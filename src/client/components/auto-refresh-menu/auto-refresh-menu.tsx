@@ -50,7 +50,7 @@ export interface AutoRefreshMenuProps {
   openOn: Element;
   onClose: Fn;
   autoRefreshRate: Duration;
-  setAutoRefreshRate: Fn;
+  setAutoRefreshRate: (duration: Duration) => void;
   refreshMaxTime: Fn;
   dataCube: DataCube;
   timekeeper: Timekeeper;
@@ -61,12 +61,6 @@ export interface AutoRefreshMenuState {
 }
 
 export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoRefreshMenuState> {
-
-  onRefreshNowClick() {
-    var { refreshMaxTime } = this.props;
-    refreshMaxTime();
-  }
-
   renderRefreshIntervalDropdown() {
     const { autoRefreshRate, setAutoRefreshRate } = this.props;
 
@@ -80,9 +74,9 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
   }
 
   render() {
-    var { openOn, onClose, dataCube, timekeeper, timezone } = this.props;
+    const { openOn, onClose, dataCube, timekeeper, timezone } = this.props;
+    const stage = Stage.fromSize(240, 200);
 
-    var stage = Stage.fromSize(240, 200);
     return <BubbleMenu
       className="auto-refresh-menu"
       direction="down"
@@ -91,7 +85,7 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
       onClose={onClose}
     >
       {this.renderRefreshIntervalDropdown()}
-      <button className="update-now-button" onClick={this.onRefreshNowClick.bind(this)}>Update now</button>
+      <button className="update-now-button" onClick={this.props.refreshMaxTime}>Update now</button>
       <div className="update-info">{dataCube.updatedText(timekeeper, timezone)}</div>
     </BubbleMenu>;
   }

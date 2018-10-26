@@ -142,13 +142,13 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this._isMounted = false;
   }
 
-  protected globalMouseMoveListener(e: MouseEvent) {
+  protected globalMouseMoveListener: (e: MouseEvent) => void = (e: MouseEvent) => {
   }
 
-  protected globalMouseUpListener(e: MouseEvent) {
+  protected globalMouseUpListener: (e: MouseEvent) => void = (e: MouseEvent) => {
   }
 
-  protected globalKeyDownListener(e: KeyboardEvent) {
+  protected globalKeyDownListener: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
   }
 
   protected renderInternals(): JSX.Element {
@@ -168,9 +168,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     return <div className={"base-visualization " + this.id}>
       <GlobalEventListener
-        mouseMove={this.globalMouseMoveListener.bind(this)}
-        mouseUp={this.globalMouseUpListener.bind(this)}
-        keyDown={this.globalKeyDownListener.bind(this)}
+        mouseMove={this.globalMouseMoveListener}
+        mouseUp={this.globalMouseUpListener}
+        keyDown={this.globalKeyDownListener}
       />
       {this.lastRenderResult}
       {datasetLoad.error ? <QueryError error={datasetLoad.error} /> : null}

@@ -357,7 +357,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     });
   }
 
-  toggleFold() {
+  toggleFold = () => {
     const { essence, timekeeper, dimension, sortOn } = this.props;
     let { unfolded } = this.state;
     unfolded = !unfolded;
@@ -365,7 +365,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
   }
 
-  onDragStart(e: DragEvent) {
+  onDragStart = (e: React.DragEvent<HTMLElement>) => {
     const { dimension } = this.props;
 
     const dataTransfer = e.dataTransfer;
@@ -376,13 +376,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     setDragGhost(dataTransfer, dimension.title);
   }
 
-  toggleSearch() {
-    const { showSearch } = this.state;
-    this.setState({ showSearch: !showSearch });
+  toggleSearch = () => {
+    this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
   }
 
-  onSearchChange(text: string) {
+  onSearchChange = (text: string) => {
     const { searchText, dataset, fetchQueued, loading } = this.state;
     const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
@@ -546,7 +545,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (isFoldable) {
       return <div
         className={classNames("folder", unfolded ? "folded" : "unfolded")}
-        onClick={this.toggleFold.bind(this)}
+        onClick={this.toggleFold}
       >
         <SvgIcon svg={require("../../icons/caret.svg")} />
         {unfolded ? "Show selection" : "Show all"}
@@ -597,7 +596,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const icons: TileHeaderIcon[] = [{
       name: "search",
       ref: "search",
-      onClick: this.toggleSearch.bind(this),
+      onClick: this.toggleSearch,
       svg: require("../../icons/full-search.svg"),
       active: showSearch
     }];
@@ -622,9 +621,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     return <SearchableTile
       style={style}
       title={this.getTitleHeader()}
-      toggleChangeFn={this.toggleSearch.bind(this)}
-      onDragStart={this.onDragStart.bind(this)}
-      onSearchChange={this.onSearchChange.bind(this)}
+      toggleChangeFn={this.toggleSearch}
+      onDragStart={this.onDragStart}
+      onSearchChange={this.onSearchChange}
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}

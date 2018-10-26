@@ -73,15 +73,15 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     }
   }
 
-  onSelectFilterOption(filterMode: FilterMode) {
+  onSelectFilterOption = (filterMode: FilterMode) => {
     this.setState({ filterMode });
   }
 
-  updateSearchText(searchText: string) {
+  updateSearchText = (searchText: string) => {
     this.setState({ searchText });
   }
 
-  updateFilter(clause: FilterClause): Filter {
+  updateFilter: (clause: FilterClause) => Filter = clause => {
     const { essence, dimension, changePosition } = this.props;
     var { filter } = essence;
 
@@ -114,7 +114,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       <div className="side-by-side">
         <FilterOptionsDropdown
           selectedOption={filterMode}
-          onSelectOption={this.onSelectFilterOption.bind(this)}
+          onSelectOption={this.onSelectFilterOption}
           filterOptions={this.getFilterOptions()}
         />
         <div className="search-box">
@@ -122,7 +122,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
             placeholder="Search"
             focusOnMount={true}
             value={searchText}
-            onChange={this.updateSearchText.bind(this)}
+            onChange={this.updateSearchText}
           />
         </div>
       </div>
@@ -147,7 +147,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         onClose={onClose}
         searchText={searchText}
         filterMode={filterMode}
-        onClauseChange={this.updateFilter.bind(this)}
+        onClauseChange={this.updateFilter}
       />;
     } else {
       menuSize = Stage.fromSize(250, 410);
@@ -159,7 +159,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         onClose={onClose}
         searchText={searchText}
         filterMode={filterMode}
-        onClauseChange={this.updateFilter.bind(this)}
+        onClauseChange={this.updateFilter}
       />;
     }
 

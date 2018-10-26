@@ -70,17 +70,12 @@ export interface NumberFilterMenuState {
 export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, NumberFilterMenuState> {
   public mounted: boolean;
 
-  constructor(props: NumberFilterMenuProps) {
-    super(props);
-    this.state = {
-      leftOffset: null,
-      rightBound: null,
-      start: ANY_VALUE,
-      end: ANY_VALUE
-    };
-
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
-  }
+  state: NumberFilterMenuState = {
+    leftOffset: null,
+    rightBound: null,
+    start: ANY_VALUE,
+    end: ANY_VALUE
+  };
 
   componentWillMount() {
     const { essence, dimension } = this.props;
@@ -123,47 +118,47 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     }));
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     if (enterKey(e)) {
       this.onOkClick();
     }
   }
 
-  onOkClick() {
+  onOkClick = () => {
     if (!this.actionEnabled()) return;
     const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
   }
 
-  onCancelClick() {
+  onCancelClick = () => {
     const { onClose } = this.props;
     onClose();
   }
 
-  onRangeInputStartChange(e: KeyboardEvent) {
-    const startInput = (e.target as HTMLInputElement).value;
+  onRangeInputStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const startInput = e.target.value;
     this.setState({
       start: stringToNumberOrAny(startInput)
     });
   }
 
-  onRangeInputEndChange(e: KeyboardEvent) {
-    const endInput = (e.target as HTMLInputElement).value;
+  onRangeInputEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const endInput = e.target.value;
     this.setState({
       end: stringToNumberOrAny(endInput)
     });
   }
 
-  onRangeStartChange(start: number) {
+  onRangeStartChange = (start: number) => {
     this.setState({ start });
   }
 
-  onRangeEndChange(end: number) {
+  onRangeEndChange = (end: number) => {
     this.setState({ end });
   }
 
-  onSelectFilterOption(filterMode: FilterMode) {
+  onSelectFilterOption = (filterMode: FilterMode) => {
     this.setState({ filterMode });
   }
 
@@ -192,23 +187,23 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
           <label className="input-top-label">Type</label>
           <FilterOptionsDropdown
             selectedOption={filterMode}
-            onSelectOption={this.onSelectFilterOption.bind(this)}
+            onSelectOption={this.onSelectFilterOption}
             filterOptions={filterOptions}
           />
         </div>
         <div className="group">
           <label className="input-top-label">Min</label>
-          <input value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange.bind(this)} />
+          <input value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange} />
         </div>
         <div className="group">
           <label className="input-top-label">Max</label>
-          <input value={numberOrAnyToString(end)} onChange={this.onRangeInputEndChange.bind(this)} />
+          <input value={numberOrAnyToString(end)} onChange={this.onRangeInputEndChange} />
         </div>
       </div>
 
       <NumberRangePicker
-        onRangeEndChange={this.onRangeEndChange.bind(this)}
-        onRangeStartChange={this.onRangeStartChange.bind(this)}
+        onRangeEndChange={this.onRangeEndChange}
+        onRangeStartChange={this.onRangeStartChange}
         start={start}
         end={end}
         dimension={dimension}
@@ -218,8 +213,8 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
       />
 
       <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
+        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
       </div>
     </BubbleMenu>;
   }

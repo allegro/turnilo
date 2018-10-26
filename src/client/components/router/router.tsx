@@ -63,12 +63,7 @@ const HASH_SEPARATOR = /\/+/;
 export class Router extends React.Component<RouterProps, RouterState> {
   public mounted: boolean;
 
-  constructor(props: RouterProps) {
-    super(props);
-    this.state = {};
-
-    this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
-  }
+  state: RouterState = {};
 
   componentDidMount() {
     window.addEventListener("hashchange", this.globalHashChangeListener);
@@ -81,7 +76,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
-  globalHashChangeListener(): void {
+  globalHashChangeListener = () => {
     var newHash = window.location.hash;
 
     // Means we're going somewhere unknown and this specific router shouldn't

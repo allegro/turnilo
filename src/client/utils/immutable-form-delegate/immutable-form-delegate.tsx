@@ -40,16 +40,13 @@ export class ImmutableFormDelegate<T> {
       canSave: false,
       errors: {}
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.updateErrors = this.updateErrors.bind(this);
   }
 
   private setState(state: ImmutableFormState<T>, callback?: () => void) {
     return this.form.setState.call(this.form, state, callback);
   }
 
-  updateErrors(path: string, isValid: boolean, error: string): { errors: any, canSave: boolean } {
+  updateErrors = (path: string, isValid: boolean, error: string): { errors: any, canSave: boolean } => {
     var { errors } = this.form.state;
 
     errors[path] = isValid ? false : error;
@@ -60,7 +57,7 @@ export class ImmutableFormDelegate<T> {
     return { errors, canSave };
   }
 
-  onChange(newItem: any, isValid: boolean, path: string, error: string) {
+  onChange = (newItem: any, isValid: boolean, path: string, error: string) => {
     var { errors, canSave } = this.updateErrors(path, isValid, error);
 
     if (isValid) {

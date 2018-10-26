@@ -243,7 +243,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { path: [], coordinates: null };
   }
 
-  onScrollerScroll(scrollTop: number, scrollLeft: number) {
+  onScrollerScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({
       hoverInfo: null,
       scrollLeft,
@@ -251,15 +251,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
     });
   }
 
-  onMouseMove(x: number, y: number) {
+  onMouseMove = (x: number, y: number) => {
     this.setState({ hoverInfo: this.calculateMousePosition(x, y) });
   }
 
-  onMouseLeave() {
+  onMouseLeave = () => {
     this.setState({ hoverInfo: null });
   }
 
-  onClick(x: number, y: number) {
+  onClick = (x: number, y: number) => {
     const { essence, clicker } = this.props;
 
     if (!clicker.changeHighlight || !clicker.dropHighlight) return;
@@ -425,12 +425,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
         dimension={dimension}
         clicker={clicker}
         openRawDataModal={openRawDataModal}
-        onClose={this.onBubbleClose.bind(this)}
+        onClose={this.onBubbleClose}
       />}
     />;
   }
 
-  onBubbleClose() {
+  onBubbleClose = () => {
     this.setState({ selectionInfo: null });
   }
 
@@ -1007,10 +1007,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
         body={measureCharts}
         overlay={overlay}
 
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
-        onMouseLeave={this.onMouseLeave.bind(this)}
-        onScroll={this.onScrollerScroll.bind(this)}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
+        onScroll={this.onScrollerScroll}
       />
     </div>;
   }

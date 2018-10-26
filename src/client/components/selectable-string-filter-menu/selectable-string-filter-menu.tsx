@@ -186,7 +186,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     }
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     if (enterKey(e)) {
       this.onOkClick();
     }
@@ -217,7 +217,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     return this.setState({ colors, selectedValues: toggle(selectedValues, value) });
   }
 
-  onOkClick() {
+  onOkClick = () => {
     if (!this.actionEnabled()) return;
     const { clicker, onClose } = this.props;
     const { colors } = this.state;
@@ -225,9 +225,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     onClose();
   }
 
-  onCancelClick() {
-    var { onClose } = this.props;
-    onClose();
+  onCancelClick = () => {
+    this.props.onClose();
   }
 
   actionEnabled() {
@@ -296,7 +295,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const hasMore = dataset && dataset.data.length > TOP_N;
     return <div className={classNames("string-filter-menu", filterMode)}>
       <GlobalEventListener
-        keyDown={this.globalKeyDownListener.bind(this)}
+        keyDown={this.globalKeyDownListener}
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderList()}
@@ -304,8 +303,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         {loading ? <Loader /> : null}
       </div>
       <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
+        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
       </div>
     </div>;
   }

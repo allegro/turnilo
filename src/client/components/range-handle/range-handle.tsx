@@ -37,17 +37,11 @@ export interface RangeHandleState {
 export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleState> {
   public mounted: boolean;
 
-  constructor(props: RangeHandleProps) {
-    super(props);
-    this.state = {
+  state: RangeHandleState = {
       anchor: null
-    };
+  };
 
-    this.onGlobalMouseUp = this.onGlobalMouseUp.bind(this);
-    this.onGlobalMouseMove = this.onGlobalMouseMove.bind(this);
-  }
-
-  onGlobalMouseMove(event: MouseEvent) {
+  onGlobalMouseMove = (event: MouseEvent) => {
     const { onChange, leftBound, rightBound } = this.props;
     const { anchor } = this.state;
     let newX = getXFromEvent(event) - anchor;
@@ -55,7 +49,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     onChange(clamp(newX, leftBound, rightBound));
   }
 
-  onMouseDown(event: MouseEvent) {
+  onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
     const { offset, positionLeft } = this.props;
 
     let x = getXFromEvent(event);
@@ -68,10 +62,9 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     event.preventDefault();
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
-
   }
 
-  onGlobalMouseUp() {
+  onGlobalMouseUp = () => {
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
   }
@@ -84,7 +77,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     return <div
       className={classNames("range-handle", { "empty": isAny, "beyond min": isBeyondMin, "beyond max": isBeyondMax })}
       style={style}
-      onMouseDown={this.onMouseDown.bind(this)}
+      onMouseDown={this.onMouseDown}
     />;
   }
 }

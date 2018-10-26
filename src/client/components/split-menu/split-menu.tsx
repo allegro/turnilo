@@ -92,7 +92,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   onCancelClick = () => this.props.onClose();
 
-  onOkClick() {
+  onOkClick = () => {
     if (!this.validate()) return;
     const { split: originalSplit, clicker, essence, onClose } = this.props;
     const split = this.constructSplitCombine();
@@ -159,7 +159,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
         limit={limit}
         includeNone={dimension.isContinuous()}/>
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.validate()}>{STRINGS.ok}</button>
+        <button className="ok" onClick={this.onOkClick} disabled={!this.validate()}>{STRINGS.ok}</button>
         <button className="cancel" onClick={this.onCancelClick}>{STRINGS.cancel}</button>
       </div>
     </BubbleMenu>;

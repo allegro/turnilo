@@ -36,14 +36,10 @@ export interface DateRangeInputState {
 }
 
 export class DateRangeInput extends React.Component<DateRangeInputProps, DateRangeInputState> {
-
-  constructor(props: DateRangeInputProps) {
-    super(props);
-    this.state = {
-      dateString: "",
-      timeString: ""
-    };
-  }
+  state = {
+    dateString: "",
+    timeString: ""
+  };
 
   componentDidMount() {
     const { time, timezone } = this.props;
@@ -70,8 +66,8 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     });
   }
 
-  dateChange(e: KeyboardEvent) {
-    const dateString = (e.target as HTMLInputElement).value.replace(/[^\d-]/g, "");
+  dateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateString = e.target.value.replace(/[^\d-]/g, "");
     this.setState({
       dateString
     });
@@ -80,8 +76,8 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     }
   }
 
-  timeChange(e: KeyboardEvent) {
-    const timeString = (e.target as HTMLInputElement).value.replace(/[^\d:]/g, "");
+  timeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const timeString = e.target.value.replace(/[^\d:]/g, "");
     this.setState({
       timeString
     });
@@ -100,15 +96,15 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
   }
 
   render() {
-    const { hide } = this.props;
+    const { hide, label } = this.props;
     const { dateString, timeString } = this.state;
     const dateValue = hide ? "" : dateString;
     const timeValue = hide ? "" : timeString;
 
     return <div className="date-range-input">
-      <div className="label">{this.props.label}</div>
-      <input placeholder="YYYY-MM-DD" className="date-field" value={dateValue} onChange={this.dateChange.bind(this)} />
-      <input placeholder="HH:MM" className="time-field" value={timeValue} onChange={this.timeChange.bind(this)} />
+      <div className="label">{label}</div>
+      <input placeholder="YYYY-MM-DD" className="date-field" value={dateValue} onChange={this.dateChange} />
+      <input placeholder="HH:MM" className="time-field" value={timeValue} onChange={this.timeChange} />
     </div>;
   }
 }

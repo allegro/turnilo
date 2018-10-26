@@ -41,7 +41,7 @@ export interface SearchableTileProps {
   className?: string;
   style: Record<string, any>;
   title: string;
-  onDragStart?: Fn;
+  onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
   actions?: TileAction[];
 }
 
@@ -53,15 +53,9 @@ export interface SearchableTileState {
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
 
-  constructor(props: SearchableTileProps) {
-    super(props);
-    this.state = {
-      actionsMenuOpenOn: null
-    };
-
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
-  }
+  state: SearchableTileState = {
+    actionsMenuOpenOn: null
+  };
 
   componentDidMount() {
     this.mounted = true;
@@ -76,7 +70,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  globalMouseDownListener(e: MouseEvent) {
+  globalMouseDownListener = (e: MouseEvent) => {
     var { searchText, toggleChangeFn } = this.props;
 
     // Remove search if it looses focus while empty
@@ -95,14 +89,14 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     toggleChangeFn();
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     const { toggleChangeFn, showSearch } = this.props;
     if (!escapeKey(e)) return;
     if (!showSearch) return;
     toggleChangeFn();
   }
 
-  onActionsMenuClose() {
+  onActionsMenuClose = () => {
     var { actionsMenuOpenOn } = this.state;
     if (!actionsMenuOpenOn) return;
     this.setState({
@@ -110,7 +104,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     });
   }
 
-  onActionsMenuClick(e: MouseEvent) {
+  onActionsMenuClick = (e: React.MouseEvent<HTMLElement>) => {
     var { actionsMenuOpenOn } = this.state;
     if (actionsMenuOpenOn) return this.onActionsMenuClose();
     this.setState({
@@ -147,7 +141,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
       className="dimension-tile-actions"
       direction="down"
       stage={stage}
-      onClose={this.onActionsMenuClose.bind(this)}
+      onClose={this.onActionsMenuClose}
       openOn={actionsMenuOpenOn}
       alignOn={actionsMenuAlignOn}
     >
@@ -169,7 +163,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
       tileIcons = [({
         name: "more",
         ref: "more",
-        onClick: this.onActionsMenuClick.bind(this),
+        onClick: this.onActionsMenuClick,
         svg: require("../../icons/full-more.svg"),
         active: Boolean(actionsMenuOpenOn)
       } as TileHeaderIcon)].concat(icons);
@@ -190,7 +184,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
           placeholder="Search"
           focusOnMount={true}
           value={searchText}
-          onChange={onSearchChange.bind(this)}
+          onChange={onSearchChange}
         />
       </div>;
     }

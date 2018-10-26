@@ -18,6 +18,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
@@ -34,8 +35,8 @@ export interface DimensionMeasurePanelProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: Fn;
-  triggerSplitMenu: Fn;
+  triggerFilterMenu: (dimension: Dimension) => void;
+  triggerSplitMenu: (dimension: Dimension) => void;
   style?: React.CSSProperties;
 }
 

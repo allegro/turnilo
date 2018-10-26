@@ -120,7 +120,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     });
   }
 
-  closeMenu() {
+  closeMenu = () => {
     var { menuOpenOn } = this.state;
     if (!menuOpenOn) return;
     this.setState({
@@ -149,7 +149,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return this.overflowMenuDeferred.promise;
   }
 
-  closeOverflowMenu() {
+  closeOverflowMenu = () => {
     var { overflowMenuOpenOn } = this.state;
     if (!overflowMenuOpenOn) return;
     this.setState({
@@ -178,7 +178,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.closeOverflowMenu();
   }
 
-  calculateDragPosition(e: DragEvent): DragPosition {
+  calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
     var numItems = essence.splits.length();
     var rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
@@ -187,20 +187,20 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
-  canDrop(e: DragEvent): boolean {
+  canDrop(): boolean {
     return Boolean(DragManager.getDragSplit() || DragManager.getDragDimension());
   }
 
-  dragEnter(e: DragEvent) {
-    if (!this.canDrop(e)) return;
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
       dragPosition: this.calculateDragPosition(e)
     });
   }
 
-  dragOver(e: DragEvent) {
-    if (!this.canDrop(e)) return;
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     var dragPosition = this.calculateDragPosition(e);
@@ -208,15 +208,15 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.setState({ dragPosition });
   }
 
-  dragLeave(e: DragEvent) {
-    if (!this.canDrop(e)) return;
+  dragLeave = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     this.setState({
       dragPosition: null
     });
   }
 
-  drop(e: DragEvent) {
-    if (!this.canDrop(e)) return;
+  drop = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.preventDefault();
     var { clicker, essence } = this.props;
     var { maxItems } = this.state;
@@ -265,15 +265,14 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return ReactDOM.findDOMNode(this.refs["overflow"]);
   }
 
-  overflowButtonClick() {
+  overflowButtonClick = () => {
     this.openOverflowMenu(this.overflowButtonTarget());
   }
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage } = this.props;
-    var { menuOpenOn, menuDimension, menuSplit, menuInside, overflowMenuOpenOn } = this.state;
+    const { essence, clicker, menuStage } = this.props;
+    const { menuOpenOn, menuDimension, menuSplit, menuInside, overflowMenuOpenOn } = this.state;
     if (!menuDimension) return null;
-    var onClose = this.closeMenu.bind(this);
 
     return <SplitMenu
       clicker={clicker}
@@ -282,7 +281,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       openOn={menuOpenOn}
       dimension={menuDimension}
       split={menuSplit}
-      onClose={onClose}
+      onClose={this.closeMenu}
       inside={menuInside}
     />;
   }
@@ -307,7 +306,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       stage={Stage.fromSize(208, itemY)}
       fixedSize={true}
       openOn={overflowMenuOpenOn}
-      onClose={this.closeOverflowMenu.bind(this)}
+      onClose={this.closeOverflowMenu}
     >
       {filterItems}
     </BubbleMenu>;
@@ -324,7 +323,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       ref="overflow"
       key="overflow"
       style={style}
-      onClick={this.overflowButtonClick.bind(this)}
+      onClick={this.overflowButtonClick}
     >
       <div className="count">{"+" + items.length}</div>
       {this.renderOverflowMenu(items)}
@@ -383,7 +382,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     return <div
       className="split-tile"
-      onDragEnter={this.dragEnter.bind(this)}
+      onDragEnter={this.dragEnter}
     >
       <div className="title">{STRINGS.split}</div>
       <div className="items" ref="items">
@@ -392,10 +391,10 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"
-        onDragOver={this.dragOver.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDragExit={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
+        onDragOver={this.dragOver}
+        onDragLeave={this.dragLeave}
+        onDragExit={this.dragLeave}
+        onDrop={this.drop}
       /> : null}
       {this.renderMenu()}
     </div>;

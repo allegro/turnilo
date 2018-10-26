@@ -189,21 +189,21 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     }
   }
 
-  updateStart(absolutePosition: number) {
+  updateStart = (absolutePosition: number) => {
     const { onRangeStartChange } = this.props;
     const { leftOffset } = this.state;
 
-    var relativePosition = absolutePosition - leftOffset;
-    var newValue = this.relativePositionToValue(addNubSize(relativePosition), "start");
+    const relativePosition = absolutePosition - leftOffset;
+    const newValue = this.relativePositionToValue(addNubSize(relativePosition), "start");
     onRangeStartChange(newValue);
   }
 
-  updateEnd(absolutePosition: number) {
+  updateEnd = (absolutePosition: number) => {
     const { onRangeEndChange } = this.props;
     const { leftOffset } = this.state;
 
-    var relativePosition = absolutePosition - leftOffset;
-    var newValue = this.relativePositionToValue(relativePosition, "end");
+    const relativePosition = absolutePosition - leftOffset;
+    const newValue = this.relativePositionToValue(relativePosition, "end");
 
     onRangeEndChange(newValue);
   }
@@ -231,7 +231,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
         <div className="range-bar selected" style={rangeBarSelected}/>
         <RangeHandle
           positionLeft={positionStart}
-          onChange={this.updateStart.bind(this)}
+          onChange={this.updateStart}
           isAny={start === ANY_VALUE}
           isBeyondMin={start !== ANY_VALUE && start < min}
           leftBound={leftOffset}
@@ -240,7 +240,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
         />
         <RangeHandle
           positionLeft={positionEnd}
-          onChange={this.updateEnd.bind(this)}
+          onChange={this.updateEnd}
           isAny={end === ANY_VALUE}
           isBeyondMax={end !== ANY_VALUE && max < end}
           leftBound={leftOffset + addNubSize(positionStart)}

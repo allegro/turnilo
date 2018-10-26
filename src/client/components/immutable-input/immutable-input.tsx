@@ -178,9 +178,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     });
   }
 
-  onChange(event: KeyboardEvent) {
-    this.update((event.target as HTMLInputElement).value as string);
-  }
+  onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => this.update(event.target.value);
 
   render() {
     const { path, valueToString, type, className } = this.props;
@@ -194,7 +192,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
         className={classNames("immutable-input", className, { error: isInvalid })}
         ref="me"
         value={(isInvalid ? invalidString : validString) || ""}
-        onChange={this.onChange.bind(this)}
+        onChange={this.onChange}
       />;
     }
 
@@ -203,7 +201,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
       ref="me"
       type="text"
       value={(isInvalid ? invalidString : validString) || ""}
-      onChange={this.onChange.bind(this)}
+      onChange={this.onChange}
     />;
   }
 }

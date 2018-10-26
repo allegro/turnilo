@@ -99,16 +99,19 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     }
   }
 
-  onEscape() {
-    var { onClose, mandatory } = this.props;
+  onEscape = () => {
+    const { onClose, mandatory } = this.props;
     if (!mandatory) onClose();
   }
 
-  onEnter() {
-    if (this.props.onEnter) this.props.onEnter();
+  onEnter = () => {
+    const { onEnter } = this.props;
+    if (onEnter) {
+      onEnter();
+    }
   }
 
-  onMouseDown(e: MouseEvent) {
+  onMouseDown = (e: MouseEvent) => {
     var { onClose, mandatory } = this.props;
     if (mandatory) return;
 
@@ -139,11 +142,11 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     return <BodyPortal fullSize={true}>
       <div className={classNames("modal", className)}>
         <GlobalEventListener
-          enter={this.onEnter.bind(this)}
-          escape={this.onEscape.bind(this)}
-          mouseDown={this.onMouseDown.bind(this)}
+          enter={this.onEnter}
+          escape={this.onEscape}
+          mouseDown={this.onMouseDown}
         />
-        <div className="backdrop"></div>
+        <div className="backdrop" />
         <GoldenCenter>
           <div className="modal-window" id={id}>
             {titleElement}

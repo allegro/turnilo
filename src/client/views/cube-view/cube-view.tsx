@@ -212,7 +212,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     };
   }
 
-  refreshMaxTime() {
+  refreshMaxTime = () => {
     const { essence, timekeeper } = this.state;
     const { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
@@ -316,7 +316,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return getEssenceFromHash(hash, dataCube, MANIFESTS);
   }
 
-  globalResizeListener() {
+  globalResizeListener = () => {
     const { container, visualization } = this.refs;
     const containerDOM = ReactDOM.findDOMNode(container);
     const visualizationDOM = ReactDOM.findDOMNode(visualization);
@@ -337,23 +337,23 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return this.state.deviceSize === DeviceSize.SMALL;
   }
 
-  dragEnter(e: DragEvent) {
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({ dragOver: true });
   }
 
-  dragOver(e: DragEvent) {
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 
-  dragLeave(e: DragEvent) {
+  dragLeave = () => {
     this.setState({ dragOver: false });
   }
 
-  drop(e: DragEvent) {
+  drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.preventDefault();
     const dimension = DragManager.getDragDimension();
@@ -363,13 +363,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ dragOver: false });
   }
 
-  openRawDataModal() {
+  openRawDataModal = () => {
     this.setState({
       showRawDataModal: true
     });
   }
 
-  onRawDataModalClose() {
+  onRawDataModalClose = () => {
     this.setState({
       showRawDataModal: false
     });
@@ -382,17 +382,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <RawDataModal
       essence={essence}
       timekeeper={timekeeper}
-      onClose={this.onRawDataModalClose.bind(this)}
+      onClose={this.onRawDataModalClose}
     />;
   }
 
-  openViewDefinitionModal() {
+  openViewDefinitionModal = () => {
     this.setState({
       showViewDefinitionModal: true
     });
   }
 
-  onViewDefinitionModalClose() {
+  onViewDefinitionModalClose = () => {
     this.setState({
       showViewDefinitionModal: false
     });
@@ -403,18 +403,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (!showViewDefinitionModal) return null;
 
     return <ViewDefinitionModal
-      onClose={this.onViewDefinitionModalClose.bind(this)}
+      onClose={this.onViewDefinitionModalClose}
       essence={essence}
     />;
   }
 
-  openDruidQueryModal() {
+  openDruidQueryModal = () => {
     this.setState({
       showDruidQueryModal: true
     });
   }
 
-  closeDruidQueryModal() {
+  closeDruidQueryModal = () => {
     this.setState({
       showDruidQueryModal: false
     });
@@ -426,20 +426,20 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <DruidQueryModal
       timekeeper={timekeeper}
       essence={essence}
-      onClose={this.closeDruidQueryModal.bind(this)} />;
+      onClose={this.closeDruidQueryModal} />;
   }
 
-  triggerFilterMenu(dimension: Dimension) {
+  triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
   }
 
-  triggerSplitMenu(dimension: Dimension) {
+  triggerSplitMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["splitTile"] as SplitTile).splitMenuRequest(dimension);
   }
 
-  changeTimezone(newTimezone: Timezone): void {
+  changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
     this.setState({ essence: newEssence });
@@ -458,7 +458,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.storeLayout(layout);
   }
 
-  toggleFactPanel() {
+  toggleFactPanel = () => {
     const { layout: { factPanel }, layout } = this.state;
     this.updateLayout({
       ...layout,
@@ -469,7 +469,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  togglePinboard() {
+  togglePinboard = () => {
     const { layout: { pinboard }, layout } = this.state;
     this.updateLayout({
       ...layout,
@@ -480,7 +480,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  onFactPanelResize(width: number) {
+  onFactPanelResize = (width: number) => {
     const { layout: { factPanel }, layout } = this.state;
     this.updateLayout({
       ...layout,
@@ -491,7 +491,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  onPinboardPanelResize(width: number) {
+  onPinboardPanelResize = (width: number) => {
     const { layout: { pinboard }, layout } = this.state;
     this.updateLayout({
       ...layout,
@@ -502,7 +502,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  onPanelResizeEnd() {
+  onPanelResizeEnd = () => {
     this.globalResizeListener();
   }
 
@@ -522,18 +522,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       timekeeper={timekeeper}
       onNavClick={onNavClick}
       getCubeViewHash={getCubeViewHash}
-      refreshMaxTime={this.refreshMaxTime.bind(this)}
-      openRawDataModal={this.openRawDataModal.bind(this)}
-      openViewDefinitionModal={this.openViewDefinitionModal.bind(this)}
-      openDruidQueryModal={this.openDruidQueryModal.bind(this)}
+      refreshMaxTime={this.refreshMaxTime}
+      openRawDataModal={this.openRawDataModal}
+      openViewDefinitionModal={this.openViewDefinitionModal}
+      openDruidQueryModal={this.openDruidQueryModal}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
-      changeTimezone={this.changeTimezone.bind(this)}
+      changeTimezone={this.changeTimezone}
       updatingMaxTime={updatingMaxTime}
     />;
 
     return <div className="cube-view">
-      <GlobalEventListener resize={this.globalResizeListener.bind(this)} />
+      <GlobalEventListener resize={this.globalResizeListener} />
       {headerBar}
       <div className="container" ref="container">
         {!layout.factPanel.hidden && <DimensionMeasurePanel
@@ -541,14 +541,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           clicker={clicker}
           essence={essence}
           menuStage={menuStage}
-          triggerFilterMenu={this.triggerFilterMenu.bind(this)}
-          triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+          triggerFilterMenu={this.triggerFilterMenu}
+          triggerSplitMenu={this.triggerSplitMenu}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}
           initialValue={layout.factPanel.width}
-          onResize={this.onFactPanelResize.bind(this)}
-          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          onResize={this.onFactPanelResize}
+          onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
         />}
@@ -556,7 +556,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         <div className="center-panel" style={styles.centerPanel}>
           <div className="center-top-bar">
             <div className="dimension-panel-toggle"
-                 onClick={this.toggleFactPanel.bind(this)}>
+                 onClick={this.toggleFactPanel}>
               <ToggleArrow right={layout.factPanel.hidden} />
             </div>
             <div className="filter-split-section">
@@ -576,23 +576,23 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             </div>
             <VisSelector clicker={clicker} essence={essence} />
             <div className="pinboard-toggle"
-                 onClick={this.togglePinboard.bind(this)}>
+                 onClick={this.togglePinboard}>
               <ToggleArrow right={!layout.pinboard.hidden} />
             </div>
           </div>
           <div
             className="center-main"
-            onDragEnter={this.dragEnter.bind(this)}
+            onDragEnter={this.dragEnter}
           >
             <div className="visualization" ref="visualization">{this.visElement()}</div>
             {this.manualFallback()}
             {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div
               className="drag-mask"
-              onDragOver={this.dragOver.bind(this)}
-              onDragLeave={this.dragLeave.bind(this)}
-              onDragExit={this.dragLeave.bind(this)}
-              onDrop={this.drop.bind(this)}
+              onDragOver={this.dragOver}
+              onDragLeave={this.dragLeave}
+              onDragExit={this.dragLeave}
+              onDrop={this.drop}
             /> : null}
           </div>
         </div>
@@ -600,8 +600,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
           direction={Direction.RIGHT}
           initialValue={layout.pinboard.width}
-          onResize={this.onPinboardPanelResize.bind(this)}
-          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          onResize={this.onPinboardPanelResize}
+          onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
         />}
@@ -664,7 +664,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       clicker: this.clicker,
       timekeeper: this.state.timekeeper,
       stage,
-      openRawDataModal: this.openRawDataModal.bind(this),
+      openRawDataModal: this.openRawDataModal,
       registerDownloadableDataset: (dataset: Dataset) => {
         this.downloadableDataset = { dataset, options: tabularOptions(essence) };
       }

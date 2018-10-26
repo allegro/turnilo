@@ -198,7 +198,7 @@ export class Table extends BaseVisualization<TableState> {
     return new Sort({ reference, direction });
   }
 
-  onClick(x: number, y: number) {
+  onClick = (x: number, y: number) => {
     const { clicker, essence } = this.props;
     const { splits, dataCube } = essence;
 
@@ -231,7 +231,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  onMouseMove(x: number, y: number) {
+  onMouseMove = (x: number, y: number) => {
     const { hoverMeasure, hoverRow } = this.state;
     const pos = this.calculateMousePosition(x, y);
     if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
@@ -242,7 +242,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  onMouseLeave() {
+  onMouseLeave = () => {
     const { hoverMeasure, hoverRow } = this.state;
     if (hoverMeasure || hoverRow) {
       this.setState({
@@ -439,7 +439,7 @@ export class Table extends BaseVisualization<TableState> {
     return null;
   }
 
-  onSimpleScroll(scrollTop: number, scrollLeft: number) {
+  onSimpleScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({ scrollLeft, scrollTop });
   }
 
@@ -587,10 +587,10 @@ export class Table extends BaseVisualization<TableState> {
         body={rows}
         overlay={overlay}
 
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
-        onMouseLeave={this.onMouseLeave.bind(this)}
-        onScroll={this.onSimpleScroll.bind(this)}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
+        onScroll={this.onSimpleScroll}
 
       />
 

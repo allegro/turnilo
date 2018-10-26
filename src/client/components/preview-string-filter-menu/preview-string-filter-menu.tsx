@@ -166,7 +166,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     return true;
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     if (enterKey(e)) {
       this.onOkClick();
     }
@@ -194,16 +194,15 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     return null;
   }
 
-  onOkClick() {
+  onOkClick = () => {
     if (!this.actionEnabled()) return;
     const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
   }
 
-  onCancelClick() {
-    const { onClose } = this.props;
-    onClose();
+  onCancelClick = () => {
+    this.props.onClose();
   }
 
   actionEnabled() {
@@ -286,7 +285,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const hasMore = dataset && dataset.data.length > TOP_N;
     return <div className={classNames("string-filter-menu", filterMode)}>
       <GlobalEventListener
-        keyDown={this.globalKeyDownListener.bind(this)}
+        keyDown={this.globalKeyDownListener}
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderList()}
@@ -294,8 +293,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
         {loading ? <Loader /> : null}
       </div>
       <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
+        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
       </div>
     </div>;
   }

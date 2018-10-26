@@ -130,7 +130,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       );
   }
 
-  onScrollerViewportUpdate(viewPortStage: Stage) {
+  onScrollerViewportUpdate = (viewPortStage: Stage) => {
     if (!viewPortStage.equals(this.state.stage)) {
       this.setState({
         stage: viewPortStage
@@ -138,7 +138,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     }
   }
 
-  onScroll(scrollTop: number, scrollLeft: number) {
+  onScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({ scrollLeft, scrollTop });
   }
 
@@ -329,8 +329,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           layout={scrollerLayout}
           topGutter={this.renderHeader()}
           body={stage && this.renderRows()}
-          onScroll={this.onScroll.bind(this)}
-          onViewportUpdate={this.onScrollerViewportUpdate.bind(this)}
+          onScroll={this.onScroll}
+          onViewportUpdate={this.onScrollerViewportUpdate}
         />
         {error ? <QueryError error={error} /> : null}
         {loading ? <Loader /> : null}

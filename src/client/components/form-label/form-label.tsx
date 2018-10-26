@@ -69,7 +69,7 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
     }
   }
 
-  onHelpClick() {
+  onHelpClick = () => {
     this.setState({ helpVisible: !this.state.helpVisible, hideHelpIfNoError: false });
   }
 
@@ -81,18 +81,18 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
     const { helpVisible } = this.state;
 
     if (errorText) {
-      return <div className="icon-container error" onClick={this.onHelpClick.bind(this)}>
+      return <div className="icon-container error" onClick={this.onHelpClick}>
         <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
       </div>;
     }
 
     if (helpVisible) {
-      return <div className="icon-container visible" onClick={this.onHelpClick.bind(this)}>
+      return <div className="icon-container visible" onClick={this.onHelpClick}>
         <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
       </div>;
     }
 
-    return <div className="icon-container" onClick={this.onHelpClick.bind(this)}>
+    return <div className="icon-container" onClick={this.onHelpClick}>
       <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
     </div>;
   }

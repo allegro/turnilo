@@ -103,7 +103,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     this.setAutoRefreshRate(Duration.fromJS("PT5M")); // ToDo: make this configurable maybe?
   }
 
-  setAutoRefreshRate(rate: Duration) {
+  setAutoRefreshRate = (rate: Duration) => {
     const { autoRefreshRate } = this.state;
     if (immutableEqual(autoRefreshRate, rate)) return;
 
@@ -171,9 +171,9 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     return <AutoRefreshMenu
       timekeeper={timekeeper}
       openOn={autoRefreshMenuAnchor}
-      onClose={this.closeAutoRefreshMenu.bind(this)}
+      onClose={this.closeAutoRefreshMenu}
       autoRefreshRate={autoRefreshRate}
-      setAutoRefreshRate={this.setAutoRefreshRate.bind(this)}
+      setAutoRefreshRate={this.setAutoRefreshRate}
       refreshMaxTime={refreshMaxTime}
       dataCube={essence.dataCube}
       timezone={essence.timezone}

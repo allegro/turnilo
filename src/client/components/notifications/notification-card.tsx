@@ -38,19 +38,16 @@ const DEFAULT_DURATION = 6; // seconds
 export class NotificationCard extends React.Component<NotificationCardProps, NotificationCardState> {
   private timeoutID: number;
 
-  constructor(props: NotificationCardProps) {
-    super(props);
-    this.state = {
-      appearing: false,
-      disappearing: false,
-      hovered: false,
-      timerExpired: false
-    };
-  }
+  state: NotificationCardState = {
+    appearing: false,
+    disappearing: false,
+    hovered: false,
+    timerExpired: false
+  };
 
   componentDidMount() {
     this.setState({ appearing: true }, () => {
-      this.timeoutID = window.setTimeout(this.appear.bind(this), 10);
+      this.timeoutID = window.setTimeout(this.appear, 10);
     });
   }
 
@@ -60,7 +57,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     }
   }
 
-  appear() {
+  appear = () => {
     const { title, message, duration, muted } = this.props.model;
 
     var d = clamp(duration, -1, 10);
@@ -74,12 +71,12 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       this.setState({ appearing: false });
     } else {
       this.setState({ appearing: false }, () => {
-        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000);
+        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd, (d ? d : DEFAULT_DURATION) * 1000);
       });
     }
   }
 
-  onDisappearTimerEnd() {
+  onDisappearTimerEnd = () => {
     if (this.state.hovered) {
       this.setState({
         timerExpired: true
@@ -108,13 +105,13 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
   }
 
-  onMouseOver() {
+  onMouseOver = () => {
     this.setState({
       hovered: true
     });
   }
 
-  onMouseLeave() {
+  onMouseLeave = () => {
     this.setState({
       hovered: false
     });
@@ -144,8 +141,8 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     return <div
       style={{ top }}
       onClick={onClick}
-      onMouseOver={this.onMouseOver.bind(this)}
-      onMouseLeave={this.onMouseLeave.bind(this)}
+      onMouseOver={this.onMouseOver}
+      onMouseLeave={this.onMouseLeave}
       className={classNames(`notification-card ${priority} ${rowsClass}`, { appearing, disappearing, muted })}
     >
       <div className="title">{title}</div>

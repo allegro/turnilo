@@ -44,7 +44,7 @@ export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDat
 
   // User menu
 
-  onUserMenuClick(e: MouseEvent) {
+  onUserMenuClick = (e: React.MouseEvent<HTMLElement>) => {
     const { userMenuOpenOn } = this.state;
     if (userMenuOpenOn) return this.onUserMenuClose();
     this.setState({
@@ -52,7 +52,7 @@ export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDat
     });
   }
 
-  onUserMenuClose() {
+  onUserMenuClose = () => {
     this.setState({
       userMenuOpenOn: null
     });
@@ -65,7 +65,7 @@ export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDat
 
     return <UserMenu
       openOn={userMenuOpenOn}
-      onClose={this.onUserMenuClose.bind(this)}
+      onClose={this.onUserMenuClose}
       user={user}
       customization={customization}
     />;
@@ -76,7 +76,7 @@ export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDat
 
     var userButton: JSX.Element = null;
     if (user) {
-      userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
+      userButton = <div className="icon-button user" onClick={this.onUserMenuClick}>
         <SvgIcon svg={require("../../../icons/full-user.svg")} />
       </div>;
     }
