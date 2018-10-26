@@ -59,12 +59,30 @@ describe("Delta", () => {
       expect(deltaNode.text()).to.be.equal("▲50 (100%)");
     });
 
+    it("should render properly positive delta for lower-is-better measure", () => {
+      const delta = shallow(<Delta currentValue={100} previousValue={50} lowerIsBetter={true} formatter={formatter}/>);
+
+      const deltaNode = delta.find("span");
+
+      expect(deltaNode.hasClass("delta-negative")).to.be.true;
+      expect(deltaNode.text()).to.be.equal("▲50 (100%)");
+    });
+
     it("should render properly negative delta", () => {
       const delta = shallow(<Delta currentValue={100} previousValue={200} formatter={formatter}/>);
 
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-negative")).to.be.true;
+      expect(deltaNode.text()).to.be.equal("▼100 (50%)");
+    });
+
+    it("should render properly negative delta for lower-is-better measure", () => {
+      const delta = shallow(<Delta currentValue={100} previousValue={200} lowerIsBetter={true} formatter={formatter}/>);
+
+      const deltaNode = delta.find("span");
+
+      expect(deltaNode.hasClass("delta-positive")).to.be.true;
       expect(deltaNode.text()).to.be.equal("▼100 (50%)");
     });
 

@@ -359,6 +359,7 @@ export class Table extends BaseVisualization<TableState> {
             <div className="label">{<Delta
               currentValue={currentValue}
               previousValue={previousValue}
+              lowerIsBetter={measure.lowerIsBetter}
               formatter={formatter}
             />}</div>
           </div>

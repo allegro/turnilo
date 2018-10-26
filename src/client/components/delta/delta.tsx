@@ -50,14 +50,14 @@ function deltaSignToSymbol(deltaSign: DeltaSign): string {
   }
 }
 
-function deltaSignToClassName(deltaSign: DeltaSign): string {
+function deltaSignToClassName(deltaSign: DeltaSign, lowerIsBetter = false): string {
   switch (deltaSign) {
     case -1:
-      return "delta-negative";
+      return lowerIsBetter ? "delta-positive" : "delta-negative";
     case 0:
       return "delta-neutral";
     case 1:
-      return "delta-positive";
+      return lowerIsBetter ? "delta-negative" : "delta-positive";
   }
 }
 
@@ -65,16 +65,17 @@ export interface DeltaProps {
   currentValue: number;
   previousValue: number;
   formatter: Unary<number, string>;
+  lowerIsBetter?: boolean;
 }
 
-export const Delta: React.SFC<DeltaProps> = ({ currentValue, previousValue, formatter }) => {
+export const Delta: React.SFC<DeltaProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
   const formattedDelta = formatDelta(currentValue, previousValue);
   if (formattedDelta === null) {
     return <span className="delta-neutral">-</span>;
   }
 
   const { delta, deltaPercentage, deltaSign } = formattedDelta;
-  return <span className={deltaSignToClassName(deltaSign)}>
+  return <span className={deltaSignToClassName(deltaSign, lowerIsBetter)}>
     {deltaSignToSymbol(deltaSign)}
     {formatter(Math.abs(delta))}
     {isFinite(deltaPercentage) && ` (${Math.abs(deltaPercentage)}%)`}
