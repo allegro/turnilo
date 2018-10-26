@@ -21,11 +21,11 @@ import { Dataset, Expression, PlywoodValue } from "plywood";
 import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
-var router = Router();
+let router = Router();
 
 router.post("/", (req: SwivRequest, res: Response) => {
-  var { dataCube, dataSource, expression, timezone, settingsVersion } = req.body;
-  dataCube = dataCube || dataSource; // back compat
+  const { dataSource, expression, timezone } = req.body;
+  const dataCube = req.body.dataCube || dataSource; // back compat
 
   if (typeof dataCube !== "string") {
     res.status(400).send({
@@ -34,7 +34,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
     return;
   }
 
-  var queryTimezone: Timezone = null;
+  let queryTimezone: Timezone = null;
   if (typeof timezone === "string") {
     try {
       queryTimezone = Timezone.fromJS(timezone);
@@ -47,7 +47,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
     }
   }
 
-  var ex: Expression = null;
+  let ex: Expression = null;
   try {
     ex = Expression.fromJS(expression);
   } catch (e) {
@@ -65,7 +65,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
       //   settingsBehind = true;
       // }
 
-      var myDataCube = appSettings.getDataCube(dataCube);
+      const myDataCube = appSettings.getDataCube(dataCube);
       if (!myDataCube) {
         res.status(400).send({ error: "unknown data cube" });
         return null;
@@ -76,9 +76,10 @@ router.post("/", (req: SwivRequest, res: Response) => {
         return null;
       }
 
-      return myDataCube.executor(ex, { timezone: queryTimezone }).then(
+      const maxQueries = myDataCube.getMaxQueries();
+      return myDataCube.executor(ex, { maxQueries, timezone: queryTimezone }).then(
         (data: PlywoodValue) => {
-          var reply: any = {
+          const reply: any = {
             result: Dataset.isDataset(data) ? data.toJS() : data
           };
           // if (settingsBehind) reply.action = 'update';

@@ -459,6 +459,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
     const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
     return <MeasureBubbleContent
+      lowerIsBetter={measure.lowerIsBetter}
       formatter={measure.formatFn}
       current={currentValue}
       previous={previousValue}

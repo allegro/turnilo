@@ -214,7 +214,11 @@ Refresh rule defining how the information about latest data in a data source is 
 
 **maxSplits** (number)
 
-Number of splits data cube supports.
+Number of splits data cube supports. Defaults to 3.
+
+**maxQueries** (number)
+
+Number of queries that can be issued to druid. Defaults to 500.
 
 ### Refresh rules
 
@@ -463,6 +467,10 @@ The description of the measure in the UI. Accepts Markdown format.
 **units** (string)
 
 The units for this measure. To be shown alongside the title.
+
+**lowerIsBetter** (boolean) default: false
+
+If set to true measure will be interpreted in UI as "better" when value is lower.
 
 **formula** (string - plywood expression)
 

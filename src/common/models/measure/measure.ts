@@ -47,6 +47,7 @@ export interface MeasureValue {
   format?: string;
   transformation?: string;
   description?: string;
+  lowerIsBetter?: boolean;
 }
 
 export interface MeasureJS {
@@ -57,6 +58,7 @@ export interface MeasureJS {
   format?: string;
   transformation?: string;
   description?: string;
+  lowerIsBetter?: boolean;
 }
 
 export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
@@ -223,6 +225,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     { name: "name", validate: verifyUrlSafeName },
     { name: "title", defaultValue: null },
     { name: "units", defaultValue: null },
+    { name: "lowerIsBetter", defaultValue: false },
     { name: "formula" },
     { name: "description", defaultValue: undefined },
     { name: "format", defaultValue: Measure.DEFAULT_FORMAT },
@@ -238,6 +241,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   public format: string;
   public formatFn: (n: number) => string;
   public transformation: string;
+  public lowerIsBetter: boolean;
   public readonly type = "measure";
 
   constructor(parameters: MeasureValue) {

@@ -376,6 +376,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
               currentValue={hoverDatum[measure.name] as number}
               previousValue={hoverDatum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number}
               formatter={measure.formatFn}
+              lowerIsBetter={measure.lowerIsBetter}
             />
           };
         });
@@ -438,6 +439,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
               currentValue={hoverDatum[measure.name] as number}
               previousValue={hoverDatumElement}
               formatter={measure.formatFn}
+              lowerIsBetter={measure.lowerIsBetter}
             />
           };
         });
@@ -475,6 +477,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
     const previous = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
     return <MeasureBubbleContent
+      lowerIsBetter={measure.lowerIsBetter}
       current={currentValue}
       previous={previous}
       formatter={measure.formatFn} />;

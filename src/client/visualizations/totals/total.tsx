@@ -20,19 +20,24 @@ import { isTruthy } from "../../../common/utils/general/general";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
-interface PreviousProps {
+interface DifferenceProps {
   currentValue: number;
   previousValue: number;
+  lowerIsBetter?: boolean;
   formatter: Unary<number, string>;
 }
 
-const Previous: React.SFC<PreviousProps> = ({ currentValue, previousValue, formatter }) => {
+const Difference: React.SFC<DifferenceProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
   return <React.Fragment>
     <div className="measure-value measure-value--previous">
       {formatter(previousValue)}
     </div>
     <div className="measure-delta-value">
-      <Delta previousValue={previousValue} currentValue={currentValue} formatter={formatter}/>
+      <Delta
+        previousValue={previousValue}
+        currentValue={currentValue}
+        lowerIsBetter={lowerIsBetter}
+        formatter={formatter} />
     </div>
   </React.Fragment>;
 };
@@ -40,14 +45,19 @@ const Previous: React.SFC<PreviousProps> = ({ currentValue, previousValue, forma
 export interface TotalProps {
   name: string;
   value?: number;
+  lowerIsBetter?: boolean;
   previous?: number;
   formatter: Unary<number, string>;
 }
 
-export const Total: React.SFC<TotalProps> = ({ name, value, previous, formatter }) => {
+export const Total: React.SFC<TotalProps> = ({ lowerIsBetter, name, value, previous, formatter }) => {
   return <div className="total">
     <div className="measure-name" title={name}>{name}</div>
     <div className="measure-value">{value ? formatter(value) : "-"}</div>
-    {isTruthy(previous) && <Previous currentValue={value} previousValue={previous} formatter={formatter}/>}
+    {isTruthy(previous) && <Difference
+      lowerIsBetter={lowerIsBetter}
+      currentValue={value}
+      previousValue={previous}
+      formatter={formatter} />}
   </div>;
 };

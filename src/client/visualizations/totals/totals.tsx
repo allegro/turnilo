@@ -84,6 +84,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
           key={measure.name}
           formatter={measure.formatFn}
           name={measure.title}
+          lowerIsBetter={measure.lowerIsBetter}
           value={null}/>;
       }).toArray();
     }
@@ -97,6 +98,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
         name={measure.title}
         value={currentValue}
         previous={previousValue}
+        lowerIsBetter={measure.lowerIsBetter}
         formatter={measure.formatFn}
       />;
     }).toArray();
