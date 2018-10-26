@@ -464,7 +464,7 @@ The description of the measure in the UI. Accepts Markdown format.
 
 The units for this measure. To be shown alongside the title.
 
-**lowerIsBetter** (boolean)
+**lowerIsBetter** (boolean) default: false
 
 If set to true measure will be interpreted in UI as "better" when value is lower.
 
