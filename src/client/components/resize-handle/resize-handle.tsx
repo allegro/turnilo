@@ -41,9 +41,11 @@ export interface ResizeHandleState {
 
 export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
 
-  state: ResizeHandleState = {};
+  state: ResizeHandleState = {
+      currentValue: this.constrainValue(this.props.initialValue)
+  };
 
-  onMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
 
@@ -76,13 +78,9 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     const { anchor } = this.state;
     const currentValue = this.constrainValue(this.getCoordinate(event)) - anchor;
     this.setState({ currentValue });
-    if (!!this.props.onResize) this.props.onResize(currentValue);
-  }
-
-  componentDidMount() {
-    this.setState({
-      currentValue: this.constrainValue(this.props.initialValue)
-    });
+    if (isFunction(this.props.onResize)) {
+      this.props.onResize(currentValue);
+    }
   }
 
   private getValue(event: MouseEvent | React.MouseEvent<HTMLElement>): number {

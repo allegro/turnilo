@@ -69,7 +69,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
 
   containerRef: Element = null;
 
-  getInitialState = (container: Element) => {
+  setInitialDimensions = (container: Element) => {
     if (!container) return;
 
     this.containerRef = container;
@@ -107,7 +107,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
     const showResizeHandle = this.containerRef !== null;
 
     return <div className="dimension-measure-panel" style={style}>
-      <div ref={this.getInitialState} className="dimension-measure-panel--container">
+      <div ref={this.setInitialDimensions} className="dimension-measure-panel--container">
         <DimensionListTile
           clicker={clicker}
           essence={essence}

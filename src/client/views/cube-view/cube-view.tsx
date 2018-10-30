@@ -545,7 +545,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         <div className="center-panel" style={styles.centerPanel}>
           <div className="center-top-bar">
             <div className="dimension-panel-toggle"
-                 onClick={this.toggleFactPanel}>
+              onClick={this.toggleFactPanel}>
               <ToggleArrow right={layout.factPanel.hidden} />
             </div>
             <div className="filter-split-section">
@@ -565,7 +565,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             </div>
             <VisSelector clicker={clicker} essence={essence} />
             <div className="pinboard-toggle"
-                 onClick={this.togglePinboard}>
+              onClick={this.togglePinboard}>
               <ToggleArrow right={!layout.pinboard.hidden} />
             </div>
           </div>
@@ -607,32 +607,38 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     </div>;
   }
 
-  private calculateStyles() {
+  private smallDeviceStyles() {
     const { layout } = this.state;
-    const isDimensionPanelHidden = layout.factPanel.hidden;
+    const dimensionsWidth = layout.factPanel.hidden ? 0 : 200;
+    const pinboardWidth = layout.pinboard.hidden ? 0 : 200;
+    return {
+      factPanel: { width: dimensionsWidth },
+      centerPanel: { left: dimensionsWidth, right: pinboardWidth },
+      pinboardPanel: { width: pinboardWidth }
+    };
+  }
+
+  private bigDeviceStyles() {
+    const { layout } = this.state;
+    const isFactPanelHidden = layout.factPanel.hidden;
     const isPinboardHidden = layout.pinboard.hidden;
-    if (this.isSmallDevice()) {
-      const dimensionsWidth = isDimensionPanelHidden ? 0 : 200;
-      const pinboardWidth = isPinboardHidden ? 0 : 200;
-      return {
-        factPanel: { width: dimensionsWidth },
-        centerPanel: { left: dimensionsWidth, right: pinboardWidth },
-        pinboardPanel: { width: pinboardWidth }
-      };
-    }
-    const nonSmallLayoutPadding = 10;
+    const padding = 10;
     return {
       factPanel: {
-        width: isDimensionPanelHidden ? 0 : layout.factPanel.width
+        width: isFactPanelHidden ? 0 : layout.factPanel.width
       },
       centerPanel: {
-        left: isDimensionPanelHidden ? nonSmallLayoutPadding : layout.factPanel.width,
-        right: isPinboardHidden ? nonSmallLayoutPadding : layout.pinboard.width
+        left: isFactPanelHidden ? padding : layout.factPanel.width,
+        right: isPinboardHidden ? padding : layout.pinboard.width
       },
       pinboardPanel: {
         width: isPinboardHidden ? 0 : layout.pinboard.width
       }
     };
+  }
+
+  private calculateStyles() {
+    return this.isSmallDevice() ? this.smallDeviceStyles() : this.bigDeviceStyles();
   }
 
   private manualFallback() {
