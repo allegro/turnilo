@@ -16,25 +16,31 @@
  */
 
 import { expect } from "chai";
+import { shallow } from "enzyme";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import { ClearableInput } from "./clearable-input";
 
 describe("ClearableInput", () => {
-  it.skip("adds the correct class", () => {
-    const renderedComponent = renderIntoDocument(
+  it("should add empty class name", () => {
+    const renderedComponent = shallow(
       <ClearableInput
         onChange={null}
         value={null}
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("clearable-input");
+    expect(renderedComponent.hasClass("empty")).to.be.true;
   });
 
+  it("should add custom class name", () => {
+    const renderedComponent = shallow(
+      <ClearableInput
+        onChange={null}
+        value={null}
+        className="foobar"
+      />
+    );
+
+    expect(renderedComponent.hasClass("foobar")).to.be.true;
+  });
 });
