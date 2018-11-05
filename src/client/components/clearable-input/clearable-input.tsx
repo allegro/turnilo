@@ -36,44 +36,28 @@ export interface ClearableInputProps {
   onBlur?: React.FocusEventHandler<HTMLElement>;
 }
 
-export interface ClearableInputState {
-}
+export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, placeholder, focusOnMount, onBlur, onChange, value = "", type = "text" }) => {
+  const change = (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value);
 
-export class ClearableInput extends React.Component<ClearableInputProps, ClearableInputState> {
-  static defaultProps = {
-    type: "text",
-    value: ""
-  };
+  const clear = () => onChange("");
 
-  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.props.onChange(e.target.value);
-  }
+  const ref = focusOnMount ? focusOnInput : null;
 
-  onClear = () => {
-    this.props.onChange("");
-  }
+  const classNames = ["clearable-input"];
+  if (className) classNames.push(className);
+  if (!value) classNames.push("empty");
 
-  render() {
-    const { className, type, placeholder, focusOnMount, value, onBlur } = this.props;
-
-    const ref = focusOnMount ? focusOnInput : null;
-
-    const classNames = ["clearable-input"];
-    if (className) classNames.push(className);
-    if (!value) classNames.push("empty");
-
-    return <div className={classNames.join(" ")}>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={this.onChange}
-        onBlur={onBlur}
-        ref={ref}
-      />
-      <div className="clear" onClick={this.onClear}>
-        <SvgIcon svg={require("../../icons/x.svg")} />
-      </div>
-    </div>;
-  }
-}
+  return <div className={classNames.join(" ")}>
+    <input
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={change}
+      onBlur={onBlur}
+      ref={ref}
+    />
+    <div className="clear" onClick={clear}>
+      <SvgIcon svg={require("../../icons/x.svg")} />
+    </div>
+  </div>;
+};
