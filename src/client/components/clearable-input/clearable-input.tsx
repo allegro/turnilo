@@ -19,9 +19,11 @@ import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./clearable-input.scss";
 
-function focusOnInput(component: HTMLInputElement): any {
-  if (!component) return;
-  (component as any).focus();
+function focusOnInput(input: HTMLInputElement): any {
+  if (!input) return;
+  input.focus();
+  const length = input.value.length;
+  input.setSelectionRange(length, length);
 }
 
 export interface ClearableInputProps {
