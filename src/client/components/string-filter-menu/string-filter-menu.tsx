@@ -20,7 +20,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -57,20 +57,28 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     super(props);
     this.state = {
       filterMode: null,
-      searchText: null
+      searchText: ""
     };
   }
 
   componentWillMount() {
-    var { essence, dimension } = this.props;
-    var { colors } = essence;
+    const { essence: { colors, filter }, dimension } = this.props;
 
-    var filterMode = essence.filter.getModeForDimension(dimension);
+    const filterMode = filter.getModeForDimension(dimension);
     if (filterMode && !this.state.filterMode) {
-      this.setState({ filterMode });
+      const searchText = this.getInitialSearchText();
+      this.setState({ filterMode, searchText });
     } else if (colors) {
       this.setState({ filterMode: FilterMode.INCLUDE });
     }
+  }
+
+  getInitialSearchText(): string {
+    const { essence, dimension } = this.props;
+    const filterClause = essence.filter.getClauseForDimension(dimension);
+    if (!(filterClause instanceof StringFilterClause)) throw new Error(`Expected StringFilterClause. Got ${filterClause}`);
+    if (filterClause.action === StringFilterAction.IN) return "";
+    return filterClause.values.first();
   }
 
   onSelectFilterOption = (filterMode: FilterMode) => {
@@ -83,7 +91,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   updateFilter: (clause: FilterClause) => Filter = clause => {
     const { essence, dimension, changePosition } = this.props;
-    var { filter } = essence;
+    const { filter } = essence;
 
     if (!clause) return filter.removeClause(dimension.name);
     if (changePosition) {
@@ -101,7 +109,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { dimension } = this.props;
     const dimensionKind = dimension.kind;
 
-    var filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
+    let filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
     if (dimensionKind !== "boolean") filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(FilterMode.REGEX, FilterMode.CONTAINS));
 
     return filterOptions;
@@ -134,8 +142,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { filterMode, searchText } = this.state;
     if (!dimension) return null;
 
-    var menuSize: Stage = null;
-    var menuCont: JSX.Element = null;
+    let menuSize: Stage = null;
+    let menuCont: JSX.Element = null;
 
     if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
       menuSize = Stage.fromSize(350, 410);

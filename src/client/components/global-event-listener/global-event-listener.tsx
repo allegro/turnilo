@@ -113,7 +113,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     if (this.props.mouseUp) this.props.mouseUp(e);
   }
 
-  onKeydown(e: KeyboardEvent) {
+  onKeydown = (e: KeyboardEvent) => {
     if (this.props.escape && escapeKey(e)) this.props.escape(e);
     if (this.props.enter && enterKey(e)) this.props.enter(e);
     if (this.props.right && rightKey(e)) this.props.right(e);
