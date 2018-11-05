@@ -62,10 +62,9 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   componentWillMount() {
-    const { essence, dimension } = this.props;
-    const { colors } = essence;
+    const { essence: { colors, filter }, dimension } = this.props;
 
-    const filterMode = essence.filter.getModeForDimension(dimension);
+    const filterMode = filter.getModeForDimension(dimension);
     if (filterMode && !this.state.filterMode) {
       const searchText = this.getInitialSearchText();
       this.setState({ filterMode, searchText });
