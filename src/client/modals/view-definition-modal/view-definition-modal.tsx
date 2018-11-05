@@ -26,9 +26,8 @@ export interface ViewDefinitionModalProps {
   essence: Essence;
 }
 
-export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = () => {
+export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({ essence, onClose }) => {
 
-  const { essence, onClose } = this.props;
   const viewDefinition = {
     dataCubeName: essence.dataCube.name,
     viewDefinitionVersion: DEFAULT_VIEW_DEFINITION_VERSION,

@@ -55,7 +55,7 @@ import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { Sort } from "../../models/sort/sort";
-import { Split } from "../../models/split/split";
+import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
 import { ViewDefinitionConverter } from "../view-definition-converter";
@@ -77,7 +77,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
-    const splits = Splits.fromSplits(splitJSConverter(definition.splits));
+    const splits = Splits.fromSplits(splitJSConverter(definition.splits, dataCube));
     const timeShift = TimeShift.empty();
     const colors = definition.colors && Colors.fromJS(definition.colors);
     const pinnedSort = dataCube.getMeasure(definition.pinnedSort) ? definition.pinnedSort : dataCube.getDefaultSortMeasure();
@@ -237,9 +237,11 @@ function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: Dat
   }
 }
 
-function convertSplit(split: any): Split {
+function convertSplit(split: any, dataCube: DataCube): Split {
   const { sortAction, limitAction, expression, bucketAction } = split;
   const reference = (expression as RefExpression).name;
+  const dimension = dataCube.getDimension(reference);
+  const type = kindToType(dimension.kind);
   const sort = sortAction && new Sort({
     reference: sortAction.expression.name,
     direction: sortAction.direction
@@ -247,6 +249,7 @@ function convertSplit(split: any): Split {
   const limit = limitAction && limitAction.value;
   const bucket = bucketAction && (bucketAction.op === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
   return new Split({
+    type,
     reference,
     sort,
     limit,
@@ -254,6 +257,6 @@ function convertSplit(split: any): Split {
   });
 }
 
-function splitJSConverter(splits: any[]): Split[] {
-  return splits.map(split => convertSplit(split));
+function splitJSConverter(splits: any[], dataCube: DataCube): Split[] {
+  return splits.map(split => convertSplit(split, dataCube));
 }

@@ -60,7 +60,7 @@ export function toExpression({ bucket, type }: Split, { expression }: Dimension,
   return expWithShift.performAction(bucketToAction(bucket));
 }
 
-function kindToType(kind: string): SplitType {
+export function kindToType(kind: string): SplitType {
   switch (kind) {
     case "time":
       return SplitType.time;

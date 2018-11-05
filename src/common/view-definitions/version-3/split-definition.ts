@@ -62,6 +62,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
   toSplitCombine(split: NumberSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
     return new Split({
+      type: SplitType.number,
       reference: dimension,
       bucket: granularity,
       sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
@@ -88,6 +89,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
   toSplitCombine(split: TimeSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
     return new Split({
+      type: SplitType.time,
       reference: dimension,
       bucket: Duration.fromJS(granularity),
       sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
