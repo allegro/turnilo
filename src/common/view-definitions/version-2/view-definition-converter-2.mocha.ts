@@ -43,11 +43,9 @@ describe("ViewDefinitionConverter2", () => {
       }
     },
     splits: [],
-    measures: {
-      isMulti: true,
-      multi: ["count"],
-      single: "delta"
-    },
+    singleMeasure: "delta",
+    multiMeasureMode: true,
+    selectedMeasures: ["count"],
     pinnedDimensions: [],
     pinnedSort: "delta"
   };
