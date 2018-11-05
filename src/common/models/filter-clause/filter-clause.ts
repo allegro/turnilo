@@ -19,6 +19,7 @@ import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
 import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
 import { constructFilter } from "../../../client/components/time-filter-menu/presets";
+import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
 type OmitType<T extends FilterDefinition> = Partial<Pick<T, Exclude<keyof T, "type">>>;
@@ -170,9 +171,8 @@ export function isTimeFilter(clause: FilterClause): clause is TimeFilterClause {
 
 export type FilterClause = BooleanFilterClause | NumberFilterClause | StringFilterClause | FixedTimeFilterClause | RelativeTimeFilterClause;
 
-export function toExpression(clause: FilterClause): Expression {
-  const { type, reference } = clause;
-  const expression = $(reference);
+export function toExpression(clause: FilterClause, { expression }: Dimension): Expression {
+  const { type } = clause;
   switch (type) {
     case FilterTypes.BOOLEAN: {
       const { not, values } = clause as BooleanFilterClause;

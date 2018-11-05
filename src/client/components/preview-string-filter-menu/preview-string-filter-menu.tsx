@@ -81,7 +81,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const nativeCount = dataCube.getMeasure("count");
     const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
-    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
+    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
 
     if (searchText) {
       const { filterMode } = this.props;

@@ -109,7 +109,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   fetchData(essence: Essence, timekeeper: Timekeeper): void {
     const { dataCube } = essence;
     const $main = $("main");
-    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression()).limit(LIMIT);
+    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube)).limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone })
       .then(

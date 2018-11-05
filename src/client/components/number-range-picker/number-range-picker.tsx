@@ -87,10 +87,10 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
-    var { dataCube } = essence;
-    var filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
-    var $main = $("main");
-    var query = ply()
+    const { dataCube } = essence;
+    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+    const $main = $("main");
+    const query = ply()
       .apply("main", $main.filter(filterExpression))
       .apply("Min", $main.min($(dimension.name)))
       .apply("Max", $main.max($(dimension.name)));
