@@ -25,8 +25,8 @@ import { renderIntoDocument } from "../../utils/test-utils";
 import { ClearableInput } from "./clearable-input";
 
 describe("ClearableInput", () => {
-  it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+  it.skip("adds the correct class", () => {
+    const renderedComponent = renderIntoDocument(
       <ClearableInput
         onChange={null}
         value={null}
