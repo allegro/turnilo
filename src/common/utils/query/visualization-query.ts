@@ -149,12 +149,13 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
   const hasComparison = essence.hasComparison();
   const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
 
+  const timeDimension = dataCube.getTimeDimension();
   const filters = {
-    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper)),
-    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper)) : undefined
+    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper), timeDimension),
+    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper), timeDimension) : undefined
   };
 
-  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression()));
+  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
 
   const queryWithMeasures = applyMeasures(essence, filters)(mainExp);
 
