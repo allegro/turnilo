@@ -137,7 +137,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     filter = filter.setExclusionForDimension(false, dimension);
 
-    let filterExpression = filter.toExpression();
+    let filterExpression = filter.toExpression(dataCube);
 
     const shouldFoldRows = !unfolded && foldable && colors && colors.dimension === dimension.name && colors.values;
 

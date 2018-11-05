@@ -18,12 +18,13 @@
 import { expect } from "chai";
 import { Set } from "immutable";
 import { $ } from "plywood";
+import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { StringFilterAction, StringFilterClause } from "../filter-clause/filter-clause";
 import { EMPTY_FILTER, Filter } from "./filter";
 
 describe("Filter", () => {
   it("works in empty case", () => {
-    expect(EMPTY_FILTER.toExpression().toJS()).to.deep.equal({
+    expect(EMPTY_FILTER.toExpression(DataCubeFixtures.wiki()).toJS()).to.deep.equal({
       op: "literal",
       value: true
     });
@@ -31,18 +32,18 @@ describe("Filter", () => {
 
   it("add works", () => {
     let filter = EMPTY_FILTER;
-    const reference = "language";
-    const $language = $(reference);
+    const reference = "namespace";
+    const $namespace = $(reference);
 
     const clause = new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of("en") });
     filter = filter.addClause(clause);
 
-    const en = $language.overlap(["en"]);
-    expect(filter.toExpression().toJS(), "lang: en").to.deep.equal(en.toJS());
+    const en = $namespace.overlap(["en"]);
+    expect(filter.toExpression(DataCubeFixtures.wiki()).toJS(), "lang: en").to.deep.equal(en.toJS());
 
     filter = filter.setClause(clause.update("values", values => values.add(null)));
 
-    const langNull = $language.overlap(["en", null]);
-    expect(filter.toExpression().toJS(), "lang: null").to.deep.equal(langNull.toJS());
+    const langNull = $namespace.overlap(["en", null]);
+    expect(filter.toExpression(DataCubeFixtures.wiki()).toJS(), "lang: null").to.deep.equal(langNull.toJS());
   });
 });
