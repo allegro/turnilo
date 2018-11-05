@@ -753,7 +753,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange {
-    if (!dataset) return null;
+    if (!dataset || dataset.data.length === 0) return null;
     const key = continuousDimension.name;
 
     const firstDatum = dataset.data[0];
