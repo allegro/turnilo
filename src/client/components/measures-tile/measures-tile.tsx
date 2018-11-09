@@ -17,14 +17,14 @@
 
 import { OrderedSet } from "immutable";
 import * as React from "react";
-import { Component, MouseEvent } from "react";
+import { Component, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import * as localStorage from "../../utils/local-storage/local-storage";
+import { setDragGhost } from "../../utils/dom/dom";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
-import { TileHeaderIcon } from "../tile-header/tile-header";
 import { MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
 import { MeasuresRenderer } from "./measures-renderer";
 
@@ -34,14 +34,15 @@ export interface MeasuresTileProps {
   style?: React.CSSProperties;
 }
 
-export const initialState = {
-  showSearch: false,
-  searchText: ""
-};
-
-export type MeasuresTileState = Readonly<typeof initialState>;
+export interface MeasuresTileState {
+  menuOpenOn?: Element;
+  menuMeasure?: Measure;
+  showSearch?: boolean;
+  searchText?: string;
+}
 
 export type MeasureClickHandler = (measureName: string, e: MouseEvent<HTMLElement>) => void;
+export type MeasureDragStartHandler = (measureName: string, e: DragEvent<HTMLElement>) => void;
 
 const hasSearchTextPredicate = (searchText: string) => (measure: Measure): boolean => {
   return searchText != null && searchText !== "" && measure.title.toLowerCase().includes(searchText.toLowerCase());
@@ -52,7 +53,12 @@ const isSelectedMeasurePredicate = (selectedMeasures: OrderedSet<string>) => (me
 };
 
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
-  readonly state: MeasuresTileState = initialState;
+  readonly state: MeasuresTileState = {
+    showSearch: false,
+    searchText: "",
+    menuOpenOn: null,
+    menuMeasure: null
+  };
 
   measureClick = (measureName: string) => {
     const { clicker, essence: { dataCube } } = this.props;
@@ -60,15 +66,27 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     clicker.toggleEffectiveMeasure(measure);
   }
 
+  dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
+    const { essence: { dataCube } } = this.props;
+    const measure = dataCube.getMeasure(measureName);
+
+    const dataTransfer = e.dataTransfer;
+    dataTransfer.effectAllowed = "all";
+    dataTransfer.setData("text/plain", measure.title);
+
+    DragManager.setDragMeasure(measure, "measure-tile");
+    setDragGhost(dataTransfer, measure.title);
+  }
+
   toggleSearch = () => {
-    var { showSearch } = this.state;
+    const { showSearch } = this.state;
     this.setState({ showSearch: !showSearch });
     this.onSearchChange("");
   }
 
   onSearchChange = (text: string) => {
-    var { searchText } = this.state;
-    var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+    const { searchText } = this.state;
+    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
     if (searchText === newSearchText) return; // nothing to do;
 
@@ -77,55 +95,34 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     });
   }
 
-  toggleMultiMeasure = () => {
-    var { clicker, essence } = this.props;
-    clicker.toggleMultiMeasureMode();
-    localStorage.set("is-multi-measure", !essence.getEffectiveMultiMeasureMode());
-  }
-
   renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
     const { searchText } = this.state;
 
-    if (!!searchText && !measuresForView.some(measure => measure.hasSearchText)) {
-      const noMeasuresFound = `No measures for "${searchText}"`;
-      return <div className="message">{noMeasuresFound}</div>;
-    } else {
-      return null;
-    }
+    if (!searchText || measuresForView.some(measure => measure.hasSearchText)) return null;
+    const noMeasuresFound = `No measures for "${searchText}"`;
+    return <div className="message">{noMeasuresFound}</div>;
   }
 
   render() {
     const { essence, style } = this.props;
     const { showSearch, searchText } = this.state;
     const { dataCube } = essence;
-    const multiMeasureMode = essence.getEffectiveMultiMeasureMode();
-    const selectedMeasures = essence.getEffectiveSelectedMeasure();
+    const selectedMeasures = essence.measures.multi;
 
     const measuresConverter = new MeasuresConverter(hasSearchTextPredicate(searchText), isSelectedMeasurePredicate(selectedMeasures));
     const measuresForView = dataCube.measures.accept(measuresConverter);
 
-    const measuresRenderer = new MeasuresRenderer(this.measureClick, multiMeasureMode, searchText);
+    const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText);
     const rows = measuresRenderer.render(measuresForView);
     const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
-    const icons: TileHeaderIcon[] = [];
-
-    if (!essence.isFixedMeasureMode()) {
-      icons.push({
-        name: "multi",
-        onClick: this.toggleMultiMeasure,
-        svg: require("../../icons/full-multi.svg"),
-        active: multiMeasureMode
-      });
-    }
-
-    icons.push({
+    const icons = [{
       name: "search",
       ref: "search",
       onClick: this.toggleSearch,
       svg: require("../../icons/full-search.svg"),
       active: showSearch
-    });
+    }];
 
     return <SearchableTile
       style={style}

@@ -16,18 +16,21 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { Measure } from "../../../common/models/measure/measure";
 import { Split } from "../../../common/models/split/split";
 
 export class DragManager {
   static dragOrigin: string = null;
   static dragDimension: Dimension = null;
   static dragSplit: Split = null;
+  static dragMeasure: Measure = null;
 
   static init() {
     document.addEventListener("dragend", () => {
       DragManager.dragOrigin = null;
       DragManager.dragDimension = null;
       DragManager.dragSplit = null;
+      DragManager.dragMeasure = null;
     }, false);
   }
 
@@ -51,5 +54,14 @@ export class DragManager {
 
   static getDragSplit(): Split {
     return DragManager.dragSplit;
+  }
+
+  static setDragMeasure(measure: Measure, origin: string): void {
+    DragManager.dragMeasure = measure;
+    DragManager.dragOrigin = origin;
+  }
+
+  static getDragMeasure(): Measure {
+    return DragManager.dragMeasure;
   }
 }

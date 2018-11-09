@@ -136,6 +136,7 @@ export const STRINGS: any = {
   relative: "Relative",
   save: "Save",
   select: "Select",
+  series: "Measures",
   settings: "Settings",
   sortBy: "Sort by",
   fixed: "Fixed",

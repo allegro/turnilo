@@ -19,6 +19,8 @@
 $toggle-width: 15px;
 $toggle-icon-width: 12px;
 
+$control-panel-height: 3 * $control-tile-height + 2px;
+
 .cube-view {
   .cube-header-bar,
   .supervised-cube-header-bar {
@@ -46,17 +48,18 @@ $toggle-icon-width: 12px;
     right: $pinboard-width;
 
     .center-top-bar {
-      @include pin-top($control-tile-height + 1px + $control-tile-height);
+      @include pin-top($control-panel-height);
 
       .filter-split-section {
         @include unpin-full(0, $vis-selector-width + 1px + $toggle-width, 0, $toggle-width);
 
         .filter-tile,
+        .series-tile,
         .split-tile {
           height: $control-tile-height;
         }
 
-        .filter-tile {
+        .series-tile {
           margin-bottom: 1px;
           border-radius: $corner 0 0 0;
         }
@@ -102,9 +105,9 @@ $toggle-icon-width: 12px;
     }
 
     .center-main {
-      @include unpin-top($control-tile-height + 1px + $control-tile-height + $small-tile-margin);
+      @include unpin-top($control-panel-height + $small-tile-margin);
       @include for-small-screens {
-        @include unpin-top($control-tile-height + 2px + $control-tile-height);
+        @include unpin-top($control-panel-height + 1px);
       }
 
       .visualization {

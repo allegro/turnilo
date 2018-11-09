@@ -47,6 +47,7 @@ import { GlobalEventListener } from "../../components/global-event-listener/glob
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
+import { SeriesTile } from "../../components/series-tile/series-tile";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
@@ -275,6 +276,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { essence } = this.state;
     if (updateViewHash && !nextState.essence.equals(essence)) {
       updateViewHash(getCubeViewHash(nextState.essence));
+    }
+  }
+
+  componentDidUpdate(prevProps: CubeViewProps, { layout: { pinboard: prevPinboard, factPanel: prevFactPanel } }: CubeViewState) {
+    const { layout: { pinboard, factPanel } } = this.state;
+    if (pinboard.hidden !== prevPinboard.hidden || factPanel.hidden !== prevFactPanel.hidden) {
+      this.globalResizeListener();
     }
   }
 
@@ -569,6 +577,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
               />
               <SplitTile
                 ref="splitTile"
+                clicker={clicker}
+                essence={essence}
+                menuStage={visualizationStage}
+              />
+              <SeriesTile
+                ref="seriesTile"
                 clicker={clicker}
                 essence={essence}
                 menuStage={visualizationStage}

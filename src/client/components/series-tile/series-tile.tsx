@@ -1,0 +1,281 @@
+/*
+ * Copyright 2017-2018 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as Q from "q";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { DragPosition } from "../../../common/models/drag-position/drag-position";
+import { Essence } from "../../../common/models/essence/essence";
+import { Measure } from "../../../common/models/measure/measure";
+import { Stage } from "../../../common/models/stage/stage";
+import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
+import { getXFromEvent, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./series-tile.scss";
+
+type Serie = string;
+
+const SERIES_CLASS_NAME = "serie";
+
+interface SeriesTileProps {
+  clicker: Clicker;
+  essence: Essence;
+  menuStage: Stage;
+}
+
+interface SeriesTileState {
+  dragPosition?: DragPosition;
+  overflowMenuOpenOn?: Element;
+  maxItems?: number;
+  menuInside?: Element;
+}
+
+export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState> {
+
+  private static canDrop(): boolean {
+    return Boolean(DragManager.getDragMeasure());
+  }
+
+  private readonly overflowMenuId = uniqueId("overflow-menu-");
+  private overflowMenuDeferred: Q.Deferred<Element>;
+
+  state: SeriesTileState = {
+    dragPosition: null,
+    maxItems: null
+  };
+
+  componentWillReceiveProps(nextProps: SeriesTileProps) {
+    const { menuStage, essence } = nextProps;
+    const { splits } = essence;
+
+    if (menuStage) {
+      const newMaxItems = getMaxItems(menuStage.width, splits.splits.count());
+      if (newMaxItems !== this.state.maxItems) {
+        this.setState({
+          overflowMenuOpenOn: null,
+          maxItems: newMaxItems
+        });
+      }
+    }
+
+  }
+
+  componentDidUpdate() {
+    const { overflowMenuOpenOn } = this.state;
+
+    if (overflowMenuOpenOn) {
+      const overflowMenu = this.getOverflowMenu();
+      if (overflowMenu) this.overflowMenuDeferred.resolve(overflowMenu);
+    }
+  }
+
+  getOverflowMenu(): Element {
+    return document.getElementById(this.overflowMenuId);
+  }
+
+  openOverflowMenu(target: Element): Q.Promise<any> {
+    if (!target) return Q(null);
+    const { overflowMenuOpenOn } = this.state;
+
+    if (overflowMenuOpenOn === target) {
+      this.closeOverflowMenu();
+      return Q(null);
+    }
+
+    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.setState({ overflowMenuOpenOn: target });
+    return this.overflowMenuDeferred.promise;
+  }
+
+  closeOverflowMenu = () => {
+    const { overflowMenuOpenOn } = this.state;
+    if (!overflowMenuOpenOn) return;
+    this.setState({
+      overflowMenuOpenOn: null
+    });
+  }
+
+  removeSplit = (measure: Measure, e: React.MouseEvent<HTMLElement>) => {
+    const { clicker } = this.props;
+    clicker.toggleEffectiveMeasure(measure);
+    this.closeOverflowMenu();
+    e.stopPropagation();
+  }
+
+  dragStart = (measure: Measure, serie: Serie, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
+    const dataTransfer = e.dataTransfer;
+    dataTransfer.effectAllowed = "all";
+    dataTransfer.setData("text/plain", measure.title);
+
+    DragManager.setDragMeasure(measure, "serie-tile");
+    setDragGhost(dataTransfer, measure.title);
+
+    this.closeOverflowMenu();
+  }
+
+  calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
+    const { essence } = this.props;
+    const numItems = essence.measures.multi.count();
+    const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
+    const x = getXFromEvent(e);
+    const offset = x - rect.left;
+    return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
+  }
+
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
+    if (!SeriesTile.canDrop()) return;
+    e.preventDefault();
+    this.setState({
+      dragPosition: this.calculateDragPosition(e)
+    });
+  }
+
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
+    if (!SeriesTile.canDrop()) return;
+    e.dataTransfer.dropEffect = "move";
+    e.preventDefault();
+    const dragPosition = this.calculateDragPosition(e);
+    if (dragPosition.equals(this.state.dragPosition)) return;
+    this.setState({ dragPosition });
+  }
+
+  dragLeave = () => {
+    if (!SeriesTile.canDrop()) return;
+    this.setState({
+      dragPosition: null
+    });
+  }
+
+  drop = (e: React.DragEvent<HTMLElement>) => {
+    if (!SeriesTile.canDrop()) return;
+    e.preventDefault();
+    const { clicker } = this.props;
+    clicker.toggleEffectiveMeasure(DragManager.getDragMeasure());
+    this.setState({
+      dragPosition: null
+    });
+  }
+
+  overflowButtonTarget(): Element {
+    return ReactDOM.findDOMNode(this.refs["overflow"]);
+  }
+
+  overflowButtonClick = () => {
+    this.openOverflowMenu(this.overflowButtonTarget());
+  }
+
+  renderOverflowMenu(items: Serie[]): JSX.Element {
+    const { overflowMenuOpenOn } = this.state;
+    if (!overflowMenuOpenOn) return null;
+
+    const segmentHeight = 29 + CORE_ITEM_GAP;
+
+    const serieItems = items.map((item, i) => {
+      const style = transformStyle(0, CORE_ITEM_GAP + i * segmentHeight);
+      return this.renderSerie(item, style, i);
+    });
+
+    return <BubbleMenu
+      className="overflow-menu"
+      id={this.overflowMenuId}
+      direction="down"
+      stage={Stage.fromSize(208, CORE_ITEM_GAP + (serieItems.length * segmentHeight))}
+      fixedSize={true}
+      openOn={overflowMenuOpenOn}
+      onClose={this.closeOverflowMenu}
+    >
+      {serieItems}
+    </BubbleMenu>;
+  }
+
+  renderOverflow(items: Serie[], itemX: number): JSX.Element {
+    const style = transformStyle(itemX, 0);
+    return <div
+      className="overflow"
+      ref="overflow"
+      key="overflow"
+      style={style}
+      onClick={this.overflowButtonClick}
+    >
+      <div className="count">{"+" + items.length}</div>
+      {this.renderOverflowMenu(items)}
+    </div>;
+  }
+
+  renderSerie(serie: Serie, style: React.CSSProperties, i: number) {
+    const { essence: { dataCube } } = this.props;
+
+    const measure = dataCube.getMeasure(serie);
+    if (!measure) throw new Error("measure not found");
+    const dimensionName = measure.name;
+
+    return <div
+      className={SERIES_CLASS_NAME}
+      key={measure.name}
+      ref={dimensionName}
+      draggable={true}
+      onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(measure, serie, i, e)}
+      style={style}
+    >
+      <div className="reading">{measure.title}</div>
+      <div className="remove"
+           onClick={(e: React.MouseEvent<HTMLElement>) => this.removeSplit(measure, e)}>
+        <SvgIcon svg={require("../../icons/x.svg")} />
+      </div>
+    </div>;
+  }
+
+  render() {
+    const { essence: { measures } } = this.props;
+    const { dragPosition, maxItems } = this.state;
+
+    const seriesArray = measures.multi.toArray();
+
+    const seriesItems = seriesArray.slice(0, maxItems).map((serie, i) => {
+      const style = transformStyle(i * SECTION_WIDTH, 0);
+      return this.renderSerie(serie, style, i);
+    }, this);
+
+    const overflowItems = seriesArray.slice(maxItems);
+    if (overflowItems.length > 0) {
+      const overFlowStart = seriesItems.length * SECTION_WIDTH;
+      seriesItems.push(this.renderOverflow(overflowItems, overFlowStart));
+    }
+
+    return <div
+      className="series-tile"
+      onDragEnter={this.dragEnter}
+    >
+      <div className="title">{STRINGS.series}</div>
+      <div className="items" ref="items">
+        {seriesItems}
+      </div>
+      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
+      {dragPosition ? <div
+        className="drag-mask"
+        onDragOver={this.dragOver}
+        onDragLeave={this.dragLeave}
+        onDragExit={this.dragLeave}
+        onDrop={this.drop}
+      /> : null}
+    </div>;
+  }
+}
