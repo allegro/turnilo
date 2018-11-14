@@ -117,6 +117,7 @@ const MAX_PANEL_WIDTH = 400;
 
 export interface DataSetWithTabOptions {
   dataset: Dataset;
+  essence: Essence;
   options?: TabulatorOptions;
 }
 
@@ -666,7 +667,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       stage,
       openRawDataModal: this.openRawDataModal,
       registerDownloadableDataset: (dataset: Dataset) => {
-        this.downloadableDataset = { dataset, options: tabularOptions(essence) };
+        this.downloadableDataset = { essence, dataset, options: tabularOptions(essence) };
       }
     };
 

@@ -3,6 +3,7 @@
 
   "include": [
     "./**/*.ts",
-    "./**/*.tsx"
+    "./**/*.tsx",
+    "../common/types.d.ts"
   ]
 }
