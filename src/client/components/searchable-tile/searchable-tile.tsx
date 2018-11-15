@@ -43,6 +43,7 @@ export interface SearchableTileProps {
   title: string;
   onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
   actions?: TileAction[];
+  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
 }
 
 export interface SearchableTileState {
@@ -154,7 +155,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   render() {
     const {
       className, style, icons, title, onSearchChange, showSearch, searchText,
-      children, onDragStart, actions
+      children, onDragStart, actions, onKeyDown
     } = this.props;
     const { actionsMenuOpenOn } = this.state;
     var tileIcons = icons;
@@ -185,6 +186,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
           focusOnMount={true}
           value={searchText}
           onChange={onSearchChange}
+          onKeyDown={onKeyDown}
         />
       </div>;
     }

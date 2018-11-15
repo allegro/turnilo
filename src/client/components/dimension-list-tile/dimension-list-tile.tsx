@@ -20,11 +20,11 @@ import { Component, CSSProperties, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { Essence } from "../../../common/models/essence/essence";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
+import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
-import { Fn } from "../../../common/utils/general/general";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -33,8 +33,18 @@ import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import { DIMENSION_CLASS_NAME } from "./dimension-item";
 import "./dimension-list-tile.scss";
-import { DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
+import { DimensionForViewType, DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
 import { DimensionsRenderer } from "./dimensions-renderer";
+
+const keyCodes = Object.freeze({
+  d: 68,
+  up: 38,
+  down: 40,
+  f: 70,
+  p: 80,
+  s: 83,
+  equals: 187
+});
 
 export interface DimensionListTileProps {
   clicker: Clicker;
@@ -50,6 +60,7 @@ export interface DimensionListTileState {
   menuDimension?: Dimension;
   showSearch?: boolean;
   searchText?: string;
+  highligthedDimensionName?: string;
 }
 
 const hasSearchTextPredicate = (searchText: string) => (dimension: Dimension): boolean => {
@@ -101,6 +112,14 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       menuOpenOn: target,
       menuDimension: dimension
     });
+  }
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.handleGlobalKeyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.handleGlobalKeyDown);
   }
 
   closeMenu = () => {
@@ -171,19 +190,94 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     }
   }
 
-  render() {
-    const { essence, style } = this.props;
-    const { menuDimension, showSearch, searchText } = this.state;
-    const { dataCube } = essence;
+  private handleGlobalKeyDown = (e: KeyboardEvent) => {
+    if (e.shiftKey && e.keyCode === keyCodes.d) {
+      e.preventDefault();
+      this.toggleSearch();
+    }
+  }
+
+  private handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    const { clicker, essence, triggerFilterMenu, triggerSplitMenu } = this.props;
+    const { highligthedDimensionName } = this.state;
+
+    if (e.keyCode === keyCodes.up || e.keyCode === keyCodes.down) {
+      const dimensionsForView = this.dimensionsForView();
+
+      let indexOfHighligthedDimension = -1;
+
+      if (highligthedDimensionName) {
+        indexOfHighligthedDimension = dimensionsForView.findIndex(dimension => dimension.name === highligthedDimensionName);
+      }
+
+      indexOfHighligthedDimension += e.keyCode === keyCodes.down ? +1 : -1;
+
+      if (indexOfHighligthedDimension < 0) {
+        indexOfHighligthedDimension = dimensionsForView.length - 1;
+      }
+
+      if (indexOfHighligthedDimension >= dimensionsForView.length) {
+        indexOfHighligthedDimension = 0;
+      }
+
+      this.setState({ highligthedDimensionName: dimensionsForView[indexOfHighligthedDimension].name });
+    }
+
+    if (highligthedDimensionName) {
+      const dimension = essence.dataCube.dimensions.getDimensionByName(highligthedDimensionName);
+
+      switch (e.keyCode) {
+        case(keyCodes.f): {
+          e.preventDefault();
+
+          triggerFilterMenu(dimension);
+          this.toggleSearch();
+          break;
+        }
+        case(keyCodes.p): {
+          e.preventDefault();
+
+          clicker.pin(dimension);
+          this.toggleSearch();
+          break;
+        }
+        case(keyCodes.s): {
+          e.preventDefault();
+
+          if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
+            triggerSplitMenu(dimension);
+          } else {
+            clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.UnfairGame);
+          }
+
+          this.toggleSearch();
+          break;
+        }
+      }
+    }
+  }
+
+  private dimensionsForView = () => {
+    const { essence } = this.props;
+    const { menuDimension, searchText } = this.state;
 
     const dimensionsConverter = new DimensionsConverter(
       hasSearchTextPredicate(searchText),
       isFilteredOrSplitPredicate(essence),
       isSelectedDimensionPredicate(menuDimension)
     );
-    const dimensionsForView = dataCube.dimensions.accept(dimensionsConverter);
 
-    const dimensionsRenderer = new DimensionsRenderer(this.clickDimension, this.dragStart, searchText);
+    return essence.dataCube.dimensions.accept(dimensionsConverter)
+      .filter(child => !searchText || child.hasSearchText || child.type === DimensionForViewType.group);
+  }
+
+  render() {
+    const { style } = this.props;
+    const { showSearch, searchText, highligthedDimensionName } = this.state;
+
+    const dimensionsForView = this.dimensionsForView();
+
+    const dimensionsRenderer = new DimensionsRenderer(this.clickDimension, this.dragStart, searchText, highligthedDimensionName);
     const items = dimensionsRenderer.render(dimensionsForView);
     const message = this.renderMessageIfNoDimensionsFound(dimensionsForView);
 
@@ -206,6 +300,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       showSearch={showSearch}
       icons={icons}
       className="dimension-list-tile"
+      onKeyDown={this.handleKeyDown}
     >
       <div className="rows" ref="items">
         {items}

@@ -33,14 +33,15 @@ export interface DimensionItemProps {
   dimensionDragStart: DimensionDragStartHandler;
   searchText: string;
   selected: boolean;
+  highlighted: boolean;
 }
 
 export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
-export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, classSuffix, searchText, selected }) => {
+export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, classSuffix, searchText, selected, highlighted }) => {
   const infoBubbleClassName = "info-icon";
-  const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
+  const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected, highlighted });
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.target as Element;
