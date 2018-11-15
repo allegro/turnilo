@@ -16,21 +16,21 @@
 
 import { SeriesList } from "../../models/series-list/series-list";
 
-export interface MeasuresDefinitionJS {
-  isMulti: boolean;
-  single: string;
-  multi: string[];
+export interface SeriesDefinition {
+  reference: string;
 }
 
-export interface SeriesDefinitionConverter {
-  // fromEssenceSeries(series: SeriesList): MeasuresDefinitionJS;
+type SeriesDefinitionsList = SeriesDefinition[];
 
-  toEssenceSeries(measures: MeasuresDefinitionJS): SeriesList;
+export interface SeriesDefinitionConverter {
+  fromEssenceSeries(series: SeriesList): SeriesDefinitionsList;
+
+  toEssenceSeries(seriesDefs: SeriesDefinitionsList): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
-  // fromEssenceSeries: ({ multi, isMulti, single }) =>
-  //   ({ isMulti, single, multi: multi.toArray() }),
-  toEssenceSeries: ({ isMulti, multi, single }) =>
-    SeriesList.fromMeasureNames(isMulti ? multi : [single])
+  fromEssenceSeries: (seriesList: SeriesList) =>
+    seriesList.series.toArray().map(series => series.toJS()),
+  toEssenceSeries: (seriesDefs: SeriesDefinitionsList) =>
+    SeriesList.fromJS(seriesDefs)
 };

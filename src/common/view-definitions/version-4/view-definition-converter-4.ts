@@ -23,18 +23,18 @@ import { Filter } from "../../models/filter/filter";
 import { Manifest } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
-import { filterDefinitionConverter } from "../version-4/filter-definition";
-import { highlightConverter } from "../version-4/highlight-definition";
-import { legendConverter } from "../version-4/legend-definition";
-import { splitConverter } from "../version-4/split-definition";
 import { ViewDefinitionConverter } from "../view-definition-converter";
-import { seriesDefinitionConverter } from "./measures-definition";
-import { ViewDefinition3 } from "./view-definition-3";
+import { filterDefinitionConverter } from "./filter-definition";
+import { highlightConverter } from "./highlight-definition";
+import { legendConverter } from "./legend-definition";
+import { seriesDefinitionConverter } from "./series-definition";
+import { splitConverter } from "./split-definition";
+import { ViewDefinition4 } from "./view-definition-4";
 
-export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
-  version = 3;
+export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
+  version = 4;
 
-  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube, visualizations: Manifest[]): Essence {
+  fromViewDefinition(definition: ViewDefinition4, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualizationName = definition.visualization;
@@ -49,7 +49,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
-    const series = seriesDefinitionConverter.toEssenceSeries(definition.measures);
+    const series = seriesDefinitionConverter.toEssenceSeries(definition.series);
     const highlight = definition.highlight && highlightConverter(dataCube)
       .toHighlight(definition.highlight);
 
@@ -70,7 +70,20 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     });
   }
 
-  toViewDefinition(essence: Essence): ViewDefinition3 {
-    throw new Error("toViewDefinition is not supported in Version 3");
+  toViewDefinition(essence: Essence): ViewDefinition4 {
+    const { dataCube } = essence;
+
+    return {
+      visualization: essence.visualization.name,
+      timezone: essence.timezone.toJS(),
+      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
+      splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),
+      series: seriesDefinitionConverter.fromEssenceSeries(essence.series),
+      pinnedDimensions: essence.pinnedDimensions.toArray(),
+      pinnedSort: essence.pinnedSort,
+      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
+      legend: essence.colors && legendConverter.fromColors(essence.colors),
+      highlight: essence.highlight && highlightConverter(dataCube).fromHighlight(essence.highlight)
+    };
   }
 }

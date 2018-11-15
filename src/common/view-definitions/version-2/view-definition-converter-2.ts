@@ -38,7 +38,7 @@ import {
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
-import { createMeasures, Essence } from "../../models/essence/essence";
+import { Essence } from "../../models/essence/essence";
 import {
   BooleanFilterClause,
   DateRange,
@@ -54,6 +54,7 @@ import {
 import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
+import { SeriesList } from "../../models/series-list/series-list";
 import { Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -69,11 +70,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const visualization = NamedArray.findByName(visualizations, definition.visualization);
 
-    const measures = createMeasures({
-      isMulti: definition.multiMeasureMode,
-      single: definition.singleMeasure,
-      multi: OrderedSet(definition.selectedMeasures)
-    });
+    const series = SeriesList.fromMeasureNames(definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure]);
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
@@ -83,7 +80,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const pinnedSort = dataCube.getMeasure(definition.pinnedSort) ? definition.pinnedSort : dataCube.getDefaultSortMeasure();
     const highlight = readHighlight(definition.highlight, dataCube);
     const compare: any = null;
-    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, measures, colors, pinnedSort, compare, highlight });
+    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort, compare, highlight });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition2 {

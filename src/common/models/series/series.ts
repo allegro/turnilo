@@ -15,21 +15,20 @@
  */
 
 import { Record } from "immutable";
-import { SortDirection } from "../../view-definitions/version-4/split-definition";
+import { Measure } from "../measure/measure";
 
-export const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
-
-interface SortDefinition {
+interface SeriesValue {
   reference: string;
-  direction: SortDirection;
 }
 
-const defaultSort: SortDefinition = { reference: null, direction: null };
+const defaultSeries: SeriesValue = { reference: null };
 
-export class Sort extends Record<SortDefinition>(defaultSort) {
-
-  empty(): boolean {
-    return this.reference === defaultSort.reference && this.direction === defaultSort.direction;
+export class Series extends Record<SeriesValue>(defaultSeries) {
+  static fromMeasure(measure: Measure) {
+    return new Series({ reference: measure.name });
   }
 
+  static fromJS({ reference }: any) {
+    return new Series({ reference });
+  }
 }
