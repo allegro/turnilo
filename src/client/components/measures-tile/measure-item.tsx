@@ -33,9 +33,10 @@ export interface MeasureItemProps {
   measureClick: MeasureClickHandler;
   multiMeasureMode: boolean;
   searchText: string;
+  highlighted: boolean;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, approximate, selected }) => {
+export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, approximate, selected, highlighted }) => {
 
   const infoBubbleClassName = "measure-info-icon";
   const checkboxType = multiMeasureMode ? "check" : "radio";
@@ -45,7 +46,7 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureC
     measureClick(name, e);
   };
 
-  return <div className={classNames("measure-item row", { selected })} onClick={handleClick}>
+  return <div className={classNames("measure-item row", { selected, highlighted })} onClick={handleClick}>
     <Checkbox className="measure-item-checkbox" type={checkboxType} selected={selected}/>
     <div className="measure-item-name">
       <HighlightString className="label measure-item-label" text={title} highlight={searchText}/>

@@ -28,6 +28,8 @@ import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
+import keyCodes from "../../utils/key-codes/key-codes";
+import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
 import { DimensionActionsMenu } from "../dimension-actions-menu/dimension-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
@@ -35,16 +37,6 @@ import { DIMENSION_CLASS_NAME } from "./dimension-item";
 import "./dimension-list-tile.scss";
 import { DimensionForViewType, DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
 import { DimensionsRenderer } from "./dimensions-renderer";
-
-const keyCodes = Object.freeze({
-  d: 68,
-  up: 38,
-  down: 40,
-  f: 70,
-  p: 80,
-  s: 83,
-  equals: 187
-});
 
 export interface DimensionListTileProps {
   clicker: Clicker;
@@ -146,7 +138,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   toggleSearch = () => {
-    this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
+    this.setState(({ showSearch }) => ({ showSearch: !showSearch, highligthedDimensionName: undefined }));
     this.onSearchChange("");
   }
 
@@ -204,21 +196,12 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     if (e.keyCode === keyCodes.up || e.keyCode === keyCodes.down) {
       const dimensionsForView = this.dimensionsForView();
 
-      let indexOfHighligthedDimension = -1;
-
-      if (highligthedDimensionName) {
-        indexOfHighligthedDimension = dimensionsForView.findIndex(dimension => dimension.name === highligthedDimensionName);
-      }
-
-      indexOfHighligthedDimension += e.keyCode === keyCodes.down ? +1 : -1;
-
-      if (indexOfHighligthedDimension < 0) {
-        indexOfHighligthedDimension = dimensionsForView.length - 1;
-      }
-
-      if (indexOfHighligthedDimension >= dimensionsForView.length) {
-        indexOfHighligthedDimension = 0;
-      }
+      const indexOfCurrentlyHighlightedDimension = dimensionsForView.findIndex(dimension => dimension.name === highligthedDimensionName);
+      const indexOfHighligthedDimension = wrappingListIndex(
+        indexOfCurrentlyHighlightedDimension,
+        dimensionsForView.length,
+        e.keyCode === keyCodes.down ? +1 : -1
+      );
 
       this.setState({ highligthedDimensionName: dimensionsForView[indexOfHighligthedDimension].name });
     }

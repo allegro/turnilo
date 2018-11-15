@@ -24,19 +24,15 @@ export class MeasuresRenderer {
   constructor(
     private readonly measureClick: MeasureClickHandler,
     private readonly multiMeasureMode: boolean,
-    private readonly searchText: string
+    private readonly searchText: string,
+    private readonly highlightedMeasureName?: string
   ) {
   }
 
   render(children: MeasureOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
 
-    const notInSearchModeOrHasSearchTextOrIsGroup = (item: MeasureOrGroupForView) => {
-      return !searchText || item.hasSearchText || item.type === MeasureForViewType.group;
-    };
-
     return children
-      .filter(notInSearchModeOrHasSearchTextOrIsGroup)
       .map(child => {
         if (child.type === MeasureForViewType.group) {
           return this.renderFolder(child);
@@ -64,7 +60,7 @@ export class MeasuresRenderer {
   }
 
   private renderMeasure(measureView: MeasureForView): JSX.Element {
-    const { measureClick, multiMeasureMode, searchText } = this;
+    const { measureClick, multiMeasureMode, searchText, highlightedMeasureName } = this;
     const { name, title, approximate, description, hasSelectedMeasures } = measureView;
 
     return <MeasureItem
@@ -77,6 +73,7 @@ export class MeasuresRenderer {
       measureClick={measureClick}
       multiMeasureMode={multiMeasureMode}
       searchText={searchText}
+      highlighted={highlightedMeasureName === measureView.name}
     />;
   }
 }
