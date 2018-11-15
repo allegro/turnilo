@@ -16,8 +16,8 @@
  */
 
 import { OrderedSet } from "immutable";
-import { Component, MouseEvent } from "react";
 import * as React from "react";
+import { Component, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
@@ -25,6 +25,7 @@ import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import keyCodes from "../../utils/key-codes/key-codes";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
+import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import { MeasureForViewType, MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
@@ -59,14 +60,6 @@ const isSelectedMeasurePredicate = (selectedMeasures: OrderedSet<string>) => (me
 
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
   readonly state: MeasuresTileState = initialState;
-
-  componentDidMount() {
-    window.addEventListener("keydown", this.handleGlobalKeyDown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleGlobalKeyDown);
-  }
 
   measureClick = (measureName: string) => {
     const { clicker, essence: { dataCube } } = this.props;
@@ -192,6 +185,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       className="measures-tile"
       onKeyDown={this.keyDown}
     >
+      <GlobalEventListener keyDown={this.handleGlobalKeyDown} />
       <div className="rows">
         {rows}
         {message}

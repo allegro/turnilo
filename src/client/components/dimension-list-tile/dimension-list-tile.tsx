@@ -31,6 +31,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import keyCodes from "../../utils/key-codes/key-codes";
 import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
 import { DimensionActionsMenu } from "../dimension-actions-menu/dimension-actions-menu";
+import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import { DIMENSION_CLASS_NAME } from "./dimension-item";
@@ -104,14 +105,6 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       menuOpenOn: target,
       menuDimension: dimension
     });
-  }
-
-  componentDidMount() {
-    window.addEventListener("keydown", this.handleGlobalKeyDown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleGlobalKeyDown);
   }
 
   closeMenu = () => {
@@ -285,6 +278,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       className="dimension-list-tile"
       onKeyDown={this.handleKeyDown}
     >
+      <GlobalEventListener keyDown={this.handleGlobalKeyDown} />
       <div className="rows" ref="items">
         {items}
         {message}
