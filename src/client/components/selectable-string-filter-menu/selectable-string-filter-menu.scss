@@ -29,5 +29,8 @@ $checkbox-width: 20px;
       background: $hover;
     }
 
+    &.highlighted {
+      background: $hover;
+    }
   }
 }

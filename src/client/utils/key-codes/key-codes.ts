@@ -7,7 +7,8 @@ const keyCodes = Object.freeze({
   p: 80,
   s: 83,
   up: 38,
-  space: 32
+  space: 32,
+  enter: 13
 });
 
 export default keyCodes;
