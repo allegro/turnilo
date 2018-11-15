@@ -16,6 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
+import moment = require("moment");
 import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
@@ -104,6 +105,10 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
   } else {
     return "" + value;
   }
+}
+
+export function formatDateWithTimezone(value: Date, timezone: Timezone) {
+  return moment.tz(value, timezone.toString()).format("YYYY-MM-DD HH:mm:ss (z)");
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {

@@ -19,7 +19,7 @@ import * as filesaver from "file-saver";
 import { Dataset, DatasetJSFull, TimeRange } from "plywood";
 import * as xlsx from "xlsx-exporter";
 import { Essence } from "../../../common/models/essence/essence";
-import { formatValue } from "../../../common/utils/formatter/formatter";
+import { formatDateWithTimezone, formatValue } from "../../../common/utils/formatter/formatter";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export type FileFormat = "csv" | "tsv" | "json" | "xlsx";
@@ -91,7 +91,7 @@ function datasetToSeparatedValues(
         .map((value: any) => {
           let formatted: string;
           if (TimeRange.isTimeRange(value)) {
-            formatted = value.start.toISOString();
+            formatted = formatDateWithTimezone(value.start, essence.timezone);
           } else {
             formatted = formatValue(value);
           }
@@ -146,7 +146,7 @@ function datasetToXLSX(
   const data = datasetToRows(essence, dataset).map(row => {
     return row.map((value: any) => {
       if (TimeRange.isTimeRange(value)) {
-        return value.start;
+         return formatDateWithTimezone(value.start, essence.timezone);
       }
       return value;
     });
