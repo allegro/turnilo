@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
 import * as React from "react";
 import { Component, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
+import { SeriesList } from "../../../common/models/series-list/series-list";
+import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { setDragGhost } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
+import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
+import { MeasureActionsMenu } from "../measure-actions-menu/measure-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
+import { MEASURE_CLASS_NAME } from "./measure-item";
 import { MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
 import { MeasuresRenderer } from "./measures-renderer";
 
 export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
+  menuStage: Stage;
   style?: React.CSSProperties;
 }
 
@@ -48,8 +52,8 @@ const hasSearchTextPredicate = (searchText: string) => (measure: Measure): boole
   return searchText != null && searchText !== "" && measure.title.toLowerCase().includes(searchText.toLowerCase());
 };
 
-const isSelectedMeasurePredicate = (selectedMeasures: OrderedSet<string>) => (measure: Measure): boolean => {
-  return selectedMeasures.contains(measure.name);
+const isSelectedMeasurePredicate = (seriesList: SeriesList) => (measure: Measure): boolean => {
+  return seriesList.hasMeasure(measure);
 };
 
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
@@ -60,10 +64,30 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     menuMeasure: null
   };
 
-  measureClick = (measureName: string) => {
-    const { clicker, essence: { dataCube } } = this.props;
+  measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
+    const { menuOpenOn } = this.state;
+    const target = findParentWithClass(e.target as Element, MEASURE_CLASS_NAME);
+    if (menuOpenOn === target) {
+      this.closeMenu();
+      return;
+    }
+
+    const { essence: { dataCube } } = this.props;
     const measure = dataCube.measures.getMeasureByName(measureName);
-    clicker.toggleEffectiveMeasure(measure);
+
+    this.setState({
+      menuOpenOn: target,
+      menuMeasure: measure
+    });
+  }
+
+  closeMenu = () => {
+    const { menuOpenOn } = this.state;
+    if (!menuOpenOn) return;
+    this.setState({
+      menuOpenOn: null,
+      menuMeasure: null
+    });
   }
 
   dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
@@ -74,7 +98,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     dataTransfer.effectAllowed = "all";
     dataTransfer.setData("text/plain", measure.title);
 
-    DragManager.setDragMeasure(measure, "measure-tile");
+    DragManager.setDragMeasure(measure, MeasureOrigin.PANEL);
     setDragGhost(dataTransfer, measure.title);
   }
 
@@ -107,9 +131,10 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     const { essence, style } = this.props;
     const { showSearch, searchText } = this.state;
     const { dataCube } = essence;
-    const selectedMeasures = essence.measures.multi;
 
-    const measuresConverter = new MeasuresConverter(hasSearchTextPredicate(searchText), isSelectedMeasurePredicate(selectedMeasures));
+    const measuresConverter = new MeasuresConverter(
+      hasSearchTextPredicate(searchText),
+      isSelectedMeasurePredicate(essence.series));
     const measuresForView = dataCube.measures.accept(measuresConverter);
 
     const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText);
@@ -138,6 +163,24 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
         {rows}
         {message}
       </div>
+
+      {this.renderMenu()}
     </SearchableTile>;
+  }
+
+  private renderMenu() {
+    const { essence, clicker, menuStage } = this.props;
+    const { menuOpenOn, menuMeasure } = this.state;
+    if (!menuMeasure) return null;
+
+    return <MeasureActionsMenu
+      clicker={clicker}
+      essence={essence}
+      direction="right"
+      containerStage={menuStage}
+      openOn={menuOpenOn}
+      measure={menuMeasure}
+      onClose={this.closeMenu}
+    />;
   }
 }

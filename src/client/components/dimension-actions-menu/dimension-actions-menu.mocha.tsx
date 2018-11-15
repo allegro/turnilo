@@ -24,7 +24,7 @@ import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { DimensionActionsMenu } from "./dimension-actions-menu";
 
-describe("DimensionActionsMenu", () => {
+describe("MeasureActionsMenu", () => {
   it("adds the correct class", () => {
     var openOn = document.createElement("div");
 

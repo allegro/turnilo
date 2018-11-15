@@ -26,6 +26,8 @@ export const MEASURE_HEIGHT = 27;
 export const CORE_ITEM_WIDTH = 192;
 export const CORE_ITEM_GAP = 8;
 export const BAR_TITLE_WIDTH = 66;
+export const PANEL_TOGGLE_WIDTH = 15;
+export const ADD_TILE_WIDTH = 25;
 
 export const PIN_TITLE_HEIGHT = 36;
 export const PIN_ITEM_HEIGHT = 25;
@@ -136,7 +138,7 @@ export const STRINGS: any = {
   relative: "Relative",
   save: "Save",
   select: "Select",
-  series: "Measures",
+  series: "Measure",
   settings: "Settings",
   sortBy: "Sort by",
   fixed: "Fixed",

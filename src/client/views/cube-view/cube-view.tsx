@@ -31,6 +31,8 @@ import { Filter } from "../../../common/models/filter/filter";
 import { Highlight } from "../../../common/models/highlight/highlight";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
+import { SeriesList } from "../../../common/models/series-list/series-list";
+import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
@@ -124,6 +126,10 @@ export interface DataSetWithTabOptions {
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps: Partial<CubeViewProps> = { maxFilters: 20 };
 
+  private static canDrop(): boolean {
+    return DragManager.isDraggingDimension();
+  }
+
   public mounted: boolean;
   private readonly clicker: Clicker;
   private downloadableDataset: DataSetWithTabOptions;
@@ -168,6 +174,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split, strategy) });
       },
+      changeSeriesList: (seriesList: SeriesList) => {
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeSeriesList(seriesList) });
+      },
+      addSeries: (series: Series) => {
+        const { essence } = this.state;
+        this.setState({ essence: essence.addSeries(series) });
+      },
+      removeSeries: (series: Series) => {
+        const { essence } = this.state;
+        this.setState({ essence: essence.removeSeries(series) });
+      },
       changeColors: (colors: Colors) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changeColors(colors) });
@@ -187,16 +205,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       changePinnedSortMeasure: (measure: Measure) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortMeasure(measure) });
-      },
-      toggleMultiMeasureMode: () => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.toggleMeasureMode() });
-      },
-      toggleEffectiveMeasure: (measure: Measure) => {
-        this.setState(prevState => {
-          const { essence: prevEssence } = prevState;
-          return { essence: prevEssence.toggleEffectiveMeasure(measure) };
-        });
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
         const { essence } = this.state;
@@ -306,9 +314,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromDataCube(dataCube: DataCube): Essence {
-    const essence = Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
-    const isMulti = !!localStorage.get("is-multi-measure");
-    return essence.measures.isMulti !== isMulti ? essence.toggleMeasureMode() : essence;
+    return Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
@@ -337,22 +343,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  private canDrop(): boolean {
-    return DragManager.getDragDimension() !== null;
-  }
-
   private isSmallDevice(): boolean {
     return this.state.deviceSize === DeviceSize.SMALL;
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop()) return;
+    if (!CubeView.canDrop()) return;
     e.preventDefault();
     this.setState({ dragOver: true });
   }
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop()) return;
+    if (!CubeView.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
@@ -362,9 +364,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop()) return;
+    if (!CubeView.canDrop()) return;
     e.preventDefault();
-    const dimension = DragManager.getDragDimension();
+    const dimension = DragManager.draggingDimension();
     if (dimension) {
       this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
@@ -504,7 +506,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.updateLayout({
       ...layout,
       pinboard: {
-        ... pinboard,
+        ...pinboard,
         width
       }
     });

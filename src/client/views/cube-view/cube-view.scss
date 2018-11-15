@@ -59,12 +59,16 @@ $control-panel-height: 3 * $control-tile-height + 2px;
           height: $control-tile-height;
         }
 
-        .series-tile {
+        .filter-tile,
+        .split-tile {
           margin-bottom: 1px;
+        }
+
+        .series-tile {
           border-radius: $corner 0 0 0;
         }
 
-        .split-tile {
+        .filter-tile {
           border-radius: 0 0 0 $corner;
         }
       }

@@ -21,7 +21,7 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Sort } from "../../../common/models/sort/sort";
 import { Unary } from "../../../common/utils/functional/functional";
-import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
+import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { STRINGS } from "../../config/constants";
 import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from "../svg-icon/svg-icon";

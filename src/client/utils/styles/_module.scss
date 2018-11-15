@@ -23,9 +23,10 @@
 %module-h-title {
   .title {
     @include pin-left($bar-title-width);
-    padding: 12px 0 0 $padding-compact;
+    padding: 12px 5px 0 0;
     font-size: 12px;
     text-transform: uppercase;
+    text-align: right;
     color: $text-light;
   }
 }

@@ -25,40 +25,29 @@ export interface HighlightStringProps {
   highlight: string | RegExp;
 }
 
-export interface HighlightStringState {
+function highlightByIndex(text: string, start: number, end: number) {
+  return [
+    <span className="pre" key="pre">{text.substring(0, start)}</span>,
+    <span className="bold" key="bold">{text.substring(start, end)}</span>,
+    <span className="post" key="post">{text.substring(end)}</span>
+  ];
 }
 
-export class HighlightString extends React.Component<HighlightStringProps, HighlightStringState> {
+function highlightBy(text: string, highlight: string | RegExp): string | JSX.Element[] {
+  if (!highlight) return text;
 
-  highlightInString(): any {
-    var { text, highlight } = this.props;
-    if (!highlight) return text;
-
-    let startIndex: number = null;
-    let highlightString: string = null;
-    if (typeof highlight === "string") {
-      var strLower = text.toLowerCase();
-      startIndex = strLower.indexOf(highlight.toLowerCase());
-      if (startIndex === -1) return text;
-      highlightString = highlight.toLowerCase();
-    } else {
-      var match = text.match(highlight);
-      if (!match) return text;
-      highlightString = match[0];
-      startIndex = match.index;
-    }
-    var endIndex = startIndex + highlightString.length;
-
-    return [
-      <span className="pre" key="pre">{text.substring(0, startIndex)}</span>,
-      <span className="bold" key="bold">{text.substring(startIndex, endIndex)}</span>,
-      <span className="post" key="post">{text.substring(endIndex)}</span>
-    ];
+  if (typeof highlight === "string") {
+    const strLower = text.toLowerCase();
+    const startIndex = strLower.indexOf(highlight.toLowerCase());
+    if (startIndex === -1) return text;
+    return highlightByIndex(text, startIndex, startIndex + highlight.length);
   }
-
-  render() {
-    var { className } = this.props;
-
-    return <span className={classNames("highlight-string", className)}>{this.highlightInString()}</span>;
-  }
+  const match = text.match(highlight);
+  if (!match) return text;
+  const startIndex = match.index;
+  return highlightByIndex(text, startIndex, startIndex + match[0].length);
 }
+
+export const HighlightString: React.SFC<HighlightStringProps> = ({ className, text, highlight }) => {
+  return <span className={classNames("highlight-string", className)}>{highlightBy(text, highlight)}</span>;
+};

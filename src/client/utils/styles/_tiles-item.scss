@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-%dimension-item {
+%tiles-item {
   padding: 0 0 0 9px;
-  background: $item-categorical;
   border: 1px solid transparent;
   border-radius: 4px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.1s ease-in-out;
   width: $item-width;
+
+  &.dimension {
+    background: $item-dimension;
+
+    &:hover, &.selected {
+      background-color: darken($item-dimension, 6%);
+    }
+  }
+
+  &.measure {
+    background: $item-measure;
+
+    &:hover, &.selected {
+      background-color: darken($item-measure, 6%);
+    }
+  }
 
   .reading {
     @include ellipsis;
@@ -53,23 +68,9 @@
     }
   }
 
-  &:hover,
-  &.selected {
-    background-color: darken($item-categorical, 6%);
-  }
-
-  &.type-time,
-  &.type-number {
-    background: $item-continuous;
-
-    &:hover,
-    &.selected {
-      background-color: darken($item-continuous, 6%);
-    }
-  }
 }
 
-%dimension-item-h {
+%tiles-item-h {
   top: $control-padding-v;
   bottom: $control-padding-v;
 }

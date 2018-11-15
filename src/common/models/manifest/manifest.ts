@@ -17,11 +17,11 @@
 
 import { VisualizationDependentEvaluator } from "../../utils/rules/visualization-dependent-evaluator";
 import { Colors } from "../colors/colors";
-import { Measure } from "../measure/measure";
+import { SeriesList } from "../series-list/series-list";
 import { Splits } from "../splits/splits";
 
 export interface Adjustment {
-  selectedMeasures?: Measure[];
+  series?: SeriesList;
   splits?: Splits;
   colors?: Colors;
 }

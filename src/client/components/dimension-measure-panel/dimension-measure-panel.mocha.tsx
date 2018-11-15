@@ -27,7 +27,7 @@ import { DimensionMeasurePanel, initialPosition, MIN_PANEL_SIZE } from "./dimens
 describe("DimensionMeasurePanel", () => {
   function renderPanel() {
     const clickyMcClickFace: Clicker = {
-      toggleMultiMeasureMode: () => {
+      addSeries: () => {
       }
     };
     return shallow(

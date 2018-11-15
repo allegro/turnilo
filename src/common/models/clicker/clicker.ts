@@ -42,9 +42,9 @@ export interface Clicker {
 
   changeSeriesList?(seriesList: SeriesList): void;
 
-  addSeries?(series: Series /* TODO: , strategy: VisStrategy) */): void;
+  addSeries?(series: Series): void;
 
-  removeSeries?(series: Series /* TODO: , strategy: VisStrategy) */): void;
+  removeSeries?(series: Series): void;
 
   changeColors?(colors: Colors): void;
 

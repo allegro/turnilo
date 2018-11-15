@@ -21,19 +21,19 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
+import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import { getXFromEvent, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { classNames, getXFromEvent, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
+import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./series-tile.scss";
 
-type Serie = string;
-
-const SERIES_CLASS_NAME = "serie";
+const SERIES_CLASS_NAME = "series";
 
 interface SeriesTileProps {
   clicker: Clicker;
@@ -49,10 +49,6 @@ interface SeriesTileState {
 }
 
 export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState> {
-
-  private static canDrop(): boolean {
-    return Boolean(DragManager.getDragMeasure());
-  }
 
   private readonly overflowMenuId = uniqueId("overflow-menu-");
   private overflowMenuDeferred: Q.Deferred<Element>;
@@ -113,19 +109,27 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     });
   }
 
-  removeSplit = (measure: Measure, e: React.MouseEvent<HTMLElement>) => {
+  removeSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {
     const { clicker } = this.props;
-    clicker.toggleEffectiveMeasure(measure);
+    clicker.removeSeries(series);
     this.closeOverflowMenu();
     e.stopPropagation();
   }
 
-  dragStart = (measure: Measure, serie: Serie, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
+  canDrop(): boolean {
+    const { essence: { series } } = this.props;
+    const measure = DragManager.draggingMeasure();
+    if (!measure) return false;
+    const origin = DragManager.dragging.origin;
+    return origin === MeasureOrigin.SERIES_TILE || !series.hasMeasure(measure);
+  }
+
+  dragStart = (measure: Measure, series: Series, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     dataTransfer.setData("text/plain", measure.title);
 
-    DragManager.setDragMeasure(measure, "serie-tile");
+    DragManager.setDragMeasure(measure, MeasureOrigin.SERIES_TILE);
     setDragGhost(dataTransfer, measure.title);
 
     this.closeOverflowMenu();
@@ -133,7 +137,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
-    const numItems = essence.measures.multi.count();
+    const numItems = essence.series.count();
     const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
@@ -141,7 +145,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (!SeriesTile.canDrop()) return;
+    if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
       dragPosition: this.calculateDragPosition(e)
@@ -149,7 +153,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!SeriesTile.canDrop()) return;
+    if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
@@ -158,20 +162,41 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   dragLeave = () => {
-    if (!SeriesTile.canDrop()) return;
+    if (!this.canDrop()) return;
     this.setState({
       dragPosition: null
     });
   }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
-    if (!SeriesTile.canDrop()) return;
+    if (!this.canDrop()) return;
     e.preventDefault();
-    const { clicker } = this.props;
-    clicker.toggleEffectiveMeasure(DragManager.getDragMeasure());
+    const { clicker, essence: { series } } = this.props;
+    const { maxItems } = this.state;
+
+    const newSeries: Series = Series.fromMeasure(DragManager.draggingMeasure());
+
+    if (newSeries) {
+      let dragPosition = this.calculateDragPosition(e);
+
+      if (dragPosition.replace === maxItems) {
+        dragPosition = new DragPosition({ insert: dragPosition.replace });
+      }
+
+      if (dragPosition.isReplace()) {
+        clicker.changeSeriesList(series.replaceByIndex(dragPosition.replace, newSeries));
+      } else {
+        clicker.changeSeriesList(series.insertByIndex(dragPosition.insert, newSeries));
+      }
+    }
+
     this.setState({
       dragPosition: null
     });
+  }
+
+  appendSeries = (measure: Measure) => {
+    this.props.clicker.addSeries(Series.fromMeasure(measure));
   }
 
   overflowButtonTarget(): Element {
@@ -182,31 +207,31 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     this.openOverflowMenu(this.overflowButtonTarget());
   }
 
-  renderOverflowMenu(items: Serie[]): JSX.Element {
+  renderOverflowMenu(items: Series[]): JSX.Element {
     const { overflowMenuOpenOn } = this.state;
     if (!overflowMenuOpenOn) return null;
 
     const segmentHeight = 29 + CORE_ITEM_GAP;
 
-    const serieItems = items.map((item, i) => {
+    const seriesItems = items.map((item, i) => {
       const style = transformStyle(0, CORE_ITEM_GAP + i * segmentHeight);
-      return this.renderSerie(item, style, i);
+      return this.renderSeries(item, style, i);
     });
 
     return <BubbleMenu
       className="overflow-menu"
       id={this.overflowMenuId}
       direction="down"
-      stage={Stage.fromSize(208, CORE_ITEM_GAP + (serieItems.length * segmentHeight))}
+      stage={Stage.fromSize(208, CORE_ITEM_GAP + (seriesItems.length * segmentHeight))}
       fixedSize={true}
       openOn={overflowMenuOpenOn}
       onClose={this.closeOverflowMenu}
     >
-      {serieItems}
+      {seriesItems}
     </BubbleMenu>;
   }
 
-  renderOverflow(items: Serie[], itemX: number): JSX.Element {
+  renderOverflow(items: Series[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
     return <div
       className="overflow"
@@ -220,38 +245,53 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     </div>;
   }
 
-  renderSerie(serie: Serie, style: React.CSSProperties, i: number) {
+  renderSeries(series: Series, style: React.CSSProperties, i: number) {
     const { essence: { dataCube } } = this.props;
 
-    const measure = dataCube.getMeasure(serie);
+    const measure = dataCube.getMeasure(series.reference);
     if (!measure) throw new Error("measure not found");
     const dimensionName = measure.name;
 
     return <div
-      className={SERIES_CLASS_NAME}
+      className={classNames(SERIES_CLASS_NAME, "measure")}
       key={measure.name}
       ref={dimensionName}
       draggable={true}
-      onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(measure, serie, i, e)}
+      onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(measure, series, i, e)}
       style={style}
     >
       <div className="reading">{measure.title}</div>
       <div className="remove"
-           onClick={(e: React.MouseEvent<HTMLElement>) => this.removeSplit(measure, e)}>
+           onClick={(e: React.MouseEvent<HTMLElement>) => this.removeSeries(series, e)}>
         <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
     </div>;
   }
 
+  renderAddTileButton() {
+    const { essence: { dataCube, series } } = this.props;
+    const tiles = dataCube.measures
+      .filterMeasures(measure => !series.hasMeasure(measure))
+      .map(measure => {
+        return {
+          key: measure.name,
+          label: measure.title,
+          value: measure
+        };
+      });
+
+    return <AddTile<Measure> onSelect={this.appendSeries} tiles={tiles} />;
+  }
+
   render() {
-    const { essence: { measures } } = this.props;
+    const { essence: { series } } = this.props;
     const { dragPosition, maxItems } = this.state;
 
-    const seriesArray = measures.multi.toArray();
+    const seriesArray = series.series.toArray();
 
     const seriesItems = seriesArray.slice(0, maxItems).map((serie, i) => {
       const style = transformStyle(i * SECTION_WIDTH, 0);
-      return this.renderSerie(serie, style, i);
+      return this.renderSeries(serie, style, i);
     }, this);
 
     const overflowItems = seriesArray.slice(maxItems);
@@ -268,6 +308,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
       <div className="items" ref="items">
         {seriesItems}
       </div>
+      {this.renderAddTileButton()}
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"

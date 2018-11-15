@@ -26,8 +26,9 @@ import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { DimensionOrigin, DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
 import { SplitMenu } from "../split-menu/split-menu";
@@ -53,10 +54,6 @@ export interface SplitTileState {
 }
 
 export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
-
-  private static canDrop(): boolean {
-    return Boolean(DragManager.getDragSplit() || DragManager.getDragDimension());
-  }
 
   private readonly overflowMenuId = uniqueId("overflow-menu-");
   private overflowMenuDeferred: Q.Deferred<Element>;
@@ -166,13 +163,24 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     e.stopPropagation();
   }
 
+  appendSplit = (dimension: Dimension) => {
+    this.props.clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+  }
+
+  canDrop(): boolean {
+    const { essence: { splits } } = this.props;
+    const dimension = DragManager.draggingDimension();
+    if (!dimension) return false;
+    const origin = DragManager.dragging.origin;
+    return origin === DimensionOrigin.SPLIT_TILE || !splits.hasSplitOn(dimension);
+  }
+
   dragStart = (dimension: Dimension, split: Split, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     dataTransfer.setData("text/plain", dimension.title);
 
-    DragManager.setDragSplit(split, "split-tile");
-    DragManager.setDragDimension(dimension, "split-tile");
+    DragManager.setDragDimension(dimension, DimensionOrigin.SPLIT_TILE);
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -189,7 +197,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (!SplitTile.canDrop()) return;
+    if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
       dragPosition: this.calculateDragPosition(e)
@@ -197,7 +205,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!SplitTile.canDrop()) return;
+    if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
@@ -206,42 +214,33 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   dragLeave = () => {
-    if (!SplitTile.canDrop()) return;
+    if (!this.canDrop()) return;
     this.setState({
       dragPosition: null
     });
   }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
-    if (!SplitTile.canDrop()) return;
+    if (!this.canDrop()) return;
     e.preventDefault();
     const { clicker, essence: { splits } } = this.props;
     const { maxItems } = this.state;
 
-    let newSplitCombine: Split = null;
-    if (DragManager.getDragSplit()) {
-      newSplitCombine = DragManager.getDragSplit();
-    } else if (DragManager.getDragDimension()) {
-      newSplitCombine = Split.fromDimension(DragManager.getDragDimension());
+    this.setState({ dragPosition: null });
+
+    const dimension = DragManager.draggingDimension();
+    const splitCombine: Split = DragManager.dragging.origin === DimensionOrigin.SPLIT_TILE ? splits.findSplitForDimension(dimension) : Split.fromDimension(dimension);
+    if (!splitCombine) return;
+
+    let dragPosition = this.calculateDragPosition(e);
+    if (dragPosition.replace === maxItems) {
+      dragPosition = new DragPosition({ insert: dragPosition.replace });
     }
-
-    if (newSplitCombine) {
-      let dragPosition = this.calculateDragPosition(e);
-
-      if (dragPosition.replace === maxItems) {
-        dragPosition = new DragPosition({ insert: dragPosition.replace });
-      }
-
-      if (dragPosition.isReplace()) {
-        clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, newSplitCombine), VisStrategy.FairGame);
-      } else {
-        clicker.changeSplits(splits.insertByIndex(dragPosition.insert, newSplitCombine), VisStrategy.FairGame);
-      }
+    if (dragPosition.isReplace()) {
+      clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, splitCombine), VisStrategy.FairGame);
+    } else {
+      clicker.changeSplits(splits.insertByIndex(dragPosition.insert, splitCombine), VisStrategy.FairGame);
     }
-
-    this.setState({
-      dragPosition: null
-    });
   }
 
   // This will be called externally
@@ -306,10 +305,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   renderOverflow(items: Split[], itemX: number): JSX.Element {
-    const { essence: { dataCube } } = this.props;
     const style = transformStyle(itemX, 0);
     return <div
-      className={classNames("overflow", { "all-continuous": items.every(item => dataCube.getDimension(item.reference).isContinuous()) })}
+      className="overflow"
       ref="overflow"
       key="overflow"
       style={style}
@@ -328,13 +326,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!dimension) throw new Error("dimension not found");
     const dimensionName = dimension.name;
 
-    const classNames = [
-      SPLIT_CLASS_NAME,
-      "type-" + dimension.className
-    ];
-    if (dimension === menuDimension) classNames.push("selected");
+    const selected = dimension === menuDimension;
     return <div
-      className={classNames.join(" ")}
+      className={classNames(SPLIT_CLASS_NAME, "dimension", { selected })}
       key={split.toKey()}
       ref={dimensionName}
       draggable={true}
@@ -348,6 +342,21 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
     </div>;
+  }
+
+  renderAddTileButton() {
+    const { essence: { dataCube, splits } } = this.props;
+    const tiles = dataCube.dimensions
+      .filterDimensions(dimension => !splits.hasSplitOn(dimension))
+      .map(dimension => {
+        return {
+          key: dimension.name,
+          label: dimension.title,
+          value: dimension
+        };
+      });
+
+    return <AddTile<Dimension> onSelect={this.appendSplit} tiles={tiles} />;
   }
 
   render() {
@@ -375,6 +384,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       <div className="items" ref="items">
         {splitItems}
       </div>
+      {this.renderAddTileButton()}
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"
