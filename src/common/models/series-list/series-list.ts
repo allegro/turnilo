@@ -46,6 +46,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.updateSeries(list => list.filter(s => s !== series));
   }
 
+  public replaceSeries(original: Series, newSeries: Series): SeriesList {
+    return this.updateSeries(series => series.map(s => s.equals(original) ? newSeries : s));
+  }
+
   public replaceByIndex(index: number, replace: Series): SeriesList {
     const { series } = this;
     if (series.count() === index) {
@@ -69,12 +73,15 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public hasSeries(reference: string): boolean {
-    return this.series.find(series => series.reference === reference) !== undefined;
+    return this.getSeries(reference) !== undefined;
   }
 
   public hasMeasure({ name }: Measure): boolean {
     return this.hasSeries(name);
+  }
 
+  public getSeries(reference: string): Series {
+    return this.series.find(series => series.reference === reference);
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {
