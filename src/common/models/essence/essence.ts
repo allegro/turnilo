@@ -325,12 +325,15 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.filter.getClauseForDimension(timeDimension) as TimeFilterClause;
   }
 
-  public isFixedMeasureMode(): boolean {
-    return this.visualization.measureModeNeed !== "any";
-  }
-
   public getEffectiveSelectedMeasures(): List<Measure> {
     return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
+  }
+
+  public getSeriesWithMeasures(): List<{ series: Series, measure: Measure }> {
+    return this.series.series.map(series => ({
+      series,
+      measure: this.dataCube.getMeasure(series.reference)
+    }));
   }
 
   public differentDataCube(other: Essence): boolean {
