@@ -36,7 +36,6 @@ describe("DimensionMeasurePanel", () => {
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
-        triggerSplitMenu={null}
       />
     );
   }

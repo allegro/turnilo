@@ -444,11 +444,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
   }
 
-  triggerSplitMenu = (dimension: Dimension) => {
-    if (!dimension) return;
-    (this.refs["splitTile"] as SplitTile).splitMenuRequest(dimension);
-  }
-
   changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
@@ -552,7 +547,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           essence={essence}
           menuStage={menuStage}
           triggerFilterMenu={this.triggerFilterMenu}
-          triggerSplitMenu={this.triggerSplitMenu}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}
