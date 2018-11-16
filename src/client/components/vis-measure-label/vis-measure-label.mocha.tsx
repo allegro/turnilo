@@ -16,26 +16,45 @@
  */
 
 import { expect } from "chai";
+import { shallow } from "enzyme";
+import { Datum } from "plywood";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
+import { MeasureDerivation } from "../../../common/models/measure/measure";
+import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
+import { DEFAULT_FORMAT } from "../../../common/models/series/series";
+import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
-describe.skip("VisMeasureLabel", () => {
-  it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+const measure = MeasureFixtures.wikiCount();
+
+const datum: Datum = { [measure.name]: 10000, [measure.getDerivedName(MeasureDerivation.PREVIOUS)]: 200 };
+
+describe("VisMeasureLabel", () => {
+  it("renders measure data", () => {
+    const renderedComponent = shallow(
       <VisMeasureLabel
-        measure={null}
-        datum={null}
+        measure={MeasureFixtures.wikiCount()}
+        format={DEFAULT_FORMAT}
+        datum={datum}
         showPrevious={false}
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("vis-measure-label");
+    expect(renderedComponent.find(".measure-title").text()).to.be.eq(measure.title);
+    expect(renderedComponent.find(".measure-value").text()).to.be.eq("10.0 k");
   });
 
+  it("renders previous", () => {
+    const renderedComponent = shallow(
+      <VisMeasureLabel
+        measure={MeasureFixtures.wikiCount()}
+        format={DEFAULT_FORMAT}
+        datum={datum}
+        showPrevious={true}
+      />
+    );
+
+    expect(renderedComponent.find(".measure-previous-value").text()).to.be.eq("200.0");
+    expect(renderedComponent.find(Delta)).to.be.not.empty;
+  });
 });
