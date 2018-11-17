@@ -246,11 +246,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   private renderRightBar(): JSX.Element {
+    const { refreshMaxTime } = this.props;
+
     return <div className="right-bar">
       <div className="text-button" onClick={this.toggleTimezoneMenu}>
         {this.props.essence.timezone.toString()}
       </div>
-      <div className={classNames("icon-button", "auto-refresh", { refreshing: this.state.animating })} onClick={this.toggleAutoRefreshMenu}>
+      <div className={classNames("icon-button", "auto-refresh", { refreshing: this.state.animating })} onClick={refreshMaxTime}>
         <SvgIcon svg={require("../../../icons/full-refresh.svg")}/>
       </div>
       <div className="icon-button" onClick={this.toggleShareMenu}>
