@@ -104,6 +104,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   setAutoRefreshRate = (rate: Duration) => {
+    return; // Disable auto refreshing
+
     const { autoRefreshRate } = this.state;
     if (immutableEqual(autoRefreshRate, rate)) return;
 
