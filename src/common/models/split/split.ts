@@ -95,15 +95,6 @@ export class Split extends Record<SplitValue>(defaultSplit) {
     return this.reference;
   }
 
-  public getNormalizedSortExpression(): Sort {
-    const { sort } = this;
-    if (!sort) return null;
-    if (sort.reference === this.reference) {
-      return sort.set("reference", SORT_ON_DIMENSION_PLACEHOLDER);
-    }
-    return sort;
-  }
-
   public changeBucket(bucket: Bucket): Split {
     return this.set("bucket", bucket);
   }
@@ -136,5 +127,15 @@ export class Split extends Record<SplitValue>(defaultSplit) {
       return ` (${bucket.getDescription(true)})`;
     }
     return ` (by ${bucket})`;
+  }
+
+  public equals(other: any): boolean {
+    if (this.type !== SplitType.time) return super.equals(other);
+    return other instanceof Split &&
+      this.type === other.type &&
+      this.reference === other.reference &&
+      this.sort.equals(other.sort) &&
+      this.limit === other.limit &&
+      (this.bucket === null && other.bucket === null) || (this.bucket as Duration).equals(other.bucket as Duration);
   }
 }
