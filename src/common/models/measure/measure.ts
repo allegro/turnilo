@@ -83,8 +83,8 @@ export class CurrentFilter implements DerivationFilter {
 }
 
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
-  static DEFAULT_FORMAT = "0,0.0 a";
-  static INTEGER_FORMAT = "0,0 a";
+  static DEFAULT_FORMAT = "0,0";
+  static INTEGER_FORMAT = "0,0";
   static DEFAULT_TRANSFORMATION = "none";
   static TRANSFORMATIONS = ["none", "percent-of-parent", "percent-of-total"];
 
