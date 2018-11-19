@@ -21,6 +21,13 @@ $bottom-margin: 12px;
 $title-margin: 6px;
 
 .series-menu {
+
+  .preview {
+    @extend %indicator-field;
+
+    margin-bottom: 14px;
+  }
+
   .button-bar {
     .ok {
       @extend %button-primary;

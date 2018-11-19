@@ -17,10 +17,12 @@
 import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, PERCENT_FORMAT, SeriesFormat, SeriesFormatType } from "../../../common/models/series/series";
-import { exactFormat, percentFormat } from "../../../common/utils/formatter/formatter";
+import { exactFormat, percentFormat, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { InputWithPresets, Preset } from "../input-with-presets/input-with-presets";
+
+const PREVIEW_VALUE = 23667.25431;
 
 interface FormatPickerProps {
   measure: Measure;
@@ -67,9 +69,15 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, fo
     formatChange(readFormat(format, measureFormat));
   }
 
-  return <InputWithPresets
-    presets={formatPresets}
-    title={STRINGS.format}
-    selected={printFormat(format, measureFormat)}
-    onChange={onFormatChange} />;
+  return <React.Fragment>
+    <InputWithPresets
+      presets={formatPresets}
+      title={STRINGS.format}
+      selected={printFormat(format, measureFormat)}
+      onChange={onFormatChange} />
+    <div className="preview">
+      <span className="value">{PREVIEW_VALUE} → </span>
+      <span className="formatted">{seriesFormatter(format, measure)(PREVIEW_VALUE)}</span>
+    </div>
+  </React.Fragment>;
 };
