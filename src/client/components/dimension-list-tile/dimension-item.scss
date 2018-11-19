@@ -35,6 +35,10 @@
     background: $highlight;
   }
 
+  &.highlighted {
+    background: $highlight;
+  }
+
   .icon {
     top: 4px;
     left: -2px;

@@ -29,6 +29,10 @@
   &:hover {
     background: $hover;
   }
+
+  &.highlighted {
+    background: $hover;
+  }
 }
 
 .measure-item-checkbox {

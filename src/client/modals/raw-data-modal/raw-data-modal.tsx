@@ -295,7 +295,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
     const options = tabularOptions(essence);
     const filtersString = getFileString(essence.getEffectiveFilter(timekeeper));
-    download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
+    download({ essence, dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
   }
 
   render() {

@@ -28,6 +28,8 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
+import keyCodes from "../../utils/key-codes/key-codes";
+import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
 import { Button } from "../button/button";
 import { Checkbox, CheckboxType } from "../checkbox/checkbox";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
@@ -56,6 +58,7 @@ export interface SelectableStringFilterMenuState {
   fetchQueued?: boolean;
   selectedValues?: Set<string>;
   promotedValues?: Set<string>; // initial selected values
+  highlightedValue?: string;
   colors?: Colors;
 }
 
@@ -192,6 +195,42 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     }
   }
 
+  public onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    const { highlightedValue, selectedValues } = this.state;
+
+    if (e.keyCode === keyCodes.up || e.keyCode === keyCodes.down) {
+      e.preventDefault();
+
+      const rowStrings = this.rowStrings();
+
+      const indexOfCurrentlyHighlightedValue = rowStrings.indexOf(highlightedValue);
+      const indexOfHighlightedValue = wrappingListIndex(
+        indexOfCurrentlyHighlightedValue,
+        rowStrings.length,
+        e.keyCode === keyCodes.down ? +1 : -1
+      );
+
+      this.setState({ highlightedValue: rowStrings[indexOfHighlightedValue] });
+    }
+
+    if (highlightedValue && e.keyCode === keyCodes.space) {
+      e.preventDefault();
+      this.setState({ selectedValues: toggle(selectedValues, highlightedValue) });
+    }
+
+    if (e.keyCode === keyCodes.enter) {
+      const rowStrings = this.rowStrings();
+
+      if (rowStrings.length === 1) {
+        event.preventDefault();
+
+        const newSelectedValues = toggle(selectedValues, rowStrings[0]);
+        this.setState({ selectedValues: newSelectedValues });
+        this.onOkClick();
+      }
+    }
+  }
+
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
     const { selectedValues } = this.state;
@@ -243,6 +282,25 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     </div>;
   }
 
+  rowStrings = () => {
+    const { dataset, promotedValues } = this.state;
+    if (!dataset) return [];
+    const { dimension, searchText } = this.props;
+
+    const promotedElements = promotedValues ? promotedValues.toArray() : [];
+    const rowData = dataset.data.slice(0, TOP_N).filter(d => {
+      return promotedElements.indexOf(d[dimension.name] as string) === -1;
+    });
+    let rowStrings = promotedElements.concat(rowData.map(d => d[dimension.name] as string));
+
+    if (searchText) {
+      const searchTextLower = searchText.toLowerCase();
+      rowStrings = rowStrings.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
+    }
+
+    return rowStrings;
+  }
+
   private renderMessage(hasRows: boolean) {
     const { searchText } = this.props;
     const { loading, dataset, fetchQueued } = this.state;
@@ -253,21 +311,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   private renderRows() {
-    const { dataset, selectedValues, promotedValues } = this.state;
+    const { dataset, selectedValues, highlightedValue } = this.state;
     if (!dataset) return [];
-    const { dimension, filterMode, searchText } = this.props;
-    const promotedElements = promotedValues ? promotedValues.toArray() : [];
-    const rowData = dataset.data.slice(0, TOP_N).filter(d => {
-      return promotedElements.indexOf(d[dimension.name] as string) === -1;
-    });
-    let rowStrings = promotedElements.concat(rowData.map(d => d[dimension.name] as string));
-
-    if (searchText) {
-      const searchTextLower = searchText.toLowerCase();
-      rowStrings = rowStrings.filter(d => {
-        return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
-      });
-    }
+    const { filterMode, searchText } = this.props;
+    const rowStrings = this.rowStrings();
 
     const checkboxType = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
     return rowStrings.map(segmentValue => {
@@ -275,7 +322,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       const selected = selectedValues && selectedValues.contains(segmentValue);
 
       return <div
-        className={classNames("row", { selected })}
+        className={classNames("row", { selected, highlighted: highlightedValue === segmentValue })}
         key={segmentValueStr}
         title={segmentValueStr}
         onClick={this.onValueClick.bind(this, segmentValue)}

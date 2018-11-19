@@ -16,22 +16,10 @@
  */
 
 import { expect } from "chai";
-import { Dataset } from "plywood";
 import "../../utils/test-utils";
-import { datasetToFileString, getMIMEType } from "./download";
+import { getMIMEType } from "./download";
 
 describe("Download", () => {
-  describe("datasetToFileString", () => {
-    it("encloses set/string in brackets appropriately", () => {
-      const ds = Dataset.fromJS([
-        { y: ["dear", "john"] },
-        { y: ["from", "peter"] }
-      ]);
-      expect(datasetToFileString(ds, "csv").indexOf("\"dear, john\""), "csv").to.not.equal(-1);
-      expect(datasetToFileString(ds, "tsv").indexOf("dear, john"), "tsv").to.not.equal(-1);
-    });
-  });
-
   describe("getMIMEType", () => {
     it("works as expected", () => {
       expect(getMIMEType("csv"), "csv").to.equal("text/csv");

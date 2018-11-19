@@ -17,6 +17,7 @@
 import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
+import { inGroupsOf } from "../../utils/in-groups-of/in-groups-of";
 import { ButtonGroup, GroupMember } from "../button-group/button-group";
 import "./input-with-presets.scss";
 
@@ -91,8 +92,10 @@ export class InputWithPresets extends React.Component<InputWithPresetsProps, Inp
 
     const renderErrorMessage = customSelected && errorMessage && customValue.length > 0;
 
+    const membersInGroupOfFives = inGroupsOf(members, 5);
+
     return <React.Fragment>
-      <ButtonGroup title={title} groupMembers={members} />
+      {membersInGroupOfFives.map((memberGroup, index) => <ButtonGroup title={index === 0 ? title : undefined} groupMembers={memberGroup} />)}
       {customSelected && <input type="text"
                                 className={classNames("custom-input", { invalid: errorMessage })}
                                 placeholder={placeholder}

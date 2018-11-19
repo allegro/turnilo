@@ -32,7 +32,7 @@ $negative: #e14040;
 
 // Colors -------------------
 
-$brand:                   hsl(21, 100%, 50%);
+$brand:                   #2e5865;
 $dark:                    #004584;
 
 $error:                   hsla(0, 72%, 59%, 1.00);
@@ -51,8 +51,8 @@ $background-lightest:     hsl(0, 0%, 96%);
 $background-medium:       hsl(0, 0%, 87%);
 $background-dark:         hsl(0, 0%, 55%);
 
-$background-brand:        $brand;
-$background-brand-light:  hsl(21, 100%, 70%);
+$background-brand:        url('/logo-white-b92859a594f33a774d4cc775cec59dbe.png') 48% / 100px no-repeat #2e5865;
+$background-brand-light:  hsl(198, 82%, 65%);
 
 
 $text-standard:           hsl(0, 0%, 13%);
@@ -69,7 +69,7 @@ $icon-hover:              #888;
 
 // other
 
-$hover:                   lighten($brand, 40%);
+$hover:                   lighten($brand, 43);
 $highlight:               darken($hover, 10%);
 $highlight-border:        darken($hover, 15%);
 
@@ -79,8 +79,8 @@ $form-spacing-compact:    14px;
 
 // dimension items
 
-$item-categorical:        hsl(21, 100%, 80%);
-$item-continuous:         hsl(205, 60%, 77%);
+$item-categorical:        #abbcc2;
+$item-continuous:         #d5dde0;
 
 // Vis
 

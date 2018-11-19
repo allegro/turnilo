@@ -22,10 +22,13 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
+import keyCodes from "../../utils/key-codes/key-codes";
 import * as localStorage from "../../utils/local-storage/local-storage";
+import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
+import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
-import { MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
+import { MeasureForViewType, MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
 import { MeasuresRenderer } from "./measures-renderer";
 
 export interface MeasuresTileProps {
@@ -39,7 +42,11 @@ export const initialState = {
   searchText: ""
 };
 
-export type MeasuresTileState = Readonly<typeof initialState>;
+export interface MeasuresTileState {
+  showSearch: boolean;
+  searchText: string;
+  highlightedMeasureName?: string;
+}
 
 export type MeasureClickHandler = (measureName: string, e: MouseEvent<HTMLElement>) => void;
 
@@ -62,7 +69,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
   toggleSearch = () => {
     var { showSearch } = this.state;
-    this.setState({ showSearch: !showSearch });
+    this.setState({ showSearch: !showSearch, highlightedMeasureName: undefined });
     this.onSearchChange("");
   }
 
@@ -94,17 +101,57 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     }
   }
 
-  render() {
-    const { essence, style } = this.props;
-    const { showSearch, searchText } = this.state;
+  private handleGlobalKeyDown = (e: KeyboardEvent) => {
+    if (e.shiftKey && e.keyCode === keyCodes.m) {
+      e.preventDefault();
+      this.toggleSearch();
+    }
+  }
+
+  private keyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    const { essence, clicker } = this.props;
+    const { highlightedMeasureName } = this.state;
+
+    if (e.keyCode === keyCodes.up || e.keyCode === keyCodes.down) {
+      e.preventDefault();
+      const measuresForView = this.measuresForView();
+
+      const indexOfCurrentlyHighlightedMeasure = measuresForView.findIndex(measure => measure.name === highlightedMeasureName);
+      const indexOfHighlightedMeasure = wrappingListIndex(
+        indexOfCurrentlyHighlightedMeasure,
+        measuresForView.length,
+        e.keyCode === keyCodes.down ? +1 : -1
+      );
+
+      this.setState({ highlightedMeasureName: measuresForView[indexOfHighlightedMeasure].name });
+    }
+
+    if (highlightedMeasureName && e.keyCode === keyCodes.space) {
+      e.preventDefault();
+
+      const measure = essence.dataCube.measures.getMeasureByName(highlightedMeasureName);
+      clicker.toggleEffectiveMeasure(measure);
+    }
+  }
+
+  private measuresForView = () => {
+    const { essence } = this.props;
+    const { searchText } = this.state;
     const { dataCube } = essence;
-    const multiMeasureMode = essence.getEffectiveMultiMeasureMode();
     const selectedMeasures = essence.getEffectiveSelectedMeasure();
 
     const measuresConverter = new MeasuresConverter(hasSearchTextPredicate(searchText), isSelectedMeasurePredicate(selectedMeasures));
-    const measuresForView = dataCube.measures.accept(measuresConverter);
+    return dataCube.measures.accept(measuresConverter).filter(item => !searchText || item.hasSearchText || item.type === MeasureForViewType.group);
+  }
 
-    const measuresRenderer = new MeasuresRenderer(this.measureClick, multiMeasureMode, searchText);
+  render() {
+    const { essence, style } = this.props;
+    const { showSearch, searchText, highlightedMeasureName } = this.state;
+    const multiMeasureMode = essence.getEffectiveMultiMeasureMode();
+
+    const measuresForView = this.measuresForView();
+
+    const measuresRenderer = new MeasuresRenderer(this.measureClick, multiMeasureMode, searchText, highlightedMeasureName);
     const rows = measuresRenderer.render(measuresForView);
     const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
@@ -136,7 +183,9 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       showSearch={showSearch}
       icons={icons}
       className="measures-tile"
+      onKeyDown={this.keyDown}
     >
+      <GlobalEventListener keyDown={this.handleGlobalKeyDown} />
       <div className="rows">
         {rows}
         {message}

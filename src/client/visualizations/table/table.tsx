@@ -31,7 +31,7 @@ import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { formatDateWithTimezone, formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
@@ -56,22 +56,7 @@ const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   if (TimeRange.isTimeRange(value)) {
-    const time = moment(value.start, timezone.toString()).toDate();
-    if (split && split.bucket instanceof Duration) {
-      const duration = split.bucket;
-      switch (duration.getSingleSpan()) {
-        case "year":
-          return d3.time.format("%Y")(time);
-        case "month":
-          return d3.time.format("%Y %B")(time);
-        case "week":
-        case "day":
-          return d3.time.format("%Y-%m-%d")(time);
-        default:
-          return d3.time.format("%Y-%m-%d %H:%M %p")(time);
-      }
-    }
-    return d3.time.format("%Y-%m-%d %H:%M %p")(time);
+    return formatDateWithTimezone(value.start, timezone);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }

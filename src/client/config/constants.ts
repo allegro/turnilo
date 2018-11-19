@@ -93,6 +93,7 @@ export const STRINGS: any = {
   explore: "Explore",
   exportToCSV: "Export to CSV",
   exportToTSV: "Export to TSV",
+  exportToXLSX: "Export to XLSX",
   filter: "Filter",
   floorableDurationsExamples: "e.g. PT2H or P3M",
   generalSettings: "General settings",
@@ -179,5 +180,6 @@ export function getLocale(): Locale {
 
 export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
-  { label: STRINGS.exportToTSV, fileFormat: "tsv" }
+  { label: STRINGS.exportToTSV, fileFormat: "tsv" },
+  { label: STRINGS.exportToXLSX, fileFormat: "xlsx" }
 ];

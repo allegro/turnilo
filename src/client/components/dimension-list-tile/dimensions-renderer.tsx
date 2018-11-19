@@ -23,14 +23,14 @@ export class DimensionsRenderer {
   constructor(
     private readonly dimensionClick: DimensionClickHandler,
     private readonly dimensionDragStart: DimensionClickHandler,
-    private readonly searchText: string
+    private readonly searchText: string,
+    private readonly highlightedDimensionName?: string
   ) {
   }
 
   render(children: DimensionOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
     return children
-      .filter(child => !searchText || child.hasSearchText || child.type === DimensionForViewType.group)
       .map(child => {
         if (child.type === DimensionForViewType.group) {
           return this.renderFolder(child);
@@ -71,6 +71,7 @@ export class DimensionsRenderer {
       dimensionDragStart={dimensionDragStart}
       classSuffix={classSuffix}
       searchText={searchText}
+      highlighted={this.highlightedDimensionName === name}
     />;
   }
 }

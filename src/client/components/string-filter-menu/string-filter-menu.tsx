@@ -52,6 +52,7 @@ export interface StringFilterMenuState {
 
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
   public mounted: boolean;
+  public selectableStringFilterMenu: SelectableStringFilterMenu;
 
   constructor(props: StringFilterMenuProps) {
     super(props);
@@ -115,6 +116,12 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     return filterOptions;
   }
 
+  private onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (this.selectableStringFilterMenu) {
+      this.selectableStringFilterMenu.onKeyDown(e);
+    }
+  }
+
   renderMenuControls() {
     const { filterMode, searchText } = this.state;
 
@@ -131,6 +138,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
             focusOnMount={true}
             value={searchText}
             onChange={this.updateSearchText}
+            onKeyDown={this.onKeyDown}
           />
         </div>
       </div>
@@ -160,6 +168,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     } else {
       menuSize = Stage.fromSize(250, 410);
       menuCont = <SelectableStringFilterMenu
+        ref={selectableStringFilterMenu => this.selectableStringFilterMenu = selectableStringFilterMenu}
         dimension={dimension}
         clicker={clicker}
         essence={essence}

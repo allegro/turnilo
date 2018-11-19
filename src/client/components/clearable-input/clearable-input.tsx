@@ -34,9 +34,10 @@ export interface ClearableInputProps {
   value: string;
   onChange: (newValue: string) => any;
   onBlur?: React.FocusEventHandler<HTMLElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
 }
 
-export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, placeholder, focusOnMount, onBlur, onChange, value = "", type = "text" }) => {
+export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, placeholder, focusOnMount, onBlur, onChange, value = "", type = "text", onKeyDown }) => {
   const change = (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value);
 
   const clear = () => onChange("");
@@ -55,6 +56,7 @@ export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, plac
       onChange={change}
       onBlur={onBlur}
       ref={ref}
+      onKeyDown={onKeyDown}
     />
     <div className="clear" onClick={clear}>
       <SvgIcon svg={require("../../icons/x.svg")} />

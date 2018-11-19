@@ -30,9 +30,14 @@ export interface TimeFilterPreset {
 export const LATEST_PRESETS: TimeFilterPreset[] = [
   { name: "1H", duration: "PT1H" },
   { name: "6H", duration: "PT6H" },
-  { name: "1D", duration: "P1D" },
+  { name: "24H", duration: "PT24H" },
+  { name: "36H", duration: "PT36H" },
+  { name: "3D", duration: "P3D" },
   { name: "7D", duration: "P7D" },
-  { name: "30D", duration: "P30D" }
+  { name: "14D", duration: "P14D" },
+  { name: "1M", duration: "P1M" },
+  { name: "3M", duration: "P3M" },
+  { name: "6M", duration: "P6M" }
 ];
 
 export const CURRENT_PRESETS: TimeFilterPreset[] = [
