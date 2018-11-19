@@ -406,7 +406,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const style = transformStyle(itemX, 0);
 
     return <div
-      className="overflow"
+      className="overflow dimension"
       ref="overflow"
       key="overflow"
       style={style}

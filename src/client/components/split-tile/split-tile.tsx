@@ -307,7 +307,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   renderOverflow(items: Split[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
     return <div
-      className="overflow"
+      className="overflow dimension"
       ref="overflow"
       key="overflow"
       style={style}

@@ -269,7 +269,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   renderOverflow(items: Series[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
     return <div
-      className="overflow"
+      className="overflow measure"
       ref="overflow"
       key="overflow"
       style={style}
