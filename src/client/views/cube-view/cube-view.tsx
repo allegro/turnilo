@@ -19,7 +19,7 @@ import { Timezone } from "chronoshift";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { MANIFESTS } from "../../../common/manifests/index";
+import { MANIFESTS } from "../../../common/manifests";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Customization } from "../../../common/models/customization/customization";
@@ -50,6 +50,7 @@ import { ManualFallback } from "../../components/manual-fallback/manual-fallback
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SeriesTile } from "../../components/series-tile/series-tile";
+import { ShortUrlModal } from "../../components/share-menu/short-url-modal";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
@@ -60,7 +61,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
-import { getVisualizationComponent } from "../../visualizations/index";
+import { getVisualizationComponent } from "../../visualizations";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
 
@@ -110,6 +111,7 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   showViewDefinitionModal?: boolean;
   showDruidQueryModal?: boolean;
+  shortenerModalProps?: { url: string, title: string };
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -439,6 +441,29 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       onClose={this.closeDruidQueryModal} />;
   }
 
+  openShortUrlModal = (url: string, title: string) => {
+    this.setState({
+      shortenerModalProps: { url, title }
+    });
+  }
+
+  closeShortUrlModal = () => {
+    this.setState({
+      shortenerModalProps: null
+    });
+  }
+
+  renderShortUrlModal() {
+    const { shortenerModalProps } = this.state;
+    if (!shortenerModalProps) return null;
+    const { customization: { urlShortener } } = this.props;
+    return <ShortUrlModal
+      title={shortenerModalProps.title}
+      url={shortenerModalProps.url}
+      shortener={urlShortener}
+      onClose={this.closeShortUrlModal} />;
+  }
+
   triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
@@ -530,6 +555,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       refreshMaxTime={this.refreshMaxTime}
       openRawDataModal={this.openRawDataModal}
       openViewDefinitionModal={this.openViewDefinitionModal}
+      openShortUrlModal={this.openShortUrlModal}
       openDruidQueryModal={this.openDruidQueryModal}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
@@ -625,6 +651,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       {this.renderDruidQueryModal()}
       {this.renderRawDataModal()}
       {this.renderViewDefinitionModal()}
+      {this.renderShortUrlModal()}
     </div>;
   }
 

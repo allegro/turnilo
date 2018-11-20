@@ -23,6 +23,7 @@ import { Customization } from "../../../../common/models/customization/customiza
 import { DataCube } from "../../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Binary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { AutoRefreshMenu } from "../../../components/auto-refresh-menu/auto-refresh-menu";
 import { DebugMenu } from "../../../components/debug-menu/debug-menu";
@@ -45,6 +46,7 @@ export interface CubeHeaderBarProps {
   openRawDataModal?: Fn;
   openViewDefinitionModal?: Fn;
   openDruidQueryModal?: Fn;
+  openShortUrlModal?: Binary<string, string, void>;
   customization?: Customization;
   getDownloadableDataset?: () => DataSetWithTabOptions;
   changeTimezone?: (timezone: Timezone) => void;
@@ -139,12 +141,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { customization, essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, openShortUrlModal, getCubeViewHash, getDownloadableDataset } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
     return <ShareMenu
       essence={essence}
+      openShortUrlModal={openShortUrlModal}
       timekeeper={timekeeper}
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}
