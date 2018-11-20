@@ -22,6 +22,7 @@ import { ExternalView } from "../../../common/models/external-view/external-view
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFileString } from "../../../common/utils/formatter/formatter";
+import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";
@@ -33,30 +34,90 @@ export interface ShareMenuProps {
   timekeeper: Timekeeper;
   openOn: Element;
   onClose: Fn;
+  openShortUrlModal: Binary<string, string, void>;
   externalViews?: ExternalView[];
   getCubeViewHash: (essence: Essence, withPrefix?: boolean) => string;
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-export const ShareMenu: React.SFC<ShareMenuProps> = props => {
+type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "getDownloadableDataset">;
 
-  function onExport(fileFormat: FileFormat) {
-    const { onClose, getDownloadableDataset, essence, timekeeper } = props;
-    const { dataCube, splits } = essence;
-    if (!getDownloadableDataset) return;
+function onExport(fileFormat: FileFormat, props: ExportProps) {
+  const { onClose, getDownloadableDataset, essence, timekeeper } = props;
+  const { dataCube, splits } = essence;
+  if (!getDownloadableDataset) return;
 
-    const filters = getFileString(essence.getEffectiveFilter(timekeeper));
-    const splitsString = splits.splits.toArray().map(split => {
-      const dimension = dataCube.getDimension(split.reference);
-      if (!dimension) return "";
-      return `${STRINGS.splitDelimiter}_${dimension.name}`;
-    }).join("_");
+  const filters = getFileString(essence.getEffectiveFilter(timekeeper));
+  const splitsString = splits.splits.toArray().map(split => {
+    const dimension = dataCube.getDimension(split.reference);
+    if (!dimension) return "";
+    return `${STRINGS.splitDelimiter}_${dimension.name}`;
+  }).join("_");
 
-    download(getDownloadableDataset(), fileFormat, makeFileName(dataCube.name, filters, splitsString));
+  download(getDownloadableDataset(), fileFormat, makeFileName(dataCube.name, filters, splitsString));
+  onClose();
+}
+
+function exportItems(props: ExportProps) {
+  return exportOptions.map(({ label, fileFormat }) =>
+    <li key={`export-${fileFormat}`} onClick={() => onExport(fileFormat, props)}>
+      {label}
+    </li>
+  );
+}
+
+type LinkProps = Pick<ShareMenuProps, "essence" | "onClose" | "getCubeViewHash" | "openShortUrlModal" | "timekeeper">;
+
+function linkItems({ essence, timekeeper, onClose, getCubeViewHash, openShortUrlModal }: LinkProps) {
+  const isRelative = essence.filter.isRelative();
+  const hash = getCubeViewHash(essence, true);
+  const specificHash = getCubeViewHash(essence.convertToSpecificFilter(timekeeper), true);
+
+  function openShortenerModal(url: string, title: string) {
+    openShortUrlModal(url, title);
     onClose();
   }
 
-  const { essence, timekeeper, openOn, getCubeViewHash, onClose, externalViews = [] } = props;
+  return <React.Fragment>
+    <CopyToClipboard key="copy-url" text={hash}>
+      <li onClick={onClose}>
+        {isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
+      </li>
+    </CopyToClipboard>
+    {isRelative && <CopyToClipboard key="copy-specific-url" text={specificHash}>
+      <li onClick={onClose}>
+        {STRINGS.copyFixedTimeUrl}
+      </li>
+    </CopyToClipboard>}
+
+    <li
+      key="short-url"
+      onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>
+      {isRelative ? STRINGS.createShortRelativeUrl : STRINGS.createShortUrl}
+    </li>
+    {isRelative && <li
+      key="short-url-specific"
+      onClick={() => openShortenerModal(hash, STRINGS.copyFixedTimeUrl)}>
+      {STRINGS.createShortFixedUrl}
+    </li>}
+  </React.Fragment>;
+}
+
+type ExternalViewsProps = Pick<ShareMenuProps, "externalViews" | "essence">;
+
+function externalViewItems({ externalViews = [], essence }: ExternalViewsProps) {
+  return externalViews.map((externalView: ExternalView, i: number) => {
+    const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
+    return <li key={`custom-url-${i}`}>
+      <a href={url} target={externalView.sameWindow ? "_self" : "_blank"}>
+        {`${STRINGS.openIn} ${externalView.title}`}
+      </a>
+    </li>;
+  });
+}
+
+export const ShareMenu: React.SFC<ShareMenuProps> = props => {
+  const { openOn, onClose } = props;
 
   return <BubbleMenu
     className="header-menu"
@@ -66,33 +127,9 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
     onClose={onClose}
   >
     <ul className="bubble-list">
-
-      <CopyToClipboard key="copy-url" text={getCubeViewHash(essence, true)}>
-        <li onClick={onClose}>
-          {essence.filter.isRelative() ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
-        </li>
-      </CopyToClipboard>
-
-      {essence.filter.isRelative() && <CopyToClipboard key="copy-specific-url" text={getCubeViewHash(essence.convertToSpecificFilter(timekeeper), true)}>
-        <li onClick={onClose}>
-          {STRINGS.copyFixedTimeUrl}
-        </li>
-      </CopyToClipboard>}
-
-      {exportOptions.map(({ label, fileFormat }) =>
-        <li key={`export-${fileFormat}`} onClick={() => onExport(fileFormat)}>
-          {label}
-        </li>
-      )}
-
-      {externalViews.map((externalView: ExternalView, i: number) => {
-        const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
-        return <li key={`custom-url-${i}`}>
-          <a href={url} target={externalView.sameWindow ? "_self" : "_blank"}>
-            {`${STRINGS.openIn} ${externalView.title}`}
-          </a>
-        </li>;
-      })}
+      {linkItems(props)}
+      {exportItems(props)}
+      {externalViewItems(props)}
     </ul>
   </BubbleMenu>;
 };

@@ -1,0 +1,78 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ * Copyright 2017-2018 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import '../../imports';
+
+.short-url-modal {
+
+  .short-url-container {
+
+    .url-group {
+      display: flex;
+
+      .short-url, .copy-button {
+        padding: 8px 8px 6px 8px;
+        display: inline-block;
+        border-radius: 0;
+      }
+
+      .short-url {
+        @extend %input-cont-inset;
+        flex: 2;
+        border-right: 0;
+        border-top-left-radius: $corner;
+        border-bottom-left-radius: $corner;
+      }
+
+      .copy-button {
+        @extend %input-cont;
+        background: $background-base;
+        cursor: pointer;
+        flex: 0;
+        border-top-right-radius: $corner;
+        border-bottom-right-radius: $corner;
+
+      }
+    }
+
+    .copied-hint {
+      margin-top: 14px;
+      color: $brand;
+    }
+  }
+
+  .url-notice {
+    margin-top: 16px;
+    padding: 0 5px;
+    color: $text-medium;
+    font-style: italic;
+    line-height: 1.4;
+
+    .copy-action {
+      color: $brand;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .copied-hint {
+      font-style: normal;
+      color: $brand;
+    }
+  }
+}
