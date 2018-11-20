@@ -223,7 +223,19 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
           if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
             triggerSplitMenu(dimension);
           } else {
-            clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.UnfairGame);
+            clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+          }
+
+          this.toggleSearch();
+          break;
+        }
+        case(keyCodes.equals): {
+          e.preventDefault();
+
+          if (essence.splits.hasSplitOn(dimension)) {
+            triggerSplitMenu(dimension);
+          } else {
+            clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
           }
 
           this.toggleSearch();
