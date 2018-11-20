@@ -1,3 +1,6 @@
+customization:
+  urlShortener: |
+    return fetch('http://tinyurl.com/api-create.php?url=' + decodeURIComponent(url)).then(function(response){ return response.text();})
 dataCubes:
   - name: wiki
     title: Wikipedia Example
@@ -181,4 +184,3 @@ dataCubes:
       - name: unique_users
         title: Unique Users
         formula: $main.countDistinct($user)
-
