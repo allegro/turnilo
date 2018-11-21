@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-require('ts-node/register');
-require('ignore-styles');
+import { UrlShortener } from "./url-shortener";
 
-const jsdom = require("jsdom").jsdom;
+export const SuccessUrlShortener = new UrlShortener("return Promise.resolve('http://foobar');");
 
-var document = (new jsdom('<!doctype html><html><body></body></html>'));
-global.document = document;
-global.window = document.defaultView;
-// setup for type-detect, should be solved in https://github.com/chaijs/type-detect/pull/129
-global.HTMLElement = global.window.HTMLElement;
-// setup for React
-global.navigator = {userAgent: "testing"};
-
-var enzyme = require('enzyme');
-var Adapter = require('enzyme-adapter-react-16');
-
-enzyme.configure({ adapter: new Adapter() });
-
+export const FailureUrlShortener = new UrlShortener("return Promise.reject(null);");
