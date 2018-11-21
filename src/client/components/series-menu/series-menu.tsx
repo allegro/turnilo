@@ -23,6 +23,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { Button } from "../button/button";
 import { FormatPicker } from "./format-picker";
 import "./series-menu.scss";
 
@@ -98,8 +99,8 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         formatChange={this.saveFormat}
       />
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick} disabled={!this.validate()}>{STRINGS.ok}</button>
-        <button className="cancel" onClick={this.onCancelClick}>{STRINGS.cancel}</button>
+        <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
+        <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
       </div>
     </BubbleMenu>;
   }

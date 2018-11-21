@@ -30,13 +30,8 @@ $title-margin: 6px;
 
   .button-bar {
     .ok {
-      @extend %button-primary;
       min-width: 60px;
       margin-right: 8px;
-    }
-
-    .cancel {
-      @extend %button-secondary;
     }
   }
 }
