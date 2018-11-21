@@ -19,6 +19,7 @@ import { Duration } from "chronoshift";
 import { Record } from "immutable";
 import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywood";
 import { isTruthy } from "../../utils/general/general";
+import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension } from "../dimension/dimension";
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../sort/sort";
 
@@ -136,6 +137,6 @@ export class Split extends Record<SplitValue>(defaultSplit) {
       this.reference === other.reference &&
       this.sort.equals(other.sort) &&
       this.limit === other.limit &&
-      (this.bucket === null && other.bucket === null) || (this.bucket as Duration).equals(other.bucket as Duration);
+      nullableEquals(this.bucket as Duration, other.bucket as Duration);
   }
 }
