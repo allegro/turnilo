@@ -31,24 +31,20 @@ import "./measure-actions-menu.scss";
 const ACTION_SIZE = 66;
 
 export interface MeasureActionsMenuProps {
-  clicker: Clicker;
-  essence: Essence;
   direction: Direction;
   containerStage: Stage;
   openOn: Element;
+}
+
+export interface MeasureActionsProps {
+  clicker: Clicker;
+  essence: Essence;
   measure: Measure;
   onClose: Fn;
 }
 
-export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps> = ({ essence, clicker, direction, containerStage, openOn, measure, onClose }) => {
+export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = ({ essence, clicker, direction, containerStage, openOn, measure, onClose }) => {
   if (!measure) return null;
-
-  const disabled = essence.series.hasMeasure(measure);
-
-  function onAdd() {
-    if (!disabled) clicker.addSeries(Series.fromMeasure(measure));
-    onClose();
-  }
 
   return <BubbleMenu
     className="measure-actions-menu"
@@ -59,9 +55,25 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps> = ({ essence
     openOn={openOn}
     onClose={onClose}
   >
-    <div className={classNames("add", "action", { disabled })} onClick={onAdd}>
-      <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
-      <div className="action-label">{STRINGS.add}</div>
-    </div>
+    <MeasureActions
+      onClose={onClose}
+      clicker={clicker}
+      essence={essence}
+      measure={measure}
+    />
   </BubbleMenu>;
+};
+
+export const MeasureActions: React.SFC<MeasureActionsProps> = ({ essence, measure, onClose, clicker }) => {
+  const disabled = essence.series.hasMeasure(measure);
+
+  function onAdd() {
+    if (!disabled) clicker.addSeries(Series.fromMeasure(measure));
+    onClose();
+  }
+
+  return <div className={classNames("add", "action", { disabled })} onClick={onAdd}>
+    <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+    <div className="action-label">{STRINGS.add}</div>
+  </div>;
 };

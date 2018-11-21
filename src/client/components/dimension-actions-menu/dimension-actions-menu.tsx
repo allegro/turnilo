@@ -31,26 +31,49 @@ import "./dimension-actions-menu.scss";
 const ACTION_SIZE = 58;
 
 export interface DimensionActionsMenuProps {
-  clicker: Clicker;
-  essence: Essence;
+  openOn: Element;
   direction: Direction;
   containerStage: Stage;
-  openOn: Element;
-  dimension: Dimension;
-  triggerFilterMenu: (dimension: Dimension) => void;
-  onClose: Fn;
 }
 
-export const DimensionActionsMenu: React.SFC<DimensionActionsMenuProps> = (props: DimensionActionsMenuProps) => {
-  const { clicker, essence: { splits }, direction, containerStage, openOn, dimension, onClose } = props;
+export interface DimensionActionsProps {
+  clicker: Clicker;
+  essence: Essence;
+  dimension: Dimension;
+  onClose: Fn;
+  triggerFilterMenu: (dimension: Dimension) => void;
+}
 
+export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionActionsMenuProps> =
+  (props: DimensionActionsMenuProps & DimensionActionsProps) => {
+    const { triggerFilterMenu, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
+    return <BubbleMenu
+      className="dimension-actions-menu"
+      direction={direction}
+      containerStage={containerStage}
+      stage={Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2)}
+      fixedSize={true}
+      openOn={openOn}
+      onClose={onClose}
+    >
+      <DimensionActions
+        essence={essence}
+        clicker={clicker}
+        dimension={dimension}
+        onClose={onClose}
+        triggerFilterMenu={triggerFilterMenu} />
+    </BubbleMenu>;
+  };
+
+export const DimensionActions: React.SFC<DimensionActionsProps> = (props: DimensionActionsProps) => {
+  const { onClose, triggerFilterMenu, clicker, essence: { splits }, dimension } = props;
   if (!dimension) return null;
 
   const hasSplitOn = splits.hasSplitOn(dimension);
   const isOnlySplit = splits.length() === 1 && hasSplitOn;
 
   function onFilter() {
-    props.triggerFilterMenu(dimension);
+    triggerFilterMenu(dimension);
     onClose();
   }
 
@@ -65,25 +88,16 @@ export const DimensionActionsMenu: React.SFC<DimensionActionsMenuProps> = (props
   }
 
   function onPin() {
-    const { clicker, dimension, onClose } = this.props;
     clicker.pin(dimension);
     onClose();
   }
 
-  return <BubbleMenu
-    className="dimension-actions-menu"
-    direction={direction}
-    containerStage={containerStage}
-    stage={Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2)}
-    fixedSize={true}
-    openOn={openOn}
-    onClose={onClose}
-  >
+  return <React.Fragment>
     <div className={classNames("filter", "action")} onClick={onFilter}>
       <SvgIcon svg={require("../../icons/preview-filter.svg")} />
       <div className="action-label">{STRINGS.filter}</div>
     </div>
-    <div className="pin action" onClick={this.onPin}>
+    <div className="pin action" onClick={onPin}>
       <SvgIcon svg={require("../../icons/preview-pin.svg")} />
       <div className="action-label">{STRINGS.pin}</div>
     </div>
@@ -95,5 +109,5 @@ export const DimensionActionsMenu: React.SFC<DimensionActionsMenuProps> = (props
       <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
       <div className="action-label">{STRINGS.subsplit}</div>
     </div>
-  </BubbleMenu>;
+  </React.Fragment>;
 };
