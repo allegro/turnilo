@@ -29,32 +29,28 @@ const measure = MeasureFixtures.wikiCount();
 
 const datum: Datum = { [measure.name]: 10000, [measure.getDerivedName(MeasureDerivation.PREVIOUS)]: 200 };
 
-describe("VisMeasureLabel", () => {
-  it("renders measure data", () => {
-    const renderedComponent = shallow(
-      <VisMeasureLabel
-        measure={MeasureFixtures.wikiCount()}
-        format={DEFAULT_FORMAT}
-        datum={datum}
-        showPrevious={false}
-      />
-    );
+const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
+  format={DEFAULT_FORMAT}
+  datum={datum}
+  measure={MeasureFixtures.wikiCount()}
+  showPrevious={showPrevious} />);
 
-    expect(renderedComponent.find(".measure-title").text()).to.be.eq(measure.title);
-    expect(renderedComponent.find(".measure-value").text()).to.be.eq("10.0 k");
+describe("VisMeasureLabel", () => {
+  it("renders measure data on label", () => {
+    const label = renderLabel();
+
+    expect(label.find(".measure-title").text()).to.be.eq(measure.title);
+    expect(label.find(".measure-value").text()).to.be.eq("10.0 k");
+    expect(label.find(".measure-previous-value")).to.have.length(0);
+    expect(label.find(Delta)).to.have.length(0);
   });
 
-  it("renders previous", () => {
-    const renderedComponent = shallow(
-      <VisMeasureLabel
-        measure={MeasureFixtures.wikiCount()}
-        format={DEFAULT_FORMAT}
-        datum={datum}
-        showPrevious={true}
-      />
-    );
+  it("renders measure data on label with previous series", () => {
+    const label = renderLabel(true);
 
-    expect(renderedComponent.find(".measure-previous-value").text()).to.be.eq("200.0");
-    expect(renderedComponent.find(Delta)).to.be.not.empty;
+    expect(label.find(".measure-title").text()).to.be.eq(measure.title);
+    expect(label.find(".measure-value").text()).to.be.eq("10.0 k");
+    expect(label.find(".measure-previous-value").text()).to.be.eq("200.0");
+    expect(label.find(Delta)).to.have.length(1);
   });
 });
