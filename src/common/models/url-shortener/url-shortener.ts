@@ -49,6 +49,10 @@ export class UrlShortener implements Instance<UrlShortenerDef, UrlShortenerDef> 
   }
 
   public equals(other: UrlShortener): boolean {
-    return this.valueOf() === other.valueOf();
+    return other instanceof UrlShortener && this.valueOf() === other.valueOf();
+  }
+
+  public toString(): string {
+    return this.shortenerDefinition;
   }
 }

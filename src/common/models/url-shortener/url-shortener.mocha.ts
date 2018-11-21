@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { UrlShortener } from "./url-shortener";
+import { testImmutableClass } from "immutable-class-tester";
+import { UrlShortener, UrlShortenerDef } from "./url-shortener";
+import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "./url-shortener.fixtures";
 
-export const FailUrlShortenerJS = "return Promise.reject(null);";
-export const FailUrlShortener = new UrlShortener(FailUrlShortenerJS);
-
-export const SuccessUrlShortenerJS = "return Promise.resolve('http://foobar');";
-export const SuccessUrlShortener = new UrlShortener(SuccessUrlShortenerJS);
+describe("UrlShortener", () => {
+  it("is an immutable class", () => {
+    testImmutableClass<UrlShortenerDef>(UrlShortener, [
+      SuccessUrlShortenerJS,
+      FailUrlShortenerJS
+    ]);
+  });
+});
