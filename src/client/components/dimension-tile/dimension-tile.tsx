@@ -550,7 +550,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         (selectedGranularity as Duration),
         timezone,
         getLocale());
-    } else if (segmentValue instanceof NumberRange) {
+    }
+    if (segmentValue instanceof NumberRange) {
       return formatNumberRange(segmentValue);
     }
     return segmentValueStr;
