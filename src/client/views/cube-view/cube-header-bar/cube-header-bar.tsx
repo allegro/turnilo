@@ -46,7 +46,7 @@ export interface CubeHeaderBarProps {
   openRawDataModal?: Fn;
   openViewDefinitionModal?: Fn;
   openDruidQueryModal?: Fn;
-  openShortUrlModal?: Binary<string, string, void>;
+  openUrlShortenerModal?: Binary<string, string, void>;
   customization?: Customization;
   getDownloadableDataset?: () => DataSetWithTabOptions;
   changeTimezone?: (timezone: Timezone) => void;
@@ -141,13 +141,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { customization, essence, timekeeper, openShortUrlModal, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, openUrlShortenerModal, getCubeViewHash, getDownloadableDataset } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
     return <ShareMenu
       essence={essence}
-      openShortUrlModal={openShortUrlModal}
+      openUrlShortenerModal={openUrlShortenerModal}
       timekeeper={timekeeper}
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}

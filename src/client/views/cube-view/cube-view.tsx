@@ -50,12 +50,12 @@ import { ManualFallback } from "../../components/manual-fallback/manual-fallback
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SeriesTile } from "../../components/series-tile/series-tile";
-import { ShortUrlModal } from "../../components/share-menu/short-url-modal";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
+import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";
@@ -111,7 +111,7 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   showViewDefinitionModal?: boolean;
   showDruidQueryModal?: boolean;
-  shortenerModalProps?: { url: string, title: string };
+  urlShortenerModalProps?: { url: string, title: string };
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -441,27 +441,27 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       onClose={this.closeDruidQueryModal} />;
   }
 
-  openShortUrlModal = (url: string, title: string) => {
+  openUrlShortenerModal = (url: string, title: string) => {
     this.setState({
-      shortenerModalProps: { url, title }
+      urlShortenerModalProps: { url, title }
     });
   }
 
-  closeShortUrlModal = () => {
+  closeUrlShortenerModal = () => {
     this.setState({
-      shortenerModalProps: null
+      urlShortenerModalProps: null
     });
   }
 
-  renderShortUrlModal() {
-    const { shortenerModalProps } = this.state;
-    if (!shortenerModalProps) return null;
+  renderUrlShortenerModal() {
+    const { urlShortenerModalProps } = this.state;
+    if (!urlShortenerModalProps) return null;
     const { customization: { urlShortener } } = this.props;
-    return <ShortUrlModal
-      title={shortenerModalProps.title}
-      url={shortenerModalProps.url}
+    return <UrlShortenerModal
+      title={urlShortenerModalProps.title}
+      url={urlShortenerModalProps.url}
       shortener={urlShortener}
-      onClose={this.closeShortUrlModal} />;
+      onClose={this.closeUrlShortenerModal} />;
   }
 
   triggerFilterMenu = (dimension: Dimension) => {
@@ -555,7 +555,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       refreshMaxTime={this.refreshMaxTime}
       openRawDataModal={this.openRawDataModal}
       openViewDefinitionModal={this.openViewDefinitionModal}
-      openShortUrlModal={this.openShortUrlModal}
+      openUrlShortenerModal={this.openUrlShortenerModal}
       openDruidQueryModal={this.openDruidQueryModal}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
@@ -651,7 +651,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       {this.renderDruidQueryModal()}
       {this.renderRawDataModal()}
       {this.renderViewDefinitionModal()}
-      {this.renderShortUrlModal()}
+      {this.renderUrlShortenerModal()}
     </div>;
   }
 

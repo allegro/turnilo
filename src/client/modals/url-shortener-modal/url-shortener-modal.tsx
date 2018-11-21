@@ -18,35 +18,50 @@ import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import { UrlShortener } from "../../../common/models/url-shortener/url-shortener";
 import { Fn } from "../../../common/utils/general/general";
+import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
-import { Modal } from "../modal/modal";
-import "./short-url-modal.scss";
+import "./url-shortener-modal.scss";
 
-interface CopyShortUrlProps {
+interface UrlShortenerPromptProps {
   url: string;
-  title: string;
   shortener: UrlShortener;
-  onClose: Fn;
 }
 
-interface CopyShortUrlState {
+interface UrlShortenerModalProps {
+  onClose: Fn;
+  title: string;
+}
+
+interface UrlShortenerPromptState {
   copiedShortUrl: boolean;
   copiedLongUrl: boolean;
   shortUrl: string;
   error?: string;
 }
 
-export class ShortUrlModal extends React.Component<CopyShortUrlProps, CopyShortUrlState> {
+export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlShortenerPromptProps> = ({ title, onClose, shortener, url }) => {
+  return <Modal
+    className="short-url-modal"
+    title={title}
+    onClose={onClose}>
+    <UrlShortenerPrompt
+      shortener={shortener}
+      url={url}
+    />
+  </Modal>;
+};
 
-  state: CopyShortUrlState = { copiedLongUrl: false, copiedShortUrl: false, shortUrl: null };
+export class UrlShortenerPrompt extends React.Component<UrlShortenerPromptProps, UrlShortenerPromptState> {
+
+  state: UrlShortenerPromptState = { copiedLongUrl: false, copiedShortUrl: false, shortUrl: null };
 
   componentDidMount() {
     if (this.props.shortener) this.shortenUrl();
   }
 
-  copiedShortUrl = () => this.setState({ copiedShortUrl: true });
+  copiedShortUrl = () => this.setState({ copiedShortUrl: true, copiedLongUrl: false });
 
-  copiedLongUrl = () => this.setState({ copiedLongUrl: true });
+  copiedLongUrl = () => this.setState({ copiedLongUrl: true, copiedShortUrl: false });
 
   shortenUrl() {
     const { shortener, url } = this.props;
@@ -65,7 +80,7 @@ export class ShortUrlModal extends React.Component<CopyShortUrlProps, CopyShortU
     if (error) return error;
     if (!shortUrl) return STRINGS.loading;
 
-    return <div className="short-url-container">
+    return <div>
       <div className="url-group">
         <input className="short-url" readOnly={true} value={shortUrl} />
         <CopyToClipboard text={shortUrl} onCopy={this.copiedShortUrl}>
@@ -77,14 +92,13 @@ export class ShortUrlModal extends React.Component<CopyShortUrlProps, CopyShortU
   }
 
   render() {
-    const { title, onClose, url } = this.props;
+    const { url } = this.props;
     const { copiedLongUrl } = this.state;
 
-    return <Modal
-      className="short-url-modal"
-      title={title}
-      onClose={onClose}>
-      {this.renderShortUrl()}
+    return <React.Fragment>
+      <div className="url-shortener">
+        {this.renderShortUrl()}
+      </div>
       <div className="url-notice">
         Please note that, this url may expire in the future. You still can&nbsp;
         <CopyToClipboard text={url} onCopy={this.copiedLongUrl}>
@@ -93,6 +107,6 @@ export class ShortUrlModal extends React.Component<CopyShortUrlProps, CopyShortU
         &nbsp;instead.&nbsp;
         {copiedLongUrl && <span className="copied-hint">{STRINGS.copied}</span>}
       </div>
-    </Modal>;
+    </React.Fragment>;
   }
 }
