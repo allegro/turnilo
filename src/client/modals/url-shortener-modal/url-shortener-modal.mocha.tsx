@@ -17,7 +17,8 @@
 import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
-import { FailureUrlShortener, SuccessUrlShortener } from "../../../common/models/url-shortener/url-shortener.fixtures";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import { FailUrlShortener, SuccessUrlShortener } from "../../../common/models/url-shortener/url-shortener.fixtures";
 import { STRINGS } from "../../config/constants";
 import { UrlShortenerPrompt } from "./url-shortener-modal";
 
@@ -26,7 +27,7 @@ const tick = () => Promise.resolve();
 const mountPrompt = (failed = false) =>
   mount(<UrlShortenerPrompt
     url="google.com"
-    shortener={failed ? FailureUrlShortener : SuccessUrlShortener}
+    shortener={failed ? FailUrlShortener : SuccessUrlShortener}
   />);
 
 describe("<UrlShortenerPrompt>", () => {
@@ -62,12 +63,13 @@ describe("<UrlShortenerPrompt>", () => {
 
     await tick();
     prompt.update();
-    (prompt.instance() as UrlShortenerPrompt).copiedShortUrl();
+    const shortener = prompt.find(".url-shortener");
+    shortener.find(CopyToClipboard).prop("onCopy")("foo", true);
     await tick();
     prompt.update();
 
-    const shortener = prompt.find(".url-shortener");
-    const shortHint = shortener.find(".copied-hint");
+    const clickedShortener = prompt.find(".url-shortener");
+    const shortHint = clickedShortener.find(".copied-hint");
     expect(shortHint.text()).to.be.eq(STRINGS.copied);
 
     const notice = prompt.find(".url-notice");
@@ -79,11 +81,13 @@ describe("<UrlShortenerPrompt>", () => {
     const prompt = mountPrompt();
 
     (prompt.instance() as UrlShortenerPrompt).copiedLongUrl();
+    const notice = prompt.find(".url-notice");
+    notice.find(CopyToClipboard).prop("onCopy")("foo", true);
     await tick();
     prompt.update();
 
-    const notice = prompt.find(".url-notice");
-    const longHint = notice.find(".copied-hint");
+    const clickedNotice = prompt.find(".url-notice");
+    const longHint = clickedNotice.find(".copied-hint");
     expect(longHint.text()).to.be.eq(STRINGS.copied);
 
     const shortener = prompt.find(".url-shortener");
