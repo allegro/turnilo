@@ -109,18 +109,19 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     });
   }
 
-  openMenu(series: Series, target: Element) {
+  toggleMenu(series: Series, target: Element) {
     const { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
       return;
     }
 
+    this.openMenu(series, target);
+  }
+
+  openMenu(series: Series, target: Element) {
     const overflowMenu = this.getOverflowMenu();
-    let menuInside: Element = null;
-    if (overflowMenu && isInside(target, overflowMenu)) {
-      menuInside = overflowMenu;
-    }
+    const menuInside = overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
 
     this.setState({
       menuOpenOn: target,
@@ -141,7 +142,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
   selectSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {
     const target = findParentWithClass(e.target as Element, SERIES_CLASS_NAME);
-    this.openMenu(series, target);
+    this.toggleMenu(series, target);
   }
 
   removeSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {

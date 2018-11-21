@@ -94,21 +94,22 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   selectDimensionSplit = (dimension: Dimension, split: Split, e: React.MouseEvent<HTMLElement>) => {
     const target = findParentWithClass(e.target as Element, SPLIT_CLASS_NAME);
-    this.openMenu(dimension, split, target);
+    this.toggleMenu(dimension, split, target);
   }
 
-  openMenu(dimension: Dimension, split: Split, target: Element) {
+  toggleMenu(dimension: Dimension, split: Split, target: Element) {
     const { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
       return;
     }
 
+    this.openMenu(target, dimension, split);
+  }
+
+  openMenu(target: Element, dimension: Dimension, split: Split) {
     const overflowMenu = this.getOverflowMenu();
-    let menuInside: Element = null;
-    if (overflowMenu && isInside(target, overflowMenu)) {
-      menuInside = overflowMenu;
-    }
+    let menuInside = overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
 
     this.setState({
       menuOpenOn: target,
@@ -241,18 +242,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     } else {
       clicker.changeSplits(splits.insertByIndex(dragPosition.insert, splitCombine), VisStrategy.FairGame);
     }
-  }
-
-  // This will be called externally
-  splitMenuRequest(dimension: Dimension) {
-    const { splits } = this.props.essence;
-    const split = splits.findSplitForDimension(dimension);
-    if (!split) return;
-    const targetRef = this.refs[dimension.name];
-    if (!targetRef) return;
-    const target = ReactDOM.findDOMNode(targetRef);
-    if (!target) return;
-    this.openMenu(dimension, split, target);
   }
 
   overflowButtonTarget(): Element {
