@@ -56,7 +56,11 @@ export class UrlShortenerPrompt extends React.Component<UrlShortenerPromptProps,
   state: UrlShortenerPromptState = { copiedLongUrl: false, copiedShortUrl: false, shortUrl: null };
 
   componentDidMount() {
-    if (this.props.shortener) this.shortenUrl();
+    if (this.props.shortener) {
+      this.shortenUrl();
+    } else {
+      this.setState({ error: "No shortener defined in configuration" });
+    }
   }
 
   copiedShortUrl = () => this.setState({ copiedShortUrl: true, copiedLongUrl: false });
