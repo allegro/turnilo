@@ -17,6 +17,7 @@
 
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Customization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
@@ -35,7 +36,7 @@ export interface ShareMenuProps {
   openOn: Element;
   onClose: Fn;
   openUrlShortenerModal: Binary<string, string, void>;
-  externalViews?: ExternalView[];
+  customization: Customization;
   getCubeViewHash: (essence: Essence, withPrefix?: boolean) => string;
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
@@ -66,9 +67,9 @@ function exportItems(props: ExportProps) {
   );
 }
 
-type LinkProps = Pick<ShareMenuProps, "essence" | "onClose" | "getCubeViewHash" | "openUrlShortenerModal" | "timekeeper">;
+type LinkProps = Pick<ShareMenuProps, "essence" | "customization" | "onClose" | "getCubeViewHash" | "openUrlShortenerModal" | "timekeeper">;
 
-function linkItems({ essence, timekeeper, onClose, getCubeViewHash, openUrlShortenerModal }: LinkProps) {
+function linkItems({ essence, customization, timekeeper, onClose, getCubeViewHash, openUrlShortenerModal }: LinkProps) {
   const isRelative = essence.filter.isRelative();
   const hash = getCubeViewHash(essence, true);
   const specificHash = getCubeViewHash(essence.convertToSpecificFilter(timekeeper), true);
@@ -90,22 +91,24 @@ function linkItems({ essence, timekeeper, onClose, getCubeViewHash, openUrlShort
       </li>
     </CopyToClipboard>}
 
-    <li
-      key="short-url"
-      onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>
-      {isRelative ? STRINGS.createShortRelativeUrl : STRINGS.createShortUrl}
-    </li>
-    {isRelative && <li
-      key="short-url-specific"
-      onClick={() => openShortenerModal(hash, STRINGS.copyFixedTimeUrl)}>
-      {STRINGS.createShortFixedUrl}
-    </li>}
+    {customization.urlShortener && <React.Fragment>
+      <li
+        key="short-url"
+        onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>
+        {isRelative ? STRINGS.createShortRelativeUrl : STRINGS.createShortUrl}
+      </li>
+      {isRelative && <li
+        key="short-url-specific"
+        onClick={() => openShortenerModal(hash, STRINGS.copyFixedTimeUrl)}>
+        {STRINGS.createShortFixedUrl}
+      </li>}
+    </React.Fragment>}
   </React.Fragment>;
 }
 
-type ExternalViewsProps = Pick<ShareMenuProps, "externalViews" | "essence">;
+type ExternalViewsProps = Pick<ShareMenuProps, "customization" | "essence">;
 
-function externalViewItems({ externalViews = [], essence }: ExternalViewsProps) {
+function externalViewItems({ customization: { externalViews = [] }, essence }: ExternalViewsProps) {
   return externalViews.map((externalView: ExternalView, i: number) => {
     const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
     return <li key={`custom-url-${i}`}>

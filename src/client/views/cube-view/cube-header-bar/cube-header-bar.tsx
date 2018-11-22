@@ -151,7 +151,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       timekeeper={timekeeper}
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}
-      externalViews={customization.externalViews}
+      customization={customization}
       getCubeViewHash={getCubeViewHash}
       getDownloadableDataset={getDownloadableDataset}
     />;
