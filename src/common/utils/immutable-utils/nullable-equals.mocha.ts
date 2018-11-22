@@ -29,28 +29,33 @@ class DummyRecord extends Record<DummyValue>({ dummy: 1 }) {
 const dummy = (dummy: number) => new DummyRecord({ dummy });
 
 describe("nullable equals", () => {
-  it("should handle both nulls", () => {
-    expect(nullableEquals(null, null)).to.be.true;
+  describe("should return true", () => {
+    it("for both nulls", () => {
+      expect(nullableEquals(null, null)).to.be.true;
+    });
+
+    it("for same value", () => {
+      const val = dummy(1);
+      expect(nullableEquals(val, val)).to.be.true;
+    });
+
+    it("for identical values", () => {
+      expect(nullableEquals(dummy(1), dummy(1))).to.be.true;
+    });
   });
 
-  it("should handle first null", () => {
-    expect(nullableEquals(null, dummy(1))).to.be.false;
-  });
+  describe("should return false", () => {
+    it("if only first is null", () => {
+      expect(nullableEquals(null, dummy(1))).to.be.false;
+    });
 
-  it("should handle second null", () => {
-    expect(nullableEquals(dummy(1), null)).to.be.false;
-  });
+    it("if only second is null", () => {
+      expect(nullableEquals(dummy(1), null)).to.be.false;
+    });
 
-  it("should handle different values", () => {
-    expect(nullableEquals(dummy(1), dummy(2))).to.be.false;
-  });
-
-  it("should handle same value", () => {
-    const val = dummy(1);
-    expect(nullableEquals(val, val)).to.be.true;
-  });
-
-  it("should handle identical values", () => {
-    expect(nullableEquals(dummy(1), dummy(1))).to.be.true;
+    it("for different values", () => {
+      expect(nullableEquals(dummy(1), dummy(2))).to.be.false;
+      expect(nullableEquals(dummy(25), dummy(80))).to.be.false;
+    });
   });
 });

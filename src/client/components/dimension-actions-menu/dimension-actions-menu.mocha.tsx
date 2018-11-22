@@ -19,11 +19,11 @@ import { mount, shallow } from "enzyme";
 import { List } from "immutable";
 import * as React from "react";
 import * as sinon from "sinon";
+import { SinonSpy } from "sinon";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
-import { VisStrategy } from "../../../common/models/essence/essence";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
-import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DimensionActions } from "./dimension-actions-menu";
@@ -33,143 +33,141 @@ const onClose = () => {
 
 describe("<DimensionActions>", () => {
   describe("Split Action", () => {
-    it("renders enabled split action when dimension is not selected", () => {
-      const actions = shallow(<DimensionActions
-        triggerFilterMenu={null}
-        dimension={DimensionFixtures.countryURL()}
-        essence={EssenceFixtures.wikiTable()}
-        onClose={onClose}
-        clicker={null}
-      />);
+
+    const dimActions = (dimension: Dimension, essence: Essence) => shallow(<DimensionActions
+      triggerFilterMenu={null}
+      dimension={dimension}
+      essence={essence}
+      onClose={onClose}
+      clicker={null}
+    />);
+
+    it("renders enabled action when dimension is not selected", () => {
+      const actions = dimActions(DimensionFixtures.countryURL(), EssenceFixtures.wikiTable());
 
       expect(actions.find(".split").hasClass("disabled")).to.be.false;
     });
 
-    it("renders disabled split action when dimension is selected", () => {
+    it("renders enabled action when dimension is selected but is not only one split", () => {
+      const actions = dimActions(DimensionFixtures.wikiCommentLength(), EssenceFixtures.wikiTable());
+
+      expect(actions.find(".split").hasClass("disabled")).to.be.false;
+    });
+
+    it("renders disabled action when dimension is only selected split", () => {
       const dimension = DimensionFixtures.wikiCommentLength();
-      const actions = shallow(<DimensionActions
-        triggerFilterMenu={null}
-        dimension={dimension}
-        essence={EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension.name)), VisStrategy.FairGame)}
-        onClose={onClose}
-        clicker={null}
-      />);
+      const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension.name)), VisStrategy.FairGame);
+
+      const actions = dimActions(dimension, essenceWithOneSplit);
 
       expect(actions.find(".split").hasClass("disabled")).to.be.true;
     });
 
-    it("call clicker and onClose when dimension is not selected", () => {
-      const onCloseSpy = sinon.spy();
-      const changeSplitsSpy = sinon.spy();
-      const clicker = { changeSplit: changeSplitsSpy };
-      const dimension = DimensionFixtures.countryURL();
-      const actions = mount(<DimensionActions
-        triggerFilterMenu={null}
+    describe("click should call action", () => {
+
+      let onCloseSpy: SinonSpy;
+      let changeSplitSpy: SinonSpy;
+
+      beforeEach(() => {
+        onCloseSpy = sinon.spy();
+        changeSplitSpy = sinon.spy();
+      });
+
+      const dimActions = (dimension: Dimension, essence: Essence) => mount(<DimensionActions
+        clicker={{ changeSplit: changeSplitSpy }}
+        essence={essence}
         dimension={dimension}
-        essence={EssenceFixtures.wikiTable()}
         onClose={onCloseSpy}
-        clicker={clicker}
-      />);
+        triggerFilterMenu={null} />);
 
-      const add = actions.find(".split");
-      add.simulate("click");
+      it("call clicker.changeSplit and onClose when dimension is not selected", () => {
+        const dimension = DimensionFixtures.countryURL();
+        const actions = dimActions(dimension, EssenceFixtures.wikiTable());
 
-      expect(onCloseSpy.calledOnce).to.be.true;
-      expect(changeSplitsSpy.calledOnce).to.be.true;
-      expect(changeSplitsSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
-    });
+        actions.find(".split").simulate("click");
 
-    it("calls onClose but not clicker when dimension is selected", () => {
-      const onCloseSpy = sinon.spy();
-      const addSeriesSpy = sinon.spy();
-      const clicker = { addSeries: addSeriesSpy };
-      const dimension = DimensionFixtures.countryURL();
-      const actions = mount(<DimensionActions
-        triggerFilterMenu={null}
-        dimension={dimension}
-        essence={EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension.name)), VisStrategy.FairGame)}
-        onClose={onCloseSpy}
-        clicker={clicker}
-      />);
+        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(changeSplitSpy.calledOnce).to.be.true;
+        expect(changeSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
+      });
 
-      const add = actions.find(".split");
-      add.simulate("click");
+      it("calls onClose but not clicker.changeSplit when dimension is selected", () => {
+        const dimension = DimensionFixtures.countryURL();
+        const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension.name)), VisStrategy.FairGame);
+        const actions = dimActions(dimension, essenceWithOneSplit);
 
-      expect(onCloseSpy.calledOnce).to.be.true;
-      expect(addSeriesSpy.notCalled).to.be.true;
+        actions.find(".split").simulate("click");
+
+        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(changeSplitSpy.notCalled).to.be.true;
+      });
     });
   });
 
   describe("SubSplit Action", () => {
-    it("renders enabled subsplit action when dimension is not selected", () => {
-      const actions = shallow(<DimensionActions
-        triggerFilterMenu={null}
-        dimension={DimensionFixtures.countryURL()}
-        essence={EssenceFixtures.wikiTable()}
-        onClose={onClose}
-        clicker={null}
-      />);
+
+    const dimActions = (dimension: Dimension) => shallow(<DimensionActions
+      triggerFilterMenu={null}
+      dimension={dimension}
+      essence={EssenceFixtures.wikiTable()}
+      onClose={onClose}
+      clicker={null}
+    />);
+
+    it("renders enabled action when dimension is not selected", () => {
+      const actions = dimActions(DimensionFixtures.countryURL());
 
       expect(actions.find(".subsplit").hasClass("disabled")).to.be.false;
     });
 
-    it("renders disabled subsplit action when dimension is selected", () => {
-      const dimension = DimensionFixtures.wikiCommentLength();
-      const actions = shallow(<DimensionActions
-        triggerFilterMenu={null}
-        dimension={dimension}
-        essence={EssenceFixtures.wikiTable()}
-        onClose={onClose}
-        clicker={null}
-      />);
+    it("renders disabled action when dimension is only selected split", () => {
+      const actions = dimActions(DimensionFixtures.wikiCommentLength());
 
       expect(actions.find(".subsplit").hasClass("disabled")).to.be.true;
     });
 
-    it("call clicker and onClose when dimension is not selected", () => {
-      const onCloseSpy = sinon.spy();
-      const addSplitSpy = sinon.spy();
-      const clicker = { addSplit: addSplitSpy };
-      const dimension = DimensionFixtures.countryURL();
-      const actions = mount(<DimensionActions
-        triggerFilterMenu={null}
-        dimension={dimension}
+    describe("click should call action", () => {
+
+      let onCloseSpy: SinonSpy;
+      let addSplitSpy: SinonSpy;
+
+      beforeEach(() => {
+        onCloseSpy = sinon.spy();
+        addSplitSpy = sinon.spy();
+      });
+
+      const dimActions = (dimension: Dimension) => mount(<DimensionActions
+        clicker={{ addSplit: addSplitSpy }}
         essence={EssenceFixtures.wikiTable()}
-        onClose={onCloseSpy}
-        clicker={clicker}
-      />);
-
-      const add = actions.find(".subsplit");
-      add.simulate("click");
-
-      expect(onCloseSpy.calledOnce).to.be.true;
-      expect(addSplitSpy.calledOnce).to.be.true;
-      expect(addSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
-    });
-
-    it("calls onClose but not clicker when dimension is selected", () => {
-      const onCloseSpy = sinon.spy();
-      const addSplitSpy = sinon.spy();
-      const clicker = { addSplit: addSplitSpy };
-      const dimension = DimensionFixtures.wikiCommentLength();
-      const actions = mount(<DimensionActions
-        triggerFilterMenu={null}
         dimension={dimension}
-        essence={EssenceFixtures.wikiTable()}
         onClose={onCloseSpy}
-        clicker={clicker}
-      />);
+        triggerFilterMenu={null} />);
 
-      const add = actions.find(".subsplit");
-      add.simulate("click");
+      it("call clicker.changeSplit and onClose when dimension is not selected", () => {
+        const dimension = DimensionFixtures.countryURL();
+        const actions = dimActions(dimension);
 
-      expect(onCloseSpy.calledOnce).to.be.true;
-      expect(addSplitSpy.notCalled).to.be.true;
+        actions.find(".subsplit").simulate("click");
+
+        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(addSplitSpy.calledOnce).to.be.true;
+        expect(addSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
+      });
+
+      it("calls onClose but not clicker.changeSplit when dimension is selected", () => {
+        const dimension = DimensionFixtures.wikiCommentLength();
+        const actions = dimActions(dimension);
+
+        actions.find(".subsplit").simulate("click");
+
+        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(addSplitSpy.notCalled).to.be.true;
+      });
     });
   });
 
   describe("Filter Action", () => {
-    it("filter action triggers passed handler", () => {
+    it("clicking filter action triggers passed handler", () => {
       const onCloseSpy = sinon.spy();
       const triggerSpy = sinon.spy();
       const dimension = DimensionFixtures.countryURL();
@@ -181,8 +179,7 @@ describe("<DimensionActions>", () => {
         clicker={null}
       />);
 
-      const add = actions.find(".filter");
-      add.simulate("click");
+      actions.find(".filter").simulate("click");
 
       expect(onCloseSpy.calledOnce).to.be.true;
       expect(triggerSpy.calledOnce).to.be.true;
@@ -191,7 +188,7 @@ describe("<DimensionActions>", () => {
   });
 
   describe("Pin Action", () => {
-    it("pin action calls clicker", () => {
+    it("clicking pin action calls clicker", () => {
       const onCloseSpy = sinon.spy();
       const pinSpy = sinon.spy();
       const clicker = { pin: pinSpy };
@@ -204,8 +201,7 @@ describe("<DimensionActions>", () => {
         clicker={clicker}
       />);
 
-      const add = actions.find(".pin");
-      add.simulate("click");
+      actions.find(".pin").simulate("click");
 
       expect(onCloseSpy.calledOnce).to.be.true;
       expect(pinSpy.calledOnce).to.be.true;
