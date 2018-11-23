@@ -16,7 +16,6 @@
 
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
-import { UrlShortener } from "../../../common/models/url-shortener/url-shortener";
 import { Fn } from "../../../common/utils/general/general";
 import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
@@ -24,7 +23,6 @@ import "./url-shortener-modal.scss";
 
 interface UrlShortenerPromptProps {
   url: string;
-  shortener: UrlShortener;
 }
 
 interface UrlShortenerModalProps {
@@ -39,15 +37,12 @@ interface UrlShortenerPromptState {
   error?: string;
 }
 
-export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlShortenerPromptProps> = ({ title, onClose, shortener, url }) => {
+export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlShortenerPromptProps> = ({ title, onClose, url }) => {
   return <Modal
     className="short-url-modal"
     title={title}
     onClose={onClose}>
-    <UrlShortenerPrompt
-      shortener={shortener}
-      url={url}
-    />
+    <UrlShortenerPrompt url={url} />
   </Modal>;
 };
 
@@ -56,11 +51,7 @@ export class UrlShortenerPrompt extends React.Component<UrlShortenerPromptProps,
   state: UrlShortenerPromptState = { copiedLongUrl: false, copiedShortUrl: false, shortUrl: null };
 
   componentDidMount() {
-    if (this.props.shortener) {
-      this.shortenUrl();
-    } else {
-      this.setState({ error: "No shortener defined in configuration" });
-    }
+    this.shortenUrl();
   }
 
   copiedShortUrl = () => this.setState({ copiedShortUrl: true, copiedLongUrl: false });
@@ -68,10 +59,9 @@ export class UrlShortenerPrompt extends React.Component<UrlShortenerPromptProps,
   copiedLongUrl = () => this.setState({ copiedLongUrl: true, copiedShortUrl: false });
 
   shortenUrl() {
-    const { shortener, url } = this.props;
-    shortener
-      .shortenUrl(url)
-      .then(shortUrl => {
+    fetch("/shorten?url=" + encodeURIComponent(this.props.url))
+      .then(response => response.json())
+      .then(({ shortUrl }) => {
         this.setState({ shortUrl });
       })
       .catch(() => {

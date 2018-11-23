@@ -15,9 +15,9 @@
  */
 
 import { Instance } from "immutable-class";
-import { Unary } from "../../utils/functional/functional";
+import { Binary } from "../../utils/functional/functional";
 
-export type UrlShortenerFn = Unary<string, Promise<string>>;
+export type UrlShortenerFn = Binary<string, any, Promise<string>>;
 export type UrlShortenerDef = string;
 
 export class UrlShortener implements Instance<UrlShortenerDef, UrlShortenerDef> {
@@ -26,14 +26,10 @@ export class UrlShortener implements Instance<UrlShortenerDef, UrlShortenerDef> 
     return new UrlShortener(definition);
   }
 
-  private readonly shortenerFunction: UrlShortenerFn;
+  public readonly shortenerFunction: UrlShortenerFn;
 
   constructor(private shortenerDefinition: string) {
-    this.shortenerFunction = new Function("url", shortenerDefinition) as UrlShortenerFn;
-  }
-
-  public shortenUrl(url: string): Promise<string> {
-    return this.shortenerFunction(url);
+    this.shortenerFunction = new Function("url", "request", shortenerDefinition) as UrlShortenerFn;
   }
 
   public toJS(): UrlShortenerDef {

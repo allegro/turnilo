@@ -456,11 +456,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   renderUrlShortenerModal() {
     const { urlShortenerModalProps } = this.state;
     if (!urlShortenerModalProps) return null;
-    const { customization: { urlShortener } } = this.props;
     return <UrlShortenerModal
       title={urlShortenerModalProps.title}
       url={urlShortenerModalProps.url}
-      shortener={urlShortener}
       onClose={this.closeUrlShortenerModal} />;
   }
 
