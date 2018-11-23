@@ -56,7 +56,7 @@ describe("<DimensionActions>", () => {
 
     it("renders disabled action when dimension is only selected split", () => {
       const dimension = DimensionFixtures.wikiCommentLength();
-      const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension.name)), VisStrategy.FairGame);
+      const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension)), VisStrategy.FairGame);
 
       const actions = dimActions(dimension, essenceWithOneSplit);
 
@@ -93,7 +93,7 @@ describe("<DimensionActions>", () => {
 
       it("calls onClose but not clicker.changeSplit when dimension is selected", () => {
         const dimension = DimensionFixtures.countryURL();
-        const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension.name)), VisStrategy.FairGame);
+        const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(Splits.fromDimensions(List.of(dimension)), VisStrategy.FairGame);
         const actions = dimActions(dimension, essenceWithOneSplit);
 
         actions.find(".split").simulate("click");
