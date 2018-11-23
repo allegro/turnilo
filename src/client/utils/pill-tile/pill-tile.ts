@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-import { BAR_TITLE_WIDTH, CORE_ITEM_GAP, CORE_ITEM_WIDTH, OVERFLOW_WIDTH, VIS_SELECTOR_WIDTH } from "../../config/constants";
+import { ADD_TILE_WIDTH, BAR_TITLE_WIDTH, CORE_ITEM_GAP, CORE_ITEM_WIDTH, OVERFLOW_WIDTH, PANEL_TOGGLE_WIDTH, VIS_SELECTOR_WIDTH } from "../../config/constants";
 
 export const SECTION_WIDTH = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
 function getWidthNoOverflowAdjustment(stageWidth: number) {
-  return stageWidth - BAR_TITLE_WIDTH - VIS_SELECTOR_WIDTH + CORE_ITEM_GAP;
+  return stageWidth - (2 * PANEL_TOGGLE_WIDTH) - BAR_TITLE_WIDTH - ADD_TILE_WIDTH - VIS_SELECTOR_WIDTH + CORE_ITEM_GAP;
 }
 
 export function getMaxItems(stageWidth: number, itemsLength: number): number {
-  var maxWidth = getWidthNoOverflowAdjustment(stageWidth);
-  var includedItems = itemsLength;
-  var initialMax = Math.floor((maxWidth - OVERFLOW_WIDTH) / SECTION_WIDTH);
+  const maxWidth = getWidthNoOverflowAdjustment(stageWidth);
+  const includedItems = itemsLength;
+  const initialMax = Math.floor((maxWidth - OVERFLOW_WIDTH) / SECTION_WIDTH);
 
   if (initialMax < includedItems) {
-
-    var widthPlusOverflow = initialMax * SECTION_WIDTH + OVERFLOW_WIDTH + CORE_ITEM_GAP;
-    var maxItems: number = null;
-
+    const widthPlusOverflow = initialMax * SECTION_WIDTH + OVERFLOW_WIDTH + CORE_ITEM_GAP;
     if (maxWidth < widthPlusOverflow) {
-      maxItems = initialMax - 1;
-    } else if (includedItems - initialMax === 1) {
-      maxItems = Math.floor(maxWidth / SECTION_WIDTH);
-    } else {
-      maxItems = initialMax;
+      return initialMax - 1;
     }
-    return maxItems;
-  } else {
-    return initialMax;
+    if (includedItems - initialMax === 1) {
+      return Math.floor(maxWidth / SECTION_WIDTH);
+    }
   }
+  return initialMax;
 }

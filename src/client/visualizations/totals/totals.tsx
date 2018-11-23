@@ -76,7 +76,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   renderTotals(): JSX.Element[] {
     const { essence } = this.props;
     const { datasetLoad: { dataset } } = this.state;
-    const measures = essence.getEffectiveMeasures();
+    const measures = essence.getEffectiveSelectedMeasures();
     const datum = dataset ? dataset.data[0] : null;
     if (!datum) {
       return measures.map(measure => {

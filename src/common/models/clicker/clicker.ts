@@ -21,6 +21,8 @@ import { VisStrategy } from "../essence/essence";
 import { Filter } from "../filter/filter";
 import { Manifest } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
+import { SeriesList } from "../series-list/series-list";
+import { Series } from "../series/series";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
@@ -38,6 +40,12 @@ export interface Clicker {
 
   removeSplit?(split: Split, strategy: VisStrategy): void;
 
+  changeSeriesList?(seriesList: SeriesList): void;
+
+  addSeries?(series: Series): void;
+
+  removeSeries?(series: Series): void;
+
   changeColors?(colors: Colors): void;
 
   changeVisualization?(visualization: Manifest): void;
@@ -47,10 +55,6 @@ export interface Clicker {
   unpin?(dimension: Dimension): void;
 
   changePinnedSortMeasure?(measure: Measure): void;
-
-  toggleMultiMeasureMode?(): void;
-
-  toggleEffectiveMeasure?(measure: Measure): void;
 
   changeHighlight?(owner: string, measure: string, delta: Filter): void;
 

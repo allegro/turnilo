@@ -23,11 +23,12 @@ import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./dimension-actions-menu.scss";
 
-const ACTION_SIZE = 60;
+const ACTION_SIZE = 58;
 
 export interface DimensionActionsMenuProps {
   clicker: Clicker;
@@ -41,10 +42,7 @@ export interface DimensionActionsMenuProps {
   onClose: Fn;
 }
 
-export interface DimensionActionsMenuState {
-}
-
-export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps, DimensionActionsMenuState> {
+export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps> {
 
   onFilter = () => {
     const { dimension, triggerFilterMenu, onClose } = this.props;
@@ -79,20 +77,23 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
   }
 
   render() {
-    const { direction, containerStage, openOn, dimension, onClose } = this.props;
+    const { essence: { filter, splits }, direction, containerStage, openOn, dimension, onClose } = this.props;
     if (!dimension) return null;
 
-    const menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
+    const isFilteredOn = filter.getClauseForDimension(dimension);
+    const hasSplitOn = splits.hasSplitOn(dimension);
+    const isOnlySplit = splits.length() === 1 && hasSplitOn;
+
     return <BubbleMenu
       className="dimension-actions-menu"
       direction={direction}
       containerStage={containerStage}
-      stage={menuSize}
+      stage={Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2)}
       fixedSize={true}
       openOn={openOn}
       onClose={onClose}
     >
-      <div className="filter action" onClick={this.onFilter}>
+      <div className={classNames("filter", "action", { disabled: isFilteredOn })} onClick={this.onFilter}>
         <SvgIcon svg={require("../../icons/preview-filter.svg")} />
         <div className="action-label">{STRINGS.filter}</div>
       </div>
@@ -100,11 +101,11 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
         <SvgIcon svg={require("../../icons/preview-pin.svg")} />
         <div className="action-label">{STRINGS.pin}</div>
       </div>
-      <div className="split action" onClick={this.onSplit}>
+      <div className={classNames("split", "action", { disabled: isOnlySplit })} onClick={this.onSplit}>
         <SvgIcon svg={require("../../icons/preview-split.svg")} />
         <div className="action-label">{STRINGS.split}</div>
       </div>
-      <div className="subsplit action" onClick={this.onSubsplit}>
+      <div className={classNames("subsplit", "action", { disabled: hasSplitOn })} onClick={this.onSubsplit}>
         <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
         <div className="action-label">{STRINGS.subsplit}</div>
       </div>

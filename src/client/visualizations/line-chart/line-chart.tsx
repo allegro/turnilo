@@ -789,7 +789,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     let bottomAxis: JSX.Element;
 
     if (datasetLoad.dataset && splits.length() && axisRange) {
-      const measures = essence.getEffectiveMeasures().toArray();
+      const measures = essence.getEffectiveSelectedMeasures().toArray();
 
       const chartWidth = stage.width - VIS_H_PADDING * 2;
       const chartHeight = Math.max(

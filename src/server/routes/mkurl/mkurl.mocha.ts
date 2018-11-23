@@ -69,8 +69,8 @@ describe("mkurl router", () => {
       .expect(200)
       .expect(
         {
-          hash: "#wiki/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
-          "KAAckaGQsp04sSbRmhoAWRjiI+YaVpKI2AOYImBdphjY0Q6qYz4FAX0plW2xaABMAERpabCgsGN9FECDsENCAZUxJD2dXdyFHO2jQ/GxTBEoACwg7CqQa7NKEBD8gA"
+          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAc" +
+            "kaGQqVSItDaEm1hU2tnZMC7TDGxoQAX0UhlEbNloATACI0TULNg1HZ1cPAGVMSVsLKxshBFoAcxN3fGwYBARKAAsIBKykPKi0jLsgA"
         },
         testComplete
       );
@@ -186,7 +186,7 @@ describe("mkurl router", () => {
       .expect(200)
       .expect(
         {
-          hash: "#wiki/" + UrlHashConverterFixtures.tableHashVersion3()
+          hash: "#wiki/" + UrlHashConverterFixtures.tableHashVersion4()
         },
         testComplete
       );

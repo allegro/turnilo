@@ -15,7 +15,7 @@
  */
 
 import { Record } from "immutable";
-import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { SortDirection } from "../../view-definitions/version-4/split-definition";
 
 export const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
 
