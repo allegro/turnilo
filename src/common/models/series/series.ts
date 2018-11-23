@@ -37,19 +37,40 @@ export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT 
 
 export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
 
+export interface SeriesPercentsValue {
+  ofParent: boolean;
+  ofTotal: boolean;
+}
+
+const defaultPercents: SeriesPercentsValue = { ofParent: false, ofTotal: false };
+
+export class SeriesPercents extends Record<SeriesPercentsValue>(defaultPercents) {
+}
+
+export const DEFAULT_PERCENTS = new SeriesPercents(defaultPercents);
+
 interface SeriesValue {
   reference: string;
   format: SeriesFormat;
+  percents: SeriesPercents;
 }
 
-const defaultSeries: SeriesValue = { reference: null, format: DEFAULT_FORMAT };
+const defaultSeries: SeriesValue = {
+  reference: null,
+  format: DEFAULT_FORMAT,
+  percents: DEFAULT_PERCENTS
+};
 
 export class Series extends Record<SeriesValue>(defaultSeries) {
   static fromMeasure(measure: Measure) {
     return new Series({ reference: measure.name });
   }
 
-  static fromJS({ reference, format }: any) {
-    return new Series({ reference, format: new SeriesFormat(format) });
+  static fromJS({ reference, format, percents }: any) {
+    return new Series({
+      reference,
+      format: new SeriesFormat(format),
+      percents: new SeriesPercents(percents)
+    });
   }
 }
