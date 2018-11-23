@@ -990,7 +990,11 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDefaultSplits(): Splits {
-    return this.defaultSplitDimensions ? Splits.fromDimensions(this.defaultSplitDimensions) : DataCube.DEFAULT_DEFAULT_SPLITS;
+    if (this.defaultSplitDimensions) {
+      const dimensions = this.defaultSplitDimensions.map(name => this.getDimension(name));
+      return Splits.fromDimensions(dimensions);
+    }
+    return DataCube.DEFAULT_DEFAULT_SPLITS;
   }
 
   public getDefaultDuration(): Duration {
