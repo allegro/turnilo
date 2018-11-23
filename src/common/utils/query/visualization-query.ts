@@ -14,37 +14,48 @@
  * limitations under the License.
  */
 
-import { $, Expression, LimitExpression, ply, SortExpression } from "plywood";
+import { $, ApplyExpression, Expression, LimitExpression, ply, SortExpression } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { toExpression as filterClauseToExpression } from "../../../common/models/filter-clause/filter-clause";
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
-import { Essence } from "../../models/essence/essence";
-import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
+import { Essence, SeriesWithMeasure } from "../../models/essence/essence";
+import { CurrentFilter, DerivationFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
 import { Sort } from "../../models/sort/sort";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
-import { thread } from "../functional/functional";
+import { concatTruthy, thread } from "../functional/functional";
 
 const $main = $("main");
 
-function applyMeasures(essence: Essence, filters: Filters, nestingLevel = 0) {
-  const measures = essence.getEffectiveSelectedMeasures();
+function seriesExpression({ series, measure }: SeriesWithMeasure, nestingLevel: number, filter: DerivationFilter = null): ApplyExpression[] {
+  return concatTruthy(
+    measure.toApplyExpression(nestingLevel, filter),
+    series.percents.ofParent && measure.toPercentOfParentApplyExpression(nestingLevel, filter),
+    series.percents.ofTotal && measure.toPercentOfTotalApplyExpression(nestingLevel, filter)
+  );
+}
+
+function performActions(expression: Expression, ...actions: ApplyExpression[]): Expression {
+  return actions.reduce((query, action) => query.performAction(action), expression);
+}
+
+function applySingleSeries(seriesWithMeasure: SeriesWithMeasure, query: Expression, hasComparison: boolean, nestingLevel: number, filters: Filters): Expression {
+  if (!hasComparison) {
+    return performActions(query, ...seriesExpression(seriesWithMeasure, nestingLevel));
+  }
+  return performActions(query,
+    ...seriesExpression(seriesWithMeasure, nestingLevel, new CurrentFilter(filters.current)),
+    ...seriesExpression(seriesWithMeasure, nestingLevel, new PreviousFilter(filters.previous)));
+}
+
+function applySeries(essence: Essence, filters: Filters, nestingLevel = 0) {
+  const seriesWithMeasures = essence.getSeriesWithMeasures();
   const hasComparison = essence.hasComparison();
 
-  return (query: Expression) => {
-    return measures.reduce((query, measure) => {
-      if (!hasComparison) {
-        return query.performAction(
-          measure.toApplyExpression(nestingLevel)
-        );
-      }
-      return query
-        .performAction(measure.toApplyExpression(nestingLevel, new CurrentFilter(filters.current)))
-        .performAction(measure.toApplyExpression(nestingLevel, new PreviousFilter(filters.previous)));
-    }, query);
-  };
+  return (query: Expression) =>
+    seriesWithMeasures.reduce((query, seriesWithMeasure) => applySingleSeries(seriesWithMeasure, query, hasComparison, nestingLevel, filters), query);
 }
 
 function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, sort: Sort): Expression {
@@ -130,7 +141,7 @@ function applySplit(index: number, essence: Essence, filters: Filters): Expressi
   return thread(
     $main.split(currentSplit, dimension.name),
     applyHaving(colors, dimension),
-    applyMeasures(essence, filters, nestingLevel),
+    applySeries(essence, filters, nestingLevel),
     applySort(essence, sort, filters.current, nestingLevel),
     applyLimit(colors, limit, dimension),
     applySubSplit(nestingLevel, essence, filters)
@@ -157,7 +168,7 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
 
   const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
 
-  const queryWithMeasures = applyMeasures(essence, filters)(mainExp);
+  const queryWithMeasures = applySeries(essence, filters)(mainExp);
 
   if (splits.length() > 0) {
     return queryWithMeasures.apply(SPLIT, applySplit(0, essence, filters));
