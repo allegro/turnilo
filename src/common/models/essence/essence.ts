@@ -134,6 +134,11 @@ function resolveVisualization({ visualization, visualizations, dataCube, splits,
   return { visualization, splits, colors, visResolve };
 }
 
+export interface SeriesWithMeasure {
+  series: Series;
+  measure: Measure;
+}
+
 export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   static getBestVisualization(
@@ -329,7 +334,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
   }
 
-  public getSeriesWithMeasures(): List<{ series: Series, measure: Measure }> {
+  public getSeriesWithMeasures(): List<SeriesWithMeasure> {
     return this.series.series.map(series => ({
       series,
       measure: this.dataCube.getMeasure(series.reference)

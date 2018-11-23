@@ -181,9 +181,9 @@ export class Table extends BaseVisualization<TableState> {
         case ColumnType.CURRENT:
           return measure.name;
         case ColumnType.PREVIOUS:
-          return measure.getDerivedName(MeasureDerivation.PREVIOUS);
+          return measure.getMeasureKey(MeasureDerivation.PREVIOUS);
         case ColumnType.DELTA:
-          return measure.getDerivedName(MeasureDerivation.DELTA);
+          return measure.getMeasureKey(MeasureDerivation.DELTA);
       }
     }
     throw new Error(`Can't create sort reference for position element: ${element}`);
@@ -336,7 +336,7 @@ export class Table extends BaseVisualization<TableState> {
           return [currentCell];
         }
 
-        const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
+        const previousValue = datum[measure.getMeasureKey(MeasureDerivation.PREVIOUS)] as number;
 
         return [
           currentCell,
@@ -390,13 +390,13 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = commonSortName === measure.getDerivedName(MeasureDerivation.PREVIOUS);
-      const isDeltaSorted = commonSortName === measure.getDerivedName(MeasureDerivation.DELTA);
+      const isPreviousSorted = commonSortName === measure.getMeasureKey(MeasureDerivation.PREVIOUS);
+      const isDeltaSorted = commonSortName === measure.getMeasureKey(MeasureDerivation.DELTA);
       return [
         currentMeasure,
         <div
           className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={measure.getDerivedName(MeasureDerivation.PREVIOUS)}
+          key={measure.getMeasureKey(MeasureDerivation.PREVIOUS)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Previous {measure.title}</div>
@@ -404,7 +404,7 @@ export class Table extends BaseVisualization<TableState> {
         </div>,
         <div
           className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isDeltaSorted })}
-          key={measure.getDerivedName(MeasureDerivation.DELTA)}
+          key={measure.getMeasureKey(MeasureDerivation.DELTA)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>

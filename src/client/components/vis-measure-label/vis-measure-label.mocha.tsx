@@ -27,7 +27,7 @@ import { VisMeasureLabel } from "./vis-measure-label";
 
 const measure = MeasureFixtures.wikiCount();
 
-const datum: Datum = { [measure.name]: 10000, [measure.getDerivedName(MeasureDerivation.PREVIOUS)]: 200 };
+const datum: Datum = { [measure.name]: 10000, [measure.getMeasureKey(MeasureDerivation.PREVIOUS)]: 200 };
 
 const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
   format={DEFAULT_FORMAT}

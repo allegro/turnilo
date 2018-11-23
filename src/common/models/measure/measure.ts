@@ -57,6 +57,21 @@ export interface MeasureJS {
 
 export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
 
+function readMeasureDerivation(str: string): MeasureDerivation {
+  if (str === MeasureDerivation.CURRENT) return MeasureDerivation.CURRENT;
+  if (str === MeasureDerivation.PREVIOUS) return MeasureDerivation.PREVIOUS;
+  if (str === MeasureDerivation.DELTA) return MeasureDerivation.DELTA;
+  return null;
+}
+
+export enum MeasurePercentOf { PARENT = "__of_parent", TOTAL = "__of_total" }
+
+function readMeasurePercentOf(str: string): MeasurePercentOf {
+  if (str === MeasurePercentOf.PARENT) return MeasurePercentOf.PARENT;
+  if (str === MeasurePercentOf.TOTAL) return MeasurePercentOf.TOTAL;
+  return null;
+}
+
 export interface DerivationFilter {
   derivation: MeasureDerivation;
   filter: Expression;
@@ -91,27 +106,40 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return measures.find(measure => measure.name.toLowerCase() === measureName);
   }
 
-  static derivedName(name: string, derivation: MeasureDerivation): string {
-    return `${derivation}${name}`;
+  static derivedName(name: string, derivation: MeasureDerivation, percentOf?: MeasurePercentOf): string {
+    const percent = percentOf || "";
+    return `${derivation}${name}${percent}`;
   }
 
-  static nominalName(name: string): { name: string, derivation: MeasureDerivation } {
-    if (name.startsWith(MeasureDerivation.DELTA)) {
+  static nominalName(name: string): { name: string, derivation: MeasureDerivation, percentOf?: MeasurePercentOf } {
+    const segments = name.split("__");
+    if (segments.length === 1) {
       return {
-        name: name.substr(MeasureDerivation.DELTA.length),
-        derivation: MeasureDerivation.DELTA
+        name,
+        derivation: MeasureDerivation.CURRENT
       };
     }
-    if (name.startsWith(MeasureDerivation.PREVIOUS)) {
+    if (segments.length === 3) {
+      const [derivationStr, name, percentOfStr] = segments;
+      const derivation = readMeasureDerivation(derivationStr);
+      const percentOf = readMeasurePercentOf(percentOfStr);
+      return { derivation, name, percentOf };
+    }
+    if (segments.length === 2) {
+      const percentOf = readMeasurePercentOf(segments[1]);
+      if (percentOf) {
+        return {
+          name: segments[0],
+          derivation: MeasureDerivation.CURRENT,
+          percentOf
+        };
+      }
       return {
-        name: name.substr(MeasureDerivation.PREVIOUS.length),
-        derivation: MeasureDerivation.PREVIOUS
+        name: segments[1],
+        derivation: readMeasureDerivation(segments[0])
       };
     }
-    return {
-      derivation: MeasureDerivation.CURRENT,
-      name
-    };
+    throw new Error(`Couldn't read measure name: ${name}`);
   }
 
   /**
@@ -253,8 +281,8 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return this === other || Measure.isMeasure(other) && super.equals(other);
   }
 
-  public getDerivedName(derivation: MeasureDerivation): string {
-    return Measure.derivedName(this.name, derivation);
+  public getMeasureKey(derivation: MeasureDerivation, percentOf?: MeasurePercentOf): string {
+    return Measure.derivedName(this.name, derivation, percentOf);
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
@@ -267,15 +295,16 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   public toApplyExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
-    switch (this.transformation) {
-      case "percent-of-parent":
-        const referencedLevelDelta = Math.min(nestingLevel, 1);
-        return this.percentOfParentExpression(referencedLevelDelta, derivationFilter);
-      case "percent-of-total":
-        return this.percentOfParentExpression(nestingLevel, derivationFilter);
-      default:
-        return this.withDerivationFilter(derivationFilter);
-    }
+    return this.withDerivationFilter(derivationFilter);
+  }
+
+  public toPercentOfTotalApplyExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
+    const referencedLevelDelta = Math.min(nestingLevel, 1);
+    return this.percentOfExpression(referencedLevelDelta, derivationFilter);
+  }
+
+  public toPercentOfParentApplyExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
+    return this.percentOfExpression(nestingLevel, derivationFilter);
   }
 
   private withDerivationFilter(derivationFilter?: DerivationFilter) {
@@ -285,18 +314,18 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     }
     const { derivation, filter } = derivationFilter;
     return new ApplyExpression({
-      name: this.getDerivedName(derivation),
+      name: this.getMeasureKey(derivation),
       expression: this.filterMainRefs(expression, filter)
     });
   }
 
-  private percentOfParentExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
+  private percentOfExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
     const formulaApplyExp = this.withDerivationFilter(derivationFilter);
     const formulaName = `__formula_${formulaApplyExp.name}`;
     const formula = formulaApplyExp.changeName(formulaName);
 
     if (nestingLevel > 0) {
-      const name = derivationFilter ? this.getDerivedName(derivationFilter.derivation) : this.name;
+      const name = derivationFilter ? this.getMeasureKey(derivationFilter.derivation) : this.name;
       return new ApplyExpression({
         name,
         operand: formula,
