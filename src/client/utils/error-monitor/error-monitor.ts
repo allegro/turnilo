@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as Qajax from "qajax";
+import axios from "axios";
 
 export function addErrorMonitor() {
   var originalOnError = window.onerror;
@@ -36,7 +36,7 @@ export function addErrorMonitor() {
       console.log(JSON.stringify(err));
     }
 
-    Qajax({
+    axios({
       method: "POST",
       url: "error",
       data: err

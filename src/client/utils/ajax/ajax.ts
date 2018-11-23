@@ -16,9 +16,7 @@
  */
 
 import { ChainableExpression, Dataset, Environment, Executor, Expression, SplitExpression } from "plywood";
-import * as Qajax from "qajax";
-
-Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
+import axios from "axios";
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
@@ -42,14 +40,6 @@ function reload() {
   window.location.reload(true);
 }
 
-function parseOrNull(json: any): any {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-}
-
 export interface AjaxOptions {
   method: "GET" | "POST";
   url: string;
@@ -70,34 +60,30 @@ export class Ajax {
       if (Ajax.settingsVersionGetter) data.settingsVersion = Ajax.settingsVersionGetter();
     }
 
-    return Qajax({
+    return axios({
       method: options.method,
       url: options.url,
+      // Qajax's filterSuccess also allows 304s, axios by default does not
+      validateStatus: (s) => s >= 200 && s < 300 || s === 304,
+      timeout: 60000,
       data
     })
-      .timeout(60000)
-      .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
       .then(res => {
-        if (res && res.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
-        return res;
+        if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
+        return res.data;
       })
-      .catch((xhr: XMLHttpRequest | Error): Dataset => {
-        if (!xhr) return null; // TS needs this
-        if (xhr instanceof Error) {
-          throw new Error("client timeout");
-        } else {
-          var jsonError = parseOrNull(xhr.responseText);
-          if (jsonError) {
-            if (jsonError.action === "reload") {
-              reload();
-            } else if (jsonError.action === "update" && Ajax.onUpdate) {
-              Ajax.onUpdate();
-            }
-            throw new Error(jsonError.message || jsonError.error);
-          } else {
-            throw new Error(xhr.responseText || "connection fail");
+      .catch(error => {
+        if (error.response && error.response.data) {
+          if (error.response.data.action === "reload") {
+            reload();
+          } else if (error.response.data.action === "update" && Ajax.onUpdate) {
+            Ajax.onUpdate();
           }
+          throw new Error("error with response: " + error.response.status + ", " + error.message);
+        } else if (error.request) {
+            throw new Error("no response received, " + error.message);
+        } else {
+            throw new Error(error.message);
         }
       }) as any;
   }
