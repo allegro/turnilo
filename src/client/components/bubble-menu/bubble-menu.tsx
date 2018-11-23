@@ -64,6 +64,8 @@ interface PositionCSSProperties {
   bottom?: number;
   height?: number;
   width?: number;
+  maxWidth?: number;
+  maxHeight?: number;
 }
 
 function defaultStage(): Stage {
@@ -171,11 +173,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   private calcMenuPosition(): PositionCSSProperties {
-    const { align, direction, stage } = this.props;
+    const { align, direction, stage, containerStage } = this.props;
     const { x: menuX, y: menuY } = this.state;
     const { height: menuHeight, width: menuWidth } = stage;
 
-    const container = this.props.containerStage || defaultStage();
+    const container = containerStage || defaultStage();
     const containerVerticalExtent = container.y + container.height - menuHeight;
     const containerHorizontalExtent = container.x + container.width - menuWidth;
 
@@ -186,7 +188,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         return {
           top: clampedTop,
           height: menuHeight,
-          left: menuX
+          left: menuX,
+          maxWidth: container.width
         };
       case "down": {
         const left = alignHorizontalOutside(align, menuX, menuWidth);
@@ -194,7 +197,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         return {
           left: clampedLeft,
           width: menuWidth,
-          top: menuY
+          top: menuY,
+          maxHeight: container.height
         };
       }
       case "up": {
@@ -203,7 +207,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         return {
           left: clampedLeft,
           width: menuWidth,
-          bottom: menuY
+          bottom: menuY,
+          maxHeight: container.height
         };
       }
 
@@ -258,8 +263,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     const hasShpitz = align === "center";
     const shpitzCoordinates = hasShpitz && this.calcShpitzPosition(menuCoordinates);
 
-    const { left, top, bottom, height, width } = menuCoordinates;
-    const menuSize = fixedSize ? { width: stage.width, height: stage.height } : { height, width };
+    const { maxHeight, maxWidth, left, top, bottom, height, width } = menuCoordinates;
+    const menuSize = fixedSize ? { width: stage.width, height: stage.height } : { maxHeight, maxWidth, height, width };
 
     const myClass = classNames("bubble-menu", direction, className, { mini: layout === "mini" });
 
