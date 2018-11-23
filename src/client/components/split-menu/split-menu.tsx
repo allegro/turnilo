@@ -113,9 +113,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   private constructSplitCombine(): Split {
+    const { split: { type } } = this.props;
     const { limit, sort, reference } = this.state;
     const bucket = this.constructGranularity();
-    return new Split({ reference, limit, sort, bucket });
+    return new Split({ type, reference, limit, sort, bucket });
   }
 
   validate() {
