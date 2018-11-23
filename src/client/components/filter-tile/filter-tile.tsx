@@ -283,12 +283,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { filter, dataCube } = essence;
 
     this.setState({ dragPosition: null });
-
     const dimension = DragManager.draggingDimension();
     if (!dimension) return;
 
     const dragPosition = this.calculateDragPosition(e);
-
     const existingClause = filter.clauseForReference(dimension.name);
     if (!existingClause) {
       let tryingToReplaceTime = false;
