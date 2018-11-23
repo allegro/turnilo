@@ -123,6 +123,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           max={maxDividerPosition}
           initialValue={dividerPosition} />}
         <MeasuresTile
+          menuStage={menuStage}
           style={measureListStyle}
           clicker={clicker}
           essence={essence}

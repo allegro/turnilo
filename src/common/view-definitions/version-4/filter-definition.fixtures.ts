@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { StringFilterAction } from "../../models/filter-clause/filter-clause";
 import {
   BooleanFilterClauseDefinition,
   FilterType,
   NumberFilterClauseDefinition,
-  StringFilterAction,
   StringFilterClauseDefinition,
   TimeFilterClauseDefinition
 } from "./filter-definition";

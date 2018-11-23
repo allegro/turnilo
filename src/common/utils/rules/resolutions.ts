@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
+import { List, OrderedSet } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Resolution } from "../../models/manifest/manifest";
+import { SeriesList } from "../../models/series-list/series-list";
+import { Series } from "../../models/series/series";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 
@@ -44,14 +46,25 @@ export class Resolutions {
       return [];
     }
 
-    const measureNames = measures.map(measure => measure.title).join(", ");
+    const measureTitles = measures.map(measure => measure.title);
     return [
-      { description: `Select default measures: ${measureNames}`, adjustment: { selectedMeasures: measures } }
+      {
+        description: `Select default measures: ${measureTitles.join(", ")}`,
+        adjustment: {
+          series: new SeriesList({ series: List(measures.map(measure => Series.fromMeasure(measure))) })
+        }
+      }
     ];
   }
 
   static firstMeasure = (dataCube: DataCube): Resolution[] => {
     const firstMeasure = dataCube.measures.first();
-    return [{ description: `Select measure: ${firstMeasure.title}`, adjustment: { selectedMeasures: [firstMeasure] } }];
+    return [
+      {
+        description: `Select measure: ${firstMeasure.title}`,
+        adjustment: {
+          series: new SeriesList({ series: List.of(Series.fromMeasure(firstMeasure)) })
+        }
+      }];
   }
 }

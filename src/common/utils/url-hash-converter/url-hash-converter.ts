@@ -39,8 +39,12 @@ function isLegacyWithVisualizationPrefix(hashParts: string[]) {
   return version2Visualizations.indexOf(hashParts[0]) !== -1 && hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
 }
 
-function isModernWithNoVisualizationPrefix(hashParts: string[]) {
+function isVersion3VisualizationPrefix(hashParts: string[]) {
   return hashParts[0] === "3";
+}
+
+function isVersion4VisualizationPrefix(hashParts: string[]) {
+  return hashParts[0] === "4";
 }
 
 interface HashSegments {
@@ -62,7 +66,13 @@ function getHashSegments(hash: string): HashSegments {
       encodedModel: hashParts.splice(2).join(SEGMENT_SEPARATOR),
       visualization: hashParts[0]
     };
-  } else if (isModernWithNoVisualizationPrefix(hashParts)) {
+  } else if (isVersion3VisualizationPrefix(hashParts)) {
+    return {
+      version: hashParts[0] as ViewDefinitionVersion,
+      encodedModel: hashParts.splice(1).join(SEGMENT_SEPARATOR),
+      visualization: undefined
+    };
+  } else if (isVersion4VisualizationPrefix(hashParts)) {
     return {
       version: hashParts[0] as ViewDefinitionVersion,
       encodedModel: hashParts.splice(1).join(SEGMENT_SEPARATOR),

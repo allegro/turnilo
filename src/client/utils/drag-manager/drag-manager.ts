@@ -16,40 +16,71 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { Split } from "../../../common/models/split/split";
+import { Measure } from "../../../common/models/measure/measure";
+
+export enum MeasureOrigin { SERIES_TILE = "series-tile", PANEL = "panel" }
+
+export enum DimensionOrigin { PANEL = "panel", FILTER_TILE = "filter-tile", SPLIT_TILE = "split-tile", PINBOARD = "pinboard"}
+
+enum DraggedElementType { DIMENSION, MEASURE }
+
+interface DraggedElementBase<T> {
+  type: DraggedElementType;
+  element: T;
+}
+
+interface DraggedDimension extends DraggedElementBase<Dimension> {
+  type: DraggedElementType.DIMENSION;
+  origin: DimensionOrigin;
+}
+
+interface DraggedMeasure extends DraggedElementBase<Measure> {
+  type: DraggedElementType.MEASURE;
+  origin: MeasureOrigin;
+}
+
+type DraggedElement = DraggedDimension | DraggedMeasure;
+
+function isDimension(el: DraggedElement): el is DraggedDimension {
+  return el.type === DraggedElementType.DIMENSION;
+}
+
+function isMeasure(el: DraggedElement): el is DraggedMeasure {
+  return el.type === DraggedElementType.MEASURE;
+}
 
 export class DragManager {
-  static dragOrigin: string = null;
-  static dragDimension: Dimension = null;
-  static dragSplit: Split = null;
+  static dragging: DraggedElement = null;
 
   static init() {
     document.addEventListener("dragend", () => {
-      DragManager.dragOrigin = null;
-      DragManager.dragDimension = null;
-      DragManager.dragSplit = null;
+      DragManager.dragging = null;
     }, false);
   }
 
-  static getDragOrigin(): string {
-    return DragManager.dragOrigin;
+  static isDraggingDimension(): boolean {
+    return isDimension(DragManager.dragging);
   }
 
-  static setDragDimension(dimension: Dimension, origin: string): void {
-    DragManager.dragDimension = dimension;
-    DragManager.dragOrigin = origin;
+  static isDraggingMeasure(): boolean {
+    return isMeasure(DragManager.dragging);
   }
 
-  static getDragDimension(): Dimension {
-    return DragManager.dragDimension;
+  static setDragDimension(element: Dimension, origin: DimensionOrigin) {
+    this.dragging = { type: DraggedElementType.DIMENSION, origin, element };
   }
 
-  static setDragSplit(split: Split, origin: string): void {
-    DragManager.dragSplit = split;
-    DragManager.dragOrigin = origin;
+  static setDragMeasure(element: Measure, origin: MeasureOrigin) {
+    this.dragging = { type: DraggedElementType.MEASURE, origin, element };
   }
 
-  static getDragSplit(): Split {
-    return DragManager.dragSplit;
+  static draggingDimension(): Dimension {
+    const el = DragManager.dragging;
+    return isDimension(el) ? el.element : null;
+  }
+
+  static draggingMeasure(): Measure {
+    const el = DragManager.dragging;
+    return isMeasure(el) ? el.element : null;
   }
 }

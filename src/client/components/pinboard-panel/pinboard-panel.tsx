@@ -23,7 +23,7 @@ import { Measure } from "../../../common/models/measure/measure";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Sort } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
+import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
@@ -51,36 +51,32 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     };
   }
 
-  canDrop(e: React.DragEvent<HTMLElement>): boolean {
-    const dimension = DragManager.getDragDimension();
-    if (dimension) {
-      const pinnedDimensions = this.props.essence.pinnedDimensions;
-      return !pinnedDimensions.has(dimension.name);
-    }
-    return false;
+  canDrop(): boolean {
+    const dimension = DragManager.draggingDimension();
+    return dimension && dimension.kind === "string" && !this.props.essence.pinnedDimensions.has(dimension.name);
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop(e)) return;
+    if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({ dragOver: true });
   }
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop(e)) return;
+    if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 
-  dragLeave = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop(e)) return;
+  dragLeave = () => {
+    if (!this.canDrop()) return;
     this.setState({ dragOver: false });
   }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop(e)) return;
+    if (!this.canDrop()) return;
     e.preventDefault();
-    const dimension = DragManager.getDragDimension();
+    const dimension = DragManager.draggingDimension();
     if (dimension) {
       this.props.clicker.pin(dimension);
     }

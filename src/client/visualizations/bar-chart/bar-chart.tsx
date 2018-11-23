@@ -31,7 +31,7 @@ import { Stage } from "../../../common/models/stage/stage";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
-import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
+import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
@@ -191,7 +191,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   calculateMousePosition(x: number, y: number): BubbleInfo {
     const { essence } = this.props;
 
-    const measures = essence.getEffectiveMeasures().toArray();
+    const measures = essence.getEffectiveSelectedMeasures().toArray();
     const chartStage = this.getSingleChartStage();
     const chartHeight = this.getOuterChartHeight(chartStage);
 
@@ -277,7 +277,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { path, chartIndex } = selectionInfo;
 
     const { splits } = essence;
-    const measures = essence.getEffectiveMeasures().toArray();
+    const measures = essence.getEffectiveSelectedMeasures().toArray();
 
     const rowHighlight = getFilterFromDatum(splits, path);
 
@@ -326,7 +326,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xTicks = xScale.domain();
     const width = xTicks.length > 0 ? roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth : 0;
 
-    const measures = essence.getEffectiveMeasures();
+    const measures = essence.getEffectiveSelectedMeasures();
     const availableHeight = stage.height - X_AXIS_HEIGHT;
     const minHeight = isThumbnail ? 1 : MIN_CHART_HEIGHT;
     const height = Math.max(minHeight, Math.floor(availableHeight / measures.size));
@@ -347,7 +347,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence, stage } = this.props;
 
     const xHeight = Math.max(
-      stage.height - (CHART_TOP_PADDING + CHART_BOTTOM_PADDING + chartStage.height) * essence.getEffectiveMeasures().size,
+      stage.height - (CHART_TOP_PADDING + CHART_BOTTOM_PADDING + chartStage.height) * essence.getEffectiveSelectedMeasures().size,
       X_AXIS_HEIGHT
     );
 
@@ -359,7 +359,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   getScrollerLayout(chartStage: Stage, xAxisStage: Stage, yAxisStage: Stage): ScrollerLayout {
     const { essence } = this.props;
-    const measures = essence.getEffectiveMeasures().toArray();
+    const measures = essence.getEffectiveSelectedMeasures().toArray();
 
     const oneChartHeight = this.getOuterChartHeight(chartStage);
 
@@ -385,7 +385,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getBubbleLeftOffset(x: number): number {
-    const { stage } = this.props;
     const { scrollLeft, scrollerXPosition } = this.state;
 
     return scrollerXPosition + x - scrollLeft;
@@ -757,7 +756,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const dimension = essence.dataCube.getDimension(split.reference);
     const dimensionKind = dimension.kind;
-    const measures = essence.getEffectiveMeasures().toArray();
+    const measures = essence.getEffectiveSelectedMeasures().toArray();
 
     this.coordinatesCache = [];
 
@@ -870,7 +869,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { datasetLoad } = this.state;
     const { splits, dataCube } = essence;
 
-    const measure = essence.getEffectiveMeasures().toArray()[chartIndex];
+    const measure = essence.getEffectiveSelectedMeasures().toArray()[chartIndex];
     const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
 
     const firstSplit = splits.splits.first();
@@ -973,7 +972,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       let xScale = this.getPrimaryXScale();
       let yAxes: JSX.Element[] = [];
       let highlights: JSX.Element[] = [];
-      let measures = essence.getEffectiveMeasures().toArray();
+      let measures = essence.getEffectiveSelectedMeasures().toArray();
 
       let getX = (d: Datum) => d[dimension.name] as string;
 

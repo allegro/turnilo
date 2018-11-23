@@ -22,7 +22,6 @@ import * as moment from "moment-timezone";
 import { Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
@@ -34,7 +33,7 @@ import { DatasetLoad, VisualizationProps } from "../../../common/models/visualiz
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
-import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
+import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { Delta } from "../../components/delta/delta";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
@@ -78,7 +77,7 @@ function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   return String(value);
 }
 
-function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: DataCube): Filter {
+function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const splitNesting = flatDatum["__nest"];
   const { splits: splitCombines } = splits;
 
@@ -149,7 +148,7 @@ export class Table extends BaseVisualization<TableState> {
 
     if (y <= HEADER_HEIGHT) {
       if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
-      const effectiveMeasures = essence.getEffectiveMeasures();
+      const effectiveMeasures = essence.getEffectiveSelectedMeasures();
 
       x = x - this.getSegmentWidth();
       const measureWidth = this.getIdealColumnWidth(this.props.essence);
@@ -216,7 +215,7 @@ export class Table extends BaseVisualization<TableState> {
     } else if (element === HoverElement.ROW) {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
-      const rowHighlight = getFilterFromDatum(splits, row, dataCube);
+      const rowHighlight = getFilterFromDatum(splits, row);
 
       if (!rowHighlight) return;
 
@@ -282,7 +281,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-    const measuresArray = essence.getEffectiveMeasures().toArray();
+    const measuresArray = essence.getEffectiveSelectedMeasures().toArray();
     const splitLength = essence.splits.length();
 
     return measuresArray.map(measure => {
@@ -300,7 +299,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   getFormattersFromMeasures(essence: Essence, flatData: PseudoDatum[]): Formatter[] {
-    const measuresArray = essence.getEffectiveMeasures().toArray();
+    const measuresArray = essence.getEffectiveSelectedMeasures().toArray();
 
     return measuresArray.map(measure => {
       const measureName = measure.name;
@@ -311,7 +310,7 @@ export class Table extends BaseVisualization<TableState> {
 
   getIdealColumnWidth(essence: Essence): number {
     const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
-    const measuresCount = essence.getEffectiveMeasures().size;
+    const measuresCount = essence.getEffectiveSelectedMeasures().size;
     const columnsCount = essence.hasComparison() ? measuresCount * 3 : measuresCount;
 
     return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
@@ -324,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
-    const measuresArray = essence.getEffectiveMeasures().toArray();
+    const measuresArray = essence.getEffectiveSelectedMeasures().toArray();
     const idealWidth = this.getIdealColumnWidth(essence);
 
     const splitLength = essence.splits.length();
@@ -385,7 +384,7 @@ export class Table extends BaseVisualization<TableState> {
       className: "sort-arrow " + commonSort.direction
     }) : null;
 
-    return flatMap(essence.getEffectiveMeasures().toArray(), measure => {
+    return flatMap(essence.getEffectiveSelectedMeasures().toArray(), measure => {
       const isCurrentSorted = commonSortName === measure.name;
 
       const currentMeasure = <div
@@ -502,7 +501,7 @@ export class Table extends BaseVisualization<TableState> {
         let selected = false;
         let selectedClass = "";
         if (highlightDelta) {
-          selected = highlightDelta.equals(getFilterFromDatum(splits, d, dataCube));
+          selected = highlightDelta.equals(getFilterFromDatum(splits, d));
           selectedClass = selected ? "selected" : "not-selected";
         }
 
@@ -560,7 +559,7 @@ export class Table extends BaseVisualization<TableState> {
       {cornerSortArrow}
     </div>;
 
-    const measuresCount = essence.getEffectiveMeasures().size;
+    const measuresCount = essence.getEffectiveSelectedMeasures().size;
     const columnsCount = essence.hasComparison() ? measuresCount * 3 : measuresCount;
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions

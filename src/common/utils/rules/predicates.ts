@@ -69,8 +69,8 @@ export class Predicates {
   }
 
   public static noSelectedMeasures(): VisualizationIndependentPredicate {
-    return ({ multiMeasureMode, selectedMeasures }) => {
-      return multiMeasureMode && selectedMeasures.isEmpty();
+    return ({ series }) => {
+      return series.count() === 0;
     };
   }
 }

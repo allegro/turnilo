@@ -15,14 +15,15 @@
  */
 
 import * as React from "react";
-import { MouseEvent } from "react";
+import { DragEvent, MouseEvent } from "react";
 import { classNames } from "../../utils/dom/dom";
-import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { InfoBubble } from "../info-bubble/info-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./measure-item.scss";
-import { MeasureClickHandler } from "./measures-tile";
+import { MeasureClickHandler, MeasureDragStartHandler } from "./measures-tile";
+
+export const MEASURE_CLASS_NAME = "measure-item";
 
 export interface MeasureItemProps {
   name: string;
@@ -31,26 +32,32 @@ export interface MeasureItemProps {
   description?: string;
   selected: boolean;
   measureClick: MeasureClickHandler;
-  multiMeasureMode: boolean;
+  measureDragStart: MeasureDragStartHandler;
   searchText: string;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, approximate, selected }) => {
+export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureDragStart, measureClick, description, searchText, approximate, selected }) => {
 
   const infoBubbleClassName = "measure-info-icon";
-  const checkboxType = multiMeasureMode ? "check" : "radio";
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.target as Element;
     if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     measureClick(name, e);
   };
 
-  return <div className={classNames("measure-item row", { selected })} onClick={handleClick}>
-    <Checkbox className="measure-item-checkbox" type={checkboxType} selected={selected}/>
+  const handleDragStart = (e: DragEvent<HTMLElement>) => {
+    measureDragStart(name, e);
+  };
+
+  return <div
+    className={classNames(MEASURE_CLASS_NAME, "row", { selected })}
+    onClick={handleClick}
+    draggable={true}
+    onDragStart={handleDragStart}>
     <div className="measure-item-name">
-      <HighlightString className="label measure-item-label" text={title} highlight={searchText}/>
-      {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")}/>}
+      <HighlightString className="label measure-item-label" text={title} highlight={searchText} />
+      {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")} />}
     </div>
-    {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
+    {description && <InfoBubble className={infoBubbleClassName} description={description} />}
   </div>;
 };

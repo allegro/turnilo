@@ -25,22 +25,26 @@ import { ViewDefinitionHashEncoder2 } from "./version-2/view-definition-hash-enc
 import { ViewDefinition3 } from "./version-3/view-definition-3";
 import { ViewDefinitionConverter3 } from "./version-3/view-definition-converter-3";
 import { ViewDefinitionHashEncoder3 } from "./version-3/view-definition-hash-encoder3";
+import { ViewDefinition4 } from "./version-4/view-definition-4";
+import { ViewDefinitionConverter4 } from "./version-4/view-definition-converter-4";
 import { ViewDefinitionConverter } from "./view-definition-converter";
 import { ViewDefinitionHashEncoder } from "./view-definition-hash-encoder";
 
-export type ViewDefinition = ViewDefinition2 | ViewDefinition3;
-export type ViewDefinitionVersion = "2" | "3";
+export type ViewDefinition = ViewDefinition2 | ViewDefinition3 | ViewDefinition4;
+export type ViewDefinitionVersion = "2" | "3" | "4";
 
-export const DEFAULT_VIEW_DEFINITION_VERSION = "3";
+export const DEFAULT_VIEW_DEFINITION_VERSION = "4";
 export const LEGACY_VIEW_DEFINITION_VERSION = "2";
 
 export const definitionConverters: { [version in ViewDefinitionVersion]: ViewDefinitionConverter<ViewDefinition, Essence> } = {
   2: new ViewDefinitionConverter2(),
-  3: new ViewDefinitionConverter3()
+  3: new ViewDefinitionConverter3(),
+  4: new ViewDefinitionConverter4()
 };
 export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDefinitionHashEncoder<ViewDefinition> } = {
   2: new ViewDefinitionHashEncoder2(),
-  3: new ViewDefinitionHashEncoder3()
+  3: new ViewDefinitionHashEncoder3(),
+  4: new ViewDefinitionHashEncoder3()
 };
 
 export const defaultDefinitionConverter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];

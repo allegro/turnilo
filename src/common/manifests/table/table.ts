@@ -17,11 +17,10 @@
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { Sort } from "../../models/sort/sort";
-import { Splits } from "../../models/splits/splits";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
-import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { SortDirection } from "../../view-definitions/version-4/split-definition";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())

@@ -18,12 +18,12 @@ import * as React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { MeasureItem } from "./measure-item";
 import { MeasureForView, MeasureForViewType, MeasureGroupForView, MeasureOrGroupForView } from "./measures-converter";
-import { MeasureClickHandler } from "./measures-tile";
+import { MeasureClickHandler, MeasureDragStartHandler } from "./measures-tile";
 
 export class MeasuresRenderer {
   constructor(
     private readonly measureClick: MeasureClickHandler,
-    private readonly multiMeasureMode: boolean,
+    private readonly measureDragStart: MeasureDragStartHandler,
     private readonly searchText: string
   ) {
   }
@@ -64,7 +64,7 @@ export class MeasuresRenderer {
   }
 
   private renderMeasure(measureView: MeasureForView): JSX.Element {
-    const { measureClick, multiMeasureMode, searchText } = this;
+    const { measureClick, measureDragStart, searchText } = this;
     const { name, title, approximate, description, hasSelectedMeasures } = measureView;
 
     return <MeasureItem
@@ -75,7 +75,7 @@ export class MeasuresRenderer {
       approximate={approximate}
       selected={hasSelectedMeasures}
       measureClick={measureClick}
-      multiMeasureMode={multiMeasureMode}
+      measureDragStart={measureDragStart}
       searchText={searchText}
     />;
   }

@@ -27,6 +27,8 @@ import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
+import { SeriesList } from "../series-list/series-list";
+import { Series } from "../series/series";
 import { Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
@@ -35,19 +37,6 @@ import { Timekeeper } from "../timekeeper/timekeeper";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
   return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName)));
-}
-
-function constrainMeasures(measures: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
-  return <OrderedSet<string>> measures.filter(measureName => Boolean(dataCube.getMeasure(measureName)));
-}
-
-function addToSetInOrder<T = string>(order: List<T>, setToAdd: OrderedSet<T>, thing: T): OrderedSet<T> {
-  return OrderedSet(order.toArray().filter(name => setToAdd.has(name) || name === thing));
-}
-
-function getEffectiveMultiMeasureMode(multiMeasureMode: boolean, visualization?: Manifest) {
-  const visualizationNeedsMulti = visualization != null && visualization.measureModeNeed === "multi";
-  return multiMeasureMode || visualizationNeedsMulti;
 }
 
 export interface VisualizationAndResolve {
@@ -66,18 +55,7 @@ export enum VisStrategy {
   KeepAlways
 }
 
-type MeasureId = string;
 type DimensionId = string;
-
-interface MeasuresDefinition {
-  isMulti: boolean;
-  single: MeasureId;
-  multi: OrderedSet<MeasureId>;
-}
-
-export type Measures = ImmutableRecord<MeasuresDefinition> & Readonly<MeasuresDefinition>;
-
-export const createMeasures = ImmutableRecord<MeasuresDefinition>({ isMulti: false, multi: OrderedSet.of(), single: null });
 
 export interface EssenceValue {
   visualizations: Manifest[];
@@ -87,7 +65,7 @@ export interface EssenceValue {
   filter: Filter;
   timeShift: TimeShift;
   splits: Splits;
-  measures: Measures;
+  series: SeriesList;
   pinnedDimensions: OrderedSet<DimensionId>;
   colors: Colors;
   pinnedSort: string;
@@ -103,7 +81,7 @@ const defaultEssence: EssenceValue = {
   timezone: Timezone.UTC,
   filter: null,
   splits: null,
-  measures: null,
+  series: null,
   pinnedDimensions: OrderedSet([]),
   pinnedSort: null,
   colors: null,
@@ -125,9 +103,9 @@ export interface EffectiveFilterOptions {
 }
 
 type VisualizationResolverResult = Pick<EssenceValue, "splits" | "visualization" | "colors" | "visResolve">;
-type VisualizationResolverParameters = Pick<EssenceValue, "visualization" | "visualizations" | "dataCube" | "splits" | "colors" | "measures">;
+type VisualizationResolverParameters = Pick<EssenceValue, "visualization" | "visualizations" | "dataCube" | "splits" | "colors" | "series">;
 
-function resolveVisualization({ visualization, visualizations, dataCube, splits, colors, measures }: VisualizationResolverParameters): VisualizationResolverResult {
+function resolveVisualization({ visualization, visualizations, dataCube, splits, colors, series }: VisualizationResolverParameters): VisualizationResolverResult {
   let visResolve: Resolve;
   if (visualizations) {
     // Place vis here because it needs to know about splits and colors (and maybe later other things)
@@ -150,8 +128,7 @@ function resolveVisualization({ visualization, visualizations, dataCube, splits,
     }
 
     if (visResolve.isReady()) {
-      const effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(measures.isMulti, visualization);
-      visResolve = visualizationIndependentEvaluator({ dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures: measures.multi });
+      visResolve = visualizationIndependentEvaluator({ dataCube, series });
     }
   }
   return { visualization, splits, colors, visResolve };
@@ -187,7 +164,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       filter: dataCube.getDefaultFilter(),
       timeShift: TimeShift.empty(),
       splits: dataCube.getDefaultSplits(),
-      measures: createMeasures({ isMulti: false, single: dataCube.getDefaultSortMeasure(), multi: dataCube.getDefaultSelectedMeasures() }),
+      series: SeriesList.fromMeasureNames(dataCube.getDefaultSelectedMeasures().toArray()),
       pinnedDimensions: dataCube.getDefaultPinnedDimensions(),
       colors: null,
       pinnedSort: dataCube.getDefaultSortMeasure(),
@@ -207,7 +184,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       dataCube,
       timezone,
       timeShift,
-      measures,
+      series,
       pinnedDimensions,
       pinnedSort,
       compare,
@@ -218,7 +195,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     const { visResolve, visualization, colors, splits } = resolveVisualization(parameters);
 
-    const newHighlight = highlight && highlight.validForMeasures(measures) ? highlight : null;
+    const newHighlight = highlight && highlight.validForSeries(series) ? highlight : null;
 
     super({
       ...parameters,
@@ -229,7 +206,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       timeShift,
       splits: splits && splits.constrainToDimensionsAndMeasures(dataCube.dimensions, dataCube.measures),
       filter: filter && filter.constrainToDimensions(dataCube.dimensions),
-      measures: measures.update("multi", multi => constrainMeasures(multi, dataCube)),
+      series: series && series.constrainToMeasures(dataCube.measures),
       pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
       pinnedSort: dataCube.getMeasure(pinnedSort) ? pinnedSort : dataCube.getDefaultSortMeasure(),
       colors,
@@ -250,7 +227,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       timezone: this.timezone.toJS(),
       filter: this.filter && this.filter.toJS(),
       splits: this.splits && this.splits.toJS(),
-      measures: this.measures.toJS(),
+      series: this.series.toJS(),
       timeShift: this.timeShift.toJS(),
       colors: this.colors && this.colors.toJS(),
       pinnedSort: this.pinnedSort,
@@ -352,33 +329,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.visualization.measureModeNeed !== "any";
   }
 
-  public getEffectiveMultiMeasureMode(): boolean {
-    const { measureModeNeed } = this.visualization;
-    if (measureModeNeed !== "any") {
-      return measureModeNeed === "multi";
-    }
-    return this.measures.isMulti;
-  }
-
-  public getEffectiveMeasures(): List<Measure> {
-    if (this.getEffectiveMultiMeasureMode()) {
-      return this.getMeasures();
-    } else {
-      return List([this.dataCube.getMeasure(this.measures.single)]);
-    }
-  }
-
-  public getMeasures(): List<Measure> {
-    const { dataCube, measures: { multi } } = this;
-    return multi.map(measureName => dataCube.getMeasure(measureName)).toList();
-  }
-
-  public getEffectiveSelectedMeasure(): OrderedSet<string> {
-    if (this.getEffectiveMultiMeasureMode()) {
-      return this.measures.multi;
-    } else {
-      return OrderedSet([this.measures.single]);
-    }
+  public getEffectiveSelectedMeasures(): List<Measure> {
+    return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
   }
 
   public differentDataCube(other: Essence): boolean {
@@ -400,7 +352,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public newEffectiveMeasures(other: Essence): boolean {
-    return !this.getEffectiveSelectedMeasure().isSubset(other.getEffectiveSelectedMeasure());
+    return !this.getEffectiveSelectedMeasures().equals(other.getEffectiveSelectedMeasures());
   }
 
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, highlightId: string = null, unfilterDimension: Dimension = null): boolean {
@@ -453,10 +405,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       */
       .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))
       .update("splits", splits => splits.constrainToDimensionsAndMeasures(newDataCube.dimensions, newDataCube.measures))
-      .updateIn(["measures", "multi"], multi => {
-        const constrained = constrainMeasures(multi, newDataCube);
-        return constrained.count() > 0 ? constrained : newDataCube.getDefaultSelectedMeasures();
-      })
+      .update("series", seriesList => seriesList.constrainToMeasures(newDataCube.measures))
       .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
       .update("colors", colors => colors && !newDataCube.getDimension(colors.dimension) ? null : colors)
       .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort)
@@ -538,6 +487,18 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.changeSplits(this.splits.removeSplit(split), strategy);
   }
 
+  addSeries(series: Series): Essence {
+    return this.changeSeriesList(this.series.addSeries(series));
+  }
+
+  removeSeries(series: Series): Essence {
+    return this.changeSeriesList(this.series.removeSeries(series));
+  }
+
+  changeSeriesList(series: SeriesList): Essence {
+    return this.set("series", series).resolveVisualizationAndUpdate();
+  }
+
   public updateSplitsWithFilter(): Essence {
     const { filter, dataCube: { dimensions }, splits } = this;
     const newSplits = splits.updateWithFilter(filter, dimensions);
@@ -554,8 +515,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public resolveVisualizationAndUpdate() {
-    const { visualization, colors, splits, dataCube, visualizations, measures } = this;
-    const result = resolveVisualization({ colors, splits, dataCube, visualizations, measures, visualization });
+    const { visualization, colors, splits, dataCube, visualizations, series } = this;
+    const result = resolveVisualization({ colors, splits, dataCube, visualizations, series, visualization });
     return this
       .set("visResolve", result.visResolve)
       .set("colors", result.colors)
@@ -579,55 +540,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.set("pinnedSort", name);
   }
 
-  private setMultiMeasureMode(): Essence {
-    const { measures: { multi, single } } = this;
-    const multiModeEssence = this.setIn(["measures", "isMulti"], true);
-    // Ensure that the singleMeasure is in the selectedMeasures
-    if (multi.count() > 0 && !multi.has(single)) {
-      return multiModeEssence.setIn(["measures", "single"], multi.first());
-    }
-    return multiModeEssence;
-  }
-
-  private setSingleMeasureMode(): Essence {
-    const { measures: { multi, single }, dataCube } = this;
-    return this
-      .setIn(["measures", "isMulti"], false)
-      .setIn(["measures", "multi"], addToSetInOrder(dataCube.measures.getMeasureNames(), multi, single));
-  }
-
-  public toggleMeasureMode(): Essence {
-    const essenceWithMode = this.measures.isMulti ? this.setSingleMeasureMode() : this.setMultiMeasureMode();
-    return essenceWithMode.resolveVisualizationAndUpdate();
-  }
-
-  private selectMeasure({ name }: Measure): Essence {
-    if (name === this.measures.single) return this;
-    return this
-      .update("splits", splits => splits.changeSortIfOnMeasure(this.measures.single, name))
-      .set("pinnedSort", name)
-      .setIn(["measures", "single"], name);
-  }
-
-  private toggleMeasure({ name }: Measure): Essence {
-    const { dataCube } = this;
-    return this.update("measures", measures =>
-      measures
-        .update("multi", multi => {
-          if (multi.has(name)) {
-            return multi.delete(name);
-          } else {
-            return addToSetInOrder(dataCube.measures.getMeasureNames(), multi, name);
-          }
-        }));
-  }
-
-  public toggleEffectiveMeasure(measure: Measure): Essence {
-    const isMulti = this.getEffectiveMultiMeasureMode();
-    const toggledEssence = isMulti ? this.toggleMeasure(measure) : this.selectMeasure(measure);
-    return toggledEssence.resolveVisualizationAndUpdate();
-  }
-
   public acceptHighlight(): Essence {
     const { highlight } = this;
     if (!highlight) return this;
@@ -635,7 +547,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public changeHighlight(newHighlight: Highlight): Essence {
-    if (!newHighlight.validForMeasures(this.measures)) return this;
+    if (!newHighlight.validForSeries(this.series)) return this;
     const { highlight, filter } = this;
 
     // If there is already a highlight from someone else accept it
