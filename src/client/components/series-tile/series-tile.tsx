@@ -306,7 +306,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   renderAddTileButton() {
-    const { essence: { dataCube, series } } = this.props;
+    const { menuStage, essence: { dataCube, series } } = this.props;
     const tiles = dataCube.measures
       .filterMeasures(measure => !series.hasMeasure(measure))
       .map(measure => {
@@ -317,7 +317,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
         };
       });
 
-    return <AddTile<Measure> onSelect={this.appendSeries} tiles={tiles} />;
+    return <AddTile<Measure> containerStage={menuStage} onSelect={this.appendSeries} tiles={tiles} />;
   }
 
   renderMenu() {
