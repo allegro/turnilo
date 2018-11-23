@@ -40,7 +40,6 @@ export interface DimensionListTileProps {
   essence: Essence;
   menuStage: Stage;
   triggerFilterMenu: (dimension: Dimension) => void;
-  triggerSplitMenu: (dimension: Dimension) => void;
   style?: CSSProperties;
 }
 
@@ -142,7 +141,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
+    var { essence, clicker, menuStage, triggerFilterMenu } = this.props;
     var { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
 
@@ -154,7 +153,6 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       openOn={menuOpenOn}
       dimension={menuDimension}
       triggerFilterMenu={triggerFilterMenu}
-      triggerSplitMenu={triggerSplitMenu}
       onClose={this.closeMenu}
     />;
   }

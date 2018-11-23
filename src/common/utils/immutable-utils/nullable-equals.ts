@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-require('ts-node/register');
-require('ignore-styles');
+interface Equatable {
+  equals(other: any): boolean;
+}
 
-const jsdom = require("jsdom").jsdom;
-
-var document = (new jsdom('<!doctype html><html><body></body></html>'));
-global.document = document;
-global.window = document.defaultView;
-// setup for type-detect, should be solved in https://github.com/chaijs/type-detect/pull/129
-global.HTMLElement = global.window.HTMLElement;
-// setup for React
-global.navigator = {userAgent: "testing"};
-
-
-var enzyme = require('enzyme');
-var Adapter = require('enzyme-adapter-react-16');
-
-enzyme.configure({ adapter: new Adapter() });
-
+export default function nullableEquals(a: Equatable, b: Equatable): boolean {
+  if (a === null) {
+    return a === b;
+  }
+  // Immutable equals short circuits to null when other is null
+  return !!a.equals(b);
+}

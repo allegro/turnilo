@@ -17,7 +17,7 @@
 
 import { Duration } from "chronoshift";
 import { Set } from "immutable";
-import { $, Dataset, Datum, Expression, NumberRange, r, SortExpression, TimeRange } from "plywood";
+import { $, Dataset, Datum, Expression, NumberRange, PlywoodValue, r, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
@@ -34,10 +34,12 @@ import {
   granularityToString
 } from "../../../common/models/granularity/granularity";
 import { Measure } from "../../../common/models/measure/measure";
+import { DEFAULT_FORMAT } from "../../../common/models/series/series";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { formatNumberRange, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
+import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { formatGranularity, formatTimeBasedOnGranularity } from "../../../common/utils/time/time";
 import { getLocale, MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
@@ -475,19 +477,29 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
   }
 
-  private prepareRows(rowData: Datum[], continuous: boolean): JSX.Element[] {
-    const { essence, dimension, sortOn, colors } = this.props;
-    const { searchText, selectedGranularity, filterMode } = this.state;
+  private getFormatter(): Unary<Datum, string> {
+    const { essence: { series: seriesList }, sortOn } = this.props;
 
     const measure = sortOn.reference;
-    const sortOnMeasure = measure && measure instanceof Measure;
-    const measureName = sortOnMeasure ? measure.name : null;
-    const formatter = sortOnMeasure ? formatterFromData(rowData.map(d => d[measureName] as number), (measure as Measure).getFormat()) : null;
-    const colorValues = this.prepareColorValues(colors, dimension, rowData);
-    const filterClause = essence.filter.getClauseForDimension(dimension);
+    if (!(measure instanceof Measure)) return null;
+    const measureName = measure.name;
+    const series = seriesList.getSeries(measureName);
+    const format = series ? series.format : DEFAULT_FORMAT;
+    const formatter = seriesFormatter(format, measure);
+    return (datum: Datum) => formatter(datum[measureName] as number);
+  }
+
+  private prepareRows(rowData: Datum[], continuous: boolean): JSX.Element[] {
+    const { essence: { filter }, dimension, colors } = this.props;
+    const { searchText, filterMode } = this.state;
+
+    const filterClause = filter.getClauseForDimension(dimension);
     if (filterClause && !(filterClause instanceof StringFilterClause)) {
       throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
     }
+    const colorValues = this.prepareColorValues(colors, dimension, rowData);
+    const formatter = this.getFormatter();
+
     const isExcluded = filterMode === FilterMode.EXCLUDE;
 
     return rowData.map((datum, i) => {
@@ -511,21 +523,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         />;
       }
 
-      let segmentValueStr = String(segmentValue);
-      if (segmentValue instanceof TimeRange) {
-        segmentValueStr = formatTimeBasedOnGranularity(
-          segmentValue,
-          (selectedGranularity as Duration),
-          essence.timezone,
-          getLocale());
-      } else if (segmentValue instanceof NumberRange) {
-        segmentValueStr = formatNumberRange(segmentValue);
-      }
-
-      let measureValueElement: JSX.Element = null;
-      if (measure) {
-        measureValueElement = <div className="measure-value">{formatter(datum[measureName] as number)}</div>;
-      }
+      const segmentValueStr = this.getSegmentValueString(segmentValue as PlywoodValue);
 
       return <div
         className={className}
@@ -536,9 +534,27 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           {checkbox}
           <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
         </div>
-        {measureValueElement}
+        {formatter && <div className="measure-value">{formatter(datum)}</div>}
       </div>;
     });
+  }
+
+  private getSegmentValueString(segmentValue: PlywoodValue): string {
+    const { essence: { timezone } } = this.props;
+    const { selectedGranularity } = this.state;
+    const segmentValueStr = String(segmentValue);
+
+    if (segmentValue instanceof TimeRange) {
+      return formatTimeBasedOnGranularity(
+        segmentValue,
+        (selectedGranularity as Duration),
+        timezone,
+        getLocale());
+    }
+    if (segmentValue instanceof NumberRange) {
+      return formatNumberRange(segmentValue);
+    }
+    return segmentValueStr;
   }
 
   private prepareFoldControl(isFoldable: boolean, unfolded: boolean): JSX.Element {

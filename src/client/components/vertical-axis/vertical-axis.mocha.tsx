@@ -26,6 +26,7 @@ describe.skip("VerticalAxis", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <VerticalAxis
+        formatter={null}
         scale={null}
         stage={null}
         ticks={null}

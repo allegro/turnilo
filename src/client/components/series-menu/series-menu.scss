@@ -1,4 +1,5 @@
 /*
+ * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +15,23 @@
  * limitations under the License.
  */
 
-const KiB = 1024;
-const MiB = Math.pow(1024, 2);
-const GiB = Math.pow(1024, 3);
-const TiB = Math.pow(1024, 4);
-const PiB = Math.pow(1024, 5);
-const EiB = Math.pow(1024, 6);
-const ZiB = Math.pow(1024, 7);
-const YiB = Math.pow(1024, 8);
+@import '../../imports';
 
-export const BYTE_PREFIXES = {
-  KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB
-};
+$bottom-margin: 12px;
+$title-margin: 6px;
 
-export const METRIC_PREFIXES = { k: 1e3, m: 1e6, b: 1e9, t: 1e12 };
+.series-menu {
+
+  .preview {
+    @extend %indicator-field;
+
+    margin-bottom: 14px;
+  }
+
+  .button-bar {
+    .ok {
+      min-width: 60px;
+      margin-right: 8px;
+    }
+  }
+}

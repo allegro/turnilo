@@ -17,18 +17,39 @@
 import { Record } from "immutable";
 import { Measure } from "../measure/measure";
 
-interface SeriesValue {
-  reference: string;
+export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
+
+type FormatString = string;
+
+interface SeriesFormatValue {
+  type: SeriesFormatType;
+  value: FormatString;
 }
 
-const defaultSeries: SeriesValue = { reference: null };
+const defaultFormat: SeriesFormatValue = { type: SeriesFormatType.DEFAULT, value: "" };
+
+export class SeriesFormat extends Record<SeriesFormatValue>(defaultFormat) {
+}
+
+export const DEFAULT_FORMAT = new SeriesFormat(defaultFormat);
+export const EXACT_FORMAT = new SeriesFormat({ type: SeriesFormatType.EXACT });
+export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT });
+
+export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
+
+interface SeriesValue {
+  reference: string;
+  format: SeriesFormat;
+}
+
+const defaultSeries: SeriesValue = { reference: null, format: DEFAULT_FORMAT };
 
 export class Series extends Record<SeriesValue>(defaultSeries) {
   static fromMeasure(measure: Measure) {
     return new Series({ reference: measure.name });
   }
 
-  static fromJS({ reference }: any) {
-    return new Series({ reference });
+  static fromJS({ reference, format }: any) {
+    return new Series({ reference, format: new SeriesFormat(format) });
   }
 }

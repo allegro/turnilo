@@ -132,7 +132,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   clickDimension(dimension: Dimension, e: React.MouseEvent<HTMLElement>) {
     const target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
-    this.openMenu(dimension, target);
+    this.toggleMenu(dimension, target);
   }
 
   openMenuOnDimension(dimension: Dimension) {
@@ -153,17 +153,18 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
-  openMenu(dimension: Dimension, target: Element) {
+  toggleMenu(dimension: Dimension, target: Element) {
     const { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
       return;
     }
+    this.openMenu(dimension, target);
+  }
+
+  openMenu(dimension: Dimension, target: Element) {
     const overflowMenu = this.getOverflowMenu();
-    let menuInside: Element = null;
-    if (overflowMenu && isInside(target, overflowMenu)) {
-      menuInside = overflowMenu;
-    }
+    const menuInside = overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
     this.setState({
       menuOpenOn: target,
       menuDimension: dimension,
@@ -282,12 +283,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { filter, dataCube } = essence;
 
     this.setState({ dragPosition: null });
-
     const dimension = DragManager.draggingDimension();
     if (!dimension) return;
 
     const dragPosition = this.calculateDragPosition(e);
-
     const existingClause = filter.clauseForReference(dimension.name);
     if (!existingClause) {
       let tryingToReplaceTime = false;
@@ -406,7 +405,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const style = transformStyle(itemX, 0);
 
     return <div
-      className="overflow"
+      className="overflow dimension"
       ref="overflow"
       key="overflow"
       style={style}

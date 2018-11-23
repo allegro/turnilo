@@ -161,6 +161,13 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
     const { start, end }: TimeRange = selection.defineEnvironment({ timezone }).getFn()(datum);
     return new FixedTimeFilterClause({ reference: this.reference, values: List.of(new DateRange({ start, end })) });
   }
+
+  equals(other: any): boolean {
+    return other instanceof RelativeTimeFilterClause &&
+      this.reference === other.reference &&
+      this.period === other.period &&
+      this.duration.equals(other.duration);
+  }
 }
 
 export type TimeFilterClause = FixedTimeFilterClause | RelativeTimeFilterClause;

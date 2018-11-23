@@ -30,7 +30,7 @@ import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
@@ -199,7 +199,7 @@ export class Table extends BaseVisualization<TableState> {
 
   onClick = (x: number, y: number) => {
     const { clicker, essence } = this.props;
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
 
     const mousePos = this.calculateMousePosition(x, y);
     const { row, element } = mousePos;
@@ -298,19 +298,9 @@ export class Table extends BaseVisualization<TableState> {
     });
   }
 
-  getFormattersFromMeasures(essence: Essence, flatData: PseudoDatum[]): Formatter[] {
-    const measuresArray = essence.getEffectiveSelectedMeasures().toArray();
-
-    return measuresArray.map(measure => {
-      const measureName = measure.name;
-      const measureValues = flatData.map((d: Datum) => d[measureName] as number);
-      return formatterFromData(measureValues, measure.getFormat());
-    });
-  }
-
   getIdealColumnWidth(essence: Essence): number {
     const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
-    const measuresCount = essence.getEffectiveSelectedMeasures().size;
+    const measuresCount = essence.series.count();
     const columnsCount = essence.hasComparison() ? measuresCount * 3 : measuresCount;
 
     return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
@@ -322,8 +312,8 @@ export class Table extends BaseVisualization<TableState> {
     </div>;
   }
 
-  makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
-    const measuresArray = essence.getEffectiveSelectedMeasures().toArray();
+  makeMeasuresRenderer(essence: Essence, hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
+    const measuresArray = essence.getSeriesWithMeasures().toArray();
     const idealWidth = this.getIdealColumnWidth(essence);
 
     const splitLength = essence.splits.length();
@@ -333,9 +323,9 @@ export class Table extends BaseVisualization<TableState> {
     return (datum: PseudoDatum): JSX.Element[] => {
       const lastLevel = datum["__nest"] === splitLength;
 
-      return flatMap(measuresArray, (measure, i) => {
-        const formatter = formatters[i];
+      return flatMap(measuresArray, ({ measure, series: { format } }, i) => {
         const currentValue = datum[measure.name];
+        const formatter = seriesFormatter(format, measure);
 
         const currentCell = <div className={className} key={measure.name} style={{ width: idealWidth }}>
           {lastLevel && this.makeBackground(hScales[i](currentValue))}
@@ -471,7 +461,6 @@ export class Table extends BaseVisualization<TableState> {
     let highlighterStyle: any = null;
     let highlightBubble: JSX.Element = null;
     if (flatData) {
-      const formatters = this.getFormattersFromMeasures(essence, flatData);
       const hScales = this.getScalesForColumns(essence, flatData);
 
       let highlightDelta: Filter = null;
@@ -481,7 +470,7 @@ export class Table extends BaseVisualization<TableState> {
 
       const [skipNumber, lastElementToShow] = this.getVisibleIndices(flatData.length, stage.height);
 
-      const measuresRenderer = this.makeMeasuresRenderer(essence, formatters, hScales);
+      const measuresRenderer = this.makeMeasuresRenderer(essence, hScales);
 
       let rowY = skipNumber * ROW_HEIGHT;
       for (let i = skipNumber; i < lastElementToShow; i++) {

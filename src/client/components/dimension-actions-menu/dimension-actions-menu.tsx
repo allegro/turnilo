@@ -31,59 +31,22 @@ import "./dimension-actions-menu.scss";
 const ACTION_SIZE = 58;
 
 export interface DimensionActionsMenuProps {
-  clicker: Clicker;
-  essence: Essence;
+  openOn: Element;
   direction: Direction;
   containerStage: Stage;
-  openOn: Element;
-  dimension: Dimension;
-  triggerFilterMenu: (dimension: Dimension) => void;
-  triggerSplitMenu: (dimension: Dimension) => void;
-  onClose: Fn;
 }
 
-export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps> {
+export interface DimensionActionsProps {
+  clicker: Clicker;
+  essence: Essence;
+  dimension: Dimension;
+  onClose: Fn;
+  triggerFilterMenu: (dimension: Dimension) => void;
+}
 
-  onFilter = () => {
-    const { dimension, triggerFilterMenu, onClose } = this.props;
-    triggerFilterMenu(dimension);
-    onClose();
-  }
-
-  onSplit = () => {
-    const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
-    if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
-      triggerSplitMenu(dimension);
-    } else {
-      clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
-    }
-    onClose();
-  }
-
-  onSubsplit = () => {
-    const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
-    if (essence.splits.hasSplitOn(dimension)) {
-      triggerSplitMenu(dimension);
-    } else {
-      clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
-    }
-    onClose();
-  }
-
-  onPin = () => {
-    const { clicker, dimension, onClose } = this.props;
-    clicker.pin(dimension);
-    onClose();
-  }
-
-  render() {
-    const { essence: { filter, splits }, direction, containerStage, openOn, dimension, onClose } = this.props;
-    if (!dimension) return null;
-
-    const isFilteredOn = filter.getClauseForDimension(dimension);
-    const hasSplitOn = splits.hasSplitOn(dimension);
-    const isOnlySplit = splits.length() === 1 && hasSplitOn;
-
+export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionActionsMenuProps> =
+  (props: DimensionActionsMenuProps & DimensionActionsProps) => {
+    const { triggerFilterMenu, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
     return <BubbleMenu
       className="dimension-actions-menu"
       direction={direction}
@@ -93,22 +56,58 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
       openOn={openOn}
       onClose={onClose}
     >
-      <div className={classNames("filter", "action", { disabled: isFilteredOn })} onClick={this.onFilter}>
-        <SvgIcon svg={require("../../icons/preview-filter.svg")} />
-        <div className="action-label">{STRINGS.filter}</div>
-      </div>
-      <div className="pin action" onClick={this.onPin}>
-        <SvgIcon svg={require("../../icons/preview-pin.svg")} />
-        <div className="action-label">{STRINGS.pin}</div>
-      </div>
-      <div className={classNames("split", "action", { disabled: isOnlySplit })} onClick={this.onSplit}>
-        <SvgIcon svg={require("../../icons/preview-split.svg")} />
-        <div className="action-label">{STRINGS.split}</div>
-      </div>
-      <div className={classNames("subsplit", "action", { disabled: hasSplitOn })} onClick={this.onSubsplit}>
-        <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
-        <div className="action-label">{STRINGS.subsplit}</div>
-      </div>
+      <DimensionActions
+        essence={essence}
+        clicker={clicker}
+        dimension={dimension}
+        onClose={onClose}
+        triggerFilterMenu={triggerFilterMenu} />
     </BubbleMenu>;
+  };
+
+export const DimensionActions: React.SFC<DimensionActionsProps> = (props: DimensionActionsProps) => {
+  const { onClose, triggerFilterMenu, clicker, essence: { splits }, dimension } = props;
+  if (!dimension) return null;
+
+  const hasSplitOn = splits.hasSplitOn(dimension);
+  const isOnlySplit = splits.length() === 1 && hasSplitOn;
+
+  function onFilter() {
+    triggerFilterMenu(dimension);
+    onClose();
   }
-}
+
+  function onSplit() {
+    if (!isOnlySplit) clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+    onClose();
+  }
+
+  function onSubSplit() {
+    if (!hasSplitOn) clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+    onClose();
+  }
+
+  function onPin() {
+    clicker.pin(dimension);
+    onClose();
+  }
+
+  return <React.Fragment>
+    <div className={classNames("filter", "action")} onClick={onFilter}>
+      <SvgIcon svg={require("../../icons/preview-filter.svg")} />
+      <div className="action-label">{STRINGS.filter}</div>
+    </div>
+    <div className="pin action" onClick={onPin}>
+      <SvgIcon svg={require("../../icons/preview-pin.svg")} />
+      <div className="action-label">{STRINGS.pin}</div>
+    </div>
+    <div className={classNames("split", "action", { disabled: isOnlySplit })} onClick={onSplit}>
+      <SvgIcon svg={require("../../icons/preview-split.svg")} />
+      <div className="action-label">{STRINGS.split}</div>
+    </div>
+    <div className={classNames("subsplit", "action", { disabled: hasSplitOn })} onClick={onSubSplit}>
+      <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+      <div className="action-label">{STRINGS.subsplit}</div>
+    </div>
+  </React.Fragment>;
+};

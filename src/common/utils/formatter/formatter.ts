@@ -31,65 +31,34 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
-import { BYTE_PREFIXES, METRIC_PREFIXES } from "../number/units";
+import { Measure } from "../../models/measure/measure";
+import { SeriesFormat, SeriesFormatType } from "../../models/series/series";
+import { Unary } from "../functional/functional";
 import { DisplayYear, formatTimeRange } from "../time/time";
 
-export type Formatter = (n: number) => string;
-
-export function getMiddleNumber(values: number[]): number {
-  const filteredAbsData: number[] = [];
-  for (let v of values) {
-    if (v === 0 || isNaN(v) || !isFinite(v)) continue;
-    filteredAbsData.push(Math.abs(v));
-  }
-
-  const n = filteredAbsData.length;
-  if (n) {
-    filteredAbsData.sort((a, b) => b - a);
-    return filteredAbsData[Math.ceil((n - 1) / 2)];
-  } else {
-    return 0;
-  }
+export function formatFnFactory(format: string): (n: number) => string {
+  return (n: number) => {
+    if (isNaN(n) || !isFinite(n)) return "-";
+    return numbro(n).format(format);
+  };
 }
 
-type FormatType = "a" | "b";
+export const exactFormat = "0,0";
+const exactFormatter = formatFnFactory(exactFormat);
+export const percentFormat = "0[.]00%";
+const percentFormatter = formatFnFactory(percentFormat);
 
-const scales: Record<FormatType, Record<string, number>> = {
-  a: METRIC_PREFIXES,
-  b: BYTE_PREFIXES
-};
-
-const baseUnits: Record<FormatType, string> = {
-  a: "",
-  b: "B"
-};
-
-function formatterUnit(middle: number, formatType: FormatType): { scale: number, unit: string } {
-  const formatMiddle = numbro(middle).format("0 " + formatType);
-  const unit = Object.keys(scales[formatType]).find(unit => formatMiddle.endsWith(unit));
-  if (!unit) return { unit: baseUnits[formatType], scale: 1 };
-  return { scale: scales[formatType][unit], unit };
-}
-
-export function formatterFromData(values: number[], format: string): Formatter {
-  const match = format.match(/^(\S*)( ?)([ab])$/);
-  if (match) {
-    const numberFormat = match[1];
-    const space = match[2];
-    const formatType = match[3] as FormatType;
-    const { unit, scale } = formatterUnit(getMiddleNumber(values), formatType);
-    const suffix = unit ? space + unit : "";
-
-    return (n: number) => {
-      if (isNaN(n) || !isFinite(n)) return "-";
-      return numbro(n / scale).format(numberFormat) + suffix;
-    };
-  } else {
-    return (n: number) => {
-      if (isNaN(n) || !isFinite(n)) return "-";
-      return numbro(n).format(format);
-    };
-  }
+export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
+  switch (format.type) {
+      case SeriesFormatType.DEFAULT:
+        return measure.formatFn;
+      case SeriesFormatType.EXACT:
+        return exactFormatter;
+      case SeriesFormatType.PERCENT:
+        return percentFormatter;
+      case SeriesFormatType.CUSTOM:
+        return formatFnFactory(format.value);
+    }
 }
 
 export function formatNumberRange(value: NumberRange) {

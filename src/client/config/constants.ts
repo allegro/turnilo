@@ -97,6 +97,7 @@ export const STRINGS: any = {
   exportToTSV: "Export to TSV",
   filter: "Filter",
   floorableDurationsExamples: "e.g. PT2H or P3M",
+  format: "Format",
   generalSettings: "General settings",
   goToUrl: "Go to URL",
   granularity: "Granularity",

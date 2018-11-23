@@ -18,11 +18,13 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { SeriesFormat } from "../../../common/models/series/series";
 import { Delta } from "../delta/delta";
 import "./vis-measure-label.scss";
 
 export interface VisMeasureLabelProps {
   measure: Measure;
+  format: SeriesFormat;
   datum: Datum;
   showPrevious: boolean;
 }
@@ -42,11 +44,11 @@ function renderPrevious(measure: Measure, datum: Datum): JSX.Element {
   </React.Fragment>;
 }
 
-export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ measure, datum, showPrevious }) => {
+export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ format, measure, datum, showPrevious }) => {
   return <div className="vis-measure-label">
     <span className="measure-title">{measure.title}</span>
     <span className="colon">: </span>
-    <span className="measure-value">{measure.formatDatum(datum)}</span>
+    <span className="measure-value">{measure.formatDatum(datum, format)}</span>
     {showPrevious && renderPrevious(measure, datum)}
   </div>;
 };
