@@ -34,38 +34,46 @@
       }
     }
   }
+
 }
 
-.search-box {
-  height: 30px;
-  width: 100%;
+.add-tile-menu {
+  display: flex;
+  flex-direction: column;
 
-  .clearable-input {
-    @extend %input-cont-inset;
+  .search-box {
+    flex: 0;
+    height: 30px;
     width: 100%;
-    height: $input-height;
-    padding-left: 6px;
-  }
-}
 
-.tile-rows {
-  margin-top: 10px;
-
-  .tile-row {
-    cursor: pointer;
-    padding: 6px $padding-compact;
-
-    &.no-results {
-      color: $brand;
-    }
-
-    .label {
-      line-height: 15px;
-    }
-
-    &:hover {
-      background: $hover;
+    .clearable-input {
+      @extend %input-cont-inset;
+      width: 100%;
+      height: $input-height;
+      padding-left: 6px;
     }
   }
-}
 
+  .tile-rows {
+    flex: 1;
+    overflow: scroll;
+    margin-top: 10px;
+
+    .tile-row {
+      cursor: pointer;
+      padding: 6px $padding-compact;
+
+      &.no-results {
+        color: $brand;
+      }
+
+      .label {
+        line-height: 15px;
+      }
+
+      &:hover {
+        background: $hover;
+      }
+    }
+  }
+}

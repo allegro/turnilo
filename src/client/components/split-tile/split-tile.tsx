@@ -334,7 +334,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   renderAddTileButton() {
-    const { essence: { dataCube, splits } } = this.props;
+    const { menuStage, essence: { dataCube, splits } } = this.props;
     const tiles = dataCube.dimensions
       .filterDimensions(dimension => !splits.hasSplitOn(dimension))
       .map(dimension => {
@@ -345,7 +345,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         };
       });
 
-    return <AddTile<Dimension> onSelect={this.appendSplit} tiles={tiles} />;
+    return <AddTile<Dimension> containerStage={menuStage} onSelect={this.appendSplit} tiles={tiles} />;
   }
 
   render() {

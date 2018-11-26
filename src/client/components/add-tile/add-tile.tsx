@@ -32,6 +32,7 @@ export interface Tile<T> {
 interface AddTileProps<T> {
   tiles: Array<Tile<T>>;
   onSelect: Unary<T, void>;
+  containerStage: Stage;
 }
 
 interface AddTileState {
@@ -86,6 +87,7 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
   }
 
   renderMenu() {
+    const { containerStage } = this.props;
     const { openMenu, query } = this.state;
     if (!openMenu) return null;
 
@@ -93,6 +95,7 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
       className="add-tile-menu"
       direction="down"
       stage={Stage.fromSize(250, 410)}
+      containerStage={containerStage}
       openOn={this.menuOpenOn}
       onClose={this.closeMenu}>
       <div className="search-box">
