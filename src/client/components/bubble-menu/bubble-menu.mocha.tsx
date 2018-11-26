@@ -31,6 +31,7 @@ const anchor = {
   width: 202
 };
 const stage = StageFixtures.defaultB();
+const containerStage = StageFixtures.container();
 
 const openOn = {
   getBoundingClientRect: () => anchor
@@ -43,6 +44,7 @@ const defaultProps = {
   className: contentClassName,
   openOn,
   stage,
+  containerStage,
   onClose: () => {
   }
 };
@@ -50,7 +52,7 @@ const defaultProps = {
 let oldInnerHeight: number;
 
 function renderBubble(direction: Direction, align: Align = "center") {
-  return shallow(<BubbleMenu{...defaultProps} direction={direction} align={align}/>);
+  return shallow(<BubbleMenu{...defaultProps} direction={direction} align={align} />);
 }
 
 describe("<BubbleMenu>", () => {
@@ -69,7 +71,12 @@ describe("<BubbleMenu>", () => {
       const bubble = renderBubble("right");
       const div = bubble.find(contentSelector);
 
-      expect(div.prop("style")).to.be.deep.equal({ height: stage.height, width: undefined });
+      expect(div.prop("style")).to.be.deep.equal({
+        height: stage.height,
+        width: undefined,
+        maxHeight: undefined,
+        maxWidth: containerStage.width
+      });
     });
 
     it("should set correct style to shpitz", () => {
@@ -97,7 +104,12 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "center");
         const div = bubble.find(contentSelector);
 
-        expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: stage.width });
+        expect(div.prop("style")).to.be.deep.equal({
+          height: undefined,
+          width: stage.width,
+          maxWidth: undefined,
+          maxHeight: containerStage.height
+        });
       });
 
       it("should set correct style to shpitz", () => {
@@ -124,7 +136,12 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "start");
         const div = bubble.find(contentSelector);
 
-        expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: stage.width });
+        expect(div.prop("style")).to.be.deep.equal({
+          height: undefined,
+          width: stage.width,
+          maxWidth: undefined,
+          maxHeight: containerStage.height
+        });
       });
 
       it("should omit shpitz", () => {
@@ -149,7 +166,12 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "end");
         const div = bubble.find(contentSelector);
 
-        expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: stage.width });
+        expect(div.prop("style")).to.be.deep.equal({
+          height: undefined,
+          width: stage.width,
+          maxHeight: containerStage.height,
+          maxWidth: undefined
+        });
       });
 
       it("should omit shpitz", () => {
@@ -189,7 +211,12 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "center");
         const div = bubble.find(contentSelector);
 
-        expect(div.prop("style")).to.be.deep.equal({ width: stage.width, height: undefined });
+        expect(div.prop("style")).to.be.deep.equal({
+          width: stage.width,
+          height: undefined,
+          maxHeight: containerStage.height,
+          maxWidth: undefined
+        });
       });
 
       it("should set correct style to shpitz", () => {
@@ -215,7 +242,12 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "start");
         const div = bubble.find(contentSelector);
 
-        expect(div.prop("style")).to.be.deep.equal({ width: stage.width, height: undefined });
+        expect(div.prop("style")).to.be.deep.equal({
+          width: stage.width,
+          height: undefined,
+          maxWidth: undefined,
+          maxHeight: containerStage.height
+        });
       });
 
       it("should omit shpitz", () => {
@@ -240,7 +272,12 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "end");
         const div = bubble.find(contentSelector);
 
-        expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: stage.width });
+        expect(div.prop("style")).to.be.deep.equal({
+          height: undefined,
+          width: stage.width,
+          maxHeight: containerStage.height,
+          maxWidth: undefined
+        });
       });
 
       it("should omit shpitz", () => {
