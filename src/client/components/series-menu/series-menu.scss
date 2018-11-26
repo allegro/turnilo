@@ -28,6 +28,22 @@ $title-margin: 6px;
     margin-bottom: 14px;
   }
 
+  .format-hint {
+    padding: 0 3px;
+    font-style: italic;
+    color: $text-light;
+    margin-bottom: 14px;
+
+    .documentation-link {
+      color: $brand;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
   .button-bar {
     .ok {
       min-width: 60px;
