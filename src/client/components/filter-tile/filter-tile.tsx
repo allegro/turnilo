@@ -558,7 +558,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   renderAddButton() {
-    const { essence: { dataCube, filter } } = this.props;
+    const { essence: { dataCube, filter }, menuStage } = this.props;
     const tiles = dataCube.dimensions
       .filterDimensions(dimension => !filter.getClauseForDimension(dimension))
       .map(dimension => {
@@ -569,7 +569,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         };
       });
 
-    return <AddTile<Dimension> onSelect={this.appendFilter} tiles={tiles} />;
+    return <AddTile<Dimension> containerStage={menuStage} onSelect={this.appendFilter} tiles={tiles} />;
   }
 
   render() {
