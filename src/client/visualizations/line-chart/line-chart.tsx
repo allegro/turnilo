@@ -345,6 +345,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
     const { dragOnMeasure, scaleX, hoverRange, hoverMeasure, continuousDimension } = this.state;
 
+    const formatter = seriesFormatter(format, measure);
+
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
     let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
@@ -377,7 +379,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
               previousValue={hoverDatum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number}
-              formatter={measure.formatFn}
+              formatter={formatter}
               lowerIsBetter={measure.lowerIsBetter}
             />
           };
@@ -436,11 +438,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
           const hoverDatumElement = hoverDatum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
           return {
             ...currentEntry,
-            previous: measure.formatFn(hoverDatumElement),
+            previous: formatter(hoverDatumElement),
             delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
               previousValue={hoverDatumElement}
-              formatter={measure.formatFn}
+              formatter={formatter}
               lowerIsBetter={measure.lowerIsBetter}
             />
           };
@@ -457,7 +459,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
         if (!hoverDatum) return null;
         const title = formatValue(hoverRange, timezone, DisplayYear.NEVER);
-        const content = this.renderMeasureLabel(measure, hoverDatum);
+        const content = this.renderMeasureLabel(hoverDatum, measure, format);
 
         return <SegmentBubble
           left={leftOffset}
@@ -472,17 +474,18 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return null;
   }
 
-  private renderMeasureLabel(measure: Measure, datum: Datum): JSXNode {
+  private renderMeasureLabel(datum: Datum, measure: Measure, format: SeriesFormat): JSXNode {
     const currentValue = datum[measure.name] as number;
     if (!this.props.essence.hasComparison()) {
-      return measure.formatFn(currentValue);
+      return measure.formatDatum(datum, format);
     }
     const previous = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
+    const formatter = seriesFormatter(format, measure);
     return <MeasureBubbleContent
       lowerIsBetter={measure.lowerIsBetter}
       current={currentValue}
       previous={previous}
-      formatter={measure.formatFn} />;
+      formatter={formatter} />;
   }
 
   calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {
