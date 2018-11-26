@@ -436,13 +436,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
   renderHoverBubble(hoverInfo: BubbleInfo): JSX.Element {
     const chartStage = this.getSingleChartStage();
     const { measure, path, chartIndex, segmentLabel, coordinates } = hoverInfo;
+    const { essence } = this.props;
+    const series = essence.series.getSeries(measure.name);
 
     const leftOffset = this.getBubbleLeftOffset(coordinates.middleX);
     const topOffset = this.getBubbleTopOffset(coordinates.y, chartIndex, chartStage);
 
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
-    const measureContent = this.renderMeasureLabel(measure, path[path.length - 1]);
+    const measureContent = this.renderMeasureLabel(path[path.length - 1], measure, series.format);
     return <SegmentBubble
       top={topOffset}
       left={leftOffset}
@@ -451,15 +453,16 @@ export class BarChart extends BaseVisualization<BarChartState> {
     />;
   }
 
-  private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
+  private renderMeasureLabel(datum: Datum, measure: Measure, format: SeriesFormat): JSX.Element | string {
     const currentValue = datum[measure.name] as number;
     if (!this.props.essence.hasComparison()) {
-      return measure.formatFn(currentValue);
+      return measure.formatDatum(datum, format);
     }
     const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
+    const formatter = seriesFormatter(format, measure);
     return <MeasureBubbleContent
       lowerIsBetter={measure.lowerIsBetter}
-      formatter={measure.formatFn}
+      formatter={formatter}
       current={currentValue}
       previous={previousValue}
     />;
