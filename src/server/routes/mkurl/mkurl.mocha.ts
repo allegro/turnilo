@@ -69,8 +69,8 @@ describe("mkurl router", () => {
       .expect(200)
       .expect(
         {
-          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAckaGQqVSItDaEm1hU2t" +
-            "nZMC7TDGxohwzJOrp8oNAE9l5kABNDcGOJCYIgwXiAAvuGKIMoQ2Ni03gAiNCZQWNga0bHxiQDKDrYWVjZCCLQA5ibe+NgBCJQAFhAVjUitRXUICOFAA"
+          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAckaGQqVSItDaEm1hU2tnZMC7TDGxohwzJO" +
+            "rp8oNAE9l5kABNDcGOJCYIgwXiAAvpSekmY2MqCYwgAKcAY2+MKktJSJvMSIGVnh4YogyhDY2LTeACI0JlBY2Bql5ZXVAMoOthZW6ZQItADmJt742AEIlAAWEEPTSPM9EwgI4UA=="
         },
         testComplete
       );
