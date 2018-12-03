@@ -111,9 +111,9 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
   private relativeNesting(nestingLevel: number): number {
     switch (this.percentOf) {
       case DataSeriesPercentOf.TOTAL:
-        return Math.min(nestingLevel, 1);
-      case DataSeriesPercentOf.PARENT:
         return nestingLevel;
+      case DataSeriesPercentOf.PARENT:
+        return Math.min(nestingLevel, 1);
     }
   }
 

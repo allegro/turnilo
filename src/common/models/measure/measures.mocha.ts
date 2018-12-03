@@ -44,14 +44,14 @@ describe("Measures", () => {
     expect(() => Measures.fromJS(measuresWithDuplicateMeasureName)).to.throw("found duplicate measure or group with names: 'added_group'");
   });
 
-  it("should throw when converting tree with previous measure name", () => {
-    const measureWithForbiddenNames = [MeasureFixtures.previousWikiCountJS()];
-    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw("found measure that starts with forbidden prefixes: '_previous__count' (prefix: '_previous__')");
+  it("should throw when converting tree with underscore prefix", () => {
+    const measureWithForbiddenNames = [{ ...MeasureFixtures.wikiCount(), name: "_name" }];
+    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw("found measure that starts or ends with underscore: _name");
   });
 
-  it("should throw when converting tree with delta measure name", () => {
-    const measureWithForbiddenNames = [MeasureFixtures.deltaWikiCountJS()];
-    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw("found measure that starts with forbidden prefixes: '_delta__count' (prefix: '_delta__')");
+  it("should throw when converting tree with underscore suffix", () => {
+    const measureWithForbiddenNames = [{ ...MeasureFixtures.wikiCount(), name: "name_" }];
+    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw("found measure that starts or ends with underscore: name_");
   });
 
   it("should count measures", () => {
