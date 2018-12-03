@@ -20,7 +20,7 @@ import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
 import { complement } from "../../utils/functional/functional";
 import { isNil, quoteNames } from "../../utils/general/general";
-import { Measure, MeasureDerivation } from "./measure";
+import { Measure } from "./measure";
 import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
 
 class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
@@ -48,22 +48,16 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
     .toList();
 }
 
-function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ name: string, prefix: string }> {
+function measureNamesWithIncorrectNames(items: List<MeasureOrGroup>): List<string> {
   return items
     .map(measureOrGroup => {
-      if (isMeasureGroupJS(measureOrGroup)) {
-        return null;
-      }
-      if (measureOrGroup.name.startsWith(MeasureDerivation.PREVIOUS)) {
-        return { name: measureOrGroup.name, prefix: MeasureDerivation.PREVIOUS };
-      }
-      if (measureOrGroup.name.startsWith(MeasureDerivation.DELTA)) {
-        return { name: measureOrGroup.name, prefix: MeasureDerivation.DELTA };
-      }
+      if (isMeasureGroupJS(measureOrGroup)) return null;
+      const measureName = measureOrGroup.name;
+      if (measureName.startsWith("_")) return measureName;
+      if (measureName.endsWith("_")) return measureName;
       return null;
     })
-    .filter(complement(isNil))
-    .toList();
+    .filter(complement(isNil));
 }
 
 function filterMeasures(items: List<MeasureOrGroup>): List<Measure> {
@@ -94,9 +88,9 @@ export class Measures {
       throw new Error(`found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
     }
 
-    const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
+    const invalidNames = measureNamesWithIncorrectNames(flattenedMeasuresWithGroups);
     if (invalidNames.size > 0) {
-      throw new Error(`found measure that starts with forbidden prefixes: ${invalidNames.map(({ name, prefix }) => `'${name}' (prefix: '${prefix}')`).toArray().join(", ")}`);
+      throw new Error(`found measure that starts or ends with underscore: ${invalidNames.toArray().join(", ")}`);
     }
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
   }

@@ -17,6 +17,15 @@
 import { Record } from "immutable";
 import { Measure } from "../measure/measure";
 
+export enum SeriesDerivation { CURRENT = "", PREVIOUS = "previous", DELTA = "delta" }
+
+export function readMeasureDerivation(str: string): SeriesDerivation {
+  if (str === SeriesDerivation.CURRENT) return SeriesDerivation.CURRENT;
+  if (str === SeriesDerivation.PREVIOUS) return SeriesDerivation.PREVIOUS;
+  if (str === SeriesDerivation.DELTA) return SeriesDerivation.DELTA;
+  return null;
+}
+
 export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
 
 type FormatString = string;

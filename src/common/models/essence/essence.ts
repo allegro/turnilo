@@ -18,9 +18,11 @@
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
 import { PlywoodRange, Range, RefExpression } from "plywood";
+import { concatTruthy } from "../../utils/functional/functional";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
+import { DataSeries, DataSeriesPercentOf } from "../data-series/data-series";
 import { Dimension } from "../dimension/dimension";
 import { DateRange, FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
@@ -28,7 +30,7 @@ import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
-import { Series } from "../series/series";
+import { PERCENT_FORMAT, Series } from "../series/series";
 import { Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
@@ -334,11 +336,21 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
   }
 
-  public getSeriesWithMeasures(): List<SeriesWithMeasure> {
-    return this.series.series.map(series => ({
-      series,
-      measure: this.dataCube.getMeasure(series.reference)
-    }));
+  public getDataSeries(): List<DataSeries> {
+    return this.series.series.flatMap(({ percents: { ofTotal, ofParent }, reference }) => {
+      const measure = this.dataCube.getMeasure(reference);
+      const measureExp = new DataSeries({ measure });
+
+      return concatTruthy(
+        measureExp,
+        ofTotal && measureExp
+          .set("percentOf", DataSeriesPercentOf.TOTAL)
+          .set("format", PERCENT_FORMAT),
+        ofParent && measureExp
+          .set("percentOf", DataSeriesPercentOf.PARENT)
+          .set("format", PERCENT_FORMAT)
+      );
+    });
   }
 
   public differentDataCube(other: Essence): boolean {
