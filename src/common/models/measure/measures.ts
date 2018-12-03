@@ -53,8 +53,7 @@ function measureNamesWithIncorrectNames(items: List<MeasureOrGroup>): List<strin
     .map(measureOrGroup => {
       if (isMeasureGroupJS(measureOrGroup)) return null;
       const measureName = measureOrGroup.name;
-      if (measureName.startsWith("_")) return measureName;
-      if (measureName.endsWith("_")) return measureName;
+      if (measureName.startsWith("_") || measureName.endsWith("_")) return measureName;
       return null;
     })
     .filter(complement(isNil));

@@ -30,17 +30,17 @@ export const PercentsPicker: React.SFC<PercentPickerProps> = ({ disabled, percen
   const { ofParent, ofTotal } = percents;
 
   function togglePercent(type: keyof SeriesPercentsValue) {
-    if (!disabled) percentsChange(percents.update(type, val => !val));
+    return () => percentsChange(percents.update(type, val => !val));
   }
 
   return <div className="percents-picker">
     <div className={classNames("percent-row", { disabled })}
-         onClick={() => togglePercent("ofTotal")}>
+         onClick={!disabled && togglePercent("ofTotal")}>
       <Checkbox className="checkbox" selected={ofTotal} />
       <span className="label">"Percent of Total"</span>
     </div>
     <div className={classNames("percent-row", { disabled })}
-         onClick={() => togglePercent("ofParent")}>
+         onClick={!disabled && togglePercent("ofParent")}>
       <Checkbox className="checkbox" selected={ofParent} />
       <span className="label">"Percent of Parent"</span>
     </div>

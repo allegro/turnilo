@@ -104,11 +104,11 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
         operand: new ApplyExpression({ expression, name: formulaName }),
         expression: $(formulaName).divide($(formulaName, nestingLevel))
       });
-    } else if (nestingLevel === 0) {
-      return new ApplyExpression({ name: formulaName, expression });
-    } else {
-      throw new Error(`wrong nesting level: ${nestingLevel}`);
     }
+    if (nestingLevel === 0) {
+      return new ApplyExpression({ name: formulaName, expression });
+    }
+    throw new Error(`wrong nesting level: ${nestingLevel}`);
   }
 
   private toApplyExpression(expression: Expression, currentNesting: number, derivation: SeriesDerivation): ApplyExpression {

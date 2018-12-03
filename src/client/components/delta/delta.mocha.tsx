@@ -29,10 +29,13 @@ const makeDatum = (current: number, previous: number) => ({
   [dataSeries.fullName(SeriesDerivation.PREVIOUS)]: previous
 });
 
-const makeDelta = (current: number, previous: number, lowerIsBetter = false) =>
-  lowerIsBetter ?
-    <Delta series={dataSeries.set("measure", MeasureFixtures.wikiCountLowerIsBetter())} datum={makeDatum(current, previous)} /> :
-    <Delta series={dataSeries} datum={makeDatum(current, previous)} />;
+function makeDelta(current: number, previous: number, lowerIsBetter = false) {
+  const series = lowerIsBetter ? dataSeries.set("measure", MeasureFixtures.wikiCountLowerIsBetter()) : dataSeries;
+  return <Delta series={series} datum={makeDatum(current, previous)}/>;
+}
+
+const formatDeltaValues = (current: number, previous: number) =>
+  formatDelta(makeDatum(current, previous), dataSeries);
 
 describe("Delta", () => {
 
@@ -42,28 +45,36 @@ describe("Delta", () => {
       expect(formatDelta(makeDatum(undefined, 5), dataSeries)).to.equal(null);
       expect(formatDelta(makeDatum(5, undefined), dataSeries)).to.equal(null);
       expect(formatDelta(makeDatum(5, null), dataSeries)).to.equal(null);
+
+      expect(formatDeltaValues(null, 5)).to.equal(null);
+      expect(formatDeltaValues(undefined, 5)).to.equal(null);
+      expect(formatDeltaValues(5, undefined)).to.equal(null);
+      expect(formatDeltaValues(5, null)).to.equal(null);
     });
 
     it("should calculate delta attributes correctly", () => {
-      expect(formatDelta(makeDatum(10, 5), dataSeries)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
-      expect(formatDelta(makeDatum(5, 10), dataSeries)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
-      expect(formatDelta(makeDatum(10, 10), dataSeries)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
+      expect(formatDeltaValues(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
+      expect(formatDeltaValues(5, 10)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
+      expect(formatDeltaValues(10, 10)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
     });
   });
 
   describe("<Delta>", () => {
-    it("should handle cases with empty values", () => {
+    it("should handle cases with empty current", () => {
       const emptyCurrent = shallow(makeDelta(undefined, 2));
-      const emptyPrevious = shallow(makeDelta(2, undefined));
 
       expect(emptyCurrent.find("span").hasClass("delta-neutral")).to.be.true;
       expect(emptyCurrent.find("span").contains("-")).to.be.true;
+    });
+
+    it("should handle cases with empty previous", () => {
+      const emptyPrevious = shallow(makeDelta(2, undefined));
 
       expect(emptyPrevious.find("span").hasClass("delta-neutral")).to.be.true;
       expect(emptyPrevious.find("span").contains("-")).to.be.true;
     });
 
-    it("should render properly positive delta", () => {
+    it("should render positive delta", () => {
       const delta = shallow(makeDelta(100, 50));
 
       const deltaNode = delta.find("span");
@@ -72,7 +83,7 @@ describe("Delta", () => {
       expect(deltaNode.text()).to.be.equal("▲50 (100%)");
     });
 
-    it("should render properly positive delta for lower-is-better measure", () => {
+    it("should render positive delta for lower-is-better measure", () => {
       const delta = shallow(makeDelta(100, 50, true));
 
       const deltaNode = delta.find("span");
@@ -81,7 +92,7 @@ describe("Delta", () => {
       expect(deltaNode.text()).to.be.equal("▲50 (100%)");
     });
 
-    it("should render properly negative delta", () => {
+    it("should render negative delta", () => {
       const delta = shallow(makeDelta(100, 200));
 
       const deltaNode = delta.find("span");
@@ -90,7 +101,7 @@ describe("Delta", () => {
       expect(deltaNode.text()).to.be.equal("▼100 (50%)");
     });
 
-    it("should render properly negative delta for lower-is-better measure", () => {
+    it("should render negative delta for lower-is-better measure", () => {
       const delta = shallow(makeDelta(100, 200, true));
 
       const deltaNode = delta.find("span");
@@ -99,7 +110,7 @@ describe("Delta", () => {
       expect(deltaNode.text()).to.be.equal("▼100 (50%)");
     });
 
-    it("should render properly neutral delta", () => {
+    it("should render neutral delta", () => {
       const delta = shallow(makeDelta(100, 100));
 
       const deltaNode = delta.find("span");
