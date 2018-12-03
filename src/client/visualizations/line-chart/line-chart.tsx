@@ -140,13 +140,13 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  getMyEventX(e: MouseEvent): number {
+  getMyEventX(e: React.MouseEvent<HTMLElement>): number {
     const myDOM = ReactDOM.findDOMNode(this);
     const rect = myDOM.getBoundingClientRect();
     return getXFromEvent(e) - (rect.left + VIS_H_PADDING);
   }
 
-  onMouseDown(measure: Measure, e: MouseEvent) {
+  onMouseDown = (measure: Measure, e: React.MouseEvent<HTMLElement>) => {
     const { clicker } = this.props;
     const { scaleX } = this.state;
     if (!scaleX || !clicker.dropHighlight || !clicker.changeHighlight) return;
@@ -159,7 +159,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  onMouseMove(dataset: Dataset, series: DataSeries, scaleX: any, e: MouseEvent) {
+  onMouseMove = (dataset: Dataset, series: DataSeries, scaleX: any, e: React.MouseEvent<HTMLElement>) => {
     const { essence } = this.props;
     const { continuousDimension, hoverRange, hoverSeries } = this.state;
     if (!dataset) return;
@@ -188,7 +188,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  getDragRange(e: MouseEvent): PlywoodRange {
+  getDragRange(e: React.MouseEvent<HTMLElement>): PlywoodRange {
     const { dragStartValue, axisRange, scaleX } = this.state;
 
     let dragEndValue = scaleX.invert(this.getMyEventX(e));
@@ -236,7 +236,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  globalMouseMoveListener = (e: MouseEvent) => {
+  globalMouseMoveListener = (e: React.MouseEvent<HTMLElement>) => {
     const { dragStartValue } = this.state;
     if (dragStartValue === null) return;
 
@@ -247,7 +247,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  globalMouseUpListener = (e: MouseEvent) => {
+  globalMouseUpListener = (e: React.MouseEvent<HTMLElement>) => {
     const { clicker, essence } = this.props;
     const { continuousDimension, dragStartValue, dragRange, dragOnMeasure } = this.state;
     if (dragStartValue === null) return;
@@ -304,7 +304,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  onMouseLeave(series: DataSeries) {
+  onMouseLeave = (series: DataSeries) => {
     const { hoverSeries } = this.state;
     if (hoverSeries.equals(series)) {
       this.setState({
@@ -608,9 +608,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return <div
       className="measure-line-chart"
       key={measure.name}
-      onMouseDown={this.onMouseDown.bind(this, measure)}
-      onMouseMove={this.onMouseMove.bind(this, splitData, series, scaleX)}
-      onMouseLeave={this.onMouseLeave.bind(this, series)}
+      onMouseDown={(e: React.MouseEvent<HTMLElement>) => this.onMouseDown(measure, e)}
+      onMouseMove={(e: React.MouseEvent<HTMLElement>) => this.onMouseMove(splitData, series, scaleX, e)}
+      onMouseLeave={() => this.onMouseLeave(series)}
     >
       <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
         {scale && this.renderHorizontalGridLines(scale, lineStage)}
@@ -752,7 +752,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return ranges.reduce((a: PlywoodRange, b: PlywoodRange) => (a && b) ? a.extend(b) : (a || b));
   }
 
-  scrollCharts = (scrollEvent: MouseEvent) => {
+  scrollCharts = (scrollEvent: React.MouseEvent<HTMLElement>) => {
     const { scrollTop, scrollLeft } = scrollEvent.target as Element;
 
     this.setState(state => ({

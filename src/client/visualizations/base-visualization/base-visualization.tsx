@@ -143,10 +143,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this._isMounted = false;
   }
 
-  protected globalMouseMoveListener: (e: MouseEvent) => void = (e: MouseEvent) => {
+  protected globalMouseMoveListener: (e: React.MouseEvent<HTMLElement>) => void = (e: React.MouseEvent<HTMLElement>) => {
   }
 
-  protected globalMouseUpListener: (e: MouseEvent) => void = (e: MouseEvent) => {
+  protected globalMouseUpListener: (e: React.MouseEvent<HTMLElement>) => void = (e: React.MouseEvent<HTMLElement>) => {
   }
 
   protected globalKeyDownListener: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {

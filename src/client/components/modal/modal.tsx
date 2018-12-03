@@ -111,7 +111,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     }
   }
 
-  onMouseDown = (e: MouseEvent) => {
+  onMouseDown = (e: React.MouseEvent<HTMLElement>) => {
     var { onClose, mandatory } = this.props;
     if (mandatory) return;
 

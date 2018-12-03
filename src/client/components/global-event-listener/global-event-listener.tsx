@@ -21,10 +21,10 @@ import { enterKey, escapeKey, leftKey, rightKey } from "../../utils/dom/dom";
 
 export interface GlobalEventListenerProps {
   resize?: () => void;
-  scroll?: (e: MouseEvent) => void;
-  mouseDown?: (e: MouseEvent) => void;
-  mouseMove?: (e: MouseEvent) => void;
-  mouseUp?: (e: MouseEvent) => void;
+  scroll?: (e: React.MouseEvent<HTMLElement>) => void;
+  mouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
+  mouseMove?: (e: React.MouseEvent<HTMLElement>) => void;
+  mouseUp?: (e: React.MouseEvent<HTMLElement>) => void;
   keyDown?: (e: KeyboardEvent) => void;
   enter?: (e: KeyboardEvent) => void;
   escape?: (e: KeyboardEvent) => void;
@@ -97,19 +97,19 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     if (this.props.resize) this.props.resize();
   }
 
-  onScroll = (e: MouseEvent) => {
+  onScroll = (e: React.MouseEvent<HTMLElement>) => {
     if (this.props.scroll) this.props.scroll(e);
   }
 
-  onMousedown = (e: MouseEvent) => {
+  onMousedown = (e: React.MouseEvent<HTMLElement>) => {
     if (this.props.mouseDown) this.props.mouseDown(e);
   }
 
-  onMousemove = (e: MouseEvent) => {
+  onMousemove = (e: React.MouseEvent<HTMLElement>) => {
     if (this.props.mouseMove) this.props.mouseMove(e);
   }
 
-  onMouseup = (e: MouseEvent) => {
+  onMouseup = (e: React.MouseEvent<HTMLElement>) => {
     if (this.props.mouseUp) this.props.mouseUp(e);
   }
 
