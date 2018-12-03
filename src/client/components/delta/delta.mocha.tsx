@@ -19,10 +19,10 @@ import { shallow } from "enzyme";
 import * as React from "react";
 import { DataSeries } from "../../../common/models/data-series/data-series";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { EXACT_FORMAT, SeriesDerivation } from "../../../common/models/series/series";
 import { Delta, formatDelta } from "./delta";
 
-const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount() });
+const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount(), format: EXACT_FORMAT });
 
 const makeDatum = (current: number, previous: number) => ({
   [dataSeries.fullName()]: current,
