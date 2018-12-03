@@ -46,8 +46,6 @@ export interface MeasureJS {
 
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = "0,0.0 a";
-  static DEFAULT_TRANSFORMATION = "none";
-  static TRANSFORMATIONS = ["none", "percent-of-parent", "percent-of-total"];
 
   static isMeasure(candidate: any): candidate is Measure {
     return candidate instanceof Measure;
@@ -129,6 +127,10 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       let parameterExpression = (parameters as any).expression;
       parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
     }
+    if (parameters.transformation) {
+      console.warn("Transformations are no longer supported for measures. This functionality is covered by Series.");
+      return null;
+    }
 
     return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
@@ -140,8 +142,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     { name: "lowerIsBetter", defaultValue: false },
     { name: "formula" },
     { name: "description", defaultValue: undefined },
-    { name: "format", defaultValue: Measure.DEFAULT_FORMAT },
-    { name: "transformation", defaultValue: Measure.DEFAULT_TRANSFORMATION, possibleValues: Measure.TRANSFORMATIONS }
+    { name: "format", defaultValue: Measure.DEFAULT_FORMAT }
   ];
 
   public name: string;
@@ -152,7 +153,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   public expression: Expression;
   public format: string;
   public formatFn: (n: number) => string;
-  public transformation: string;
   public lowerIsBetter: boolean;
   public readonly type = "measure";
 

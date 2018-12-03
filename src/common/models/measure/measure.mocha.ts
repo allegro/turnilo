@@ -44,20 +44,7 @@ describe("Measure", () => {
       {
         name: "item_sum",
         title: "Items",
-        formula: "$main.sum($item)",
-        transformation: "none"
-      },
-      {
-        name: "items_of_parent",
-        title: "Items (% of parent)",
-        formula: "$main.sum($item)",
-        transformation: "percent-of-parent"
-      },
-      {
-        name: "items_of_total",
-        title: "Items (% of total)",
-        formula: "$main.sum($item)",
-        transformation: "percent-of-total"
+        formula: "$main.sum($item)"
       }
     ]);
   });
@@ -199,47 +186,4 @@ describe("Measure", () => {
 
   });
 
-  describe("toApplyExpression", () => {
-
-    describe("no transformation", () => {
-      const nestingLevels = [0, 1, 99];
-
-      nestingLevels.forEach(nestingLevel => {
-        it(`creates simple formula expression at level: ${nestingLevel}`, () => {
-          const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(nestingLevel);
-          expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
-        });
-      });
-    });
-
-    describe("percent-of-parent transformation", () => {
-      const tests = [
-        { nestingLevel: 0, expression: MeasureFixtures.applyWithTransformationAtRootLevel() },
-        { nestingLevel: 1, expression: MeasureFixtures.applyWithTransformationAtLevel(1) },
-        { nestingLevel: 99, expression: MeasureFixtures.applyWithTransformationAtLevel(1) }
-      ];
-
-      tests.forEach(test => {
-        it(`creates correct formula expression at level: ${test.nestingLevel}`, () => {
-          const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(test.nestingLevel);
-          expect(applyExpression.toJS()).to.deep.equal(test.expression);
-        });
-      });
-    });
-
-    describe("percent-of-total transformation", () => {
-      const tests = [
-        { nestingLevel: 0, expression: MeasureFixtures.applyWithTransformationAtRootLevel() },
-        { nestingLevel: 1, expression: MeasureFixtures.applyWithTransformationAtLevel(1) },
-        { nestingLevel: 99, expression: MeasureFixtures.applyWithTransformationAtLevel(99) }
-      ];
-
-      tests.forEach(test => {
-        it(`creates correct formula expression at level: ${test.nestingLevel}`, () => {
-          const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(test.nestingLevel);
-          expect(applyExpression.toJS()).to.deep.equal(test.expression);
-        });
-      });
-    });
-  });
 });

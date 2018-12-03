@@ -15,7 +15,8 @@
  */
 
 import { immutableArraysEqual, Instance } from "immutable-class";
-import { makeTitle } from "../../utils/general/general";
+import { complement } from "../../utils/functional/functional";
+import { isNil, makeTitle } from "../../utils/general/general";
 import { Measure, MeasureJS } from "./measure";
 
 export type MeasureOrGroupJS = MeasureJS | MeasureGroupJS;
@@ -69,7 +70,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
       name,
       title,
       description,
-      measures: measures.map(measureOrGroupFromJS)
+      measures: measures.map(measureOrGroupFromJS).filter(complement(isNil))
     });
   }
 

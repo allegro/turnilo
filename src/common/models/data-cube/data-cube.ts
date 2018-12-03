@@ -35,11 +35,10 @@ import {
   ExternalValue,
   ply,
   PlyTypeSimple,
-  r,
   RefExpression,
   SimpleFullType
 } from "plywood";
-import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
+import { isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { getWallTimeString } from "../../utils/time/time";
 import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Cluster } from "../cluster/cluster";
@@ -48,7 +47,7 @@ import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
-import { Measure, MeasureJS } from "../measure/measure";
+import { Measure } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
@@ -166,71 +165,6 @@ export interface DataCubeOptions {
 export interface DataCubeContext {
   cluster?: Cluster;
   executor?: Executor;
-}
-
-export interface LongForm {
-  metricColumn: string;
-  possibleAggregates: Record<string, any>;
-  addSubsetFilter?: boolean;
-  measures: Array<MeasureJS | LongFormMeasure>;
-}
-
-export interface LongFormMeasure {
-  aggregate: string;
-  value: string;
-  title: string;
-  units?: string;
-}
-
-function measuresFromLongForm(longForm: LongForm): Measure[] {
-  const { metricColumn, measures, possibleAggregates } = longForm;
-  let myPossibleAggregates: Record<string, Expression> = {};
-  for (let agg in possibleAggregates) {
-    if (!hasOwnProperty(possibleAggregates, agg)) continue;
-    myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
-  }
-
-  return measures.map(measure => {
-    if (hasOwnProperty(measure, "name")) {
-      return Measure.fromJS(measure as MeasureJS);
-    }
-
-    const title = measure.title;
-    if (!title) {
-      throw new Error("must have title in longForm value");
-    }
-
-    const value = (measure as LongFormMeasure).value;
-    const aggregate = (measure as LongFormMeasure).aggregate;
-    if (!aggregate) {
-      throw new Error("must have aggregates in longForm value");
-    }
-
-    const myExpression = myPossibleAggregates[aggregate];
-    if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value}`);
-
-    const name = makeUrlSafeName(`${aggregate}_${value}`);
-    return new Measure({
-      name,
-      title,
-      units: measure.units,
-      formula: myExpression.substitute(ex => {
-        if (ex instanceof RefExpression && ex.name === "filtered") {
-          return $("main").filter($(metricColumn).is(r(value)));
-        }
-        return null;
-      }).toString()
-    });
-  });
-}
-
-function filterFromLongForm(longForm: LongForm): Expression {
-  const { metricColumn, measures } = longForm;
-  let values: string[] = [];
-  for (let measure of measures) {
-    if (hasOwnProperty(measure, "aggregate")) values.push((measure as LongFormMeasure).value);
-  }
-  return $(metricColumn).in(values).simplify();
 }
 
 let check: Class<DataCubeValue, DataCubeJS>;

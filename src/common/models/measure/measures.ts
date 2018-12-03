@@ -70,7 +70,7 @@ export class Measures {
   }
 
   static fromJS(parameters: MeasureOrGroupJS[]): Measures {
-    return new Measures(parameters.map(measureOrGroupFromJS));
+    return new Measures(parameters.map(measureOrGroupFromJS).filter(complement(isNil)));
   }
 
   private readonly measures: MeasureOrGroup[];
