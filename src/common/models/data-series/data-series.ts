@@ -161,17 +161,7 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
 
   public datumFormatter() {
     const formatter = this.formatter();
-    return (datum: Datum, derivation = SeriesDerivation.CURRENT) => {
-      switch (derivation) {
-        case SeriesDerivation.CURRENT:
-        case SeriesDerivation.PREVIOUS:
-          return formatter(datum[this.fullName(derivation)] as number);
-        case SeriesDerivation.DELTA: {
-          const current = datum[this.fullName(SeriesDerivation.CURRENT)] as number;
-          const previous = datum[this.fullName(SeriesDerivation.PREVIOUS)] as number;
-          return formatter(Math.abs(current - previous));
-        }
-      }
-    };
+    return (datum: Datum, derivation = SeriesDerivation.CURRENT) =>
+      formatter(this.getDatum(datum, derivation));
   }
 }

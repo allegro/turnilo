@@ -87,4 +87,76 @@ export class DataSeriesExpressionSnapshots {
       }
     };
   }
+
+  static itemInCurrentPeriod(start: Date, end: Date) {
+    return {
+      expression: {
+        expression: {
+          name: "item",
+          op: "ref"
+        },
+        op: "sum",
+        operand: {
+          expression: {
+            expression: {
+              op: "literal",
+              type: "SET",
+              value: {
+                elements: [{ end, start }],
+                setType: "TIME_RANGE"
+              }
+            },
+            op: "overlap",
+            operand: {
+              name: "time",
+              op: "ref"
+            }
+          },
+          op: "filter",
+          operand: {
+            name: "main",
+            op: "ref"
+          }
+        }
+      },
+      name: "items_measure",
+      op: "apply"
+    };
+  }
+
+  static itemInPreviousPeriod(start: Date, end: Date) {
+    return {
+      expression: {
+        expression: {
+          name: "item",
+          op: "ref"
+        },
+        op: "sum",
+        operand: {
+          expression: {
+            expression: {
+              op: "literal",
+              type: "SET",
+              value: {
+                elements: [{ end, start }],
+                setType: "TIME_RANGE"
+              }
+            },
+            op: "overlap",
+            operand: {
+              name: "time",
+              op: "ref"
+            }
+          },
+          op: "filter",
+          operand: {
+            name: "main",
+            op: "ref"
+          }
+        }
+      },
+      name: "_previous__items_measure",
+      op: "apply"
+    };
+  }
 }

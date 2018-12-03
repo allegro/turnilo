@@ -15,9 +15,11 @@
  */
 
 import { expect } from "chai";
+import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { FilterFixtures } from "../filter/filter.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { SeriesDerivation } from "../series/series";
-import { DataSeries, DataSeriesPercentOf } from "./data-series";
+import { customFormat, EXACT_FORMAT, PERCENT_FORMAT, SeriesDerivation } from "../series/series";
+import { CurrentPeriod, DataSeries, DataSeriesPercentOf, PreviousPeriod } from "./data-series";
 import { nominalName } from "./data-series-names";
 import { DataSeriesFixtures } from "./data-series.fixtures";
 import { DataSeriesExpressionSnapshots } from "./data-series.snapshots";
@@ -26,7 +28,19 @@ describe("DataSeries", () => {
   describe("toExpression", () => {
     describe("periods", () => {
       it("creates expression for current period", () => {
+        const start = new Date(30 * 86400);
+        const end = new Date(40 * 86400);
+        const filter = FilterFixtures.timeAttributeFilter(start, end).toExpression(DataCubeFixtures.wiki());
+        const exp = DataSeriesFixtures.itemsSeries().toExpression(0, new CurrentPeriod(filter));
+        expect(exp.toJS()).to.deep.eq(DataSeriesExpressionSnapshots.itemInCurrentPeriod(start, end));
+      });
 
+      it("creates expression for previous period", () => {
+        const end = new Date(20 * 86400);
+        const start = new Date(10 * 86400);
+        const filter = FilterFixtures.timeAttributeFilter(start, end).toExpression(DataCubeFixtures.wiki());
+        const exp = DataSeriesFixtures.itemsSeries().toExpression(0, new PreviousPeriod(filter));
+        expect(exp.toJS()).to.deep.eq(DataSeriesExpressionSnapshots.itemInPreviousPeriod(start, end));
       });
     });
 
@@ -92,7 +106,7 @@ describe("DataSeries", () => {
     ];
 
     tests.forEach(({ percentOf, derivation }) => {
-      it("fullName/nominalName is isomorphic", () => {
+      it(`fullName/nominalName is isomorphic for derivation ${derivation} and percentOf ${percentOf}`, () => {
         const series = new DataSeries({ measure, percentOf });
         const fullName = series.fullName(derivation);
         const { derivation: nominalDerivation, name, percentOf: nominalPercent } = nominalName(fullName);
@@ -104,11 +118,44 @@ describe("DataSeries", () => {
   });
 
   describe("datum formatter", () => {
+    const series = new DataSeries({ measure: MeasureFixtures.wikiCount() });
+    const datum = { [series.fullName()]: 123456.987654 };
 
+    it("should format with default format", () => {
+      expect(series.formatDatum(datum)).to.be.eq("123.5 k");
+    });
+
+    it("should format with exact format", () => {
+      expect(series.set("format", EXACT_FORMAT).formatDatum(datum)).to.be.eq("123,456.987654");
+    });
+
+    it("should format with percent format", () => {
+      expect(series.set("format", PERCENT_FORMAT).formatDatum(datum)).to.be.eq("12345698.77%");
+    });
+
+    it("should format with custom format", () => {
+      expect(series.set("format", customFormat("0,0.0")).formatDatum(datum)).to.be.eq("123,457.0");
+    });
   });
 
-  describe("datum getter", () => {
+  describe("get from datum", () => {
+    const series = new DataSeries({ measure: MeasureFixtures.wikiCount() });
+    const datum = {
+      [series.fullName()]: 100,
+      [series.fullName(SeriesDerivation.PREVIOUS)]: 20
+    };
 
+    it("should get current value", () => {
+      expect(series.getDatum(datum)).to.eq(100);
+    });
+
+    it("should get previous value", () => {
+      expect(series.getDatum(datum, SeriesDerivation.PREVIOUS)).to.eq(20);
+    });
+
+    it("should get current value", () => {
+      expect(series.getDatum(datum, SeriesDerivation.DELTA)).to.eq(80);
+    });
   });
 
   describe("title", () => {

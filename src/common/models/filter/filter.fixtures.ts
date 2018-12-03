@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import { FilterJS } from "./filter";
+import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
+import { Filter } from "./filter";
 
 export class FilterFixtures {
 
-  static wikiLanguageIn(articleNames: string[]): FilterJS {
-    return {
-      op: "OVERLAP",
-      operand: { op: "ref", name: "articleName" },
-      expression: {
-        op: "literal",
-        value: { setType: "STRING", elements: articleNames },
-        type: "SET"
-      }
-    };
+  static timeAttributeFilter(start: Date, end: Date): Filter {
+    return Filter.fromClause(FilterClauseFixtures.timeRange("time", start, end));
   }
 }
