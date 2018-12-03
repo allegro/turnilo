@@ -17,31 +17,44 @@
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
+import { DataSeries } from "../../../common/models/data-series/data-series";
+import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
+import { SeriesDerivation } from "../../../common/models/series/series";
 import { Delta, formatDelta } from "./delta";
 
-const formatter = (i: number) => i.toFixed();
+const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount() });
+
+const makeDatum = (current: number, previous: number) => ({
+  [dataSeries.fullName()]: current,
+  [dataSeries.fullName(SeriesDerivation.PREVIOUS)]: previous
+});
+
+const makeDelta = (current: number, previous: number, lowerIsBetter = false) =>
+  lowerIsBetter ?
+    <Delta series={dataSeries.set("measure", MeasureFixtures.wikiCountLowerIsBetter())} datum={makeDatum(current, previous)} /> :
+    <Delta series={dataSeries} datum={makeDatum(current, previous)} />;
 
 describe("Delta", () => {
 
   describe("formatDelta", () => {
     it("should handle nil values", () => {
-      expect(formatDelta(null, 5)).to.equal(null);
-      expect(formatDelta(undefined, 5)).to.equal(null);
-      expect(formatDelta(5, undefined)).to.equal(null);
-      expect(formatDelta(5, null)).to.equal(null);
+      expect(formatDelta(makeDatum(null, 5), dataSeries)).to.equal(null);
+      expect(formatDelta(makeDatum(undefined, 5), dataSeries)).to.equal(null);
+      expect(formatDelta(makeDatum(5, undefined), dataSeries)).to.equal(null);
+      expect(formatDelta(makeDatum(5, null), dataSeries)).to.equal(null);
     });
 
     it("should calculate delta attributes correctly", () => {
-      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
-      expect(formatDelta(5, 10)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
-      expect(formatDelta(10, 10)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
+      expect(formatDelta(makeDatum(10, 5), dataSeries)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
+      expect(formatDelta(makeDatum(5, 10), dataSeries)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
+      expect(formatDelta(makeDatum(10, 10), dataSeries)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
     });
   });
 
   describe("<Delta>", () => {
     it("should handle cases with empty values", () => {
-      const emptyCurrent = shallow(<Delta currentValue={undefined} previousValue={2} formatter={formatter}/>);
-      const emptyPrevious = shallow(<Delta currentValue={2} previousValue={undefined} formatter={formatter}/>);
+      const emptyCurrent = shallow(makeDelta(undefined, 2));
+      const emptyPrevious = shallow(makeDelta(2, undefined));
 
       expect(emptyCurrent.find("span").hasClass("delta-neutral")).to.be.true;
       expect(emptyCurrent.find("span").contains("-")).to.be.true;
@@ -51,7 +64,7 @@ describe("Delta", () => {
     });
 
     it("should render properly positive delta", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={50} formatter={formatter}/>);
+      const delta = shallow(makeDelta(100, 50));
 
       const deltaNode = delta.find("span");
 
@@ -60,7 +73,7 @@ describe("Delta", () => {
     });
 
     it("should render properly positive delta for lower-is-better measure", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={50} lowerIsBetter={true} formatter={formatter}/>);
+      const delta = shallow(makeDelta(100, 50, true));
 
       const deltaNode = delta.find("span");
 
@@ -69,7 +82,7 @@ describe("Delta", () => {
     });
 
     it("should render properly negative delta", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={200} formatter={formatter}/>);
+      const delta = shallow(makeDelta(100, 200));
 
       const deltaNode = delta.find("span");
 
@@ -78,7 +91,7 @@ describe("Delta", () => {
     });
 
     it("should render properly negative delta for lower-is-better measure", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={200} lowerIsBetter={true} formatter={formatter}/>);
+      const delta = shallow(makeDelta(100, 200, true));
 
       const deltaNode = delta.find("span");
 
@@ -87,7 +100,7 @@ describe("Delta", () => {
     });
 
     it("should render properly neutral delta", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={100} formatter={formatter}/>);
+      const delta = shallow(makeDelta(100, 100));
 
       const deltaNode = delta.find("span");
 
@@ -96,8 +109,8 @@ describe("Delta", () => {
     });
 
     it("should handle infinite cases for delta percentage", () => {
-      const positive = shallow(<Delta currentValue={100} previousValue={0} formatter={formatter}/>);
-      const negative = shallow(<Delta currentValue={-100} previousValue={0} formatter={formatter}/>);
+      const positive = shallow(makeDelta(100, 0));
+      const negative = shallow(makeDelta(-100, 0));
 
       const positiveNode = positive.find("span");
       const negativeNode = negative.find("span");

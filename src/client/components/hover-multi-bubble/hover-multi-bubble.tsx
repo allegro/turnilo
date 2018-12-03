@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
+import { Datum } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
+import { DataSeries } from "../../../common/models/data-series/data-series";
+import { SeriesDerivation } from "../../../common/models/series/series";
 import { Fn } from "../../../common/utils/general/general";
 import { BodyPortal } from "../body-portal/body-portal";
+import { Delta } from "../delta/delta";
 import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
 import "./hover-multi-bubble.scss";
 
@@ -27,9 +31,9 @@ const LEFT_OFFSET = 22;
 export interface ColorEntry {
   color: string;
   name: string;
-  value: string;
-  previous?: string;
-  delta?: JSX.Element;
+  series: DataSeries;
+  datum: Datum;
+  calculateDelta?: boolean;
 }
 
 export interface HoverMultiBubbleProps {
@@ -44,16 +48,19 @@ export interface HoverMultiBubbleProps {
 function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
   if (!colorEntries || !colorEntries.length) return null;
 
-  const colorSwabs = colorEntries.map(({ color, name, value, previous, delta }: ColorEntry) => {
+  const colorSwabs = colorEntries.map(({ color, name, series, datum, calculateDelta }: ColorEntry) => {
+    const formatter = series.datumFormatter();
     const swabStyle = { background: color };
     return <tr key={name}>
       <td>
         <div className="color-swab" style={swabStyle}/>
       </td>
       <td className="color-name">{name}</td>
-      <td className="color-value">{value}</td>
-      {previous && <td className="color-previous">{previous}</td>}
-      {delta && <td className="color-delta">{delta}</td>}
+      <td className="color-value">{formatter(datum)}</td>
+      {calculateDelta && <td className="color-previous">{formatter(datum, SeriesDerivation.PREVIOUS)}</td>}
+      {calculateDelta && <td className="color-delta">
+        <Delta series={series} datum={datum}/>
+      </td>}
     </tr>;
   });
 

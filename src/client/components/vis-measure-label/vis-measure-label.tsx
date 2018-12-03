@@ -17,40 +17,31 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { SeriesFormat } from "../../../common/models/series/series";
-import { seriesFormatter } from "../../../common/utils/formatter/formatter";
+import { DataSeries } from "../../../common/models/data-series/data-series";
+import { SeriesDerivation } from "../../../common/models/series/series";
 import { Delta } from "../delta/delta";
 import "./vis-measure-label.scss";
 
 export interface VisMeasureLabelProps {
-  measure: Measure;
-  format: SeriesFormat;
+  series: DataSeries;
   datum: Datum;
   showPrevious: boolean;
 }
 
-function renderPrevious(datum: Datum, measure: Measure, format: SeriesFormat): JSX.Element {
-  const current = datum[measure.name] as number;
-  const previous = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
-  const formatter = seriesFormatter(format, measure);
+function renderPrevious(datum: Datum, series: DataSeries): JSX.Element {
   return <React.Fragment>
     <span className="measure-previous-value">
-      {formatter(previous)}
+      {series.formatDatum(datum, SeriesDerivation.PREVIOUS)}
       </span>
-    <Delta
-      formatter={formatter}
-      lowerIsBetter={measure.lowerIsBetter}
-      currentValue={current}
-      previousValue={previous} />
+    <Delta datum={datum} series={series} />
   </React.Fragment>;
 }
 
-export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ format, measure, datum, showPrevious }) => {
+export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ series, datum, showPrevious }) => {
   return <div className="vis-measure-label">
-    <span className="measure-title">{measure.title}</span>
+    <span className="measure-title">{series.measure.title}</span>
     <span className="colon">: </span>
-    <span className="measure-value">{measure.formatDatum(datum, format)}</span>
-    {showPrevious && renderPrevious(datum, measure, format)}
+    <span className="measure-value">{series.formatDatum(datum)}</span>
+    {showPrevious && renderPrevious(datum, series)}
   </div>;
 };

@@ -17,6 +17,7 @@
 
 import { Dataset, Expression } from "plywood";
 import * as React from "react";
+import { DataSeries } from "../../../common/models/data-series/data-series";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -32,7 +33,7 @@ export interface BaseVisualizationState {
   dragOnMeasure?: Measure;
   scrollLeft?: number;
   scrollTop?: number;
-  hoverMeasure?: Measure;
+  hoverSeries?: DataSeries;
 }
 
 export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
@@ -52,7 +53,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       datasetLoad: {},
       scrollLeft: 0,
       scrollTop: 0,
-      hoverMeasure: null
+      hoverSeries: null
     };
   }
 
@@ -70,7 +71,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    return makeQuery(essence, timekeeper);
+    return makeQuery(essence, timekeeper, this.id);
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {

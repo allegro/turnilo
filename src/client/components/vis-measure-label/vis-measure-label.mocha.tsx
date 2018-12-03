@@ -19,27 +19,26 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import { Datum } from "plywood";
 import * as React from "react";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
+import { DataSeries } from "../../../common/models/data-series/data-series";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { DEFAULT_FORMAT } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series";
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
-const measure = MeasureFixtures.wikiCount();
+const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount() });
 
-const datum: Datum = { [measure.name]: 10000, [measure.getMeasureKey(MeasureDerivation.PREVIOUS)]: 200 };
+const datum: Datum = { [dataSeries.fullName()]: 10000, [dataSeries.fullName(SeriesDerivation.PREVIOUS)]: 200 };
 
 const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
-  format={DEFAULT_FORMAT}
   datum={datum}
-  measure={MeasureFixtures.wikiCount()}
+  series={dataSeries}
   showPrevious={showPrevious} />);
 
 describe("VisMeasureLabel", () => {
   it("renders measure data on label", () => {
     const label = renderLabel();
 
-    expect(label.find(".measure-title").text()).to.be.eq(measure.title);
+    expect(label.find(".measure-title").text()).to.be.eq(dataSeries.measure.title);
     expect(label.find(".measure-value").text()).to.be.eq("10.0 k");
     expect(label.find(".measure-previous-value")).to.have.length(0);
     expect(label.find(Delta)).to.have.length(0);
@@ -48,7 +47,7 @@ describe("VisMeasureLabel", () => {
   it("renders measure data on label with previous series", () => {
     const label = renderLabel(true);
 
-    expect(label.find(".measure-title").text()).to.be.eq(measure.title);
+    expect(label.find(".measure-title").text()).to.be.eq(dataSeries.measure.title);
     expect(label.find(".measure-value").text()).to.be.eq("10.0 k");
     expect(label.find(".measure-previous-value").text()).to.be.eq("200.0");
     expect(label.find(Delta)).to.have.length(1);

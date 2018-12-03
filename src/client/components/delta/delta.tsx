@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { Datum } from "plywood";
 import * as React from "react";
-import { Unary } from "../../../common/utils/functional/functional";
+import { DataSeries } from "../../../common/models/data-series/data-series";
+import { SeriesDerivation } from "../../../common/models/series/series";
 import { isNil } from "../../../common/utils/general/general";
 import "./delta.scss";
 
@@ -27,7 +29,9 @@ export interface DeltaAttributes {
   deltaSign: DeltaSign;
 }
 
-export function formatDelta(currentValue: number, previousValue: number): DeltaAttributes {
+export function formatDelta(datum: Datum, series: DataSeries): DeltaAttributes {
+  const currentValue = series.getDatum(datum);
+  const previousValue = series.getDatum(datum, SeriesDerivation.PREVIOUS);
   if (isNil(currentValue) || isNil(previousValue)) {
     return null;
   }
@@ -62,20 +66,19 @@ function deltaSignToClassName(deltaSign: DeltaSign, lowerIsBetter = false): stri
 }
 
 export interface DeltaProps {
-  currentValue: number;
-  previousValue: number;
-  formatter: Unary<number, string>;
-  lowerIsBetter?: boolean;
+  datum: Datum;
+  series: DataSeries;
 }
 
-export const Delta: React.SFC<DeltaProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
-  const formattedDelta = formatDelta(currentValue, previousValue);
+export const Delta: React.SFC<DeltaProps> = ({ series, datum }) => {
+  const formattedDelta = formatDelta(datum, series);
+  const formatter = series.formatter();
   if (formattedDelta === null) {
     return <span className="delta-neutral">-</span>;
   }
 
   const { delta, deltaPercentage, deltaSign } = formattedDelta;
-  return <span className={deltaSignToClassName(deltaSign, lowerIsBetter)}>
+  return <span className={deltaSignToClassName(deltaSign, series.measure.lowerIsBetter)}>
     {deltaSignToSymbol(deltaSign)}
     {formatter(Math.abs(delta))}
     {isFinite(deltaPercentage) && ` (${Math.abs(deltaPercentage)}%)`}

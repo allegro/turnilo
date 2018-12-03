@@ -17,9 +17,7 @@
 
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Total } from "./total";
 import "./totals.scss";
@@ -77,33 +75,15 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   renderTotals(): JSX.Element[] {
     const { essence } = this.props;
     const { datasetLoad: { dataset } } = this.state;
-    const measures = essence.getSeriesWithMeasures();
+    const dataSeriesList = essence.getDataSeries();
     const datum = dataset ? dataset.data[0] : null;
-    if (!datum) {
-      return measures.map(({ series, measure }) => {
-        return <Total
-          key={measure.name}
-          formatter={seriesFormatter(series.format, measure )}
-          name={measure.title}
-          lowerIsBetter={measure.lowerIsBetter}
-          value={null}/>;
-      }).toArray();
-    }
 
-    return measures.map(({ series, measure }) => {
-      const currentValue = datum[measure.name] as number;
-      const previousValue = essence.hasComparison() && datum[measure.getMeasureKey(MeasureDerivation.PREVIOUS)] as number;
-
-      return <Total
-        key={measure.name}
-        name={measure.title}
-        value={currentValue}
-        previous={previousValue}
-        lowerIsBetter={measure.lowerIsBetter}
-        formatter={seriesFormatter(series.format, measure)}
-      />;
-    }).toArray();
-
+    return dataSeriesList.toArray().map(dataSeries =>
+      <Total
+        key={dataSeries.fullName()}
+        series={dataSeries}
+        datum={datum}
+        calculateDelta={essence.hasComparison()} />);
   }
 
   renderInternals() {

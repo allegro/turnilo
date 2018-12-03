@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
+import { Datum } from "plywood";
 import * as React from "react";
-import { Unary } from "../../../common/utils/functional/functional";
+import { DataSeries } from "../../../common/models/data-series/data-series";
+import { SeriesDerivation } from "../../../common/models/series/series";
 import { Delta } from "../delta/delta";
 import "./measure-bubble-content.scss";
 
 export interface MeasureBubbleContentProps {
-  current: number;
-  previous: number;
-  formatter: Unary<number, string>;
-  lowerIsBetter?: boolean;
+  datum: Datum;
+  series: DataSeries;
 }
 
-export const MeasureBubbleContent: React.SFC<MeasureBubbleContentProps> = ({ lowerIsBetter, formatter, current, previous }) => {
-  const currentValue = formatter(current);
-  const previousValue = formatter(previous);
+export const MeasureBubbleContent: React.SFC<MeasureBubbleContentProps> = ({ series, datum }) => {
+  const formatter = series.datumFormatter();
+  const currentValue = formatter(datum);
+  const previousValue = formatter(datum, SeriesDerivation.PREVIOUS);
   return <React.Fragment>
     <strong className="current-value">{currentValue}</strong>
     <span className="previous-value">{previousValue}</span>
-    <Delta formatter={formatter} currentValue={current} previousValue={previous} lowerIsBetter={lowerIsBetter}/>
+    <Delta series={series} datum={datum} />
   </React.Fragment>;
 };
