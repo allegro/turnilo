@@ -14,60 +14,55 @@
  * limitations under the License.
  */
 
-import { $, ApplyExpression, Expression, LimitExpression, ply, SortExpression } from "plywood";
+import { List } from "immutable";
+import { $, Expression, LimitExpression, ply, SortExpression } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { toExpression as filterClauseToExpression } from "../../../common/models/filter-clause/filter-clause";
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
+import { CurrentPeriod, DataSeries, PreviousPeriod } from "../../models/data-series/data-series";
 import { Dimension } from "../../models/dimension/dimension";
-import { Essence, SeriesWithMeasure } from "../../models/essence/essence";
-import { CurrentFilter, DerivationFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
+import { Essence } from "../../models/essence/essence";
+import { SeriesDerivation } from "../../models/series/series";
 import { Sort } from "../../models/sort/sort";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
-import { concatTruthy, thread } from "../functional/functional";
+import { thread } from "../functional/functional";
+
+interface PeriodFilters {
+  current: Expression;
+  previous?: Expression;
+}
 
 const $main = $("main");
 
-function seriesExpression({ series, measure }: SeriesWithMeasure, nestingLevel: number, filter: DerivationFilter = null): ApplyExpression[] {
-  return concatTruthy(
-    measure.toApplyExpression(nestingLevel, filter),
-    series.percents.ofParent && measure.toPercentOfParentApplyExpression(nestingLevel, filter),
-    series.percents.ofTotal && measure.toPercentOfTotalApplyExpression(nestingLevel, filter)
-  );
-}
-
-function performActions(expression: Expression, ...actions: ApplyExpression[]): Expression {
-  return actions.reduce((query, action) => query.performAction(action), expression);
-}
-
-function applySingleSeries(seriesWithMeasure: SeriesWithMeasure, query: Expression, hasComparison: boolean, nestingLevel: number, filters: Filters): Expression {
-  if (!hasComparison) {
-    return performActions(query, ...seriesExpression(seriesWithMeasure, nestingLevel));
-  }
-  return performActions(query,
-    ...seriesExpression(seriesWithMeasure, nestingLevel, new CurrentFilter(filters.current)),
-    ...seriesExpression(seriesWithMeasure, nestingLevel, new PreviousFilter(filters.previous)));
-}
-
-function applySeries(essence: Essence, filters: Filters, nestingLevel = 0) {
-  const seriesWithMeasures = essence.getSeriesWithMeasures();
-  const hasComparison = essence.hasComparison();
-
+function applySeries(dataSeries: List<DataSeries>, nestingLevel: number, filters?: PeriodFilters) {
   return (query: Expression) =>
-    seriesWithMeasures.reduce((query, seriesWithMeasure) => applySingleSeries(seriesWithMeasure, query, hasComparison, nestingLevel, filters), query);
+    dataSeries.reduce((query, series) => {
+      if (!filters) return query.performAction(series.toExpression(nestingLevel));
+      // TODO: maybe add delta as next expression
+      return query
+        .performAction(series.toExpression(nestingLevel, new CurrentPeriod(filters.current)))
+        .performAction(series.toExpression(nestingLevel, new PreviousPeriod(filters.previous)));
+    }, query);
 }
 
+// TODO: check sorts for percents & (delta | previous)
 function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, sort: Sort): Expression {
-  const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
-  if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
+  // TODO: match apply expressions
+  const { name: sortMeasureName, derivation, percentOf } = DataSeries.nominalName(sort.reference);
+  if (sortMeasureName && derivation === SeriesDerivation.CURRENT) {
     const sortMeasure = essence.dataCube.getMeasure(sortMeasureName);
     if (sortMeasure && !essence.getEffectiveSelectedMeasures().contains(sortMeasure)) {
-      return query.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
+      const dataSeries = new DataSeries({ percentOf, measure: sortMeasure });
+      const currentPeriod = currentFilter ? new CurrentPeriod(currentFilter) : undefined;
+      return query.performAction(dataSeries.toExpression(nestingLevel, currentPeriod));
     }
   }
-  if (sortMeasureName && derivation === MeasureDerivation.DELTA) {
-    return query.apply(sort.reference, $(sortMeasureName).subtract($(Measure.derivedName(sortMeasureName, MeasureDerivation.PREVIOUS))));
+  if (sortMeasureName && derivation === SeriesDerivation.DELTA) {
+    const currentReference = $(DataSeries.fullName(sortMeasureName, SeriesDerivation.CURRENT, percentOf));
+    const previousReference = $(DataSeries.fullName(sortMeasureName, SeriesDerivation.PREVIOUS, percentOf));
+    return query.apply(sort.reference, currentReference.subtract(previousReference));
   }
   return query;
 }
@@ -117,14 +112,14 @@ function applyHaving(colors: Colors, splitDimension: Dimension) {
   };
 }
 
-function applySubSplit(nestingLevel: number, essence: Essence, filters: Filters) {
+function applySubSplit(nestingLevel: number, essence: Essence, dataSeries: List<DataSeries>, filters: PeriodFilters) {
   return (query: Expression) => {
     if (nestingLevel >= essence.splits.length()) return query;
-    return query.apply(SPLIT, applySplit(nestingLevel, essence, filters));
+    return query.apply(SPLIT, applySplit(nestingLevel, essence, dataSeries, filters));
   };
 }
 
-function applySplit(index: number, essence: Essence, filters: Filters): Expression {
+function applySplit(index: number, essence: Essence, dataSeries: List<DataSeries>, filters: PeriodFilters): Expression {
   const { splits, dataCube, colors } = essence;
   const hasComparison = essence.hasComparison();
   const split = splits.getSplit(index);
@@ -136,42 +131,43 @@ function applySplit(index: number, essence: Essence, filters: Filters): Expressi
 
   const nestingLevel = index + 1;
 
-  const currentSplit = splitToExpression(split, dimension, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
+  const filterShift = hasComparison && { filter: filters.current, shift: essence.timeShift.valueOf() };
+
+  const currentSplit = splitToExpression(split, dimension, filterShift);
 
   return thread(
     $main.split(currentSplit, dimension.name),
     applyHaving(colors, dimension),
-    applySeries(essence, filters, nestingLevel),
-    applySort(essence, sort, filters.current, nestingLevel),
+    applySeries(dataSeries, nestingLevel, filters),
+    applySort(essence, sort, filters && filters.current, nestingLevel),
     applyLimit(colors, limit, dimension),
-    applySubSplit(nestingLevel, essence, filters)
+    applySubSplit(nestingLevel, essence, dataSeries, filters)
   );
 }
 
-interface Filters {
-  current: Expression;
-  previous?: Expression;
+function getPeriodFilters(essence: Essence, timekeeper: Timekeeper): PeriodFilters {
+  if (!essence.hasComparison()) return null;
+  const timeDimension = essence.dataCube.getTimeDimension();
+  const current = filterClauseToExpression(essence.currentTimeFilter(timekeeper), timeDimension);
+  const previous = filterClauseToExpression(essence.previousTimeFilter(timekeeper), timeDimension);
+
+  return { current, previous };
 }
 
-export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+export default function makeQuery(essence: Essence, timekeeper: Timekeeper, highlightId?: string): Expression {
   const { splits, dataCube } = essence;
   if (splits.length() > dataCube.getMaxSplits()) throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`);
 
   const hasComparison = essence.hasComparison();
-  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
-
-  const timeDimension = dataCube.getTimeDimension();
-  const filters = {
-    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper), timeDimension),
-    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper), timeDimension) : undefined
-  };
+  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId });
+  const measureExpressions = essence.getDataSeries();
+  const periodFilters = getPeriodFilters(essence, timekeeper);
 
   const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
-
-  const queryWithMeasures = applySeries(essence, filters)(mainExp);
+  const queryWithSeries = applySeries(measureExpressions, 0, periodFilters)(mainExp);
 
   if (splits.length() > 0) {
-    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, filters));
+    return queryWithSeries.apply(SPLIT, applySplit(0, essence, measureExpressions, periodFilters));
   }
-  return queryWithMeasures;
+  return queryWithSeries;
 }
