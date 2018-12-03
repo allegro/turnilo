@@ -56,26 +56,20 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
   }
 
   render() {
-    var { clicker, essence } = this.props;
-    var { menuOpenOn } = this.state;
-    var { visualization } = essence;
-
-    var menu: JSX.Element = null;
-    if (menuOpenOn) {
-      menu = React.createElement(VisSelectorMenu, {
-        clicker,
-        essence,
-        openOn: menuOpenOn,
-        onClose: this.closeMenu
-      });
-    }
+    const { clicker, essence } = this.props;
+    const { menuOpenOn } = this.state;
+    const { visualization } = essence;
 
     return <div className={classNames("vis-selector", { active: menuOpenOn })} onClick={this.openMenu}>
       <div className="vis-item selected">
         <SvgIcon svg={require("../../icons/vis-" + visualization.name + ".svg")} />
         <div className="vis-title">{visualization.title}</div>
       </div>
-      {menu}
+      {menuOpenOn && <VisSelectorMenu
+        clicker={clicker}
+        essence={essence}
+        openOn={menuOpenOn}
+        onClose={this.closeMenu} />}
     </div>;
   }
 }
