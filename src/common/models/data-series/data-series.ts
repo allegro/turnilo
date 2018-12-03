@@ -18,7 +18,8 @@ import { Record } from "immutable";
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { seriesFormatter } from "../../utils/formatter/formatter";
 import { Measure } from "../measure/measure";
-import { DEFAULT_FORMAT, readMeasureDerivation, SeriesDerivation, SeriesFormat } from "../series/series";
+import { DEFAULT_FORMAT, SeriesDerivation, SeriesFormat } from "../series/series";
+import { fullName } from "./data-series-names";
 
 interface DataSeriesValue {
   measure: Measure;
@@ -33,12 +34,6 @@ const defaultDataSeries: DataSeriesValue = {
 };
 
 export enum DataSeriesPercentOf { PARENT = "of_parent", TOTAL = "of_total" }
-
-function readDataSeriesPercentOf(str: string): DataSeriesPercentOf {
-  if (str === DataSeriesPercentOf.PARENT) return DataSeriesPercentOf.PARENT;
-  if (str === DataSeriesPercentOf.TOTAL) return DataSeriesPercentOf.TOTAL;
-  return null;
-}
 
 export interface Period {
   derivation: SeriesDerivation;
@@ -61,23 +56,6 @@ export class CurrentPeriod implements Period {
 
 export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
 
-  static namePattern = new RegExp(`^(_(${SeriesDerivation.PREVIOUS}|${SeriesDerivation.DELTA})__)?(.+)(__(${DataSeriesPercentOf.PARENT}|${DataSeriesPercentOf.TOTAL})_)?$`);
-
-  static nominalName(fullName: string): { name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf } {
-    const matches = fullName.match(DataSeries.namePattern);
-    if (!matches) throw new Error(`Couldn't read measure name: ${fullName}`);
-    const name = matches[3];
-    const derivation = matches[1] ? readMeasureDerivation(matches[1]) : SeriesDerivation.CURRENT;
-    const percentOf = matches[5] ? readDataSeriesPercentOf(matches[5]) : undefined;
-    return { name, derivation, percentOf };
-  }
-
-  static fullName(name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf): string {
-    const percentStr = percentOf ? `__${percentOf}_` : "";
-    const derivationStr = derivation === SeriesDerivation.CURRENT ? "" : `_${derivation}__`;
-    return `${derivationStr}${name}${percentStr}`;
-  }
-
   private static derivationTitle(derivation: SeriesDerivation): string {
     switch (derivation) {
       case SeriesDerivation.CURRENT:
@@ -91,7 +69,7 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
 
   public fullName(derivation = SeriesDerivation.CURRENT): string {
     const percentOf = this.percentOf;
-    return DataSeries.fullName(this.measure.name, derivation, percentOf);
+    return fullName(this.measure.name, derivation, percentOf);
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {

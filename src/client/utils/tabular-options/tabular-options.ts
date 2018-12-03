@@ -15,7 +15,7 @@
  */
 
 import { AttributeInfo, TabulatorOptions } from "plywood";
-import { DataSeries } from "../../../common/models/data-series/data-series";
+import { nominalName } from "../../../common/models/data-series/data-series-names";
 import { Essence } from "../../../common/models/essence/essence";
 import { SeriesDerivation } from "../../../common/models/series/series";
 
@@ -23,7 +23,7 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
     attributeTitle: ({ name }: AttributeInfo) => {
       // TODO: make function nominalName -> title
-      const { derivation, name: measureName } = DataSeries.nominalName(name);
+      const { derivation, name: measureName } = nominalName(name);
       const measure = essence.dataCube.getMeasure(measureName);
       if (measure) {
         switch (derivation) {

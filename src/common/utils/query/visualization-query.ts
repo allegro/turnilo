@@ -21,6 +21,7 @@ import { toExpression as filterClauseToExpression } from "../../../common/models
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
 import { CurrentPeriod, DataSeries, PreviousPeriod } from "../../models/data-series/data-series";
+import { fullName, nominalName } from "../../models/data-series/data-series-names";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { SeriesDerivation } from "../../models/series/series";
@@ -50,7 +51,7 @@ function applySeries(dataSeries: List<DataSeries>, nestingLevel: number, filters
 // TODO: check sorts for percents & (delta | previous)
 function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, sort: Sort): Expression {
   // TODO: match apply expressions
-  const { name: sortMeasureName, derivation, percentOf } = DataSeries.nominalName(sort.reference);
+  const { name: sortMeasureName, derivation, percentOf } = nominalName(sort.reference);
   if (sortMeasureName && derivation === SeriesDerivation.CURRENT) {
     const sortMeasure = essence.dataCube.getMeasure(sortMeasureName);
     if (sortMeasure && !essence.getEffectiveSelectedMeasures().contains(sortMeasure)) {
@@ -60,8 +61,8 @@ function applySortReferenceExpression(essence: Essence, query: Expression, nesti
     }
   }
   if (sortMeasureName && derivation === SeriesDerivation.DELTA) {
-    const currentReference = $(DataSeries.fullName(sortMeasureName, SeriesDerivation.CURRENT, percentOf));
-    const previousReference = $(DataSeries.fullName(sortMeasureName, SeriesDerivation.PREVIOUS, percentOf));
+    const currentReference = $(fullName(sortMeasureName, SeriesDerivation.CURRENT, percentOf));
+    const previousReference = $(fullName(sortMeasureName, SeriesDerivation.PREVIOUS, percentOf));
     return query.apply(sort.reference, currentReference.subtract(previousReference));
   }
   return query;
