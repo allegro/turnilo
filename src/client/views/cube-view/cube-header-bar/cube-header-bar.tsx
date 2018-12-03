@@ -216,8 +216,9 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     const { debugMenuAnchor } = this.state;
     if (!debugMenuAnchor) return null;
 
-    const { openRawDataModal, openViewDefinitionModal, openDruidQueryModal } = this.props;
+    const { essence: { dataCube }, openRawDataModal, openViewDefinitionModal, openDruidQueryModal } = this.props;
     return <DebugMenu
+      dataCube={dataCube}
       openRawDataModal={openRawDataModal}
       openDruidQueryModal={openDruidQueryModal}
       openViewDefinitionModal={openViewDefinitionModal}
