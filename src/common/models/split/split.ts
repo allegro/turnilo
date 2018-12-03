@@ -54,9 +54,20 @@ export function bucketToAction(bucket: Bucket): Expression {
     : new NumberBucketExpression({ size: bucket });
 }
 
-export function toExpression({ bucket, type }: Split, { expression }: Dimension, filter?: Expression, shift?: Duration): Expression {
-  const shouldApplyShift = shift && filter && type === SplitType.time;
-  const expWithShift = shouldApplyShift ? filter.then(expression).fallback(expression.timeShift(shift)) : expression;
+export interface FilterShift {
+  shift: Duration;
+  filter: Expression;
+}
+
+function applyShift(splitType: SplitType, expression: Expression, filterShift?: FilterShift) {
+  const shouldApplyShift = filterShift && splitType === SplitType.time;
+  if (!shouldApplyShift) return expression;
+  const { shift, filter } = filterShift;
+  return filter.then(expression).fallback(expression.timeShift(shift));
+}
+
+export function toExpression({ bucket, type }: Split, { expression }: Dimension, filterShift?: FilterShift): Expression {
+  const expWithShift = applyShift(type, expression, filterShift);
   if (!bucket) return expWithShift;
   return expWithShift.performAction(bucketToAction(bucket));
 }
