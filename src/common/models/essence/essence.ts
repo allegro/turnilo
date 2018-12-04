@@ -337,16 +337,17 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public getDataSeries(): List<DataSeries> {
+    const hasSplit = this.splits.length() > 0;
     return this.series.series.flatMap(({ percents: { ofTotal, ofParent }, reference }) => {
       const measure = this.dataCube.getMeasure(reference);
       const measureExp = new DataSeries({ measure });
 
       return concatTruthy(
         measureExp,
-        ofTotal && measureExp
+        hasSplit && ofTotal && measureExp
           .set("percentOf", DataSeriesPercentOf.TOTAL)
           .set("format", PERCENT_FORMAT),
-        ofParent && measureExp
+        hasSplit && ofParent && measureExp
           .set("percentOf", DataSeriesPercentOf.PARENT)
           .set("format", PERCENT_FORMAT)
       );
