@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 $bottom-margin: 12px;
@@ -40,6 +39,27 @@ $title-margin: 6px;
 
       &:hover {
         text-decoration: underline;
+      }
+    }
+  }
+
+  .percents-picker {
+    margin-bottom: 14px;
+
+    .percent-row {
+      height: 20px;
+      cursor: pointer;
+
+      &.disabled {
+        cursor: not-allowed;
+
+        .label {
+          color: $text-light;
+        }
+      }
+
+      .label {
+        line-height: 20px;
       }
     }
   }

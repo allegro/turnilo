@@ -16,37 +16,40 @@
  */
 
 import { expect } from "chai";
+import { shallow } from "enzyme";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
-import * as sinon from "sinon";
-import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
+import { SvgIcon } from "../svg-icon/svg-icon";
 import { Checkbox } from "./checkbox";
 
 describe("Checkbox", () => {
-  it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
-      <Checkbox
-        selected={true}
-      />
-    );
-
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("checkbox");
+  it("should render check icon for type 'check'", () => {
+    const check = shallow(<Checkbox selected={true} type="check" />);
+    expect(check.find(SvgIcon).prop("svg")).to.be.eq(require("../../icons/check.svg"));
   });
 
-  it("not checked + check", () => {
-    var onClick = sinon.spy();
+  it("should render check icon when no type provided", () => {
+    const check = shallow(<Checkbox selected={true} />);
+    expect(check.find(SvgIcon).prop("svg")).to.be.eq(require("../../icons/check.svg"));
+  });
 
-    var renderedComponent = renderIntoDocument(
-      <Checkbox selected={false} onClick={onClick} />
-    );
+  it("should render cross icon for type 'cross'", () => {
+    const check = shallow(<Checkbox selected={true} type="cross" />);
+    expect(check.find(SvgIcon).prop("svg")).to.be.eq(require("../../icons/x.svg"));
+  });
 
-    var svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent as React.Component, "svg");
-    expect(svgs.length).to.equal(0);
+  it("should render no icon for type 'radio'", () => {
+    const check = shallow(<Checkbox selected={true} type="radio" />);
+    expect(check.find(SvgIcon).length).to.be.eq(0);
+  });
 
-    expect(onClick.callCount).to.equal(0);
-    TestUtils.Simulate.click(findDOMNode(renderedComponent));
-    expect(onClick.callCount).to.equal(1);
+  it("shouldn't render icon when is not selected", () => {
+    const check = shallow(<Checkbox selected={false} />);
+    expect(check.find(SvgIcon).length).to.be.eq(0);
+  });
+
+  it("should set color when passed", () => {
+    const color = "red";
+    const check = shallow(<Checkbox color={color} selected={true} />);
+    expect(check.find(".checkbox-body").prop("style")).to.be.deep.eq({ background: color });
   });
 });

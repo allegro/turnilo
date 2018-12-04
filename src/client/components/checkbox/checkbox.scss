@@ -51,6 +51,18 @@ $checkbox-size: 15px;
     }
   }
 
+  &.disabled {
+    cursor: not-allowed;
+  }
+
+  &.disabled.check,
+  &.disabled.cross,
+  &.disabled.radio {
+    .checkbox-body {
+      background: hsla(0, 0, 0, 0.10);
+    }
+  }
+
   &.selected.radio {
     .checkbox-body::after {
       content: '';

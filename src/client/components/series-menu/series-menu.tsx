@@ -85,7 +85,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { essence: { dataCube }, containerStage, openOn, series, onClose, inside } = this.props;
+    const { essence: { dataCube, splits }, containerStage, openOn, series, onClose, inside } = this.props;
     const { percents, format } = this.state;
     const measure = dataCube.getMeasure(series.reference);
     if (!measure) return null;
@@ -105,6 +105,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         formatChange={this.saveFormat}
       />
       <PercentsPicker
+        disabled={splits.length() === 0}
         percents={percents}
         percentsChange={this.savePercents} />
       <div className="button-bar">

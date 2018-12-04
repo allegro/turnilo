@@ -24,45 +24,28 @@ export type CheckboxType = "check" | "cross" | "radio";
 
 export interface CheckboxProps {
   selected: boolean;
-  onClick?: React.MouseEventHandler<HTMLElement>;
   type?: CheckboxType;
+  disabled?: boolean;
   color?: string;
-  label?: string;
-  className?: string;
 }
 
-export interface CheckboxState {
-}
-
-export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
-
-  static defaultProps: Partial<CheckboxProps> = {
-    type: "check"
-  };
-
-  renderIcon() {
-    const { selected, type } = this.props;
-    if (!selected) return null;
-    if (type === "check") {
+function renderIcon(selected: boolean, type: CheckboxType) {
+  if (!selected) return null;
+  switch (type) {
+    case "check":
       return <SvgIcon svg={require("../../icons/check.svg")} />;
-    } else if (type === "cross") {
+    case "cross":
       return <SvgIcon svg={require("../../icons/x.svg")} />;
-    }
-    return null;
-  }
-
-  render() {
-    const { onClick, type, color, selected, label, className } = this.props;
-
-    var style: React.CSSProperties = null;
-    if (color) {
-      style = { background: color };
-    }
-
-    return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
-      <div className="checkbox-body" style={style}></div>
-      {this.renderIcon()}
-      {label ? <div className="label">{label}</div> : null}
-    </div>;
+    default:
+      return null;
   }
 }
+
+export const Checkbox: React.SFC<CheckboxProps> = ({ selected, type = "check", disabled, color }) => {
+  const icon = renderIcon(selected, type);
+  const style = color ? { background: color } : null;
+  return <div className={classNames("checkbox", type, { disabled, selected })}>
+    <div className="checkbox-body" style={style} />
+    {icon}
+  </div>;
+};
