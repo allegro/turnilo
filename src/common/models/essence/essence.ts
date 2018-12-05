@@ -338,9 +338,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public getDataSeries(): List<DataSeries> {
     const hasSplit = this.splits.length() > 0;
-    return this.series.series.flatMap(({ percents: { ofTotal, ofParent }, reference }) => {
+    return this.series.series.flatMap(({ format, percents: { ofTotal, ofParent }, reference }) => {
       const measure = this.dataCube.getMeasure(reference);
-      const measureExp = new DataSeries({ measure });
+      const measureExp = new DataSeries({ measure, format });
 
       return concatTruthy(
         measureExp,
@@ -372,8 +372,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return !this.colors.equals(other.colors);
   }
 
-  public newEffectiveMeasures(other: Essence): boolean {
-    return !this.getEffectiveSelectedMeasures().equals(other.getEffectiveSelectedMeasures());
+  public newSeries(other: Essence): boolean {
+    return !this.series.equals(other.series);
   }
 
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, highlightId: string = null, unfilterDimension: Dimension = null): boolean {

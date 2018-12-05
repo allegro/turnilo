@@ -174,7 +174,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.newSeries(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
   }
 

@@ -306,7 +306,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   onMouseLeave = (series: DataSeries) => {
     const { hoverSeries } = this.state;
-    if (hoverSeries.equals(series)) {
+    if (series.equals(hoverSeries)) {
       this.setState({
         hoverRange: null,
         hoverSeries: null
@@ -406,7 +406,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         />;
       }
 
-    } else if (!dragRange && hoverRange && hoverSeries.equals(series)) {
+    } else if (!dragRange && hoverRange && series.equals(hoverSeries)) {
       const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
       const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
@@ -603,7 +603,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const extent = this.calculateExtend(splitData, splits, getY, getYP);
     const scale = this.getScale(extent, lineStage);
 
-    const isHovered = !dragRange && hoverSeries.equals(series);
+    const isHovered = !dragRange && series.equals(hoverSeries);
 
     return <div
       className="measure-line-chart"

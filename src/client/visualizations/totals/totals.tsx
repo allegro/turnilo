@@ -42,7 +42,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
       nextEssence.differentTimeShift(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.newSeries(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
   }
 

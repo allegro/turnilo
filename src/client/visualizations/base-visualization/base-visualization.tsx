@@ -131,7 +131,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.newSeries(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
   }
 
