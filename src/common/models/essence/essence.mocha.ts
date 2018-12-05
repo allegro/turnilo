@@ -16,6 +16,7 @@
  */
 
 import { expect } from "chai";
+import { List } from "immutable";
 import { MANIFESTS } from "../../manifests";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
@@ -23,12 +24,15 @@ import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { DataSeriesPercentOf } from "../data-series/data-series";
 import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { Series } from "../series/series";
+import { SeriesList } from "../series-list/series-list";
+import { PERCENT_FORMAT, Series } from "../series/series";
+import { SeriesFixtures } from "../series/series.fixtures";
 import { Split, SplitType } from "../split/split";
-import { Splits } from "../splits/splits";
+import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
@@ -288,5 +292,104 @@ describe("EssenceProps", () => {
       });
     });
 
+  });
+
+  describe("getDataSeries", () => {
+    describe("Multiple series without percentages", () => {
+      const series = List.of(SeriesFixtures.wikiCount(), SeriesFixtures.wikiAdded());
+
+      const essence = EssenceFixtures.wikiTable().changeSeriesList(new SeriesList({ series }));
+
+      const dataSeries = essence.getDataSeries();
+
+      it("should generate same number of DataSeries as Series", () => {
+        expect(dataSeries.count()).to.eq(dataSeries.count());
+      });
+
+      dataSeries.zipWith((dataSeries, series) => {
+        it("DataSeries should have the same format", () => {
+          expect(dataSeries.format).to.be.eq(series.format);
+        });
+        it("DataSeries should have measure with name from Series reference", () => {
+          expect(dataSeries.measure.name).to.be.eq(series.reference);
+        });
+        it("DataSeries shouldn't have percentage", () => {
+          expect(dataSeries.percentOf).to.be.null;
+        });
+      }, series);
+    });
+
+    it("Series with percentage and Essence with no Splits", () => {
+      const series = List.of(SeriesFixtures.wikiCountWithPercents());
+
+      const essence = EssenceFixtures.wikiTable()
+        .changeSplits(EMPTY_SPLITS, VisStrategy.FairGame)
+        .changeSeriesList(new SeriesList({ series }));
+
+      const dataSeries = essence.getDataSeries();
+
+      it("should generate one DataSeries", () => {
+        expect(dataSeries.count()).to.eq(1);
+      });
+
+      it("DataSeries should have the same format", () => {
+        expect(dataSeries.first().format).to.be.eq(series.first().format);
+      });
+      it("DataSeries should have measure with name from Series reference", () => {
+        expect(dataSeries.first().measure.name).to.be.eq(series.first().reference);
+      });
+      it("DataSeries shouldn't have percentage", () => {
+        expect(dataSeries.first().percentOf).to.be.null;
+      });
+    });
+
+    it("Series with percentages and Essence with Splits", () => {
+      const series = List.of(SeriesFixtures.wikiCountWithPercents());
+
+      const essence = EssenceFixtures.wikiTable()
+        .changeSeriesList(new SeriesList({ series }));
+
+      const dataSeries = essence.getDataSeries();
+
+      it("should generate three DataSeries", () => {
+        expect(dataSeries.count()).to.eq(3);
+      });
+
+      describe("First DataSeries", () => {
+        it("should have the same format", () => {
+          expect(dataSeries.first().format).to.be.eq(series.first().format);
+        });
+        it("should have measure with name from Series reference", () => {
+          expect(dataSeries.first().measure.name).to.be.eq(series.first().reference);
+        });
+        it("shouldn't have percentage", () => {
+          expect(dataSeries.first().percentOf).to.be.null;
+        });
+      });
+
+      describe("Second DataSeries", () => {
+        it("should have PERCENT format", () => {
+          expect(dataSeries.get(1).format).to.be.eq(PERCENT_FORMAT);
+        });
+        it("should have measure with name from Series reference", () => {
+          expect(dataSeries.get(1).measure.name).to.be.eq(series.first().reference);
+        });
+        it("should have Percent of Total", () => {
+          expect(dataSeries.get(1).percentOf).to.be.eq(DataSeriesPercentOf.TOTAL);
+        });
+      });
+
+      describe("Third DataSeries", () => {
+        it("should have PERCENT format", () => {
+          expect(dataSeries.get(2).format).to.be.eq(PERCENT_FORMAT);
+        });
+        it("should have measure with name from Series reference", () => {
+          expect(dataSeries.get(2).measure.name).to.be.eq(series.first().reference);
+        });
+        it("should have Percent of Parent", () => {
+          expect(dataSeries.get(2).percentOf).to.be.eq(DataSeriesPercentOf.PARENT);
+        });
+      });
+    });
   });
 });

@@ -64,14 +64,14 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   onCancelClick = () => this.props.onClose();
 
   onOkClick = () => {
-    if (!this.validate()) return;
+    if (!this.hasChanged()) return;
     const { series: originalSeries, clicker, essence, onClose } = this.props;
     const series = this.constructSeries();
     clicker.changeSeriesList(essence.series.replaceSeries(originalSeries, series));
     onClose();
   }
 
-  validate() {
+  hasChanged() {
     const series = this.constructSeries();
     return !this.props.series.equals(series);
   }
@@ -86,9 +86,11 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   render() {
     const { essence: { dataCube, splits }, containerStage, openOn, series, onClose, inside } = this.props;
-    const { percents, format } = this.state;
     const measure = dataCube.getMeasure(series.reference);
     if (!measure) return null;
+
+    const { percents, format } = this.state;
+    const disabled = !this.hasChanged();
 
     return <BubbleMenu
       className="series-menu"
@@ -97,19 +99,17 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
       stage={Stage.fromSize(250, 240)}
       openOn={openOn}
       onClose={onClose}
-      inside={inside}
-    >
+      inside={inside}>
       <FormatPicker
         measure={measure}
         format={format}
-        formatChange={this.saveFormat}
-      />
+        formatChange={this.saveFormat} />
       <PercentsPicker
         disabled={splits.length() === 0}
         percents={percents}
         percentsChange={this.savePercents} />
       <div className="button-bar">
-        <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
+        <Button className="ok" type="primary" disabled={disabled} onClick={this.onOkClick} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
       </div>
     </BubbleMenu>;

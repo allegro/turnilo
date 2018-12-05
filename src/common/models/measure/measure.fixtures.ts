@@ -47,6 +47,10 @@ export class MeasureFixtures {
     return new Measure(MeasureFixtures.wikiCountJS());
   }
 
+  static wikiAdded(): Measure {
+    return new Measure(MeasureFixtures.wikiAddedJS());
+  }
+
   static wikiCountLowerIsBetter(): Measure {
     return new Measure({
       ...MeasureFixtures.wikiCountJS(),
@@ -84,4 +88,11 @@ export class MeasureFixtures {
     });
   }
 
+  static wikiAddedJS() {
+    return {
+      name: "added",
+      title: "Added",
+      formula: "$main.sum($added)"
+    };
+  }
 }
