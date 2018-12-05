@@ -19,7 +19,7 @@ import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { seriesFormatter } from "../../utils/formatter/formatter";
 import { Measure } from "../measure/measure";
 import { DEFAULT_FORMAT, SeriesDerivation, SeriesFormat } from "../series/series";
-import { fullName } from "./data-series-names";
+import { fullName, title } from "./data-series-names";
 
 interface DataSeriesValue {
   measure: Measure;
@@ -56,20 +56,8 @@ export class CurrentPeriod implements Period {
 
 export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
 
-  private static derivationTitle(derivation: SeriesDerivation): string {
-    switch (derivation) {
-      case SeriesDerivation.CURRENT:
-        return "";
-      case SeriesDerivation.PREVIOUS:
-        return "Previous ";
-      case SeriesDerivation.DELTA:
-        return "Difference ";
-    }
-  }
-
   public fullName(derivation = SeriesDerivation.CURRENT): string {
-    const percentOf = this.percentOf;
-    return fullName(this.measure.name, derivation, percentOf);
+    return fullName(this.measure.name, derivation, this.percentOf);
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
@@ -121,20 +109,8 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
     return this.toApplyExpression(expWithPeriodFilter, nestingLevel, period && period.derivation);
   }
 
-  private percentTitle(): string {
-    if (!this.percentOf) return "";
-    switch (this.percentOf) {
-      case DataSeriesPercentOf.TOTAL:
-        return " (% of Total)";
-      case DataSeriesPercentOf.PARENT:
-        return " (% of Parent)";
-    }
-  }
-
   public title(derivation = SeriesDerivation.CURRENT): string {
-    const derivationStr = DataSeries.derivationTitle(derivation);
-    const percentStr = this.percentTitle();
-    return `${derivationStr}${this.measure.title}${percentStr}`;
+    return title(this.measure.title, derivation, this.percentOf);
   }
 
   public getDatum(datum: Datum, derivation = SeriesDerivation.CURRENT) {

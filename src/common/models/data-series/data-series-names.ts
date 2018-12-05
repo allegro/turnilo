@@ -57,3 +57,30 @@ export function nominalName(fullName: string): { name: string, derivation: Serie
   const name = fullName.substring(derivationLength, fullName.length - percentLength);
   return { name, derivation, percentOf };
 }
+
+function derivationTitle(derivation: SeriesDerivation): string {
+  switch (derivation) {
+    case SeriesDerivation.CURRENT:
+      return "";
+    case SeriesDerivation.PREVIOUS:
+      return "Previous ";
+    case SeriesDerivation.DELTA:
+      return "Difference ";
+  }
+}
+
+function percentTitle(percentOf: DataSeriesPercentOf): string {
+  if (!percentOf) return "";
+  switch (percentOf) {
+    case DataSeriesPercentOf.TOTAL:
+      return " (% of Total)";
+    case DataSeriesPercentOf.PARENT:
+      return " (% of Parent)";
+  }
+}
+
+export function title(title: string, derivation: SeriesDerivation, percentOf: DataSeriesPercentOf): string {
+  const derivationStr = derivationTitle(derivation);
+  const percentStr = percentTitle(percentOf);
+  return `${derivationStr}${title}${percentStr}`;
+}

@@ -15,25 +15,20 @@
  */
 
 import { AttributeInfo, TabulatorOptions } from "plywood";
-import { nominalName } from "../../../common/models/data-series/data-series-names";
+import { nominalName, title } from "../../../common/models/data-series/data-series-names";
 import { Essence } from "../../../common/models/essence/essence";
-import { SeriesDerivation } from "../../../common/models/series/series";
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
+    attributeFilter: ({ name }: AttributeInfo) => {
+      return !name.startsWith("__formula");
+    },
     attributeTitle: ({ name }: AttributeInfo) => {
       // TODO: make function nominalName -> title
-      const { derivation, name: measureName } = nominalName(name);
+      const { derivation, name: measureName, percentOf } = nominalName(name);
       const measure = essence.dataCube.getMeasure(measureName);
       if (measure) {
-        switch (derivation) {
-          case SeriesDerivation.CURRENT:
-            return measure.title;
-          case SeriesDerivation.PREVIOUS:
-            return `Previous ${measure.title}`;
-          case SeriesDerivation.DELTA:
-            return `Difference ${measure.title}`;
-        }
+        return title(measure.title, derivation, percentOf);
       }
       const dimension = essence.dataCube.getDimension(name);
       if (dimension) {
