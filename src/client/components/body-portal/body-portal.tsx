@@ -17,11 +17,11 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { classNames } from "../../utils/dom/dom";
 import "./body-portal.scss";
 import normalizeStyles from "./normalize-styles";
 
 export interface BodyPortalProps {
-
   left?: number | string;
   right?: number | string;
   top?: number | string;
@@ -40,22 +40,18 @@ export class BodyPortal extends React.Component<BodyPortalProps, {}> {
 
   private static aboveAll: any;
 
-  private _target: any = null; // HTMLElement, a div that is appended to the body
-  private _component: Element = null; // ReactElement, which is mounted on the target
-
-  public get component() {
-    return this._component;
+  constructor(props: BodyPortalProps) {
+    super(props);
+    this.target = document.createElement("div");
+    this.target.className = classNames("body-portal", { "full-size": props.fullSize });
   }
 
-  public get target() {
-    return this._target;
-  }
+  private readonly target: HTMLElement = null; // HTMLElement, a div that is appended to the body
 
   componentDidMount() {
-    this.teleport();
+    document.body.appendChild(this.target);
 
     const { onMount, isAboveAll } = this.props;
-
     if (onMount) onMount();
 
     if (isAboveAll) {
@@ -64,32 +60,17 @@ export class BodyPortal extends React.Component<BodyPortalProps, {}> {
     }
   }
 
-  updateStyle() {
-    Object.assign(this._target.style, normalizeStyles(this.props));
-  }
-
-  teleport() {
-    const { fullSize } = this.props;
-    let newDiv = document.createElement("div");
-    newDiv.className = "body-portal" + (fullSize ? " full-size" : "");
-    this._target = document.body.appendChild(newDiv);
-    this.updateStyle();
-    this._component = ReactDOM.render(React.Children.only(this.props.children) as any, this._target);
-  }
-
-  componentDidUpdate() {
-    this.updateStyle();
-    this._component = ReactDOM.render(React.Children.only(this.props.children) as any, this._target);
+  renderModalStyles() {
+    Object.assign(this.target.style, normalizeStyles(this.props));
   }
 
   componentWillUnmount() {
-    ReactDOM.unmountComponentAtNode(this._target);
-    document.body.removeChild(this._target);
-
+    document.body.removeChild(this.target);
     if (BodyPortal.aboveAll === this) BodyPortal.aboveAll = undefined;
   }
 
-  render(): React.ReactElement<BodyPortalProps> {
-    return null;
+  render() {
+    this.renderModalStyles();
+    return ReactDOM.createPortal(this.props.children, this.target);
   }
 }
