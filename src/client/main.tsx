@@ -27,7 +27,7 @@ import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
 
 addErrorMonitor();
 
-const container = document.getElementsByClassName("app-container")[ 0 ];
+const container = document.getElementsByClassName("app-container")[0];
 if (!container) throw new Error("container not found");
 
 // Add the loader
@@ -44,7 +44,7 @@ interface Config {
   stateful: boolean;
 }
 
-const config: Config = (window as any)[ "__CONFIG__" ];
+const config: Config = (window as any)["__CONFIG__"];
 if (!config || !config.version || !config.appSettings || !config.appSettings.dataCubes) {
   throw new Error("config not found");
 }
