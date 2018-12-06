@@ -35,11 +35,12 @@ module.exports = merge.smart(common, {
               babelOptions: {
                 babelrc: false,
                 presets: [
-                  ["@babel/preset-env", {
+                  [
+                    "@babel/preset-env", {
                       targets: "last 2 versions, ie 11",
                       modules: false,
-                      useBuiltIns: "entry"
-                  }]
+                    }
+                  ]
                 ]
               },
               babelCore: "@babel/core",
