@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import "@babel/polyfill";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { AppSettingsJS } from "../common/models/app-settings/app-settings";
@@ -26,7 +27,7 @@ import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
 
 addErrorMonitor();
 
-var container = document.getElementsByClassName("app-container")[0];
+const container = document.getElementsByClassName("app-container")[ 0 ];
 if (!container) throw new Error("container not found");
 
 // Add the loader
@@ -43,12 +44,12 @@ interface Config {
   stateful: boolean;
 }
 
-var config: Config = (window as any)["__CONFIG__"];
+const config: Config = (window as any)[ "__CONFIG__" ];
 if (!config || !config.version || !config.appSettings || !config.appSettings.dataCubes) {
   throw new Error("config not found");
 }
 
-var version = config.version;
+const version = config.version;
 
 require.ensure([], require => {
   const { Ajax } = require("./utils/ajax/ajax");
@@ -59,7 +60,7 @@ require.ensure([], require => {
 
   Ajax.version = version;
 
-  var appSettings = AppSettings.fromJS(config.appSettings, {
+  const appSettings = AppSettings.fromJS(config.appSettings, {
     visualizations: MANIFESTS,
     executorFactory: (dataCube: DataCube) => {
       return Ajax.queryUrlExecutorFactory(dataCube.name, "plywood");
@@ -81,18 +82,18 @@ require.ensure([], require => {
 // Polyfill =====================================
 
 // From ../../assets/polyfill/drag-drop-polyfill.js
-var div = document.createElement("div");
-var dragDiv = "draggable" in div;
-var evts = "ondragstart" in div && "ondrop" in div;
+const div = document.createElement("div");
+const dragDiv = "draggable" in div;
+const evts = "ondragstart" in div && "ondrop" in div;
 
-var needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
 if (needsPatch) {
   require.ensure([
     "../../lib/polyfill/drag-drop-polyfill.min.js",
     "../../lib/polyfill/drag-drop-polyfill.css"
   ], require => {
-    var DragDropPolyfill = require("../../lib/polyfill/drag-drop-polyfill.min.js");
+    const DragDropPolyfill = require("../../lib/polyfill/drag-drop-polyfill.min.js");
     require("../../lib/polyfill/drag-drop-polyfill.css");
     DragDropPolyfill.Initialize({});
   }, "ios-drag-drop");

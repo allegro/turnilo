@@ -116,7 +116,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", dimension.title);
+    dataTransfer.setData("text", dimension.title);
 
     DragManager.setDragDimension(dimension, DimensionOrigin.PANEL);
     setDragGhost(dataTransfer, dimension.title);

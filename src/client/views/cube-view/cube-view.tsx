@@ -56,6 +56,7 @@ import { VisSelector } from "../../components/vis-selector/vis-selector";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
+import { isInternetExplorer } from "../../utils/browser-type/browser-type";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";
 import * as localStorage from "../../utils/local-storage/local-storage";
@@ -355,7 +356,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!CubeView.canDrop()) return;
-    e.dataTransfer.dropEffect = "move";
+    if (!isInternetExplorer()) e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 

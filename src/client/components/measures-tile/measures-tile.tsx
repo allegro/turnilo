@@ -96,7 +96,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", measure.title);
+    dataTransfer.setData("text", measure.title);
 
     DragManager.setDragMeasure(measure, MeasureOrigin.PANEL);
     setDragGhost(dataTransfer, measure.title);
