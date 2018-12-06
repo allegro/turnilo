@@ -963,33 +963,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.defaultPinnedDimensions || (OrderedSet([]) as any);
   }
 
-  public change(propertyName: string, newValue: any): DataCube {
-    let v = this.valueOf();
-
-    if (!v.hasOwnProperty(propertyName)) {
-      throw new Error(`Unknown property : ${propertyName}`);
-    }
-
-    (v as any)[propertyName] = newValue;
-    return new DataCube(v);
-  }
-
-  public changeDefaultSortMeasure(defaultSortMeasure: string) {
-    return this.change("defaultSortMeasure", defaultSortMeasure);
-  }
-
-  public changeTitle(title: string) {
-    return this.change("title", title);
-  }
-
-  public changeDescription(description: string) {
-    return this.change("description", description);
-  }
-
-  public changeMeasures(measures: List<Measure>) {
-    return this.change("measures", measures);
-  }
-
   public getDefaultSortExpression(): Sort {
     return new Sort({
       reference: this.defaultSortMeasure,
