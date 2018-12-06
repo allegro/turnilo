@@ -65,8 +65,18 @@
       padding: 0 $padding-compact;
 
       .row-wrapper {
-        @include ellipsis;
         height: 100%;
+
+        @include not-internet-explorer {
+          @include ellipsis;
+        }
+
+        @include internet-explorer {
+          white-space: nowrap;
+          overflow-x: visible;
+          text-overflow: ellipsis;
+        }
+
 
         .label {
           display: inline-block;

@@ -88,6 +88,9 @@
     "request-promise-native": "1.0.5"
   },
   "devDependencies": {
+    "@babel/core": "7.2.0",
+    "@babel/polyfill": "7.0.0",
+    "@babel/preset-env": "7.2.0",
     "@types/body-parser": "1.16.8",
     "@types/chai": "4.0.10",
     "@types/compression": "0.0.35",

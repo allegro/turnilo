@@ -15,27 +15,6 @@
  * limitations under the License.
  */
 
-@import '../../../../lib/style/tech-mixins';
-@import '../../config/constants';
-
-@import './variables';
-@import './media-queries';
-
-@import './linear-transition';
-@import './bounce';
-@import './browser-type';
-
-@import './form';
-@import './menu-cont';
-@import './bubble-cont';
-@import './header-bar';
-@import './side-by-side';
-@import './button';
-@import './input';
-@import 'tiles-item';
-@import './modal-cont';
-@import './module';
-@import './indicator-field';
-@import './white-shadow';
-@import './overflow';
-@import './hoverable-icon';
+export const isInternetExplorer = (): boolean => {
+  return window.navigator.userAgent.indexOf("MSIE ") > 0 || !!navigator.userAgent.match(/Trident.*rv:11\./);
+};
