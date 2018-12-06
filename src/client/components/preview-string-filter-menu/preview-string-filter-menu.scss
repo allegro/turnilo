@@ -28,28 +28,4 @@
     padding: 4px 10px;
     color: $text-light;
   }
-
-  .percents-picker {
-    margin-bottom: 14px;
-
-    .percent-row {
-      height: 24px;
-      cursor: pointer;
-
-      &.disabled {
-        cursor: not-allowed;
-        color: $text-light;
-      }
-    }
-
-
-    .checkbox {
-      margin-top: 1px;
-    }
-
-    .label {
-      line-height: 24px;
-    }
-  }
-
 }
