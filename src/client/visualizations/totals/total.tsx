@@ -27,10 +27,9 @@ interface DifferenceProps {
 }
 
 const Difference: React.SFC<DifferenceProps> = ({ series, datum }) => {
-  const formatter = series.datumFormatter();
   return <React.Fragment>
     <div className="measure-value measure-value--previous">
-      {formatter(datum, SeriesDerivation.PREVIOUS)}
+      {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
     </div>
     <div className="measure-delta-value">
       <Delta datum={datum} series={series} />
@@ -46,8 +45,7 @@ export interface TotalProps {
 
 export const Total: React.SFC<TotalProps> = ({ datum, calculateDelta, series }) => {
   const title = series.title();
-  const formatter = series.datumFormatter();
-  const currentValue = datum ? formatter(datum, SeriesDerivation.CURRENT) : "-";
+  const currentValue = datum ? series.formatValue(datum, SeriesDerivation.CURRENT) : "-";
   return <div className="total">
     <div className="measure-name" title={title}>{title}</div>
     <div className="measure-value">{currentValue}</div>

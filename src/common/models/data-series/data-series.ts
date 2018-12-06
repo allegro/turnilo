@@ -113,7 +113,7 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
     return title(this.measure.title, derivation, this.percentOf);
   }
 
-  public getDatum(datum: Datum, derivation = SeriesDerivation.CURRENT) {
+  public selectValue(datum: Datum, derivation = SeriesDerivation.CURRENT) {
     switch (derivation) {
       case SeriesDerivation.CURRENT:
       case SeriesDerivation.PREVIOUS:
@@ -130,14 +130,9 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
     return seriesFormatter(this.format, this.measure);
   }
 
-  public formatDatum(datum: Datum, derivaion = SeriesDerivation.CURRENT): string {
-    const formatter = this.datumFormatter();
-    return formatter(datum, derivaion);
-  }
-
-  public datumFormatter() {
+  public formatValue(datum: Datum, derivation = SeriesDerivation.CURRENT): string {
     const formatter = this.formatter();
-    return (datum: Datum, derivation = SeriesDerivation.CURRENT) =>
-      formatter(this.getDatum(datum, derivation));
+    const data = this.selectValue(datum, derivation);
+    return formatter(data);
   }
 }

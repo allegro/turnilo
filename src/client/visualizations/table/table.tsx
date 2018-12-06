@@ -287,7 +287,7 @@ export class Table extends BaseVisualization<TableState> {
     return dataSeries.map(series => {
       const measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
-        .map((d: Datum) => series.getDatum(d));
+        .map((d: Datum) => series.selectValue(d));
 
       return d3.scale.linear()
         .domain(d3.extent([0, ...measureValues]))
@@ -321,25 +321,24 @@ export class Table extends BaseVisualization<TableState> {
       const lastLevel = datum["__nest"] === splitLength;
 
       return dataSeries.flatMap((dataSeries, i) => {
-        const currentValue = dataSeries.getDatum(datum);
-        const formatter = dataSeries.datumFormatter();
+        const currentValue = dataSeries.selectValue(datum);
 
         const currentCell = <div className={className} key={dataSeries.fullName()} style={{ width: idealWidth }}>
           {lastLevel && this.makeBackground(hScales[i](currentValue))}
-          <div className="label">{formatter(datum)}</div>
+          <div className="label">{dataSeries.formatValue(datum)}</div>
         </div>;
 
         if (!essence.hasComparison()) {
           return [currentCell];
         }
 
-        const previousValue = dataSeries.getDatum(datum, SeriesDerivation.PREVIOUS);
+        const previousValue = dataSeries.selectValue(datum, SeriesDerivation.PREVIOUS);
 
         return [
           currentCell,
           <div className={className} key={dataSeries.fullName(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
             {lastLevel && this.makeBackground(hScales[i](previousValue))}
-            <div className="label">{formatter(datum, SeriesDerivation.PREVIOUS)}</div>
+            <div className="label">{dataSeries.formatValue(datum, SeriesDerivation.PREVIOUS)}</div>
           </div>,
           <div className={className} key={dataSeries.fullName(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
             <div className="label">

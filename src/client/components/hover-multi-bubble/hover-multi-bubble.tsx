@@ -49,15 +49,14 @@ function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
   if (!colorEntries || !colorEntries.length) return null;
 
   const colorSwabs = colorEntries.map(({ color, name, series, datum, calculateDelta }: ColorEntry) => {
-    const formatter = series.datumFormatter();
     const swabStyle = { background: color };
     return <tr key={name}>
       <td>
         <div className="color-swab" style={swabStyle}/>
       </td>
       <td className="color-name">{name}</td>
-      <td className="color-value">{formatter(datum)}</td>
-      {calculateDelta && <td className="color-previous">{formatter(datum, SeriesDerivation.PREVIOUS)}</td>}
+      <td className="color-value">{series.formatValue(datum)}</td>
+      {calculateDelta && <td className="color-previous">{series.formatValue(datum, SeriesDerivation.PREVIOUS)}</td>}
       {calculateDelta && <td className="color-delta">
         <Delta series={series} datum={datum}/>
       </td>}

@@ -53,9 +53,9 @@ describe("Delta", () => {
     });
 
     it("should calculate delta attributes correctly", () => {
-      expect(formatDeltaValues(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
-      expect(formatDeltaValues(5, 10)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
-      expect(formatDeltaValues(10, 10)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
+      expect(formatDeltaValues(10, 5)).to.deep.equal({ delta: "5", deltaPercentage: "100%", deltaSign: 1 });
+      expect(formatDeltaValues(5, 10)).to.deep.equal({ delta: "5", deltaPercentage: "50%", deltaSign: -1 });
+      expect(formatDeltaValues(10, 10)).to.deep.equal({ delta: "0", deltaPercentage: "0%", deltaSign: 0 });
     });
   });
 

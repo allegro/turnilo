@@ -27,12 +27,9 @@ export interface MeasureBubbleContentProps {
 }
 
 export const MeasureBubbleContent: React.SFC<MeasureBubbleContentProps> = ({ series, datum }) => {
-  const formatter = series.datumFormatter();
-  const currentValue = formatter(datum);
-  const previousValue = formatter(datum, SeriesDerivation.PREVIOUS);
   return <React.Fragment>
-    <strong className="current-value">{currentValue}</strong>
-    <span className="previous-value">{previousValue}</span>
+    <strong className="current-value">{series.formatValue(datum)}</strong>
+    <span className="previous-value">{series.formatValue(datum, SeriesDerivation.PREVIOUS)}</span>
     <Delta series={series} datum={datum} />
   </React.Fragment>;
 };

@@ -391,8 +391,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
         const segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
         const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
-        const formatter = series.datumFormatter();
-        const measureLabel = highlightDatum ? formatter(highlightDatum) : null;
+        const measureLabel = highlightDatum ? series.formatValue(highlightDatum) : null;
 
         return <SegmentBubble
           left={leftOffset}
@@ -458,7 +457,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   private renderMeasureLabel(datum: Datum, series: DataSeries): JSXNode {
     if (!this.props.essence.hasComparison()) {
-      return series.datumFormatter()(datum);
+      return series.formatValue(datum);
     }
     return <MeasureBubbleContent series={series} datum={datum} />;
   }
@@ -594,8 +593,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
-    const getY = (datum: Datum) => series.getDatum(datum);
-    const getYP = (datum: Datum) => series.getDatum(datum, SeriesDerivation.PREVIOUS);
+    const getY = (datum: Datum) => series.selectValue(datum);
+    const getYP = (datum: Datum) => series.selectValue(datum, SeriesDerivation.PREVIOUS);
 
     const datum: Datum = dataset.data[0];
     const splitData = datum[SPLIT] as Dataset;

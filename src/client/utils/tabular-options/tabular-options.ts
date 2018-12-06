@@ -15,8 +15,8 @@
  */
 
 import { AttributeInfo, TabulatorOptions } from "plywood";
-import { nominalName, title } from "../../../common/models/data-series/data-series-names";
 import { Essence } from "../../../common/models/essence/essence";
+import { SeriesDerivation } from "../../../common/models/series/series";
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
@@ -24,11 +24,19 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
       return !name.startsWith("__formula");
     },
     attributeTitle: ({ name }: AttributeInfo) => {
-      // TODO: make function nominalName -> title
-      const { derivation, name: measureName, percentOf } = nominalName(name);
-      const measure = essence.dataCube.getMeasure(measureName);
-      if (measure) {
-        return title(measure.title, derivation, percentOf);
+      // TODO: What if Derivation could become part of series?
+      const dataSeries = essence.getDataSeries();
+      const currentSeries = dataSeries.find(series => series.fullName() === name);
+      if (currentSeries) {
+        return currentSeries.title();
+      }
+      const previousSeries = dataSeries.find(series => series.fullName(SeriesDerivation.PREVIOUS) === name);
+      if (previousSeries) {
+        return previousSeries.title(SeriesDerivation.PREVIOUS);
+      }
+      const deltaSeries = dataSeries.find(series => series.fullName(SeriesDerivation.DELTA) === name);
+      if (deltaSeries) {
+        return deltaSeries.title(SeriesDerivation.DELTA);
       }
       const dimension = essence.dataCube.getDimension(name);
       if (dimension) {

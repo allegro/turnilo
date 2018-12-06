@@ -31,7 +31,7 @@ export interface VisMeasureLabelProps {
 function renderPrevious(datum: Datum, series: DataSeries): JSX.Element {
   return <React.Fragment>
     <span className="measure-previous-value">
-      {series.formatDatum(datum, SeriesDerivation.PREVIOUS)}
+      {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
       </span>
     <Delta datum={datum} series={series} />
   </React.Fragment>;
@@ -41,7 +41,7 @@ export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ series, datum
   return <div className="vis-measure-label">
     <span className="measure-title">{series.measure.title}</span>
     <span className="colon">: </span>
-    <span className="measure-value">{series.formatDatum(datum)}</span>
+    <span className="measure-value">{series.formatValue(datum)}</span>
     {showPrevious && renderPrevious(datum, series)}
   </div>;
 };

@@ -24,21 +24,24 @@ import "./delta.scss";
 export type DeltaSign = -1 | 0 | 1;
 
 export interface DeltaAttributes {
-  delta: number;
-  deltaPercentage: number;
+  delta: string;
+  deltaPercentage: string;
   deltaSign: DeltaSign;
 }
 
 export function formatDelta(datum: Datum, series: DataSeries): DeltaAttributes {
-  const currentValue = series.getDatum(datum);
-  const previousValue = series.getDatum(datum, SeriesDerivation.PREVIOUS);
+  const currentValue = series.selectValue(datum);
+  const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
   if (isNil(currentValue) || isNil(previousValue)) {
     return null;
   }
+  const deltaValue = series.selectValue(datum, SeriesDerivation.DELTA);
+  const delta = series.formatValue(datum, SeriesDerivation.DELTA);
 
-  const delta = currentValue - previousValue;
-  const deltaSign = delta ? delta < 0 ? -1 : 1 : 0;
-  const deltaPercentage = Math.floor((delta / previousValue) * 100);
+  const diff = currentValue - previousValue;
+  const deltaSign = diff ? diff < 0 ? -1 : 1 : 0;
+  const deltaRatio = Math.floor((deltaValue / previousValue) * 100);
+  const deltaPercentage = isFinite(deltaRatio) ? `${deltaRatio}%` : null;
 
   return { deltaSign, deltaPercentage, delta };
 }
@@ -72,7 +75,6 @@ export interface DeltaProps {
 
 export const Delta: React.SFC<DeltaProps> = ({ series, datum }) => {
   const formattedDelta = formatDelta(datum, series);
-  const formatter = series.formatter();
   if (formattedDelta === null) {
     return <span className="delta-neutral">-</span>;
   }
@@ -80,7 +82,7 @@ export const Delta: React.SFC<DeltaProps> = ({ series, datum }) => {
   const { delta, deltaPercentage, deltaSign } = formattedDelta;
   return <span className={deltaSignToClassName(deltaSign, series.measure.lowerIsBetter)}>
     {deltaSignToSymbol(deltaSign)}
-    {formatter(Math.abs(delta))}
-    {isFinite(deltaPercentage) && ` (${Math.abs(deltaPercentage)}%)`}
+    {delta}
+    {deltaPercentage && ` (${deltaPercentage})`}
   </span>;
 };

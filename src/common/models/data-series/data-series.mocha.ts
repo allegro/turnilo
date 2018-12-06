@@ -122,19 +122,19 @@ describe("DataSeries", () => {
     const datum = { [series.fullName()]: 123456.987654 };
 
     it("should format with default format", () => {
-      expect(series.formatDatum(datum)).to.be.eq("123.5 k");
+      expect(series.formatValue(datum)).to.be.eq("123.5 k");
     });
 
     it("should format with exact format", () => {
-      expect(series.set("format", EXACT_FORMAT).formatDatum(datum)).to.be.eq("123,456.987654");
+      expect(series.set("format", EXACT_FORMAT).formatValue(datum)).to.be.eq("123,456.987654");
     });
 
     it("should format with percent format", () => {
-      expect(series.set("format", PERCENT_FORMAT).formatDatum(datum)).to.be.eq("12345698.77%");
+      expect(series.set("format", PERCENT_FORMAT).formatValue(datum)).to.be.eq("12345698.77%");
     });
 
     it("should format with custom format", () => {
-      expect(series.set("format", customFormat("0,0.0")).formatDatum(datum)).to.be.eq("123,457.0");
+      expect(series.set("format", customFormat("0,0.0")).formatValue(datum)).to.be.eq("123,457.0");
     });
   });
 
@@ -146,15 +146,15 @@ describe("DataSeries", () => {
     };
 
     it("should get current value", () => {
-      expect(series.getDatum(datum)).to.eq(100);
+      expect(series.selectValue(datum)).to.eq(100);
     });
 
     it("should get previous value", () => {
-      expect(series.getDatum(datum, SeriesDerivation.PREVIOUS)).to.eq(20);
+      expect(series.selectValue(datum, SeriesDerivation.PREVIOUS)).to.eq(20);
     });
 
     it("should get current value", () => {
-      expect(series.getDatum(datum, SeriesDerivation.DELTA)).to.eq(80);
+      expect(series.selectValue(datum, SeriesDerivation.DELTA)).to.eq(80);
     });
   });
 

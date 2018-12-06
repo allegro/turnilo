@@ -297,7 +297,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getYExtent(data: Datum[], series: DataSeries): number[] {
-    return d3.extent(data, (d: Datum) => series.getDatum(d));
+    return d3.extent(data, (d: Datum) => series.selectValue(d));
   }
 
   getYScale(series: DataSeries, yAxisStage: Stage): d3.scale.Linear<number, number> {
@@ -416,7 +416,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       left={leftOffset}
       top={topOffset}
       title={segmentLabel}
-      content={series.formatDatum(path[path.length - 1])}
+      content={series.formatValue(path[path.length - 1])}
       actions={<SegmentActionButtons
         dimension={dimension}
         clicker={clicker}
@@ -450,7 +450,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   private renderMeasureLabel(datum: Datum, series: DataSeries): JSX.Element | string {
     if (!this.props.essence.hasComparison()) {
-      return series.formatDatum(datum);
+      return series.formatValue(datum);
     }
     return <MeasureBubbleContent
       series={series}
@@ -903,7 +903,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     return data.map((d, i) => {
       let x = xScale(getX(d, i));
-      let y = scaleY(series.getDatum(d));
+      let y = scaleY(series.selectValue(d));
       let h = scaleY(0) - y;
       const children: BarCoordinates[] = [];
       const coordinate = new BarCoordinates({
