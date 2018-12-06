@@ -229,6 +229,34 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     const { kind } = this;
     return kind === "time" || kind === "number";
   }
+
+  change(propertyName: string, newValue: any): Dimension {
+    var v = this.valueOf();
+
+    if (!v.hasOwnProperty(propertyName)) {
+      throw new Error(`Unknown property : ${propertyName}`);
+    }
+
+    (v as any)[propertyName] = newValue;
+    return new Dimension(v);
+  }
+
+  changeKind(newKind: string): Dimension {
+    return this.change("kind", newKind);
+  }
+
+  changeName(newName: string): Dimension {
+    return this.change("name", newName);
+  }
+
+  changeTitle(newTitle: string): Dimension {
+    return this.change("title", newTitle);
+  }
+
+  public changeFormula(newFormula: string): Dimension {
+    return this.change("formula", newFormula);
+  }
+
 }
 
 check = Dimension;
