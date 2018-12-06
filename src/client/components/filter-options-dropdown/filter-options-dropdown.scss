@@ -53,6 +53,7 @@
 
   svg.icon {
     display: inline-block;
+    padding: 5px 0;
     cursor: pointer;
     width: 19px;
     @include internet-explorer {
