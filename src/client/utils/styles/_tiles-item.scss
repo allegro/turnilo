@@ -51,10 +51,6 @@
 
   .remove {
     @include pin-right(27px);
-    text-align: center;
-    padding-top: 9px;
-    cursor: pointer;
-
     @include not-internet-explorer {
       padding-top: 9px;
     }
@@ -62,6 +58,9 @@
     @include internet-explorer {
       padding-top: 0;
     }
+    text-align: center;
+    padding-top: 9px;
+    cursor: pointer;
 
     svg {
       width: 10px;

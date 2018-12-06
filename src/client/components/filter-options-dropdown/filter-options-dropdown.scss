@@ -52,13 +52,13 @@
   }
 
   svg.icon {
+    @include internet-explorer {
+      height: 29px;
+    }
     display: inline-block;
     padding: 5px 0;
     cursor: pointer;
     width: 19px;
-    @include internet-explorer {
-      height: 29px;
-    }
 
     path {
       fill: #888;

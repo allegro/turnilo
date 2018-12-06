@@ -67,7 +67,10 @@ rules:
   no-transition-all: 2
   no-universal-selectors: 0
   no-url-protocols: 2
-  no-vendor-prefixes: 2
+  no-vendor-prefixes:
+  - 2
+  - excluded-identifiers:
+    - ms
   no-warn: 2
   one-declaration-per-line: 2
   placeholder-in-extend: 2
