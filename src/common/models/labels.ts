@@ -204,7 +204,7 @@ export const CLUSTER = {
 export const GENERAL = {
   "customization.title": {
     label: "Title",
-    description: "What will appear as the tab's title in your browser-type. Use <code>%v</code> as a placeholder for Turnilo's version."
+    description: "What will appear as the tab's title in your browser. Use <code>%v</code> as a placeholder for Turnilo's version."
   },
   "customization.timezones": {
     label: "Timezones",
