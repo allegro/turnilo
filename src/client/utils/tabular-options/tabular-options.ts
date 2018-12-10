@@ -16,7 +16,24 @@
 
 import { AttributeInfo, TabulatorOptions } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
+
+function titleFromDataSeries(essence: Essence, name: string) {
+  // TODO: What if Derivation could become part of series?
+  const dataSeries = essence.getDataSeries();
+  for (const derivation of [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA]) {
+    const currentSeries = dataSeries.find(series => series.plywoodExpressionName(derivation) === name);
+    if (currentSeries) {
+      return currentSeries.title(derivation);
+    }
+  }
+  return null;
+}
+
+function titleForDimension(essence: Essence, name: string) {
+  const dimension = essence.dataCube.getDimension(name);
+  return dimension ? dimension.title : null;
+}
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
@@ -24,24 +41,10 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
       return !name.startsWith("__formula");
     },
     attributeTitle: ({ name }: AttributeInfo) => {
-      // TODO: What if Derivation could become part of series?
-      const dataSeries = essence.getDataSeries();
-      const currentSeries = dataSeries.find(series => series.fullName() === name);
-      if (currentSeries) {
-        return currentSeries.title();
-      }
-      const previousSeries = dataSeries.find(series => series.fullName(SeriesDerivation.PREVIOUS) === name);
-      if (previousSeries) {
-        return previousSeries.title(SeriesDerivation.PREVIOUS);
-      }
-      const deltaSeries = dataSeries.find(series => series.fullName(SeriesDerivation.DELTA) === name);
-      if (deltaSeries) {
-        return deltaSeries.title(SeriesDerivation.DELTA);
-      }
-      const dimension = essence.dataCube.getDimension(name);
-      if (dimension) {
-        return dimension.title;
-      }
+      const dataSeriesTitle = titleFromDataSeries(essence, name);
+      if (dataSeriesTitle) return dataSeriesTitle;
+      const dimensionTitle = titleForDimension(essence, name);
+      if (dimensionTitle) return dimensionTitle;
       return name;
     },
     timezone: essence.timezone
