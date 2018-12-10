@@ -70,7 +70,7 @@ describe("mkurl router", () => {
       .expect(
         {
           hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAckaGQqVSItDaEm1hU2tnZMC7TDGxohwzJO" +
-            "rp8oNAE9l5kABNDcGOJCYIgwXiAAvpSekmY2MqCYwgAKcAY2+MKktJSJvMSIGVnh4YogyhDY2LTeACI0JlBY2Bql5ZXVAMoOthZW6ZQItADmJt742AEIlAAWEEPTSPM9EwgI4UA=="
+            "rp8oNAE9l5kABNDcGOJCYIgwXiAAvpSekmY2cADmui4gmMIACnAGNvjCpLSUqbzEiDl54eGKIMoQ2Ni03gAiNCZQWNgaldW19QDKDrYWVtmUCLSJ2N742AEIlAAWEPFzSEsD0wgI4UA=="
         },
         testComplete
       );
