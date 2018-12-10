@@ -18,10 +18,10 @@ import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
-import { Series } from "../series/series";
+import { SeriesDefinition } from "../series/series-definition";
 
 interface SeriesListValue {
-  series: List<Series>;
+  series: List<SeriesDefinition>;
 }
 
 const defaultSeriesList: SeriesListValue = { series: List([]) };
@@ -29,28 +29,28 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new Series({ reference }))) });
+    return new SeriesList({ series: List(names.map(reference => new SeriesDefinition({ reference }))) });
   }
 
   static fromJS(seriesDefs: any[]): SeriesList {
-    const series = List(seriesDefs.map(def => Series.fromJS(def)));
+    const series = List(seriesDefs.map(def => SeriesDefinition.fromJS(def)));
     return new SeriesList({ series });
   }
 
-  public addSeries(newSeries: Series): SeriesList {
+  public addSeries(newSeries: SeriesDefinition): SeriesList {
     const { series } = this;
     return this.insertByIndex(series.count(), newSeries);
   }
 
-  public removeSeries(series: Series): SeriesList {
+  public removeSeries(series: SeriesDefinition): SeriesList {
     return this.updateSeries(list => list.filter(s => s !== series));
   }
 
-  public replaceSeries(original: Series, newSeries: Series): SeriesList {
+  public replaceSeries(original: SeriesDefinition, newSeries: SeriesDefinition): SeriesList {
     return this.updateSeries(series => series.map(s => s.equals(original) ? newSeries : s));
   }
 
-  public replaceByIndex(index: number, replace: Series): SeriesList {
+  public replaceByIndex(index: number, replace: SeriesDefinition): SeriesList {
     const { series } = this;
     if (series.count() === index) {
       return this.insertByIndex(index, replace);
@@ -65,7 +65,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     });
   }
 
-  public insertByIndex(index: number, insert: Series): SeriesList {
+  public insertByIndex(index: number, insert: SeriesDefinition): SeriesList {
     return this.updateSeries(list =>
       list
         .insert(index, insert)
@@ -80,7 +80,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.hasSeries(name);
   }
 
-  public getSeries(reference: string): Series {
+  public getSeries(reference: string): SeriesDefinition {
     return this.series.find(series => series.reference === reference);
   }
 
@@ -92,7 +92,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.series.count();
   }
 
-  private updateSeries(updater: Unary<List<Series>, List<Series>>) {
+  private updateSeries(updater: Unary<List<SeriesDefinition>, List<SeriesDefinition>>) {
     return this.update("series", updater);
   }
 }

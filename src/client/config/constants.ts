@@ -128,6 +128,7 @@ export const STRINGS: any = {
   noTilesInThisCollection: "There are no tiles in this collection",
   ok: "OK",
   openIn: "Open in",
+  percentages: "Percentages",
   pin: "Pin",
   pinboard: "Pinboard",
   pinboardPlaceholder: "Click or drag dimensions to pin them",

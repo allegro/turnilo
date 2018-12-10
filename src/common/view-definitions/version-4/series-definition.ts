@@ -18,6 +18,8 @@ import { SeriesList } from "../../models/series-list/series-list";
 
 export interface SeriesDefinition {
   reference: string;
+  format: string;
+  percents?: { ofParent?: boolean, ofTotal?: boolean };
 }
 
 type SeriesDefinitionsList = SeriesDefinition[];

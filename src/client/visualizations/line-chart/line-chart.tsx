@@ -30,7 +30,7 @@ import { DateRange, FixedTimeFilterClause, NumberFilterClause, NumberRange as Fi
 import { Filter } from "../../../common/models/filter/filter";
 import { getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
 import { Measure } from "../../../common/models/measure/measure";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";

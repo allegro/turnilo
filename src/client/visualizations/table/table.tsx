@@ -26,7 +26,7 @@ import { DataSeries } from "../../../common/models/data-series/data-series";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
@@ -179,11 +179,11 @@ export class Table extends BaseVisualization<TableState> {
     if (element === HoverElement.HEADER) {
       switch (columnType) {
         case ColumnType.CURRENT:
-          return series.fullName();
+          return series.plywoodExpressionName();
         case ColumnType.PREVIOUS:
-          return series.fullName(SeriesDerivation.PREVIOUS);
+          return series.plywoodExpressionName(SeriesDerivation.PREVIOUS);
         case ColumnType.DELTA:
-          return series.fullName(SeriesDerivation.DELTA);
+          return series.plywoodExpressionName(SeriesDerivation.DELTA);
       }
     }
     throw new Error(`Can't create sort reference for position element: ${element}`);
@@ -323,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
       return dataSeries.flatMap((dataSeries, i) => {
         const currentValue = dataSeries.selectValue(datum);
 
-        const currentCell = <div className={className} key={dataSeries.fullName()} style={{ width: idealWidth }}>
+        const currentCell = <div className={className} key={dataSeries.plywoodExpressionName()} style={{ width: idealWidth }}>
           {lastLevel && this.makeBackground(hScales[i](currentValue))}
           <div className="label">{dataSeries.formatValue(datum)}</div>
         </div>;
@@ -336,11 +336,11 @@ export class Table extends BaseVisualization<TableState> {
 
         return [
           currentCell,
-          <div className={className} key={dataSeries.fullName(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
+          <div className={className} key={dataSeries.plywoodExpressionName(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
             {lastLevel && this.makeBackground(hScales[i](previousValue))}
             <div className="label">{dataSeries.formatValue(datum, SeriesDerivation.PREVIOUS)}</div>
           </div>,
-          <div className={className} key={dataSeries.fullName(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
+          <div className={className} key={dataSeries.plywoodExpressionName(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
             <div className="label">
               {<Delta series={dataSeries} datum={datum} />}
             </div>
@@ -367,11 +367,11 @@ export class Table extends BaseVisualization<TableState> {
                className={classNames("sort-arrow", commonSort.direction)} />;
 
     return essence.getDataSeries().flatMap(series => {
-      const isCurrentSorted = commonSortName === series.fullName();
+      const isCurrentSorted = commonSortName === series.plywoodExpressionName();
 
       const currentSeries = <div
         className={classNames("measure-name", { hover: series.equals(hoverSeries), sorted: isCurrentSorted })}
-        key={series.fullName()}
+        key={series.plywoodExpressionName()}
         style={{ width: columnWidth }}
       >
         <div className="title-wrap">{series.title()}</div>
@@ -382,13 +382,13 @@ export class Table extends BaseVisualization<TableState> {
         return [currentSeries];
       }
 
-      const isPreviousSorted = commonSortName === series.fullName(SeriesDerivation.PREVIOUS);
-      const isDeltaSorted = commonSortName === series.fullName(SeriesDerivation.DELTA);
+      const isPreviousSorted = commonSortName === series.plywoodExpressionName(SeriesDerivation.PREVIOUS);
+      const isDeltaSorted = commonSortName === series.plywoodExpressionName(SeriesDerivation.DELTA);
       return [
         currentSeries,
         <div
           className={classNames("measure-name", { hover: series.equals(hoverSeries), sorted: isPreviousSorted })}
-          key={series.fullName(SeriesDerivation.PREVIOUS)}
+          key={series.plywoodExpressionName(SeriesDerivation.PREVIOUS)}
           style={{ width: columnWidth }}
         >
           <div className="title-wrap">{series.title(SeriesDerivation.PREVIOUS)}</div>
@@ -396,7 +396,7 @@ export class Table extends BaseVisualization<TableState> {
         </div>,
         <div
           className={classNames("measure-name measure-delta", { hover: series.equals(hoverSeries), sorted: isDeltaSorted })}
-          key={series.fullName(SeriesDerivation.DELTA)}
+          key={series.plywoodExpressionName(SeriesDerivation.DELTA)}
           style={{ width: columnWidth }}
         >
           <div className="title-wrap">Difference</div>

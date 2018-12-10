@@ -128,7 +128,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
     }
     if (parameters.transformation) {
-      console.warn("Transformations are no longer supported for measures. This functionality is covered by Series.");
+      console.warn("Transformations are no longer supported for measures. This functionality is covered by SeriesDefinition.");
       return null;
     }
 

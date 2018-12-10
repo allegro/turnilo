@@ -21,13 +21,13 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { DataSeries } from "../../../common/models/data-series/data-series";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
 const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount() });
 
-const datum: Datum = { [dataSeries.fullName()]: 10000, [dataSeries.fullName(SeriesDerivation.PREVIOUS)]: 200 };
+const datum: Datum = { [dataSeries.plywoodExpressionName()]: 10000, [dataSeries.plywoodExpressionName(SeriesDerivation.PREVIOUS)]: 200 };
 
 const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
   datum={datum}

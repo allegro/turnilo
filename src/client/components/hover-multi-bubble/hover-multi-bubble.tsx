@@ -19,7 +19,7 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataSeries } from "../../../common/models/data-series/data-series";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
 import { Fn } from "../../../common/utils/general/general";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Delta } from "../delta/delta";

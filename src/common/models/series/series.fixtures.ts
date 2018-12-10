@@ -15,22 +15,22 @@
  */
 
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { Series, SeriesPercents } from "./series";
+import { SeriesDefinition, SeriesPercentages } from "./series-definition";
 
 export class SeriesFixtures {
-  static wikiCount(): Series {
+  static wikiCount(): SeriesDefinition {
     const reference = MeasureFixtures.wikiCount().name;
-    return new Series({ reference });
+    return new SeriesDefinition({ reference });
   }
 
-  static wikiAdded(): Series {
+  static wikiAdded(): SeriesDefinition {
     const reference = MeasureFixtures.wikiAdded().name;
-    return new Series({ reference });
+    return new SeriesDefinition({ reference });
   }
 
-  static wikiCountWithPercents(): Series {
+  static wikiCountWithPercents(): SeriesDefinition {
     const reference = MeasureFixtures.wikiCount().name;
-    const percents = new SeriesPercents({ ofParent: true, ofTotal: true });
-    return new Series({ reference, percents });
+    const percentages = new SeriesPercentages({ ofParent: true, ofTotal: true });
+    return new SeriesDefinition({ reference, percentages });
   }
 }

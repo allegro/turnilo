@@ -34,7 +34,7 @@ import {
   granularityToString
 } from "../../../common/models/granularity/granularity";
 import { Measure } from "../../../common/models/measure/measure";
-import { DEFAULT_FORMAT } from "../../../common/models/series/series";
+import { DEFAULT_FORMAT } from "../../../common/models/series/series-definition";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";

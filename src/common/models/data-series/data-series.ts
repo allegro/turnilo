@@ -18,8 +18,8 @@ import { Record } from "immutable";
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { seriesFormatter } from "../../utils/formatter/formatter";
 import { Measure } from "../measure/measure";
-import { DEFAULT_FORMAT, SeriesDerivation, SeriesFormat } from "../series/series";
-import { fullName, title } from "./data-series-names";
+import { DEFAULT_FORMAT, SeriesDerivation, SeriesFormat } from "../series/series-definition";
+import { plywoodExpressionKey, title } from "./data-series-names";
 
 interface DataSeriesValue {
   measure: Measure;
@@ -56,8 +56,8 @@ export class CurrentPeriod implements Period {
 
 export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
 
-  public fullName(derivation = SeriesDerivation.CURRENT): string {
-    return fullName(this.measure.name, derivation, this.percentOf);
+  public plywoodExpressionName(derivation = SeriesDerivation.CURRENT): string {
+    return plywoodExpressionKey(this.measure.name, derivation, this.percentOf);
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
@@ -84,7 +84,7 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
   }
 
   private percentOfExpression(expression: Expression, nestingLevel: number, derivation = SeriesDerivation.CURRENT): ApplyExpression {
-    const name = this.fullName(derivation);
+    const name = this.plywoodExpressionName(derivation);
     const formulaName = `__formula_${name}`;
     if (nestingLevel > 0) {
       return new ApplyExpression({
@@ -100,7 +100,7 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
   }
 
   private toApplyExpression(expression: Expression, currentNesting: number, derivation: SeriesDerivation): ApplyExpression {
-    if (!this.percentOf) return new ApplyExpression({ name: this.fullName(derivation), expression });
+    if (!this.percentOf) return new ApplyExpression({ name: this.plywoodExpressionName(derivation), expression });
     return this.percentOfExpression(expression, this.relativeNesting(currentNesting), derivation);
   }
 
@@ -117,15 +117,18 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
     switch (derivation) {
       case SeriesDerivation.CURRENT:
       case SeriesDerivation.PREVIOUS:
-        return datum[this.fullName(derivation)] as number;
+        return datum[this.plywoodExpressionName(derivation)] as number;
       case SeriesDerivation.DELTA: {
-        const current = datum[this.fullName(SeriesDerivation.CURRENT)] as number;
-        const previous = datum[this.fullName(SeriesDerivation.PREVIOUS)] as number;
+        const current = datum[this.plywoodExpressionName(SeriesDerivation.CURRENT)] as number;
+        const previous = datum[this.plywoodExpressionName(SeriesDerivation.PREVIOUS)] as number;
         return Math.abs(current - previous);
       }
     }
   }
 
+  /**
+   * @deprecated
+   */
   public formatter() {
     return seriesFormatter(this.format, this.measure);
   }

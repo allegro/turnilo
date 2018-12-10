@@ -18,7 +18,7 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { DataSeries } from "../../../common/models/data-series/data-series";
-import { SeriesDerivation } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
 import { Delta } from "../delta/delta";
 import "./vis-measure-label.scss";
 

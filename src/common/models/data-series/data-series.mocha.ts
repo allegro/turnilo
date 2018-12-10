@@ -18,7 +18,7 @@ import { expect } from "chai";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { FilterFixtures } from "../filter/filter.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { customFormat, EXACT_FORMAT, PERCENT_FORMAT, SeriesDerivation } from "../series/series";
+import { customFormat, EXACT_FORMAT, PERCENT_FORMAT, SeriesDerivation } from "../series/series-definition";
 import { CurrentPeriod, DataSeries, DataSeriesPercentOf, PreviousPeriod } from "./data-series";
 import { nominalName } from "./data-series-names";
 import { DataSeriesFixtures } from "./data-series.fixtures";
@@ -108,7 +108,7 @@ describe("DataSeries", () => {
     tests.forEach(({ percentOf, derivation }) => {
       it(`fullName/nominalName is isomorphic for derivation ${derivation} and percentOf ${percentOf}`, () => {
         const series = new DataSeries({ measure, percentOf });
-        const fullName = series.fullName(derivation);
+        const fullName = series.plywoodExpressionName(derivation);
         const { derivation: nominalDerivation, name, percentOf: nominalPercent } = nominalName(fullName);
         expect(nominalDerivation).to.eq(derivation || SeriesDerivation.CURRENT);
         expect(name).to.eq(measure.name);
@@ -119,7 +119,7 @@ describe("DataSeries", () => {
 
   describe("datum formatter", () => {
     const series = new DataSeries({ measure: MeasureFixtures.wikiCount() });
-    const datum = { [series.fullName()]: 123456.987654 };
+    const datum = { [series.plywoodExpressionName()]: 123456.987654 };
 
     it("should format with default format", () => {
       expect(series.formatValue(datum)).to.be.eq("123.5 k");
@@ -141,8 +141,8 @@ describe("DataSeries", () => {
   describe("get from datum", () => {
     const series = new DataSeries({ measure: MeasureFixtures.wikiCount() });
     const datum = {
-      [series.fullName()]: 100,
-      [series.fullName(SeriesDerivation.PREVIOUS)]: 20
+      [series.plywoodExpressionName()]: 100,
+      [series.plywoodExpressionName(SeriesDerivation.PREVIOUS)]: 20
     };
 
     it("should get current value", () => {

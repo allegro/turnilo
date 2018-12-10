@@ -22,7 +22,7 @@ import { Filter } from "../filter/filter";
 import { Manifest } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
-import { Series } from "../series/series";
+import { SeriesDefinition } from "../series/series-definition";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
@@ -42,9 +42,9 @@ export interface Clicker {
 
   changeSeriesList?(seriesList: SeriesList): void;
 
-  addSeries?(series: Series): void;
+  addSeries?(series: SeriesDefinition): void;
 
-  removeSeries?(series: Series): void;
+  removeSeries?(series: SeriesDefinition): void;
 
   changeColors?(colors: Colors): void;
 

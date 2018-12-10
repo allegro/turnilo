@@ -30,7 +30,7 @@ import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
-import { PERCENT_FORMAT, Series } from "../series/series";
+import { PERCENT_FORMAT, SeriesDefinition } from "../series/series-definition";
 import { Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
@@ -137,7 +137,7 @@ function resolveVisualization({ visualization, visualizations, dataCube, splits,
 }
 
 export interface SeriesWithMeasure {
-  series: Series;
+  series: SeriesDefinition;
   measure: Measure;
 }
 
@@ -338,7 +338,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public getDataSeries(): List<DataSeries> {
     const hasSplit = this.splits.length() > 0;
-    return this.series.series.flatMap(({ format, percents: { ofTotal, ofParent }, reference }) => {
+    return this.series.series.flatMap(({ format, percentages: { ofTotal, ofParent }, reference }) => {
       const measure = this.dataCube.getMeasure(reference);
       const measureExp = new DataSeries({ measure, format });
 
@@ -508,11 +508,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.changeSplits(this.splits.removeSplit(split), strategy);
   }
 
-  addSeries(series: Series): Essence {
+  addSeries(series: SeriesDefinition): Essence {
     return this.changeSeriesList(this.series.addSeries(series));
   }
 
-  removeSeries(series: Series): Essence {
+  removeSeries(series: SeriesDefinition): Essence {
     return this.changeSeriesList(this.series.removeSeries(series));
   }
 

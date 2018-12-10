@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { fullName } from "../data-series/data-series-names";
-import { SeriesDerivation } from "../series/series";
+import { plywoodExpressionKey } from "../data-series/data-series-names";
+import { SeriesDerivation } from "../series/series-definition";
 import { Measure, MeasureJS } from "./measure";
 
 export class MeasureFixtures {
@@ -29,7 +29,7 @@ export class MeasureFixtures {
 
   static previousWikiCountJS(): MeasureJS {
     return {
-      name: fullName("count", SeriesDerivation.PREVIOUS),
+      name: plywoodExpressionKey("count", SeriesDerivation.PREVIOUS),
       title: "Count",
       formula: "$main.sum($count)"
     };
@@ -37,7 +37,7 @@ export class MeasureFixtures {
 
   static deltaWikiCountJS(): MeasureJS {
     return {
-      name: fullName("count", SeriesDerivation.DELTA),
+      name: plywoodExpressionKey("count", SeriesDerivation.DELTA),
       title: "Count",
       formula: "$main.sum($count)"
     };

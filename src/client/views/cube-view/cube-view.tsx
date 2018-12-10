@@ -32,7 +32,7 @@ import { Highlight } from "../../../common/models/highlight/highlight";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
-import { Series } from "../../../common/models/series/series";
+import { SeriesDefinition } from "../../../common/models/series/series-definition";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
@@ -178,11 +178,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.changeSeriesList(seriesList) });
       },
-      addSeries: (series: Series) => {
+      addSeries: (series: SeriesDefinition) => {
         const { essence } = this.state;
         this.setState({ essence: essence.addSeries(series) });
       },
-      removeSeries: (series: Series) => {
+      removeSeries: (series: SeriesDefinition) => {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSeries(series) });
       },

@@ -29,7 +29,7 @@ import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SeriesList } from "../series-list/series-list";
-import { PERCENT_FORMAT, Series } from "../series/series";
+import { PERCENT_FORMAT, SeriesDefinition } from "../series/series-definition";
 import { SeriesFixtures } from "../series/series.fixtures";
 import { Split, SplitType } from "../split/split";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
@@ -262,7 +262,7 @@ describe("EssenceProps", () => {
           expect(withoutSplit.visualization).to.deep.equal(visualization);
           expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.be.true;
 
-          const toggledAgain = withoutSplit.addSeries(Series.fromMeasure(MeasureFixtures.twitterCount()));
+          const toggledAgain = withoutSplit.addSeries(SeriesDefinition.fromMeasure(MeasureFixtures.twitterCount()));
           expect(toggledAgain.visualization).to.deep.equal(visualization);
           expect(toggledAgain.visResolve.isManual(), "is manual after second toggle").to.be.true;
         });
@@ -302,7 +302,7 @@ describe("EssenceProps", () => {
 
       const dataSeries = essence.getDataSeries();
 
-      it("should generate same number of DataSeries as Series", () => {
+      it("should generate same number of DataSeries as SeriesDefinition", () => {
         expect(dataSeries.count()).to.eq(dataSeries.count());
       });
 
@@ -310,16 +310,16 @@ describe("EssenceProps", () => {
         it("DataSeries should have the same format", () => {
           expect(dataSeries.format).to.be.eq(series.format);
         });
-        it("DataSeries should have measure with name from Series reference", () => {
+        it("DataSeries should have measure with name from SeriesDefinition reference", () => {
           expect(dataSeries.measure.name).to.be.eq(series.reference);
         });
-        it("DataSeries shouldn't have percentage", () => {
+        it("DataSeries shouldn't have percentages", () => {
           expect(dataSeries.percentOf).to.be.null;
         });
       }, series);
     });
 
-    it("Series with percentage and Essence with no Splits", () => {
+    it("SeriesDefinition with percentages and Essence with no Splits", () => {
       const series = List.of(SeriesFixtures.wikiCountWithPercents());
 
       const essence = EssenceFixtures.wikiTable()
@@ -335,15 +335,15 @@ describe("EssenceProps", () => {
       it("DataSeries should have the same format", () => {
         expect(dataSeries.first().format).to.be.eq(series.first().format);
       });
-      it("DataSeries should have measure with name from Series reference", () => {
+      it("DataSeries should have measure with name from SeriesDefinition reference", () => {
         expect(dataSeries.first().measure.name).to.be.eq(series.first().reference);
       });
-      it("DataSeries shouldn't have percentage", () => {
+      it("DataSeries shouldn't have percentages", () => {
         expect(dataSeries.first().percentOf).to.be.null;
       });
     });
 
-    it("Series with percentages and Essence with Splits", () => {
+    it("SeriesDefinition with percentages and Essence with Splits", () => {
       const series = List.of(SeriesFixtures.wikiCountWithPercents());
 
       const essence = EssenceFixtures.wikiTable()
@@ -359,10 +359,10 @@ describe("EssenceProps", () => {
         it("should have the same format", () => {
           expect(dataSeries.first().format).to.be.eq(series.first().format);
         });
-        it("should have measure with name from Series reference", () => {
+        it("should have measure with name from SeriesDefinition reference", () => {
           expect(dataSeries.first().measure.name).to.be.eq(series.first().reference);
         });
-        it("shouldn't have percentage", () => {
+        it("shouldn't have percentages", () => {
           expect(dataSeries.first().percentOf).to.be.null;
         });
       });
@@ -371,7 +371,7 @@ describe("EssenceProps", () => {
         it("should have PERCENT format", () => {
           expect(dataSeries.get(1).format).to.be.eq(PERCENT_FORMAT);
         });
-        it("should have measure with name from Series reference", () => {
+        it("should have measure with name from SeriesDefinition reference", () => {
           expect(dataSeries.get(1).measure.name).to.be.eq(series.first().reference);
         });
         it("should have Percent of Total", () => {
@@ -383,7 +383,7 @@ describe("EssenceProps", () => {
         it("should have PERCENT format", () => {
           expect(dataSeries.get(2).format).to.be.eq(PERCENT_FORMAT);
         });
-        it("should have measure with name from Series reference", () => {
+        it("should have measure with name from SeriesDefinition reference", () => {
           expect(dataSeries.get(2).measure.name).to.be.eq(series.first().reference);
         });
         it("should have Percent of Parent", () => {

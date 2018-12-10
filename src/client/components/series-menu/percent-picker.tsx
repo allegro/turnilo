@@ -15,34 +15,37 @@
  */
 
 import * as React from "react";
-import { SeriesPercents, SeriesPercentsValue } from "../../../common/models/series/series";
+import { SeriesPercentages, SeriesPercentageValue } from "../../../common/models/series/series-definition";
 import { Unary } from "../../../common/utils/functional/functional";
+import { STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
+import "./percentage-picker.scss";
 
-interface PercentPickerProps {
-  percents: SeriesPercents;
-  percentsChange: Unary<SeriesPercents, void>;
+interface PercentagePickerProps {
+  percentages: SeriesPercentages;
+  percentagesChange: Unary<SeriesPercentages, void>;
   disabled?: boolean;
 }
 
-export const PercentsPicker: React.SFC<PercentPickerProps> = ({ disabled, percents, percentsChange }) => {
-  const { ofParent, ofTotal } = percents;
+export const PercentagePicker: React.SFC<PercentagePickerProps> = ({ disabled, percentages, percentagesChange }) => {
+  const { ofParent, ofTotal } = percentages;
 
-  function togglePercent(type: keyof SeriesPercentsValue) {
-    return () => percentsChange(percents.update(type, val => !val));
+  function togglePercentage(type: keyof SeriesPercentageValue) {
+    return () => percentagesChange(percentages.update(type, val => !val));
   }
 
-  const toggleTotal = disabled ? undefined : togglePercent("ofTotal");
-  const toggleParent = disabled ? undefined : togglePercent("ofParent");
+  const toggleTotal = disabled ? undefined : togglePercentage("ofTotal");
+  const toggleParent = disabled ? undefined : togglePercentage("ofParent");
 
-  return <div className="percents-picker">
-    <div className={classNames("percent-row", { disabled })}
+  return <div className="percentages-picker">
+    <span className="percentages-title">{STRINGS.percentages}</span>
+    <div className={classNames("percentage-row", { disabled })}
          onClick={toggleTotal}>
       <Checkbox disabled={disabled} selected={ofTotal} />
       <span className="label">Percent of Total</span>
     </div>
-    <div className={classNames("percent-row", { disabled })}
+    <div className={classNames("percentage-row", { disabled })}
          onClick={toggleParent}>
       <Checkbox disabled={disabled} selected={ofParent} />
       <span className="label">Percent of Parent</span>

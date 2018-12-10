@@ -80,7 +80,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
     return dataSeriesList.toArray().map(dataSeries =>
       <Total
-        key={dataSeries.fullName()}
+        key={dataSeries.plywoodExpressionName()}
         series={dataSeries}
         datum={datum}
         calculateDelta={essence.hasComparison()} />);

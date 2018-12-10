@@ -17,7 +17,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
-import { Series, SeriesFormat, SeriesPercents } from "../../../common/models/series/series";
+import { SeriesDefinition, SeriesFormat, SeriesPercentages } from "../../../common/models/series/series-definition";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -25,7 +25,7 @@ import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
 import { FormatPicker } from "./format-picker";
-import { PercentsPicker } from "./percent-picker";
+import { PercentagePicker } from "./percent-picker";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
@@ -34,18 +34,18 @@ interface SeriesMenuProps {
   openOn: Element;
   containerStage: Stage;
   onClose: Fn;
-  series: Series;
+  series: SeriesDefinition;
   inside?: Element;
 }
 
 interface SeriesMenuState {
   format: SeriesFormat;
-  percents: SeriesPercents;
+  percentages: SeriesPercentages;
 }
 
 export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState> {
 
-  state: SeriesMenuState = { format: this.props.series.format, percents: this.props.series.percents };
+  state: SeriesMenuState = { format: this.props.series.format, percentages: this.props.series.percentages };
 
   componentDidMount() {
     window.addEventListener("keydown", this.globalKeyDownListener);
@@ -59,7 +59,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   saveFormat = (format: SeriesFormat) => this.setState({ format });
 
-  savePercents = (percents: SeriesPercents) => this.setState({ percents });
+  savePercentages = (percentages: SeriesPercentages) => this.setState({ percentages });
 
   onCancelClick = () => this.props.onClose();
 
@@ -78,10 +78,10 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   private constructSeries() {
     const { series } = this.props;
-    const { format, percents } = this.state;
+    const { format, percentages } = this.state;
     return series
       .set("format", format)
-      .set("percents", percents);
+      .set("percentages", percentages);
   }
 
   render() {
@@ -89,7 +89,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
     const measure = dataCube.getMeasure(series.reference);
     if (!measure) return null;
 
-    const { percents, format } = this.state;
+    const { percentages, format } = this.state;
     const disabled = !this.hasChanged();
 
     return <BubbleMenu
@@ -104,10 +104,10 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         measure={measure}
         format={format}
         formatChange={this.saveFormat} />
-      <PercentsPicker
+      <PercentagePicker
         disabled={splits.length() === 0}
-        percents={percents}
-        percentsChange={this.savePercents} />
+        percentages={percentages}
+        percentagesChange={this.savePercentages} />
       <div className="button-bar">
         <Button className="ok" type="primary" disabled={disabled} onClick={this.onOkClick} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />

@@ -16,13 +16,14 @@
 
 import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
-import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, PERCENT_FORMAT, SeriesFormat, SeriesFormatType } from "../../../common/models/series/series";
+import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, PERCENT_FORMAT, SeriesFormat, SeriesFormatType } from "../../../common/models/series/series-definition";
 import { exactFormat, percentFormat, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { InputWithPresets, Preset } from "../input-with-presets/input-with-presets";
+import "./format-picker.scss";
 
-const PREVIEW_VALUE = 23667.25431;
+const PREVIEW_VALUE = 2367.254;
 
 interface FormatPickerProps {
   measure: Measure;

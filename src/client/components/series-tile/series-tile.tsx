@@ -21,7 +21,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
-import { Series } from "../../../common/models/series/series";
+import { SeriesDefinition } from "../../../common/models/series/series-definition";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
@@ -47,7 +47,7 @@ interface SeriesTileState {
   overflowMenuOpenOn?: Element;
   maxItems?: number;
   menuInside?: Element;
-  menuSeries?: Series;
+  menuSeries?: SeriesDefinition;
   menuOpenOn?: Element;
 }
 
@@ -109,7 +109,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     });
   }
 
-  toggleMenu(series: Series, target: Element) {
+  toggleMenu(series: SeriesDefinition, target: Element) {
     const { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
@@ -119,7 +119,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     this.openMenu(series, target);
   }
 
-  openMenu(series: Series, target: Element) {
+  openMenu(series: SeriesDefinition, target: Element) {
     const overflowMenu = this.getOverflowMenu();
     const menuInside = overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
 
@@ -140,12 +140,12 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     });
   }
 
-  selectSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {
+  selectSeries = (series: SeriesDefinition, e: React.MouseEvent<HTMLElement>) => {
     const target = findParentWithClass(e.target as Element, SERIES_CLASS_NAME);
     this.toggleMenu(series, target);
   }
 
-  removeSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {
+  removeSeries = (series: SeriesDefinition, e: React.MouseEvent<HTMLElement>) => {
     const { clicker } = this.props;
     clicker.removeSeries(series);
     this.closeOverflowMenu();
@@ -160,7 +160,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     return origin === MeasureOrigin.SERIES_TILE || !series.hasMeasure(measure);
   }
 
-  dragStart = (measure: Measure, series: Series, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
+  dragStart = (measure: Measure, series: SeriesDefinition, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     dataTransfer.setData("text/plain", measure.title);
@@ -210,7 +210,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     const { clicker, essence: { series } } = this.props;
     const { maxItems } = this.state;
 
-    const newSeries: Series = Series.fromMeasure(DragManager.draggingMeasure());
+    const newSeries: SeriesDefinition = SeriesDefinition.fromMeasure(DragManager.draggingMeasure());
 
     if (newSeries) {
       let dragPosition = this.calculateDragPosition(e);
@@ -232,7 +232,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   appendSeries = (measure: Measure) => {
-    this.props.clicker.addSeries(Series.fromMeasure(measure));
+    this.props.clicker.addSeries(SeriesDefinition.fromMeasure(measure));
   }
 
   overflowButtonTarget(): Element {
@@ -243,7 +243,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     this.openOverflowMenu(this.overflowButtonTarget());
   }
 
-  renderOverflowMenu(items: Series[]): JSX.Element {
+  renderOverflowMenu(items: SeriesDefinition[]): JSX.Element {
     const { overflowMenuOpenOn } = this.state;
     if (!overflowMenuOpenOn) return null;
 
@@ -267,7 +267,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     </BubbleMenu>;
   }
 
-  renderOverflow(items: Series[], itemX: number): JSX.Element {
+  renderOverflow(items: SeriesDefinition[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
     return <div
       className="overflow measure"
@@ -281,7 +281,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     </div>;
   }
 
-  renderSeries(series: Series, style: React.CSSProperties, i: number) {
+  renderSeries(series: SeriesDefinition, style: React.CSSProperties, i: number) {
     const { essence: { dataCube } } = this.props;
 
     const measure = dataCube.getMeasure(series.reference);

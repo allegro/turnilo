@@ -21,10 +21,10 @@ import { toExpression as filterClauseToExpression } from "../../../common/models
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
 import { CurrentPeriod, DataSeries, PreviousPeriod } from "../../models/data-series/data-series";
-import { fullName, nominalName } from "../../models/data-series/data-series-names";
+import { nominalName, plywoodExpressionKey } from "../../models/data-series/data-series-names";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
-import { SeriesDerivation } from "../../models/series/series";
+import { SeriesDerivation } from "../../models/series/series-definition";
 import { Sort } from "../../models/sort/sort";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
@@ -48,7 +48,7 @@ function applySeries(dataSeries: List<DataSeries>, nestingLevel: number, filters
     }, query);
 }
 
-// TODO: check sorts for percents & (delta | previous)
+// TODO: check sorts for percentages & (delta | previous)
 function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, sort: Sort): Expression {
   // TODO: match apply expressions
   const { name: sortMeasureName, derivation, percentOf } = nominalName(sort.reference);
@@ -61,8 +61,8 @@ function applySortReferenceExpression(essence: Essence, query: Expression, nesti
     }
   }
   if (sortMeasureName && derivation === SeriesDerivation.DELTA) {
-    const currentReference = $(fullName(sortMeasureName, SeriesDerivation.CURRENT, percentOf));
-    const previousReference = $(fullName(sortMeasureName, SeriesDerivation.PREVIOUS, percentOf));
+    const currentReference = $(plywoodExpressionKey(sortMeasureName, SeriesDerivation.CURRENT, percentOf));
+    const previousReference = $(plywoodExpressionKey(sortMeasureName, SeriesDerivation.PREVIOUS, percentOf));
     return query.apply(sort.reference, currentReference.subtract(previousReference));
   }
   return query;

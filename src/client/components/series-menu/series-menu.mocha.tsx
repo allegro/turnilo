@@ -17,16 +17,16 @@
 import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
-import { SinonSpy } from "sinon";
 import * as sinon from "sinon";
+import { SinonSpy } from "sinon";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
-import { DEFAULT_FORMAT, PERCENT_FORMAT, Series, SeriesPercents } from "../../../common/models/series/series";
+import { DEFAULT_FORMAT, PERCENT_FORMAT, SeriesDefinition, SeriesPercentages } from "../../../common/models/series/series-definition";
 import { SeriesFixtures } from "../../../common/models/series/series.fixtures";
 import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
 import { Fn } from "../../../common/utils/general/general";
-import { PercentsPicker } from "./percent-picker";
+import { PercentagePicker } from "./percent-picker";
 import { SeriesMenu } from "./series-menu";
 
 const openOn = document.createElement("div");
@@ -60,7 +60,7 @@ describe("<SeriesMenu>", () => {
       const menu = mountMenu({ clicker, onClose: onCloseSpy });
 
       (menu.instance() as SeriesMenu).saveFormat(PERCENT_FORMAT);
-      (menu.instance() as SeriesMenu).savePercents(new SeriesPercents({ ofTotal: true }));
+      (menu.instance() as SeriesMenu).savePercentages(new SeriesPercentages({ ofTotal: true }));
       menu.update();
 
       const ok = menu.find("Button[className='ok']");
@@ -70,11 +70,11 @@ describe("<SeriesMenu>", () => {
       expect(changeSeriesListSpy.calledOnce).to.be.true;
 
       const series = EssenceFixtures.wikiTable().series;
-      const count: Series = series.getSeries(SeriesFixtures.wikiCount().reference);
+      const count: SeriesDefinition = series.getSeries(SeriesFixtures.wikiCount().reference);
 
       const newCount = count
         .set("format", PERCENT_FORMAT)
-        .set("percents", new SeriesPercents({ ofTotal: true }));
+        .set("percentages", new SeriesPercentages({ ofTotal: true }));
 
       const changedSeries = EssenceFixtures.wikiTable().series.replaceSeries(count, newCount);
 
@@ -96,13 +96,13 @@ describe("<SeriesMenu>", () => {
       expect(okAfterChange.prop("disabled")).to.be.false;
     });
 
-    it("ok should be enable after percents change", () => {
+    it("ok should be enable after percentages change", () => {
       const menu = mountMenu();
       const ok = menu.find("Button[className='ok']");
 
       expect(ok.prop("disabled")).to.be.true;
 
-      (menu.instance() as SeriesMenu).savePercents(new SeriesPercents({ ofTotal: true }));
+      (menu.instance() as SeriesMenu).savePercentages(new SeriesPercentages({ ofTotal: true }));
       menu.update();
 
       const okAfterChange = menu.find("Button[className='ok']");
@@ -129,10 +129,10 @@ describe("<SeriesMenu>", () => {
     });
   });
 
-  describe("<PercentsPicker>", () => {
+  describe("<PercentagePicker>", () => {
     it("should be enabled when there are any splits", () => {
       const menu = mountMenu();
-      const picker = menu.find(PercentsPicker);
+      const picker = menu.find(PercentagePicker);
 
       expect(picker.prop("disabled")).to.be.false;
     });
@@ -140,7 +140,7 @@ describe("<SeriesMenu>", () => {
     it("should be disabled when there are no splits", () => {
       const essence = EssenceFixtures.twitterNoVisualisation();
       const menu = mountMenu({ essence });
-      const picker = menu.find(PercentsPicker);
+      const picker = menu.find(PercentagePicker);
 
       expect(picker.prop("disabled")).to.be.true;
     });

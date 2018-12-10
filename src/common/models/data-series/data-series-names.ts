@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SeriesDerivation } from "../series/series";
+import { SeriesDerivation } from "../series/series-definition";
 import { DataSeriesPercentOf } from "./data-series";
 
 function formatPercentOf(percentOf: DataSeriesPercentOf): string {
@@ -25,7 +25,7 @@ function formatDerivation(derivation: SeriesDerivation): string {
   return `_${derivation}__`;
 }
 
-export function fullName(name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf): string {
+export function plywoodExpressionKey(name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf): string {
   const percentStr = percentOf ? formatPercentOf(percentOf) : "";
   const derivationStr = derivation === SeriesDerivation.CURRENT ? "" : formatDerivation(derivation);
   return `${derivationStr}${name}${percentStr}`;
@@ -51,6 +51,9 @@ function extractPercent(fullName: string): { percentOf?: DataSeriesPercentOf, le
   return { length: 0 };
 }
 
+/**
+ * @deprecated
+ */
 export function nominalName(fullName: string): { name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf } {
   const { derivation, length: derivationLength } = extractDerivation(fullName);
   const { percentOf, length: percentLength } = extractPercent(fullName);

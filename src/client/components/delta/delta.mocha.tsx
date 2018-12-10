@@ -19,14 +19,14 @@ import { shallow } from "enzyme";
 import * as React from "react";
 import { DataSeries } from "../../../common/models/data-series/data-series";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { EXACT_FORMAT, SeriesDerivation } from "../../../common/models/series/series";
+import { EXACT_FORMAT, SeriesDerivation } from "../../../common/models/series/series-definition";
 import { Delta, formatDelta } from "./delta";
 
 const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount(), format: EXACT_FORMAT });
 
 const makeDatum = (current: number, previous: number) => ({
-  [dataSeries.fullName()]: current,
-  [dataSeries.fullName(SeriesDerivation.PREVIOUS)]: previous
+  [dataSeries.plywoodExpressionName()]: current,
+  [dataSeries.plywoodExpressionName(SeriesDerivation.PREVIOUS)]: previous
 });
 
 function makeDelta(current: number, previous: number, lowerIsBetter = false) {
