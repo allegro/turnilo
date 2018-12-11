@@ -106,11 +106,10 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   getFilterOptions() {
-    const { dimension } = this.props;
-    const dimensionKind = dimension.kind;
+    const { dimension: { kind } } = this.props;
 
     let filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
-    if (dimensionKind !== "boolean") filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(FilterMode.REGEX, FilterMode.CONTAINS));
+    if (kind !== "boolean") filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(FilterMode.REGEX, FilterMode.CONTAINS));
 
     return filterOptions;
   }
@@ -137,51 +136,42 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     </div>;
   }
 
-  render() {
-    const { dimension, clicker, essence, timekeeper, onClose, containerStage, openOn, inside } = this.props;
+  renderMenu(): { stage: Stage, menu: JSX.Element } {
+    const { dimension, clicker, essence, timekeeper, onClose } = this.props;
     const { filterMode, searchText } = this.state;
+    const props = {
+      dimension,
+      clicker,
+      essence,
+      timekeeper,
+      onClose,
+      searchText,
+      filterMode,
+      onClauseChange: this.updateFilter
+    };
+    if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
+      return { stage: Stage.fromSize(350, 410), menu: <PreviewStringFilterMenu {...props} /> };
+    }
+    return { stage: Stage.fromSize(250, 410), menu: <SelectableStringFilterMenu {...props} /> };
+  }
+
+  render() {
+    const { dimension, onClose, containerStage, openOn, inside } = this.props;
     if (!dimension) return null;
 
-    let menuSize: Stage = null;
-    let menuCont: JSX.Element = null;
-
-    if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
-      menuSize = Stage.fromSize(350, 410);
-      menuCont = <PreviewStringFilterMenu
-        dimension={dimension}
-        clicker={clicker}
-        essence={essence}
-        timekeeper={timekeeper}
-        onClose={onClose}
-        searchText={searchText}
-        filterMode={filterMode}
-        onClauseChange={this.updateFilter}
-      />;
-    } else {
-      menuSize = Stage.fromSize(250, 410);
-      menuCont = <SelectableStringFilterMenu
-        dimension={dimension}
-        clicker={clicker}
-        essence={essence}
-        timekeeper={timekeeper}
-        onClose={onClose}
-        searchText={searchText}
-        filterMode={filterMode}
-        onClauseChange={this.updateFilter}
-      />;
-    }
+    const { stage, menu } = this.renderMenu();
 
     return <BubbleMenu
       className="string-filter-menu"
       direction="down"
       containerStage={containerStage}
-      stage={menuSize}
+      stage={stage}
       openOn={openOn}
       onClose={onClose}
       inside={inside}
     >
       {this.renderMenuControls()}
-      {menuCont}
+      {menu}
     </BubbleMenu>;
   }
 }
