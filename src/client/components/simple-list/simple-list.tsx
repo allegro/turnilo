@@ -16,8 +16,7 @@
  */
 
 import * as React from "react";
-import { isInternetExplorer } from "../../utils/browser-type/browser-type";
-import { classNames, getYFromEvent, setDragGhost } from "../../utils/dom/dom";
+import { classNames, getYFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./simple-list.scss";
 
@@ -52,9 +51,8 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "move";
-    const dataFormat = isInternetExplorer() ? "text" : "text/html";
-    dataTransfer.setData(dataFormat, item.title);
 
+    setDragData(dataTransfer, "text/html", item.title);
     setDragGhost(dataTransfer, item.title);
   }
 

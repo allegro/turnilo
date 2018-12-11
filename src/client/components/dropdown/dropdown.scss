@@ -74,15 +74,8 @@
   }
 
   .dropdown-item {
-    @include not-internet-explorer {
-      @include ellipsis;
-    }
+    @include ellipsis;
 
-    @include internet-explorer {
-      white-space: nowrap;
-      overflow-x: visible;
-      text-overflow: ellipsis;
-    }
     padding: 0 10px;
     cursor: pointer;
 

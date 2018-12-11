@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import "@babel/polyfill";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { AppSettingsJS } from "../common/models/app-settings/app-settings";
@@ -23,6 +22,7 @@ import { DataCube } from "../common/models/data-cube/data-cube";
 import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
+import "./polyfills";
 import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
 
 addErrorMonitor();

@@ -31,19 +31,6 @@ module.exports = merge.smart(common, {
             loader: "awesome-typescript-loader",
             options: {
               declaration: false,
-              useBabel: true,
-              babelOptions: {
-                babelrc: false,
-                presets: [
-                  [
-                    "@babel/preset-env", {
-                      targets: "last 2 versions, ie 11",
-                      modules: false,
-                    }
-                  ]
-                ]
-              },
-              babelCore: "@babel/core",
             }
           }
         ]

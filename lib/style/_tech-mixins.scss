@@ -107,6 +107,9 @@
 }
 
 @mixin ellipsis {
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    overflow-x: visible;
+  }
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;

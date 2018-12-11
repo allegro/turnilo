@@ -25,7 +25,6 @@ import { Sort } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { STRINGS } from "../../config/constants";
-import { isInternetExplorer } from "../../utils/browser-type/browser-type";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
@@ -65,7 +64,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
-    if (!isInternetExplorer()) e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 
@@ -82,7 +80,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       this.props.clicker.pin(dimension);
     }
     this.setState({ dragOver: false });
-  }
+  };
 
   getColorsSortOn(): SortOn {
     const { essence } = this.props;
@@ -119,12 +117,12 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         }
       }
     }
-  }
+  };
 
   onPinboardSortOnSelect = (sortOn: SortOn) => {
     if (!(sortOn.reference instanceof Measure)) return;
     this.props.clicker.changePinnedSortMeasure(sortOn.reference);
-  }
+  };
 
   onRemoveLegend = () => {
     const { clicker, essence } = this.props;
@@ -139,7 +137,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         }
       }
     }
-  }
+  };
 
   render() {
     const { clicker, essence, timekeeper, style } = this.props;

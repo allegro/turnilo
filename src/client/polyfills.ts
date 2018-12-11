@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,7 @@
  * limitations under the License.
  */
 
-export const isInternetExplorer = (): boolean => {
-  return window.navigator.userAgent.indexOf("MSIE ") > 0 || !!navigator.userAgent.match(/Trident.*rv:11\./);
-};
+import "core-js/es6/array";
+import "core-js/es6/object";
+import "core-js/es6/promise";
+import "core-js/es6/string";
