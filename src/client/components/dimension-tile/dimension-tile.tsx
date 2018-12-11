@@ -43,7 +43,7 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { formatGranularity, formatTimeBasedOnGranularity } from "../../../common/utils/time/time";
 import { getLocale, MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
-import { classNames, setDragGhost } from "../../utils/dom/dom";
+import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DimensionOrigin, DragManager } from "../../utils/drag-manager/drag-manager";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
@@ -372,7 +372,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text", dimension.title);
+    setDragData(dataTransfer, "text/plain", dimension.title);
 
     DragManager.setDragDimension(dimension, DimensionOrigin.PINBOARD);
     setDragGhost(dataTransfer, dimension.title);
