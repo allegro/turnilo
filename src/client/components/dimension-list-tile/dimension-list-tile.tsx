@@ -25,7 +25,7 @@ import { Filter } from "../../../common/models/filter/filter";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
+import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DimensionOrigin, DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionActionsMenu } from "../dimension-actions-menu/dimension-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
@@ -116,7 +116,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text", dimension.title);
+    setDragData(dataTransfer, "text/plain", dimension.title);
 
     DragManager.setDragDimension(dimension, DimensionOrigin.PANEL);
     setDragGhost(dataTransfer, dimension.title);
