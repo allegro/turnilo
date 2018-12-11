@@ -80,7 +80,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       this.props.clicker.pin(dimension);
     }
     this.setState({ dragOver: false });
-  };
+  }
 
   getColorsSortOn(): SortOn {
     const { essence } = this.props;
@@ -117,12 +117,12 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         }
       }
     }
-  };
+  }
 
   onPinboardSortOnSelect = (sortOn: SortOn) => {
     if (!(sortOn.reference instanceof Measure)) return;
     this.props.clicker.changePinnedSortMeasure(sortOn.reference);
-  };
+  }
 
   onRemoveLegend = () => {
     const { clicker, essence } = this.props;
@@ -137,7 +137,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         }
       }
     }
-  };
+  }
 
   render() {
     const { clicker, essence, timekeeper, style } = this.props;
