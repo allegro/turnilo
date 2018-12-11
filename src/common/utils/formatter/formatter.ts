@@ -87,7 +87,8 @@ function getFormattedStringClauseValues({ values, action }: StringFilterClause):
     case StringFilterAction.CONTAINS:
       return `"${values.first()}"`;
     case StringFilterAction.IN:
-      return values.count() > 1 ? `(${values.count()})` : values.first();
+      // TODO: We shouldn't get there anything but string, and yet - #252
+      return values.count() > 1 ? `(${values.count()})` : values.first().toString();
   }
 }
 
