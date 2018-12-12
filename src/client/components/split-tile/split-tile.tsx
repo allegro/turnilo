@@ -295,16 +295,18 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   renderOverflow(items: Split[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
-    return <div
-      className="overflow dimension"
-      ref="overflow"
-      key="overflow"
-      style={style}
-      onClick={this.overflowButtonClick}
-    >
-      <div className="count">{"+" + items.length}</div>
+    return <React.Fragment key="overflow">
+      <div
+        className="overflow dimension"
+        ref="overflow"
+        key="overflow"
+        style={style}
+        onClick={this.overflowButtonClick}
+      >
+        <div className="count">{"+" + items.length}</div>
+      </div>
       {this.renderOverflowMenu(items)}
-    </div>;
+    </React.Fragment>;
   }
 
   renderSplit(split: Split, style: React.CSSProperties, i: number) {

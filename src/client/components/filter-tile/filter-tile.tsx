@@ -404,16 +404,17 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   renderOverflow(overflowItemBlanks: ItemBlank[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
 
-    return <div
-      className="overflow dimension"
-      ref="overflow"
-      key="overflow"
-      style={style}
-      onClick={this.overflowButtonClick}
-    >
-      <div className="count">{"+" + overflowItemBlanks.length}</div>
+    return <React.Fragment key="overflow">
+      <div
+        className="overflow dimension"
+        key="overflow"
+        style={style}
+        onClick={this.overflowButtonClick}
+      >
+        <div className="count">{"+" + overflowItemBlanks.length}</div>
+      </div>
       {this.renderOverflowMenu(overflowItemBlanks)}
-    </div>;
+    </React.Fragment>;
   }
 
   renderRemoveButton(itemBlank: ItemBlank) {

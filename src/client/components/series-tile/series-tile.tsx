@@ -269,16 +269,17 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
   renderOverflow(items: SeriesDefinition[], itemX: number): JSX.Element {
     const style = transformStyle(itemX, 0);
-    return <div
-      className="overflow measure"
-      ref="overflow"
-      key="overflow"
-      style={style}
-      onClick={this.overflowButtonClick}
-    >
-      <div className="count">{"+" + items.length}</div>
+    return <React.Fragment key="overflow">
+      <div
+        className="overflow measure"
+        ref="overflow"
+        style={style}
+        onClick={this.overflowButtonClick}
+      >
+        <div className="count">{"+" + items.length}</div>
+      </div>
       {this.renderOverflowMenu(items)}
-    </div>;
+    </React.Fragment>;
   }
 
   renderSeries(series: SeriesDefinition, style: React.CSSProperties, i: number) {
