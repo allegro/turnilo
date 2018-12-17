@@ -18,11 +18,11 @@ import { expect } from "chai";
 import { mount, shallow } from "enzyme";
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
-import { SinonStub } from "sinon";
 import * as sinon from "sinon";
+import { SinonStub } from "sinon";
 import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
-import { LongUrl, ShortUrl, UrlShortenerPrompt, UrlShortenerModal } from "./url-shortener-modal";
+import { LongUrl, ShortUrl, UrlShortenerModal, UrlShortenerPrompt } from "./url-shortener-modal";
 
 const tick = () => Promise.resolve();
 
