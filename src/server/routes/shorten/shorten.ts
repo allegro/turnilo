@@ -16,14 +16,13 @@
 
 import { Response, Router } from "express";
 import * as request from "request-promise-native";
-import { SETTINGS_MANAGER } from "../../config";
 import { SwivRequest } from "../../utils/general/general";
 
 let router = Router();
 
 router.get("/", (req: SwivRequest, res: Response) => {
   const { url } = req.query;
-  SETTINGS_MANAGER.getSettings()
+  req.getSettings()
     .then(settings => settings.customization.urlShortener)
     .then(shortener => shortener.shortenerFunction(url, request))
     .then(shortUrl => res.json({ shortUrl }))
