@@ -15,19 +15,50 @@
  */
 
 import { expect } from "chai";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { SinonStub } from "sinon";
+import * as sinon from "sinon";
+import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
-import { UrlShortenerPrompt } from "./url-shortener-modal";
+import { LongUrl, ShortUrl, UrlShortenerPrompt, UrlShortenerModal } from "./url-shortener-modal";
 
 const tick = () => Promise.resolve();
 
-const mountPrompt = (failed = false) =>
-  mount(<UrlShortenerPrompt url="google.com" />);
+describe("<UrlShortenerModal>", () => {
+  it("should pass props correctly", () => {
+    const onClose = () => {
+    };
+    const url = "foobar.com";
+    const title = "TITLE";
 
-// TODO: need to mock shortener API
-describe.skip("<UrlShortenerPrompt>", () => {
+    const modal = shallow(<UrlShortenerModal url={url} title={title} onClose={onClose} />);
+
+    expect(modal.find(UrlShortenerPrompt).prop("url")).to.be.eq(url);
+    expect(modal.find(Modal).prop("title")).to.be.eq(title);
+    expect(modal.find(Modal).prop("onClose")).to.be.eq(onClose);
+  });
+});
+
+describe("<UrlShortenerPrompt>", () => {
+
+  let stub: SinonStub;
+
+  const mountPrompt = (fails = false) => {
+    stub = sinon.stub(UrlShortenerPrompt.prototype, "shortenUrl");
+    if (fails) {
+      stub.rejects();
+    } else {
+      stub.resolves({ shortUrl: "short-url" });
+    }
+    return mount(<UrlShortenerPrompt url="google.com" />);
+  };
+
+  afterEach(() => {
+    stub.restore();
+  });
+
   it("renders shortened url", async () => {
     const prompt = mountPrompt();
 
@@ -37,7 +68,7 @@ describe.skip("<UrlShortenerPrompt>", () => {
     await tick();
     prompt.update();
     const updatedShortener = prompt.find(".url-shortener");
-    expect(updatedShortener.find(".short-url").prop("value")).to.be.eq("http://foobar");
+    expect(updatedShortener.find(ShortUrl).prop("url")).to.be.eq("short-url");
   });
 
   it("renders error when url shortener fails", async () => {
@@ -54,41 +85,30 @@ describe.skip("<UrlShortenerPrompt>", () => {
     const updatedShortener = prompt.find(".url-shortener");
     expect(updatedShortener.text()).to.be.eq("Couldn't create short link");
   });
+});
 
+describe("<ShortUrl>", () => {
   it("should show copied hint after copying short url", async () => {
-    const prompt = mountPrompt();
+    const shortUrl = mount(<ShortUrl url="foobar.com" />);
 
+    shortUrl.find(CopyToClipboard).prop("onCopy")("foo", true);
     await tick();
-    prompt.update();
-    const shortener = prompt.find(".url-shortener");
-    shortener.find(CopyToClipboard).prop("onCopy")("foo", true);
-    await tick();
-    prompt.update();
+    shortUrl.update();
 
-    const clickedShortener = prompt.find(".url-shortener");
-    const shortHint = clickedShortener.find(".copied-hint");
+    const shortHint = shortUrl.find(".copied-hint");
     expect(shortHint.text()).to.be.eq(STRINGS.copied);
-
-    const notice = prompt.find(".url-notice");
-    const longHint = notice.find(".copied-hint");
-    expect(longHint).to.have.length(0);
   });
+});
 
+describe("<LongUrl>", () => {
   it("should show copied hint after copying long url", async () => {
-    const prompt = mountPrompt();
+    const longUrl = mount(<LongUrl url="foobar.com" />);
 
-    (prompt.instance() as UrlShortenerPrompt).copiedLongUrl();
-    const notice = prompt.find(".url-notice");
-    notice.find(CopyToClipboard).prop("onCopy")("foo", true);
+    longUrl.find(CopyToClipboard).prop("onCopy")("foo", true);
     await tick();
-    prompt.update();
+    longUrl.update();
 
-    const clickedNotice = prompt.find(".url-notice");
-    const longHint = clickedNotice.find(".copied-hint");
+    const longHint = longUrl.find(".copied-hint");
     expect(longHint.text()).to.be.eq(STRINGS.copied);
-
-    const shortener = prompt.find(".url-shortener");
-    const shortHint = shortener.find(".copied-hint");
-    expect(shortHint).to.have.length(0);
   });
 });

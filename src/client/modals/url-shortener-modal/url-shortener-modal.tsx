@@ -21,23 +21,16 @@ import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
 import "./url-shortener-modal.scss";
 
-interface UrlShortenerPromptProps {
-  url: string;
-}
-
 interface UrlShortenerModalProps {
   onClose: Fn;
   title: string;
 }
 
-interface UrlShortenerPromptState {
-  copiedShortUrl: boolean;
-  copiedLongUrl: boolean;
-  shortUrl: string;
-  error?: string;
+interface UrlProp {
+  url: string;
 }
 
-export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlShortenerPromptProps> = ({ title, onClose, url }) => {
+export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
   return <Modal
     className="short-url-modal"
     title={title}
@@ -46,21 +39,17 @@ export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlShortenerP
   </Modal>;
 };
 
-export class UrlShortenerPrompt extends React.Component<UrlShortenerPromptProps, UrlShortenerPromptState> {
+interface UrlShortenerPromptState {
+  shortUrl: string;
+  error?: string;
+}
 
-  state: UrlShortenerPromptState = { copiedLongUrl: false, copiedShortUrl: false, shortUrl: null };
+export class UrlShortenerPrompt extends React.Component<UrlProp, UrlShortenerPromptState> {
+
+  state: UrlShortenerPromptState = { shortUrl: null };
 
   componentDidMount() {
-    this.shortenUrl();
-  }
-
-  copiedShortUrl = () => this.setState({ copiedShortUrl: true, copiedLongUrl: false });
-
-  copiedLongUrl = () => this.setState({ copiedLongUrl: true, copiedShortUrl: false });
-
-  shortenUrl() {
-    fetch("/shorten?url=" + encodeURIComponent(this.props.url))
-      .then(response => response.json())
+    this.shortenUrl()
       .then(({ shortUrl }) => {
         this.setState({ shortUrl });
       })
@@ -69,38 +58,64 @@ export class UrlShortenerPrompt extends React.Component<UrlShortenerPromptProps,
       });
   }
 
+  shortenUrl() {
+    return fetch("/shorten?url=" + encodeURIComponent(this.props.url))
+      .then(response => response.json());
+  }
+
   renderShortUrl() {
-    const { shortUrl, copiedShortUrl, error } = this.state;
+    const { shortUrl, error } = this.state;
     if (error) return error;
     if (!shortUrl) return STRINGS.loading;
-
-    return <div>
-      <div className="url-group">
-        <input className="short-url" readOnly={true} value={shortUrl} />
-        <CopyToClipboard text={shortUrl} onCopy={this.copiedShortUrl}>
-          <button className="copy-button">Copy</button>
-        </CopyToClipboard>
-      </div>
-      {copiedShortUrl && <div className="copied-hint">{STRINGS.copied}</div>}
-    </div>;
+    return <ShortUrl url={shortUrl} />;
   }
 
   render() {
-    const { url } = this.props;
-    const { copiedLongUrl } = this.state;
-
     return <React.Fragment>
-      <div className="url-shortener">
-        {this.renderShortUrl()}
-      </div>
-      <div className="url-notice">
-        Please note that, this url may expire in the future. You still can&nbsp;
-        <CopyToClipboard text={url} onCopy={this.copiedLongUrl}>
-          <span className="copy-action">copy full url</span>
-        </CopyToClipboard>
-        &nbsp;instead.&nbsp;
-        {copiedLongUrl && <span className="copied-hint">{STRINGS.copied}</span>}
-      </div>
+      <div className="url-shortener">{this.renderShortUrl()}</div>
+      <LongUrl url={this.props.url} />
     </React.Fragment>;
+  }
+}
+
+interface UrlState {
+  copied: boolean;
+}
+
+export class ShortUrl extends React.Component<UrlProp, UrlState> {
+
+  state = { copied: false };
+
+  copiedUrl = () => this.setState({ copied: true });
+
+  render() {
+    const { url } = this.props;
+    return <div>
+      <div className="url-group">
+        <input className="short-url" readOnly={true} value={url} />
+        <CopyToClipboard text={url} onCopy={this.copiedUrl}>
+          <button className="copy-button">Copy</button>
+        </CopyToClipboard>
+      </div>
+      {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
+    </div>;
+  }
+}
+
+export class LongUrl extends React.Component<UrlProp, UrlState> {
+
+  state = { copied: false };
+
+  copiedUrl = () => this.setState({ copied: true });
+
+  render() {
+    return <div className="url-notice">
+      Please note that, this url may expire in the future. You still can&nbsp;
+      <CopyToClipboard text={this.props.url} onCopy={this.copiedUrl}>
+        <span className="copy-action">copy full url</span>
+      </CopyToClipboard>
+      &nbsp;instead.&nbsp;
+      {this.state.copied && <span className="copied-hint">{STRINGS.copied}</span>}
+    </div>;
   }
 }
