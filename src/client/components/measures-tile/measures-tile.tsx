@@ -23,7 +23,7 @@ import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
+import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
 import { MeasureActionsMenu } from "../measure-actions-menu/measure-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
@@ -96,7 +96,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", measure.title);
+    setDragData(dataTransfer, "text/plain", measure.title);
 
     DragManager.setDragMeasure(measure, MeasureOrigin.PANEL);
     setDragGhost(dataTransfer, measure.title);

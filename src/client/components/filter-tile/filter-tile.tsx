@@ -29,7 +29,7 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
+import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DimensionOrigin, DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
@@ -229,7 +229,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", dimension.title);
+    setDragData(dataTransfer, "text/plain", dimension.title);
 
     DragManager.setDragDimension(dimension, DimensionOrigin.FILTER_TILE);
 
@@ -265,7 +265,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
-    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;

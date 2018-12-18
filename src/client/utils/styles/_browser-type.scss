@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,27 +14,8 @@
  * limitations under the License.
  */
 
-@import './tech-mixins';
-@import '../../config/constants';
-
-@import './variables';
-@import './media-queries';
-
-@import './linear-transition';
-@import './bounce';
-@import './browser-type';
-
-@import './form';
-@import './menu-cont';
-@import './bubble-cont';
-@import './header-bar';
-@import './side-by-side';
-@import './button';
-@import './input';
-@import 'tiles-item';
-@import './modal-cont';
-@import './module';
-@import './indicator-field';
-@import './white-shadow';
-@import './overflow';
-@import './hoverable-icon';
+@mixin internet-explorer {
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    @content
+  }
+}

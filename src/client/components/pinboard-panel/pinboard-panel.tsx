@@ -64,7 +64,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
-    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 

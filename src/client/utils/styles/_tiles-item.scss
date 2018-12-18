@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+@import './tech-mixins';
+
 %tiles-item {
   padding: 0 0 0 9px;
   border: 1px solid transparent;
@@ -51,6 +53,9 @@
 
   .remove {
     @include pin-right(27px);
+    @include internet-explorer {
+      padding-top: 0;
+    }
     text-align: center;
     padding-top: 9px;
     cursor: pointer;

@@ -357,7 +357,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!CubeView.canDrop()) return;
-    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 

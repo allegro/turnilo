@@ -24,7 +24,7 @@ import { Measure } from "../../../common/models/measure/measure";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
+import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
@@ -163,7 +163,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   dragStart = (measure: Measure, series: Series, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", measure.title);
+    setDragData(dataTransfer, "text/plain", measure.title);
 
     DragManager.setDragMeasure(measure, MeasureOrigin.SERIES_TILE);
     setDragGhost(dataTransfer, measure.title);
@@ -190,7 +190,6 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
-    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;

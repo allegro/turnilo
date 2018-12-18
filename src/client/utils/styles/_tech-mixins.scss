@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import './browser-type';
 
 // positioning
 @mixin pin-full {
@@ -107,6 +108,9 @@
 }
 
 @mixin ellipsis {
+  @include internet-explorer {
+    overflow-x: visible;
+  }
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;

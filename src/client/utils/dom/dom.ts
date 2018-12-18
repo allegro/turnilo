@@ -82,6 +82,14 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   }, 1);
 }
 
+export const setDragData = (dataTransfer: DataTransfer, format: string, data: string): void => {
+  try {
+    dataTransfer.setData(format, data);
+  } catch (e) {
+    dataTransfer.setData("text", data);
+  }
+};
+
 export function enterKey(e: KeyboardEvent): boolean {
   return e.which === KEY_CODES.ENTER;
 }
