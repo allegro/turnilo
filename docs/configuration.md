@@ -691,6 +691,23 @@ customization:
     headerBackground: '#2D95CA'
 ```
 
+### Url Shortener
+
+Turnilo supports url shorteners for generating short links for current view definitions. This is done by defining function body in configuration.
+Function will receive two arguments, `request` - [node request module](https://github.com/request/request-promise-native) and `url` with current hash. Function should return Promise with shortened url as string inside.
+
+
+
+For example:
+
+```yaml
+
+customization:
+  urlShortener: |
+    return fetch('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
+      .then(function(response){ return response.text();})
+```
+
 ### External links
 
 Turnilo supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.

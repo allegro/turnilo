@@ -61,7 +61,7 @@ export class SourceModal extends React.Component<SourceModalProps, SourceModalSt
           <CopyToClipboard text={source} onCopy={this.onCopy}>
             <Button type="secondary" title={STRINGS.copyDefinition} />
           </CopyToClipboard>
-          {this.state.copied && <div className="copied-hint">Copied!</div>}
+          {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
         </div>
       </div>
     </Modal>;

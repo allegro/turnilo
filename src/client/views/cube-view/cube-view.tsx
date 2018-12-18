@@ -19,7 +19,7 @@ import { Timezone } from "chronoshift";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { MANIFESTS } from "../../../common/manifests/index";
+import { MANIFESTS } from "../../../common/manifests";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Customization } from "../../../common/models/customization/customization";
@@ -55,12 +55,13 @@ import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
+import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
-import { getVisualizationComponent } from "../../visualizations/index";
+import { getVisualizationComponent } from "../../visualizations";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
 
@@ -110,6 +111,7 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   showViewDefinitionModal?: boolean;
   showDruidQueryModal?: boolean;
+  urlShortenerModalProps?: { url: string, title: string };
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -439,6 +441,27 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       onClose={this.closeDruidQueryModal} />;
   }
 
+  openUrlShortenerModal = (url: string, title: string) => {
+    this.setState({
+      urlShortenerModalProps: { url, title }
+    });
+  }
+
+  closeUrlShortenerModal = () => {
+    this.setState({
+      urlShortenerModalProps: null
+    });
+  }
+
+  renderUrlShortenerModal() {
+    const { urlShortenerModalProps } = this.state;
+    if (!urlShortenerModalProps) return null;
+    return <UrlShortenerModal
+      title={urlShortenerModalProps.title}
+      url={urlShortenerModalProps.url}
+      onClose={this.closeUrlShortenerModal} />;
+  }
+
   triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
@@ -530,6 +553,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       refreshMaxTime={this.refreshMaxTime}
       openRawDataModal={this.openRawDataModal}
       openViewDefinitionModal={this.openViewDefinitionModal}
+      openUrlShortenerModal={this.openUrlShortenerModal}
       openDruidQueryModal={this.openDruidQueryModal}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
@@ -625,6 +649,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       {this.renderDruidQueryModal()}
       {this.renderRawDataModal()}
       {this.renderViewDefinitionModal()}
+      {this.renderUrlShortenerModal()}
     </div>;
   }
 

@@ -58,7 +58,6 @@
   "dependencies": {
     "body-parser": "1.18.2",
     "chronoshift": "0.8.1",
-    "clipboard": "1.7.1",
     "compression": "1.7.1",
     "d3": "3.5.17",
     "express": "4.16.2",
