@@ -125,7 +125,7 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
   return <BubbleMenu
     className="header-menu"
     direction="down"
-    stage={Stage.fromSize(200, 200)}
+    stage={Stage.fromSize(230, 200)}
     openOn={openOn}
     onClose={onClose}
   >
