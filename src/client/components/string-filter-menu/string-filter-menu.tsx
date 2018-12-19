@@ -39,10 +39,9 @@ export interface StringFilterMenuProps {
   timekeeper: Timekeeper;
   changePosition: DragPosition;
   onClose: Fn;
-
-  containerStage: Stage;
+  containerStage?: Stage;
   openOn: Element;
-  inside: Element;
+  inside?: Element;
 }
 
 export interface StringFilterMenuState {
