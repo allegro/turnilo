@@ -33,7 +33,8 @@ export interface FilterDefinition {
 
 interface BooleanFilterDefinition extends FilterDefinition {
   not: boolean;
-  values: ImmutableSet<boolean>;
+  // In Druid, Bools are represented as string dictionary
+  values: ImmutableSet<string | boolean>;
 }
 
 const defaultBooleanFilter: BooleanFilterDefinition = {
