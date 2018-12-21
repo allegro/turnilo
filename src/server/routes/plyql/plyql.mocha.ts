@@ -19,7 +19,6 @@ import * as bodyParser from "body-parser";
 import * as express from "express";
 import { Response } from "express";
 import * as mime from "mime";
-import * as Q from "q";
 import * as supertest from "supertest";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
@@ -35,7 +34,7 @@ var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = "0.9.4";
-  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Q(appSettings);
+  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
   next();
 });
 

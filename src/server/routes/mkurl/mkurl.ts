@@ -81,8 +81,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
       res.json({
         hash: `#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
       });
-    })
-    .done();
+    });
 
 });
 

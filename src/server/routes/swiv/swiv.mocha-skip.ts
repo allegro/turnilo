@@ -17,7 +17,6 @@
 
 import { expect } from "chai";
 import * as express from "express";
-import * as Q from "q";
 import * as supertest from "supertest";
 import { Response } from "supertest";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
@@ -33,7 +32,7 @@ var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: express.Response, next: Function) => {
   req.user = null;
   req.version = "0.9.4";
-  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Q(appSettings);
+  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
   next();
 });
 

@@ -96,8 +96,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
           });
         }
       );
-    })
-    .done();
+    });
 
 });
 

@@ -17,7 +17,6 @@
 
 import { SimpleArray } from "immutable-class";
 import { basicExecutorFactory, Dataset, External } from "plywood";
-import * as Q from "q";
 import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster } from "../../../common/models/cluster/cluster";
@@ -51,7 +50,7 @@ export class SettingsManager {
   public timeMonitor: TimeMonitor;
   public fileManagers: FileManager[];
   public clusterManagers: ClusterManager[];
-  public currentWork: Q.Promise<any>;
+  public currentWork: Promise<any>;
   public initialLoadTimeout: number;
 
   constructor(settingsStore: SettingsStore, options: SettingsManagerOptions) {
@@ -87,7 +86,7 @@ export class SettingsManager {
     return SimpleArray.find(this.clusterManagers, clusterManager => clusterManager.cluster.name === clusterName);
   }
 
-  private addClusterManager(cluster: Cluster, dataCubes: DataCube[]): Q.Promise<any> {
+  private addClusterManager(cluster: Cluster, dataCubes: DataCube[]): Promise<any> {
     const { verbose, logger, anchorPath } = this;
 
     var initialExternals = dataCubes.map(dataCube => {
@@ -125,7 +124,7 @@ export class SettingsManager {
     return SimpleArray.find(this.fileManagers, fileManager => fileManager.uri === uri);
   }
 
-  private addFileManager(dataCube: DataCube): Q.Promise<any> {
+  private addFileManager(dataCube: DataCube): Promise<any> {
     if (dataCube.clusterName !== "native") throw new Error(`data cube '${dataCube.name}' must be native to have a file manager`);
     const { verbose, logger, anchorPath } = this;
 
@@ -156,40 +155,43 @@ export class SettingsManager {
     return this.timeMonitor.timekeeper;
   }
 
-  getSettings(opts: GetSettingsOptions = {}): Q.Promise<AppSettings> {
-    var currentWork = this.currentWork;
-
+  getSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
     // Refresh all clusters
-    var currentWork = currentWork.then(() => {
+    var currentWork = this.currentWork.then(() => {
       // ToDo: utilize dataCubeOfInterest
-      return Q.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
+      return Promise.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
     });
 
     var timeout = opts.timeout || this.initialLoadTimeout;
     if (timeout !== 0) {
-      currentWork = currentWork.timeout(timeout)
-        .catch(e => {
-          this.logger.error("Settings load timeout hit, continuing");
-        });
+      currentWork = Promise.race([
+        currentWork,
+        new Promise((resolve, reject) => {
+          let wait = setTimeout(() => {
+            clearTimeout(wait);
+            reject("timeout");
+          }, timeout);
+        }).catch(() => this.logger.error("Settings load timeout hit, continuing"))
+      ]);
     }
 
     return currentWork.then(() => this.appSettings);
   }
 
-  reviseSettings(newSettings: AppSettings): Q.Promise<any> {
+  reviseSettings(newSettings: AppSettings): Promise<any> {
     var tasks = [
       this.reviseClusters(newSettings),
       this.reviseDataCubes(newSettings)
     ];
     this.appSettings = newSettings;
 
-    return Q.all(tasks);
+    return Promise.all(tasks);
   }
 
-  reviseClusters(newSettings: AppSettings): Q.Promise<any> {
+  reviseClusters(newSettings: AppSettings): Promise<any> {
     const { verbose, logger } = this;
     var oldSettings = this.appSettings;
-    var tasks: Array<Q.Promise<any>> = [];
+    var tasks: Array<Promise<any>> = [];
 
     updater(oldSettings.clusters, newSettings.clusters, {
       onExit: oldCluster => {
@@ -203,13 +205,13 @@ export class SettingsManager {
       }
     });
 
-    return Q.all(tasks);
+    return Promise.all(tasks);
   }
 
-  reviseDataCubes(newSettings: AppSettings): Q.Promise<any> {
+  reviseDataCubes(newSettings: AppSettings): Promise<any> {
     const { verbose, logger } = this;
     var oldSettings = this.appSettings;
-    var tasks: Array<Q.Promise<any>> = [];
+    var tasks: Array<Promise<any>> = [];
 
     var oldNativeDataCubes = oldSettings.getDataCubesForCluster("native");
     var newNativeDataCubes = newSettings.getDataCubesForCluster("native");
@@ -233,11 +235,11 @@ export class SettingsManager {
       }
     });
 
-    return Q.all(tasks);
+    return Promise.all(tasks);
   }
 
-  updateSettings(newSettings: AppSettings): Q.Promise<any> {
-    if (!this.settingsStore.writeSettings) return Q.reject(new Error("must be writable"));
+  updateSettings(newSettings: AppSettings): Promise<any> {
+    if (!this.settingsStore.writeSettings) return Promise.reject(new Error("must be writable"));
 
     var loadedNewSettings = newSettings.attachExecutors(dataCube => {
       if (dataCube.clusterName === "native") {

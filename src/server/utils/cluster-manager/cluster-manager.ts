@@ -20,9 +20,9 @@ import * as path from "path";
 import { External } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator } from "plywood-druid-requester";
-import * as Q from "q";
 import { Logger } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
+import { Deferred, noop } from "../../../common/utils/ajax/helpers";
 import { properRequesterFactory } from "../requester/requester";
 
 const CONNECTION_RETRY_TIMEOUT = 20000;
@@ -53,10 +53,6 @@ export interface ClusterManagerOptions {
   initialExternals?: ManagedExternal[];
   onExternalChange?: (name: string, external: External) => Promise<any>;
   generateExternalName?: (external: External) => string;
-}
-
-function noop(): Promise<any> {
-  return Promise.resolve(null);
 }
 
 function getSourceFromExternal(external: External): string {
@@ -106,7 +102,7 @@ export class ClusterManager {
   }
 
   // Do initialization
-  public init(): Q.Promise<any> {
+  public init(): Promise<any> {
     const { cluster, logger } = this;
 
     if (cluster.sourceListRefreshOnLoad) {
@@ -117,10 +113,10 @@ export class ClusterManager {
       logger.log(`Cluster '${cluster.name}' will reintrospect sources on load`);
     }
 
-    return Q(null)
-      .then(() => this.establishInitialConnection())
-      .then(() => this.introspectSources())
-      .then(() => this.scanSourceList());
+    return noop()
+      .then(this.establishInitialConnection)
+      .then(this.introspectSources)
+      .then(this.scanSourceList);
   }
 
   public destroy() {
@@ -248,10 +244,10 @@ export class ClusterManager {
     }
   }
 
-  private establishInitialConnection(): Q.Promise<any> {
+  private establishInitialConnection(): Promise<any> {
     const { logger, verbose, cluster } = this;
 
-    var deferred: Q.Deferred<any> = Q.defer();
+    var deferred: Deferred<any> = new Deferred();
 
     var retryNumber = -1;
     var lastTryAt: number;
@@ -293,18 +289,18 @@ export class ClusterManager {
     this.updateSourceReintrospectTimer();
   }
 
-  private internalizeVersion(version: string): Q.Promise<any> {
+  private internalizeVersion(version: string): Promise<any> {
     // If there is a version already do nothing
-    if (this.version) return Q(null);
+    if (this.version) return noop();
 
     const { logger, cluster } = this;
     logger.log(`Cluster '${cluster.name}' is running ${cluster.type}@${version}`);
     this.version = version;
 
     // Update all externals if needed
-    return Q.all(
+    return Promise.all(
       this.managedExternals.map(managedExternal => {
-        if (managedExternal.external.version) return Q(null);
+        if (managedExternal.external.version) return noop();
         return this.updateManagedExternal(managedExternal, managedExternal.external.changeVersion(version));
       })
     );
@@ -312,7 +308,7 @@ export class ClusterManager {
 
   private introspectManagedExternal(managedExternal: ManagedExternal): Promise<any> {
     const { logger, verbose, cluster } = this;
-    if (managedExternal.suppressIntrospection) return Promise.resolve(null);
+    if (managedExternal.suppressIntrospection) return noop();
 
     if (verbose) logger.log(`Cluster '${cluster.name}' introspecting '${managedExternal.name}'`);
     return managedExternal.external.introspect()
@@ -330,7 +326,7 @@ export class ClusterManager {
   // See if any new sources were added to the cluster
   public scanSourceList(): Promise<any> {
     const { logger, cluster, verbose } = this;
-    if (!cluster.shouldScanSources()) return Promise.resolve(null);
+    if (!cluster.shouldScanSources()) return noop();
 
     logger.log(`Scanning cluster '${cluster.name}' for new sources`);
     return (External.getConstructorFor(cluster.type) as any).getSourceList(this.requester)
@@ -368,7 +364,7 @@ export class ClusterManager {
             }
           });
 
-          return Q.all(introspectionTasks);
+          return Promise.all(introspectionTasks);
         },
         (e: Error) => {
           logger.error(`Failed to get source list from cluster '${cluster.name}' because: ${e.message}`);
@@ -377,20 +373,20 @@ export class ClusterManager {
   }
 
   // See if any new dimensions or measures were added to the existing externals
-  public introspectSources(): Q.Promise<any> {
+  public introspectSources(): Promise<any> {
     const { logger, cluster } = this;
 
     logger.log(`Introspecting all sources in cluster '${cluster.name}'`);
 
-    return Q.all(this.managedExternals.map(managedExternal => {
+    return Promise.all(this.managedExternals.map(managedExternal => {
       return this.introspectManagedExternal(managedExternal);
     }));
   }
 
   // Refresh the cluster now, will trigger onExternalUpdate and then return an empty promise when done
-  public refresh(): Q.Promise<any> {
+  public refresh(): Promise<any> {
     const { cluster, initialConnectionEstablished } = this;
-    var process = Q(null);
+    var process = noop();
     if (!initialConnectionEstablished) return process;
 
     if (cluster.sourceReintrospectOnLoad) {

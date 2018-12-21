@@ -15,15 +15,25 @@
  * limitations under the License.
  */
 
-import { Request } from "express";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { User } from "../../../common/models/user/user";
-import { GetSettingsOptions } from "../settings-manager/settings-manager";
+/**
+ * Compatibility with Q.defer or Promise.defer, now obsolete
+ */
+export class Deferred<T> {
+  resolve: (r: T) => void;
+  reject: () => void;
+  promise: Promise<T>;
 
-export interface SwivRequest extends Request {
-  version: string;
-  stateful: boolean;
-  user: User;
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
 
-  getSettings(opts?: GetSettingsOptions): Promise<AppSettings>;
+/**
+ * used everywhere that Q(null) was used
+ */
+export function noop(): Promise<any> {
+  return Promise.resolve(null);
 }

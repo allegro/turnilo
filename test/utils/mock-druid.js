@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-var Q = require('q');
 var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -29,7 +28,7 @@ function mockDruid(options, callback) {
 
   app.get('/status', (req, res) => {
     if (options.onStatus) {
-      Q(options.onStatus()).then(function(r) {
+      Promise.resolve(options.onStatus()).then(function(r) {
         res.status(r.status || 200).json(r.json);
       });
     } else {
@@ -41,7 +40,7 @@ function mockDruid(options, callback) {
 
   app.get('/druid/v2/datasources', (req, res) => {
     if (options.onDataSources) {
-      Q(options.onDataSources(req.body)).then(function(r) {
+      Promise.resolve(options.onDataSources(req.body)).then(function(r) {
         res.status(r.status || 200).json(r.json);
       });
     } else {
@@ -53,7 +52,7 @@ function mockDruid(options, callback) {
 
   app.post('/druid/v2/', (req, res) => {
     if (options.onQuery) {
-      Q(options.onQuery(req.body)).then(function(r) {
+      Promise.resolve(options.onQuery(req.body)).then(function(r) {
         res.status(r.status || 200).json(r.json);
       });
     } else {

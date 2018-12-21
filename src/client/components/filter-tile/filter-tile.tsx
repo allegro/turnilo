@@ -16,7 +16,6 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as Q from "q";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
@@ -27,6 +26,7 @@ import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause
 import { Filter } from "../../../common/models/filter/filter";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { Deferred, noop } from "../../../common/utils/ajax/helpers";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
@@ -72,8 +72,8 @@ export interface FilterTileState {
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
   private overflowMenuId: string;
-  private dummyDeferred: Q.Deferred<any>;
-  private overflowMenuDeferred: Q.Deferred<any>;
+  private dummyDeferred: Deferred<any>;
+  private overflowMenuDeferred: Deferred<any>;
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -117,7 +117,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     if (overflowMenuOpenOn) {
-      this.overflowMenuDeferred.resolve();
+      this.overflowMenuDeferred.resolve(null);
     }
   }
 
@@ -188,16 +188,16 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
-  openOverflowMenu(target: Element): Q.Promise<any> {
-    if (!target) return Q(null);
+  openOverflowMenu(target: Element): Promise<any> {
+    if (!target) return noop();
     const { overflowMenuOpenOn } = this.state;
 
     if (overflowMenuOpenOn === target) {
       this.closeOverflowMenu();
-      return Q(null);
+      return noop();
     }
 
-    this.overflowMenuDeferred = Q.defer();
+    this.overflowMenuDeferred = new Deferred<any>();
     this.setState({ overflowMenuOpenOn: target });
     return this.overflowMenuDeferred.promise;
   }
@@ -328,7 +328,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   addDummy(dimension: Dimension, possiblePosition: DragPosition) {
-    this.dummyDeferred = Q.defer() as Q.Deferred<Element>;
+    this.dummyDeferred = new Deferred<Element>();
     this.setState({
       possibleDimension: dimension,
       possiblePosition

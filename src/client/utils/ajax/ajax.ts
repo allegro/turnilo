@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { ChainableExpression, Dataset, Environment, Executor, Expression, SplitExpression } from "plywood";
 import axios from "axios";
+import { ChainableExpression, Dataset, Environment, Executor, Expression, SplitExpression } from "plywood";
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
@@ -64,7 +64,7 @@ export class Ajax {
       method: options.method,
       url: options.url,
       // Qajax's filterSuccess also allows 304s, axios by default does not
-      validateStatus: (s) => s >= 200 && s < 300 || s === 304,
+      validateStatus: s => 200 <= s && s < 300 || s === 304,
       timeout: 60000,
       data
     })

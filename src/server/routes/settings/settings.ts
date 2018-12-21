@@ -39,8 +39,7 @@ router.get("/", (req: SwivRequest, res: Response) => {
           message: e.message
         });
       }
-    )
-    .done();
+    );
 
 });
 
@@ -72,8 +71,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
           message: e.message
         });
       }
-    )
-    .done();
+    );
 
 });
 

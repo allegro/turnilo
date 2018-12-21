@@ -78,7 +78,6 @@
     "plywood": "0.19.2",
     "plywood-base-api": "0.2.8",
     "plywood-druid-requester": "2.5.0",
-    "q": "1.5.1",
     "axios": "0.18.0",
     "react": "16.2.0",
     "react-copy-to-clipboard": "5.0.1",
