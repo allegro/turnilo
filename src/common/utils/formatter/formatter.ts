@@ -21,6 +21,7 @@ import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { Dimension } from "../../models/dimension/dimension";
 import {
+  BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
   isTimeFilter,
@@ -50,15 +51,15 @@ const percentFormatter = formatFnFactory(percentFormat);
 
 export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
   switch (format.type) {
-      case SeriesFormatType.DEFAULT:
-        return measure.formatFn;
-      case SeriesFormatType.EXACT:
-        return exactFormatter;
-      case SeriesFormatType.PERCENT:
-        return percentFormatter;
-      case SeriesFormatType.CUSTOM:
-        return formatFnFactory(format.value);
-    }
+    case SeriesFormatType.DEFAULT:
+      return measure.formatFn;
+    case SeriesFormatType.EXACT:
+      return exactFormatter;
+    case SeriesFormatType.PERCENT:
+      return percentFormatter;
+    case SeriesFormatType.CUSTOM:
+      return formatFnFactory(format.value);
+  }
 }
 
 export function formatNumberRange(value: NumberRange) {
@@ -91,6 +92,15 @@ function getFormattedStringClauseValues({ values, action }: StringFilterClause):
   }
 }
 
+function getFormattedBooleanClauseValues({ values }: BooleanFilterClause) {
+  return values.count() > 1 ? `(${values.count()})` : values.first().toString();
+}
+
+function getFormattedNumberClauseValues(clause: NumberFilterClause) {
+  const { start, end } = clause.values.first();
+  return `${start} to ${end}`;
+}
+
 function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string {
   if (isTimeFilter(clause)) {
     return getFormattedTimeClauseValues(clause, timezone);
@@ -98,11 +108,13 @@ function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string
   if (clause instanceof StringFilterClause) {
     return getFormattedStringClauseValues(clause);
   }
-  if (clause instanceof NumberFilterClause) {
-    const { start, end } = clause.values.first();
-    return `${start} to ${end}`;
+  if (clause instanceof BooleanFilterClause) {
+    return getFormattedBooleanClauseValues(clause);
   }
-  return clause.values.first().toString();
+  if (clause instanceof NumberFilterClause) {
+    return getFormattedNumberClauseValues(clause);
+  }
+  throw new Error(`Unknown Filter Clause: ${clause}`);
 }
 
 function getClauseLabel(clause: FilterClause, dimension: Dimension) {
