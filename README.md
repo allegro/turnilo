@@ -88,16 +88,11 @@ Build the project.
 npm run build:dev
 ```
 
-Run Wikipedia examples.
+Copy `chef.new/cookbooks/templates/config.yaml` to this repo. Change its `clusters: host` entry to `broker1.dw1.remerge.io:8082`
+
 
 ```
-npm run start:dev -- --examples
-```
-
-Connect to the existing Druid cluster.
-
-```
-npm run start:dev -- --druid broker_host:broker_port
+npm run start:dev -- --config config.yaml
 ```
 
 ### Testing
