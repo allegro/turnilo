@@ -25,7 +25,7 @@ function formatLimit(limit: number | string): string {
   return limit === null ? "None" : String(limit);
 }
 
-const defaultLimits = [5, 10, 25, 50, 100];
+const defaultLimits = [5, 10, 25, 50, 100, 500, 1000, 5000, 10000, 50000];
 const limitsForColors = [3, 5, 7, 9, 10];
 
 function calculateSelectedLimit(limit: number, colors: Colors) {
