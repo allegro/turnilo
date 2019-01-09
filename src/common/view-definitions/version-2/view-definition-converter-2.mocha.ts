@@ -267,7 +267,7 @@ describe("ViewDefinitionConverter2", () => {
     expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");
   });
 
-  it("converts splits with limits", () => {
+  it("converts splits with plywood < 0.14.1 limits", () => {
     const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(totalsWithSplits, DataCubeFixtures.wiki(), MANIFESTS).splits;
     expect(convertedSplits.getSplit(0).limit).to.equal(10);
   });

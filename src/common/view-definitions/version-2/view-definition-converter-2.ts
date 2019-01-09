@@ -246,7 +246,7 @@ function convertSplit(split: any, dataCube: DataCube): Split {
     reference: sortAction.expression.name,
     direction: sortAction.direction
   });
-  // test fixtures and converter use value, real links generated using swiv use limit...?
+  // plywood < 0.14.1 uses limit instead of value
   const limit = limitAction && (limitAction.value || limitAction.limit);
   // test fixtures and converter use op, real links generated using swiv use action...?
   const bucket = bucketAction && ((bucketAction.action || bucketAction.op) === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
