@@ -264,13 +264,16 @@ describe("ViewDefinitionConverter2", () => {
 
   it("converts splits with lookup expressions", () => {
     const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(totalsWithSplits, DataCubeFixtures.wiki(), MANIFESTS).splits;
-    expect(convertedSplits.length()).to.equal(2);
     expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");
+  });
+
+  it("converts splits with limits", () => {
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(totalsWithSplits, DataCubeFixtures.wiki(), MANIFESTS).splits;
+    expect(convertedSplits.getSplit(0).limit).to.equal(10);
   });
 
   it("converts time bucket splits", () => {
     const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(totalsWithSplits, DataCubeFixtures.wiki(), MANIFESTS).splits;
-    expect(convertedSplits.length()).to.equal(2);
     expect(convertedSplits.getSplit(1).bucket).to.deep.equal(Duration.fromJS("PT1H"));
   });
 

@@ -246,7 +246,8 @@ function convertSplit(split: any, dataCube: DataCube): Split {
     reference: sortAction.expression.name,
     direction: sortAction.direction
   });
-  const limit = limitAction && limitAction.value;
+  // test fixtures and converter use value, real links generated using swiv use limit...?
+  const limit = limitAction && (limitAction.value || limitAction.limit);
   // test fixtures and converter use op, real links generated using swiv use action...?
   const bucket = bucketAction && ((bucketAction.action || bucketAction.op) === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
   return new Split({
