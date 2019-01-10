@@ -18,17 +18,17 @@ import { day } from "chronoshift";
 import { List } from "immutable";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { Essence } from "../../../common/models/essence/essence";
-import { DateRange, FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../common/models/filter/filter";
-import { isValidTimeShift, TimeShift } from "../../../common/models/time-shift/time-shift";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-import { Button } from "../button/button";
-import { DateRangePicker } from "../date-range-picker/date-range-picker";
+import { Clicker } from "../../../../common/models/clicker/clicker";
+import { Dimension } from "../../../../common/models/dimension/dimension";
+import { Essence } from "../../../../common/models/essence/essence";
+import { DateRange, FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Filter } from "../../../../common/models/filter/filter";
+import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
+import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../../common/utils/general/general";
+import { STRINGS } from "../../../config/constants";
+import { Button } from "../../button/button";
+import { DateRangePicker } from "../../date-range-picker/date-range-picker";
 import { TimeShiftSelector } from "./time-shift-selector";
 
 export interface FixedTimeTabProps {

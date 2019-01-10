@@ -92,11 +92,11 @@ function getFormattedStringClauseValues({ values, action }: StringFilterClause):
   }
 }
 
-function getFormattedBooleanClauseValues({ values }: BooleanFilterClause) {
+function getFormattedBooleanClauseValues({ values }: BooleanFilterClause): string {
   return values.count() > 1 ? `(${values.count()})` : values.first().toString();
 }
 
-function getFormattedNumberClauseValues(clause: NumberFilterClause) {
+function getFormattedNumberClauseValues(clause: NumberFilterClause): string {
   const { start, end } = clause.values.first();
   return `${start} to ${end}`;
 }

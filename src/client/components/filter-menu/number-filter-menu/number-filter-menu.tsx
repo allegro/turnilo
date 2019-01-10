@@ -17,20 +17,20 @@
 
 import { List } from "immutable";
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { Essence } from "../../../common/models/essence/essence";
-import { NumberFilterClause, NumberRange } from "../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
-import { Stage } from "../../../common/models/stage/stage";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-import { enterKey } from "../../utils/dom/dom";
-import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { Button } from "../button/button";
-import { FilterOption, FilterOptionsDropdown } from "../filter-options-dropdown/filter-options-dropdown";
-import { ANY_VALUE, NumberRangePicker } from "../number-range-picker/number-range-picker";
+import { Clicker } from "../../../../common/models/clicker/clicker";
+import { Dimension } from "../../../../common/models/dimension/dimension";
+import { Essence } from "../../../../common/models/essence/essence";
+import { NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
+import { Filter, FilterMode } from "../../../../common/models/filter/filter";
+import { Stage } from "../../../../common/models/stage/stage";
+import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../../common/utils/general/general";
+import { STRINGS } from "../../../config/constants";
+import { enterKey } from "../../../utils/dom/dom";
+import { BubbleMenu } from "../../bubble-menu/bubble-menu";
+import { Button } from "../../button/button";
+import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
+import { ANY_VALUE, NumberRangePicker } from "../../number-range-picker/number-range-picker";
 import "./number-filter-menu.scss";
 
 function numberOrAnyToString(start: number): string {

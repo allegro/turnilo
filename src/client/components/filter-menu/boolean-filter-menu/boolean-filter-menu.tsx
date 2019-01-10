@@ -17,21 +17,21 @@
 import { Set } from "immutable";
 import { $, Dataset } from "plywood";
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { DragPosition } from "../../../common/models/drag-position/drag-position";
-import { Essence } from "../../../common/models/essence/essence";
-import { BooleanFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../common/models/filter/filter";
-import { Stage } from "../../../common/models/stage/stage";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { Button } from "../button/button";
-import { Checkbox } from "../checkbox/checkbox";
-import { Loader } from "../loader/loader";
-import { QueryError } from "../query-error/query-error";
+import { Clicker } from "../../../../common/models/clicker/clicker";
+import { Dimension } from "../../../../common/models/dimension/dimension";
+import { DragPosition } from "../../../../common/models/drag-position/drag-position";
+import { Essence } from "../../../../common/models/essence/essence";
+import { BooleanFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Filter } from "../../../../common/models/filter/filter";
+import { Stage } from "../../../../common/models/stage/stage";
+import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../../common/utils/general/general";
+import { STRINGS } from "../../../config/constants";
+import { BubbleMenu } from "../../bubble-menu/bubble-menu";
+import { Button } from "../../button/button";
+import { Checkbox } from "../../checkbox/checkbox";
+import { Loader } from "../../loader/loader";
+import { QueryError } from "../../query-error/query-error";
 import "./boolean-filter-menu.scss";
 
 interface BooleanFilterMenuProps {
@@ -78,11 +78,9 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
   fetchData() {
     const { essence, timekeeper, dimension } = this.props;
     const { dataCube } = essence;
-    const $main = $("main");
-
     const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
 
-    const query = $main
+    const query = $("main")
       .filter(filterExpression)
       .split(dimension.expression, dimension.name);
 

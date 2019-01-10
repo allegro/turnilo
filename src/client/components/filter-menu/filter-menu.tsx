@@ -23,11 +23,11 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
-import { BooleanFilterMenu } from "../boolean-filter-menu/boolean-filter-menu";
-import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
-import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";
-import { TimeFilterMenu } from "../time-filter-menu/time-filter-menu";
+import { BooleanFilterMenu } from "./boolean-filter-menu/boolean-filter-menu";
 import "./filter-menu.scss";
+import { NumberFilterMenu } from "./number-filter-menu/number-filter-menu";
+import { StringFilterMenu } from "./string-filter-menu/string-filter-menu";
+import { TimeFilterMenu } from "./time-filter-menu/time-filter-menu";
 
 export interface FilterMenuProps {
   essence: Essence;

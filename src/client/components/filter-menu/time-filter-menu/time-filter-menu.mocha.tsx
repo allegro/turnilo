@@ -19,20 +19,20 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
-import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
-import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
-import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
-import { renderIntoDocument } from "../../utils/test-utils";
-import { StringFilterMenu } from "./string-filter-menu";
+import { DimensionFixtures } from "../../../../common/models/dimension/dimension.fixtures";
+import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
+import { StageFixtures } from "../../../../common/models/stage/stage.fixtures";
+import { TimekeeperFixtures } from "../../../../common/models/timekeeper/timekeeper.fixtures";
+import { renderIntoDocument } from "../../../utils/test-utils/index";
+import { TimeFilterMenu } from "./time-filter-menu";
 
-describe.skip("StringFilterMenu", () => {
+describe.skip("TimeFilterMenu", () => {
   it("adds the correct class", () => {
     var div = document.createElement("div");
     div.setAttribute("id", "Div1");
 
     var renderedComponent = renderIntoDocument(
-      <StringFilterMenu
+      <TimeFilterMenu
         clicker={null}
         dimension={DimensionFixtures.countryURL()}
         essence={EssenceFixtures.wikiLineChart()}
@@ -41,12 +41,11 @@ describe.skip("StringFilterMenu", () => {
         containerStage={StageFixtures.defaultA()}
         openOn={div}
         inside={div}
-        changePosition={null}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("string-filter-menu");
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("time-filter-menu");
   });
 
 });
