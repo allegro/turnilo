@@ -30,7 +30,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
-import { DimensionOrigin, DragManager } from "../../utils/drag-manager/drag-manager";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
@@ -231,7 +231,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, DimensionOrigin.FILTER_TILE);
+    DragManager.setDragFilter(clause);
 
     setDragGhost(dataTransfer, dimension.title);
 
@@ -250,9 +250,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   canDrop(): boolean {
     const { essence: { filter } } = this.props;
     const dimension = DragManager.draggingDimension();
-    if (!dimension) return false;
-    const origin = DragManager.dragging.origin;
-    return origin === DimensionOrigin.FILTER_TILE || !filter.getClauseForDimension(dimension);
+    if (dimension) return !filter.getClauseForDimension(dimension);
+    return DragManager.isDraggingFilter();
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
@@ -282,12 +281,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { filter, dataCube } = essence;
 
     this.setState({ dragPosition: null });
-    const dimension = DragManager.draggingDimension();
-    if (!dimension) return;
 
     const dragPosition = this.calculateDragPosition(e);
-    const existingClause = filter.clauseForReference(dimension.name);
-    if (!existingClause) {
+    if (!DragManager.isDraggingFilter()) {
+      const dimension = DragManager.draggingDimension();
       let tryingToReplaceTime = false;
       if (dragPosition.replace !== null) {
         const targetClause = filter.clauses.get(dragPosition.replace);
@@ -299,10 +296,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       return;
     }
     let newFilter: Filter;
+    const clause = DragManager.draggingFilter();
     if (dragPosition.isReplace()) {
-      newFilter = filter.replaceByIndex(dragPosition.replace, existingClause);
+      newFilter = filter.replaceByIndex(dragPosition.replace, clause);
     } else {
-      newFilter = filter.insertByIndex(dragPosition.insert, existingClause);
+      newFilter = filter.insertByIndex(dragPosition.insert, clause);
     }
 
     let newFilterSame = filter.equals(newFilter);
@@ -310,7 +308,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       clicker.changeFilter(newFilter);
     }
 
-    if (DragManager.dragging.origin !== DimensionOrigin.FILTER_TILE) { // Do not open the menu if it is an internal re-arrange
+    if (DragManager.isDraggingFilter()) { // Do not open the menu if it is an internal re-arrange
+      const dimension = DragManager.draggingDimension();
       if (newFilterSame) {
         this.filterMenuRequest(dimension);
       } else {

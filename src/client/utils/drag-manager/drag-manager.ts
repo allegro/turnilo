@@ -16,13 +16,12 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Measure } from "../../../common/models/measure/measure";
+import { Series } from "../../../common/models/series/series";
+import { Split } from "../../../common/models/split/split";
 
-export enum MeasureOrigin { SERIES_TILE = "series-tile", PANEL = "panel" }
-
-export enum DimensionOrigin { PANEL = "panel", FILTER_TILE = "filter-tile", SPLIT_TILE = "split-tile", PINBOARD = "pinboard"}
-
-enum DraggedElementType { DIMENSION, MEASURE }
+enum DraggedElementType { DIMENSION, MEASURE, SERIES, SPLIT, FILTER }
 
 interface DraggedElementBase<T> {
   type: DraggedElementType;
@@ -31,23 +30,25 @@ interface DraggedElementBase<T> {
 
 interface DraggedDimension extends DraggedElementBase<Dimension> {
   type: DraggedElementType.DIMENSION;
-  origin: DimensionOrigin;
 }
 
 interface DraggedMeasure extends DraggedElementBase<Measure> {
   type: DraggedElementType.MEASURE;
-  origin: MeasureOrigin;
 }
 
-type DraggedElement = DraggedDimension | DraggedMeasure;
-
-function isDimension(el: DraggedElement): el is DraggedDimension {
-  return el.type === DraggedElementType.DIMENSION;
+interface DraggedSeries extends DraggedElementBase<Series> {
+  type: DraggedElementType.SERIES;
 }
 
-function isMeasure(el: DraggedElement): el is DraggedMeasure {
-  return el.type === DraggedElementType.MEASURE;
+interface DraggedSplit extends DraggedElementBase<Split> {
+  type: DraggedElementType.SPLIT;
 }
+
+interface DraggedFilter extends DraggedElementBase<FilterClause> {
+  type: DraggedElementType.FILTER;
+}
+
+type DraggedElement = DraggedDimension | DraggedMeasure | DraggedFilter | DraggedSplit | DraggedSeries;
 
 export class DragManager {
   static dragging: DraggedElement = null;
@@ -58,29 +59,56 @@ export class DragManager {
     }, false);
   }
 
-  static isDraggingDimension(): boolean {
-    return isDimension(DragManager.dragging);
+  static isDraggingSplit(): boolean {
+    return this.dragging.type === DraggedElementType.SPLIT;
   }
 
-  static isDraggingMeasure(): boolean {
-    return isMeasure(DragManager.dragging);
+  static isDraggingFilter(): boolean {
+    return this.dragging.type === DraggedElementType.FILTER;
   }
 
-  static setDragDimension(element: Dimension, origin: DimensionOrigin) {
-    this.dragging = { type: DraggedElementType.DIMENSION, origin, element };
+  static setDragDimension(element: Dimension) {
+    this.dragging = { type: DraggedElementType.DIMENSION, element };
   }
 
-  static setDragMeasure(element: Measure, origin: MeasureOrigin) {
-    this.dragging = { type: DraggedElementType.MEASURE, origin, element };
+  static setDragMeasure(element: Measure) {
+    this.dragging = { type: DraggedElementType.MEASURE, element };
+  }
+
+  static setDragSeries(element: Series) {
+    this.dragging = { type: DraggedElementType.SERIES, element };
+  }
+
+  static setDragFilter(element: FilterClause) {
+    this.dragging = { type: DraggedElementType.FILTER, element };
+  }
+
+  static setDragSplit(element: Split) {
+    this.dragging = { type: DraggedElementType.SPLIT, element };
   }
 
   static draggingDimension(): Dimension {
     const el = DragManager.dragging;
-    return isDimension(el) ? el.element : null;
+    return el.type === DraggedElementType.DIMENSION ? el.element : null;
   }
 
   static draggingMeasure(): Measure {
     const el = DragManager.dragging;
-    return isMeasure(el) ? el.element : null;
+    return el.type === DraggedElementType.MEASURE ? el.element : null;
+  }
+
+  static draggingSplit(): Split {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.SPLIT ? el.element : null;
+  }
+
+  static draggingSeries(): Series {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.SERIES ? el.element : null;
+  }
+
+  static draggingFilter(): FilterClause {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.FILTER ? el.element : null;
   }
 }

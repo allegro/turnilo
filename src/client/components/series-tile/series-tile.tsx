@@ -25,7 +25,7 @@ import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
-import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
@@ -153,11 +153,11 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   canDrop(): boolean {
-    const { essence: { series } } = this.props;
+    const { essence: { series: seriesList } } = this.props;
     const measure = DragManager.draggingMeasure();
-    if (!measure) return false;
-    const origin = DragManager.dragging.origin;
-    return origin === MeasureOrigin.SERIES_TILE || !series.hasMeasure(measure);
+    if (measure) return seriesList.hasMeasure(measure);
+    const series = DragManager.draggingSeries();
+    return series !== null;
   }
 
   dragStart = (measure: Measure, series: Series, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
@@ -165,7 +165,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", measure.title);
 
-    DragManager.setDragMeasure(measure, MeasureOrigin.SERIES_TILE);
+    DragManager.setDragSeries(series);
     setDragGhost(dataTransfer, measure.title);
 
     this.closeOverflowMenu();
