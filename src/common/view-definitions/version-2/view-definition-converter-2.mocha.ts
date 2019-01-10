@@ -15,46 +15,194 @@
  */
 
 import { expect } from "chai";
+import { Duration } from "chronoshift";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
-import { ViewDefinition2 } from "./view-definition-2";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
+import { ViewDefinitionConverter2Fixtures } from "./view-definition-converter-2.fixtures";
 
 describe("ViewDefinitionConverter2", () => {
 
-  const totalsWithTimeBucket: ViewDefinition2 = {
-    visualization: "totals",
-    timezone: "Etc/UTC",
-    filter: {
-      op: "overlap",
+  it("converts current time bucket expression to time period", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression({
+      op: "timeBucket",
       operand: {
         op: "ref",
-        name: "time"
+        name: "n"
       },
-      expression: {
-        op: "timeBucket",
+      duration: "P1D"
+    });
+    const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS);
+    const convertedClause = essence.filter.clauses.first();
+
+    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.CURRENT);
+    expect(convertedClause).to.deep.equal(expectedClause);
+  });
+
+  it("converts latest time range expression to time period", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression({
+      op: "timeRange",
+      operand: {
+        op: "ref",
+        name: "m"
+      },
+      duration: "P1D",
+      step: -3
+    });
+    const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS);
+    const convertedClause = essence.filter.clauses.first();
+
+    const expectedClause = FilterClauseFixtures.timePeriod("time", "P3D", TimeFilterPeriod.LATEST);
+    expect(convertedClause).to.deep.equal(expectedClause);
+  });
+
+  it("converts previous time bucket expression to time period", () => {
+    const viewDefintiion = ViewDefinitionConverter2Fixtures.withFilterExpression({
+      op: "timeRange",
+      operand: {
+        op: "timeFloor",
         operand: {
           op: "ref",
           name: "n"
         },
-        duration: "P1D"
-      }
-    },
-    splits: [],
-    singleMeasure: "delta",
-    multiMeasureMode: true,
-    selectedMeasures: ["count"],
-    pinnedDimensions: [],
-    pinnedSort: "delta"
-  };
-
-  it("should convert time bucket expression to time range", () => {
-    const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
+        duration: "P1W"
+      },
+      duration: "P1W",
+      step: -1
+    });
+    const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefintiion, DataCubeFixtures.wiki(), MANIFESTS);
     const convertedClause = essence.filter.clauses.first();
 
-    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST);
+    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1W", TimeFilterPeriod.PREVIOUS);
     expect(convertedClause).to.deep.equal(expectedClause);
   });
+
+  it("converts filter with lookup expressions", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterActions([
+      {
+        action: "in",
+        expression: {
+          op: "chain",
+          expression: {
+            op: "ref",
+            name: "n"
+          },
+          actions: [
+            {
+              action: "timeFloor",
+              duration: "P1W"
+            },
+            {
+              action: "timeRange",
+              duration: "P1W",
+              step: -1
+            }
+          ]
+        }
+      },
+      {
+        action: "and",
+        expression: {
+          op: "chain",
+          expression: {
+            op: "ref",
+            name: "page"
+          },
+          actions: [
+            {
+              action: "lookup",
+              lookup: "page_last_author"
+            },
+            {
+              action: "overlap",
+              expression: {
+                op: "literal",
+                value: {
+                  setType: "STRING",
+                  elements: [
+                    "TypeScript"
+                  ]
+                },
+                type: "SET"
+              }
+            }
+          ]
+        }
+      }
+    ]);
+    const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).filter;
+    const convertedClause = convertedFilter.clauses.get(1);
+
+    const expectedClause = FilterClauseFixtures.stringIn("page_last_author", ["TypeScript"]);
+    expect(convertedClause).to.deep.equal(expectedClause);
+  });
+
+  const splitWithLookupAndLimit = {
+    expression: {
+      op: "chain",
+      expression: {
+        op: "ref",
+        name: "page"
+      },
+      actions: [
+        {
+          action: "lookup",
+          lookup: "page_last_author"
+        }
+      ]
+    },
+    sortAction: {
+      action: "sort",
+      expression: {
+        op: "ref",
+        name: "count"
+      },
+      direction: "descending"
+    },
+    limitAction: {
+      action: "limit",
+      limit: 10
+    }
+  };
+
+  it("converts splits with lookup expressions", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([splitWithLookupAndLimit]);
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).splits;
+
+    expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");
+  });
+
+  it("converts splits with plywood < 0.14.1 limits", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([splitWithLookupAndLimit]);
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).splits;
+
+    expect(convertedSplits.getSplit(0).limit).to.equal(10);
+  });
+
+  it("converts time bucket splits", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([{
+      expression: {
+        op: "ref",
+        name: "time"
+      },
+      bucketAction: {
+        action: "timeBucket",
+        duration: "PT1H"
+      },
+      sortAction: {
+        action: "sort",
+        expression: {
+          op: "ref",
+          name: "time"
+        },
+        direction: "ascending"
+      }
+    }]);
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).splits;
+
+    expect(convertedSplits.getSplit(0).bucket).to.deep.equal(Duration.fromJS("PT1H"));
+  });
+
 });

@@ -28,7 +28,6 @@ import {
   MatchExpression,
   NotExpression,
   OverlapExpression,
-  RefExpression,
   Set as PlywoodSet,
   TimeBucketExpression,
   TimeFloorExpression,
@@ -155,9 +154,10 @@ function readFixedTimeFilter(selection: LiteralExpression, dimension: Dimension)
 }
 
 function readRelativeTimeFilterClause(selection: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
+  const { operand, step, duration } = selection;
   const { name: reference } = dimension;
-  if (selection.operand instanceof TimeFloorExpression) {
-    const { step, duration } = selection;
+  if (operand instanceof TimeFloorExpression) {
+    // pretty sure this is only ever used for previous
     return new RelativeTimeFilterClause({
       reference,
       duration: duration.multiply(Math.abs(step)),
@@ -166,8 +166,8 @@ function readRelativeTimeFilterClause(selection: TimeRangeExpression, dimension:
   }
   return new RelativeTimeFilterClause({
     reference,
-    period: TimeFilterPeriod.LATEST,
-    duration: selection.duration
+    period: step ? TimeFilterPeriod.LATEST : TimeFilterPeriod.CURRENT,
+    duration: step ? duration.multiply(Math.abs(step)) : duration
   });
 }
 
@@ -221,8 +221,7 @@ function expressionAction(expression: ChainableExpression): SupportedAction {
 
 function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: DataCube): FilterClause {
   const { expression, exclude } = extractExclude(filter);
-  const dimensionName = (expression.operand as RefExpression).name;
-  const dimension = dataCube.getDimension(dimensionName);
+  const dimension = dataCube.getDimensionByExpression(expression.operand);
 
   if (isBooleanFilterSelection(expression.expression)) {
     return readBooleanFilterClause(expression.expression, dimension, exclude);
@@ -238,16 +237,19 @@ function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: Dat
 }
 
 function convertSplit(split: any, dataCube: DataCube): Split {
-  const { sortAction, limitAction, expression, bucketAction } = split;
-  const reference = (expression as RefExpression).name;
-  const dimension = dataCube.getDimension(reference);
+  const { sortAction, limitAction, bucketAction } = split;
+  const expression = Expression.fromJS(split.expression);
+  const dimension = dataCube.getDimensionByExpression(expression);
+  const reference = dimension.name;
   const type = kindToType(dimension.kind);
   const sort = sortAction && new Sort({
     reference: sortAction.expression.name,
     direction: sortAction.direction
   });
-  const limit = limitAction && limitAction.value;
-  const bucket = bucketAction && (bucketAction.op === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
+  // plywood < 0.14.1 uses limit instead of value
+  const limit = limitAction && (limitAction.value || limitAction.limit);
+  // test fixtures and converter use op, real links generated using swiv use action...?
+  const bucket = bucketAction && ((bucketAction.action || bucketAction.op) === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
   return new Split({
     type,
     reference,
