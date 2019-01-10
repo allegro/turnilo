@@ -141,8 +141,8 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage, triggerFilterMenu } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
+    const { essence, clicker, menuStage, triggerFilterMenu } = this.props;
+    const { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
 
     return <DimensionActionsMenu

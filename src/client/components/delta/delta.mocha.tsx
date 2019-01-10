@@ -19,10 +19,12 @@ import { shallow } from "enzyme";
 import * as React from "react";
 import { DataSeries } from "../../../common/models/data-series/data-series";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { EXACT_FORMAT, SeriesDerivation } from "../../../common/models/series/series-definition";
+import { SeriesDerivation } from "../../../common/models/series/series-definition";
+import { EXACT_FORMAT } from "../../../common/models/series/series-format";
 import { Delta, formatDelta } from "./delta";
 
-const dataSeries = new DataSeries({ measure: MeasureFixtures.wikiCount(), format: EXACT_FORMAT });
+const dataSeries = new DataSeries(MeasureFixtures.wikiCount(), EXACT_FORMAT);
+const lowerIsBetterDataSeries = new DataSeries(MeasureFixtures.wikiCountLowerIsBetter(), EXACT_FORMAT);
 
 const makeDatum = (current: number, previous: number) => ({
   [dataSeries.plywoodExpressionName()]: current,
@@ -30,7 +32,7 @@ const makeDatum = (current: number, previous: number) => ({
 });
 
 function makeDelta(current: number, previous: number, lowerIsBetter = false) {
-  const series = lowerIsBetter ? dataSeries.set("measure", MeasureFixtures.wikiCountLowerIsBetter()) : dataSeries;
+  const series = lowerIsBetter ? lowerIsBetterDataSeries : dataSeries;
   return <Delta series={series} datum={makeDatum(current, previous)}/>;
 }
 

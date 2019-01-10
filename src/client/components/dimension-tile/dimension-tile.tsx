@@ -34,7 +34,7 @@ import {
   granularityToString
 } from "../../../common/models/granularity/granularity";
 import { Measure } from "../../../common/models/measure/measure";
-import { DEFAULT_FORMAT } from "../../../common/models/series/series-definition";
+import { DEFAULT_FORMAT } from "../../../common/models/series/series-format";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -483,7 +483,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const measure = sortOn.reference;
     if (!(measure instanceof Measure)) return null;
     const measureName = measure.name;
-    const series = seriesList.getSeries(measureName);
+    const series = seriesList.getMeasureSeries(measureName);
     const format = series ? series.format : DEFAULT_FORMAT;
     const formatter = seriesFormatter(format, measure);
     return (datum: Datum) => formatter(datum[measureName] as number);

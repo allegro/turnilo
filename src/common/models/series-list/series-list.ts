@@ -18,7 +18,7 @@ import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
-import { SeriesDefinition } from "../series/series-definition";
+import { fromJS, MeasureSeriesDefinition, SeriesDefinition } from "../series/series-definition";
 
 interface SeriesListValue {
   series: List<SeriesDefinition>;
@@ -28,12 +28,15 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
+  /**
+   * @deprecated
+   */
   static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new SeriesDefinition({ reference }))) });
+    return new SeriesList({ series: List(names.map(reference => new MeasureSeriesDefinition({ reference }))) });
   }
 
   static fromJS(seriesDefs: any[]): SeriesList {
-    const series = List(seriesDefs.map(def => SeriesDefinition.fromJS(def)));
+    const series = List(seriesDefs.map(def => fromJS(def)));
     return new SeriesList({ series });
   }
 
@@ -72,16 +75,16 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
         .filterNot((series, idx) => series.equals(insert) && idx !== index));
   }
 
-  public hasSeries(reference: string): boolean {
-    return this.getSeries(reference) !== undefined;
+  public hasMeasureSeries(reference: string): boolean {
+    return this.getMeasureSeries(reference) !== undefined;
   }
 
-  public hasMeasure({ name }: Measure): boolean {
-    return this.hasSeries(name);
+  public hasSeriesForMeasure({ name }: Measure): boolean {
+    return this.hasMeasureSeries(name);
   }
 
-  public getSeries(reference: string): SeriesDefinition {
-    return this.series.find(series => series.reference === reference);
+  public getMeasureSeries(reference: string): SeriesDefinition {
+    return this.series.find(series => series.reference === reference && series instanceof MeasureSeriesDefinition);
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {

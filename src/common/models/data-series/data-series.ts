@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-import { Record } from "immutable";
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { seriesFormatter } from "../../utils/formatter/formatter";
 import { Measure } from "../measure/measure";
-import { DEFAULT_FORMAT, SeriesDerivation, SeriesFormat } from "../series/series-definition";
+import { SeriesDerivation } from "../series/series-definition";
+import { SeriesFormat } from "../series/series-format";
 import { plywoodExpressionKey, title } from "./data-series-names";
-
-interface DataSeriesValue {
-  measure: Measure;
-  percentOf: DataSeriesPercentOf;
-  format: SeriesFormat;
-}
-
-const defaultDataSeries: DataSeriesValue = {
-  measure: null,
-  percentOf: null,
-  format: DEFAULT_FORMAT
-};
-
-export enum DataSeriesPercentOf { PARENT = "of_parent", TOTAL = "of_total" }
 
 export interface Period {
   derivation: SeriesDerivation;
@@ -54,10 +40,96 @@ export class CurrentPeriod implements Period {
   }
 }
 
-export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
+export interface Transformation {
+  expressionName(reference: string, derivation: SeriesDerivation): string;
+
+  title(baseTitle: string, derivation: SeriesDerivation): string;
+
+  applyExpression(reference: string, derivation: SeriesDerivation, expression: Expression, nestingLevel: number): ApplyExpression;
+}
+
+class IdTransformation implements Transformation {
+  expressionName(reference: string, derivation: SeriesDerivation): string {
+    return plywoodExpressionKey(reference, derivation);
+  }
+
+  applyExpression(reference: string, derivation: SeriesDerivation, expression: Expression): ApplyExpression {
+    const name = this.expressionName(reference, derivation);
+    return new ApplyExpression({ name, expression });
+  }
+
+  title(baseTitle: string, derivation: SeriesDerivation): string {
+    return title(baseTitle, derivation);
+  }
+}
+
+export enum PercentOf { TOTAL = "__total_", PARENT = "__parent_" }
+
+export class PercentageTransformation implements Transformation {
+
+  constructor(private readonly percentOf: PercentOf) {
+  }
+
+  expressionName(reference: string, derivation: SeriesDerivation): string {
+    return `${plywoodExpressionKey(reference, derivation)}${this.percentOf}`;
+  }
+
+  private relativeNesting(nestingLevel: number): number {
+    switch (this.percentOf) {
+      case PercentOf.TOTAL:
+        return nestingLevel;
+      case PercentOf.PARENT:
+        return Math.min(nestingLevel, 1);
+    }
+  }
+
+  applyExpression(reference: string, derivation: SeriesDerivation, expression: Expression, nestingLevel: number): ApplyExpression {
+    const relativeNesting = this.relativeNesting(nestingLevel);
+    const name = this.expressionName(reference, derivation);
+    const formulaName = `__formula_${name}`;
+    if (relativeNesting > 0) {
+      return new ApplyExpression({
+        name,
+        operand: new ApplyExpression({ expression, name: formulaName }),
+        expression: $(formulaName).divide($(formulaName, relativeNesting))
+      });
+    }
+    if (relativeNesting === 0) {
+      return new ApplyExpression({ name: formulaName, expression });
+    }
+    throw new Error(`wrong nesting level: ${relativeNesting}`);
+  }
+
+  private percentTitle(): string {
+    switch (this.percentOf) {
+      case PercentOf.TOTAL:
+        return " (% of Total)";
+      case PercentOf.PARENT:
+        return " (% of Parent)";
+    }
+  }
+
+  title(baseTitle: string, derivation: SeriesDerivation): string {
+    return `${title(baseTitle, derivation)}${this.percentTitle()}`;
+  }
+}
+
+export class DataSeries {
+
+  constructor(public readonly measure: Measure,
+              public readonly format: SeriesFormat,
+              public readonly transformation: Transformation = new IdTransformation()) {
+  }
+
+  equals(other: any): boolean {
+    return other instanceof DataSeries &&
+      this.measure.equals(other.measure) &&
+      // this.transformation.equals(other.transformation) &&
+      this.format.equals(other.format);
+  }
 
   public plywoodExpressionName(derivation = SeriesDerivation.CURRENT): string {
-    return plywoodExpressionKey(this.measure.name, derivation, this.percentOf);
+    return this.transformation.expressionName(this.measure.name, derivation);
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
@@ -74,34 +146,8 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
     return this.filterMainRefs(this.measure.expression, period.filter);
   }
 
-  private relativeNesting(nestingLevel: number): number {
-    switch (this.percentOf) {
-      case DataSeriesPercentOf.TOTAL:
-        return nestingLevel;
-      case DataSeriesPercentOf.PARENT:
-        return Math.min(nestingLevel, 1);
-    }
-  }
-
-  private percentOfExpression(expression: Expression, nestingLevel: number, derivation = SeriesDerivation.CURRENT): ApplyExpression {
-    const name = this.plywoodExpressionName(derivation);
-    const formulaName = `__formula_${name}`;
-    if (nestingLevel > 0) {
-      return new ApplyExpression({
-        name,
-        operand: new ApplyExpression({ expression, name: formulaName }),
-        expression: $(formulaName).divide($(formulaName, nestingLevel))
-      });
-    }
-    if (nestingLevel === 0) {
-      return new ApplyExpression({ name: formulaName, expression });
-    }
-    throw new Error(`wrong nesting level: ${nestingLevel}`);
-  }
-
   private toApplyExpression(expression: Expression, currentNesting: number, derivation: SeriesDerivation): ApplyExpression {
-    if (!this.percentOf) return new ApplyExpression({ name: this.plywoodExpressionName(derivation), expression });
-    return this.percentOfExpression(expression, this.relativeNesting(currentNesting), derivation);
+    return this.transformation.applyExpression(this.measure.name, derivation, expression, currentNesting);
   }
 
   public toExpression(nestingLevel: number, period?: Period): ApplyExpression {
@@ -110,7 +156,7 @@ export class DataSeries extends Record<DataSeriesValue>(defaultDataSeries) {
   }
 
   public title(derivation = SeriesDerivation.CURRENT): string {
-    return title(this.measure.title, derivation, this.percentOf);
+    return this.transformation.title(this.measure.title, derivation);
   }
 
   public selectValue(datum: Datum, derivation = SeriesDerivation.CURRENT) {

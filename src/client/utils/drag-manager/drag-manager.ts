@@ -17,12 +17,15 @@
 
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Measure } from "../../../common/models/measure/measure";
+import { SeriesDefinition } from "../../../common/models/series/series-definition";
 
 export enum MeasureOrigin { SERIES_TILE = "series-tile", PANEL = "panel" }
 
+export enum SeriesOrigin { SERIES_TILE = "series-tile" }
+
 export enum DimensionOrigin { PANEL = "panel", FILTER_TILE = "filter-tile", SPLIT_TILE = "split-tile", PINBOARD = "pinboard"}
 
-enum DraggedElementType { DIMENSION, MEASURE }
+enum DraggedElementType { DIMENSION, MEASURE, SERIES }
 
 interface DraggedElementBase<T> {
   type: DraggedElementType;
@@ -39,7 +42,12 @@ interface DraggedMeasure extends DraggedElementBase<Measure> {
   origin: MeasureOrigin;
 }
 
-type DraggedElement = DraggedDimension | DraggedMeasure;
+interface DraggedSeries extends DraggedElementBase<SeriesDefinition> {
+  type: DraggedElementType.SERIES;
+  origin: SeriesOrigin;
+}
+
+type DraggedElement = DraggedDimension | DraggedMeasure | DraggedSeries;
 
 function isDimension(el: DraggedElement): el is DraggedDimension {
   return el.type === DraggedElementType.DIMENSION;
@@ -47,6 +55,10 @@ function isDimension(el: DraggedElement): el is DraggedDimension {
 
 function isMeasure(el: DraggedElement): el is DraggedMeasure {
   return el.type === DraggedElementType.MEASURE;
+}
+
+function isSeries(el: DraggedElement): el is DraggedSeries {
+  return el.type === DraggedElementType.SERIES;
 }
 
 export class DragManager {
@@ -66,12 +78,20 @@ export class DragManager {
     return isMeasure(DragManager.dragging);
   }
 
+  static isDraggingSeries(): boolean {
+    return isSeries(DragManager.dragging);
+  }
+
   static setDragDimension(element: Dimension, origin: DimensionOrigin) {
     this.dragging = { type: DraggedElementType.DIMENSION, origin, element };
   }
 
   static setDragMeasure(element: Measure, origin: MeasureOrigin) {
     this.dragging = { type: DraggedElementType.MEASURE, origin, element };
+  }
+
+  static setDragSeries(element: SeriesDefinition, origin: SeriesOrigin) {
+    this.dragging = { type: DraggedElementType.SERIES, origin, element };
   }
 
   static draggingDimension(): Dimension {
@@ -82,5 +102,10 @@ export class DragManager {
   static draggingMeasure(): Measure {
     const el = DragManager.dragging;
     return isMeasure(el) ? el.element : null;
+  }
+
+  static draggingSeries(): SeriesDefinition {
+    const el = DragManager.dragging;
+    return isSeries(el) ? el.element : null;
   }
 }

@@ -22,7 +22,7 @@ import { SinonSpy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { SeriesDefinition } from "../../../common/models/series/series-definition";
+import { MeasureSeriesDefinition } from "../../../common/models/series/series-definition";
 import { MeasureActions } from "./measure-actions-menu";
 
 const onCloseNoop = () => {
@@ -33,7 +33,8 @@ describe("<MeasureActions>", () => {
   const measureActions = (measure: Measure) => shallow(<MeasureActions
     essence={EssenceFixtures.wikiTable()}
     measure={measure}
-    clicker={null}
+    promptSeries={null}
+    appendSeries={null}
     onClose={onCloseNoop}
   />);
 
@@ -63,7 +64,8 @@ describe("<MeasureActions>", () => {
       const measureActions = (measure: Measure) => mount(<MeasureActions
         essence={EssenceFixtures.wikiTable()}
         measure={measure}
-        clicker={{ addSeries: addSeriesSpy }}
+        promptSeries={null}
+        appendSeries={addSeriesSpy}
         onClose={onCloseSpy}
       />);
 
@@ -75,7 +77,7 @@ describe("<MeasureActions>", () => {
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSeriesSpy.calledOnce).to.be.true;
-        expect(addSeriesSpy.calledWith(SeriesDefinition.fromMeasure(measure))).to.be.true;
+        expect(addSeriesSpy.calledWith(MeasureSeriesDefinition.fromMeasure(measure))).to.be.true;
       });
 
       it("calls onClose but not clicker.addSeries when measure is selected", () => {

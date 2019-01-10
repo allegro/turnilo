@@ -25,6 +25,7 @@ import { nominalName, plywoodExpressionKey } from "../../models/data-series/data
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { SeriesDerivation } from "../../models/series/series-definition";
+import { DEFAULT_FORMAT } from "../../models/series/series-format";
 import { Sort } from "../../models/sort/sort";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
@@ -55,14 +56,16 @@ function applySortReferenceExpression(essence: Essence, query: Expression, nesti
   if (sortMeasureName && derivation === SeriesDerivation.CURRENT) {
     const sortMeasure = essence.dataCube.getMeasure(sortMeasureName);
     if (sortMeasure && !essence.getEffectiveSelectedMeasures().contains(sortMeasure)) {
-      const dataSeries = new DataSeries({ percentOf, measure: sortMeasure });
+      // TODO: fix crude way of generating expression
+      const dataSeries = new DataSeries(sortMeasure, DEFAULT_FORMAT);
       const currentPeriod = currentFilter ? new CurrentPeriod(currentFilter) : undefined;
       return query.performAction(dataSeries.toExpression(nestingLevel, currentPeriod));
     }
   }
   if (sortMeasureName && derivation === SeriesDerivation.DELTA) {
-    const currentReference = $(plywoodExpressionKey(sortMeasureName, SeriesDerivation.CURRENT, percentOf));
-    const previousReference = $(plywoodExpressionKey(sortMeasureName, SeriesDerivation.PREVIOUS, percentOf));
+    // TODO: get name from transformation from DataSeries
+    const currentReference = $(plywoodExpressionKey(sortMeasureName, SeriesDerivation.CURRENT));
+    const previousReference = $(plywoodExpressionKey(sortMeasureName, SeriesDerivation.PREVIOUS));
     return query.apply(sort.reference, currentReference.subtract(previousReference));
   }
   return query;

@@ -34,6 +34,7 @@ describe("MeasuresTile", () => {
       <MeasuresTile
         clicker={fakeClicker}
         menuStage={null}
+        triggerSeriesMenu={null}
         essence={EssenceFixtures.wikiTotals()}
       />
     );

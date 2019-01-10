@@ -17,7 +17,7 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
+import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
 import { constructFilter } from "../../../client/components/time-filter-menu/presets";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";

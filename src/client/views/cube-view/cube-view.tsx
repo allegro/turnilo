@@ -444,6 +444,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
   }
 
+  triggerSeriesMenu = (series: SeriesDefinition) => {
+    (this.refs["seriesTile"] as SeriesTile).seriesMenuRequest(series);
+  }
+
   changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
@@ -547,6 +551,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           essence={essence}
           menuStage={menuStage}
           triggerFilterMenu={this.triggerFilterMenu}
+          triggerSeriesMenu={this.triggerSeriesMenu}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}
@@ -659,7 +664,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private manualFallback() {
     const { essence } = this.state;
     if (!essence.visResolve.isManual()) return null;
-    return <ManualFallback clicker={this.clicker} essence={essence}/>;
+    return <ManualFallback clicker={this.clicker} essence={essence} />;
   }
 
   private visElement() {

@@ -93,6 +93,10 @@ export class Dimensions {
     return this === other || immutableArraysEqual(this.dimensions, other.dimensions);
   }
 
+  has(dimension: Dimension): boolean {
+    return this.flattenedDimensions.contains(dimension);
+  }
+
   mapDimensions<R>(mapper: (dimension: Dimension) => R): R[] {
     return this.flattenedDimensions.map(mapper).toArray();
   }

@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 .series-tile {
@@ -35,6 +34,11 @@
       @extend %tiles-item-h;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
+
+      &.expression {
+        border: 1px dashed $item-measure;
+        background: rgba($item-measure, 0.5);
+      }
     }
   }
 

@@ -15,9 +15,9 @@
  */
 
 import { SeriesDerivation } from "../series/series-definition";
-import { DataSeriesPercentOf } from "./data-series";
+import { PercentOf } from "./data-series";
 
-function formatPercentOf(percentOf: DataSeriesPercentOf): string {
+function formatPercentOf(percentOf: PercentOf): string {
   return `__${percentOf}_`;
 }
 
@@ -25,10 +25,9 @@ function formatDerivation(derivation: SeriesDerivation): string {
   return `_${derivation}__`;
 }
 
-export function plywoodExpressionKey(name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf): string {
-  const percentStr = percentOf ? formatPercentOf(percentOf) : "";
+export function plywoodExpressionKey(name: string, derivation: SeriesDerivation = SeriesDerivation.CURRENT): string {
   const derivationStr = derivation === SeriesDerivation.CURRENT ? "" : formatDerivation(derivation);
-  return `${derivationStr}${name}${percentStr}`;
+  return `${derivationStr}${name}`;
 }
 
 function extractDerivation(fullName: string): { derivation: SeriesDerivation, length: number } {
@@ -41,12 +40,12 @@ function extractDerivation(fullName: string): { derivation: SeriesDerivation, le
   return { derivation: SeriesDerivation.CURRENT, length: 0 };
 }
 
-function extractPercent(fullName: string): { percentOf?: DataSeriesPercentOf, length: number } {
-  if (fullName.endsWith(formatPercentOf(DataSeriesPercentOf.TOTAL))) {
-    return { percentOf: DataSeriesPercentOf.TOTAL, length: formatPercentOf(DataSeriesPercentOf.TOTAL).length };
+function extractPercent(fullName: string): { percentOf?: PercentOf, length: number } {
+  if (fullName.endsWith(formatPercentOf(PercentOf.TOTAL))) {
+    return { percentOf: PercentOf.TOTAL, length: formatPercentOf(PercentOf.TOTAL).length };
   }
-  if (fullName.endsWith(formatPercentOf(DataSeriesPercentOf.PARENT))) {
-    return { percentOf: DataSeriesPercentOf.PARENT, length: formatPercentOf(DataSeriesPercentOf.PARENT).length };
+  if (fullName.endsWith(formatPercentOf(PercentOf.PARENT))) {
+    return { percentOf: PercentOf.PARENT, length: formatPercentOf(PercentOf.PARENT).length };
   }
   return { length: 0 };
 }
@@ -54,7 +53,7 @@ function extractPercent(fullName: string): { percentOf?: DataSeriesPercentOf, le
 /**
  * @deprecated
  */
-export function nominalName(fullName: string): { name: string, derivation: SeriesDerivation, percentOf?: DataSeriesPercentOf } {
+export function nominalName(fullName: string): { name: string, derivation: SeriesDerivation, percentOf?: PercentOf } {
   const { derivation, length: derivationLength } = extractDerivation(fullName);
   const { percentOf, length: percentLength } = extractPercent(fullName);
   const name = fullName.substring(derivationLength, fullName.length - percentLength);
@@ -72,18 +71,7 @@ function derivationTitle(derivation: SeriesDerivation): string {
   }
 }
 
-function percentTitle(percentOf: DataSeriesPercentOf): string {
-  if (!percentOf) return "";
-  switch (percentOf) {
-    case DataSeriesPercentOf.TOTAL:
-      return " (% of Total)";
-    case DataSeriesPercentOf.PARENT:
-      return " (% of Parent)";
-  }
-}
-
-export function title(title: string, derivation: SeriesDerivation, percentOf: DataSeriesPercentOf): string {
+export function title(title: string, derivation: SeriesDerivation): string {
   const derivationStr = derivationTitle(derivation);
-  const percentStr = percentTitle(percentOf);
-  return `${derivationStr}${title}${percentStr}`;
+  return `${derivationStr}${title}`;
 }

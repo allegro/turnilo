@@ -15,64 +15,122 @@
  */
 
 import { Record } from "immutable";
+import { PercentageTransformation, PercentOf } from "../data-series/data-series";
 import { Measure } from "../measure/measure";
+import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
+
+interface Keyed {
+  key: () => string;
+}
 
 export enum SeriesDerivation { CURRENT = "", PREVIOUS = "previous", DELTA = "delta" }
 
-export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
+export enum SeriesType { MEASURE = "measure", QUANTILE = "quantile", EXPRESSION = "expression" }
 
-type FormatString = string;
-
-interface SeriesFormatValue {
-  type: SeriesFormatType;
-  value: FormatString;
-}
-
-const defaultFormat: SeriesFormatValue = { type: SeriesFormatType.DEFAULT, value: "" };
-
-export class SeriesFormat extends Record<SeriesFormatValue>(defaultFormat) {
-}
-
-export const DEFAULT_FORMAT = new SeriesFormat(defaultFormat);
-export const EXACT_FORMAT = new SeriesFormat({ type: SeriesFormatType.EXACT });
-export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT });
-
-export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
-
-export interface SeriesPercentageValue {
-  ofParent: boolean;
-  ofTotal: boolean;
-}
-
-const defaultPercentages: SeriesPercentageValue = { ofParent: false, ofTotal: false };
-
-export class SeriesPercentages extends Record<SeriesPercentageValue>(defaultPercentages) {
-}
-
-export const DEFAULT_PERCENTS = new SeriesPercentages(defaultPercentages);
-
-interface SeriesDefinitionValue {
+interface MeasureSeriesDefinitionValue {
   reference: string;
+  type: SeriesType.MEASURE;
   format: SeriesFormat;
-  percentages: SeriesPercentages;
 }
 
-const defaultSeries: SeriesDefinitionValue = {
+const defaultMeasureSeriesDef: MeasureSeriesDefinitionValue = {
   reference: null,
-  format: DEFAULT_FORMAT,
-  percentages: DEFAULT_PERCENTS
+  type: SeriesType.MEASURE,
+  format: DEFAULT_FORMAT
 };
 
-export class SeriesDefinition extends Record<SeriesDefinitionValue>(defaultSeries) {
+export class MeasureSeriesDefinition extends Record<MeasureSeriesDefinitionValue>(defaultMeasureSeriesDef) implements Keyed {
   static fromMeasure(measure: Measure) {
-    return new SeriesDefinition({ reference: measure.name });
+    return new MeasureSeriesDefinition({ reference: measure.name });
   }
 
-  static fromJS({ reference, format, percents }: any) {
-    return new SeriesDefinition({
-      reference,
-      format: new SeriesFormat(format),
-      percentages: new SeriesPercentages(percents)
-    });
+  key() {
+    return this.reference;
   }
+}
+
+export enum SeriesExpression { PERCENT_OF_PARENT = "percent_of_parent", PERCENT_OF_TOTAL = "percent_of_total" }
+
+interface ExpressionSeriesDefinitionValue {
+  reference: string;
+  type: SeriesType.EXPRESSION;
+  expression: SeriesExpression;
+  format: SeriesFormat;
+  operandReference?: string;
+}
+
+const defaultExpressionSeriesDef: ExpressionSeriesDefinitionValue = {
+  reference: null,
+  operandReference: null,
+  type: SeriesType.EXPRESSION,
+  expression: null,
+  format: DEFAULT_FORMAT
+};
+
+export class ExpressionSeriesDefinition extends Record<ExpressionSeriesDefinitionValue>(defaultExpressionSeriesDef) implements Keyed {
+  key() {
+    const prefix = `expression-${this.reference}-${this.expression}`;
+    if (this.operandReference) return `${prefix}-${this.operandReference}`;
+    return prefix;
+  }
+}
+
+export const createExpression = (measure: Measure) =>
+  new ExpressionSeriesDefinition({ reference: measure.name });
+
+export function transformationFromSeriesExpression(expression: SeriesExpression) {
+  switch (expression) {
+    case SeriesExpression.PERCENT_OF_TOTAL:
+      return new PercentageTransformation(PercentOf.TOTAL);
+    case SeriesExpression.PERCENT_OF_PARENT:
+      return new PercentageTransformation(PercentOf.PARENT);
+  }
+}
+
+interface QuantileSeriesDefinitionValue {
+  reference: string;
+  type: SeriesType.QUANTILE;
+  format: SeriesFormat;
+  percentile: number;
+}
+
+const defaultQuantileSeriesDef: QuantileSeriesDefinitionValue = {
+  reference: null,
+  type: SeriesType.QUANTILE,
+  format: DEFAULT_FORMAT,
+  percentile: null
+};
+
+export class QuantileSeriesDefinition extends Record<QuantileSeriesDefinitionValue>(defaultQuantileSeriesDef) implements Keyed {
+  static fromMeasure(measure: Measure) {
+    return new MeasureSeriesDefinition({ reference: measure.name });
+  }
+
+  key() {
+    return `quantile-${this.reference}-${this.percentile}`;
+  }
+}
+
+export type SeriesDefinition = MeasureSeriesDefinition | QuantileSeriesDefinition | ExpressionSeriesDefinition;
+
+export function fromMeasure(measure: Measure): SeriesDefinition {
+  return measure.isQuantile() ? new QuantileSeriesDefinition({ reference: measure.name }) : new MeasureSeriesDefinition({ reference: measure.name });
+}
+
+export function fromJS(params: any): SeriesDefinition {
+  switch (params.type) {
+    case SeriesType.MEASURE: {
+      const { format, reference } = params as MeasureSeriesDefinitionValue;
+      return new MeasureSeriesDefinition({ reference, format: new SeriesFormat(format) });
+    }
+    case SeriesType.QUANTILE: {
+      const { percentile, format, reference } = params as QuantileSeriesDefinitionValue;
+      return new QuantileSeriesDefinition({ percentile, reference, format: new SeriesFormat(format) });
+    }
+    case SeriesType.EXPRESSION: {
+      const { expression, operandReference, format, reference } = params as ExpressionSeriesDefinitionValue;
+      return new ExpressionSeriesDefinition({ reference, expression, operandReference, format: new SeriesFormat(format) });
+    }
+  }
+  throw new Error(`Unrecognized Series Definition type: ${params.type}`);
 }

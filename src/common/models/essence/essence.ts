@@ -18,11 +18,10 @@
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
 import { PlywoodRange, Range, RefExpression } from "plywood";
-import { concatTruthy } from "../../utils/functional/functional";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
-import { DataSeries, DataSeriesPercentOf } from "../data-series/data-series";
+import { DataSeries } from "../data-series/data-series";
 import { Dimension } from "../dimension/dimension";
 import { DateRange, FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
@@ -30,7 +29,7 @@ import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
-import { PERCENT_FORMAT, SeriesDefinition } from "../series/series-definition";
+import { ExpressionSeriesDefinition, SeriesDefinition, transformationFromSeriesExpression } from "../series/series-definition";
 import { Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
@@ -337,20 +336,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public getDataSeries(): List<DataSeries> {
-    const hasSplit = this.splits.length() > 0;
-    return this.series.series.flatMap(({ format, percentages: { ofTotal, ofParent }, reference }) => {
+    return this.series.series.map(series => {
+      const { format, reference } = series;
       const measure = this.dataCube.getMeasure(reference);
-      const measureExp = new DataSeries({ measure, format });
-
-      return concatTruthy(
-        measureExp,
-        hasSplit && ofTotal && measureExp
-          .set("percentOf", DataSeriesPercentOf.TOTAL)
-          .set("format", PERCENT_FORMAT),
-        hasSplit && ofParent && measureExp
-          .set("percentOf", DataSeriesPercentOf.PARENT)
-          .set("format", PERCENT_FORMAT)
-      );
+      if (!(series instanceof ExpressionSeriesDefinition)) return new DataSeries(measure, format);
+      return new DataSeries(measure, format, transformationFromSeriesExpression(series.expression));
     });
   }
 

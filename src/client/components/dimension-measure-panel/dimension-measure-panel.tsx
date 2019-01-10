@@ -20,6 +20,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
+import { SeriesDefinition } from "../../../common/models/series/series-definition";
 import { Stage } from "../../../common/models/stage/stage";
 import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
@@ -34,7 +35,9 @@ export interface DimensionMeasurePanelProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+  // TODO: change signature to Unary<FilterClause, void>
   triggerFilterMenu: (dimension: Dimension) => void;
+  triggerSeriesMenu: (series: SeriesDefinition) => void;
   style?: React.CSSProperties;
 }
 
@@ -90,7 +93,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
   }
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, style } = this.props;
+    const { clicker, essence, menuStage, triggerSeriesMenu, triggerFilterMenu, style } = this.props;
     const { dividerPosition, containerHeight } = this.state;
     const { maxDividerPosition, minDividerPosition } = dividerConstraints(containerHeight);
 
@@ -111,8 +114,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           essence={essence}
           menuStage={menuStage}
           triggerFilterMenu={triggerFilterMenu}
-          style={dimensionListStyle}
-        />
+          style={dimensionListStyle} />
         {showResizeHandle && <ResizeHandle
           onResize={this.saveDividerPosition}
           direction={Direction.TOP}
@@ -124,7 +126,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           style={measureListStyle}
           clicker={clicker}
           essence={essence}
-        />
+          triggerSeriesMenu={triggerSeriesMenu} />
       </div>
     </div>;
   }

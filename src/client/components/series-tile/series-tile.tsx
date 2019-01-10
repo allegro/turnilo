@@ -21,11 +21,12 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
-import { SeriesDefinition } from "../../../common/models/series/series-definition";
+import { ExpressionSeriesDefinition, fromMeasure, MeasureSeriesDefinition, QuantileSeriesDefinition, SeriesDefinition } from "../../../common/models/series/series-definition";
 import { Stage } from "../../../common/models/stage/stage";
+import { concatTruthy } from "../../../common/utils/functional/functional";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
-import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
+import { DragManager, MeasureOrigin, SeriesOrigin } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
@@ -44,6 +45,7 @@ interface SeriesTileProps {
 
 interface SeriesTileState {
   dragPosition?: DragPosition;
+  possibleSeries?: SeriesDefinition;
   overflowMenuOpenOn?: Element;
   maxItems?: number;
   menuInside?: Element;
@@ -54,6 +56,7 @@ interface SeriesTileState {
 export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState> {
 
   private readonly overflowMenuId = uniqueId("overflow-menu-");
+  private dummyDeferred: Q.Deferred<void>;
   private overflowMenuDeferred: Q.Deferred<Element>;
 
   state: SeriesTileState = {};
@@ -66,16 +69,21 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
       const newMaxItems = getMaxItems(menuStage.width, splits.splits.count());
       if (newMaxItems !== this.state.maxItems) {
         this.setState({
+          menuOpenOn: null,
           overflowMenuOpenOn: null,
+          possibleSeries: null,
           maxItems: newMaxItems
         });
       }
     }
-
   }
 
   componentDidUpdate() {
-    const { overflowMenuOpenOn } = this.state;
+    const { possibleSeries, overflowMenuOpenOn } = this.state;
+
+    if (possibleSeries) {
+      this.dummyDeferred.resolve(null);
+    }
 
     if (overflowMenuOpenOn) {
       const overflowMenu = this.getOverflowMenu();
@@ -87,7 +95,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     return document.getElementById(this.overflowMenuId);
   }
 
-  openOverflowMenu(target: Element): Q.Promise<any> {
+  openOverflowMenu(target: Element): Q.Promise<Element> {
     if (!target) return Q(null);
     const { overflowMenuOpenOn } = this.state;
 
@@ -96,7 +104,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
       return Q(null);
     }
 
-    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.overflowMenuDeferred = Q.defer<Element>();
     this.setState({ overflowMenuOpenOn: target });
     return this.overflowMenuDeferred.promise;
   }
@@ -131,13 +139,21 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   closeMenu = () => {
-    const { menuOpenOn } = this.state;
+    const { possibleSeries, menuOpenOn } = this.state;
     if (!menuOpenOn) return;
-    this.setState({
+    const newState: SeriesTileState = {
       menuOpenOn: null,
       menuInside: null,
-      menuSeries: null
-    });
+      menuSeries: null,
+      possibleSeries: null
+    };
+    if (possibleSeries) {
+      // If we are adding a ghost series also close the overflow menu
+      // This is so it does not remain phantom open with nothing inside
+      this.setState({ ...newState, overflowMenuOpenOn: null });
+      return;
+    }
+    this.setState(newState);
   }
 
   selectSeries = (series: SeriesDefinition, e: React.MouseEvent<HTMLElement>) => {
@@ -153,21 +169,28 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   canDrop(): boolean {
-    const { essence: { series } } = this.props;
+    const series = DragManager.draggingSeries();
+    if (series) return true;
+
     const measure = DragManager.draggingMeasure();
-    if (!measure) return false;
-    const origin = DragManager.dragging.origin;
-    return origin === MeasureOrigin.SERIES_TILE || !series.hasMeasure(measure);
+    if (measure && DragManager.dragging.origin === MeasureOrigin.SERIES_TILE) return true;
+    if (measure && !this.props.essence.series.hasSeriesForMeasure(measure)) return true;
+    return false;
   }
 
-  dragStart = (measure: Measure, series: SeriesDefinition, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
+  dragStart = (series: SeriesDefinition, e: React.DragEvent<HTMLElement>) => {
+    const measure = this.props.essence.dataCube.getMeasure(series.reference);
+
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
+    // TODO: Series.title or smthing
     dataTransfer.setData("text/plain", measure.title);
-
-    DragManager.setDragMeasure(measure, MeasureOrigin.SERIES_TILE);
     setDragGhost(dataTransfer, measure.title);
-
+    if (series instanceof ExpressionSeriesDefinition) {
+      DragManager.setDragSeries(series, SeriesOrigin.SERIES_TILE);
+    } else {
+      DragManager.setDragMeasure(measure, MeasureOrigin.SERIES_TILE);
+    }
     this.closeOverflowMenu();
   }
 
@@ -199,40 +222,87 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
   dragLeave = () => {
     if (!this.canDrop()) return;
-    this.setState({
-      dragPosition: null
-    });
+    this.setState({ dragPosition: null });
   }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.preventDefault();
-    const { clicker, essence: { series } } = this.props;
-    const { maxItems } = this.state;
-
-    const newSeries: SeriesDefinition = SeriesDefinition.fromMeasure(DragManager.draggingMeasure());
-
-    if (newSeries) {
-      let dragPosition = this.calculateDragPosition(e);
-
-      if (dragPosition.replace === maxItems) {
-        dragPosition = new DragPosition({ insert: dragPosition.replace });
-      }
-
-      if (dragPosition.isReplace()) {
-        clicker.changeSeriesList(series.replaceByIndex(dragPosition.replace, newSeries));
-      } else {
-        clicker.changeSeriesList(series.insertByIndex(dragPosition.insert, newSeries));
-      }
+    const dragPosition = this.calculateDragPosition(e);
+    if (DragManager.isDraggingSeries()) {
+      this.dropSeries(DragManager.draggingSeries(), dragPosition);
+      return;
     }
-
-    this.setState({
-      dragPosition: null
-    });
+    if (DragManager.isDraggingMeasure()) {
+      this.dropSeries(MeasureSeriesDefinition.fromMeasure(DragManager.draggingMeasure()), dragPosition);
+      return;
+    }
   }
 
-  appendSeries = (measure: Measure) => {
-    this.props.clicker.addSeries(SeriesDefinition.fromMeasure(measure));
+  private dropSeries(series: SeriesDefinition, dragPosition: DragPosition) {
+    const { clicker, essence: { series: seriesList } } = this.props;
+    const { maxItems } = this.state;
+    if (dragPosition.replace === maxItems) {
+      dragPosition = new DragPosition({ insert: dragPosition.replace });
+    }
+
+    if (dragPosition.isReplace()) {
+      clicker.changeSeriesList(seriesList.replaceByIndex(dragPosition.replace, series));
+    } else {
+      clicker.changeSeriesList(seriesList.insertByIndex(dragPosition.insert, series));
+    }
+    this.setState({ dragPosition: null });
+  }
+
+  addMeasure = (measure: Measure) => {
+    const series = fromMeasure(measure);
+    if (series instanceof QuantileSeriesDefinition) {
+      this.addDummy(series);
+    } else {
+      this.props.clicker.addSeries(series);
+    }
+  }
+
+  updateSeries = (series: SeriesDefinition) => {
+    const { menuSeries, possibleSeries } = this.state;
+    const { essence, clicker } = this.props;
+
+    if (!possibleSeries) {
+      clicker.changeSeriesList(essence.series.replaceSeries(menuSeries, series));
+      return;
+    }
+    clicker.addSeries(series);
+  }
+
+  openMenuOnSeries(series: SeriesDefinition) {
+    const targetRef = this.refs[series.key()];
+    if (targetRef) {
+      const target = ReactDOM.findDOMNode(targetRef);
+      if (!target) return;
+      this.openMenu(series, target);
+    } else {
+      const overflowButtonTarget = this.overflowButtonTarget();
+      if (overflowButtonTarget) {
+        this.openOverflowMenu(overflowButtonTarget).then(() => {
+          const target = ReactDOM.findDOMNode(this.refs[series.key()]);
+          if (!target) return;
+          this.openMenu(series, target);
+        });
+      }
+    }
+  }
+
+  // This will be called externally
+  seriesMenuRequest(series: SeriesDefinition) {
+    this.addDummy(series);
+  }
+
+  addDummy(possibleSeries: SeriesDefinition) {
+    this.dummyDeferred = Q.defer();
+    this.setState({ possibleSeries });
+    this.dummyDeferred.promise.then(() => {
+      this.openMenuOnSeries(possibleSeries);
+    });
   }
 
   overflowButtonTarget(): Element {
@@ -251,7 +321,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
     const seriesItems = items.map((item, i) => {
       const style = transformStyle(0, CORE_ITEM_GAP + i * segmentHeight);
-      return this.renderSeries(item, style, i);
+      return this.renderSeries(item, style);
     });
 
     return <BubbleMenu
@@ -282,23 +352,26 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     </React.Fragment>;
   }
 
-  renderSeries(series: SeriesDefinition, style: React.CSSProperties, i: number) {
+  renderSeries(series: SeriesDefinition, style: React.CSSProperties) {
     const { essence: { dataCube } } = this.props;
 
     const measure = dataCube.getMeasure(series.reference);
     if (!measure) throw new Error("measure not found");
-    const dimensionName = measure.name;
+    // TODO: title from series
+    const title = measure.title;
 
+    const key = series.key();
+    const expression = series instanceof ExpressionSeriesDefinition;
     return <div
-      className={classNames(SERIES_CLASS_NAME, "measure")}
-      key={measure.name}
-      ref={dimensionName}
+      className={classNames(SERIES_CLASS_NAME, "measure", { expression })}
+      key={key}
+      ref={key}
       draggable={true}
       onClick={(e: React.MouseEvent<HTMLElement>) => this.selectSeries(series, e)}
-      onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(measure, series, i, e)}
+      onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(series, e)}
       style={style}
     >
-      <div className="reading">{measure.title}</div>
+      <div className="reading">{title}</div>
       <div className="remove"
            onClick={(e: React.MouseEvent<HTMLElement>) => this.removeSeries(series, e)}>
         <SvgIcon svg={require("../../icons/x.svg")} />
@@ -309,7 +382,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   renderAddTileButton() {
     const { menuStage, essence: { dataCube, series } } = this.props;
     const tiles = dataCube.measures
-      .filterMeasures(measure => !series.hasMeasure(measure))
+      .filterMeasures(measure => !series.hasSeriesForMeasure(measure))
       .map(measure => {
         return {
           key: measure.name,
@@ -318,19 +391,20 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
         };
       });
 
-    return <AddTile<Measure> containerStage={menuStage} onSelect={this.appendSeries} tiles={tiles} />;
+    return <AddTile<Measure>
+      containerStage={menuStage}
+      onSelect={this.addMeasure}
+      tiles={tiles} />;
   }
 
   renderMenu() {
-    const { essence, clicker, menuStage } = this.props;
+    const { essence, menuStage } = this.props;
     const { menuOpenOn, menuSeries, menuInside, overflowMenuOpenOn } = this.state;
     if (!menuSeries) return null;
 
-    const measure = essence.dataCube.measures.getMeasureByName(menuSeries.reference);
-
     return <SeriesMenu
-      clicker={clicker}
-      essence={essence}
+      onSave={this.updateSeries}
+      dataCube={essence.dataCube}
       containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
       series={menuSeries}
@@ -339,15 +413,21 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     />;
   }
 
+  getSeriesItems() {
+    const { essence: { series: { series } } } = this.props;
+    const { possibleSeries } = this.state;
+
+    return concatTruthy(...series.toArray(), possibleSeries);
+  }
+
   render() {
-    const { essence: { series } } = this.props;
     const { dragPosition, maxItems } = this.state;
 
-    const seriesArray = series.series.toArray();
+    const seriesArray = this.getSeriesItems();
 
-    const seriesItems = seriesArray.slice(0, maxItems).map((serie, i) => {
+    const seriesItems = seriesArray.slice(0, maxItems).map((series, i) => {
       const style = transformStyle(i * SECTION_WIDTH, 0);
-      return this.renderSeries(serie, style, i);
+      return this.renderSeries(series, style);
     }, this);
 
     const overflowItems = seriesArray.slice(maxItems);

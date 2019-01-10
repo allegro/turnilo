@@ -16,11 +16,11 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
-import { SeriesDefinition } from "../../../common/models/series/series-definition";
+import { createExpression, fromMeasure, SeriesDefinition } from "../../../common/models/series/series-definition";
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
@@ -37,43 +37,61 @@ export interface MeasureActionsMenuProps {
 }
 
 export interface MeasureActionsProps {
-  clicker: Clicker;
   essence: Essence;
   measure: Measure;
   onClose: Fn;
+  appendSeries: Unary<SeriesDefinition, void>;
+  promptSeries: Unary<SeriesDefinition, void>;
 }
 
-export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = ({ essence, clicker, direction, containerStage, openOn, measure, onClose }) => {
+export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = ({ promptSeries, essence, appendSeries, direction, containerStage, openOn, measure, onClose }) => {
   if (!measure) return null;
 
   return <BubbleMenu
     className="measure-actions-menu"
     direction={direction}
     containerStage={containerStage}
-    stage={Stage.fromSize(ACTION_SIZE, ACTION_SIZE)}
+    stage={Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE)}
     fixedSize={true}
     openOn={openOn}
     onClose={onClose}
   >
     <MeasureActions
       onClose={onClose}
-      clicker={clicker}
+      promptSeries={promptSeries}
+      appendSeries={appendSeries}
       essence={essence}
       measure={measure}
     />
   </BubbleMenu>;
 };
 
-export const MeasureActions: React.SFC<MeasureActionsProps> = ({ essence, measure, onClose, clicker }) => {
-  const disabled = essence.series.hasMeasure(measure);
+export const MeasureActions: React.SFC<MeasureActionsProps> = ({ essence, measure, onClose, appendSeries, promptSeries }) => {
+  // TODO: rethink when disabled
+  const disabled = !measure.isQuantile() && essence.series.hasSeriesForMeasure(measure);
 
   function onAdd() {
-    if (!disabled) clicker.addSeries(SeriesDefinition.fromMeasure(measure));
+    if (measure.isQuantile()) {
+      promptSeries(fromMeasure(measure));
+    } else {
+      if (!disabled) appendSeries(fromMeasure(measure));
+    }
     onClose();
   }
 
-  return <div className={classNames("add", "action", { disabled })} onClick={onAdd}>
-    <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
-    <div className="action-label">{STRINGS.add}</div>
-  </div>;
+  function onExpression() {
+    promptSeries(createExpression(measure));
+    onClose();
+  }
+
+  return <React.Fragment>
+    <div className={classNames("add", "action", { disabled })} onClick={onAdd}>
+      <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+      <div className="action-label">{STRINGS.add}</div>
+    </div>
+    <div className={classNames("expression", "action")} onClick={onExpression}>
+      <SvgIcon svg={require("../../icons/full-edit.svg")} />
+      <div className="action-label">{STRINGS.add}</div>
+    </div>
+  </React.Fragment>;
 };

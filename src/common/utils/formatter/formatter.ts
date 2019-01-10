@@ -32,7 +32,7 @@ import {
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
 import { Measure } from "../../models/measure/measure";
-import { SeriesFormat, SeriesFormatType } from "../../models/series/series-definition";
+import { SeriesFormat, SeriesFormatType } from "../../models/series/series-format";
 import { Unary } from "../functional/functional";
 import { DisplayYear, formatTimeRange } from "../time/time";
 

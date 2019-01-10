@@ -20,6 +20,7 @@ import { $, ApplyExpression, AttributeInfo, CountDistinctExpression, deduplicate
 import { formatFnFactory } from "../../utils/formatter/formatter";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import { DataSeries } from "../data-series/data-series";
+import { DEFAULT_FORMAT } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 export interface MeasureValue {
@@ -180,6 +181,17 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     }
   }
 
+  public isQuantile(): boolean {
+    // Expression.some is bugged
+    let isQuantile = false;
+    this.expression.forEach((exp: Expression) => {
+      if (exp instanceof QuantileExpression) {
+        isQuantile = true;
+      }
+    });
+    return isQuantile;
+  }
+
   public isApproximate(): boolean {
     // Expression.some is bugged
     let isApproximate = false;
@@ -194,8 +206,12 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   // Default getter from ImmutableValue
   public getFormat: () => string;
 
+  /**
+   * @deprecated
+   * @param nestingLevel
+   */
   public toApplyExpression(nestingLevel: number): ApplyExpression {
-    return new DataSeries({ measure: this }).toExpression(nestingLevel);
+    return new DataSeries(this, DEFAULT_FORMAT).toExpression(nestingLevel);
   }
 }
 

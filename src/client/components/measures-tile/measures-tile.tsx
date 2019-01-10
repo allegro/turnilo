@@ -21,7 +21,9 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
+import { SeriesDefinition } from "../../../common/models/series/series-definition";
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
 import { DragManager, MeasureOrigin } from "../../utils/drag-manager/drag-manager";
@@ -35,6 +37,7 @@ export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+  triggerSeriesMenu: Unary<SeriesDefinition, void>;
   style?: React.CSSProperties;
 }
 
@@ -53,7 +56,7 @@ const hasSearchTextPredicate = (searchText: string) => (measure: Measure): boole
 };
 
 const isSelectedMeasurePredicate = (seriesList: SeriesList) => (measure: Measure): boolean => {
-  return seriesList.hasMeasure(measure);
+  return seriesList.hasSeriesForMeasure(measure);
 };
 
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
@@ -119,6 +122,14 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     });
   }
 
+  promptSeries = (series: SeriesDefinition) => {
+    this.props.triggerSeriesMenu(series);
+  }
+
+  appendSeries = (series: SeriesDefinition) => {
+    this.props.clicker.addSeries(series);
+  }
+
   renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
     const { searchText } = this.state;
 
@@ -169,18 +180,19 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   }
 
   private renderMenu() {
-    const { essence, clicker, menuStage } = this.props;
+    const { essence, menuStage } = this.props;
     const { menuOpenOn, menuMeasure } = this.state;
     if (!menuMeasure) return null;
 
     return <MeasureActionsMenu
-      clicker={clicker}
+      appendSeries={this.appendSeries}
       essence={essence}
       direction="right"
       containerStage={menuStage}
       openOn={menuOpenOn}
       measure={menuMeasure}
       onClose={this.closeMenu}
+      promptSeries={this.promptSeries}
     />;
   }
 }
