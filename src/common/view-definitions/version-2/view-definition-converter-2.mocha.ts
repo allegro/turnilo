@@ -22,39 +22,73 @@ import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.f
 import { ViewDefinition2 } from "./view-definition-2";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 
+const currentDay = {
+  op: "timeBucket",
+  operand: {
+    op: "ref",
+    name: "n"
+  },
+  duration: "P1D"
+};
+
+const previousDay = {
+  op: "timeRange",
+  operand: {
+    op: "timeFloor",
+    operand:
+      {
+        op: "ref",
+        name: "n"
+      },
+    duration: "P1D"
+  },
+  duration: "P1D",
+  step: -1
+};
+
+const latestDay = {
+  op: "timeRange",
+  operand: {
+    op: "ref",
+    name: "m"
+  },
+  duration: "P1D",
+  step: -1
+};
+
+const totalsWithPeriod = (period: any): ViewDefinition2 => ({
+  visualization: "totals",
+  timezone: "Etc/UTC",
+  filter: {
+    op: "overlap",
+    operand: {
+      op: "ref",
+      name: "time"
+    },
+    expression: period
+  },
+  splits: [],
+  singleMeasure: "delta",
+  multiMeasureMode: true,
+  selectedMeasures: ["count"],
+  pinnedDimensions: [],
+  pinnedSort: "delta"
+});
+
 describe("ViewDefinitionConverter2", () => {
 
-  const totalsWithTimeBucket: ViewDefinition2 = {
-    visualization: "totals",
-    timezone: "Etc/UTC",
-    filter: {
-      op: "overlap",
-      operand: {
-        op: "ref",
-        name: "time"
-      },
-      expression: {
-        op: "timeBucket",
-        operand: {
-          op: "ref",
-          name: "n"
-        },
-        duration: "P1D"
-      }
-    },
-    splits: [],
-    singleMeasure: "delta",
-    multiMeasureMode: true,
-    selectedMeasures: ["count"],
-    pinnedDimensions: [],
-    pinnedSort: "delta"
-  };
+  [
+    { label: "current day", expression: currentDay, period: TimeFilterPeriod.CURRENT },
+    { label: "previous day", expression: previousDay, period: TimeFilterPeriod.PREVIOUS },
+    { label: "latest day", expression: latestDay, period: TimeFilterPeriod.LATEST }
+  ].forEach(({ label, expression, period }) => {
+    it(`should convert time filter clause with ${label}`, () => {
+      const totalsWithTimeBucket: ViewDefinition2 = totalsWithPeriod(expression);
+      const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
+      const convertedClause = essence.filter.clauses.first();
 
-  it("should convert time bucket expression to time range", () => {
-    const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
-    const convertedClause = essence.filter.clauses.first();
-
-    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST);
-    expect(convertedClause).to.deep.equal(expectedClause);
+      const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", period);
+      expect(convertedClause).to.deep.equal(expectedClause);
+    });
   });
 });
