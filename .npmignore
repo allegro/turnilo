@@ -5,7 +5,6 @@
 /resources/
 /src/
 /test/
-/typings/
 *.js.map
 *.fixtures.js
 *.mocha.js
@@ -13,6 +12,7 @@
 *.ts
 *.tgz
 *.iml
+.release-it.json
 .sass-lint.yml
 .travis.yml
 tsconfig*.json
