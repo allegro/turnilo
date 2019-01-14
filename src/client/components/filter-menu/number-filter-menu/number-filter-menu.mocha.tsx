@@ -18,11 +18,11 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
-import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
-import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
-import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
-import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
+import { DimensionFixtures } from "../../../../common/models/dimension/dimension.fixtures";
+import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
+import { StageFixtures } from "../../../../common/models/stage/stage.fixtures";
+import { TimekeeperFixtures } from "../../../../common/models/timekeeper/timekeeper.fixtures";
+import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils/index";
 import { NumberFilterMenu } from "./number-filter-menu";
 
 describe("NumberFilterMenu", () => {

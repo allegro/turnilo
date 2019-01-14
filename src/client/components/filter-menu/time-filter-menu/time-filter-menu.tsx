@@ -16,16 +16,16 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { Essence } from "../../../common/models/essence/essence";
-import { isTimeFilter, RelativeTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Stage } from "../../../common/models/stage/stage";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { ButtonGroup } from "../button-group/button-group";
+import { Clicker } from "../../../../common/models/clicker/clicker";
+import { Dimension } from "../../../../common/models/dimension/dimension";
+import { Essence } from "../../../../common/models/essence/essence";
+import { isTimeFilter, RelativeTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Stage } from "../../../../common/models/stage/stage";
+import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../../common/utils/general/general";
+import { STRINGS } from "../../../config/constants";
+import { BubbleMenu } from "../../bubble-menu/bubble-menu";
+import { ButtonGroup } from "../../button-group/button-group";
 import { FixedTimeTab } from "./fixed-time-tab";
 import { PresetTimeTab } from "./preset-time-tab";
 import "./time-filter-menu.scss";
@@ -38,9 +38,9 @@ export interface TimeFilterMenuProps {
   essence: Essence;
   dimension: Dimension;
   onClose: Fn;
-  containerStage: Stage;
+  containerStage?: Stage;
   openOn: Element;
-  inside: Element;
+  inside?: Element;
 }
 
 export interface TimeFilterMenuState {

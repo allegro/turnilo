@@ -15,9 +15,9 @@
  */
 
 import { $, Expression } from "plywood";
-import { TimeFilterPeriod } from "../../../common/models/filter-clause/filter-clause";
-import { TimeShift } from "../../../common/models/time-shift/time-shift";
-import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../../common/models/time/time";
+import { TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
+import { TimeShift } from "../../../../common/models/time-shift/time-shift";
+import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../../../common/models/time/time";
 
 const $MAX_TIME = $(MAX_TIME_REF_NAME);
 const $NOW = $(NOW_REF_NAME);

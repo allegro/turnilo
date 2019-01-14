@@ -15,31 +15,11 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import '../../../imports';
 
-.string-filter-menu {
+$checkbox-width: 20px;
 
-  .side-by-side {
-    @extend %side-by-side;
-
-    :not(:last-child) {
-      margin-right: 0;
-    }
-  }
-
-  .search-box {
-    height: 30px;
-    margin-left: 6px;
-    width: 100%;
-
-    .clearable-input {
-      @extend %input-cont-inset;
-      width: 100%;
-      height: $input-height;
-      padding-left: 6px;
-    }
-  }
-
+.boolean-filter-menu {
   .menu-table {
 
     @extend %white-shadow;
@@ -51,7 +31,6 @@
     }
 
     .rows {
-      height: 280px;
       margin-top: 10px;
       margin-left: -$padding-compact;
       margin-right: -$padding-compact;
@@ -65,9 +44,6 @@
       padding: 0 $padding-compact;
 
       .row-wrapper {
-        @include ellipsis;
-
-
         height: 100%;
 
         .label {
@@ -84,22 +60,6 @@
       &:last-child {
         margin-bottom: 12px;
       }
-
-      &.no-select {
-        pointer-events: none;
-        user-select: none;
-      }
-    }
-
-    .message {
-      padding: 4px 10px;
-      color: $text-light;
-      font-style: italic;
-    }
-
-    .matching-values-message {
-      padding: 4px 10px;
-      color: $text-light;
     }
 
     .loader,

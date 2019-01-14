@@ -58,7 +58,7 @@ export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition
 export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.boolean;
   not: boolean;
-  values: boolean[];
+  values: Array<boolean | string>;
 }
 
 export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {

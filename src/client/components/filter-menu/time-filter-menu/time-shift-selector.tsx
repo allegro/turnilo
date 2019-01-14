@@ -18,11 +18,11 @@
 import { Duration, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { TimeShift } from "../../../common/models/time-shift/time-shift";
-import { Unary } from "../../../common/utils/functional/functional";
-import { DisplayYear, formatTimeRange } from "../../../common/utils/time/time";
-import { STRINGS } from "../../config/constants";
-import { InputWithPresets } from "../input-with-presets/input-with-presets";
+import { TimeShift } from "../../../../common/models/time-shift/time-shift";
+import { Unary } from "../../../../common/utils/functional/functional";
+import { DisplayYear, formatTimeRange } from "../../../../common/utils/time/time";
+import { STRINGS } from "../../../config/constants";
+import { InputWithPresets } from "../../input-with-presets/input-with-presets";
 import { COMPARISON_PRESETS } from "./presets";
 
 function timeShiftPreviewForRange({ shiftValue, time, timezone }: Pick<TimeShiftSelectorProps, "shiftValue" | "time" | "timezone">): string {
