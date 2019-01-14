@@ -152,7 +152,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   private coordinatesCache: BarCoordinates[][] = [];
 
   getDefaultState(): BarChartState {
-    return Object.assign({ hoverInfo: null }, super.getDefaultState());
+    return { hoverInfo: null, ...super.getDefaultState() };
   }
 
   shouldFetchData(nextProps: VisualizationProps): boolean {

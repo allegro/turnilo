@@ -116,7 +116,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   public static id = LINE_CHART_MANIFEST.name;
 
   getDefaultState(): LineChartState {
-    return Object.assign({ dragStartValue: null, dragRange: null, hoverRange: null }, super.getDefaultState());
+    return { dragStartValue: null, dragRange: null, hoverRange: null, ...super.getDefaultState() };
   }
 
   componentDidUpdate() {

@@ -125,7 +125,7 @@ export class Table extends BaseVisualization<TableState> {
   public static id = TABLE_MANIFEST.name;
 
   getDefaultState(): TableState {
-    return Object.assign({ flatData: null, hoverRow: null }, super.getDefaultState());
+    return { flatData: null, hoverRow: null, ...super.getDefaultState() };
   }
 
   getSegmentWidth(): number {
