@@ -26,7 +26,7 @@ import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
-import { DimensionOrigin, DragManager } from "../../utils/drag-manager/drag-manager";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
@@ -171,9 +171,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   canDrop(): boolean {
     const { essence: { splits } } = this.props;
     const dimension = DragManager.draggingDimension();
-    if (!dimension) return false;
-    const origin = DragManager.dragging.origin;
-    return origin === DimensionOrigin.SPLIT_TILE || !splits.hasSplitOn(dimension);
+    if (dimension) return !splits.hasSplitOn(dimension);
+    return DragManager.isDraggingSplit();
   }
 
   dragStart = (dimension: Dimension, split: Split, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
@@ -181,7 +180,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, DimensionOrigin.SPLIT_TILE);
+    DragManager.setDragSplit(split);
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -228,18 +227,17 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     this.setState({ dragPosition: null });
 
-    const dimension = DragManager.draggingDimension();
-    const splitCombine: Split = DragManager.dragging.origin === DimensionOrigin.SPLIT_TILE ? splits.findSplitForDimension(dimension) : Split.fromDimension(dimension);
-    if (!splitCombine) return;
+    const split = DragManager.isDraggingSplit() ? DragManager.draggingSplit() : Split.fromDimension(DragManager.draggingDimension());
+    if (!split) return;
 
     let dragPosition = this.calculateDragPosition(e);
     if (dragPosition.replace === maxItems) {
       dragPosition = new DragPosition({ insert: dragPosition.replace });
     }
     if (dragPosition.isReplace()) {
-      clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, splitCombine), VisStrategy.FairGame);
+      clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, split), VisStrategy.FairGame);
     } else {
-      clicker.changeSplits(splits.insertByIndex(dragPosition.insert, splitCombine), VisStrategy.FairGame);
+      clicker.changeSplits(splits.insertByIndex(dragPosition.insert, split), VisStrategy.FairGame);
     }
   }
 

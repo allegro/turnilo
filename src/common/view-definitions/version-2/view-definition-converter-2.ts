@@ -151,20 +151,19 @@ function readFixedTimeFilter(selection: LiteralExpression, dimension: Dimension)
   return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(selection.value as TimeRange)) });
 }
 
-function readRelativeTimeFilterClause(selection: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
+function readRelativeTimeFilterClause({ step, duration, operand }: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
   const { name: reference } = dimension;
-  if (selection.operand instanceof TimeFloorExpression) {
-    const { step, duration } = selection;
+  if (operand instanceof TimeFloorExpression) {
     return new RelativeTimeFilterClause({
       reference,
       duration: duration.multiply(Math.abs(step)),
-      period: step > 0 ? TimeFilterPeriod.CURRENT : TimeFilterPeriod.PREVIOUS
+      period: TimeFilterPeriod.PREVIOUS
     });
   }
   return new RelativeTimeFilterClause({
     reference,
-    period: TimeFilterPeriod.LATEST,
-    duration: selection.duration
+    period: step ? TimeFilterPeriod.LATEST : TimeFilterPeriod.CURRENT,
+    duration: step ? duration.multiply(Math.abs(step)) : duration
   });
 }
 
@@ -234,6 +233,16 @@ function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: Dat
   }
 }
 
+// Handle change in plywood internal representation around 0.14.0
+function limitValue(limitAction: any): number {
+  return limitAction.value || limitAction.limit;
+}
+
+// Handle change in plywood internal representation around 0.14.0
+function isTimeBucket(action: any): boolean {
+  return action.op === "timeBucket" || action.action === "timeBucket";
+}
+
 function convertSplit(split: any, dataCube: DataCube): Split {
   const { sortAction, limitAction, expression, bucketAction } = split;
   const reference = (expression as RefExpression).name;
@@ -243,8 +252,8 @@ function convertSplit(split: any, dataCube: DataCube): Split {
     reference: sortAction.expression.name,
     direction: sortAction.direction
   });
-  const limit = limitAction && limitAction.value;
-  const bucket = bucketAction && (bucketAction.op === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
+  const limit = limitAction && limitValue(limitAction);
+  const bucket = bucketAction && (isTimeBucket(bucketAction) ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
   return new Split({
     type,
     reference,

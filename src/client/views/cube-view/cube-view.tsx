@@ -129,7 +129,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps: Partial<CubeViewProps> = { maxFilters: 20 };
 
   private static canDrop(): boolean {
-    return DragManager.isDraggingDimension();
+    return DragManager.draggingDimension() !== null;
   }
 
   public mounted: boolean;
