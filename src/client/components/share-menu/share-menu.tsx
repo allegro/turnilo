@@ -22,11 +22,10 @@ import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { getFileString } from "../../../common/utils/formatter/formatter";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
-import { download, FileFormat, makeFileName } from "../../utils/download/download";
+import { download, FileFormat, filter2NameComponent, makeFileName, splits2NameComponent } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
@@ -50,11 +49,10 @@ function onExport(fileFormat: FileFormat, props: ExportProps) {
   if (!dataSetWithTabOptions.dataset) return;
 
   const { dataCube, splits } = essence;
-  const filters = getFileString(essence.getEffectiveFilter(timekeeper));
-  const splitsString = splits.splits.toArray().map(split =>
-    `${STRINGS.splitDelimiter}_${split.reference}`).join("_");
+  const effectiveFilter = essence.getEffectiveFilter(timekeeper);
 
-  download(dataSetWithTabOptions, fileFormat, makeFileName(dataCube.name, filters, splitsString));
+  const fileName = makeFileName(dataCube.name, filter2NameComponent(effectiveFilter), splits2NameComponent(splits));
+  download(dataSetWithTabOptions, fileFormat, fileName);
   onClose();
 }
 

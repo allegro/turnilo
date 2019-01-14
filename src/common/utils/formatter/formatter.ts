@@ -154,20 +154,3 @@ function getQualifiedDurationDescription(duration: Duration) {
   }
 }
 
-function dateToFileString(date: Date): string {
-  return date.toISOString()
-    .replace("T", "_")
-    .replace("Z", "")
-    .replace(".000", "");
-}
-
-export function getFileString(filter: Filter): string {
-  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
-  const nonTimeClauseSize = filter.clauses.filter(clause => !(clause instanceof FixedTimeFilterClause)).count();
-  const filtersPart = nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
-  if (timeFilter) {
-    const { start, end } = timeFilter.values.first();
-    return `${dateToFileString(start)}_${dateToFileString(end)}${filtersPart}`;
-  }
-  return filtersPart;
-}

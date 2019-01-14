@@ -17,7 +17,6 @@
 
 import { Collection, List } from "immutable";
 import { Equalable, immutableArraysEqual } from "immutable-class";
-import Timer = NodeJS.Timer;
 
 // The most generic function
 export type Fn = () => void;
@@ -35,6 +34,10 @@ export function isNil(obj: any): boolean {
 
 export function isTruthy(element: any): boolean {
   return element !== null && element !== undefined && element !== false;
+}
+
+export function isBlank(str: string): boolean {
+  return str.length === 0;
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {

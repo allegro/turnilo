@@ -23,7 +23,7 @@ import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { formatFilterClause, getFileString } from "../../../common/utils/formatter/formatter";
+import { formatFilterClause } from "../../../common/utils/formatter/formatter";
 import { arraySum, Fn, makeTitle } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Loader } from "../../components/loader/loader";
@@ -32,7 +32,7 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import { download, FileFormat, makeFileName } from "../../utils/download/download";
+import { download, FileFormat, filter2NameComponent, makeFileName } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
@@ -294,7 +294,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     const options = tabularOptions(essence);
-    const filtersString = getFileString(essence.getEffectiveFilter(timekeeper));
+    const filtersString = filter2NameComponent(essence.getEffectiveFilter(timekeeper));
     download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
   }
 
