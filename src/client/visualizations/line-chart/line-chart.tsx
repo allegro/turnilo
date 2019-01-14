@@ -34,7 +34,7 @@ import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
@@ -116,13 +116,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   public static id = LINE_CHART_MANIFEST.name;
 
   getDefaultState(): LineChartState {
-    let s = super.getDefaultState() as LineChartState;
-
-    s.dragStartValue = null;
-    s.dragRange = null;
-    s.hoverRange = null;
-
-    return s;
+    return Object.assign({ dragStartValue: null, dragRange: null, hoverRange: null }, super.getDefaultState());
   }
 
   componentDidUpdate() {
@@ -668,48 +662,26 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   }
 
-  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset, essence, timekeeper, stage } = props;
+  precalculate(props: VisualizationProps, dataset: Dataset) {
+    const { essence, timekeeper, stage } = props;
     const { splits, timezone, dataCube } = essence;
 
-    const existingDatasetLoad = this.state.datasetLoad;
-    let newState: LineChartState = {};
-    if (datasetLoad) {
-      // Always keep the old dataset while loading (for now)
-      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
-
-      newState.datasetLoad = datasetLoad;
-    } else {
-      datasetLoad = this.state.datasetLoad;
-    }
-
     if (splits.length() > 0) {
-      const { dataset } = datasetLoad;
-      if (dataset) {
-        if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-      }
-
       const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
       const continuousDimension = dataCube.getDimension(continuousSplit.reference);
       if (continuousDimension) {
-        newState.continuousDimension = continuousDimension;
-
         const filterRange = this.getFilterRange(essence, continuousSplit, timekeeper);
         const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
         const axisRange = union(filterRange, datasetRange);
-        if (axisRange) {
-          const domain = [(axisRange).start, (axisRange).end] as [number, number];
-          const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
-          const scaleFn = continuousDimension.kind === "time" ? d3.time.scale() : d3.scale.linear();
-
-          newState.axisRange = axisRange;
-          newState.scaleX = scaleFn.domain(domain).range(range);
-          newState.xTicks = this.getLineChartTicks(axisRange, timezone);
-        }
+        if (!axisRange) return this.setState({ continuousDimension });
+        const domain = [(axisRange).start, (axisRange).end] as [number, number];
+        const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
+        const scaleFn = continuousDimension.kind === "time" ? d3.time.scale() : d3.scale.linear();
+        const scaleX = scaleFn.domain(domain).range(range);
+        const xTicks = this.getLineChartTicks(axisRange, timezone);
+        this.setState({ continuousDimension, axisRange, scaleX, xTicks });
       }
     }
-
-    this.setState(newState);
   }
 
   private getLineChartTicks(range: PlywoodRange, timezone: Timezone): Array<Date | number> {
@@ -792,15 +764,15 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }));
   }
 
-  renderInternals() {
+  renderInternals(dataset: Dataset) {
     const { essence, stage } = this.props;
-    const { datasetLoad, axisRange, scaleX, xTicks } = this.state;
+    const { axisRange, scaleX, xTicks } = this.state;
     const { splits, timezone } = essence;
 
     let measureCharts: JSX.Element[];
     let bottomAxis: JSX.Element;
 
-    if (datasetLoad.dataset && splits.length() && axisRange) {
+    if (splits.length() && axisRange) {
       const measures = essence.getEffectiveSelectedMeasures().toArray();
 
       const chartWidth = stage.width - VIS_H_PADDING * 2;
@@ -819,7 +791,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       });
 
       measureCharts = measures.map((measure, chartIndex) => {
-        return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage);
+        return this.renderChart(dataset, measure, chartIndex, stage, chartStage);
       });
 
       const xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);

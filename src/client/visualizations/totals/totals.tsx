@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
+import { Dataset } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { MeasureDerivation } from "../../../common/models/measure/measure";
-import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Total } from "./total";
@@ -26,16 +27,6 @@ import "./totals.scss";
 
 export class Totals extends BaseVisualization<BaseVisualizationState> {
   public static id = TOTALS_MANIFEST.name;
-
-  componentWillMount() {
-    this.precalculate(this.props);
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-    const { essence, timekeeper } = this.props;
-    this.fetchData(essence, timekeeper);
-  }
 
   shouldFetchData(nextProps: VisualizationProps): boolean {
     const { essence, timekeeper } = this.props;
@@ -48,48 +39,10 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       nextEssence.dataCube.refreshRule.isRealtime();
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset } = props;
-
-    const existingDatasetLoad = this.state.datasetLoad;
-    const newState: BaseVisualizationState = {};
-    if (datasetLoad) {
-      // Always keep the old dataset while loading
-      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
-
-      newState.datasetLoad = datasetLoad;
-    } else {
-      datasetLoad = existingDatasetLoad;
-    }
-
-    const { dataset } = datasetLoad;
-    if (dataset) {
-      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-    }
-
-    this.setState(newState);
-  }
-
-  renderTotals(): JSX.Element[] {
+  renderTotals(dataset: Dataset): JSX.Element[] {
     const { essence } = this.props;
-    const { datasetLoad: { dataset } } = this.state;
     const measures = essence.getSeriesWithMeasures();
-    const datum = dataset ? dataset.data[0] : null;
-    if (!datum) {
-      return measures.map(({ series, measure }) => {
-        return <Total
-          key={measure.name}
-          formatter={seriesFormatter(series.format, measure )}
-          name={measure.title}
-          lowerIsBetter={measure.lowerIsBetter}
-          value={null}/>;
-      }).toArray();
-    }
-
+    const datum = dataset.data[0];
     return measures.map(({ series, measure }) => {
       const currentValue = datum[measure.name] as number;
       const previousValue = essence.hasComparison() && datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
@@ -106,10 +59,10 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
   }
 
-  renderInternals() {
+  renderInternals(dataset: Dataset) {
     return <div className="internals">
       <div className="total-container">
-        {this.renderTotals()}
+        {this.renderTotals(dataset)}
       </div>
     </div>;
   }

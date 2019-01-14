@@ -19,7 +19,7 @@ import { Duration, Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { List, Set } from "immutable";
 import * as moment from "moment-timezone";
-import { Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
+import { Dataset, Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -29,7 +29,7 @@ import { Measure, MeasureDerivation } from "../../../common/models/measure/measu
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
-import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
@@ -125,12 +125,7 @@ export class Table extends BaseVisualization<TableState> {
   public static id = TABLE_MANIFEST.name;
 
   getDefaultState(): TableState {
-    let s = super.getDefaultState() as TableState;
-
-    s.flatData = null;
-    s.hoverRow = null;
-
-    return s;
+    return Object.assign({ flatData: null, hoverRow: null }, super.getDefaultState());
   }
 
   getSegmentWidth(): number {
@@ -251,33 +246,16 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset, essence } = props;
-    const { splits } = essence;
-
-    const existingDatasetLoad = this.state.datasetLoad;
-    let newState: TableState = {};
-    if (datasetLoad) {
-      // Always keep the old dataset while loading (for now)
-      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
-
-      newState.datasetLoad = datasetLoad;
-    } else {
-      datasetLoad = this.state.datasetLoad;
-    }
-
-    const { dataset } = datasetLoad;
+  precalculate(props: VisualizationProps, dataset: Dataset) {
+    const { essence: { splits } } = props;
 
     if (dataset && splits.length()) {
-      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-
-      newState.flatData = dataset.flatten({
+      const flatData = dataset.flatten({
         order: "preorder",
         nestingName: "__nest"
       }).data;
+      this.setState({ flatData });
     }
-
-    this.setState(newState);
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
@@ -441,7 +419,7 @@ export class Table extends BaseVisualization<TableState> {
     ];
   }
 
-  renderInternals() {
+  protected renderInternals() {
     const { clicker, essence, stage, openRawDataModal } = this.props;
     const { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
     const { splits, dataCube } = essence;
