@@ -45,17 +45,16 @@ type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
   const { onClose, getDownloadableDataset, essence, timekeeper } = props;
-  const { dataCube, splits } = essence;
   if (!getDownloadableDataset) return;
+  const dataSetWithTabOptions = getDownloadableDataset();
+  if (!dataSetWithTabOptions.dataset) return;
 
+  const { dataCube, splits } = essence;
   const filters = getFileString(essence.getEffectiveFilter(timekeeper));
-  const splitsString = splits.splits.toArray().map(split => {
-    const dimension = dataCube.getDimension(split.reference);
-    if (!dimension) return "";
-    return `${STRINGS.splitDelimiter}_${dimension.name}`;
-  }).join("_");
+  const splitsString = splits.splits.toArray().map(split =>
+    `${STRINGS.splitDelimiter}_${split.reference}`).join("_");
 
-  download(getDownloadableDataset(), fileFormat, makeFileName(dataCube.name, filters, splitsString));
+  download(dataSetWithTabOptions, fileFormat, makeFileName(dataCube.name, filters, splitsString));
   onClose();
 }
 

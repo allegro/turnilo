@@ -51,11 +51,10 @@ export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, op
   }
 }
 
-export function makeFileName(...args: string[]): string {
-  var nameComponents: string[] = [];
-  args.forEach(arg => {
-    if (arg) nameComponents.push(arg.toLowerCase());
-  });
-  var nameString = nameComponents.join("_");
-  return nameString.length < 200 ? nameString : nameString.substr(0, 200);
+export function makeFileName(...nameComponents: string[]): string {
+  return nameComponents
+    .filter(name => name && name.length)
+    .map(name => name.toLowerCase())
+    .join("_")
+    .substr(0, 200);
 }
