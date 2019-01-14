@@ -22,6 +22,7 @@ import { Measure } from "../../../common/models/measure/measure";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { noop } from "../../../common/utils/functional/functional";
+import { debounce } from "../../../common/utils/general/general";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
@@ -86,6 +87,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this.requestEssence = essence;
     this.handleDatasetLoad(loading);
 
+    this.debouncedCallExecutor(essence, timekeeper);
+  }
+
+  private callExecutor = (essence: Essence, timekeeper: Timekeeper) =>
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           if (!essence.equals(this.requestEssence)) return;
@@ -95,9 +100,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         err => {
           if (!essence.equals(this.requestEssence)) return;
           this.handleDatasetLoad(error(err));
-        }
-      ); // Not calling done() prevents potential error from being bubbled up
-  }
+        })
+
+  private debouncedCallExecutor = debounce(this.callExecutor, 500);
 
   private handleDatasetLoad(dl: DatasetLoad) {
     this.setState({ datasetLoad: dl });
@@ -138,8 +143,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       <GlobalEventListener
         mouseMove={this.globalMouseMoveListener}
         mouseUp={this.globalMouseUpListener}
-        keyDown={this.globalKeyDownListener}
-      />
+        keyDown={this.globalKeyDownListener} />
       {isLoaded(datasetLoad) && this.renderInternals(datasetLoad.dataset)}
       {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
       {isLoading(datasetLoad) && <Loader />}

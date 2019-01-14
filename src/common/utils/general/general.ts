@@ -17,6 +17,7 @@
 
 import { Collection, List } from "immutable";
 import { Equalable, immutableArraysEqual } from "immutable-class";
+import Timer = NodeJS.Timer;
 
 // The most generic function
 export type Fn = () => void;
@@ -169,4 +170,21 @@ export function isDecimalInteger(input: string): boolean {
 
 export function readNumber(input: any): number {
   return typeof input === "number" ? input : parseFloat(input);
+}
+
+export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T {
+  let timeoutId: any;
+
+  return function(...args: any[]) {
+    const callLater = () => {
+      timeoutId = undefined;
+      fn(...args);
+    };
+
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(callLater, ms);
+  } as T;
 }
