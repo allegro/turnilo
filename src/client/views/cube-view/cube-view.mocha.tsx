@@ -16,37 +16,21 @@
  */
 
 import { expect } from "chai";
+import { mount } from "enzyme";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
 import * as sinon from "sinon";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
-import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
-import { FilterTile } from "../../components/filter-tile/filter-tile";
-import { SplitTile } from "../../components/split-tile/split-tile";
-import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
+import { Totals } from "../../visualizations/totals/totals";
 import { CubeView } from "./cube-view";
 
 describe("CubeView", () => {
-  before(() => {
-    mockReactComponent(DimensionMeasurePanel);
-    mockReactComponent(FilterTile);
-    mockReactComponent(SplitTile);
-  });
-
-  after(() => {
-    (DimensionMeasurePanel as any).restore();
-    (FilterTile as any).restore();
-    (SplitTile as any).restore();
-  });
-
-  it("adds the correct class", () => {
+  it("embeds correct Visualization component", () => {
     const updateViewHash = sinon.stub();
     const getEssenceFromHash = sinon.stub();
     const getCubeViewHash = sinon.stub();
 
-    const renderedComponent = renderIntoDocument(
+    const cubeView = mount(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
@@ -58,8 +42,6 @@ describe("CubeView", () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("cube-view");
-
+    expect(cubeView.find(".visualization").find(Totals)).to.have.lengthOf(1);
   });
 });
