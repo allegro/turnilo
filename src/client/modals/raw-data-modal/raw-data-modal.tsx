@@ -32,7 +32,7 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import { download, FileFormat, dateFromFilter, makeFileName } from "../../utils/download/download";
+import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
