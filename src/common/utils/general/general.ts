@@ -175,10 +175,10 @@ export function readNumber(input: any): number {
   return typeof input === "number" ? input : parseFloat(input);
 }
 
-export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T {
+export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T & { cancel: Fn } {
   let timeoutId: any;
 
-  return function(...args: any[]) {
+  const debouncedFn = function(...args: any[]) {
     const callLater = () => {
       timeoutId = undefined;
       fn(...args);
@@ -189,5 +189,9 @@ export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): 
     }
 
     timeoutId = setTimeout(callLater, ms);
-  } as T;
+  } as any;
+
+  debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
+
+  return debouncedFn;
 }

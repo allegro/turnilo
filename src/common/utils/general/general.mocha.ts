@@ -19,6 +19,7 @@ import { expect } from "chai";
 import { List } from "immutable";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
+import { sleep } from "../../../client/utils/test-utils";
 import { debounce, ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
 
 describe("General", () => {
@@ -183,8 +184,6 @@ describe("General", () => {
   });
 
   describe("debounce", () => {
-
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     let callSpy: SinonSpy;
 
     beforeEach(() => {
@@ -221,6 +220,15 @@ describe("General", () => {
       debounced();
       await sleep(10);
       expect(callSpy.callCount).to.eq(2);
+    });
+
+    it("should not call function after cancelation", async () => {
+      const debounced = debounce(callSpy, 10);
+      debounced();
+      debounced();
+      debounced.cancel();
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(0);
     });
   });
 });

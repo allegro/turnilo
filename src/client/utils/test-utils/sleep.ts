@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +14,4 @@
  * limitations under the License.
  */
 
-// This needs to be required, otherwise React doesn't play nice with jsdom...
-var ExecutionEnvironment = require("../../../../node_modules/fbjs/lib/ExecutionEnvironment");
-ExecutionEnvironment.canUseDOM = true;
-
-import "./jsdom-setup";
-import "./require-extensions";
-
-export * from "./mock-require-ensure";
-export * from "./mock-react-component";
-export * from "./find-dom-node";
-export * from "./render-into-document";
-export * from "./sleep";
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
