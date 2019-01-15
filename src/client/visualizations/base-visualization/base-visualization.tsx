@@ -66,7 +66,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   protected globalKeyDownListener: (e: KeyboardEvent) => void = noop;
 
-  private requestEssence: Essence;
+  private requestEssence: Essence = null;
 
   componentDidMount() {
     const { essence, timekeeper } = this.props;
@@ -75,6 +75,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentWillUnmount() {
     this.requestEssence = null;
+    this.debouncedCallExecutor.cancel();
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
