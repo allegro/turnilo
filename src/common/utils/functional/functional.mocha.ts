@@ -15,7 +15,10 @@
  */
 
 import { expect } from "chai";
-import { complement, concatTruthy, cons, flatMap, mapTruthy, thread, threadTruthy } from "./functional";
+import * as sinon from "sinon";
+import { SinonSpy } from "sinon";
+import { sleep } from "../../../client/utils/test-utils";
+import { complement, concatTruthy, cons, debounce, flatMap, mapTruthy, thread, threadTruthy } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -88,4 +91,52 @@ describe("Functional utilities", () => {
     });
   });
 
+  describe("debounce", () => {
+    let callSpy: SinonSpy;
+
+    beforeEach(() => {
+      callSpy = sinon.spy();
+    });
+
+    it("should call function once", async () => {
+      const debounced = debounce(callSpy, 10);
+      debounced();
+      debounced();
+      debounced();
+      expect(callSpy.callCount).to.eq(0);
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(1);
+    });
+
+    it("should call function with argument of last invocation", async () => {
+      const debounced = debounce(callSpy, 10);
+      debounced(1);
+      debounced(2);
+      debounced(3);
+      await sleep(10);
+      expect(callSpy.calledWith(3)).to.be.true;
+    });
+
+    it("should call function again after if time passes", async () => {
+      const debounced = debounce(callSpy, 10);
+      debounced();
+      debounced();
+      debounced();
+      expect(callSpy.callCount).to.eq(0);
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(1);
+      debounced();
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(2);
+    });
+
+    it("should not call function after cancelation", async () => {
+      const debounced = debounce(callSpy, 10);
+      debounced();
+      debounced();
+      debounced.cancel();
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(0);
+    });
+  });
 });

@@ -21,8 +21,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { noop } from "../../../common/utils/functional/functional";
-import { debounce } from "../../../common/utils/general/general";
+import { debounce, noop } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
@@ -66,7 +65,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   protected globalKeyDownListener: (e: KeyboardEvent) => void = noop;
 
-  private requestEssence: Essence = null;
+  private lastQueryEssence: Essence = null;
 
   componentDidMount() {
     const { essence, timekeeper } = this.props;
@@ -74,7 +73,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   componentWillUnmount() {
-    this.requestEssence = null;
+    this.lastQueryEssence = null;
     this.debouncedCallExecutor.cancel();
   }
 
@@ -85,7 +84,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    this.requestEssence = essence;
+    this.lastQueryEssence = essence;
     this.handleDatasetLoad(loading);
 
     this.debouncedCallExecutor(essence, timekeeper);
@@ -94,14 +93,18 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   private callExecutor = (essence: Essence, timekeeper: Timekeeper) =>
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
-          if (!essence.equals(this.requestEssence)) return;
+          if (!this.wasUsedForLastQuery(essence)) return;
           this.handleDatasetLoad(loaded(dataset));
           this.precalculate(this.props, dataset);
         },
         err => {
-          if (!essence.equals(this.requestEssence)) return;
+          if (!this.wasUsedForLastQuery(essence)) return;
           this.handleDatasetLoad(error(err));
         })
+
+  private wasUsedForLastQuery(essence: Essence) {
+    return essence.equals(this.lastQueryEssence);
+  }
 
   private debouncedCallExecutor = debounce(this.callExecutor, 500);
 

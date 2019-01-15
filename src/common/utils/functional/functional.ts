@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isTruthy } from "../general/general";
+import { Fn, isTruthy } from "../general/general";
 
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
@@ -54,4 +54,25 @@ export function threadTruthy(x: any, ...fns: Function[]) {
 
 export function complement<T>(p: Predicate<T>): Predicate<T> {
  return (x: T) => !p(x);
+}
+
+export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T & { cancel: Fn } {
+  let timeoutId: any;
+
+  const debouncedFn = function(...args: any[]) {
+    const callLater = () => {
+      timeoutId = undefined;
+      fn(...args);
+    };
+
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(callLater, ms);
+  } as any;
+
+  debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
+
+  return debouncedFn;
 }

@@ -17,10 +17,7 @@
 
 import { expect } from "chai";
 import { List } from "immutable";
-import * as sinon from "sinon";
-import { SinonSpy } from "sinon";
-import { sleep } from "../../../client/utils/test-utils";
-import { debounce, ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
+import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
 
 describe("General", () => {
   describe("moveInList", () => {
@@ -180,55 +177,6 @@ describe("General", () => {
       expect(readNumber("NaN"), "NaN").to.be.NaN;
       expect(readNumber(null), "<null>").to.be.NaN;
       expect(readNumber(undefined), "<undefined>").to.be.NaN;
-    });
-  });
-
-  describe("debounce", () => {
-    let callSpy: SinonSpy;
-
-    beforeEach(() => {
-      callSpy = sinon.spy();
-    });
-
-    it("should call function once", async () => {
-      const debounced = debounce(callSpy, 10);
-      debounced();
-      debounced();
-      debounced();
-      expect(callSpy.callCount).to.eq(0);
-      await sleep(10);
-      expect(callSpy.callCount).to.eq(1);
-    });
-
-    it("should call function with argument of last invocation", async () => {
-      const debounced = debounce(callSpy, 10);
-      debounced(1);
-      debounced(2);
-      debounced(3);
-      await sleep(10);
-      expect(callSpy.calledWith(3)).to.be.true;
-    });
-
-    it("should call function again after if time passes", async () => {
-      const debounced = debounce(callSpy, 10);
-      debounced();
-      debounced();
-      debounced();
-      expect(callSpy.callCount).to.eq(0);
-      await sleep(10);
-      expect(callSpy.callCount).to.eq(1);
-      debounced();
-      await sleep(10);
-      expect(callSpy.callCount).to.eq(2);
-    });
-
-    it("should not call function after cancelation", async () => {
-      const debounced = debounce(callSpy, 10);
-      debounced();
-      debounced();
-      debounced.cancel();
-      await sleep(10);
-      expect(callSpy.callCount).to.eq(0);
     });
   });
 });

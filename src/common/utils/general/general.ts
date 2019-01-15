@@ -174,24 +174,3 @@ export function isDecimalInteger(input: string): boolean {
 export function readNumber(input: any): number {
   return typeof input === "number" ? input : parseFloat(input);
 }
-
-export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T & { cancel: Fn } {
-  let timeoutId: any;
-
-  const debouncedFn = function(...args: any[]) {
-    const callLater = () => {
-      timeoutId = undefined;
-      fn(...args);
-    };
-
-    if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(callLater, ms);
-  } as any;
-
-  debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
-
-  return debouncedFn;
-}
