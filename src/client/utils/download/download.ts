@@ -16,14 +16,12 @@
  */
 
 import * as filesaver from "file-saver";
+import * as moment from "moment";
 import { Dataset, DatasetJSFull, TabulatorOptions } from "plywood";
 import { FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
-import { Split } from "../../../common/models/split/split";
-import { Splits } from "../../../common/models/splits/splits";
 import { complement } from "../../../common/utils/functional/functional";
 import { isBlank } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export type FileFormat = "csv" | "tsv" | "json";
@@ -59,27 +57,14 @@ export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, op
 }
 
 function dateToFileString(date: Date): string {
-  return date.toISOString()
-    .replace("T", "_")
-    .replace("Z", "")
-    .replace(".000", "");
+  return moment(date).format("YYYY-MM-DD_HH_mm_ss");
 }
 
-export function filter2NameComponent(filter: Filter): string {
+export function dateFromFilter(filter: Filter): string {
   const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
-  const nonTimeClauseSize = filter.clauses.filter(clause => !(clause instanceof FixedTimeFilterClause)).count();
-  const filtersPart = nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
-  if (timeFilter) {
-    const { start, end } = timeFilter.values.first();
-    return `${dateToFileString(start)}_${dateToFileString(end)}${filtersPart}`;
-  }
-  return filtersPart;
-}
-
-const split2NameComponent = (split: Split) => `${STRINGS.splitDelimiter}_${split.reference}`;
-
-export function splits2NameComponent(splits: Splits): string {
-  return splits.splits.toArray().map(split2NameComponent).join("_");
+  if (!timeFilter) return "";
+  const { start, end } = timeFilter.values.first();
+  return `${dateToFileString(start)}_${dateToFileString(end)}`;
 }
 
 export function makeFileName(...nameComponents: string[]): string {

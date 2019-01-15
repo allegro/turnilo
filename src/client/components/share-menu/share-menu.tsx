@@ -25,7 +25,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
-import { download, FileFormat, filter2NameComponent, makeFileName, splits2NameComponent } from "../../utils/download/download";
+import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
@@ -44,14 +44,13 @@ type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
   const { onClose, getDownloadableDataset, essence, timekeeper } = props;
-  if (!getDownloadableDataset) return;
   const dataSetWithTabOptions = getDownloadableDataset();
   if (!dataSetWithTabOptions.dataset) return;
 
-  const { dataCube, splits } = essence;
+  const { dataCube } = essence;
   const effectiveFilter = essence.getEffectiveFilter(timekeeper);
 
-  const fileName = makeFileName(dataCube.name, filter2NameComponent(effectiveFilter), splits2NameComponent(splits));
+  const fileName = makeFileName(dataCube.name, dateFromFilter(effectiveFilter));
   download(dataSetWithTabOptions, fileFormat, fileName);
   onClose();
 }
