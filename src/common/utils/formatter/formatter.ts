@@ -153,4 +153,3 @@ function getQualifiedDurationDescription(duration: Duration) {
     return duration.getDescription();
   }
 }
-

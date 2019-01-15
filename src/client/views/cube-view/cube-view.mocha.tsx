@@ -43,5 +43,7 @@ describe("CubeView", () => {
     );
 
     expect(cubeView.find(".visualization").find(Totals)).to.have.lengthOf(1);
+
+    cubeView.unmount();
   });
 });
