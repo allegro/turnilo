@@ -18,7 +18,7 @@
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
 import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
-import { constructFilter } from "../../../client/components/time-filter-menu/presets";
+import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
@@ -33,7 +33,8 @@ export interface FilterDefinition {
 
 interface BooleanFilterDefinition extends FilterDefinition {
   not: boolean;
-  values: ImmutableSet<boolean>;
+  // In Druid, Bools are represented as string dictionary
+  values: ImmutableSet<string | boolean>;
 }
 
 const defaultBooleanFilter: BooleanFilterDefinition = {

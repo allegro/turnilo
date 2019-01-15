@@ -16,20 +16,20 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { DragPosition } from "../../../common/models/drag-position/drag-position";
-import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
-import { Stage } from "../../../common/models/stage/stage";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Fn } from "../../../common/utils/general/general";
-import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { ClearableInput } from "../clearable-input/clearable-input";
-import { FilterOption, FilterOptionsDropdown } from "../filter-options-dropdown/filter-options-dropdown";
-import { PreviewStringFilterMenu } from "../preview-string-filter-menu/preview-string-filter-menu";
-import { SelectableStringFilterMenu } from "../selectable-string-filter-menu/selectable-string-filter-menu";
+import { Clicker } from "../../../../common/models/clicker/clicker";
+import { Dimension } from "../../../../common/models/dimension/dimension";
+import { DragPosition } from "../../../../common/models/drag-position/drag-position";
+import { Essence } from "../../../../common/models/essence/essence";
+import { FilterClause, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Filter, FilterMode } from "../../../../common/models/filter/filter";
+import { Stage } from "../../../../common/models/stage/stage";
+import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../../common/utils/general/general";
+import { BubbleMenu } from "../../bubble-menu/bubble-menu";
+import { ClearableInput } from "../../clearable-input/clearable-input";
+import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
+import { PreviewStringFilterMenu } from "../../preview-string-filter-menu/preview-string-filter-menu";
+import { SelectableStringFilterMenu } from "../../selectable-string-filter-menu/selectable-string-filter-menu";
 import "./string-filter-menu.scss";
 
 export interface StringFilterMenuProps {
@@ -39,10 +39,9 @@ export interface StringFilterMenuProps {
   timekeeper: Timekeeper;
   changePosition: DragPosition;
   onClose: Fn;
-
-  containerStage: Stage;
+  containerStage?: Stage;
   openOn: Element;
-  inside: Element;
+  inside?: Element;
 }
 
 export interface StringFilterMenuState {
