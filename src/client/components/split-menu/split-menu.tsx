@@ -47,7 +47,7 @@ export interface SplitMenuProps {
 }
 
 export interface SplitMenuState {
-  reference?: string;
+  reference?: Dimension;
   granularity?: string;
   sort?: Sort;
   limit?: number;
@@ -64,7 +64,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const { colors } = essence;
     const { bucket, reference, sort, limit } = split;
 
-    const colorsDimensionMatch = colors && colors.dimension === split.reference;
+    const colorsDimensionMatch = colors && colors.dimension.equals(split.reference);
 
     this.setState({
       reference,

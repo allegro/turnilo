@@ -17,7 +17,7 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
+import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
@@ -27,7 +27,7 @@ type OmitType<T extends FilterDefinition> = Partial<Pick<T, Exclude<keyof T, "ty
 export enum FilterTypes { BOOLEAN = "boolean", NUMBER = "number", STRING = "string", FIXED_TIME = "fixed_time", RELATIVE_TIME = "relative_time" }
 
 export interface FilterDefinition {
-  reference: string;
+  reference: Dimension;
   type: FilterTypes;
 }
 
@@ -105,6 +105,16 @@ export class StringFilterClause extends Record<StringFilterDefinition>(defaultSt
   constructor(params: OmitType<StringFilterDefinition>) {
     super(params);
   }
+
+  equals(other: any): boolean {
+    console.log("keys", (this as any)._keys, other._keys)
+    return super.equals(other);
+    // return this.reference.equals(other.reference) &&
+    //   this.values.equals(other.values) &&
+    //   this.type === other.type &&
+    //   this.action === other.action &&
+    //   this.not === other.not;
+  }
 }
 
 interface DateRangeDefinition {
@@ -165,7 +175,7 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
 
   equals(other: any): boolean {
     return other instanceof RelativeTimeFilterClause &&
-      this.reference === other.reference &&
+      this.reference.equals(other.reference) &&
       this.period === other.period &&
       this.duration.equals(other.duration);
   }
@@ -179,8 +189,8 @@ export function isTimeFilter(clause: FilterClause): clause is TimeFilterClause {
 
 export type FilterClause = BooleanFilterClause | NumberFilterClause | StringFilterClause | FixedTimeFilterClause | RelativeTimeFilterClause;
 
-export function toExpression(clause: FilterClause, { expression }: Dimension): Expression {
-  const { type } = clause;
+export function toExpression(clause: FilterClause): Expression {
+  const { type, reference: { expression } } = clause;
   switch (type) {
     case FilterTypes.BOOLEAN: {
       const { not, values } = clause as BooleanFilterClause;

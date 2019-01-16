@@ -261,12 +261,12 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const existingHighlightRange = essence.getHighlightRange();
       if (existingHighlightRange.contains(highlightRange.start)) {
         const { highlight } = essence;
-        if (highlight.measure === dragOnMeasure.name) {
+        if (highlight.measure.equals(dragOnMeasure)) {
           clicker.dropHighlight();
         } else {
           clicker.changeHighlight(
             LineChart.id,
-            dragOnMeasure.name,
+            dragOnMeasure,
             highlight.delta
           );
         }
@@ -274,7 +274,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
     }
 
-    const reference = continuousDimension.name;
+    const reference = continuousDimension;
     const { start, end } = highlightRange;
     const filterClause = continuousDimension.kind === "number"
       ? new NumberFilterClause({ reference, values: List.of(new FilterNumberRange({ start: start as number, end: end as number })) })
@@ -282,7 +282,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     clicker.changeHighlight(
       LineChart.id,
-      dragOnMeasure.name,
+      dragOnMeasure,
       Filter.fromClause(filterClause)
     );
   }
@@ -347,14 +347,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const formatter = seriesFormatter(format, measure);
 
-    if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
+    if (essence.highlightOnDifferentMeasure(LineChart.id, measure)) return null;
 
     let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
 
     topOffset += containerYPosition;
 
-    if ((dragRange && dragOnMeasure === measure) || (!dragRange && essence.highlightOn(LineChart.id, measure.name))) {
+    if ((dragRange && dragOnMeasure === measure) || (!dragRange && essence.highlightOn(LineChart.id, measure))) {
       const bubbleRange = dragRange || essence.getHighlightRange();
 
       const shownRange = roundDragRange || bubbleRange;
@@ -362,7 +362,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       if (colors) {
         const segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
         const firstSplit = essence.splits.splits.first();
-        const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
+        const categoryDimension = firstSplit.reference;
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
 
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
@@ -416,7 +416,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
       if (colors) {
         const firstSplit = essence.splits.splits.first();
-        const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
+        const categoryDimension = firstSplit.reference;
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
         const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         const hasComparison = essence.hasComparison();
@@ -542,7 +542,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
     let colorValues: string[] = null;
     const firstSplit = essence.splits.splits.first();
-    const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
+    const categoryDimension = firstSplit.reference;
 
     if (colors) {
       colorValues = colors.getColors(splitData.data.map(d => d[categoryDimension.name]));
@@ -613,7 +613,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
     const { essence, isThumbnail } = this.props;
     const { splits, series } = essence;
-    const format = series.getSeries(measure.name).format;
+    const format = series.getSeries(measure).format;
     const formatter = seriesFormatter(format, measure);
 
     const { hoverMeasure, dragRange, scaleX, xTicks } = this.state;
@@ -690,7 +690,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
 
       const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
-      const continuousDimension = dataCube.getDimension(continuousSplit.reference);
+      const continuousDimension = continuousSplit.reference;
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 
@@ -735,7 +735,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   private getFilterRange(essence: Essence, continuousSplit: Split, timekeeper: Timekeeper): PlywoodRange {
     const maxTime = essence.dataCube.getMaxTime(timekeeper);
-    const continuousDimension = essence.dataCube.getDimension(continuousSplit.reference);
+    const continuousDimension = continuousSplit.reference;
     const effectiveFilter = essence
       .getEffectiveFilter(timekeeper, { highlightId: LineChart.id });
     const continuousFilter = effectiveFilter.getClauseForDimension(continuousDimension);

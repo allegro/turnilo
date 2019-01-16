@@ -78,7 +78,7 @@ function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nest
 
 function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
   return (query: Expression) => {
-    if (colors && colors.dimension === dimension.name) {
+    if (colors && colors.dimension.equals(dimension)) {
       return query.performAction(colors.toLimitExpression());
     }
     if (limit) {
@@ -96,7 +96,7 @@ function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
 
 function applyHaving(colors: Colors, splitDimension: Dimension) {
   return (query: Expression): Expression => {
-    if (colors && colors.dimension === splitDimension.name) {
+    if (colors && colors.dimension.equals(splitDimension)) {
       const havingFilter = colors.toHavingFilter(splitDimension.name);
       if (havingFilter) {
         return query.performAction(havingFilter);
@@ -114,10 +114,9 @@ function applySubSplit(nestingLevel: number, essence: Essence, filters: Filters)
 }
 
 function applySplit(index: number, essence: Essence, filters: Filters): Expression {
-  const { splits, dataCube, colors } = essence;
+  const { splits, colors } = essence;
   const hasComparison = essence.hasComparison();
   const split = splits.getSplit(index);
-  const dimension = dataCube.getDimension(split.reference);
   const { sort, limit } = split;
   if (!sort) {
     throw new Error("something went wrong during query generation");
@@ -125,14 +124,14 @@ function applySplit(index: number, essence: Essence, filters: Filters): Expressi
 
   const nestingLevel = index + 1;
 
-  const currentSplit = splitToExpression(split, dimension, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
+  const currentSplit = splitToExpression(split, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
 
   return thread(
-    $main.split(currentSplit, dimension.name),
-    applyHaving(colors, dimension),
+    $main.split(currentSplit, split.reference.name),
+    applyHaving(colors, split.reference),
     applyMeasures(essence, filters, nestingLevel),
     applySort(essence, sort, filters.current, nestingLevel),
-    applyLimit(colors, limit, dimension),
+    applyLimit(colors, limit, split.reference),
     applySubSplit(nestingLevel, essence, filters)
   );
 }
@@ -149,13 +148,12 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
   const hasComparison = essence.hasComparison();
   const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
 
-  const timeDimension = dataCube.getTimeDimension();
   const filters = {
-    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper), timeDimension),
-    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper), timeDimension) : undefined
+    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper)),
+    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper)) : undefined
   };
 
-  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
+  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression()));
 
   const queryWithMeasures = applyMeasures(essence, filters)(mainExp);
 

@@ -50,6 +50,22 @@ export class MeasureFixtures {
     });
   }
 
+  static wikiAdded(): Measure {
+    return new Measure(({
+      name: "added",
+      title: "Added",
+      formula: "$main.sum($added)"
+    }));
+  }
+
+  static wikiAvgAdded(): Measure {
+    return new Measure({
+      name: "avg_added",
+      title: "Avg Added",
+      formula: "$main.average($added)"
+    });
+  }
+
   static wikiUniqueUsersJS(): MeasureJS {
     return {
       name: "unique_users",

@@ -58,7 +58,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   componentWillMount() {
     const { essence: { filter }, dimension } = this.props;
-    const clause = filter.clauseForReference(dimension.name);
+    const clause = filter.getClauseForDimension(dimension);
     if (clause && !isTimeFilter(clause)) {
       throw new Error(`Expected TimeFilter. Got ${clause}`);
     }

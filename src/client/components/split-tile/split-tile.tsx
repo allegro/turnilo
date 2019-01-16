@@ -305,11 +305,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   renderSplit(split: Split, style: React.CSSProperties, i: number) {
-    const { essence: { dataCube } } = this.props;
     const { menuDimension } = this.state;
 
-    const dimension = dataCube.getDimension(split.reference);
-    if (!dimension) throw new Error("dimension not found");
+    const dimension = split.reference;
     const dimensionName = dimension.name;
 
     const selected = dimension === menuDimension;
@@ -322,7 +320,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(dimension, split, i, e)}
       style={style}
     >
-      <div className="reading">{split.getTitle(dataCube.getDimension(split.reference))}</div>
+      <div className="reading">{split.getTitle()}</div>
       <div className="remove"
            onClick={(e: React.MouseEvent<HTMLElement>) => this.removeSplit(split, e)}>
         <SvgIcon svg={require("../../icons/x.svg")} />

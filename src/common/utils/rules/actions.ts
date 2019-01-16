@@ -37,7 +37,7 @@ export class Actions {
       const newSplits = splits.splits.take(dataCube.getMaxSplits());
       const excessiveSplits = splits.splits
         .skip(dataCube.getMaxSplits())
-        .map(split => dataCube.getDimension(split.reference).title);
+        .map(split => split.reference.title);
       return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
         {
           description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { DataCube } from "../../models/data-cube/data-cube";
 import { SeriesList } from "../../models/series-list/series-list";
 
 export interface MeasuresDefinitionJS {
@@ -23,14 +24,12 @@ export interface MeasuresDefinitionJS {
 }
 
 export interface SeriesDefinitionConverter {
-  // fromEssenceSeries(series: SeriesList): MeasuresDefinitionJS;
-
-  toEssenceSeries(measures: MeasuresDefinitionJS): SeriesList;
+  toEssenceSeries(measures: MeasuresDefinitionJS, dataCube: DataCube): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
-  // fromEssenceSeries: ({ multi, isMulti, single }) =>
-  //   ({ isMulti, single, multi: multi.toArray() }),
-  toEssenceSeries: ({ isMulti, multi, single }) =>
-    SeriesList.fromMeasureNames(isMulti ? multi : [single])
+  toEssenceSeries: ({ isMulti, multi, single }, dataCube: DataCube) => {
+    const measures = isMulti ? multi : [single];
+    return SeriesList.fromMeasures(measures.map(name => dataCube.getMeasure(name)));
+  }
 };

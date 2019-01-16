@@ -61,8 +61,8 @@ function initialState(essence: Essence, dimension: Dimension): PresetTimeTabStat
   };
 }
 
-function constructFilter(period: TimeFilterPeriod, duration: string, reference: string) {
-  return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference });
+function constructFilter(period: TimeFilterPeriod, duration: string, dimension: Dimension) {
+  return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference: dimension });
 }
 
 export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTimeTabState> {
@@ -75,9 +75,9 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
 
   saveTimeFilter = () => {
     if (!this.validate()) return;
-    const { clicker, onClose, essence, dimension: { name: dimensionName } } = this.props;
+    const { clicker, onClose, essence, dimension } = this.props;
     const { filterPeriod, filterDuration, timeShift } = this.state;
-    clicker.changeFilter(essence.filter.setClause(constructFilter(filterPeriod, filterDuration, dimensionName)));
+    clicker.changeFilter(essence.filter.setClause(constructFilter(filterPeriod, filterDuration, dimension)));
     clicker.changeComparisonShift(TimeShift.fromJS(timeShift));
     onClose();
   }
@@ -120,9 +120,8 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
 
   private getFilterRange() {
     const { filterPeriod, filterDuration } = this.state;
-    const { name: dimensionName } = this.props.dimension;
     if (!isValidDuration(filterDuration)) return null;
-    const filter = constructFilter(filterPeriod, filterDuration, dimensionName);
+    const filter = constructFilter(filterPeriod, filterDuration, this.props.dimension);
     if (!filter) return null;
     const { essence, timekeeper } = this.props;
     const fixedFilter = essence.evaluateSelection(filter, timekeeper);

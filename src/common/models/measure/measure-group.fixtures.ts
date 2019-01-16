@@ -61,16 +61,8 @@ export class MeasureGroupFixtures {
       name: "added_group",
       title: "Added Group",
       measures: [
-        {
-          name: "added",
-          title: "Added",
-          formula: "$main.sum($added)"
-        },
-        {
-          name: "avg_added",
-          title: "Avg Added",
-          formula: "$main.average($added)"
-        }
+        MeasureFixtures.wikiAdded().toJS(),
+        MeasureFixtures.wikiAvgAdded().toJS()
       ]
     };
   }

@@ -18,12 +18,13 @@
 import { Record } from "immutable";
 import { Dimensions } from "../dimension/dimensions";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
+import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 
 export interface HighlightValue {
   owner: string;
   delta: Filter;
-  measure: string;
+  measure: Measure;
 }
 
 const defaultHighlight: HighlightValue = {
@@ -52,6 +53,6 @@ export class Highlight extends Record<HighlightValue>(defaultHighlight) {
   public validForSeries(series: SeriesList): boolean {
     const { measure } = this;
     if (!measure) return true;
-    return series.hasSeries(measure);
+    return series.hasMeasure(measure);
   }
 }

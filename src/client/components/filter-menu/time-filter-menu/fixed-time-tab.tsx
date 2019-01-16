@@ -48,10 +48,10 @@ export interface FixedTimeTabState {
 export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTabState> {
 
   initialState = (): FixedTimeTabState => {
-    const { essence, timekeeper, dimension: { name } } = this.props;
+    const { essence, timekeeper, dimension } = this.props;
     const shift = essence.timeShift.toJS();
 
-    const timeFilter = essence.getEffectiveFilter(timekeeper).clauseForReference(name);
+    const timeFilter = essence.getEffectiveFilter(timekeeper).getClauseForDimension(dimension);
     if (timeFilter && timeFilter instanceof FixedTimeFilterClause && !timeFilter.values.isEmpty()) {
       const { start, end } = timeFilter.values.get(0);
       return { start, end, shift };
@@ -87,7 +87,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   constructFixedFilter(): Filter {
     let { start, end } = this.state;
-    const { essence: { filter, timezone }, dimension: { name } } = this.props;
+    const { essence: { filter, timezone }, dimension } = this.props;
 
     if (!start) {
       throw new Error("Couldn't construct time filter: No starting date.");
@@ -100,7 +100,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     if (start >= end) {
       throw new Error("Couldn't construct time filter: Start should be earlier than end.");
     }
-    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(new DateRange({ start, end })) });
+    const clause = new FixedTimeFilterClause({ reference: dimension, values: List.of(new DateRange({ start, end })) });
     return filter.setClause(clause);
   }
 

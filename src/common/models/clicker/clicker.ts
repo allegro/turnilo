@@ -56,7 +56,7 @@ export interface Clicker {
 
   changePinnedSortMeasure?(measure: Measure): void;
 
-  changeHighlight?(owner: string, measure: string, delta: Filter): void;
+  changeHighlight?(owner: string, measure: Measure, delta: Filter): void;
 
   acceptHighlight?(): void;
 

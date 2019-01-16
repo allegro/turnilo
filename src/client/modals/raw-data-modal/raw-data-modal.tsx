@@ -109,7 +109,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   fetchData(essence: Essence, timekeeper: Timekeeper): void {
     const { dataCube } = essence;
     const $main = $("main");
-    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube)).limit(LIMIT);
+    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression()).limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone })
       .then(
@@ -144,11 +144,9 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   getStringifiedFilters(): List<string> {
     const { essence, timekeeper } = this.props;
-    const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimension(clause.reference);
-      if (!dimension) return null;
+      const dimension = clause.reference;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();
   }

@@ -83,6 +83,47 @@ export class DimensionFixtures {
     });
   }
 
+  static wikiChannel(): Dimension {
+    return new Dimension({
+      name: "channel",
+      title: "Channel",
+      formula: "$channel"
+    });
+  }
+
+  static wikiIsRobot(): Dimension {
+    return new Dimension({
+      name: "isRobot",
+      title: "Is Robot",
+      formula: "$isRobot",
+      kind: "boolean"
+    });
+  }
+
+  static wikiPage(): Dimension {
+    return new Dimension({
+      name: "page",
+      title: "Page",
+      formula: "$page"
+    });
+  }
+
+  static wikiUserChars(): Dimension {
+    return new Dimension({
+      name: "userChars",
+      title: "User Chars",
+      formula: "$userChars"
+    });
+  }
+
+  static wikiNamespace(): Dimension {
+    return new Dimension({
+      name: "namespace",
+      title: "Namespace",
+      formula: "$namespace"
+    });
+  }
+
   static countryString() {
     return Dimension.fromJS(DimensionFixtures.COUNTRY_STRING_JS);
   }

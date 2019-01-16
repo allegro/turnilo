@@ -81,7 +81,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const nativeCount = dataCube.getMeasure("count");
     const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
-    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
     if (searchText) {
       const { filterMode } = this.props;
@@ -174,18 +174,17 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange, searchText } = this.props;
-    const { name: reference } = dimension;
 
     if (searchText) {
       if (filterMode === FilterMode.REGEX) {
         return onClauseChange(new StringFilterClause({
-          reference,
+          reference: dimension,
           values: Set.of(searchText),
           action: StringFilterAction.MATCH
         }));
       } else if (filterMode === FilterMode.CONTAINS) {
         return onClauseChange(new StringFilterClause({
-          reference,
+          reference: dimension,
           values: Set.of(searchText),
           action: StringFilterAction.CONTAINS
         }));

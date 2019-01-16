@@ -985,7 +985,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return filter.insertByIndex(0, new RelativeTimeFilterClause({
       period: TimeFilterPeriod.LATEST,
       duration: this.getDefaultDuration(),
-      reference: this.getTimeDimension().name
+      reference: this.getTimeDimension()
     }));
   }
 
@@ -1021,12 +1021,14 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return isTruthy(this.maxQueries) ? this.maxQueries : DataCube.DEFAULT_MAX_QUERIES;
   }
 
-  public getDefaultSelectedMeasures(): OrderedSet<string> {
-    return this.defaultSelectedMeasures || this.measures.getFirstNMeasureNames(4);
+  public getDefaultSelectedMeasures(): OrderedSet<Measure> {
+    if (!this.defaultSelectedMeasures) return this.measures.getFirstMeasures(4);
+    return this.defaultSelectedMeasures.map(name => this.getMeasure(name));
   }
 
-  public getDefaultPinnedDimensions(): OrderedSet<string> {
-    return this.defaultPinnedDimensions || (OrderedSet([]) as any);
+  public getDefaultPinnedDimensions(): OrderedSet<Dimension> {
+    if (!this.defaultPinnedDimensions) return OrderedSet.of<Dimension>();
+    return this.defaultPinnedDimensions.map(name => this.getDimension(name));
   }
 
   public change(propertyName: string, newValue: any): DataCube {

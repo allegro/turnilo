@@ -50,8 +50,7 @@ function onExport(fileFormat: FileFormat, props: ExportProps) {
 
   const filters = getFileString(essence.getEffectiveFilter(timekeeper));
   const splitsString = splits.splits.toArray().map(split => {
-    const dimension = dataCube.getDimension(split.reference);
-    if (!dimension) return "";
+    const dimension = split.reference;
     return `${STRINGS.splitDelimiter}_${dimension.name}`;
   }).join("_");
 

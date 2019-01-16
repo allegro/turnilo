@@ -17,12 +17,13 @@
 
 import { Duration } from "chronoshift";
 import { SortDirection } from "../../view-definitions/version-4/split-definition";
+import { Dimension } from "../dimension/dimension";
 import { Sort } from "../sort/sort";
 import { Split, SplitType } from "./split";
 
 export class SplitFixtures {
 
-  static stringSplitCombine(dimension: string, sortOn: string, direction: SortDirection, limit: number): Split {
+  static stringSplitCombine(dimension: Dimension, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
       reference: dimension,
       sort: new Sort({ reference: sortOn, direction }),
@@ -30,7 +31,7 @@ export class SplitFixtures {
     });
   }
 
-  static numberSplitCombine(dimension: string, granularity: number, sortOn: string, direction: SortDirection, limit: number): Split {
+  static numberSplitCombine(dimension: Dimension, granularity: number, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
       type: SplitType.number,
       reference: dimension,
@@ -40,7 +41,7 @@ export class SplitFixtures {
     });
   }
 
-  static timeSplitCombine(dimension: string, granularity: string, sortOn: string, direction: SortDirection, limit: number): Split {
+  static timeSplitCombine(dimension: Dimension, granularity: string, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
       type: SplitType.time,
       reference: dimension,

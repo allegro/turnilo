@@ -38,7 +38,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let autoChanged = false;
 
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+      const splitDimension = split.reference;
       const sortStrategy = splitDimension.sortStrategy;
       if (split.sort.empty()) {
         if (sortStrategy) {

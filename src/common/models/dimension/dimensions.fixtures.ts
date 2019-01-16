@@ -36,43 +36,18 @@ export class DimensionsFixtures {
         title: "Country",
         formula: "$country"
       },
-      {
-        kind: "string",
-        name: "channel",
-        title: "Channel",
-        formula: "$channel"
-      },
+      DimensionFixtures.wikiChannel().toJS(),
       DimensionGroupFixtures.commentsJS(),
-      {
-        kind: "string",
-        name: "isRobot",
-        title: "Is Robot",
-        formula: "$isRobot"
-      },
-      {
-        kind: "string",
-        name: "namespace",
-        title: "Namespace",
-        formula: "$namespace"
-      },
+      DimensionFixtures.wikiIsRobot().toJS(),
+      DimensionFixtures.wikiNamespace().toJS(),
       {
         kind: "string",
         name: "articleName",
         title: "Article Name",
         formula: "$articleName"
       },
-      {
-        kind: "string",
-        name: "page",
-        title: "Page",
-        formula: "$page"
-      },
-      {
-        kind: "string",
-        name: "userChars",
-        title: "User Chars",
-        formula: "$userChars"
-      }
+      DimensionFixtures.wikiPage().toJS(),
+      DimensionFixtures.wikiUserChars().toJS()
     ];
   }
 

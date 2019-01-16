@@ -18,7 +18,8 @@
 import { Record as ImmutableRecord } from "immutable";
 import { isImmutableClass } from "immutable-class";
 import { $, FilterExpression, LimitExpression, Set, valueFromJS, valueToJS } from "plywood";
-import { hasOwnProperty } from "../../../common/utils/general/general";
+import { hasOwnProperty } from "../../utils/general/general";
+import { Dimension, DimensionJS } from "../dimension/dimension";
 
 const NULL_COLOR = "#666666";
 // const OTHERS_COLOR = '#AAAAAA';
@@ -76,7 +77,7 @@ function cloneValues(values: Record<string, any>): Record<string, any> {
 }
 
 export interface ColorsValue {
-  dimension: string;
+  dimension: Dimension;
   values?: Record<string, any>;
   hasNull?: boolean;
   limit?: number;
@@ -90,7 +91,7 @@ const defaultColors: ColorsValue = {
 };
 
 export interface ColorsJS {
-  dimension: string;
+  dimension: DimensionJS;
   values?: Record<string, any>;
   hasNull?: boolean;
   limit?: number;
@@ -102,11 +103,11 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
     return candidate instanceof Colors;
   }
 
-  static fromLimit(dimension: string, limit: number): Colors {
+  static fromLimit(dimension: Dimension, limit: number): Colors {
     return new Colors({ dimension, limit });
   }
 
-  static fromValues(dimension: string, values: any[]): Colors {
+  static fromValues(dimension: Dimension, values: any[]): Colors {
     var valueLookup: Record<string, any> = {};
     var hasNull = false;
     var n = Math.min(values.length, NORMAL_COLORS.length + 1);
@@ -131,7 +132,7 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
 
   static fromJS(parameters: ColorsJS): Colors {
     var value: ColorsValue = {
-      dimension: parameters.dimension,
+      dimension: Dimension.fromJS(parameters.dimension),
       limit: parameters.limit
     };
 
@@ -155,7 +156,7 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
     return new Colors(value);
   }
 
-  public dimension: string;
+  public dimension: Dimension;
   public values: Record<string, any>;
   public hasNull: boolean;
   public limit: number;
@@ -177,16 +178,12 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
 
   public toJS(): ColorsJS {
     var js: ColorsJS = {
-      dimension: this.dimension
+      dimension: this.dimension.toJS()
     };
     if (this.values) js.values = valuesToJS(this.values);
     if (this.hasNull) js.hasNull = true;
     if (this.limit) js.limit = this.limit;
     return js;
-  }
-
-  public toJSON(): ColorsJS {
-    return this.toJS();
   }
 
   public toString(): string {
@@ -228,12 +225,12 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public toHavingFilter(segmentName?: string): FilterExpression {
-    var { dimension, values } = this;
-    if (!segmentName) segmentName = dimension;
+    const { dimension, values } = this;
+    const expression = segmentName ? $(segmentName) : dimension.expression;
 
     if (!values) return null;
     return new FilterExpression({
-      expression: $(segmentName).in(this.toSet())
+      expression: expression.in(this.toSet())
     });
   }
 

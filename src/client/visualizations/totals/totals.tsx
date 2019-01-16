@@ -77,10 +77,11 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   renderTotals(): JSX.Element[] {
     const { essence } = this.props;
     const { datasetLoad: { dataset } } = this.state;
-    const measures = essence.getSeriesWithMeasures();
+    const series = essence.series.series;
     const datum = dataset ? dataset.data[0] : null;
     if (!datum) {
-      return measures.map(({ series, measure }) => {
+      return series.map(series => {
+        const measure = series.reference;
         return <Total
           key={measure.name}
           formatter={seriesFormatter(series.format, measure )}
@@ -90,7 +91,8 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       }).toArray();
     }
 
-    return measures.map(({ series, measure }) => {
+    return series.map(series => {
+      const measure = series.reference;
       const currentValue = datum[measure.name] as number;
       const previousValue = essence.hasComparison() && datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
 

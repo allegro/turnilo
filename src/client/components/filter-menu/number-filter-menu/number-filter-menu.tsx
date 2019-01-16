@@ -111,7 +111,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     if (start === null && end === null) return null;
     if (start !== null && end !== null && start > end) return null;
     return filter.setClause(new NumberFilterClause({
-      reference: dimension.name,
+      reference: dimension,
       not: filterMode === FilterMode.EXCLUDE,
       values: List.of(new NumberRange({ start, end, bounds: start === end ? "[]" : "[)" }))
     }));

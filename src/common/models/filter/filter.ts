@@ -19,7 +19,6 @@ import { Timezone } from "chronoshift";
 import { List, Record } from "immutable";
 import { Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
-import { DataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
 import { FilterClause, FilterDefinition, fromJS, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
@@ -90,8 +89,8 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.clauses.count();
   }
 
-  public toExpression(dataCube: DataCube): Expression {
-    const clauses = this.clauses.toArray().map(clause => toExpression(clause, dataCube.getDimension(clause.reference)));
+  public toExpression(): Expression {
+    const clauses = this.clauses.toArray().map(clause => toExpression(clause));
     switch (clauses.length) {
       case 0:
         return Expression.TRUE;
@@ -117,34 +116,30 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
       }));
   }
 
-  private indexOfClause(reference: string): number {
-    return this.clauses.findIndex(clause => clause.reference === reference);
-  }
-
-  public clauseForReference(reference: string): FilterClause {
-    return this.clauses.find(clause => clause.reference === reference);
+  private indexOfClause(reference: Dimension): number {
+    return this.clauses.findIndex(clause => clause.reference.equals(reference));
   }
 
   public addClause(clause: FilterClause): Filter {
     return this.updateClauses(clauses => clauses.push(clause));
   }
 
-  public removeClause(reference: string): Filter {
+  public removeClause(reference: Dimension): Filter {
     const index = this.indexOfClause(reference);
     if (index === -1) return this;
     return this.updateClauses(clauses => clauses.delete(index));
   }
 
-  public filteredOn(reference: string): boolean {
+  public filteredOn(reference: Dimension): boolean {
     return this.indexOfClause(reference) !== -1;
   }
 
-  public getClauseForDimension({ name }: Dimension): FilterClause {
-    return this.clauses.find(clause => clause.reference === name);
+  public getClauseForDimension(dimension: Dimension): FilterClause {
+    return this.clauses.find(clause => clause.reference.equals(dimension));
   }
 
-  public getModeForDimension({ name }: Dimension): FilterMode {
-    const dimensionClauses = this.clauses.filter(clause => clause.reference === name);
+  public getModeForDimension(dimension: Dimension): FilterMode {
+    const dimensionClauses = this.clauses.filter(clause => clause.reference.equals(dimension));
 
     if (dimensionClauses.size > 0) {
       if (dimensionClauses.every(clause =>
@@ -175,12 +170,12 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public constrainToDimensions(dimensions: Dimensions): Filter {
     return this.updateClauses(clauses =>
-      clauses.filter(clause => dimensions.getDimensionByName(clause.reference)));
+      clauses.filter(clause => dimensions.has(clause.reference)));
   }
 
-  public setExclusionForDimension(exclusion: boolean, { name }: Dimension): Filter {
+  public setExclusionForDimension(exclusion: boolean, dimension: Dimension): Filter {
     return this.updateClauses(clauses => {
-      const idx = clauses.findIndex(clause => clause.reference === name);
+      const idx = clauses.findIndex(clause => clause.reference.equals(dimension));
       if (idx === -1) return clauses;
       return clauses.setIn([idx, "not"], exclusion);
     });

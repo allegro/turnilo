@@ -33,7 +33,7 @@ export type Bucket = number | Duration;
 
 export interface SplitValue {
   type: SplitType;
-  reference: string;
+  reference: Dimension;
   // TODO: capture better in type
   bucket: Bucket;
   sort: Sort;
@@ -54,7 +54,7 @@ export function bucketToAction(bucket: Bucket): Expression {
     : new NumberBucketExpression({ size: bucket });
 }
 
-export function toExpression({ bucket, type }: Split, { expression }: Dimension, filter?: Expression, shift?: Duration): Expression {
+export function toExpression({ bucket, type, reference: { expression } }: Split, filter?: Expression, shift?: Duration): Expression {
   const shouldApplyShift = shift && filter && type === SplitType.time;
   const expWithShift = shouldApplyShift ? filter.then(expression).fallback(expression.timeShift(shift)) : expression;
   if (!bucket) return expWithShift;
@@ -74,8 +74,8 @@ export function kindToType(kind: string): SplitType {
 
 export class Split extends Record<SplitValue>(defaultSplit) {
 
-  static fromDimension({ name, kind }: Dimension): Split {
-    return new Split({ reference: name, type: kindToType(kind) });
+  static fromDimension(dimension: Dimension): Split {
+    return new Split({ reference: dimension, type: kindToType(dimension.kind) });
   }
 
   static fromJS({ type, reference, bucket, sort, limit }: any): Split {
@@ -93,7 +93,7 @@ export class Split extends Record<SplitValue>(defaultSplit) {
   }
 
   public toKey(): string {
-    return this.reference;
+    return this.reference.name;
   }
 
   public changeBucket(bucket: Bucket): Split {
@@ -106,7 +106,7 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   public changeSortFromNormalized(sort: Sort): Split {
     if (sort.reference === SORT_ON_DIMENSION_PLACEHOLDER) {
-      return this.changeSort(sort.set("reference", this.reference));
+      return this.changeSort(sort.set("reference", this.reference.name));
     }
     return this.changeSort(sort);
   }
@@ -115,8 +115,8 @@ export class Split extends Record<SplitValue>(defaultSplit) {
     return this.set("limit", limit);
   }
 
-  public getTitle(dimension: Dimension): string {
-    return (dimension ? dimension.title : "?") + this.getBucketTitle();
+  public getTitle(): string {
+    return this.reference.title + this.getBucketTitle();
   }
 
   public getBucketTitle(): string {
@@ -134,7 +134,7 @@ export class Split extends Record<SplitValue>(defaultSplit) {
     if (this.type !== SplitType.time) return super.equals(other);
     return other instanceof Split &&
       this.type === other.type &&
-      this.reference === other.reference &&
+      this.reference.equals(other.reference) &&
       this.sort.equals(other.sort) &&
       this.limit === other.limit &&
       nullableEquals(this.bucket as Duration, other.bucket as Duration);

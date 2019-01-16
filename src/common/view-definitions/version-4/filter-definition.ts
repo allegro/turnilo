@@ -85,14 +85,14 @@ export interface FilterDefinitionConversion<In extends FilterClauseDefinition, O
 }
 
 const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition, BooleanFilterClause> = {
-  toFilterClause({ not, values }: BooleanFilterClauseDefinition, { name }: Dimension): BooleanFilterClause {
-    return new BooleanFilterClause({ reference: name, not, values: Set(values) });
+  toFilterClause({ not, values }: BooleanFilterClauseDefinition, dimension: Dimension): BooleanFilterClause {
+    return new BooleanFilterClause({ reference: dimension, not, values: Set(values) });
   },
 
   fromFilterClause({ values, not, reference }: BooleanFilterClause): BooleanFilterClauseDefinition {
     return {
       type: FilterType.boolean,
-      ref: reference,
+      ref: reference.name,
       values: values.toArray(),
       not
     };
@@ -110,10 +110,8 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
     if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {
       throw Error(`Wrong string filter values: ${values} for action: ${action}. Dimension: ${dimension}`);
     }
-    const { name } = dimension;
-
     return new StringFilterClause({
-      reference: name,
+      reference: dimension,
       action,
       not,
       values: Set(values)
@@ -123,7 +121,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
   fromFilterClause({ action, reference, not, values }: StringFilterClause): StringFilterClauseDefinition {
     return {
       type: FilterType.string,
-      ref: reference,
+      ref: reference.name,
       action,
       values: values.toArray(),
       not
@@ -132,14 +130,14 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
 };
 
 const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition, NumberFilterClause> = {
-  toFilterClause({ not, ranges }: NumberFilterClauseDefinition, { name }: Dimension): NumberFilterClause {
-    return new NumberFilterClause({ not, values: List(ranges.map(range => new NumberRange(range))), reference: name });
+  toFilterClause({ not, ranges }: NumberFilterClauseDefinition, dimension: Dimension): NumberFilterClause {
+    return new NumberFilterClause({ not, values: List(ranges.map(range => new NumberRange(range))), reference: dimension });
   },
 
   fromFilterClause({ not, reference, values }: NumberFilterClause): NumberFilterClauseDefinition {
     return {
       type: FilterType.number,
-      ref: reference,
+      ref: reference.name,
       not,
       ranges: values.toJS()
     };
@@ -160,16 +158,15 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
       throw Error(`Time filter support a single timePeriod only. Dimension: ${dimension}`);
     }
 
-    const { name } = dimension;
     if (timeRanges !== undefined) {
       return new FixedTimeFilterClause({
-        reference: name,
+        reference: dimension,
         values: List(timeRanges.map(range => new DateRange({ start: new Date(range.start), end: new Date(range.end) })))
       });
     }
     const { duration, step, type } = timePeriods[0];
     return new RelativeTimeFilterClause({
-      reference: name,
+      reference: dimension,
       duration: Duration.fromJS(duration).multiply(Math.abs(step)),
       period: timeFilterPeriod(step, type)
     });
@@ -184,14 +181,14 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
       const type = period === TimeFilterPeriod.LATEST ? "latest" : "floored";
       return {
         type: FilterType.time,
-        ref: reference,
+        ref: reference.name,
         timePeriods: [{ duration: duration.toString(), step, type }]
       };
     }
     const { values } = filterClause;
     return {
       type: FilterType.time,
-      ref: reference,
+      ref: reference.name,
       timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
     };
   }

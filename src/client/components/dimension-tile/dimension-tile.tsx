@@ -134,14 +134,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     let filter = essence.getEffectiveFilter(timekeeper);
     // don't remove filter if time
     if (unfolded && dimension !== essence.getTimeDimension()) {
-      filter = filter.removeClause(dimension.name);
+      filter = filter.removeClause(dimension);
     }
 
     filter = filter.setExclusionForDimension(false, dimension);
 
-    let filterExpression = filter.toExpression(dataCube);
+    let filterExpression = filter.toExpression();
 
-    const shouldFoldRows = !unfolded && foldable && colors && colors.dimension === dimension.name && colors.values;
+    const shouldFoldRows = !unfolded && foldable && colors && colors.dimension.equals(dimension) && colors.values;
 
     if (shouldFoldRows) {
       filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
@@ -206,7 +206,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   updateFoldability(essence: Essence, dimension: Dimension, colors: Colors): boolean {
     let { unfolded } = this.state;
     let foldable = true;
-    if (essence.filter.filteredOn(dimension.name)) { // has filter
+    if (essence.filter.filteredOn(dimension)) { // has filter
       if (colors) {
         foldable = false;
         unfolded = false;
@@ -291,7 +291,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     let { colors } = this.props;
     let { filter } = essence;
 
-    if (colors && colors.dimension === dimension.name) {
+    if (colors && colors.dimension.equals(dimension)) {
       if (colors.limit) {
         if (!dataset) return;
         const values = dataset.data.slice(0, colors.limit).map(d => d[dimension.name]);
@@ -304,7 +304,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       // If no longer filtered switch unfolded to true for later
       const { unfolded } = this.state;
-      if (!unfolded && !filter.filteredOn(dimension.name)) {
+      if (!unfolded && !filter.filteredOn(dimension)) {
         this.setState({ unfolded: true });
       }
 
@@ -315,7 +315,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   private selectValueInFilter(filter: Filter, dimension: Dimension, value: any, event: MouseEvent): Filter {
     const filterClause = filter.getClauseForDimension(dimension);
     if (!filterClause) {
-      return filter.addClause(new StringFilterClause({ reference: dimension.name, values: Set.of(value), action: StringFilterAction.IN }));
+      return filter.addClause(new StringFilterClause({ reference: dimension, values: Set.of(value), action: StringFilterAction.IN }));
     }
     if (!(filterClause instanceof StringFilterClause)) {
       throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
@@ -326,9 +326,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       const singleFilter = values.count() === 1;
 
       if (filteredOnMe && singleFilter) {
-        return filter.removeClause(dimension.name);
+        return filter.removeClause(dimension);
       }
-      return filter.removeClause(dimension.name).setClause(filterClause.update("values", values => values.add(value)));
+      return filter.removeClause(dimension).setClause(filterClause.update("values", values => values.add(value)));
     }
     return filter.setClause(filterClause.update("values", values =>
       values.has(value) ? values.remove(value) : values.add(value)));
@@ -482,11 +482,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const measure = sortOn.reference;
     if (!(measure instanceof Measure)) return null;
-    const measureName = measure.name;
-    const series = seriesList.getSeries(measureName);
+    const series = seriesList.getSeries(measure);
     const format = series ? series.format : DEFAULT_FORMAT;
     const formatter = seriesFormatter(format, measure);
-    return (datum: Datum) => formatter(datum[measureName] as number);
+    return (datum: Datum) => formatter(datum[measure.name] as number);
   }
 
   private prepareRows(rowData: Datum[], continuous: boolean): JSX.Element[] {

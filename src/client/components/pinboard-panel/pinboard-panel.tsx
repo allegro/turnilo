@@ -53,7 +53,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   canDrop(): boolean {
     const dimension = DragManager.draggingDimension();
-    return dimension && dimension.kind === "string" && !this.props.essence.pinnedDimensions.has(dimension.name);
+    return dimension && dimension.kind === "string" && !this.props.essence.pinnedDimensions.has(dimension);
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
@@ -86,7 +86,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     const { essence } = this.props;
     const { dataCube, splits, colors } = essence;
     if (colors) {
-      const dimension = dataCube.getDimension(colors.dimension);
+      const dimension = colors.dimension;
       if (dimension) {
         const split = splits.findSplitForDimension(dimension);
         if (split) {
@@ -100,9 +100,9 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   onLegendSortOnSelect = (sortOn: SortOn) => {
     const { clicker, essence } = this.props;
-    const { dataCube, splits, colors } = essence;
+    const { splits, colors } = essence;
     if (colors) {
-      const dimension = dataCube.getDimension(colors.dimension);
+      const dimension = colors.dimension;
       if (dimension) {
         const split = splits.findSplitForDimension(dimension);
         if (split) {
@@ -126,10 +126,10 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   onRemoveLegend = () => {
     const { clicker, essence } = this.props;
-    const { dataCube, splits, colors } = essence;
+    const { splits, colors } = essence;
 
     if (colors) {
-      const dimension = dataCube.getDimension(colors.dimension);
+      const dimension = colors.dimension;
       if (dimension) {
         const split = splits.findSplitForDimension(dimension);
         if (split) {
@@ -142,19 +142,18 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     const { clicker, essence, timekeeper, style } = this.props;
     const { dragOver } = this.state;
-    const { dataCube, pinnedDimensions, colors } = essence;
+    const { pinnedDimensions, colors } = essence;
 
     let legendMeasureSelector: JSX.Element = null;
     let legendDimensionTile: JSX.Element = null;
     let colorDimension = colors ? colors.dimension : null;
     if (colorDimension) {
-      const dimension = dataCube.getDimension(colorDimension);
       const colorsSortOn = this.getColorsSortOn();
-      if (dimension && colorsSortOn) {
+      if (colorDimension && colorsSortOn) {
         legendMeasureSelector = <PinboardMeasureTile
           essence={essence}
           title="Legend"
-          dimension={dimension}
+          dimension={colorDimension}
           sortOn={colorsSortOn}
           onSelect={this.onLegendSortOnSelect}
         />;
@@ -163,7 +162,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
-          dimension={dimension}
+          dimension={colorDimension}
           sortOn={colorsSortOn}
           colors={colors}
           onClose={this.onRemoveLegend}
@@ -173,10 +172,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
     const pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
     let dimensionTiles: JSX.Element[] = [];
-    pinnedDimensions.forEach(dimensionName => {
-      const dimension = dataCube.getDimension(dimensionName);
-      if (!dimension) return null;
-
+    pinnedDimensions.forEach(dimension => {
       dimensionTiles.push(<DimensionTile
         key={dimension.name}
         clicker={clicker}

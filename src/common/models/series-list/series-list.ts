@@ -28,8 +28,8 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
-  static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new Series({ reference }))) });
+  static fromMeasures(measures: Measure[]): SeriesList {
+    return new SeriesList({ series: List(measures.map(reference => new Series({ reference }))) });
   }
 
   static fromJS(seriesDefs: any[]): SeriesList {
@@ -72,20 +72,16 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
         .filterNot((series, idx) => series.equals(insert) && idx !== index));
   }
 
-  public hasSeries(reference: string): boolean {
-    return this.getSeries(reference) !== undefined;
+  public hasMeasure(measure: Measure): boolean {
+    return this.getSeries(measure) !== undefined;
   }
 
-  public hasMeasure({ name }: Measure): boolean {
-    return this.hasSeries(name);
-  }
-
-  public getSeries(reference: string): Series {
-    return this.series.find(series => series.reference === reference);
+  public getSeries(reference: Measure): Series {
+    return this.series.find(series => series.reference.equals(reference));
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {
-    return this.updateSeries(list => list.filter(series => measures.getMeasureByName(series.reference)));
+    return this.updateSeries(list => list.filter(series => measures.has(series.reference)));
   }
 
   public count(): number {

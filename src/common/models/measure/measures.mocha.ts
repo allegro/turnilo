@@ -119,7 +119,7 @@ describe("Measures", () => {
   });
 
   it("should provide first n measure names", () => {
-    const measureNames = measures.getFirstNMeasureNames(1);
+    const measureNames = measures.getFirstMeasures(1);
 
     expect(measureNames).to.deep.equal(OrderedSet(["count"]));
   });

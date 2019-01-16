@@ -88,7 +88,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
     const { dataCube } = essence;
-    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
     const $main = $("main");
     const query = ply()
       .apply("main", $main.filter(filterExpression))

@@ -92,7 +92,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const $main = $("main");
     const measureExpression = nativeCount ? nativeCount.expression : $main.count();
 
-    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
     if (searchText) {
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
@@ -134,7 +134,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const { essence, dimension } = this.props;
     const { filter, colors } = essence;
 
-    const myColors = (colors && colors.dimension === dimension.name ? colors : null);
+    const myColors = (colors && colors.dimension.equals(dimension) ? colors : null);
 
     const existingMode = filter.getModeForDimension(dimension);
 
@@ -195,12 +195,11 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
     const { selectedValues } = this.state;
-    const { name } = dimension;
     if (selectedValues.count() === 0) return onClauseChange(null);
 
     const clause = new StringFilterClause({
       action: StringFilterAction.IN,
-      reference: name,
+      reference: dimension,
       values: selectedValues,
       not: filterMode === FilterMode.EXCLUDE
     });

@@ -113,6 +113,10 @@ export class Measures {
     return this.flattenedMeasures.first();
   }
 
+  has(measure: Measure): boolean {
+    return this.flattenedMeasures.contains(measure);
+  }
+
   equals(other: Measures): boolean {
     return this === other || immutableArraysEqual(this.measures, other.measures);
   }
@@ -145,8 +149,8 @@ export class Measures {
     return this.flattenedMeasures.some(measure => measure.name === name);
   }
 
-  getFirstNMeasureNames(n: number): OrderedSet<string> {
-    return OrderedSet(this.flattenedMeasures.slice(0, n).map(measure => measure.name));
+  getFirstMeasures(n: number): OrderedSet<Measure> {
+    return OrderedSet(this.flattenedMeasures.slice(0, n));
   }
 
   append(...measures: Measure[]): Measures {

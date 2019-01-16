@@ -101,8 +101,8 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return this.splits.get(index);
   }
 
-  public findSplitForDimension({ name }: Dimension): Split {
-    return this.splits.find(s => s.reference === name);
+  public findSplitForDimension(dimension: Dimension): Split {
+    return this.splits.find(s => s.reference.equals(dimension));
   }
 
   public hasSplitOn(dimension: Dimension): boolean {
@@ -113,21 +113,21 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return this.updateSplits(splits => splits.map(s => s.equals(search) ? replace : s));
   }
 
-  public removeBucketingFrom(references: Set<string>) {
+  public removeBucketingFrom(references: Set<Dimension>) {
     return this.updateSplits(splits => splits.map(split => {
       if (!split.bucket || !references.has(split.reference)) return split;
       return split.changeBucket(null);
     }));
   }
 
-  public updateWithFilter(filter: Filter, dimensions: Dimensions): Splits {
+  public updateWithFilter(filter: Filter): Splits {
     const specificFilter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
 
     return this.updateSplits(splits => splits.map(split => {
       const { bucket, reference } = split;
       if (bucket) return split;
 
-      const splitDimension = dimensions.getDimensionByName(reference);
+      const splitDimension = reference;
       const splitKind = splitDimension.kind;
       if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !splitDimension.canBucketByDefault()) {
         return split;
@@ -154,7 +154,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
 
   public constrainToDimensionsAndMeasures(dimensions: Dimensions, measures: Measures): Splits {
     function validSplit(split: Split): boolean {
-      if (!dimensions.getDimensionByName(split.reference)) return false;
+      if (!split.reference) return false;
       if (split.sort.empty()) return true;
       const sortRef = split.sort.reference;
       return dimensions.containsDimensionWithName(sortRef) || measures.containsMeasureWithName(sortRef);

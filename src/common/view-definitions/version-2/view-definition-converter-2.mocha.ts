@@ -17,6 +17,7 @@
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinition2 } from "./view-definition-2";
@@ -87,7 +88,7 @@ describe("ViewDefinitionConverter2", () => {
       const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
       const convertedClause = essence.filter.clauses.first();
 
-      const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", period);
+      const expectedClause = FilterClauseFixtures.timePeriod(DimensionFixtures.wikiTime(), "P1D", period);
       expect(convertedClause).to.deep.equal(expectedClause);
     });
   });

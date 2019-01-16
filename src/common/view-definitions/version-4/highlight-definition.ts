@@ -34,7 +34,8 @@ export interface HighlightDefinitionConverter {
 export function highlightConverter(dataCube: DataCube): HighlightDefinitionConverter {
   return {
     toHighlight(highlightDefinition: HighlightDefinition): Highlight {
-      const { owner, filters, measure } = highlightDefinition;
+      const { owner, filters, measure: measureName } = highlightDefinition;
+      const measure = dataCube.getMeasure(measureName);
       const filter = Filter.fromClauses(filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
       return new Highlight({ owner, delta: filter, measure });
@@ -44,7 +45,7 @@ export function highlightConverter(dataCube: DataCube): HighlightDefinitionConve
       const { owner, delta, measure } = highlight;
       const filters = delta.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray();
 
-      return { owner, filters, measure };
+      return { owner, filters, measure: measure.name };
     }
   };
 }

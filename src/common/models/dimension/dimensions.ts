@@ -89,6 +89,10 @@ export class Dimensions {
     return this.flattenedDimensions.first();
   }
 
+  has(dimension: Dimension): boolean {
+    return this.flattenedDimensions.contains(dimension);
+  }
+
   equals(other: Dimensions): boolean {
     return this === other || immutableArraysEqual(this.dimensions, other.dimensions);
   }

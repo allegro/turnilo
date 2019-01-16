@@ -16,6 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
+import { Dimension } from "../dimension/dimension";
 import {
   BooleanFilterClause,
   DateRange,
@@ -30,7 +31,7 @@ import {
 
 export class FilterClauseFixtures {
 
-  static stringWithAction(reference: string, action: StringFilterAction, values: string[], not = false): FilterClause {
+  static stringWithAction(reference: Dimension, action: StringFilterAction, values: string[], not = false): FilterClause {
     if (action !== StringFilterAction.IN && values instanceof Array && values.length !== 1) {
       throw new Error(`Unsupported values: ${values} for action: ${action}.`);
     }
@@ -38,31 +39,31 @@ export class FilterClauseFixtures {
     return new StringFilterClause({ reference, action, values: Set(values), not });
   }
 
-  static stringIn(reference: string, values: string[], not = false): FilterClause {
+  static stringIn(reference: Dimension, values: string[], not = false): FilterClause {
     return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set(values), not });
   }
 
-  static stringContains(reference: string, value: string, not = false): FilterClause {
+  static stringContains(reference: Dimension, value: string, not = false): FilterClause {
     return new StringFilterClause({ reference, action: StringFilterAction.CONTAINS, values: Set.of(value), not });
   }
 
-  static stringMatch(reference: string, value: string, not = false): FilterClause {
+  static stringMatch(reference: Dimension, value: string, not = false): FilterClause {
     return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
   }
 
-  static boolean(reference: string, values: boolean[], not = false): FilterClause {
+  static boolean(reference: Dimension, values: boolean[], not = false): FilterClause {
     return new BooleanFilterClause({ reference, not, values: Set(values) });
   }
 
-  static numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): FilterClause {
+  static numberRange(reference: Dimension, start: number, end: number, bounds = "[)", not = false): FilterClause {
     return new NumberFilterClause({ reference, not, values: List.of(new NumberRange({ bounds, start, end })) });
   }
 
-  static timeRange(reference: string, start: Date, end: Date): FilterClause {
+  static timeRange(reference: Dimension, start: Date, end: Date): FilterClause {
     return new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start, end })) });
   }
 
-  static timePeriod(reference: string, duration: string, period: TimeFilterPeriod): FilterClause {
+  static timePeriod(reference: Dimension, duration: string, period: TimeFilterPeriod): FilterClause {
     return new RelativeTimeFilterClause({ reference, duration: Duration.fromJS(duration), period });
   }
 }

@@ -16,6 +16,8 @@
 
 import { Duration } from "chronoshift";
 import { Direction } from "plywood";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Dimension } from "../../models/dimension/dimension";
 import { Sort } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 
@@ -53,14 +55,14 @@ export const sortDirectionMapper: { [sort in SortDirection]: Direction; } = {
 };
 
 interface SplitDefinitionConversion<In extends SplitDefinition> {
-  toSplitCombine(split: In): Split;
+  toSplitCombine(split: In, dimension: Dimension): Split;
 
   fromSplitCombine(splitCombine: Split): In;
 }
 
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
-  toSplitCombine(split: NumberSplitDefinition): Split {
-    const { dimension, limit, sort, granularity } = split;
+  toSplitCombine(split: NumberSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort, granularity } = split;
     return new Split({
       type: SplitType.number,
       reference: dimension,
@@ -74,7 +76,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
     if (typeof bucket === "number") {
       return {
         type: SplitType.number,
-        dimension: reference,
+        dimension: reference.name,
         granularity: bucket,
         sort: sort && { ref: sort.reference, direction: sort.direction },
         limit
@@ -86,8 +88,8 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
 };
 
 const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
-  toSplitCombine(split: TimeSplitDefinition): Split {
-    const { dimension, limit, sort, granularity } = split;
+  toSplitCombine(split: TimeSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort, granularity } = split;
     return new Split({
       type: SplitType.time,
       reference: dimension,
@@ -101,7 +103,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
     if (bucket instanceof Duration) {
       return {
         type: SplitType.time,
-        dimension: reference,
+        dimension: reference.name,
         granularity: bucket.toJS(),
         sort: sort && { ref: sort.reference, direction: sort.direction },
         limit
@@ -114,8 +116,8 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
 };
 
 const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = {
-  toSplitCombine(split: StringSplitDefinition): Split {
-    const { dimension, limit, sort } = split;
+  toSplitCombine(split: StringSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort } = split;
     return new Split({
       reference: dimension,
       sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
@@ -126,7 +128,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
   fromSplitCombine({ limit, sort, reference }: Split): StringSplitDefinition {
     return {
       type: SplitType.string,
-      dimension: reference,
+      dimension: reference.name,
       sort: sort && { ref: sort.reference, direction: sort.direction },
       limit
     };
@@ -140,14 +142,15 @@ const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDe
 };
 
 export interface SplitDefinitionConverter {
-  toSplitCombine(split: SplitDefinition): Split;
+  toSplitCombine(split: SplitDefinition, dataCube: DataCube): Split;
 
   fromSplitCombine(splitCombine: Split): SplitDefinition;
 }
 
 export const splitConverter: SplitDefinitionConverter = {
-  toSplitCombine(split: SplitDefinition): Split {
-    return splitConversions[split.type].toSplitCombine(split);
+  toSplitCombine(split: SplitDefinition, dataCube: DataCube): Split {
+    const dimension = dataCube.getDimension(split.dimension);
+    return splitConversions[split.type].toSplitCombine(split, dimension);
   },
 
   fromSplitCombine(splitCombine: Split): SplitDefinition {

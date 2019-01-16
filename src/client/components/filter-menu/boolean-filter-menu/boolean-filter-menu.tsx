@@ -78,7 +78,7 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
   fetchData() {
     const { essence, timekeeper, dimension } = this.props;
     const { dataCube } = essence;
-    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
     const query = $("main")
       .filter(filterExpression)
@@ -110,7 +110,7 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
     const { selectedValues } = this.state;
 
     return filter.setClause(new BooleanFilterClause({
-      reference: dimension.name,
+      reference: dimension,
       values: selectedValues
     }));
   }

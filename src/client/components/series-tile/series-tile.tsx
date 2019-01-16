@@ -281,16 +281,12 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   renderSeries(series: Series, style: React.CSSProperties, i: number) {
-    const { essence: { dataCube } } = this.props;
-
-    const measure = dataCube.getMeasure(series.reference);
-    if (!measure) throw new Error("measure not found");
-    const dimensionName = measure.name;
+    const measure = series.reference;
 
     return <div
       className={classNames(SERIES_CLASS_NAME, "measure")}
       key={measure.name}
-      ref={dimensionName}
+      ref={measure.name}
       draggable={true}
       onClick={(e: React.MouseEvent<HTMLElement>) => this.selectSeries(series, e)}
       onDragStart={(e: React.DragEvent<HTMLElement>) => this.dragStart(measure, series, i, e)}
@@ -323,8 +319,6 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     const { essence, clicker, menuStage } = this.props;
     const { menuOpenOn, menuSeries, menuInside, overflowMenuOpenOn } = this.state;
     if (!menuSeries) return null;
-
-    const measure = essence.dataCube.measures.getMeasureByName(menuSeries.reference);
 
     return <SeriesMenu
       clicker={clicker}

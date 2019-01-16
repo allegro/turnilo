@@ -288,7 +288,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       let tryingToReplaceTime = false;
       if (dragPosition.replace !== null) {
         const targetClause = filter.clauses.get(dragPosition.replace);
-        tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
+        tryingToReplaceTime = targetClause && targetClause.reference.equals(dataCube.getTimeDimension());
       }
       if (dragPosition && !tryingToReplaceTime) {
         this.addDummy(dimension, dragPosition);
@@ -340,7 +340,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   // This will be called externally
   filterMenuRequest(dimension: Dimension) {
     const { filter } = this.props.essence;
-    if (filter.filteredOn(dimension.name)) {
+    if (filter.filteredOn(dimension)) {
       this.openMenuOnDimension(dimension);
     } else {
       this.addDummy(dimension, new DragPosition({ insert: filter.length() }));
@@ -499,7 +499,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        const dimension = dataCube.getDimension(clause.reference);
+        const dimension = clause.reference;
         if (!dimension) return null;
         return {
           dimension,
@@ -525,7 +525,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           }
         });
         if (!added) {
-          const dimension = dataCube.getDimension(clause.reference);
+          const dimension = clause.reference;
           if (dimension) {
             itemBlanks.push({
               dimension,

@@ -44,12 +44,13 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
     const splitDefinitions = List(definition.splits);
-    const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
+    const splits = new Splits({ splits: splitDefinitions.map(split => splitConverter.toSplitCombine(split, dataCube)) });
 
-    const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
-    const colors = definition.legend && legendConverter.toColors(definition.legend);
+    const pinnedDimRefs = definition.pinnedDimensions || [];
+    const pinnedDimensions = OrderedSet(pinnedDimRefs.map(ref => dataCube.getDimension(ref)));
+    const colors = definition.legend && legendConverter.toColors(definition.legend, dataCube);
     const pinnedSort = definition.pinnedSort;
-    const series = seriesDefinitionConverter.toEssenceSeries(definition.measures);
+    const series = seriesDefinitionConverter.toEssenceSeries(definition.measures, dataCube);
     const highlight = definition.highlight && highlightConverter(dataCube)
       .toHighlight(definition.highlight);
 

@@ -15,6 +15,8 @@
  */
 
 import { expect } from "chai";
+import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
 import { SplitFixtures } from "../../models/split/split.fixtures";
 import { SortDirection, splitConverter } from "./split-definition";
 import { SplitDefinitionFixtures } from "./split-definition.fixtures";
@@ -24,14 +26,14 @@ describe("SplitDefinition v3", () => {
     const converter = splitConverter;
 
     const stringSplitTests = [
-      { dimension: "channel", sortOn: "channel", sortDirection: SortDirection.ascending, limit: 5 },
-      { dimension: "channel", sortOn: "count", sortDirection: SortDirection.descending, limit: 15 }
+      { dimension: DimensionFixtures.wikiChannel(), sortOn: "channel", sortDirection: SortDirection.ascending, limit: 5 },
+      { dimension: DimensionFixtures.wikiChannel(), sortOn: "count", sortDirection: SortDirection.descending, limit: 15 }
     ];
 
     stringSplitTests.forEach(({ dimension, sortOn, sortDirection, limit }) => {
       it(`should convert model sorted ${sortDirection} on ${sortOn} with limit ${limit}`, () => {
-        const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn, sortDirection, limit);
-        const splitCombine = converter.toSplitCombine(splitDefinition);
+        const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension.name, sortOn, sortDirection, limit);
+        const splitCombine = converter.toSplitCombine(splitDefinition, DataCubeFixtures.wiki());
         const expectedSplitCombine = SplitFixtures.stringSplitCombine(dimension, sortOn, sortDirection, limit);
 
         expect(splitCombine.toJS()).to.deep.equal(expectedSplitCombine.toJS());

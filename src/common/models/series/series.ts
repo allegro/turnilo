@@ -38,7 +38,7 @@ export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT 
 export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
 
 interface SeriesValue {
-  reference: string;
+  reference: Measure;
   format: SeriesFormat;
 }
 
@@ -46,7 +46,7 @@ const defaultSeries: SeriesValue = { reference: null, format: DEFAULT_FORMAT };
 
 export class Series extends Record<SeriesValue>(defaultSeries) {
   static fromMeasure(measure: Measure) {
-    return new Series({ reference: measure.name });
+    return new Series({ reference: measure });
   }
 
   static fromJS({ reference, format }: any) {

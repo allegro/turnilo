@@ -79,10 +79,9 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { essence: { dataCube }, containerStage, openOn, series, onClose, inside } = this.props;
+    const { containerStage, openOn, series, onClose, inside } = this.props;
     const { format } = this.state;
-    const measure = dataCube.getMeasure(series.reference);
-    if (!measure) return null;
+    const measure = series.reference;
 
     return <BubbleMenu
       className="series-menu"

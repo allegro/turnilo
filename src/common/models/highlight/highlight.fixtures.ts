@@ -16,13 +16,15 @@
 
 import { LineChart } from "../../../client/visualizations/line-chart/line-chart";
 import { Table } from "../../../client/visualizations/table/table";
+import { DimensionFixtures } from "../dimension/dimension.fixtures";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
+import { MeasureFixtures } from "../measure/measure.fixtures";
 import { Highlight } from "./highlight";
 
 export class HighlightFixtures {
   static tableNoMeasure(): Highlight {
-    const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
+    const channelInFilterClause = FilterClauseFixtures.stringIn(DimensionFixtures.wikiChannel(), ["en"]);
     return new Highlight({
       owner: Table.id,
       measure: null,
@@ -31,19 +33,19 @@ export class HighlightFixtures {
   }
 
   static lineChartWithAvgAddedMeasure(): Highlight {
-    const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
+    const channelInFilterClause = FilterClauseFixtures.stringIn(DimensionFixtures.wikiChannel(), ["en"]);
     return new Highlight({
       owner: LineChart.id,
-      measure: "avg_added",
+      measure: MeasureFixtures.wikiAvgAdded(),
       delta: Filter.fromClause(channelInFilterClause)
     });
   }
 
   static lineChartWithAddedMeasure(): Highlight {
-    const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
+    const channelInFilterClause = FilterClauseFixtures.stringIn(DimensionFixtures.wikiChannel(), ["en"]);
     return new Highlight({
       owner: LineChart.id,
-      measure: "added",
+      measure: MeasureFixtures.wikiAdded(),
       delta: Filter.fromClause(channelInFilterClause)
     });
   }

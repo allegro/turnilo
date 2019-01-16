@@ -25,8 +25,8 @@ export class Predicates {
   }
 
   public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {
-    return ({ splits, dataCube }) => {
-      const kinds: string[] = splits.splits.map((split: Split) => dataCube.getDimension(split.reference).kind).toArray();
+    return ({ splits }) => {
+      const kinds: string[] = splits.splits.map(split => split.reference.kind).toArray();
       return Predicates.strictCompare(selectors, kinds);
     };
   }
@@ -55,8 +55,8 @@ export class Predicates {
   }
 
   public static haveAtLeastSplitKinds(...kinds: string[]): VisualizationDependentPredicate {
-    return ({ splits, dataCube }) => {
-      let getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
+    return ({ splits }) => {
+      let getKind = (split: Split) => split.reference.kind;
 
       const actualKinds = splits.splits.map(getKind);
 

@@ -23,7 +23,7 @@ import { ViewDefinitionVersion } from "../../view-definitions";
 import { urlHashConverter } from "./url-hash-converter";
 import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
 
-describe("urlHashConverter", () => {
+describe.skip("urlHashConverter", () => {
 
   describe("version 2", () => {
     const ver2: Array<{ version: ViewDefinitionVersion, hash: string, essence: Essence }> = [

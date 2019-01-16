@@ -92,7 +92,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { essence, dimension, changePosition } = this.props;
     const { filter } = essence;
 
-    if (!clause) return filter.removeClause(dimension.name);
+    if (!clause) return filter.removeClause(dimension);
     if (changePosition) {
       if (changePosition.isInsert()) {
         return filter.insertByIndex(changePosition.insert, clause);

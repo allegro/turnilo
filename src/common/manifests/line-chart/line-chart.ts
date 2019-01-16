@@ -50,7 +50,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let score = 4;
 
     let continuousSplit = splits.getSplit(0);
-    const continuousDimension = dataCube.getDimension(continuousSplit.reference);
+    const continuousDimension = continuousSplit.reference;
     const sortStrategy = continuousDimension.sortStrategy;
 
     let sort: Sort = null;
@@ -93,7 +93,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.areExactSplitKinds("time", "*"))
   .then(({ splits, dataCube, colors }) => {
     let timeSplit = splits.getSplit(0);
-    const timeDimension = dataCube.getDimension(timeSplit.reference);
+    const timeDimension = timeSplit.reference;
 
     const sort: Sort = new Sort({
       reference: timeDimension.name,
@@ -116,9 +116,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       colorSplit = colorSplit.changeSort(dataCube.getDefaultSortExpression());
     }
 
-    const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
-    if (!colors || colors.dimension !== colorSplitDimension.name) {
-      colors = Colors.fromLimit(colorSplitDimension.name, 5);
+    const colorSplitDimension = colorSplit.reference;
+    if (!colors || !colors.dimension.equals(colorSplitDimension)) {
+      colors = Colors.fromLimit(colorSplitDimension, 5);
     }
 
     return Resolve.automatic(8, {
@@ -131,7 +131,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .or(Predicates.areExactSplitKinds("*", "number"))
   .then(({ splits, dataCube, colors }) => {
     let timeSplit = splits.getSplit(1);
-    const timeDimension = dataCube.getDimension(timeSplit.reference);
+    const timeDimension = timeSplit.reference;
 
     let autoChanged = false;
 
@@ -159,9 +159,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
-    if (!colors || colors.dimension !== colorSplitDimension.name) {
-      colors = Colors.fromLimit(colorSplitDimension.name, 5);
+    const colorSplitDimension = colorSplit.reference;
+    if (!colors || !colors.dimension.equals(colorSplitDimension)) {
+      colors = Colors.fromLimit(colorSplitDimension, 5);
       autoChanged = true;
     }
 
@@ -173,8 +173,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.haveAtLeastSplitKinds("time"))
-  .then(({ splits, dataCube }) => {
-    let timeSplit = splits.splits.find(split => dataCube.getDimension(split.reference).kind === "time");
+  .then(({ splits }) => {
+    let timeSplit = splits.splits.find(split => split.reference.kind === "time");
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "Too many splits on the line chart", [
       {
         description: "Remove all but the time split",

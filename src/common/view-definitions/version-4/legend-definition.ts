@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Colors } from "../../models/colors/colors";
+import { DataCube } from "../../models/data-cube/data-cube";
 
 export interface LegendDefinition {
   dimension: string;
@@ -23,23 +24,23 @@ export interface LegendDefinition {
 }
 
 export interface LegendDefinitionConverter {
-  toColors(legend: LegendDefinition): Colors;
+  toColors(legend: LegendDefinition, dataCube: DataCube): Colors;
 
   fromColors(colors: Colors): LegendDefinition;
 }
 
 export const legendConverter: LegendDefinitionConverter = {
-  toColors(legend: LegendDefinition) {
-    const { dimension, values, limit, hasNull } = legend;
-
+  toColors(legend: LegendDefinition, dataCube: DataCube): Colors {
+    const { dimension: dimensionName, values, limit, hasNull } = legend;
+    const dimension = dataCube.getDimension(dimensionName);
     return new Colors({ dimension, limit, values, hasNull });
   },
 
-  fromColors(colors: Colors) {
+  fromColors(colors: Colors): LegendDefinition {
     const { dimension, limit, values, hasNull } = colors;
 
     return {
-      dimension,
+      dimension: dimension.name,
       limit,
       values,
       hasNull

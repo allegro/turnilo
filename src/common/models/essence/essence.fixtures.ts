@@ -24,10 +24,12 @@ import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { DimensionFixtures } from "../dimension/dimension.fixtures";
 import { NumberFilterClause, NumberRange, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
+import { MeasureFixtures } from "../measure/measure.fixtures";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
 import { SplitFixtures } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
@@ -40,7 +42,7 @@ const defaultEssence: EssenceValue = {
   visualization: null,
   timezone: Timezone.UTC,
   pinnedDimensions: OrderedSet([]),
-  filter: new Filter({ clauses: List.of(new NumberFilterClause({ reference: "commentLength", values: List.of(new NumberRange({ start: 1, end: 100 })) })) }),
+  filter: new Filter({ clauses: List.of(new NumberFilterClause({ reference: DimensionFixtures.wikiCommentLength(), values: List.of(new NumberRange({ start: 1, end: 100 })) })) }),
   colors: null,
   pinnedSort: null,
   compare: null,
@@ -55,7 +57,7 @@ export class EssenceFixtures {
     return {
       ...defaultEssence,
       visualization: TOTALS_MANIFEST,
-      series: SeriesList.fromMeasureNames(["count"])
+      series: SeriesList.fromMeasures([MeasureFixtures.wikiCount()])
     };
   }
 
@@ -89,18 +91,18 @@ export class EssenceFixtures {
 
   static wikiTable(): Essence {
     const filterClauses = [
-      FilterClauseFixtures.timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z")),
-      FilterClauseFixtures.stringIn("channel", ["en"]),
-      FilterClauseFixtures.boolean("isRobot", [true], true),
-      FilterClauseFixtures.stringContains("page", "Jeremy", false),
-      FilterClauseFixtures.stringMatch("userChars", "^A$", false),
-      FilterClauseFixtures.numberRange("commentLength", 3, null, "[)", false)
+      FilterClauseFixtures.timeRange(DimensionFixtures.wikiTime(), new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z")),
+      FilterClauseFixtures.stringIn(DimensionFixtures.wikiChannel(), ["en"]),
+      FilterClauseFixtures.boolean(DimensionFixtures.wikiIsRobot(), [true], true),
+      FilterClauseFixtures.stringContains(DimensionFixtures.wikiPage(), "Jeremy", false),
+      FilterClauseFixtures.stringMatch(DimensionFixtures.wikiUserChars(), "^A$", false),
+      FilterClauseFixtures.numberRange(DimensionFixtures.wikiCommentLength(), 3, null, "[)", false)
     ];
     const splitCombines = [
-      SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      SplitFixtures.stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
-      SplitFixtures.numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
-      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
+      SplitFixtures.stringSplitCombine(DimensionFixtures.wikiChannel(), "delta", SortDirection.descending, 50),
+      SplitFixtures.stringSplitCombine(DimensionFixtures.wikiIsRobot(), "delta", SortDirection.descending, 5),
+      SplitFixtures.numberSplitCombine(DimensionFixtures.wikiCommentLength(), 10, "delta", SortDirection.descending, 5),
+      SplitFixtures.timeSplitCombine(DimensionFixtures.wikiTime(), "PT1H", "delta", SortDirection.descending, 5)
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -110,8 +112,8 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      series: SeriesList.fromMeasureNames(["count", "added"]),
-      pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
+      series: SeriesList.fromMeasures([MeasureFixtures.wikiCount(), MeasureFixtures.wikiAdded()]),
+      pinnedDimensions: OrderedSet([DimensionFixtures.wikiChannel(), DimensionFixtures.wikiNamespace(), DimensionFixtures.wikiIsRobot()]),
       colors: null,
       pinnedSort: "delta",
       compare: null,
@@ -121,15 +123,15 @@ export class EssenceFixtures {
 
   static wikiLineChart() {
     const filterClauses = [
-      FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST),
-      FilterClauseFixtures.stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
+      FilterClauseFixtures.timePeriod(DimensionFixtures.wikiTime(), "P1D", TimeFilterPeriod.LATEST),
+      FilterClauseFixtures.stringIn(DimensionFixtures.wikiChannel(), ["en", "no", "sv", "de", "fr", "cs"])
     ];
     const splitCombines = [
-      SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
+      SplitFixtures.stringSplitCombine(DimensionFixtures.wikiChannel(), "delta", SortDirection.descending, 50),
+      SplitFixtures.timeSplitCombine(DimensionFixtures.wikiTime(), "PT1H", "delta", SortDirection.descending, null)
     ];
     const highlightClauses = [
-      FilterClauseFixtures.timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"))
+      FilterClauseFixtures.timeRange(DimensionFixtures.wikiTime(), new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"))
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -139,12 +141,12 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      series: SeriesList.fromMeasureNames(["count", "added"]),
-      pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
+      series: SeriesList.fromMeasures([MeasureFixtures.wikiCount(), MeasureFixtures.wikiAdded()]),
+      pinnedDimensions: OrderedSet([DimensionFixtures.wikiChannel(), DimensionFixtures.wikiNamespace(), DimensionFixtures.wikiIsRobot()]),
+      colors: new Colors({ dimension: DimensionFixtures.wikiChannel(), values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
       compare: null,
-      highlight: new Highlight({ owner: "line-chart", measure: "count", delta: Filter.fromClauses(highlightClauses) })
+      highlight: new Highlight({ owner: "line-chart", measure: MeasureFixtures.wikiCount(), delta: Filter.fromClauses(highlightClauses) })
     });
   }
 

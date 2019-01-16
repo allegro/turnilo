@@ -70,10 +70,11 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const visualization = NamedArray.findByName(visualizations, definition.visualization);
 
-    const series = SeriesList.fromMeasureNames(definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure]);
+    const measures = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
+    const series = SeriesList.fromMeasures(measures.map(measure => dataCube.getMeasure(measure)));
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
-    const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
+    const pinnedDimensions = OrderedSet(definition.pinnedDimensions.map(dimension => dataCube.getDimension(dimension)));
     const splits = Splits.fromSplits(splitJSConverter(definition.splits, dataCube));
     const timeShift = TimeShift.empty();
     const colors = definition.colors && Colors.fromJS(definition.colors);
@@ -129,39 +130,32 @@ enum SupportedAction {
 }
 
 function readBooleanFilterClause(selection: LiteralExpression, dimension: Dimension, not: boolean): BooleanFilterClause {
-  const { name: reference } = dimension;
-
-  return new BooleanFilterClause({ reference, values: Set(selection.value.elements), not });
+  return new BooleanFilterClause({ reference: dimension, values: Set(selection.value.elements), not });
 }
 
 function readNumberFilterClause(selection: LiteralExpression, dimension: Dimension, not: boolean): NumberFilterClause {
-  const { name: reference } = dimension;
-
   if (isNumberFilterSelection(selection) && selection.value instanceof PlywoodSet) {
     const values = List(selection.value.elements.map((range: NumberRange) => new NumberRange(range)));
-    return new NumberFilterClause({ reference, not, values });
+    return new NumberFilterClause({ reference: dimension, not, values });
   } else {
-    throw new Error(`Number filterClause expected, found: ${selection}. Dimension: ${reference}`);
+    throw new Error(`Number filterClause expected, found: ${selection}. Dimension: ${dimension}`);
   }
 }
 
 function readFixedTimeFilter(selection: LiteralExpression, dimension: Dimension): FixedTimeFilterClause {
-  const { name: reference } = dimension;
-
-  return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(selection.value as TimeRange)) });
+  return new FixedTimeFilterClause({ reference: dimension, values: List.of(new DateRange(selection.value as TimeRange)) });
 }
 
 function readRelativeTimeFilterClause({ step, duration, operand }: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
-  const { name: reference } = dimension;
   if (operand instanceof TimeFloorExpression) {
     return new RelativeTimeFilterClause({
-      reference,
+      reference: dimension,
       duration: duration.multiply(Math.abs(step)),
       period: TimeFilterPeriod.PREVIOUS
     });
   }
   return new RelativeTimeFilterClause({
-    reference,
+    reference: dimension,
     period: step ? TimeFilterPeriod.LATEST : TimeFilterPeriod.CURRENT,
     duration: step ? duration.multiply(Math.abs(step)) : duration
   });
@@ -169,19 +163,18 @@ function readRelativeTimeFilterClause({ step, duration, operand }: TimeRangeExpr
 
 function readStringFilterClause(selection: ChainableExpression, dimension: Dimension, exclude: boolean): StringFilterClause {
   const action = expressionAction(selection);
-  const { name: reference } = dimension;
 
   switch (action) {
     case SupportedAction.contains:
       return new StringFilterClause({
-        reference,
+        reference: dimension,
         action: StringFilterAction.CONTAINS,
         values: Set.of(((selection as ChainableUnaryExpression).expression as LiteralExpression).value),
         not: exclude
       });
     case SupportedAction.match:
       return new StringFilterClause({
-        reference,
+        reference: dimension,
         action: StringFilterAction.MATCH,
         values: Set.of((selection as MatchExpression).regexp),
         not: exclude
@@ -190,7 +183,7 @@ function readStringFilterClause(selection: ChainableExpression, dimension: Dimen
     case undefined:
     default:
       return new StringFilterClause({
-        reference,
+        reference: dimension,
         action: StringFilterAction.IN,
         values: Set(((selection as ChainableUnaryExpression).expression as LiteralExpression).value.elements),
         not: exclude
@@ -245,8 +238,8 @@ function isTimeBucket(action: any): boolean {
 
 function convertSplit(split: any, dataCube: DataCube): Split {
   const { sortAction, limitAction, expression, bucketAction } = split;
-  const reference = (expression as RefExpression).name;
-  const dimension = dataCube.getDimension(reference);
+  const name = (expression as RefExpression).name;
+  const dimension = dataCube.getDimension(name);
   const type = kindToType(dimension.kind);
   const sort = sortAction && new Sort({
     reference: sortAction.expression.name,
@@ -256,7 +249,7 @@ function convertSplit(split: any, dataCube: DataCube): Split {
   const bucket = bucketAction && (isTimeBucket(bucketAction) ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
   return new Split({
     type,
-    reference,
+    reference: dimension,
     sort,
     limit,
     bucket

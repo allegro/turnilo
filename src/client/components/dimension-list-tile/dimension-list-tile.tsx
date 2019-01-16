@@ -18,7 +18,6 @@
 import * as React from "react";
 import { Component, CSSProperties, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
@@ -55,20 +54,20 @@ const hasSearchTextPredicate = (searchText: string) => (dimension: Dimension): b
 };
 
 const isFilteredOrSplitPredicate = (essence: Essence) => (dimension: Dimension): boolean => {
-  const { dataCube, filter, splits } = essence;
-  return isFiltered(dimension, filter, dataCube) || isSplit(dimension, splits, dataCube);
+  const { filter, splits } = essence;
+  return isFiltered(dimension, filter) || isSplit(dimension, splits);
 };
 
-const isSplit = (dimension: Dimension, { splits }: Splits, dataCube: DataCube): boolean => {
+const isSplit = (dimension: Dimension, { splits }: Splits): boolean => {
   return splits
-    .map(split => dataCube.dimensions.getDimensionByName(split.reference))
+    .map(split => split.reference)
     .contains(dimension);
 };
 
-const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
+const isFiltered = (dimension: Dimension, filter: Filter): boolean => {
   return filter
     .clauses
-    .map(clause => dataCube.dimensions.getDimensionByName(clause.reference))
+    .map(clause => clause.reference)
     .contains(dimension);
 };
 

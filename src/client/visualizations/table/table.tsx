@@ -86,7 +86,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const filterClauses = splitCombines
     .take(splitNesting)
     .map(({ reference, type }) => {
-      const segment: any = flatDatum[reference];
+      const segment: any = flatDatum[reference.name];
 
       switch (type) {
         case SplitType.number:
@@ -313,17 +313,17 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   makeMeasuresRenderer(essence: Essence, hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
-    const measuresArray = essence.getSeriesWithMeasures().toArray();
+    const series = essence.series.series.toArray();
     const idealWidth = this.getIdealColumnWidth(essence);
 
     const splitLength = essence.splits.length();
-    const isSingleMeasure = measuresArray.length === 1;
-    const className = classNames("measure", { "all-alone": isSingleMeasure });
+    const isSingleSeries = series.length === 1;
+    const className = classNames("measure", { "all-alone": isSingleSeries });
 
     return (datum: PseudoDatum): JSX.Element[] => {
       const lastLevel = datum["__nest"] === splitLength;
 
-      return flatMap(measuresArray, ({ measure, series: { format } }, i) => {
+      return flatMap(series, ({ reference: measure, format }, i) => {
         const currentValue = datum[measure.name];
         const formatter = seriesFormatter(format, measure);
 
@@ -446,7 +446,7 @@ export class Table extends BaseVisualization<TableState> {
     const { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
     const { splits, dataCube } = essence;
 
-    const segmentTitle = splits.splits.map(split => essence.dataCube.getDimension(split.reference).title).join(", ");
+    const segmentTitle = splits.splits.map(split => split.reference.title).join(", ");
 
     const cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
     const idealWidth = this.getIdealColumnWidth(essence);
@@ -479,7 +479,7 @@ export class Table extends BaseVisualization<TableState> {
         const nest = d["__nest"];
 
         const split = nest > 0 ? splits.splits.get(nest - 1) : null;
-        const dimension = split ? dataCube.getDimension(split.reference) : null;
+        const dimension = split ? split.reference : null;
 
         const segmentValue = dimension ? d[dimension.name] : "";
         const segmentName = nest ? formatSegment(segmentValue, essence.timezone, split) : "Total";
@@ -513,7 +513,7 @@ export class Table extends BaseVisualization<TableState> {
             left
           };
 
-          const dimension = essence.dataCube.getDimension(splits.splits.get(nest - 1).reference);
+          const dimension = splits.splits.get(nest - 1).reference;
 
           highlighter = <div className="highlighter" key="highlight" style={highlighterStyle} />;
 
