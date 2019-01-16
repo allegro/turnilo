@@ -100,7 +100,7 @@ export class EssenceFixtures {
       SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
       SplitFixtures.stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
       SplitFixtures.numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
-      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
+      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
