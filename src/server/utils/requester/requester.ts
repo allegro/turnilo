@@ -19,6 +19,7 @@ import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequeste
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
 import { SupportedType } from "../../../common/models/cluster/cluster";
+import { threadTruthy } from "../../../common/utils/functional/functional";
 
 export interface ProperRequesterOptions {
   type: SupportedType;
@@ -38,52 +39,39 @@ export interface ProperRequesterOptions {
   password?: string;
 }
 
-export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
-  var {
-    type,
-    host,
-    retry,
-    timeout,
-    verbose,
-    concurrentLimit
-  } = options;
-
-  var requester: PlywoodRequester<any>;
-
+function createRequester({ type, host, timeout, druidRequestDecorator, protocol }: ProperRequesterOptions): PlywoodRequester<any> {
   switch (type) {
     case "druid":
-      requester = druidRequesterFactory({
+      return druidRequesterFactory({
         host,
-        timeout: timeout || 30000,
-        requestDecorator: options.druidRequestDecorator,
-        protocol: options.protocol
+        timeout,
+        requestDecorator: druidRequestDecorator,
+        protocol
       });
-      break;
     default:
       throw new Error(`unknown requester type ${type}`);
   }
+}
 
-  if (retry) {
-    requester = retryRequesterFactory({
-      requester,
-      retry,
-      delay: 500,
-      retryOnTimeout: false
-    });
-  }
+function setRetryOptions(retry: number) {
+  return (requester: PlywoodRequester<any>) => retryRequesterFactory({ requester, retry, delay: 500, retryOnTimeout: false });
+}
 
-  if (verbose) {
-    requester = verboseRequesterFactory({
-      requester
-    });
-  }
+function setVerbose(requester: PlywoodRequester<any>) {
+  return verboseRequesterFactory({ requester });
+}
 
-  if (concurrentLimit) {
-    requester = concurrentLimitRequesterFactory({
-      requester,
-      concurrentLimit
-    });
-  }
+function setConcurrencyLimit(concurrentLimit: number) {
+  return (requester: PlywoodRequester<any>) => concurrentLimitRequesterFactory({ requester, concurrentLimit });
+}
 
-  return requester;
+export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
+  const { retry, verbose, concurrentLimit } = options;
+
+  return threadTruthy(
+    createRequester(options),
+    retry && setRetryOptions(retry),
+    verbose && setVerbose,
+    concurrentLimit && setConcurrencyLimit(concurrentLimit)
+  );
 }
