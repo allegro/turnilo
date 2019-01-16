@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-import { Dataset, Expression } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { debounce, noop } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
@@ -38,8 +39,10 @@ export interface BaseVisualizationState {
 export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
   public static id = "base-visualization";
 
-  // isMounted was already taken by the superclass
-  protected _isMounted: boolean;
+  // Way to get a static property without explicitly specifying the class
+  protected get id(): string {
+    return (this.constructor as any).id;
+  }
 
   constructor(props: VisualizationProps) {
     super(props);
@@ -47,81 +50,73 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this.state = this.getDefaultState() as S;
   }
 
-  getDefaultState(): BaseVisualizationState {
+  protected getDefaultState(): BaseVisualizationState {
     return {
-      datasetLoad: {},
+      datasetLoad: loading,
       scrollLeft: 0,
       scrollTop: 0,
       hoverMeasure: null
     };
   }
 
-  // Way to get a static property without explicitly specifying the class
-  protected get id(): string {
-    return (this.constructor as any).id;
-  }
+  protected globalMouseMoveListener: (e: MouseEvent) => void = noop;
 
-  protected onScroll(e: UIEvent) {
-    const target = e.target as Element;
-    this.setState({
-      scrollLeft: target.scrollLeft,
-      scrollTop: target.scrollTop
-    } as BaseVisualizationState as S); // Geez, TypeScript
-  }
+  protected globalMouseUpListener: (e: MouseEvent) => void = noop;
 
-  protected makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    return makeQuery(essence, timekeeper);
-  }
+  protected globalKeyDownListener: (e: KeyboardEvent) => void = noop;
 
-  protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    this.precalculate(this.props, { loading: true });
-
-    const { registerDownloadableDataset } = this.props;
-
-    const query = this.makeQuery(essence, timekeeper);
-    essence.dataCube.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this._isMounted) return;
-
-          this.precalculate(this.props, {
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        error => {
-          if (registerDownloadableDataset) registerDownloadableDataset(null);
-          if (!this._isMounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset: null,
-            error
-          });
-        }
-      ); // Not calling done() prevents potential error from being bubbled up
-  }
-
-  private lastRenderResult: JSX.Element = null;
-
-  componentWillMount() {
-    this.precalculate(this.props);
-  }
+  private lastQueryEssence: Essence = null;
 
   componentDidMount() {
-    this._isMounted = true;
     const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
   }
 
+  componentWillUnmount() {
+    this.lastQueryEssence = null;
+    this.debouncedCallExecutor.cancel();
+  }
+
   componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.precalculate(nextProps);
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
       this.fetchData(nextProps.essence, nextProps.timekeeper);
     }
   }
 
-  shouldFetchData(nextProps: VisualizationProps): boolean {
+  protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
+    this.lastQueryEssence = essence;
+    this.handleDatasetLoad(loading);
+
+    this.debouncedCallExecutor(essence, timekeeper);
+  }
+
+  private callExecutor = (essence: Essence, timekeeper: Timekeeper) =>
+    essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
+      .then((dataset: Dataset) => {
+          if (!this.wasUsedForLastQuery(essence)) return;
+          this.handleDatasetLoad(loaded(dataset));
+          this.precalculate(this.props, dataset);
+        },
+        err => {
+          if (!this.wasUsedForLastQuery(essence)) return;
+          this.handleDatasetLoad(error(err));
+        })
+
+  private wasUsedForLastQuery(essence: Essence) {
+    return essence.equals(this.lastQueryEssence);
+  }
+
+  private debouncedCallExecutor = debounce(this.callExecutor, 500);
+
+  private handleDatasetLoad(dl: DatasetLoad) {
+    this.setState({ datasetLoad: dl });
+    const { registerDownloadableDataset } = this.props;
+    if (registerDownloadableDataset) {
+      registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
+    }
+  }
+
+  protected shouldFetchData(nextProps: VisualizationProps): boolean {
     const { essence, timekeeper } = this.props;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
@@ -134,47 +129,28 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.dataCube.refreshRule.isRealtime();
   }
 
-  visualisationNotResized(nextProps: VisualizationProps): boolean {
+  private visualisationNotResized(nextProps: VisualizationProps): boolean {
     return this.props.stage.equals(nextProps.stage);
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  protected globalMouseMoveListener: (e: MouseEvent) => void = (e: MouseEvent) => {
-  }
-
-  protected globalMouseUpListener: (e: MouseEvent) => void = (e: MouseEvent) => {
-  }
-
-  protected globalKeyDownListener: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
-  }
-
-  protected renderInternals(): JSX.Element {
+  protected renderInternals(dataset: Dataset): JSX.Element {
     return null;
   }
 
-  protected precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-
+  protected precalculate(props: VisualizationProps, dataset: Dataset) {
   }
 
   render() {
-    let { datasetLoad } = this.state;
-
-    if (!datasetLoad.loading || !this.lastRenderResult) {
-      this.lastRenderResult = this.renderInternals();
-    }
+    const { datasetLoad } = this.state;
 
     return <div className={"base-visualization " + this.id}>
       <GlobalEventListener
         mouseMove={this.globalMouseMoveListener}
         mouseUp={this.globalMouseUpListener}
-        keyDown={this.globalKeyDownListener}
-      />
-      {this.lastRenderResult}
-      {datasetLoad.error ? <QueryError error={datasetLoad.error} /> : null}
-      {datasetLoad.loading ? <Loader /> : null}
+        keyDown={this.globalKeyDownListener} />
+      {isLoaded(datasetLoad) && this.renderInternals(datasetLoad.dataset)}
+      {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
+      {isLoading(datasetLoad) && <Loader />}
     </div>;
   }
 }

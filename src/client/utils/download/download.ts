@@ -16,7 +16,12 @@
  */
 
 import * as filesaver from "file-saver";
+import * as moment from "moment";
 import { Dataset, DatasetJSFull, TabulatorOptions } from "plywood";
+import { FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Filter } from "../../../common/models/filter/filter";
+import { complement } from "../../../common/utils/functional/functional";
+import { isBlank } from "../../../common/utils/general/general";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export type FileFormat = "csv" | "tsv" | "json";
@@ -51,11 +56,21 @@ export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, op
   }
 }
 
-export function makeFileName(...args: string[]): string {
-  var nameComponents: string[] = [];
-  args.forEach(arg => {
-    if (arg) nameComponents.push(arg.toLowerCase());
-  });
-  var nameString = nameComponents.join("_");
-  return nameString.length < 200 ? nameString : nameString.substr(0, 200);
+function dateToFileString(date: Date): string {
+  return moment(date).format("YYYY-MM-DD_HH_mm_ss");
+}
+
+export function dateFromFilter(filter: Filter): string {
+  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
+  if (!timeFilter) return "";
+  const { start, end } = timeFilter.values.first();
+  return `${dateToFileString(start)}_${dateToFileString(end)}`;
+}
+
+export function makeFileName(...nameComponents: string[]): string {
+  return nameComponents
+    .filter(complement(isBlank))
+    .map(name => name.toLowerCase())
+    .join("_")
+    .substr(0, 200);
 }

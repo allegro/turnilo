@@ -29,7 +29,7 @@ import { SeriesFormat } from "../../../common/models/series/series";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
-import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { isLoaded, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
@@ -146,24 +146,13 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   return new Dataset(value);
 }
 
-function padDatasetLoad(datasetLoad: DatasetLoad, dimension: Dimension, measures: Measure[]): DatasetLoad {
-  const originalDataset = datasetLoad.dataset;
-  const newDataset = originalDataset ? padDataset(originalDataset, dimension, measures) : null;
-  datasetLoad.dataset = newDataset;
-  return datasetLoad;
-}
-
 export class BarChart extends BaseVisualization<BarChartState> {
   public static id = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
 
   getDefaultState(): BarChartState {
-    const s = super.getDefaultState() as BarChartState;
-
-    s.hoverInfo = null;
-
-    return s;
+    return { hoverInfo: null, ...super.getDefaultState() };
   }
 
   shouldFetchData(nextProps: VisualizationProps): boolean {
@@ -218,6 +207,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   findPathForIndices(indices: number[]): Datum[] {
     const { datasetLoad } = this.state;
+    if (!isLoaded(datasetLoad)) return null;
     const mySplitDataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
 
     const path: Datum[] = [];
@@ -757,55 +747,27 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { chart, yAxis, highlight };
   }
 
-  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset, essence } = props;
+  precalculate(props: VisualizationProps, dataset: Dataset) {
+    const { essence } = props;
     const { splits } = essence;
-    const split = splits.splits.first();
-
-    const dimension = essence.dataCube.getDimension(split.reference);
-    const dimensionKind = dimension.kind;
-    const measures = essence.getEffectiveSelectedMeasures().toArray();
-
     this.coordinatesCache = [];
-
-    const existingDatasetLoad = this.state.datasetLoad;
-    const newState: BarChartState = {};
-
-    if (datasetLoad) {
-      if (dimensionKind === "number") {
-        datasetLoad = padDatasetLoad(datasetLoad, dimension, measures);
-      }
-      // Always keep the old dataset while loading (for now)
-      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
-
-      newState.datasetLoad = datasetLoad;
-    } else {
-      const stateDatasetLoad = this.state.datasetLoad;
-      if (dimensionKind === "number") {
-        datasetLoad = padDatasetLoad(stateDatasetLoad, dimension, measures);
-      } else {
-        datasetLoad = stateDatasetLoad;
-      }
-    }
-
-    const { dataset } = datasetLoad;
-    if (dataset && splits.length()) {
-      let firstSplitDataSet = dataset.data[0][SPLIT] as Dataset;
-      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-      let flattened = firstSplitDataSet.flatten({
+    if (splits.length()) {
+      const split = splits.splits.first();
+      const dimension = essence.dataCube.getDimension(split.reference);
+      const dimensionKind = dimension.kind;
+      const measures = essence.getEffectiveSelectedMeasures().toArray();
+      const paddedDataset = dimensionKind === "number" ? padDataset(dataset, dimension, measures) : dataset;
+      const firstSplitDataSet = paddedDataset.data[0][SPLIT] as Dataset;
+      const flattened = firstSplitDataSet.flatten({
         order: "preorder",
         nestingName: "__nest"
       });
 
-      const maxima = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
-      this.maxNumberOfLeaves(firstSplitDataSet.data, maxima, 0);
-
-      newState.maxNumberOfLeaves = maxima;
-
-      newState.flatData = flattened.data;
+      const maxNumberOfLeaves = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
+      this.maxNumberOfLeaves(firstSplitDataSet.data, maxNumberOfLeaves, 0);
+      const flatData = flattened.data;
+      this.setState({ maxNumberOfLeaves, flatData });
     }
-
-    this.setState(newState);
   }
 
   maxNumberOfLeaves(data: Datum[], maxima: number[], level: number) {
@@ -821,6 +783,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   getPrimaryXScale(): d3.scale.Ordinal<string, number> {
     const { datasetLoad, maxNumberOfLeaves } = this.state;
+    if (!isLoaded(datasetLoad)) return null;
     const data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
 
     const { essence } = this.props;
@@ -873,13 +836,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
       return this.coordinatesCache[chartIndex];
     }
 
-    const { essence } = this.props;
     const { datasetLoad } = this.state;
+    if (!isLoaded(datasetLoad)) return null;
+    const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
+
+    const { essence } = this.props;
     const { splits, dataCube } = essence;
 
     const measure = essence.getEffectiveSelectedMeasures().toArray()[chartIndex];
-    const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
-
     const firstSplit = splits.splits.first();
     const dimension = dataCube.getDimension(firstSplit.reference);
 
@@ -954,21 +918,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderSelectionContainer(selectionHighlight: JSX.Element, chartIndex: number, chartStage: Stage): JSX.Element {
-    const { scrollLeft, scrollTop } = this.state;
-    const chartHeight = this.getOuterChartHeight(chartStage);
-
     return <div className="selection-highlight-container">
       {selectionHighlight}
     </div>;
   }
 
-  renderInternals() {
+  renderInternals(dataset: Dataset) {
     const { essence, stage } = this.props;
-    const { datasetLoad } = this.state;
-    const { splits, dataCube } = essence;
-
-    const firstSplit = splits.splits.first();
-    const dimension = dataCube.getDimension(firstSplit.reference);
+    const { splits } = essence;
 
     let scrollerLayout: ScrollerLayout;
     const measureCharts: JSX.Element[] = [];
@@ -976,18 +933,18 @@ export class BarChart extends BaseVisualization<BarChartState> {
     let rightGutter: JSX.Element;
     let overlay: JSX.Element;
 
-    if (datasetLoad.dataset && splits.length()) {
+    if (splits.length()) {
       const xScale = this.getPrimaryXScale();
       let yAxes: JSX.Element[] = [];
       const measures = essence.getSeriesWithMeasures();
 
       const chartStage = this.getSingleChartStage();
       const { xAxisStage, yAxisStage } = this.getAxisStages(chartStage);
-      xAxis = this.renderXAxis((datasetLoad.dataset.data[0][SPLIT] as Dataset).data, this.getBarsCoordinates(0, xScale), xAxisStage);
+      xAxis = this.renderXAxis((dataset.data[0][SPLIT] as Dataset).data, this.getBarsCoordinates(0, xScale), xAxisStage);
 
       measures.forEach(({ measure, series: { format } }, chartIndex) => {
         const coordinates = this.getBarsCoordinates(chartIndex, xScale);
-        const { yAxis, chart, highlight } = this.renderChart(datasetLoad.dataset, coordinates, measure, format, chartIndex, chartStage);
+        const { yAxis, chart, highlight } = this.renderChart(dataset, coordinates, measure, format, chartIndex, chartStage);
 
         measureCharts.push(chart);
         yAxes.push(yAxis);
