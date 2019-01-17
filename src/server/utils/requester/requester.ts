@@ -19,7 +19,7 @@ import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequeste
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
 import { SupportedType } from "../../../common/models/cluster/cluster";
-import { threadTruthy } from "../../../common/utils/functional/functional";
+import { threadConditionally } from "../../../common/utils/functional/functional";
 
 export interface ProperRequesterOptions {
   type: SupportedType;
@@ -68,7 +68,7 @@ function setConcurrencyLimit(concurrentLimit: number) {
 export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
   const { retry, verbose, concurrentLimit } = options;
 
-  return threadTruthy(
+  return threadConditionally(
     createRequester(options),
     retry && setRetryOptions(retry),
     verbose && setVerbose,
