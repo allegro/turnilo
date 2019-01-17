@@ -48,8 +48,14 @@ export function thread(x: any, ...fns: Function[]) {
   return fns.reduce((x, f) => f(x), x);
 }
 
-export function threadTruthy(x: any, ...fns: Function[]) {
+export function threadNullable(x: any, ...fns: Function[]) {
   return fns.reduce((x, f) => isTruthy(x) ? f(x) : x, x);
+}
+
+const isCallable = (f: any) => typeof f === "function";
+
+export function threadConditionally(x: any, ...fns: Function[]) {
+  return fns.reduce((x, f) => isCallable(f) ? f(x) : x, x);
 }
 
 export function complement<T>(p: Predicate<T>): Predicate<T> {
