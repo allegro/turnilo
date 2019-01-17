@@ -17,6 +17,8 @@
 
 import { ChainableExpression, Dataset, Environment, Executor, Expression, SplitExpression } from "plywood";
 import * as Qajax from "qajax";
+import { Cluster } from "../../../common/models/cluster/cluster";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
 
 Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
 
@@ -32,6 +34,13 @@ function getSplitsDescription(ex: Expression): string {
     }
   });
   return splits.join(";");
+}
+
+const CLIENT_TIMEOUT_DELTA = 5000;
+
+function clientTimeout(cluster: Cluster): number {
+  const clusterTimeout = cluster ? cluster.getTimeout() : 0;
+  return clusterTimeout + CLIENT_TIMEOUT_DELTA;
 }
 
 var reloadRequested = false;
@@ -97,10 +106,11 @@ export class Ajax {
       }) as any;
   }
 
-  static queryUrlExecutorFactory(name: string, endpoint: string, timeout: number): Executor {
+  static queryUrlExecutorFactory({ name, cluster }: DataCube): Executor {
+    const timeout = clientTimeout(cluster);
     return (ex: Expression, env: Environment = {}) => {
       const method = "POST";
-      const url = `${endpoint}?by=${getSplitsDescription(ex)}`;
+      const url = `plywood?by=${getSplitsDescription(ex)}`;
       const timezone = env ? env.timezone : null;
       const data = { dataCube: name, expression: ex.toJS(), timezone };
       return Ajax.query({ method, url, timeout, data })
