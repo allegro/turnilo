@@ -53,6 +53,7 @@ function parseOrNull(json: any): any {
 export interface AjaxOptions {
   method: "GET" | "POST";
   url: string;
+  timeout: number;
   data?: any;
 }
 
@@ -62,20 +63,14 @@ export class Ajax {
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
 
-  static query(options: AjaxOptions): Promise<any> {
-    var data = options.data;
-
+  static query({ data, url, timeout, method }: AjaxOptions): Promise<any> {
     if (data) {
       if (Ajax.version) data.version = Ajax.version;
       if (Ajax.settingsVersionGetter) data.settingsVersion = Ajax.settingsVersionGetter();
     }
 
-    return Qajax({
-      method: options.method,
-      url: options.url,
-      data
-    })
-      .timeout(60000)
+    return Qajax({ method, url, data })
+      .timeout(timeout)
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON)
       .then(res => {
@@ -102,17 +97,14 @@ export class Ajax {
       }) as any;
   }
 
-  static queryUrlExecutorFactory(name: string, url: string): Executor {
+  static queryUrlExecutorFactory(name: string, endpoint: string, timeout: number): Executor {
     return (ex: Expression, env: Environment = {}) => {
-      return Ajax.query({
-        method: "POST",
-        url: url + "?by=" + getSplitsDescription(ex),
-        data: {
-          dataCube: name,
-          expression: ex.toJS(),
-          timezone: env ? env.timezone : null
-        }
-      }).then(res => Dataset.fromJS(res.result));
+      const method = "POST";
+      const url = `${endpoint}?by=${getSplitsDescription(ex)}`;
+      const timezone = env ? env.timezone : null;
+      const data = { dataCube: name, expression: ex.toJS(), timezone };
+      return Ajax.query({ method, url, timeout, data })
+        .then(res => Dataset.fromJS(res.result));
     };
   }
 }
