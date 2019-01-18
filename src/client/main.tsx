@@ -62,9 +62,7 @@ require.ensure([], require => {
 
   const appSettings = AppSettings.fromJS(config.appSettings, {
     visualizations: MANIFESTS,
-    executorFactory: ({ name, cluster }: DataCube) => {
-      return Ajax.queryUrlExecutorFactory(name, "plywood", cluster.timeout);
-    }
+    executorFactory:  Ajax.queryUrlExecutorFactory
   });
 
   const app =
