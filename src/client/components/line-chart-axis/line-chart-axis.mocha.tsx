@@ -40,7 +40,7 @@ describe("LineChartAxis", () => {
     it("should format when days differ by one", () => {
       const formatter = timeFormat(scaleWithHoursAfter(24));
 
-      expect(formatter(start)).to.equal(d3.time.format("%a %d, %H %p")(start));
+      expect(formatter(start)).to.equal(d3.time.format("%a %d, %H")(start));
     });
     it("should format across different days", () => {
       const formatter = timeFormat(scaleWithHoursAfter(24 * 5));
@@ -50,12 +50,12 @@ describe("LineChartAxis", () => {
     it("should format across different hours", () => {
       const formatter = timeFormat(scaleWithHoursAfter(12));
 
-      expect(formatter(start)).to.equal(d3.time.format("%H %p")(start));
+      expect(formatter(start)).to.equal(d3.time.format("%H")(start));
     });
     it("should format with smaller than hour difference", () => {
       const formatter = timeFormat(scaleWithHoursAfter(0.2));
 
-      expect(formatter(start)).to.equal(d3.time.format("%H:%M %p")(start));
+      expect(formatter(start)).to.equal(d3.time.format("%H:%M")(start));
     });
     it("should format correctly with not enough ticks", () => {
       const formatter = timeFormat(scaleWithHoursAfter(0));

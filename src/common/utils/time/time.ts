@@ -27,8 +27,8 @@ const FORMAT_TIME = "HH:mm";
 const FORMAT_WITH_YEAR = "MMM D, YYYY";
 const FORMAT_WITHOUT_YEAR = "MMM D";
 
-const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "Ha";
-const FORMAT_TIME_OF_DAY_WITH_MINUTES = "H:mma";
+const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "H";
+const FORMAT_TIME_OF_DAY_WITH_MINUTES = "H:mm";
 
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
@@ -195,8 +195,6 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
   const second = wallTimeStart.second();
 
   const monthString = locale.shortMonths[month];
-  const hourToTwelve = hour % 12 === 0 ? 12 : hour % 12;
-  const amPm = (hour / 12) >= 1 ? "pm" : "am";
 
   const granularityString = granularity.toJS();
   const unit = granularityString.substring(granularityString.length - 1);
@@ -206,9 +204,9 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
       return `${monthString} ${day}, ${pad(hour)}:${pad(minute)}:${pad(second)}`;
     case "M":
       const prefix = granularityString.substring(0, 2);
-      return prefix === "PT" ? `${monthString} ${day}, ${hourToTwelve}:${pad(minute)}${amPm}` : `${monthString}, ${year}`;
+      return prefix === "PT" ? `${monthString} ${day}, ${hour}:${pad(minute)}` : `${monthString}, ${year}`;
     case "H":
-      return `${monthString} ${day}, ${year}, ${hourToTwelve}${amPm}`;
+      return `${monthString} ${day}, ${year}, ${hour}`;
     case "D":
       return `${monthString} ${day}, ${year}`;
     case "W":
