@@ -55,22 +55,22 @@ const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   if (TimeRange.isTimeRange(value)) {
-    const time = moment(value.start, timezone.toString()).toDate();
+    const time = moment(value.start, timezone.toString());
     if (split && split.bucket instanceof Duration) {
       const duration = split.bucket;
       switch (duration.getSingleSpan()) {
         case "year":
-          return d3.time.format("%Y")(time);
+          return time.format("YYYY");
         case "month":
-          return d3.time.format("%Y %B")(time);
+          return time.format("YYYY MMMM");
         case "week":
         case "day":
-          return d3.time.format("%Y-%m-%d")(time);
+          return time.format("YYYY-MM-DD");
         default:
-          return d3.time.format("%Y-%m-%d %H:%M %p")(time);
+          return time.format("YYYY-MM-DD HH:mm");
       }
     }
-    return d3.time.format("%Y-%m-%d %H:%M %p")(time);
+    return time.format("YYYY-MM-DD HH:mm");
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }
