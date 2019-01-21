@@ -36,27 +36,31 @@ export interface LineChartAxisProps {
   timezone: Timezone;
 }
 
-export function timeFormat(scale: AxisScale): Unary<Date, string> {
+type TimeFormatter = Unary<moment.Moment, string>;
+
+const formatterFromDef = (format: string): TimeFormatter => time => time.format(format);
+
+export function pickTimeFormatter(scale: AxisScale): TimeFormatter {
   const ticks = scale.ticks();
-  if (ticks.length < 2) return d3.time.format("%c");
+  if (ticks.length < 2) return formatterFromDef("YYYY-MM-DD HH:mm");
   const first = ticks[0];
   const last = ticks[ticks.length - 1];
   if (first.getFullYear() !== last.getFullYear()) {
-    return d3.time.format("%Y-%m-%d");
+    return formatterFromDef("YYYY-MM-DD");
   }
   if (first.getMonth() !== last.getMonth()) {
-    return d3.time.format("%b %d");
+    return formatterFromDef("MMM DD");
   }
   if (last.getDate() - first.getDate() === 1) {
-    return d3.time.format("%a %d, %H %p");
+    return formatterFromDef("dd DD, HH");
   }
   if (first.getDate() !== last.getDate()) {
-    return d3.time.format("%a %d");
+    return formatterFromDef("dd DD");
   }
   if (first.getHours() !== last.getHours()) {
-    return d3.time.format("%H %p");
+    return formatterFromDef("HH");
   }
-  return d3.time.format("%H:%M %p");
+  return formatterFromDef("HH:mm");
 }
 
 const floatFormat = d3.format(".1f");
@@ -64,9 +68,10 @@ const floatFormat = d3.format(".1f");
 function labelFormatter(scale: AxisScale, timezone: Timezone): Unary<Date | number, string> {
   const [start] = scale.domain();
   if (start instanceof Date) {
-    const timeFormatter = timeFormat(scale);
-    const timezoneString = timezone.toString();
-    return (value: Date) => timeFormatter(moment.tz(value, timezoneString).toDate());
+    const formatter = pickTimeFormatter(scale);
+    const timezoneStr = timezone.toString();
+    return (date: Date) =>
+      formatter(moment.tz(date, timezoneStr));
   }
   return (value: number) => String(floatFormat(value));
 
