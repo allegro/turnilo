@@ -55,7 +55,7 @@ const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   if (TimeRange.isTimeRange(value)) {
-    const time = moment(value.start, timezone.toString());
+    const time = moment.tz(value.start, timezone.toString());
     if (split && split.bucket instanceof Duration) {
       const duration = split.bucket;
       switch (duration.getSingleSpan()) {
