@@ -155,9 +155,8 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   canDrop(): boolean {
     const { essence: { series: seriesList } } = this.props;
     const measure = DragManager.draggingMeasure();
-    if (measure) return seriesList.hasMeasure(measure);
-    const series = DragManager.draggingSeries();
-    return series !== null;
+    if (measure) return !seriesList.hasMeasure(measure);
+    return DragManager.isDraggingSeries();
   }
 
   dragStart = (measure: Measure, series: Series, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
