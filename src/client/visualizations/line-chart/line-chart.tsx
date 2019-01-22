@@ -662,26 +662,24 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   }
 
-  precalculate(props: VisualizationProps, dataset: Dataset) {
+  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<LineChartState> {
     const { essence, timekeeper, stage } = props;
     const { splits, timezone, dataCube } = essence;
 
-    if (splits.length() > 0) {
-      const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
-      const continuousDimension = dataCube.getDimension(continuousSplit.reference);
-      if (continuousDimension) {
-        const filterRange = this.getFilterRange(essence, continuousSplit, timekeeper);
-        const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
-        const axisRange = union(filterRange, datasetRange);
-        if (!axisRange) return this.setState({ continuousDimension });
-        const domain = [(axisRange).start, (axisRange).end] as [number, number];
-        const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
-        const scaleFn = continuousDimension.kind === "time" ? d3.time.scale() : d3.scale.linear();
-        const scaleX = scaleFn.domain(domain).range(range);
-        const xTicks = this.getLineChartTicks(axisRange, timezone);
-        this.setState({ continuousDimension, axisRange, scaleX, xTicks });
-      }
-    }
+    if (!splits.length()) return {};
+    const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
+    const continuousDimension = dataCube.getDimension(continuousSplit.reference);
+    if (!continuousDimension) return {};
+    const filterRange = this.getFilterRange(essence, continuousSplit, timekeeper);
+    const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
+    const axisRange = union(filterRange, datasetRange);
+    if (!axisRange) return { continuousDimension };
+    const domain = [(axisRange).start, (axisRange).end] as [number, number];
+    const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
+    const scaleFn = continuousDimension.kind === "time" ? d3.time.scale() : d3.scale.linear();
+    const scaleX = scaleFn.domain(domain).range(range);
+    const xTicks = this.getLineChartTicks(axisRange, timezone);
+    return { continuousDimension, axisRange, scaleX, xTicks };
   }
 
   private getLineChartTicks(range: PlywoodRange, timezone: Timezone): Array<Date | number> {

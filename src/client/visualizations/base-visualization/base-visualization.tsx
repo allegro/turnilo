@@ -94,8 +94,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           if (!this.wasUsedForLastQuery(essence)) return;
-          this.handleDatasetLoad(loaded(dataset));
-          this.precalculate(this.props, dataset);
+          this.handleDatasetLoad(loaded(dataset), this.deriveDatasetState(this.props, dataset));
         },
         err => {
           if (!this.wasUsedForLastQuery(essence)) return;
@@ -108,8 +107,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private debouncedCallExecutor = debounce(this.callExecutor, 500);
 
-  private handleDatasetLoad(dl: DatasetLoad) {
-    this.setState({ datasetLoad: dl });
+  private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
+    // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
+    this.setState({ ...(derivedState as object), datasetLoad: dl });
     const { registerDownloadableDataset } = this.props;
     if (registerDownloadableDataset) {
       registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
@@ -137,7 +137,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return null;
   }
 
-  protected precalculate(props: VisualizationProps, dataset: Dataset) {
+  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<S> {
+    return {};
   }
 
   render() {

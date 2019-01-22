@@ -73,6 +73,10 @@ export class DragManager {
     return this.dragging.type === DraggedElementType.FILTER;
   }
 
+  static isDraggingSeries(): boolean {
+    return this.dragging.type === DraggedElementType.SERIES;
+  }
+
   static setDragDimension(element: Dimension) {
     this.dragging = { type: DraggedElementType.DIMENSION, element };
   }
