@@ -152,7 +152,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   private coordinatesCache: BarCoordinates[][] = [];
 
   getDefaultState(): BarChartState {
-    return { hoverInfo: null, ...super.getDefaultState() };
+    return { hoverInfo: null, maxNumberOfLeaves: [], flatData: [], ...super.getDefaultState() };
   }
 
   shouldFetchData(nextProps: VisualizationProps): boolean {
@@ -747,27 +747,26 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { chart, yAxis, highlight };
   }
 
-  precalculate(props: VisualizationProps, dataset: Dataset) {
+  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<BarChartState> {
     const { essence } = props;
     const { splits } = essence;
     this.coordinatesCache = [];
-    if (splits.length()) {
-      const split = splits.splits.first();
-      const dimension = essence.dataCube.getDimension(split.reference);
-      const dimensionKind = dimension.kind;
-      const measures = essence.getEffectiveSelectedMeasures().toArray();
-      const paddedDataset = dimensionKind === "number" ? padDataset(dataset, dimension, measures) : dataset;
-      const firstSplitDataSet = paddedDataset.data[0][SPLIT] as Dataset;
-      const flattened = firstSplitDataSet.flatten({
-        order: "preorder",
-        nestingName: "__nest"
-      });
+    if (!splits.length()) return {};
+    const split = splits.splits.first();
+    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimensionKind = dimension.kind;
+    const measures = essence.getEffectiveSelectedMeasures().toArray();
+    const paddedDataset = dimensionKind === "number" ? padDataset(dataset, dimension, measures) : dataset;
+    const firstSplitDataSet = paddedDataset.data[0][SPLIT] as Dataset;
+    const flattened = firstSplitDataSet.flatten({
+      order: "preorder",
+      nestingName: "__nest"
+    });
 
-      const maxNumberOfLeaves = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
-      this.maxNumberOfLeaves(firstSplitDataSet.data, maxNumberOfLeaves, 0);
-      const flatData = flattened.data;
-      this.setState({ maxNumberOfLeaves, flatData });
-    }
+    const maxNumberOfLeaves = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
+    this.maxNumberOfLeaves(firstSplitDataSet.data, maxNumberOfLeaves, 0);
+    const flatData = flattened.data;
+    return { maxNumberOfLeaves, flatData };
   }
 
   maxNumberOfLeaves(data: Datum[], maxima: number[], level: number) {
