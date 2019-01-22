@@ -94,8 +94,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           if (!this.wasUsedForLastQuery(essence)) return;
-          this.handleDatasetLoad(loaded(dataset));
           this.precalculate(this.props, dataset);
+          this.handleDatasetLoad(loaded(dataset));
         },
         err => {
           if (!this.wasUsedForLastQuery(essence)) return;
