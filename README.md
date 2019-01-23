@@ -5,7 +5,7 @@
 
 Turnilo is a business intelligence, data exploration and visualization web application for [Druid](http://druid.io/).
 Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
-This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv) 
+This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv)
 with the latest version of Pivot under Apache license.
 
 ## Motivation
@@ -29,9 +29,9 @@ this is how Turnilo emerged.
 ## Features
 
 * Intuitive, drag and drop, gorgeous user interface to visualize Druid datasets
-* Fully dedicated to low latency Druid 
-[Timeseries](http://druid.io/docs/latest/querying/timeseriesquery.html), 
-[TopN](http://druid.io/docs/latest/querying/topnquery.html) and 
+* Fully dedicated to low latency Druid
+[Timeseries](http://druid.io/docs/latest/querying/timeseriesquery.html),
+[TopN](http://druid.io/docs/latest/querying/topnquery.html) and
 [GroupBy](http://druid.io/docs/latest/querying/groupbyquery.html) queries.
 * Unified view for historical and real-time data
 * Blazingly fast
@@ -54,7 +54,7 @@ Install Turnilo distribution using [npm](https://www.npmjs.com/).
 npm install -g turnilo
 ```
 
-Start off by running an example with Wikipedia page editions dataset 
+Start off by running an example with Wikipedia page editions dataset
 and open [http://localhost:9090/](http://localhost:9090/).
 
 ```
@@ -88,7 +88,7 @@ Build the project.
 npm run build:dev
 ```
 
-Copy `chef.new/cookbooks/templates/config.yaml` to this repo. Change its `clusters: host` entry to `broker1.dw1.remerge.io:8082`
+Copy `chef.new/cookbooks/turnilo/templates/config.yaml` to this repo. Change its `clusters: host` entry to `broker1.dw1.remerge.io:8082`
 
 
 ```
@@ -111,7 +111,7 @@ npm run test:client
 npm run test:server
 ```
 
-## Debugging 
+## Debugging
 
 ### Client module
 
@@ -123,11 +123,11 @@ You can find more information [here](https://www.jetbrains.com/help/webstorm/deb
 ### Server module
 
 In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
-Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo" 
+Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo"
 and "Application parameters" to "--examples".
 
 You can find more infrmation [here](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html)
- 
+
 ## License
 
 **Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
