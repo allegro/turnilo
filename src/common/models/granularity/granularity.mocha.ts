@@ -158,12 +158,12 @@ describe("Granularity", () => {
     expect(getBestBucketUnitForRange(monthLength, true).toString()).to.equal(week);
 
     const sevenDaysLength = new TimeRange({ start: new Date("1995-02-20T00:00:00.000Z"), end: new Date("1995-02-28T00:00:00.000Z") });
-    expect(getBestBucketUnitForRange(sevenDaysLength, false).toString()).to.equal(oneHour);
+    expect(getBestBucketUnitForRange(sevenDaysLength, false).toString()).to.equal(day);
     expect(getBestBucketUnitForRange(sevenDaysLength, true).toString()).to.equal(day);
 
     const threeDaysLength = new TimeRange({ start: new Date("1995-02-20T00:00:00.000Z"), end: new Date("1995-02-24T00:00:00.000Z") });
-    expect(getBestBucketUnitForRange(sevenDaysLength, false).toString()).to.equal(oneHour);
-    expect(getBestBucketUnitForRange(threeDaysLength, true).toString()).to.equal(twelveHours);
+    expect(getBestBucketUnitForRange(sevenDaysLength, false).toString()).to.equal(day);
+    expect(getBestBucketUnitForRange(threeDaysLength, true).toString()).to.equal(day);
 
     const dayLength = new TimeRange({ start: new Date("1995-02-24T00:00:00.000Z"), end: new Date("1995-02-25T00:00:00.000Z") });
     expect(getBestBucketUnitForRange(dayLength, false).toString()).to.equal(oneHour);
