@@ -116,33 +116,41 @@ describe("Time", () => {
   });
 
   it("formats time range based off of start walltime", () => {
-    let start = new Date("1965-02-02T13:00:00.000Z");
-    let end = day.shift(start, TZ_TIJUANA, 1);
-    let gran = Duration.fromJS("PT1H");
-    let range = new TimeRange({ start, end });
-    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA), "hour tijuana").to.equal("Feb 2, 1965, 05:00");
+
+    var locale = {
+      shortDays: ["2"],
+      weekStart: 0,
+      shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+    };
+
+    var start = new Date("1965-02-02T13:00:00.000Z");
+    var end = day.shift(start, TZ_TIJUANA, 1);
+    var gran = Duration.fromJS("PT1H");
+    var range = new TimeRange({ start, end });
+    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "hour tijuana").to.equal("Feb 2, 1965, 05:00");
 
     start = new Date("1999-05-02T13:00:00.000Z");
     end = month.shift(start, TZ_TIJUANA, 1);
     gran = Duration.fromJS("PT1S");
     range = new TimeRange({ start, end });
-    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA), "second tijuana").to.equal("May 2, 06:00:00");
+    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "second tijuana").to.equal("May 2, 06:00:00");
 
     start = new Date("1999-05-02T13:00:00.000Z");
     end = month.shift(start, TZ_TIJUANA, 1);
     gran = Duration.fromJS("P1W");
     range = new TimeRange({ start, end });
-    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA), "week tijuana").to.equal("May 2, 1999");
+    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "week tijuana").to.equal("May 2 - Jun 2, 1999 06:00");
 
     start = new Date("1999-05-02T13:00:00.000Z");
     end = month.shift(start, TZ_KATHMANDU, 1);
     gran = Duration.fromJS("P1M");
     range = new TimeRange({ start, end });
-    const monthFmt = formatTimeBasedOnGranularity(range, gran, TZ_KATHMANDU);
+    var monthFmt = formatTimeBasedOnGranularity(range, gran, TZ_KATHMANDU, locale);
     expect(monthFmt, "month granularity format").to.equal("May, 1999");
-    const minFmt = formatTimeBasedOnGranularity(range, Duration.fromJS("PT1M"), TZ_KATHMANDU);
+    var minFmt = formatTimeBasedOnGranularity(range, Duration.fromJS("PT1M"), TZ_KATHMANDU, locale);
     expect(minFmt, "minute granularity format").to.equal("May 2, 18:45");
     expect(monthFmt).to.not.equal(minFmt, "distinguishes between month and minute fmt");
+
   });
 
 });

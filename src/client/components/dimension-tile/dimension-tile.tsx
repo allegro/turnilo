@@ -42,7 +42,7 @@ import { formatNumberRange, seriesFormatter } from "../../../common/utils/format
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { formatGranularity, formatTimeBasedOnGranularity } from "../../../common/utils/time/time";
-import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
+import { getLocale, MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { Checkbox } from "../checkbox/checkbox";
@@ -545,7 +545,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const segmentValueStr = String(segmentValue);
 
     if (segmentValue instanceof TimeRange) {
-      return formatTimeBasedOnGranularity(segmentValue, selectedGranularity as Duration, timezone);
+      return formatTimeBasedOnGranularity(
+        segmentValue,
+        (selectedGranularity as Duration),
+        timezone,
+        getLocale());
     }
     if (segmentValue instanceof NumberRange) {
       return formatNumberRange(segmentValue);
