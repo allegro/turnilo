@@ -20,7 +20,7 @@ import * as filesaver from "file-saver";
 import { Dataset, DatasetJSFull, TimeRange } from "plywood";
 import * as xlsx from "xlsx-exporter";
 import { Essence } from "../../../common/models/essence/essence";
-import {  formatDateWithoutTimeWithTimezone, formatDateWithTimezone, formatValue } from "../../../common/utils/formatter/formatter";
+import {  formatDate, formatDateWithoutTime, formatValue } from "../../../common/utils/formatter/formatter";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export type FileFormat = "csv" | "tsv" | "json" | "xlsx";
@@ -93,9 +93,9 @@ function datasetToSeparatedValues(
           let formatted: string;
           if (TimeRange.isTimeRange(value)) {
             if (value.end.valueOf() >= day.shift(value.start, essence.timezone, 1).valueOf()) {
-              formatted = formatDateWithoutTimeWithTimezone(value.start, essence.timezone);
+              formatted = formatDateWithoutTime(value.start, essence.timezone);
             } else {
-              formatted = formatDateWithTimezone(value.start, essence.timezone);
+              formatted = formatDate(value.start, essence.timezone);
             }
           } else {
             formatted = formatValue(value);
@@ -152,9 +152,9 @@ function datasetToXLSX(
     return row.map((value: any) => {
       if (TimeRange.isTimeRange(value)) {
         if (value.end.valueOf() >= day.shift(value.start, essence.timezone, 1).valueOf()) {
-          return formatDateWithoutTimeWithTimezone(value.start, essence.timezone);
+          return formatDateWithoutTime(value.start, essence.timezone);
         } else {
-          return formatDateWithTimezone(value.start, essence.timezone);
+          return formatDate(value.start, essence.timezone);
         }
       }
       return value;
