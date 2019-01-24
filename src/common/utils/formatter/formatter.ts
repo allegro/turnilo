@@ -108,7 +108,8 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
 }
 
 export function formatDateWithTimezone(value: Date, timezone: Timezone) {
-  return moment.tz(value, timezone.toString()).format("YYYY-MM-DD HH:mm:ss (z)");
+  return moment.tz(value, timezone.toString()).format("YYYY-MM-DD HH:mm:ss");
+}
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
