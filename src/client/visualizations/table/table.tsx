@@ -246,7 +246,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  precalculate(props: VisualizationProps, dataset: Dataset) {
+  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<TableState> {
     const { essence: { splits } } = props;
 
     if (dataset && splits.length()) {
@@ -254,8 +254,9 @@ export class Table extends BaseVisualization<TableState> {
         order: "preorder",
         nestingName: "__nest"
       }).data;
-      this.setState({ flatData });
+      return { flatData };
     }
+    return {};
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {

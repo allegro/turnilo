@@ -155,9 +155,8 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   canDrop(): boolean {
     const { essence: { series: seriesList } } = this.props;
     const measure = DragManager.draggingMeasure();
-    if (measure) return seriesList.hasMeasure(measure);
-    const series = DragManager.draggingSeries();
-    return series !== null;
+    if (measure) return !seriesList.hasMeasure(measure);
+    return DragManager.isDraggingSeries();
   }
 
   dragStart = (measure: Measure, series: Series, splitIndex: number, e: React.DragEvent<HTMLElement>) => {
@@ -209,25 +208,22 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     const { clicker, essence: { series } } = this.props;
     const { maxItems } = this.state;
 
-    const newSeries: Series = Series.fromMeasure(DragManager.draggingMeasure());
+    this.setState({ dragPosition: null });
 
-    if (newSeries) {
-      let dragPosition = this.calculateDragPosition(e);
+    const newSeries: Series = DragManager.isDraggingSeries() ? DragManager.draggingSeries() : Series.fromMeasure(DragManager.draggingMeasure());
+    if (!newSeries) return;
 
-      if (dragPosition.replace === maxItems) {
-        dragPosition = new DragPosition({ insert: dragPosition.replace });
-      }
+    let dragPosition = this.calculateDragPosition(e);
 
-      if (dragPosition.isReplace()) {
-        clicker.changeSeriesList(series.replaceByIndex(dragPosition.replace, newSeries));
-      } else {
-        clicker.changeSeriesList(series.insertByIndex(dragPosition.insert, newSeries));
-      }
+    if (dragPosition.replace === maxItems) {
+      dragPosition = new DragPosition({ insert: dragPosition.replace });
     }
 
-    this.setState({
-      dragPosition: null
-    });
+    if (dragPosition.isReplace()) {
+      clicker.changeSeriesList(series.replaceByIndex(dragPosition.replace, newSeries));
+    } else {
+      clicker.changeSeriesList(series.insertByIndex(dragPosition.insert, newSeries));
+    }
   }
 
   appendSeries = (measure: Measure) => {
