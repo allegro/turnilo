@@ -92,7 +92,11 @@ function datasetToSeparatedValues(
         .map((value: any) => {
           let formatted: string;
           if (TimeRange.isTimeRange(value)) {
-            formatted = formatDateWithTimezone(value.start, essence.timezone);
+            if (value.end.valueOf() >= day.shift(value.start, essence.timezone, 1).valueOf()) {
+              formatted = formatDateWithoutTimeWithTimezone(value.start, essence.timezone);
+            } else {
+              formatted = formatDateWithTimezone(value.start, essence.timezone);
+            }
           } else {
             formatted = formatValue(value);
           }
