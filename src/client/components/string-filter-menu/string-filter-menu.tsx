@@ -32,6 +32,8 @@ import { PreviewStringFilterMenu } from "../preview-string-filter-menu/preview-s
 import { SelectableStringFilterMenu } from "../selectable-string-filter-menu/selectable-string-filter-menu";
 import "./string-filter-menu.scss";
 
+const MENU_SIZE = Stage.fromSize(500, 410);
+
 export interface StringFilterMenuProps {
   clicker: Clicker;
   dimension: Dimension;
@@ -150,11 +152,9 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { filterMode, searchText } = this.state;
     if (!dimension) return null;
 
-    let menuSize: Stage = null;
     let menuCont: JSX.Element = null;
 
     if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
-      menuSize = Stage.fromSize(600, 410);
       menuCont = <PreviewStringFilterMenu
         dimension={dimension}
         clicker={clicker}
@@ -166,7 +166,6 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         onClauseChange={this.updateFilter}
       />;
     } else {
-      menuSize = Stage.fromSize(500, 410);
       menuCont = <SelectableStringFilterMenu
         ref={selectableStringFilterMenu => this.selectableStringFilterMenu = selectableStringFilterMenu}
         dimension={dimension}
@@ -184,7 +183,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       className="string-filter-menu"
       direction="down"
       containerStage={containerStage}
-      stage={menuSize}
+      stage={MENU_SIZE}
       openOn={openOn}
       onClose={onClose}
       inside={inside}
