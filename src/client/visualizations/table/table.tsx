@@ -29,7 +29,6 @@ import { Measure, MeasureDerivation } from "../../../common/models/measure/measu
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
@@ -246,17 +245,13 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<TableState> {
-    const { essence: { splits } } = props;
-
-    if (dataset && splits.length()) {
-      const flatData = dataset.flatten({
-        order: "preorder",
-        nestingName: "__nest"
-      }).data;
-      return { flatData };
-    }
-    return {};
+  deriveDatasetState(dataset: Dataset): Partial<TableState> {
+    if (!this.props.essence.splits.length()) return {};
+    const flatData = dataset.flatten({
+      order: "preorder",
+      nestingName: "__nest"
+    }).data;
+    return { flatData };
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
