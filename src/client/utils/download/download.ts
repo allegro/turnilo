@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+import { day } from "chronoshift";
 import * as filesaver from "file-saver";
 import { Dataset, DatasetJSFull, TimeRange } from "plywood";
 import * as xlsx from "xlsx-exporter";
 import { Essence } from "../../../common/models/essence/essence";
-import { formatDateWithTimezone, formatValue } from "../../../common/utils/formatter/formatter";
+import {  formatDateWithoutTimeWithTimezone, formatDateWithTimezone, formatValue } from "../../../common/utils/formatter/formatter";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export type FileFormat = "csv" | "tsv" | "json" | "xlsx";
@@ -146,7 +147,11 @@ function datasetToXLSX(
   const data = datasetToRows(essence, dataset).map(row => {
     return row.map((value: any) => {
       if (TimeRange.isTimeRange(value)) {
-         return formatDateWithTimezone(value.start, essence.timezone);
+        if (value.end.valueOf() >= day.shift(value.start, essence.timezone, 1).valueOf()) {
+          return formatDateWithoutTimeWithTimezone(value.start, essence.timezone);
+        } else {
+          return formatDateWithTimezone(value.start, essence.timezone);
+        }
       }
       return value;
     });
