@@ -154,7 +154,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     let menuCont: JSX.Element = null;
 
     if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
-      menuSize = Stage.fromSize(350, 410);
+      menuSize = Stage.fromSize(600, 410);
       menuCont = <PreviewStringFilterMenu
         dimension={dimension}
         clicker={clicker}
@@ -166,7 +166,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         onClauseChange={this.updateFilter}
       />;
     } else {
-      menuSize = Stage.fromSize(250, 410);
+      menuSize = Stage.fromSize(500, 410);
       menuCont = <SelectableStringFilterMenu
         ref={selectableStringFilterMenu => this.selectableStringFilterMenu = selectableStringFilterMenu}
         dimension={dimension}
