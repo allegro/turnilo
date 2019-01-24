@@ -114,14 +114,14 @@ export class TimeHelper {
 
   static checkers = [
     makeCheckpoint(days(95), Duration.fromJS("P1W")),
-    makeCheckpoint(days(8), Duration.fromJS("P1D")),
+    makeCheckpoint(days(2), Duration.fromJS("P1D")),
     makeCheckpoint(hours(8), Duration.fromJS("PT1H")),
     makeCheckpoint(hours(3), Duration.fromJS("PT5M"))];
 
   static coarseCheckers = [
     makeCheckpoint(days(95), Duration.fromJS("P1M")),
     makeCheckpoint(days(20), Duration.fromJS("P1W")),
-    makeCheckpoint(days(6), Duration.fromJS("P1D")),
+    makeCheckpoint(days(2.5), Duration.fromJS("P1D")),
     makeCheckpoint(days(2), Duration.fromJS("PT12H")),
     makeCheckpoint(hours(23), Duration.fromJS("PT6H")),
     makeCheckpoint(hours(3), Duration.fromJS("PT1H")),
