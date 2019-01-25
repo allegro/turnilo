@@ -440,7 +440,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     </div>;
   }
 
-  renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
+  renderItemBlank(itemBlank: ItemBlank, style: React.CSSProperties): JSX.Element {
     const { essence: { timezone }, clicker } = this.props;
     const { menuDimension } = this.state;
 
@@ -454,7 +454,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (source === "from-highlight") {
       return <div
         className={className}
-        key={dimensionName}
+        key={`${dimensionName}-highlight`}
         ref={dimensionName}
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}

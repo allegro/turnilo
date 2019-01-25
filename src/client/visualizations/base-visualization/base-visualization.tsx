@@ -41,7 +41,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   // Way to get a static property without explicitly specifying the class
   protected get id(): string {
-    return (this.constructor as any).id;
+    return (this.constructor as typeof BaseVisualization).id;
   }
 
   constructor(props: VisualizationProps) {
@@ -91,7 +91,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   private callExecutor = (essence: Essence, timekeeper: Timekeeper) =>
-    essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
+    essence.dataCube.executor(makeQuery(essence, timekeeper, this.id), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           if (!this.wasUsedForLastQuery(essence)) return;
           this.handleDatasetLoad(loaded(dataset), this.deriveDatasetState(this.props, dataset));
