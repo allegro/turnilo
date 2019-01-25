@@ -55,7 +55,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       }
 
       // ToDo: review this
-      if (!split.limit && (autoChanged || splitDimension.kind !== "time")) {
+      if (!split.limit && splitDimension.kind !== "time") {
         split = split.changeLimit(i ? 5 : 50);
         autoChanged = true;
       }
