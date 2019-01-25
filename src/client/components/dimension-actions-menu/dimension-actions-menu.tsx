@@ -71,6 +71,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
 
   const hasSplitOn = splits.hasSplitOn(dimension);
   const isOnlySplit = splits.length() === 1 && hasSplitOn;
+  const isStringDimension = dimension.kind === "string";
 
   function onFilter() {
     triggerFilterMenu(dimension);
@@ -88,7 +89,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
   }
 
   function onPin() {
-    clicker.pin(dimension);
+    if (isStringDimension) clicker.pin(dimension);
     onClose();
   }
 
@@ -97,7 +98,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
       <SvgIcon svg={require("../../icons/preview-filter.svg")} />
       <div className="action-label">{STRINGS.filter}</div>
     </div>
-    <div className="pin action" onClick={onPin}>
+    <div className={classNames("pin",  "action", { disabled: !isStringDimension })} onClick={onPin}>
       <SvgIcon svg={require("../../icons/preview-pin.svg")} />
       <div className="action-label">{STRINGS.pin}</div>
     </div>
