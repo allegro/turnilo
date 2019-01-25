@@ -251,6 +251,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { essence: { filter } } = this.props;
     const dimension = DragManager.draggingDimension();
     if (dimension) return !filter.getClauseForDimension(dimension);
+    if (DragManager.isDraggingSplit()) {
+      return !filter.clauseForReference(DragManager.draggingSplit().reference);
+    }
     return DragManager.isDraggingFilter();
   }
 
@@ -274,52 +277,49 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({ dragPosition: null });
   }
 
+  draggingDimension(): Dimension {
+    const { essence: { dataCube } } = this.props;
+    if (DragManager.isDraggingSplit()) {
+      return dataCube.getDimension(DragManager.draggingSplit().reference);
+    }
+    return DragManager.draggingDimension();
+  }
+
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.preventDefault();
-    const { clicker, essence } = this.props;
-    const { filter, dataCube } = essence;
 
     this.setState({ dragPosition: null });
 
     const dragPosition = this.calculateDragPosition(e);
-    if (!DragManager.isDraggingFilter()) {
-      const dimension = DragManager.draggingDimension();
-      let tryingToReplaceTime = false;
-      if (dragPosition.replace !== null) {
-        const targetClause = filter.clauses.get(dragPosition.replace);
-        tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
-      }
-      if (dragPosition && !tryingToReplaceTime) {
-        this.addDummy(dimension, dragPosition);
-      }
+
+    if (DragManager.isDraggingFilter()) {
+      this.dropFilter(dragPosition);
       return;
     }
-    let newFilter: Filter;
+    this.dropDimension(dragPosition);
+  }
+
+  private dropDimension(dragPosition: DragPosition) {
+    const { essence: { filter, dataCube } } = this.props;
+    const dimension = this.draggingDimension();
+    let tryingToReplaceTime = false;
+    if (dragPosition.replace !== null) {
+      const targetClause = filter.clauses.get(dragPosition.replace);
+      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
+    }
+    if (dragPosition && !tryingToReplaceTime) {
+      this.addDummy(dimension, dragPosition);
+    }
+  }
+
+  private dropFilter(dragPosition: DragPosition) {
+    const { clicker, essence: { filter } } = this.props;
     const clause = DragManager.draggingFilter();
-    if (dragPosition.isReplace()) {
-      newFilter = filter.replaceByIndex(dragPosition.replace, clause);
-    } else {
-      newFilter = filter.insertByIndex(dragPosition.insert, clause);
-    }
-
-    let newFilterSame = filter.equals(newFilter);
-    if (!newFilterSame) {
-      clicker.changeFilter(newFilter);
-    }
-
-    if (DragManager.isDraggingFilter()) { // Do not open the menu if it is an internal re-arrange
-      const dimension = DragManager.draggingDimension();
-      if (newFilterSame) {
-        this.filterMenuRequest(dimension);
-      } else {
-        // Wait for the animation to finish to know where to open the menu
-        setTimeout(
-          () => this.filterMenuRequest(dimension),
-          ANIMATION_DURATION + 50
-        );
-      }
-    }
+    const newFilter = dragPosition.isReplace()
+      ? filter.replaceByIndex(dragPosition.replace, clause)
+      : filter.insertByIndex(dragPosition.insert, clause);
+    !filter.equals(newFilter) && clicker.changeFilter(newFilter);
   }
 
   appendFilter = (dimension: Dimension) => {
