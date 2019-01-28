@@ -454,7 +454,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (source === "from-highlight") {
       return <div
         className={className}
-        key={dimensionName}
+        key={`highlight-${dimensionName}`}
         ref={dimensionName}
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
