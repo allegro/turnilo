@@ -214,14 +214,14 @@ export class Table extends BaseVisualization<TableState> {
 
       if (!rowHighlight) return;
 
-      if (essence.highlightOn(Table.id)) {
+      if (essence.hasHighlight()) {
         if (rowHighlight.equals(essence.highlight.delta)) {
           clicker.dropHighlight();
           return;
         }
       }
 
-      clicker.changeHighlight(Table.id, null, rowHighlight);
+      clicker.changeHighlight(null, rowHighlight);
     }
   }
 
@@ -443,7 +443,7 @@ export class Table extends BaseVisualization<TableState> {
       const hScales = this.getScalesForColumns(essence, flatData);
 
       let highlightDelta: Filter = null;
-      if (essence.highlightOn(Table.id)) {
+      if (essence.hasHighlight()) {
         highlightDelta = essence.highlight.delta;
       }
 

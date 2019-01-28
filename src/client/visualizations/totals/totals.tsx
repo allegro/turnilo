@@ -33,7 +33,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();

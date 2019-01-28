@@ -208,9 +208,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortMeasure(measure) });
       },
-      changeHighlight: (owner: string, measure: string, delta: Filter) => {
+      changeHighlight: (measure: string, delta: Filter) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(new Highlight({ owner, measure, delta })) });
+        this.setState({ essence: essence.changeHighlight(new Highlight({ measure, delta })) });
       },
       acceptHighlight: () => {
         const { essence } = this.state;

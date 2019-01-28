@@ -40,8 +40,11 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   public static id = "base-visualization";
 
   // Way to get a static property without explicitly specifying the class
+  /**
+   * @deprecated
+   */
   protected get id(): string {
-    return (this.constructor as any).id;
+    return (this.constructor as typeof BaseVisualization).id;
   }
 
   constructor(props: VisualizationProps) {
@@ -121,7 +124,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
