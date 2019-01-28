@@ -164,7 +164,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
+      this.hasNewerTimestamp(nextProps);
   }
 
   componentDidUpdate() {

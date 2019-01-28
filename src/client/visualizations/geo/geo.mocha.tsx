@@ -28,6 +28,7 @@ describe("Geo", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Geo
+        requestTimestamp={0}
         clicker={null}
         essence={null}
         timekeeper={TimekeeperFixtures.fixed()}

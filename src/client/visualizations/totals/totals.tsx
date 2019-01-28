@@ -36,7 +36,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
+      this.hasNewerTimestamp(nextProps);
   }
 
   renderTotals(dataset: Dataset): JSX.Element[] {

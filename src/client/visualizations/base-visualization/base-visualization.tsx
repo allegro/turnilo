@@ -141,7 +141,11 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
+      this.hasNewerTimestamp(nextProps);
+  }
+
+  protected hasNewerTimestamp(nextProps: VisualizationProps): boolean {
+    return nextProps.requestTimestamp !== this.props.requestTimestamp;
   }
 
   private visualisationNotResized(nextProps: VisualizationProps): boolean {

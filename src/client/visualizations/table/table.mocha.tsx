@@ -28,6 +28,7 @@ describe.skip("Table", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Table
+        requestTimestamp={0}
         clicker={null}
         essence={null}
         timekeeper={TimekeeperFixtures.fixed()}
