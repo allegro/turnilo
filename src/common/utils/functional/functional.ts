@@ -59,16 +59,21 @@ export function threadConditionally(x: any, ...fns: Function[]) {
 }
 
 export function complement<T>(p: Predicate<T>): Predicate<T> {
- return (x: T) => !p(x);
+  return (x: T) => !p(x);
 }
 
-export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T & { cancel: Fn } {
+// TODO: fix to use infer on arguments tuple https://stackoverflow.com/a/50014868/1089761
+export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms: number): ((...args: any[]) => Promise<any>) & { cancel: Fn } {
   let timeoutId: any;
 
   const debouncedFn = function(...args: any[]) {
+    let resolve: Function;
+    const promise = new Promise(pResolve => {
+      resolve = pResolve;
+    });
     const callLater = () => {
       timeoutId = undefined;
-      fn(...args);
+      resolve(fn(...args));
     };
 
     if (timeoutId !== undefined) {
@@ -76,6 +81,8 @@ export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): 
     }
 
     timeoutId = setTimeout(callLater, ms);
+
+    return promise;
   } as any;
 
   debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
