@@ -1,3 +1,4 @@
+import { Timezone } from "chronoshift";
 /*
  * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
@@ -92,11 +93,7 @@ function datasetToSeparatedValues(
         .map((value: any) => {
           let formatted: string;
           if (TimeRange.isTimeRange(value)) {
-            if (value.end.valueOf() >= day.shift(value.start, essence.timezone, 1).valueOf()) {
-              formatted = formatDateWithoutTime(value.start, essence.timezone);
-            } else {
-              formatted = formatDate(value.start, essence.timezone);
-            }
+            formatted = formatTimeRange(value, essence.timezone);
           } else {
             formatted = formatValue(value);
           }
@@ -151,11 +148,7 @@ function datasetToXLSX(
   const data = datasetToRows(essence, dataset).map(row => {
     return row.map((value: any) => {
       if (TimeRange.isTimeRange(value)) {
-        if (value.end.valueOf() >= day.shift(value.start, essence.timezone, 1).valueOf()) {
-          return formatDateWithoutTime(value.start, essence.timezone);
-        } else {
-          return formatDate(value.start, essence.timezone);
-        }
+        return formatTimeRange(value, essence.timezone);
       }
       return value;
     });
@@ -165,4 +158,12 @@ function datasetToXLSX(
   workbook.addWorksheet(worksheet);
 
   return workbook.save();
+}
+
+function formatTimeRange(value: TimeRange, timezone: Timezone) {
+  if (value.end.valueOf() >= day.shift(value.start, timezone, 1).valueOf()) {
+    return formatDateWithoutTime(value.start, timezone);
+  } else {
+    return formatDate(value.start, timezone);
+  }
 }
