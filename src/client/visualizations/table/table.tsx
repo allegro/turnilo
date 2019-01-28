@@ -31,7 +31,7 @@ import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { formatDateWithTimezone, formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { formatDate, formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
@@ -56,7 +56,7 @@ const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   if (TimeRange.isTimeRange(value)) {
-    return formatDateWithTimezone(value.start, timezone);
+    return formatDate(value.start, timezone);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }

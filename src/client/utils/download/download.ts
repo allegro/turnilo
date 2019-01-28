@@ -1,3 +1,4 @@
+import { Timezone } from "chronoshift";
 /*
  * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
@@ -15,11 +16,12 @@
  * limitations under the License.
  */
 
+import { day } from "chronoshift";
 import * as filesaver from "file-saver";
 import { Dataset, DatasetJSFull, TimeRange } from "plywood";
 import * as xlsx from "xlsx-exporter";
 import { Essence } from "../../../common/models/essence/essence";
-import { formatDateWithTimezone, formatValue } from "../../../common/utils/formatter/formatter";
+import {  formatDate, formatDateWithoutTime, formatValue } from "../../../common/utils/formatter/formatter";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export type FileFormat = "csv" | "tsv" | "json" | "xlsx";
@@ -91,7 +93,7 @@ function datasetToSeparatedValues(
         .map((value: any) => {
           let formatted: string;
           if (TimeRange.isTimeRange(value)) {
-            formatted = formatDateWithTimezone(value.start, essence.timezone);
+            formatted = formatTimeRange(value, essence.timezone);
           } else {
             formatted = formatValue(value);
           }
@@ -146,7 +148,7 @@ function datasetToXLSX(
   const data = datasetToRows(essence, dataset).map(row => {
     return row.map((value: any) => {
       if (TimeRange.isTimeRange(value)) {
-         return formatDateWithTimezone(value.start, essence.timezone);
+        return formatTimeRange(value, essence.timezone);
       }
       return value;
     });
@@ -156,4 +158,12 @@ function datasetToXLSX(
   workbook.addWorksheet(worksheet);
 
   return workbook.save();
+}
+
+function formatTimeRange(value: TimeRange, timezone: Timezone) {
+  if (value.end.valueOf() >= day.shift(value.start, timezone, 1).valueOf()) {
+    return formatDateWithoutTime(value.start, timezone);
+  } else {
+    return formatDate(value.start, timezone);
+  }
 }
