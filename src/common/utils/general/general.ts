@@ -174,3 +174,7 @@ export function isDecimalInteger(input: string): boolean {
 export function readNumber(input: any): number {
   return typeof input === "number" ? input : parseFloat(input);
 }
+
+export function equalDates(a: Date, b: Date): boolean {
+  return a.getTime() === b.getTime();
+}
