@@ -34,7 +34,6 @@ import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
@@ -660,8 +659,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   }
 
-  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<LineChartState> {
-    const { essence, timekeeper, stage } = props;
+  deriveDatasetState(dataset: Dataset): Partial<LineChartState> {
+    const { essence, timekeeper, stage } = this.props;
     const { splits, timezone, dataCube } = essence;
 
     if (!splits.length()) return {};

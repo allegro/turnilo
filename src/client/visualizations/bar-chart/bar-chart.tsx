@@ -742,8 +742,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { chart, yAxis, highlight };
   }
 
-  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<BarChartState> {
-    const { essence } = props;
+  deriveDatasetState(dataset: Dataset): Partial<BarChartState> {
+    const { essence } = this.props;
     const { splits } = essence;
     this.coordinatesCache = [];
     if (!splits.length()) return {};

@@ -95,7 +95,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
           this.handleDatasetLoad(dl);
         }
         if (isLoaded(dl)) {
-          this.handleDatasetLoad(dl, this.deriveDatasetState(this.props, dl.dataset));
+          this.handleDatasetLoad(dl, this.deriveDatasetState(dl.dataset));
         }
       });
   }
@@ -124,7 +124,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
     // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
-    this.setState({ ...(derivedState as object), datasetLoad: dl });
+    this.setState({ ...(derivedState as object), datasetLoad: dl, scrollLeft: 0, scrollTop: 0 });
     const { registerDownloadableDataset } = this.props;
     if (registerDownloadableDataset) {
       registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
@@ -156,7 +156,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return null;
   }
 
-  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<S> {
+  deriveDatasetState(dataset: Dataset): Partial<S> {
     return {};
   }
 
