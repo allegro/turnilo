@@ -85,6 +85,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     if (showSpinner) this.handleDatasetLoad(loading);
     this.fetchData(essence, timekeeper)
       .then(loadedDataset => {
+        // TODO: encode it better
+        // null is here when we get out of order request, so we just ignore it
+        if (!loadedDataset) return;
         if (isError(loadedDataset)) {
           this.handleDatasetLoad(loadedDataset);
         }
@@ -102,10 +105,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
+          // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
           return loaded(dataset);
         },
         err => {
+          // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
           return error(err);
         })
