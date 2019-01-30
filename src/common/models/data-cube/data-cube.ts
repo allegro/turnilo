@@ -56,22 +56,6 @@ import { Sort } from "../sort/sort";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
-function formatTimeDiff(diff: number): string {
-  diff = Math.round(Math.abs(diff) / 1000); // turn to seconds
-  if (diff < 60) return "less than 1 minute";
-
-  diff = Math.floor(diff / 60); // turn to minutes
-  if (diff === 1) return "1 minute";
-  if (diff < 60) return diff + " minutes";
-
-  diff = Math.floor(diff / 60); // turn to hours
-  if (diff === 1) return "1 hour";
-  if (diff <= 24) return diff + " hours";
-
-  diff = Math.floor(diff / 24); // turn to days
-  return diff + " days";
-}
-
 function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measures: Measures, dataCubeName: string) {
   if (dimensions != null && measures != null) {
     const dimensionNames = dimensions.getDimensionNames();
@@ -739,22 +723,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       return refreshRule.time;
     } else { // refreshRule is query
       return timekeeper.getTime(name);
-    }
-  }
-
-  public updatedText(timekeeper: Timekeeper, timezone: Timezone): string {
-    const { refreshRule } = this;
-    if (refreshRule.isRealtime()) {
-      return "Updated ~1 second ago";
-    } else if (refreshRule.isFixed()) {
-      return `Fixed to ${getWallTimeString(refreshRule.time, timezone)}`;
-    } else { // refreshRule is query
-      const maxTime = this.getMaxTime(timekeeper);
-      if (maxTime) {
-        return `Updated ${formatTimeDiff(timekeeper.now().valueOf() - maxTime.valueOf().valueOf())} ago`;
-      } else {
-        return null;
-      }
     }
   }
 
