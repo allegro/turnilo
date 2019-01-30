@@ -158,6 +158,10 @@ export function getWallTimeMonthWithYear(date: Date, timezone: Timezone) {
   return moment.tz(date, timezone.toString()).format(FORMAT_FULL_MONTH_WITH_YEAR);
 }
 
+export function getRelativeTime(date: Date, timezone: Timezone): string {
+  return moment.tz(date, timezone.toString()).fromNow(true);
+}
+
 export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
   if (d1 === d2) return true;
@@ -167,8 +171,7 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
 }
 
 export function getWallTimeString(date: Date, timezone: Timezone): string {
-  const wallTimeISOString = moment.tz(date, timezone.toString()).format(FORMAT_ISO_WITHOUT_TIMEZONE);
-  return wallTimeISOString.replace("T", ", ");
+  return moment.tz(date, timezone.toString()).format("YYYY-MM-DD HH:mm:ss");
 }
 
 export function getWallTimeDateOnlyString(date: Date, timezone: Timezone): string {
