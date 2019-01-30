@@ -34,6 +34,7 @@ import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
@@ -112,7 +113,7 @@ export interface LineChartState extends BaseVisualizationState {
 }
 
 export class LineChart extends BaseVisualization<LineChartState> {
-  public static id = LINE_CHART_MANIFEST.name;
+  protected className = LINE_CHART_MANIFEST.name;
 
   getDefaultState(): LineChartState {
     return { dragStartValue: null, dragRange: null, hoverRange: null, ...super.getDefaultState() };
@@ -132,6 +133,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
         containerXPosition: rect.left
       });
     }
+  }
+
+  protected shouldFetchData(props: VisualizationProps): boolean {
+    const { essence } = props;
+    return this.differentVisualizationDefinition(props) || essence.differentColors(this.props.essence);
   }
 
   getMyEventX(e: MouseEvent): number {

@@ -41,7 +41,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { User } from "../../../common/models/user/user";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { Fn } from "../../../common/utils/general/general";
+import { equalDates, Fn } from "../../../common/utils/general/general";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
 import { FilterTile } from "../../components/filter-tile/filter-tile";
@@ -115,7 +115,7 @@ export interface CubeViewState {
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
-  requestTimestamp: number;
+  lastRefreshRequestTimestamp: number;
 }
 
 const MIN_PANEL_WIDTH = 240;
@@ -144,7 +144,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence: null,
       dragOver: false,
       layout: this.getStoredLayout(),
-      requestTimestamp: 0,
+      lastRefreshRequestTimestamp: 0,
       updatingMaxTime: false
     };
 
@@ -233,11 +233,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     DataCube.queryMaxTime(dataCube)
       .then(maxTime => {
         if (!this.mounted) return;
-        if (!dataCube.refreshRule.isRealtime() && maxTime.getTime() === timekeeper.getTime(dataCube.name).getTime()) return;
+        const timeName = dataCube.name;
+        const isBatchCube = !dataCube.refreshRule.isRealtime();
+        const isCubeUpToDate = equalDates(maxTime, timekeeper.getTime(timeName));
+        if (isBatchCube && isCubeUpToDate) {
+          this.setState({ updatingMaxTime: false });
+          return;
+        }
         this.setState({
-          timekeeper: timekeeper.updateTime(dataCube.name, maxTime),
+          timekeeper: timekeeper.updateTime(timeName, maxTime),
           updatingMaxTime: false,
-          requestTimestamp: (new Date()).getTime()
+          lastRefreshRequestTimestamp: (new Date()).getTime()
         });
       });
   }
@@ -695,10 +701,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private visElement() {
-    const { essence, visualizationStage: stage, requestTimestamp } = this.state;
+    const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
-      requestTimestamp,
+      refreshRequestTimestamp: lastRefreshRequestTimestamp,
       essence,
       clicker: this.clicker,
       timekeeper: this.state.timekeeper,

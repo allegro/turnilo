@@ -147,24 +147,12 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
 }
 
 export class BarChart extends BaseVisualization<BarChartState> {
-  public static id = BAR_CHART_MANIFEST.name;
+  protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
 
   getDefaultState(): BarChartState {
     return { hoverInfo: null, maxNumberOfLeaves: [], flatData: [], ...super.getDefaultState() };
-  }
-
-  shouldFetchData(nextProps: VisualizationProps): boolean {
-    const { essence, timekeeper } = this.props;
-    const nextEssence = nextProps.essence;
-    const nextTimekeeper = nextProps.timekeeper;
-    return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
-      nextEssence.differentTimeShift(essence) ||
-      nextEssence.differentSplits(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
-      this.hasNewerTimestamp(nextProps);
   }
 
   componentDidUpdate() {

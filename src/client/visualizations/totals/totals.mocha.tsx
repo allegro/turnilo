@@ -29,7 +29,7 @@ describe.skip("Totals", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Totals
-        requestTimestamp={0}
+        refreshRequestTimestamp={0}
         clicker={null}
         essence={null}
         timekeeper={TimekeeperFixtures.fixed()}

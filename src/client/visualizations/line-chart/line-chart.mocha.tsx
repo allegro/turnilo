@@ -31,7 +31,7 @@ describe.skip("LineChart", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <LineChart
-        requestTimestamp={0}
+        refreshRequestTimestamp={0}
         clicker={null}
         essence={EssenceFixtures.wikiLineChart()}
         stage={StageFixtures.defaultA()}
