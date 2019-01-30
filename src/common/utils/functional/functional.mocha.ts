@@ -154,9 +154,8 @@ describe("Functional utilities", () => {
     it("should return promise with value", async () => {
       const returnVal = 5;
       const debounced = debounceWithPromise(() => returnVal, 10);
-      debounced().then(x => {
-        expect(x).to.be.eq(returnVal);
-      });
+      const x = await debounced();
+      expect(x).to.be.eq(returnVal);
     });
   });
 });
