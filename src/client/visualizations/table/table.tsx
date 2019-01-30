@@ -66,10 +66,10 @@ function formatSegment(value: any, timezone: Timezone, split?: Split): string {
         case "day":
           return d3.time.format("%Y-%m-%d")(time);
         default:
-          return d3.time.format("%Y-%m-%d %H:%M %p")(time);
+          return d3.time.format("%Y-%m-%d %I:%M %p")(time);
       }
     }
-    return d3.time.format("%Y-%m-%d %H:%M %p")(time);
+    return d3.time.format("%Y-%m-%d %I:%M %p")(time);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }

@@ -48,15 +48,15 @@ export function timeFormat(scale: AxisScale): Unary<Date, string> {
     return d3.time.format("%b %d");
   }
   if (last.getDate() - first.getDate() === 1) {
-    return d3.time.format("%a %d, %H %p");
+    return d3.time.format("%a %d, %I %p");
   }
   if (first.getDate() !== last.getDate()) {
     return d3.time.format("%a %d");
   }
   if (first.getHours() !== last.getHours()) {
-    return d3.time.format("%H %p");
+    return d3.time.format("%I %p");
   }
-  return d3.time.format("%H:%M %p");
+  return d3.time.format("%I:%M %p");
 }
 
 const floatFormat = d3.format(".1f");
