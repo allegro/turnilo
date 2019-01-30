@@ -121,7 +121,7 @@ export interface TableState extends BaseVisualizationState {
 }
 
 export class Table extends BaseVisualization<TableState> {
-  protected id = TABLE_MANIFEST.name;
+  protected className = TABLE_MANIFEST.name;
 
   getDefaultState(): TableState {
     return { flatData: null, hoverRow: null, ...super.getDefaultState() };
