@@ -21,13 +21,11 @@ import { EMPTY_FILTER, Filter } from "../filter/filter";
 import { SeriesList } from "../series-list/series-list";
 
 export interface HighlightValue {
-  owner: string;
   delta: Filter;
   measure: string;
 }
 
 const defaultHighlight: HighlightValue = {
-  owner: null,
   delta: EMPTY_FILTER,
   measure: null
 };
@@ -35,7 +33,7 @@ const defaultHighlight: HighlightValue = {
 export class Highlight extends Record<HighlightValue>(defaultHighlight) {
 
   public toString(): string {
-    return `[Highlight ${this.owner}]`;
+    return `[Highlight ${this.delta.toString()}]`;
   }
 
   public applyToFilter(filter: Filter): Filter {

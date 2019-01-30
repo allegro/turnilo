@@ -115,6 +115,7 @@ export interface CubeViewState {
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
+  requestTimestamp: number;
 }
 
 const MIN_PANEL_WIDTH = 240;
@@ -143,6 +144,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence: null,
       dragOver: false,
       layout: this.getStoredLayout(),
+      requestTimestamp: 0,
       updatingMaxTime: false
     };
 
@@ -208,9 +210,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortMeasure(measure) });
       },
-      changeHighlight: (owner: string, measure: string, delta: Filter) => {
+      changeHighlight: (measure: string, delta: Filter) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(new Highlight({ owner, measure, delta })) });
+        this.setState({ essence: essence.changeHighlight(new Highlight({ measure, delta })) });
       },
       acceptHighlight: () => {
         const { essence } = this.state;
@@ -229,11 +231,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ updatingMaxTime: true });
 
     DataCube.queryMaxTime(dataCube)
-      .then(updatedMaxTime => {
+      .then(maxTime => {
         if (!this.mounted) return;
+        if (!dataCube.refreshRule.isRealtime() && maxTime.getTime() === timekeeper.getTime(dataCube.name).getTime()) return;
         this.setState({
-          timekeeper: timekeeper.updateTime(dataCube.name, updatedMaxTime),
-          updatingMaxTime: false
+          timekeeper: timekeeper.updateTime(dataCube.name, maxTime),
+          updatingMaxTime: false,
+          requestTimestamp: (new Date()).getTime()
         });
       });
   }
@@ -691,9 +695,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private visElement() {
-    const { essence, visualizationStage: stage } = this.state;
+    const { essence, visualizationStage: stage, requestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
+      requestTimestamp,
       essence,
       clicker: this.clicker,
       timekeeper: this.state.timekeeper,

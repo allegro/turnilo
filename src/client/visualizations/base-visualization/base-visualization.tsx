@@ -21,7 +21,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { debounce, noop } from "../../../common/utils/functional/functional";
+import { debounceWithPromise, noop } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
@@ -40,8 +40,11 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   public static id = "base-visualization";
 
   // Way to get a static property without explicitly specifying the class
+  /**
+   * @deprecated
+   */
   protected get id(): string {
-    return (this.constructor as any).id;
+    return (this.constructor as typeof BaseVisualization).id;
   }
 
   constructor(props: VisualizationProps) {
@@ -69,7 +72,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentDidMount() {
     const { essence, timekeeper } = this.props;
-    this.fetchData(essence, timekeeper);
+    this.loadData(essence, timekeeper);
   }
 
   componentWillUnmount() {
@@ -79,33 +82,45 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
-      this.fetchData(nextProps.essence, nextProps.timekeeper);
+      this.loadData(nextProps.essence, nextProps.timekeeper, !this.props.essence.equals(nextProps.essence));
     }
   }
 
-  protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    this.lastQueryEssence = essence;
-    this.handleDatasetLoad(loading);
-
-    this.debouncedCallExecutor(essence, timekeeper);
+  private loadData(essence: Essence, timekeeper: Timekeeper, showSpinner = true) {
+    if (showSpinner) this.handleDatasetLoad(loading);
+    this.fetchData(essence, timekeeper)
+      .then(dl => {
+        if (isLoading(dl)) return;
+        if (isError(dl)) {
+          this.handleDatasetLoad(dl);
+        }
+        if (isLoaded(dl)) {
+          this.handleDatasetLoad(dl, this.deriveDatasetState(dl.dataset));
+        }
+      });
   }
 
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper) =>
+  private fetchData(essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad> {
+    this.lastQueryEssence = essence;
+    return this.debouncedCallExecutor(essence, timekeeper);
+  }
+
+  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad> =>
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
-          if (!this.wasUsedForLastQuery(essence)) return;
-          this.handleDatasetLoad(loaded(dataset), this.deriveDatasetState(dataset));
+          if (!this.wasUsedForLastQuery(essence)) return loading;
+          return loaded(dataset);
         },
         err => {
-          if (!this.wasUsedForLastQuery(essence)) return;
-          this.handleDatasetLoad(error(err));
+          if (!this.wasUsedForLastQuery(essence)) return loading;
+          return error(err);
         })
 
   private wasUsedForLastQuery(essence: Essence) {
     return essence.equals(this.lastQueryEssence);
   }
 
-  private debouncedCallExecutor = debounce(this.callExecutor, 500);
+  private debouncedCallExecutor = debounceWithPromise(this.callExecutor, 500);
 
   private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
     // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
@@ -121,12 +136,16 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
+      this.hasNewerTimestamp(nextProps);
+  }
+
+  protected hasNewerTimestamp(nextProps: VisualizationProps): boolean {
+    return nextProps.requestTimestamp !== this.props.requestTimestamp;
   }
 
   private visualisationNotResized(nextProps: VisualizationProps): boolean {

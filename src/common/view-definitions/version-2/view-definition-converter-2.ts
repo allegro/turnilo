@@ -90,9 +90,9 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
 
 function readHighlight(definition: any, dataCube: DataCube): Highlight {
   if (!definition) return null;
-  const { measure, owner } = definition;
+  const { measure } = definition;
   const delta = Filter.fromClauses(filterJSConverter(definition.delta, dataCube));
-  return new Highlight({ measure, owner, delta });
+  return new Highlight({ measure, delta });
 
 }
 

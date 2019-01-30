@@ -160,11 +160,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
+      this.hasNewerTimestamp(nextProps);
   }
 
   componentDidUpdate() {
@@ -274,7 +274,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const rowHighlight = getFilterFromDatum(splits, path);
 
-    if (essence.highlightOn(BarChart.id, measures[chartIndex].name)) {
+    if (essence.highlightOn(measures[chartIndex].name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
         clicker.dropHighlight();
         this.setState({ selectionInfo: null });
@@ -283,7 +283,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
 
     this.setState({ selectionInfo });
-    clicker.changeHighlight(BarChart.id, measures[chartIndex].name, rowHighlight);
+    clicker.changeHighlight(measures[chartIndex].name, rowHighlight);
   }
 
   getYExtent(data: Datum[], measure: Measure): number[] {
@@ -460,24 +460,19 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
+    if (!essence.highlightOn(measure.name)) return false;
+
     const { splits } = essence;
-
-    if (essence.highlightOnDifferentMeasure(BarChart.id, measure.name)) return false;
-
-    if (essence.highlightOn(BarChart.id, measure.name)) {
-      return essence.highlight.delta.equals(getFilterFromDatum(splits, path));
-    }
-
-    return false;
+    return essence.highlight.delta.equals(getFilterFromDatum(splits, path));
   }
 
   isFaded(): boolean {
     const { essence } = this.props;
-    return essence.highlightOn(BarChart.id);
+    return essence.hasHighlight();
   }
 
   hasAnySelectionGoingOn(): boolean {
-    return this.props.essence.highlightOn(BarChart.id);
+    return this.props.essence.hasHighlight();
   }
 
   isHovered(path: Datum[], measure: Measure): boolean {

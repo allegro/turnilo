@@ -97,7 +97,6 @@ export interface EssenceContext {
 }
 
 export interface EffectiveFilterOptions {
-  highlightId?: string;
   unfilterDimension?: Dimension;
   combineWithPrevious?: boolean;
 }
@@ -265,10 +264,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public getEffectiveFilter(
     timekeeper: Timekeeper,
-    { highlightId = null, combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
-    const { dataCube, highlight, timezone } = this;
+    { combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
+    const { dataCube, timezone } = this;
     let filter = this.filter;
-    if (highlight && (highlightId !== highlight.owner)) filter = highlight.applyToFilter(filter);
     if (unfilterDimension) filter = filter.removeClause(unfilterDimension.name);
     filter = filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
     if (combineWithPrevious) {
@@ -358,22 +356,20 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return !this.getEffectiveSelectedMeasures().equals(other.getEffectiveSelectedMeasures());
   }
 
-  public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, highlightId: string = null, unfilterDimension: Dimension = null): boolean {
-    const myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, { highlightId, unfilterDimension });
-    const otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, { highlightId, unfilterDimension });
+  public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, unfilterDimension: Dimension = null): boolean {
+    const myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, { unfilterDimension });
+    const otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, { unfilterDimension });
     return !myEffectiveFilter.equals(otherEffectiveFilter);
   }
 
-  public highlightOn(owner: string, measure?: string): boolean {
-    const { highlight } = this;
-    if (!highlight) return false;
-    return highlight.owner === owner && (!measure || highlight.measure === measure);
+  public hasHighlight(): boolean {
+    return !!this.highlight;
   }
 
-  public highlightOnDifferentMeasure(owner: string, measure: string): boolean {
+  public highlightOn(measure: string): boolean {
     const { highlight } = this;
     if (!highlight) return false;
-    return highlight.owner === owner && measure && highlight.measure !== measure;
+    return highlight.measure === measure;
   }
 
   public getHighlightRange(): PlywoodRange {
@@ -551,12 +547,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public changeHighlight(newHighlight: Highlight): Essence {
     if (!newHighlight.validForSeries(this.series)) return this;
-    const { highlight, filter } = this;
-
-    // If there is already a highlight from someone else accept it
-    const differentHighlight = highlight && highlight.owner !== newHighlight.owner;
-    const essence = differentHighlight ? this.changeFilter(highlight.applyToFilter(filter)) : this;
-    return essence.set("highlight", newHighlight);
+    return this.set("highlight", newHighlight);
   }
 
   public dropHighlight(): Essence {
