@@ -16,12 +16,12 @@
 
 import { day } from "chronoshift";
 import { List } from "immutable";
-import { TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
+import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { DateRange, FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
 import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
@@ -67,17 +67,13 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   state: FixedTimeTabState = this.initialState();
 
-  createDateRange(): DateRange {
+  createDateRange(): DateRange | null {
     const { start, end: maybeEnd } = this.state;
     if (!start) return null;
-    const end = maybeEnd || day.shift(start, this.props.essence.timezone, 1);
+    const timezone = this.props.essence.timezone;
+    const end = maybeEnd || day.shift(start, timezone, 1);
     if (start >= end) return null;
     return new DateRange({ start, end });
-  }
-
-  createTimeRange(): TimeRange | null {
-    const dateRange = this.createDateRange();
-    return dateRange && TimeRange.fromJS(dateRange);
   }
 
   constructFixedFilter(dateRange: DateRange): Filter {
@@ -130,7 +126,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
       <div className="cont">
         <TimeShiftSelector
           shift={shift}
-          time={this.createTimeRange()}
+          time={this.createDateRange()}
           onShiftChange={this.setTimeShift}
           timezone={timezone}
           shiftValue={isValidTimeShift(shift) ? TimeShift.fromJS(shift) : null}

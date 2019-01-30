@@ -18,7 +18,7 @@
 import { day, Duration, month, Timezone } from "chronoshift";
 import { Moment } from "moment";
 import * as moment from "moment-timezone";
-import { TimeRange } from "plywood";
+import { DateRange } from "../../models/date-range/date-range";
 
 const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";
 const FORMAT_DATE = "YYYY-MM-DD";
@@ -59,7 +59,7 @@ export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
   return new Date(exclusiveEnd.valueOf() - 1);
 }
 
-export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displayYear: DisplayYear): string {
+export function formatTimeRange(timeRange: DateRange, timezone: Timezone, displayYear: DisplayYear): string {
   const { start, end } = timeRange;
   const startWallTime = moment.tz(start, timezone.toString());
   const endWallTime = moment.tz(end, timezone.toString());
@@ -184,7 +184,7 @@ function pad(input: number) {
   return String(input);
 }
 
-export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
+export function formatTimeBasedOnGranularity(range: DateRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
   const wallTimeStart = moment.tz(range.start, timezone.toString());
 
   const year = wallTimeStart.year();
