@@ -17,7 +17,7 @@
 
 import { Duration, Timezone } from "chronoshift";
 import * as React from "react";
-import { RefreshRule } from "../../../common/models/refresh-rule/refresh-rule";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -54,7 +54,7 @@ export interface AutoRefreshMenuProps {
   autoRefreshRate: Duration;
   setAutoRefreshRate: Unary<Duration, void>;
   refreshMaxTime: Fn;
-  refreshRule: RefreshRule;
+  dataCube: DataCube;
   timekeeper: Timekeeper;
   timezone: Timezone;
 }
@@ -71,19 +71,20 @@ function renderRefreshIntervalDropdown(autoRefreshRate: Duration, setAutoRefresh
   />;
 }
 
-function updatedText(refreshRule: RefreshRule, timekeeper: Timekeeper, timezone: Timezone): string {
+function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timezone): string {
+  const { refreshRule } = dataCube;
   if (refreshRule.isRealtime()) {
     return "Updated ~1 second ago";
   } else if (refreshRule.isFixed()) {
     return `Fixed to ${getWallTimeString(refreshRule.time, timezone)}`;
   } else { // refreshRule is query
-    const maxTime = this.getMaxTime(timekeeper);
+    const maxTime = dataCube.getMaxTime(timekeeper);
     if (!maxTime) return null;
     return `Updated ${getRelativeTime(maxTime, timezone)} ago`;
   }
 }
 
-export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, refreshRule, timekeeper, timezone }) =>
+export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
   <BubbleMenu
     className="auto-refresh-menu"
     direction="down"
@@ -92,6 +93,6 @@ export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRa
     onClose={onClose}
   >
     {renderRefreshIntervalDropdown(autoRefreshRate, setAutoRefreshRate)}
-    <button className="update-now-button" onClick={this.props.refreshMaxTime}>Update now</button>
-    <div className="update-info">{updatedText(refreshRule, timekeeper, timezone)}</div>
+    <button className="update-now-button" onClick={refreshMaxTime}>Update now</button>
+    <div className="update-info">{updatedText(dataCube, timekeeper, timezone)}</div>
   </BubbleMenu>;

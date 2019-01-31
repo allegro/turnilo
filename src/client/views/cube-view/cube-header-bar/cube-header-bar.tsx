@@ -167,7 +167,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeAutoRefreshMenu = () => this.setState({ autoRefreshMenuAnchor: null });
 
   renderAutoRefreshMenu() {
-    const { refreshMaxTime, essence, timekeeper } = this.props;
+    const { refreshMaxTime, essence: { dataCube, timezone }, timekeeper } = this.props;
     const { autoRefreshMenuAnchor, autoRefreshRate } = this.state;
     if (!autoRefreshMenuAnchor) return null;
 
@@ -178,8 +178,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       autoRefreshRate={autoRefreshRate}
       setAutoRefreshRate={this.setAutoRefreshRate}
       refreshMaxTime={refreshMaxTime}
-      refreshRule={essence.dataCube.refreshRule}
-      timezone={essence.timezone}
+      dataCube={dataCube}
+      timezone={timezone}
     />;
   }
 

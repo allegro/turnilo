@@ -36,7 +36,7 @@ describe.skip("AutoRefreshMenu", () => {
         autoRefreshRate={null}
         setAutoRefreshRate={null}
         refreshMaxTime={null}
-        refreshRule={dataCube.refreshRule}
+        dataCube={dataCube}
         timekeeper={TimekeeperFixtures.fixed()}
         timezone={dataCube.getDefaultTimezone()}
       />
