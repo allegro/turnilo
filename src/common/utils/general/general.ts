@@ -64,12 +64,6 @@ export function makeTitle(name: string): string {
     });
 }
 
-export function immutableListsEqual<T extends Equalable>(listA: List<T>, listB: List<T>): boolean {
-  if (listA === listB) return true;
-  if (!listA !== !listB) return false;
-  return immutableArraysEqual(listA.toArray(), listB.toArray());
-}
-
 export function collect(wait: number, fn: Fn): Fn {
   var timeout: any;
   var later = function() {
@@ -173,8 +167,4 @@ export function isDecimalInteger(input: string): boolean {
 
 export function readNumber(input: any): number {
   return typeof input === "number" ? input : parseFloat(input);
-}
-
-export function equalDates(a: Date, b: Date): boolean {
-  return a.getTime() === b.getTime();
 }

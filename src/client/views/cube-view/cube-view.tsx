@@ -41,7 +41,8 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { User } from "../../../common/models/user/user";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { equalDates, Fn } from "../../../common/utils/general/general";
+import { Fn } from "../../../common/utils/general/general";
+import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
 import { FilterTile } from "../../components/filter-tile/filter-tile";
@@ -235,7 +236,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (!this.mounted) return;
         const timeName = dataCube.name;
         const isBatchCube = !dataCube.refreshRule.isRealtime();
-        const isCubeUpToDate = equalDates(maxTime, timekeeper.getTime(timeName));
+        const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
         if (isBatchCube && isCubeUpToDate) {
           this.setState({ updatingMaxTime: false });
           return;

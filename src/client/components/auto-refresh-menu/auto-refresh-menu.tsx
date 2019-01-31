@@ -22,7 +22,7 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { getRelativeTime, getWallTimeString } from "../../../common/utils/time/time";
+import { formatDateTime, formatTimeElapsed } from "../../../common/utils/time/time";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Dropdown } from "../dropdown/dropdown";
@@ -76,11 +76,11 @@ function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timez
   if (refreshRule.isRealtime()) {
     return "Updated ~1 second ago";
   } else if (refreshRule.isFixed()) {
-    return `Fixed to ${getWallTimeString(refreshRule.time, timezone)}`;
+    return `Fixed to ${formatDateTime(refreshRule.time, timezone)}`;
   } else { // refreshRule is query
     const maxTime = dataCube.getMaxTime(timekeeper);
     if (!maxTime) return null;
-    return `Updated ${getRelativeTime(maxTime, timezone)} ago`;
+    return `Updated ${formatTimeElapsed(maxTime, timezone)} ago`;
   }
 }
 

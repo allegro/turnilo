@@ -40,7 +40,6 @@ import {
   SimpleFullType
 } from "plywood";
 import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
-import { getWallTimeString } from "../../utils/time/time";
 import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
