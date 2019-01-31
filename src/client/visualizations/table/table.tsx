@@ -23,7 +23,7 @@ import { Dataset, Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { DateRange, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
@@ -91,7 +91,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
         case SplitType.number:
           return new NumberFilterClause({ reference, values: List.of(segment) });
         case SplitType.time:
-          return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+          return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
       }
