@@ -21,14 +21,15 @@ import * as moment from "moment-timezone";
 import { TimeRange } from "plywood";
 
 const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";
+const FORMAT_FULL_DATE_TIME = "YYYY-MM-DD HH:mm:ss";
 const FORMAT_DATE = "YYYY-MM-DD";
 const FORMAT_TIME = "HH:mm";
 
 const FORMAT_WITH_YEAR = "MMM D, YYYY";
 const FORMAT_WITHOUT_YEAR = "MMM D";
 
-const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "ha";
-const FORMAT_TIME_OF_DAY_WITH_MINUTES = "h:mma";
+const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "Ha";
+const FORMAT_TIME_OF_DAY_WITH_MINUTES = "H:mma";
 
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
@@ -171,7 +172,7 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
 }
 
 export function getWallTimeString(date: Date, timezone: Timezone): string {
-  return moment.tz(date, timezone.toString()).format("YYYY-MM-DD HH:mm:ss");
+  return moment.tz(date, timezone.toString()).format(FORMAT_FULL_DATE_TIME);
 }
 
 export function getWallTimeDateOnlyString(date: Date, timezone: Timezone): string {

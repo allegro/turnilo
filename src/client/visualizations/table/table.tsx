@@ -66,10 +66,10 @@ function formatSegment(value: any, timezone: Timezone, split?: Split): string {
         case "day":
           return d3.time.format("%Y-%m-%d")(time);
         default:
-          return d3.time.format("%Y-%m-%d %I:%M %p")(time);
+          return d3.time.format("%Y-%m-%d %H:%M %p")(time);
       }
     }
-    return d3.time.format("%Y-%m-%d %I:%M %p")(time);
+    return d3.time.format("%Y-%m-%d %H:%M %p")(time);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }
@@ -247,10 +247,8 @@ export class Table extends BaseVisualization<TableState> {
 
   deriveDatasetState(dataset: Dataset): Partial<TableState> {
     if (!this.props.essence.splits.length()) return {};
-    const flatData = dataset.flatten({
-      order: "preorder",
-      nestingName: "__nest"
-    }).data;
+    const flatDataset = dataset.flatten({ order: "preorder", nestingName: "__nest" });
+    const flatData = flatDataset.data;
     return { flatData };
   }
 
