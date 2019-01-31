@@ -337,14 +337,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     scaleY: any
   ): JSX.Element {
     const { clicker, essence, openRawDataModal } = this.props;
-    const { colors, timezone } = essence;
+    const { highlight, colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
     const { dragOnMeasure, scaleX, hoverRange, hoverMeasure, continuousDimension } = this.state;
 
     const formatter = seriesFormatter(format, measure);
 
-    if (!essence.highlightOn(measure.name)) return null;
+    if (highlight && !essence.highlightOn(measure.name)) return null;
 
     let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
@@ -401,6 +401,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           title={segmentLabel}
           content={measureLabel}
           actions={<SegmentActionButtons
+            segmentValue={measureLabel}
             clicker={dragRange ? null : clicker}
             openRawDataModal={openRawDataModal}
           />}

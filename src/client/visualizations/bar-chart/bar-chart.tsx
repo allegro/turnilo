@@ -393,13 +393,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence: { splits, dataCube, series }, clicker, openRawDataModal } = this.props;
     const dimension = dataCube.getDimension(splits.splits.get(hoverInfo.splitIndex).reference);
     const format = series.getSeries(measure.name).format;
+    const segmentValue = measure.formatDatum(path[path.length - 1], format);
     return <SegmentBubble
       left={leftOffset}
       top={topOffset}
       title={segmentLabel}
-      content={measure.formatDatum(path[path.length - 1], format)}
+      content={segmentValue}
       actions={<SegmentActionButtons
         dimension={dimension}
+        segmentValue={segmentValue}
         clicker={clicker}
         openRawDataModal={openRawDataModal}
         onClose={this.onBubbleClose}
@@ -448,10 +450,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
-    if (!essence.highlightOn(measure.name)) return false;
+    const { highlight, splits } = essence;
+    if (highlight && !essence.highlightOn(measure.name)) return false;
 
-    const { splits } = essence;
-    return essence.highlight.delta.equals(getFilterFromDatum(splits, path));
+    return highlight.delta.equals(getFilterFromDatum(splits, path));
   }
 
   isFaded(): boolean {
