@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('ts-node/register');
+require('ts-node').register({ typeCheck: true });
 require('ignore-styles');
 
 const jsdom = require("jsdom").jsdom;
