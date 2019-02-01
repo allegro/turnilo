@@ -18,15 +18,7 @@
 import { expect } from "chai";
 import { day, Duration, month, Timezone } from "chronoshift";
 import { DateRange } from "../../models/date-range/date-range";
-import {
-  appendDays,
-  datesEqual,
-  formatTimeBasedOnGranularity,
-  getEndWallTimeInclusive,
-  getWallTimeDay,
-  getWallTimeMonthWithYear,
-  prependDays
-} from "./time";
+import { appendDays, datesEqual, formatTimeBasedOnGranularity, formatYearMonth, getEndWallTimeInclusive, getWallTimeDay, prependDays } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {

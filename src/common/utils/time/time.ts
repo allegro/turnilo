@@ -191,7 +191,7 @@ function pad(input: number): string {
   return String(input);
 }
 
-export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
+export function formatTimeBasedOnGranularity(range: DateRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
   const wallTimeStart = getMoment(range.start, timezone);
   const year = wallTimeStart.year();
   const month = wallTimeStart.month();
