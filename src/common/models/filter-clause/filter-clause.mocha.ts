@@ -17,11 +17,34 @@
 
 import { expect } from "chai";
 import { Duration, Timezone } from "chronoshift";
-import { List } from "immutable";
+import { List, Set } from "immutable";
 import { DateRange } from "../date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
+import { FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, stringSatisfyClause, TimeFilterPeriod } from "./filter-clause";
 
 describe("FilterClause", () => {
+  describe("satisfy clause", () => {
+    describe("StringFilterClause", () => {
+      const input = ["foo", "bar", "baz", "qvux", "spam", "eggs"];
+
+      it("Include", () => {
+        const clause = new StringFilterClause({ action: StringFilterAction.IN, values: Set.of("bar", "baz") });
+        expect(input.filter(str => stringSatisfyClause(str, clause))).to.be.deep.eq(["bar", "baz"]);
+      });
+      it("Exclude", () => {
+        const clause = new StringFilterClause({ action: StringFilterAction.IN, not: true, values: Set.of("bar", "baz") });
+        expect(input.filter(str => stringSatisfyClause(str, clause))).to.be.deep.eq(["foo", "qvux", "spam", "eggs"]);
+      });
+      it("Contains", () => {
+        const clause = new StringFilterClause({ action: StringFilterAction.CONTAINS, values: Set.of("a") });
+        expect(input.filter(str => stringSatisfyClause(str, clause))).to.be.deep.eq(["bar", "baz", "spam"]);
+      });
+      it("Regular Expression", () => {
+        const clause = new StringFilterClause({ action: StringFilterAction.IN, values: Set.of("bar", "baz") });
+        expect(input.filter(str => stringSatisfyClause(str, clause))).to.be.deep.eq(["bar", "baz"]);
+      });
+    });
+  });
+
   describe("evaluate", () => {
     it("works with now for previous", () => {
       const previousRelative = new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.PREVIOUS, duration: Duration.fromJS("P1D") });
