@@ -30,6 +30,7 @@ export interface VisualizationProps {
   openRawDataModal?: Fn;
   registerDownloadableDataset?: (dataset: Dataset) => void;
   isThumbnail?: boolean;
+  refreshRequestTimestamp: number;
 }
 
 enum DatasetLoadStatus { LOADED, LOADING, ERROR }

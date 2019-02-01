@@ -21,9 +21,9 @@ import * as React from "react";
 import {
   appendDays,
   datesEqual,
+  formatYearMonth,
   getEndWallTimeInclusive,
   getWallTimeDay,
-  getWallTimeMonthWithYear,
   monthToWeeks,
   prependDays,
   shiftOneDay,
@@ -203,7 +203,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
       >
         <SvgIcon svg={require("../../icons/full-caret-left.svg")} />
       </div>
-      {getWallTimeMonthWithYear(startDate, timezone)}
+      {formatYearMonth(startDate, timezone)}
       <div
         className="caret right"
         onClick={this.goToNextMonth}

@@ -22,6 +22,7 @@ import * as moment from "moment-timezone";
 import { Dataset, Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
+import { DateRange } from "../../../common/models/date-range/date-range";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
@@ -29,7 +30,6 @@ import { Measure, MeasureDerivation } from "../../../common/models/measure/measu
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
@@ -92,7 +92,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
         case SplitType.number:
           return new NumberFilterClause({ reference, values: List.of(segment) });
         case SplitType.time:
-          return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+          return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
       }
@@ -122,7 +122,7 @@ export interface TableState extends BaseVisualizationState {
 }
 
 export class Table extends BaseVisualization<TableState> {
-  public static id = TABLE_MANIFEST.name;
+  protected className = TABLE_MANIFEST.name;
 
   getDefaultState(): TableState {
     return { flatData: null, hoverRow: null, ...super.getDefaultState() };
@@ -214,14 +214,14 @@ export class Table extends BaseVisualization<TableState> {
 
       if (!rowHighlight) return;
 
-      if (essence.highlightOn(Table.id)) {
+      if (essence.hasHighlight()) {
         if (rowHighlight.equals(essence.highlight.delta)) {
           clicker.dropHighlight();
           return;
         }
       }
 
-      clicker.changeHighlight(Table.id, null, rowHighlight);
+      clicker.changeHighlight(null, rowHighlight);
     }
   }
 
@@ -246,17 +246,11 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<TableState> {
-    const { essence: { splits } } = props;
-
-    if (dataset && splits.length()) {
-      const flatData = dataset.flatten({
-        order: "preorder",
-        nestingName: "__nest"
-      }).data;
-      return { flatData };
-    }
-    return {};
+  deriveDatasetState(dataset: Dataset): Partial<TableState> {
+    if (!this.props.essence.splits.length()) return {};
+    const flatDataset = dataset.flatten({ order: "preorder", nestingName: "__nest" });
+    const flatData = flatDataset.data;
+    return { flatData };
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
@@ -443,7 +437,7 @@ export class Table extends BaseVisualization<TableState> {
       const hScales = this.getScalesForColumns(essence, flatData);
 
       let highlightDelta: Filter = null;
-      if (essence.highlightOn(Table.id)) {
+      if (essence.hasHighlight()) {
         highlightDelta = essence.highlight.delta;
       }
 

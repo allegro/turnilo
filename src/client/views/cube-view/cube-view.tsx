@@ -42,6 +42,7 @@ import { User } from "../../../common/models/user/user";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { Fn } from "../../../common/utils/general/general";
+import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
 import { FilterTile } from "../../components/filter-tile/filter-tile";
@@ -115,6 +116,7 @@ export interface CubeViewState {
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
+  lastRefreshRequestTimestamp: number;
 }
 
 const MIN_PANEL_WIDTH = 240;
@@ -143,6 +145,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence: null,
       dragOver: false,
       layout: this.getStoredLayout(),
+      lastRefreshRequestTimestamp: 0,
       updatingMaxTime: false
     };
 
@@ -208,9 +211,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortMeasure(measure) });
       },
-      changeHighlight: (owner: string, measure: string, delta: Filter) => {
+      changeHighlight: (measure: string, delta: Filter) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(new Highlight({ owner, measure, delta })) });
+        this.setState({ essence: essence.changeHighlight(new Highlight({ measure, delta })) });
       },
       acceptHighlight: () => {
         const { essence } = this.state;
@@ -229,11 +232,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ updatingMaxTime: true });
 
     DataCube.queryMaxTime(dataCube)
-      .then(updatedMaxTime => {
+      .then(maxTime => {
         if (!this.mounted) return;
+        const timeName = dataCube.name;
+        const isBatchCube = !dataCube.refreshRule.isRealtime();
+        const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
+        if (isBatchCube && isCubeUpToDate) {
+          this.setState({ updatingMaxTime: false });
+          return;
+        }
         this.setState({
-          timekeeper: timekeeper.updateTime(dataCube.name, updatedMaxTime),
-          updatingMaxTime: false
+          timekeeper: timekeeper.updateTime(timeName, maxTime),
+          updatingMaxTime: false,
+          lastRefreshRequestTimestamp: (new Date()).getTime()
         });
       });
   }
@@ -691,9 +702,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private visElement() {
-    const { essence, visualizationStage: stage } = this.state;
+    const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
+      refreshRequestTimestamp: lastRefreshRequestTimestamp,
       essence,
       clicker: this.clicker,
       timekeeper: this.state.timekeeper,
