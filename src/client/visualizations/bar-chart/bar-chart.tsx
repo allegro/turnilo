@@ -21,6 +21,7 @@ import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "p
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
+import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
@@ -90,7 +91,7 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[]): Filter {
         case SplitType.number:
           return new NumberFilterClause({ reference, values: List.of(segment) });
         case SplitType.time:
-          return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+          return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
       }
@@ -451,9 +452,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
     const { highlight, splits } = essence;
-    if (highlight && !essence.highlightOn(measure.name)) return false;
-
-    return highlight.delta.equals(getFilterFromDatum(splits, path));
+    return essence.highlightOn(measure.name) && highlight.delta.equals(getFilterFromDatum(splits, path));
   }
 
   isFaded(): boolean {
