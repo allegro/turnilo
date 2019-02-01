@@ -23,7 +23,7 @@ import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { AutoRefreshMenu } from "./auto-refresh-menu";
 
-describe("AutoRefreshMenu", () => {
+describe.skip("AutoRefreshMenu", () => {
   it("adds the correct class", () => {
     var openOn = document.createElement("div");
 

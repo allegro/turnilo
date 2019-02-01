@@ -147,24 +147,12 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
 }
 
 export class BarChart extends BaseVisualization<BarChartState> {
-  public static id = BAR_CHART_MANIFEST.name;
+  protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
 
   getDefaultState(): BarChartState {
     return { hoverInfo: null, maxNumberOfLeaves: [], flatData: [], ...super.getDefaultState() };
-  }
-
-  shouldFetchData(nextProps: VisualizationProps): boolean {
-    const { essence, timekeeper } = this.props;
-    const nextEssence = nextProps.essence;
-    const nextTimekeeper = nextProps.timekeeper;
-    return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
-      nextEssence.differentTimeShift(essence) ||
-      nextEssence.differentSplits(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
   }
 
   componentDidUpdate() {
@@ -274,7 +262,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const rowHighlight = getFilterFromDatum(splits, path);
 
-    if (essence.highlightOn(BarChart.id, measures[chartIndex].name)) {
+    if (essence.highlightOn(measures[chartIndex].name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
         clicker.dropHighlight();
         this.setState({ selectionInfo: null });
@@ -283,7 +271,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
 
     this.setState({ selectionInfo });
-    clicker.changeHighlight(BarChart.id, measures[chartIndex].name, rowHighlight);
+    clicker.changeHighlight(measures[chartIndex].name, rowHighlight);
   }
 
   getYExtent(data: Datum[], measure: Measure): number[] {
@@ -405,13 +393,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence: { splits, dataCube, series }, clicker, openRawDataModal } = this.props;
     const dimension = dataCube.getDimension(splits.splits.get(hoverInfo.splitIndex).reference);
     const format = series.getSeries(measure.name).format;
+    const segmentValue = measure.formatDatum(path[path.length - 1], format);
     return <SegmentBubble
       left={leftOffset}
       top={topOffset}
       title={segmentLabel}
-      content={measure.formatDatum(path[path.length - 1], format)}
+      content={segmentValue}
       actions={<SegmentActionButtons
         dimension={dimension}
+        segmentValue={segmentValue}
         clicker={clicker}
         openRawDataModal={openRawDataModal}
         onClose={this.onBubbleClose}
@@ -460,24 +450,19 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
-    const { splits } = essence;
+    const { highlight, splits } = essence;
+    if (highlight && !essence.highlightOn(measure.name)) return false;
 
-    if (essence.highlightOnDifferentMeasure(BarChart.id, measure.name)) return false;
-
-    if (essence.highlightOn(BarChart.id, measure.name)) {
-      return essence.highlight.delta.equals(getFilterFromDatum(splits, path));
-    }
-
-    return false;
+    return highlight.delta.equals(getFilterFromDatum(splits, path));
   }
 
   isFaded(): boolean {
     const { essence } = this.props;
-    return essence.highlightOn(BarChart.id);
+    return essence.hasHighlight();
   }
 
   hasAnySelectionGoingOn(): boolean {
-    return this.props.essence.highlightOn(BarChart.id);
+    return this.props.essence.hasHighlight();
   }
 
   isHovered(path: Datum[], measure: Measure): boolean {
@@ -747,8 +732,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { chart, yAxis, highlight };
   }
 
-  deriveDatasetState(props: VisualizationProps, dataset: Dataset): Partial<BarChartState> {
-    const { essence } = props;
+  deriveDatasetState(dataset: Dataset): Partial<BarChartState> {
+    const { essence } = this.props;
     const { splits } = essence;
     this.coordinatesCache = [];
     if (!splits.length()) return {};
