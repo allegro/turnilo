@@ -45,7 +45,7 @@ describe("Dimensions", () => {
   });
 
   it("should count dimensions", () => {
-    expect(dimensions.size()).to.equal(11);
+    expect(dimensions.size()).to.equal(12);
   });
 
   it("should return the first dimension", () => {
@@ -111,18 +111,18 @@ describe("Dimensions", () => {
   it("should be immutable on append", () => {
     const newDimensions = dimensions.append(DimensionFixtures.number());
 
-    expect(dimensions.size()).to.equal(11);
+    expect(dimensions.size()).to.equal(12);
     expect(newDimensions).to.not.equal(dimensions);
     expect(newDimensions.equals(dimensions)).to.be.false;
-    expect(newDimensions.size()).to.equal(12);
+    expect(newDimensions.size()).to.equal(13);
   });
 
   it("should be immutable on prepend", () => {
     const newDimensions = dimensions.prepend(DimensionFixtures.number());
 
-    expect(dimensions.size()).to.equal(11);
+    expect(dimensions.size()).to.equal(12);
     expect(newDimensions).to.not.equal(dimensions);
     expect(newDimensions.equals(dimensions)).to.be.false;
-    expect(newDimensions.size()).to.equal(12);
+    expect(newDimensions.size()).to.equal(13);
   });
 });

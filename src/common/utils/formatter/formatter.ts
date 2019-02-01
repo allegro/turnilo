@@ -19,6 +19,7 @@ import { Duration, Timezone } from "chronoshift";
 import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
+import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import {
   BooleanFilterClause,
@@ -70,7 +71,7 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
   if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   } else if (TimeRange.isTimeRange(value)) {
-    return formatTimeRange(value, timezone, displayYear);
+    return formatTimeRange(new DateRange(value), timezone, displayYear);
   } else {
     return "" + value;
   }
@@ -133,7 +134,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
 
 function getFormattedTimeClauseValues(clause: TimeFilterClause, timezone: Timezone): string {
   if (clause instanceof FixedTimeFilterClause) {
-    return formatTimeRange(TimeRange.fromJS(clause.values.get(0)), timezone, DisplayYear.IF_DIFF);
+    return formatTimeRange(clause.values.get(0), timezone, DisplayYear.IF_DIFF);
   }
   const { period, duration } = clause;
   switch (period) {

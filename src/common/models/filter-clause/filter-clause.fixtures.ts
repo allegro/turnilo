@@ -16,9 +16,9 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
+import { DateRange } from "../date-range/date-range";
 import {
   BooleanFilterClause,
-  DateRange,
   FilterClause,
   FixedTimeFilterClause,
   NumberFilterClause, NumberRange,

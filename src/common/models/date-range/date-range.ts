@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,14 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import { Record } from "immutable";
 
-// sass-lint:disable no-empty-rulesets
-.geo {
-
+interface DateRangeDefinition {
+  start: Date;
+  end: Date;
 }
-// sass-lint:enable no-empty-rulesets
+
+const defaultDateRange: DateRangeDefinition = { start: null, end: null };
+
+export class DateRange extends Record<DateRangeDefinition>(defaultDateRange) {
+}

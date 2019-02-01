@@ -20,11 +20,11 @@ import { DimensionFixtures } from "./dimension.fixtures";
 
 export class DimensionsFixtures {
   static wikiNames(): string[] {
-    return ["time", "country", "channel", "comment", "commentLength", "commentLengthOver100", "isRobot", "namespace", "articleName", "page", "userChars"];
+    return ["time", "country", "channel", "comment", "commentLength", "commentLengthOver100", "isRobot", "namespace", "articleName", "page", "page_last_author", "userChars"];
   }
 
   static wikiTitles(): string[] {
-    return ["Time", "Country", "Channel", "Comment", "Comment Length", "Comment Length Over 100", "Is Robot", "Namespace", "Article Name", "Page", "User Chars"];
+    return ["Time", "Country", "Channel", "Comment", "Comment Length", "Comment Length Over 100", "Is Robot", "Namespace", "Article Name", "Page", "Page Author", "User Chars"];
   }
 
   static wikiJS(): DimensionOrGroupJS[] {
@@ -66,6 +66,12 @@ export class DimensionsFixtures {
         name: "page",
         title: "Page",
         formula: "$page"
+      },
+      {
+        kind: "string",
+        name: "page_last_author",
+        title: "Page Author",
+        formula: "$page.lookup(page_last_author)"
       },
       {
         kind: "string",

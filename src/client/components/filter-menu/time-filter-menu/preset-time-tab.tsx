@@ -15,9 +15,9 @@
  */
 
 import { Duration, second } from "chronoshift";
-import { TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
+import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
@@ -128,7 +128,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     const fixedFilter = essence.evaluateSelection(filter, timekeeper);
     const { start, end } = fixedFilter.values.get(0);
 
-    return new TimeRange({
+    return new DateRange({
       start: second.shift(start, essence.timezone, -1),
       end: second.shift(end, essence.timezone, 1)
     });

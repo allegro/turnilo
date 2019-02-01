@@ -18,7 +18,8 @@
 import { expect } from "chai";
 import { Duration, Timezone } from "chronoshift";
 import { List } from "immutable";
-import { DateRange, FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
+import { DateRange } from "../date-range/date-range";
+import { FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
 
 describe("FilterClause", () => {
   describe("evaluate", () => {
