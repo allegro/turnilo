@@ -236,6 +236,12 @@ describe("AppSettings", () => {
                 title: "Page"
               },
               {
+                formula: "$page.lookup(page_last_author)",
+                kind: "string",
+                name: "page_last_author",
+                title: "Page Author"
+              },
+              {
                 formula: "$userChars",
                 kind: "string",
                 name: "userChars",

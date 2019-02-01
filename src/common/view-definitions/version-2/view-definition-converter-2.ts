@@ -28,7 +28,6 @@ import {
   MatchExpression,
   NotExpression,
   OverlapExpression,
-  RefExpression,
   Set as PlywoodSet,
   TimeBucketExpression,
   TimeFloorExpression,
@@ -217,8 +216,7 @@ function expressionAction(expression: ChainableExpression): SupportedAction {
 
 function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: DataCube): FilterClause {
   const { expression, exclude } = extractExclude(filter);
-  const dimensionName = (expression.operand as RefExpression).name;
-  const dimension = dataCube.getDimension(dimensionName);
+  const dimension = dataCube.getDimensionByExpression(expression.operand);
 
   if (isBooleanFilterSelection(expression.expression)) {
     return readBooleanFilterClause(expression.expression, dimension, exclude);
@@ -244,9 +242,10 @@ function isTimeBucket(action: any): boolean {
 }
 
 function convertSplit(split: any, dataCube: DataCube): Split {
-  const { sortAction, limitAction, expression, bucketAction } = split;
-  const reference = (expression as RefExpression).name;
-  const dimension = dataCube.getDimension(reference);
+  const { sortAction, limitAction, bucketAction } = split;
+  const expression = Expression.fromJS(split.expression);
+  const dimension = dataCube.getDimensionByExpression(expression);
+  const reference = dimension.name;
   const type = kindToType(dimension.kind);
   const sort = sortAction && new Sort({
     reference: sortAction.expression.name,
