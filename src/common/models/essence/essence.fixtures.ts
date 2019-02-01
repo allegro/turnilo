@@ -144,7 +144,7 @@ export class EssenceFixtures {
       colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
       compare: null,
-      highlight: new Highlight({ owner: "line-chart", measure: "count", delta: Filter.fromClauses(highlightClauses) })
+      highlight: new Highlight({ measure: "count", delta: Filter.fromClauses(highlightClauses) })
     });
   }
 

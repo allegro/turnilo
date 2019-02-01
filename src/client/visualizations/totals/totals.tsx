@@ -19,25 +19,13 @@ import { Dataset } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { MeasureDerivation } from "../../../common/models/measure/measure";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Total } from "./total";
 import "./totals.scss";
 
 export class Totals extends BaseVisualization<BaseVisualizationState> {
-  public static id = TOTALS_MANIFEST.name;
-
-  shouldFetchData(nextProps: VisualizationProps): boolean {
-    const { essence, timekeeper } = this.props;
-    const nextEssence = nextProps.essence;
-    const nextTimekeeper = nextProps.timekeeper;
-    return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
-      nextEssence.differentTimeShift(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime();
-  }
+  protected className = TOTALS_MANIFEST.name;
 
   renderTotals(dataset: Dataset): JSX.Element[] {
     const { essence } = this.props;

@@ -18,7 +18,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { sleep } from "../../../client/utils/test-utils/sleep";
-import { complement, concatTruthy, cons, debounce, flatMap, mapTruthy, thread, threadConditionally, threadNullable } from "./functional";
+import { complement, concatTruthy, cons, debounceWithPromise, flatMap, mapTruthy, thread, threadConditionally, threadNullable } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -103,7 +103,7 @@ describe("Functional utilities", () => {
     });
   });
 
-  describe("debounce", () => {
+  describe("debounceWithPromise", () => {
     let callSpy: SinonSpy;
 
     beforeEach(() => {
@@ -111,7 +111,7 @@ describe("Functional utilities", () => {
     });
 
     it("should call function once", async () => {
-      const debounced = debounce(callSpy, 10);
+      const debounced = debounceWithPromise(callSpy, 10);
       debounced();
       debounced();
       debounced();
@@ -121,7 +121,7 @@ describe("Functional utilities", () => {
     });
 
     it("should call function with argument of last invocation", async () => {
-      const debounced = debounce(callSpy, 10);
+      const debounced = debounceWithPromise(callSpy, 10);
       debounced(1);
       debounced(2);
       debounced(3);
@@ -130,7 +130,7 @@ describe("Functional utilities", () => {
     });
 
     it("should call function again after if time passes", async () => {
-      const debounced = debounce(callSpy, 10);
+      const debounced = debounceWithPromise(callSpy, 10);
       debounced();
       debounced();
       debounced();
@@ -143,12 +143,19 @@ describe("Functional utilities", () => {
     });
 
     it("should not call function after cancelation", async () => {
-      const debounced = debounce(callSpy, 10);
+      const debounced = debounceWithPromise(callSpy, 10);
       debounced();
       debounced();
       debounced.cancel();
       await sleep(10);
       expect(callSpy.callCount).to.eq(0);
+    });
+
+    it("should return promise with value", async () => {
+      const returnVal = 5;
+      const debounced = debounceWithPromise(() => returnVal, 10);
+      const x = await debounced();
+      expect(x).to.be.eq(returnVal);
     });
   });
 });
