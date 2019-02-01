@@ -21,6 +21,7 @@ import { $, Dataset, Datum, Expression, NumberRange, PlywoodValue, r, SortExpres
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
+import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
@@ -546,7 +547,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (segmentValue instanceof TimeRange) {
       return formatTimeBasedOnGranularity(
-        segmentValue,
+        new DateRange(segmentValue),
         (selectedGranularity as Duration),
         timezone,
         getLocale());

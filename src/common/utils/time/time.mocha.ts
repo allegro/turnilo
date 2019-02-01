@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { day, Duration, month, Timezone } from "chronoshift";
-import { TimeRange } from "plywood";
+import { DateRange } from "../../models/date-range/date-range";
 import { appendDays, datesEqual, formatTimeBasedOnGranularity, formatYearMonth, getEndWallTimeInclusive, getWallTimeDay, prependDays } from "./time";
 
 describe("Time", () => {
@@ -118,25 +118,25 @@ describe("Time", () => {
     var start = new Date("1965-02-02T13:00:00.000Z");
     var end = day.shift(start, TZ_TIJUANA, 1);
     var gran = Duration.fromJS("PT1H");
-    var range = new TimeRange({ start, end });
+    var range = new DateRange({ start, end });
     expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "hour tijuana").to.equal("Feb 2, 1965, 5am");
 
     start = new Date("1999-05-02T13:00:00.000Z");
     end = month.shift(start, TZ_TIJUANA, 1);
     gran = Duration.fromJS("PT1S");
-    range = new TimeRange({ start, end });
+    range = new DateRange({ start, end });
     expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "second tijuana").to.equal("May 2, 06:00:00");
 
     start = new Date("1999-05-02T13:00:00.000Z");
     end = month.shift(start, TZ_TIJUANA, 1);
     gran = Duration.fromJS("P1W");
-    range = new TimeRange({ start, end });
+    range = new DateRange({ start, end });
     expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "week tijuana").to.equal("May 2 - Jun 2, 1999 6am");
 
     start = new Date("1999-05-02T13:00:00.000Z");
     end = month.shift(start, TZ_KATHMANDU, 1);
     gran = Duration.fromJS("P1M");
-    range = new TimeRange({ start, end });
+    range = new DateRange({ start, end });
     var monthFmt = formatTimeBasedOnGranularity(range, gran, TZ_KATHMANDU, locale);
     expect(monthFmt, "month granularity format").to.equal("May, 1999");
     var minFmt = formatTimeBasedOnGranularity(range, Duration.fromJS("PT1M"), TZ_KATHMANDU, locale);

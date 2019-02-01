@@ -16,12 +16,12 @@
 
 import { day } from "chronoshift";
 import { List } from "immutable";
-import { TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
+import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { DateRange, FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
 import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
@@ -67,40 +67,19 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   state: FixedTimeTabState = this.initialState();
 
-  validate(): boolean {
-    return this.validateFilter() || this.validateTimeShift();
+  createDateRange(): DateRange | null {
+    const { start, end: maybeEnd } = this.state;
+    if (!start) return null;
+    const timezone = this.props.essence.timezone;
+    const end = maybeEnd || day.shift(start, timezone, 1);
+    if (start >= end) return null;
+    return new DateRange({ start, end });
   }
 
-  validateTimeShift(): boolean {
-    const { shift } = this.state;
-    return isValidTimeShift(shift) && !this.props.essence.timeShift.equals(TimeShift.fromJS(shift));
-  }
+  constructFixedFilter(dateRange: DateRange): Filter {
+    const { essence: { filter }, dimension: { name } } = this.props;
 
-  validateFilter(): boolean {
-    try {
-      const newFilter = this.constructFixedFilter();
-      return !this.props.essence.filter.equals(newFilter);
-    } catch {
-      return false;
-    }
-  }
-
-  constructFixedFilter(): Filter {
-    let { start, end } = this.state;
-    const { essence: { filter, timezone }, dimension: { name } } = this.props;
-
-    if (!start) {
-      throw new Error("Couldn't construct time filter: No starting date.");
-    }
-
-    if (!end) {
-      end = day.shift(start, timezone, 1);
-    }
-
-    if (start >= end) {
-      throw new Error("Couldn't construct time filter: Start should be earlier than end.");
-    }
-    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(new DateRange({ start, end })) });
+    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(dateRange) });
     return filter.setClause(clause);
   }
 
@@ -108,16 +87,30 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     return TimeShift.fromJS(this.state.shift);
   }
 
+  validateTimeShift(): boolean {
+    return isValidTimeShift(this.state.shift);
+  }
+
+  validate(): boolean {
+    const dateRange = this.createDateRange();
+    if (!dateRange) return false;
+    if (!this.validateTimeShift()) return false;
+    const { essence: { filter, timeShift } } = this.props;
+    const newTimeShift = this.constructTimeShift();
+    const newFilter = this.constructFixedFilter(dateRange);
+    return !filter.equals(newFilter) || !timeShift.equals(newTimeShift);
+  }
+
   onOkClick = () => {
     if (!this.validate()) return;
     const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFixedFilter());
+    clicker.changeFilter(this.constructFixedFilter(this.createDateRange()));
     clicker.changeComparisonShift(this.constructTimeShift());
     onClose();
   }
 
   render() {
-    const { essence, timekeeper, dimension } = this.props;
+    const { essence: { timezone, dataCube }, timekeeper, dimension, onClose } = this.props;
     if (!dimension) return null;
     const { shift, start, end } = this.state;
 
@@ -125,24 +118,24 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
       <DateRangePicker
         startTime={start}
         endTime={end}
-        maxTime={essence.dataCube.getMaxTime(timekeeper)}
-        timezone={essence.timezone}
+        maxTime={dataCube.getMaxTime(timekeeper)}
+        timezone={timezone}
         onStartChange={this.onStartChange}
         onEndChange={this.onEndChange}
       />
       <div className="cont">
         <TimeShiftSelector
           shift={shift}
-          time={TimeRange.fromJS({ start, end })}
+          time={this.createDateRange()}
           onShiftChange={this.setTimeShift}
-          timezone={essence.timezone}
+          timezone={timezone}
           shiftValue={isValidTimeShift(shift) ? TimeShift.fromJS(shift) : null}
           errorMessage={!isValidTimeShift(shift) && STRINGS.invalidDurationFormat}
         />
       </div>
       <div className="ok-cancel-bar">
         <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />
-        <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel} />
+        <Button type="secondary" onClick={onClose} title={STRINGS.cancel} />
       </div>
     </div>;
   }

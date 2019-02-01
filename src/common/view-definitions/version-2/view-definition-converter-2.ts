@@ -36,11 +36,11 @@ import {
 } from "plywood";
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import {
   BooleanFilterClause,
-  DateRange,
   FilterClause,
   FixedTimeFilterClause,
   NumberFilterClause,
