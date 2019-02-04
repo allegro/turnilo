@@ -17,9 +17,10 @@
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import {
-  BooleanFilterClause, DateRange,
+  BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
   NumberFilterClause, NumberRange,

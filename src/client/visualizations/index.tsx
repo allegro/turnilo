@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-import { SimpleArray } from "immutable-class";
+import { BAR_CHART_MANIFEST } from "../../common/manifests/bar-chart/bar-chart";
+import { LINE_CHART_MANIFEST } from "../../common/manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../common/manifests/table/table";
+import { TOTALS_MANIFEST } from "../../common/manifests/totals/totals";
 import { Manifest } from "../../common/models/manifest/manifest";
-
+import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
-import { BaseVisualization } from "./base-visualization/base-visualization";
+import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
 import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
 
-// TODO, back to: const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
-const VIS_COMPONENTS: any[] = [
-  Totals,
-  Table,
-  LineChart,
-  BarChart
-];
+type Visualisation = new(props: VisualizationProps) => BaseVisualization<BaseVisualizationState>;
 
-export function getVisualizationComponent(manifest: Manifest): typeof BaseVisualization {
-  var manifestName = manifest.name;
-  return SimpleArray.find(VIS_COMPONENTS, v => (v as any).id === manifestName);
+const VIS_COMPONENTS: Record<string, Visualisation> = {
+  [TOTALS_MANIFEST.name]: Totals,
+  [TABLE_MANIFEST.name]: Table,
+  [LINE_CHART_MANIFEST.name]: LineChart,
+  [BAR_CHART_MANIFEST.name]: BarChart
+};
+
+export function getVisualizationComponent({ name }: Manifest): Visualisation {
+  return VIS_COMPONENTS[name];
 }

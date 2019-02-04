@@ -472,6 +472,10 @@ The units for this measure. To be shown alongside the title.
 
 If set to true measure will be interpreted in UI as "better" when value is lower.
 
+**format** (string)  default: "0,0.0 a"
+
+Default format for measure as string in [numbro format](http://numbrojs.com/old-format.html).
+
 **formula** (string - plywood expression)
 
 The [Plywood expression](http://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.

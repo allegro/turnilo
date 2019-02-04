@@ -15,12 +15,13 @@
  */
 
 import { expect } from "chai";
+import { Duration } from "chronoshift";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
-import { ViewDefinition2 } from "./view-definition-2";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
+import { ViewDefinitionConverter2Fixtures } from "./view-definition-converter-2.fixtures";
 
 const currentDay = {
   op: "timeBucket",
@@ -56,25 +57,6 @@ const latestDay = {
   step: -1
 };
 
-const totalsWithPeriod = (period: any): ViewDefinition2 => ({
-  visualization: "totals",
-  timezone: "Etc/UTC",
-  filter: {
-    op: "overlap",
-    operand: {
-      op: "ref",
-      name: "time"
-    },
-    expression: period
-  },
-  splits: [],
-  singleMeasure: "delta",
-  multiMeasureMode: true,
-  selectedMeasures: ["count"],
-  pinnedDimensions: [],
-  pinnedSort: "delta"
-});
-
 describe("ViewDefinitionConverter2", () => {
 
   [
@@ -82,13 +64,107 @@ describe("ViewDefinitionConverter2", () => {
     { label: "previous day", expression: previousDay, period: TimeFilterPeriod.PREVIOUS },
     { label: "latest day", expression: latestDay, period: TimeFilterPeriod.LATEST }
   ].forEach(({ label, expression, period }) => {
-    it(`should convert time filter clause with ${label}`, () => {
-      const totalsWithTimeBucket: ViewDefinition2 = totalsWithPeriod(expression);
-      const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
+    it(`converts ${label} bucket expression to time period`, () => {
+      const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression(expression);
+      const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS);
       const convertedClause = essence.filter.clauses.first();
 
       const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", period);
       expect(convertedClause).to.deep.equal(expectedClause);
     });
   });
+
+  it("converts filter with lookup expressions", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterActions([
+      {
+        action: "in",
+        expression: {
+          op: "chain",
+          expression: {
+            op: "ref",
+            name: "n"
+          },
+          actions: [
+            {
+              action: "timeFloor",
+              duration: "P1W"
+            },
+            {
+              action: "timeRange",
+              duration: "P1W",
+              step: -1
+            }
+          ]
+        }
+      },
+      {
+        action: "and",
+        expression: {
+          op: "chain",
+          expression: {
+            op: "ref",
+            name: "page"
+          },
+          actions: [
+            {
+              action: "lookup",
+              lookup: "page_last_author"
+            },
+            {
+              action: "overlap",
+              expression: {
+                op: "literal",
+                value: {
+                  setType: "STRING",
+                  elements: [
+                    "TypeScript"
+                  ]
+                },
+                type: "SET"
+              }
+            }
+          ]
+        }
+      }
+    ]);
+    const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).filter;
+    const convertedClause = convertedFilter.clauses.get(1);
+
+    const expectedClause = FilterClauseFixtures.stringIn("page_last_author", ["TypeScript"]);
+    expect(convertedClause).to.deep.equal(expectedClause);
+  });
+
+  it("converts splits with lookup expressions", () => {
+    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([{
+      expression: {
+        op: "chain",
+        expression: {
+          op: "ref",
+          name: "page"
+        },
+        actions: [
+          {
+            action: "lookup",
+            lookup: "page_last_author"
+          }
+        ]
+      },
+      sortAction: {
+        action: "sort",
+        expression: {
+          op: "ref",
+          name: "count"
+        },
+        direction: "descending"
+      },
+      limitAction: {
+        action: "limit",
+        limit: 10
+      }
+    }]);
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).splits;
+
+    expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");
+  });
+
 });

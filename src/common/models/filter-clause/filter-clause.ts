@@ -17,8 +17,9 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
+import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
+import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
@@ -105,16 +106,6 @@ export class StringFilterClause extends Record<StringFilterDefinition>(defaultSt
   constructor(params: OmitType<StringFilterDefinition>) {
     super(params);
   }
-}
-
-interface DateRangeDefinition {
-  start: Date;
-  end: Date;
-}
-
-const defaultDateRange: DateRangeDefinition = { start: null, end: null };
-
-export class DateRange extends Record<DateRangeDefinition>(defaultDateRange) {
 }
 
 interface FixedTimeFilterDefinition extends FilterDefinition {
