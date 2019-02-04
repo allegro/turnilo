@@ -121,6 +121,29 @@ export const MEASURE = {
   }
 };
 
+export const CUSTOMIZATION = {
+  customLogoSvg: {
+    label: "Custom Logo",
+    description: "Custom Logo icon."
+  },
+  headerBackground: {
+    label: "Background Color",
+    description: "Custom color of header background."
+  },
+  urlShortener: {
+    label: "Url Shortener",
+    description: "Code for request call to url shortener service. If provided, additional options would show in share menu."
+  },
+  externalViews: {
+    label: "External Views",
+    description: "Code that generates links to external views that will appear in share menu."
+  },
+  timezones: {
+    label: "Timezones",
+    description: "These timezones will appear in the dropdown instead of the default."
+  }
+};
+
 export const CLUSTER = {
   title: {
     label: "Title",
