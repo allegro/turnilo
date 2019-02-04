@@ -16,9 +16,10 @@
  */
 
 import { AttributeInfo } from "plywood";
-import { CLUSTER, DATA_CUBE } from "../../../common/models/labels";
+import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../../common/models/labels";
 import { AppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";
+import { Customization } from "../../models/customization/customization";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Measure } from "../../models/measure/measure";
@@ -97,7 +98,34 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
   return { add: adder };
 }
 
-export function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
+function customizationToYAML(customization: Customization, withComments: boolean): string[] {
+  const { timezones, externalViews } = customization;
+  let lines: string[] = [];
+
+  getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
+    .add("customLogoSvg")
+    .add("headerBackground")
+    .add("urlShortener");
+
+  if (timezones && timezones.length) {
+    lines.push("timezones:");
+    lines.push(...timezones.map(tz => `- ${tz.toString()}`));
+  }
+
+  if (externalViews && externalViews.length) {
+    lines.push("externalViews:");
+    externalViews.forEach(({ title, linkGenerator }) => {
+      lines.push(...yamlObject([
+        `title: ${title}`,
+        `linkGenerator: ${linkGenerator}`
+      ]));
+    });
+  }
+
+  return yamlObject(lines);
+}
+
+function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   let lines: string[] = [
     `name: ${cluster.name}`
   ];
@@ -135,7 +163,7 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
   return yamlObject(lines);
 }
 
-export function attributeToYAML(attribute: AttributeInfo): string[] {
+function attributeToYAML(attribute: AttributeInfo): string[] {
   let lines: string[] = [
     `name: ${attribute.name}`,
     `type: ${attribute.type}`
@@ -149,7 +177,7 @@ export function attributeToYAML(attribute: AttributeInfo): string[] {
   return yamlObject(lines);
 }
 
-export function dimensionToYAML(dimension: Dimension): string[] {
+function dimensionToYAML(dimension: Dimension): string[] {
   let lines: string[] = [
     `name: ${dimension.name}`,
     `title: ${dimension.title}`
@@ -165,7 +193,7 @@ export function dimensionToYAML(dimension: Dimension): string[] {
   return yamlObject(lines);
 }
 
-export function measureToYAML(measure: Measure): string[] {
+function measureToYAML(measure: Measure): string[] {
   let lines: string[] = [
     `name: ${measure.name}`,
     `title: ${measure.title}`
@@ -186,7 +214,7 @@ export function measureToYAML(measure: Measure): string[] {
   return yamlObject(lines);
 }
 
-export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
+function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   let lines: string[] = [
     `name: ${dataCube.name}`,
     `title: ${dataCube.title}`,
@@ -367,7 +395,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   return yamlObject(lines);
 }
 
-export interface Extra {
+interface Extra {
   header?: boolean;
   version?: string;
   verbose?: boolean;
@@ -375,7 +403,7 @@ export interface Extra {
 }
 
 export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
-  const { dataCubes, clusters } = appSettings;
+  const { dataCubes, clusters, customization } = appSettings;
 
   if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
 
@@ -406,6 +434,11 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
   if (clusters.length) {
     lines.push("clusters:");
     lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
+  }
+
+  if (customization) {
+    lines.push("customization:");
+    lines.push(...customizationToYAML(customization, withComments));
   }
 
   lines.push("dataCubes:");
