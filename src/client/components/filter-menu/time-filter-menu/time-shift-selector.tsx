@@ -16,8 +16,8 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { TimeRange } from "plywood";
 import * as React from "react";
+import { DateRange } from "../../../../common/models/date-range/date-range";
 import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { DisplayYear, formatTimeRange } from "../../../../common/utils/time/time";
@@ -29,17 +29,15 @@ function timeShiftPreviewForRange({ shiftValue, time, timezone }: Pick<TimeShift
   if (shiftValue === null || shiftValue.isEmpty()) return null;
   if (time === null || !time.start || !time.end) return null;
   const duration: Duration = shiftValue.valueOf();
-  const shiftedTimeRange = TimeRange.fromJS({
-    start: duration.shift(time.start, timezone, -1),
-    end: duration.shift(time.end, timezone, -1),
-    bounds: time.bounds
-  });
+  const shiftedTimeRange = time
+    .set("start", duration.shift(time.start, timezone, -1))
+    .set("end", duration.shift(time.end, timezone, -1));
   return formatTimeRange(shiftedTimeRange, timezone, DisplayYear.IF_DIFF);
 }
 
 export interface TimeShiftSelectorProps {
   shift: string;
-  time: TimeRange;
+  time: DateRange;
   timezone: Timezone;
   onShiftChange: Unary<string, void>;
   errorMessage?: string;

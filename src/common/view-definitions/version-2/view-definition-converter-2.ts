@@ -28,7 +28,6 @@ import {
   MatchExpression,
   NotExpression,
   OverlapExpression,
-  RefExpression,
   Set as PlywoodSet,
   TimeBucketExpression,
   TimeFloorExpression,
@@ -37,11 +36,11 @@ import {
 } from "plywood";
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import {
   BooleanFilterClause,
-  DateRange,
   FilterClause,
   FixedTimeFilterClause,
   NumberFilterClause,
@@ -90,9 +89,9 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
 
 function readHighlight(definition: any, dataCube: DataCube): Highlight {
   if (!definition) return null;
-  const { measure, owner } = definition;
+  const { measure } = definition;
   const delta = Filter.fromClauses(filterJSConverter(definition.delta, dataCube));
-  return new Highlight({ measure, owner, delta });
+  return new Highlight({ measure, delta });
 
 }
 
@@ -217,8 +216,7 @@ function expressionAction(expression: ChainableExpression): SupportedAction {
 
 function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: DataCube): FilterClause {
   const { expression, exclude } = extractExclude(filter);
-  const dimensionName = (expression.operand as RefExpression).name;
-  const dimension = dataCube.getDimension(dimensionName);
+  const dimension = dataCube.getDimensionByExpression(expression.operand);
 
   if (isBooleanFilterSelection(expression.expression)) {
     return readBooleanFilterClause(expression.expression, dimension, exclude);
@@ -244,9 +242,10 @@ function isTimeBucket(action: any): boolean {
 }
 
 function convertSplit(split: any, dataCube: DataCube): Split {
-  const { sortAction, limitAction, expression, bucketAction } = split;
-  const reference = (expression as RefExpression).name;
-  const dimension = dataCube.getDimension(reference);
+  const { sortAction, limitAction, bucketAction } = split;
+  const expression = Expression.fromJS(split.expression);
+  const dimension = dataCube.getDimensionByExpression(expression);
+  const reference = dimension.name;
   const type = kindToType(dimension.kind);
   const sort = sortAction && new Sort({
     reference: sortAction.expression.name,

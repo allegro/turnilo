@@ -20,7 +20,6 @@ import { Highlight } from "../../models/highlight/highlight";
 import { FilterClauseDefinition, filterDefinitionConverter } from "./filter-definition";
 
 export interface HighlightDefinition {
-  owner: string;
   filters: FilterClauseDefinition[];
   measure: string;
 }
@@ -34,17 +33,17 @@ export interface HighlightDefinitionConverter {
 export function highlightConverter(dataCube: DataCube): HighlightDefinitionConverter {
   return {
     toHighlight(highlightDefinition: HighlightDefinition): Highlight {
-      const { owner, filters, measure } = highlightDefinition;
+      const { filters, measure } = highlightDefinition;
       const filter = Filter.fromClauses(filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
-      return new Highlight({ owner, delta: filter, measure });
+      return new Highlight({ delta: filter, measure });
     },
 
     fromHighlight(highlight: Highlight): HighlightDefinition {
-      const { owner, delta, measure } = highlight;
+      const { delta, measure } = highlight;
       const filters = delta.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray();
 
-      return { owner, filters, measure };
+      return { filters, measure };
     }
   };
 }
