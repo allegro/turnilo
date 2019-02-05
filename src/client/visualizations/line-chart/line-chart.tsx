@@ -28,7 +28,7 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, NumberRange as FilterNumberRange } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
-import { getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
+import { ContinuousDimensionKind, getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 import { SeriesFormat } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
@@ -109,6 +109,7 @@ export interface LineChartState extends BaseVisualizationState {
   // Cached props
   continuousDimension?: Dimension;
   axisRange?: PlywoodRange;
+  // TODO: fix this type
   scaleX?: any;
   xTicks?: continuousValueType[];
 }
@@ -679,12 +680,24 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
     const axisRange = union(filterRange, datasetRange);
     if (!axisRange) return { continuousDimension };
-    const domain = [(axisRange).start, (axisRange).end] as [number, number];
-    const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
-    const scaleFn = continuousDimension.kind === "time" ? d3.time.scale() : d3.scale.linear();
-    const scaleX = scaleFn.domain(domain).range(range);
     const xTicks = this.getLineChartTicks(axisRange, timezone);
+    const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange);
     return { continuousDimension, axisRange, scaleX, xTicks };
+  }
+
+  private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {
+    const stage = this.props.stage;
+    const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
+    switch (kind) {
+      case "number": {
+        const domain = [start, end] as [number, number];
+        return d3.scale.linear().domain(domain).range(range);
+      }
+      case "time": {
+        const domain = [start, end] as [Date, Date];
+        return d3.time.scale().domain(domain).range(range);
+      }
+    }
   }
 
   private getLineChartTicks(range: PlywoodRange, timezone: Timezone): Array<Date | number> {
