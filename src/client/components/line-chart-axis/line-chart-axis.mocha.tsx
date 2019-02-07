@@ -17,50 +17,51 @@
 
 import { expect } from "chai";
 import * as d3 from "d3";
+import * as moment from "moment-timezone";
 import * as React from "react";
-import { timeFormat } from "./line-chart-axis";
+import { pickTimeFormatter } from "./line-chart-axis";
 
-const start = new Date(0);
-const hoursAfter = (hs: number) => new Date(hs * 1000 * 60 * 60);
+const start = moment(new Date(0));
+const hoursAfter = (hs: number) => moment(new Date(hs * 1000 * 60 * 60));
 const scaleWithHoursAfter = (hs: number) =>
-  d3.time.scale().range([0, 100]).domain([start, hoursAfter(hs)]);
+  d3.time.scale().range([0, 100]).domain([start.toDate(), hoursAfter(hs).toDate()]);
 
 describe("LineChartAxis", () => {
-  describe("timeFormat", () => {
+  describe("pickTimeFormatter", () => {
     it("should format across different years", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(24 * 365 * 3));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(24 * 365 * 3));
 
-      expect(formatter(start)).to.equal(d3.time.format("%Y-%m-%d")(start));
+      expect(formatter(start)).to.equal(start.format("YYYY-MM-DD"));
     });
     it("should format across different months", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(24 * 30 * 2));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(24 * 30 * 2));
 
-      expect(formatter(start)).to.equal(d3.time.format("%b %d")(start));
+      expect(formatter(start)).to.equal(start.format("MMM DD"));
     });
     it("should format when days differ by one", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(24));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(24));
 
-      expect(formatter(start)).to.equal(d3.time.format("%a %d, %I %p")(start));
+      expect(formatter(start)).to.equal(start.format("dd DD, HH"));
     });
     it("should format across different days", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(24 * 5));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(24 * 5));
 
-      expect(formatter(start)).to.equal(d3.time.format("%a %d")(start));
+      expect(formatter(start)).to.equal(start.format("dd DD"));
     });
     it("should format across different hours", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(12));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(12));
 
-      expect(formatter(start)).to.equal(d3.time.format("%I %p")(start));
+      expect(formatter(start)).to.equal(start.format("HH"));
     });
     it("should format with smaller than hour difference", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(0.2));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(0.2));
 
-      expect(formatter(start)).to.equal(d3.time.format("%I:%M %p")(start));
+      expect(formatter(start)).to.equal(start.format("HH:mm"));
     });
     it("should format correctly with not enough ticks", () => {
-      const formatter = timeFormat(scaleWithHoursAfter(0));
+      const formatter = pickTimeFormatter(scaleWithHoursAfter(0));
 
-      expect(formatter(start)).to.equal(d3.time.format("%c")(start));
+      expect(formatter(start)).to.equal(start.format("YYYY-MM-DD HH:mm"));
     });
   });
 });

@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
-import * as moment from "moment-timezone";
+import { Moment, tz } from "moment-timezone";
 import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -36,27 +36,31 @@ export interface LineChartAxisProps {
   timezone: Timezone;
 }
 
-export function timeFormat(scale: AxisScale): Unary<Date, string> {
+type TimeFormatter = Unary<Moment, string>;
+
+const formatterFromDef = (format: string): TimeFormatter => time => time.format(format);
+
+export function pickTimeFormatter(scale: AxisScale): TimeFormatter {
   const ticks = scale.ticks();
-  if (ticks.length < 2) return d3.time.format("%c");
+  if (ticks.length < 2) return formatterFromDef("YYYY-MM-DD HH:mm");
   const first = ticks[0];
   const last = ticks[ticks.length - 1];
   if (first.getFullYear() !== last.getFullYear()) {
-    return d3.time.format("%Y-%m-%d");
+    return formatterFromDef("YYYY-MM-DD");
   }
   if (first.getMonth() !== last.getMonth()) {
-    return d3.time.format("%b %d");
+    return formatterFromDef("MMM DD");
   }
   if (last.getDate() - first.getDate() === 1) {
-    return d3.time.format("%a %d, %I %p");
+    return formatterFromDef("dd DD, HH");
   }
   if (first.getDate() !== last.getDate()) {
-    return d3.time.format("%a %d");
+    return formatterFromDef("dd DD");
   }
   if (first.getHours() !== last.getHours()) {
-    return d3.time.format("%I %p");
+    return formatterFromDef("HH");
   }
-  return d3.time.format("%I:%M %p");
+  return formatterFromDef("HH:mm");
 }
 
 const floatFormat = d3.format(".1f");
@@ -64,9 +68,9 @@ const floatFormat = d3.format(".1f");
 function labelFormatter(scale: AxisScale, timezone: Timezone): Unary<Date | number, string> {
   const [start] = scale.domain();
   if (start instanceof Date) {
-    const timeFormatter = timeFormat(scale);
+    const timeFormatter = pickTimeFormatter(scale);
     const timezoneString = timezone.toString();
-    return (value: Date) => timeFormatter(moment.tz(value, timezoneString).toDate());
+    return (value: Date) => timeFormatter(tz(value, timezoneString));
   }
   return (value: number) => String(floatFormat(value));
 
