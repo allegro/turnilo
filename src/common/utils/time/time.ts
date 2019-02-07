@@ -167,14 +167,6 @@ export function formatISOTime(date: Date, timezone: Timezone): string {
 
 /**
  * @deprecated
- * @param granularity
- */
-export function formatGranularity(granularity: string): string {
-  return granularity.replace(/^PT?/, "");
-}
-
-/**
- * @deprecated
  * @param date
  */
 export function maybeFullyDefinedDate(date: string): boolean {

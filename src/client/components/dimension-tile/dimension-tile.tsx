@@ -27,6 +27,7 @@ import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClaus
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import {
   ContinuousDimensionKind,
+  formatGranularity,
   getBestGranularityForRange,
   getDefaultGranularityForKind,
   getGranularities,
@@ -41,7 +42,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
-import { formatGranularity, formatTimeRange } from "../../../common/utils/time/time";
+import { formatTimeRange } from "../../../common/utils/time/time";
 import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -427,12 +428,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { selectedGranularity } = this.state;
     const granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, true);
     return granularities.map(g => {
-      const granularityStr = granularityToString(g);
       return {
         selected: granularityEquals(selectedGranularity, g),
         onSelect: this.onSelectGranularity.bind(this, g),
-        displayValue: formatGranularity(granularityStr),
-        keyString: granularityStr
+        displayValue: formatGranularity(g),
+        keyString: granularityToString(g)
       };
     });
   }

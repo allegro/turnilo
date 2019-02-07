@@ -219,6 +219,13 @@ export function granularityToString(input: Bucket): string {
   return input.toString();
 }
 
+export function formatGranularity(bucket: Bucket): string {
+  if (bucket instanceof Duration) {
+    return `${bucket.getSingleSpanValue()}${bucket.getSingleSpan().substr(0, 1).toUpperCase()}`;
+  }
+  return bucket.toString();
+}
+
 export function granularityEquals(g1: Bucket, g2: Bucket) {
   if (g1 instanceof Duration) {
     try {
