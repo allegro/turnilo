@@ -126,12 +126,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     if (!filter) return null;
     const { essence, timekeeper } = this.props;
     const fixedFilter = essence.evaluateSelection(filter, timekeeper);
-    const { start, end } = fixedFilter.values.get(0);
-
-    return new DateRange({
-      start: second.shift(start, essence.timezone, -1),
-      end: second.shift(end, essence.timezone, 1)
-    });
+    return fixedFilter.values.get(0);
   }
 
   render() {
