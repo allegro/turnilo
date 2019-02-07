@@ -17,7 +17,9 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
+import * as sinon from "sinon";
 import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
+import * as TimeModule from "../time/time";
 import { formatFilterClause } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
@@ -28,7 +30,7 @@ describe("General", () => {
       { duration: "PT6H", label: "Latest 6 hours" },
       { duration: "P1D", label: "Latest day" },
       { duration: "P7D", label: "Latest 7 days" },
-      { duration: "P30D",  label: "Latest 30 days" }
+      { duration: "P30D", label: "Latest 30 days" }
     ];
 
     latestDurationTests.forEach(({ duration, label }) => {
@@ -60,17 +62,13 @@ describe("General", () => {
       });
     });
 
-    const fixedTimeTests = [
-      { start: "2016-11-11", end: "2016-12-12", label: "11 Nov 2016 - 11 Dec 2016" },
-      { start: "2015-11-11", end: "2016-12-12", label: "11 Nov 2015 - 11 Dec 2016" },
-      { start: "2015-11-11", end: "2015-11-14", label: "11 Nov 2015 - 13 Nov 2015" }
-    ];
-
-    fixedTimeTests.forEach(({ start, end, label }) => {
-      it(`formats [${start}, ${end}) as "${label}"`, () => {
-        const filterClause = FormatterFixtures.fixedTimeFilter(new Date(start), new Date(end));
-        expect(formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC)).to.equal(label);
-      });
+    it("should use formatTimeRange for formatting range in FixedTimeFilter", () => {
+      const formatTimeRange = sinon.spy(TimeModule, "formatTimeRange");
+      const start = new Date("2016-11-11");
+      const end = new Date("2016-12-01");
+      const filterClause = FormatterFixtures.fixedTimeFilter(start, end);
+      formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC);
+      expect(formatTimeRange.calledWith({ start, end }, Timezone.UTC)).to.equal(true);
     });
 
     it("formats number", () => {
