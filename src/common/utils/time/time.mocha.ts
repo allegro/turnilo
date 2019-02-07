@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
-import { appendDays, datesEqual, formatTimeRange, formatYearMonth, getEndWallTimeInclusive, getDayInMonth, prependDays } from "./time";
+import { appendDays, datesEqual, formatTimeRange, formatYearMonth, getDayInMonth, prependDays } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
@@ -70,23 +70,6 @@ describe("Time", () => {
   const TZ_KATHMANDU = new Timezone("Asia/Kathmandu"); // +5.8;
   const TZ_TIJUANA = new Timezone("America/Tijuana"); // -8.0
   const TZ_Kiritimati = new Timezone("Pacific/Kiritimati");  // +14.0
-
-  it("gets human friendly end time which is -1 ms from actual end time", () => {
-    var endExclusive = new Date("1995-03-09T00:00:00.000Z");
-    var timezone = new Timezone("America/Tijuana");
-    let quasiIsoFormat = "YYYY-MM-DD[T]HH:mm:ss.SSS";
-    var endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, timezone).format(quasiIsoFormat);
-    expect(endWallTimeInclusive, "tijuana").to.equal("1995-03-08T15:59:59.999");
-    endExclusive = new Date("1995-03-09T00:00:00.000Z");
-    endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, TZ_KATHMANDU).format(quasiIsoFormat);
-    expect(endWallTimeInclusive, "kathmandu").to.equal("1995-03-09T05:44:59.999");
-    endExclusive = new Date("1999-03-09T00:00:00.000Z");
-    endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, TZ_TIJUANA).format(quasiIsoFormat);
-    expect(endWallTimeInclusive, "tijuana2").to.equal("1999-03-08T15:59:59.999");
-    endExclusive = new Date("2016-02-28T00:00:00.000Z");
-    endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, TZ_Kiritimati).format(quasiIsoFormat);
-    expect(endWallTimeInclusive, "kiritimati").to.equal("2016-02-28T13:59:59.999");
-  });
 
   it("get walltime day returns day according to walltime", () => {
     var date = new Date("1995-03-09T00:00:00.000Z");

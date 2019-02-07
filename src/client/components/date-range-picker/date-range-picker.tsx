@@ -18,7 +18,7 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { appendDays, datesEqual, endingDay, formatYearMonth, getDayInMonth, monthToWeeks, prependDays, shiftOneDay, } from "../../../common/utils/time/time";
+import { appendDays, datesEqual, endingDay, formatYearMonth, getDayInMonth, monthToWeeks, prependDays, shiftOneDay } from "../../../common/utils/time/time";
 import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
