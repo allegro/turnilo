@@ -90,7 +90,14 @@ describe("Time", () => {
   });
 
   describe("formatTimeRange", () => {
-    describe("should add year correctly", () => {
+
+    function coerceToCurrentYear(date: Date): Date {
+      const currentYear = new Date().getFullYear();
+      date.setFullYear(currentYear);
+      return date;
+    }
+
+    describe("should display year correctly", () => {
       it("should use long format for different years", () => {
         const range = {
           start: new Date("1997-02-21T11:00Z"),
@@ -107,17 +114,25 @@ describe("Time", () => {
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 11:00 - 30 May 1997 16:21");
       });
 
-      it("should omit year for both current years", () => {
+      it("should use long format when just one date in current year", () => {
         const range = {
-          start: new Date("2019-02-21T11:00Z"),
-          end: new Date("2019-05-30T16:21Z")
+          start: new Date("1997-02-21T11:00Z"),
+          end: coerceToCurrentYear(new Date("1997-05-30T16:21Z"))
         };
+        const currentYear = new Date().getFullYear();
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq(`21 Feb 1997 11:00 - 30 May ${currentYear} 16:21`);
+      });
+
+      it("should omit year for both current years", () => {
+        const start = coerceToCurrentYear(new Date("1999-02-21T11:00Z"));
+        const end = coerceToCurrentYear(new Date("1999-05-30T16:21Z"));
+        const range = { start, end };
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 11:00 - 30 May 16:21");
       });
     });
 
     describe("should handle full day ranges", () => {
-      it("should show one date", () => {
+      it("should show one date with year when not current year", () => {
         const range = {
           start: new Date("1999-02-21Z"),
           end: new Date("1999-02-22Z")
@@ -127,15 +142,15 @@ describe("Time", () => {
 
       it("should show one short date for current year", () => {
         const range = {
-          start: new Date("2019-02-21Z"),
-          end: new Date("2019-02-22Z")
+          start: coerceToCurrentYear(new Date("2019-02-21Z")),
+          end: coerceToCurrentYear(new Date("2019-02-22Z"))
         };
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb");
       });
     });
 
     describe("should omit hour and subtract day if range is multiple days", () => {
-      it("should show just dates", () => {
+      it("should show just dates with year when not current year", () => {
         const range = {
           start: new Date("1997-02-21Z"),
           end: new Date("1999-05-30Z")
@@ -143,10 +158,10 @@ describe("Time", () => {
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 - 29 May 1999");
       });
 
-      it("should show just days and months", () => {
+      it("should show just days and months without year when current year", () => {
         const range = {
-          start: new Date("2019-02-21Z"),
-          end: new Date("2019-05-30Z")
+          start: coerceToCurrentYear(new Date("2019-02-21Z")),
+          end: coerceToCurrentYear(new Date("2019-05-30Z"))
         };
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb - 29 May");
       });

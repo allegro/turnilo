@@ -50,11 +50,14 @@ function isCurrentYear(year: number, timezone: Timezone): boolean {
 }
 
 function isStartOfTheDay(date: Moment): boolean {
-  return date.clone().startOf("day").isSame(date);
+  return date.milliseconds() === 0
+    && date.seconds() === 0
+    && date.minutes() === 0
+    && date.hours() === 0;
 }
 
 function isOneWholeDay(a: Moment, b: Moment): boolean {
-  return isStartOfTheDay(a) && b.diff(a, "days") === 1;
+  return isStartOfTheDay(a) && isStartOfTheDay(b) && b.diff(a, "days") === 1;
 }
 
 export function formatTimeRange({ start, end }: { start: Date, end: Date }, timezone: Timezone): string {
@@ -121,9 +124,9 @@ export function shiftOneDay(floored: Date, timezone: Timezone): Date {
 
 export function endingDay(date: Date, timezone: Timezone): Date {
   const moment = getMoment(date, timezone);
-  const start = moment.clone().startOf("day");
-  if (moment.isSame(start)) return start.subtract(1, "day").toDate();
-  return start.toDate();
+  const startOfDay = moment.clone().startOf("day");
+  if (moment.isSame(startOfDay)) return startOfDay.subtract(1, "day").toDate();
+  return startOfDay.toDate();
 }
 
 export function datesEqual(d1: Date, d2: Date): boolean {
@@ -156,20 +159,26 @@ export function formatISOTime(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(ISO_FORMAT_TIME);
 }
 
+const ISO_DATE_DISALLOWED = /[^\d-]/g;
+
 export function trimISODate(date: string): string {
-  return date.replace(/[^\d-]/g, "");
+  return date.replace(ISO_DATE_DISALLOWED, "");
 }
 
 const ISO_DATE_TEST = /^\d\d\d\d-\d\d-\d\d$/;
+
 export function validateISODate(date: string): boolean {
   return ISO_DATE_TEST.test(date);
 }
 
+const ISO_TIME_DISALLOWED = /[^\d:]/g;
+
 export function trimISOTime(time: string): string {
-  return time.replace(/[^\d:]/g, "");
+  return time.replace(ISO_TIME_DISALLOWED, "");
 }
 
 const ISO_TIME_TEST = /^\d\d:\d\d$/;
+
 export function validateISOTime(time: string): boolean {
   return ISO_TIME_TEST.test(time);
 }
