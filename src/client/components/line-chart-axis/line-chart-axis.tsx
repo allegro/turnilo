@@ -40,27 +40,27 @@ type TimeFormatter = Unary<Moment, string>;
 
 const formatterFromDef = (format: string): TimeFormatter => time => time.format(format);
 
-export function pickTimeFormatter(scale: AxisScale): TimeFormatter {
+export function pickFormatDefinition(scale: AxisScale): string {
   const ticks = scale.ticks();
-  if (ticks.length < 2) return formatterFromDef("YYYY-MM-DD HH:mm");
+  if (ticks.length < 2) return "YYYY-MM-DD HH:mm";
   const first = ticks[0];
   const last = ticks[ticks.length - 1];
   if (first.getFullYear() !== last.getFullYear()) {
-    return formatterFromDef("YYYY-MM-DD");
+    return "YYYY-MM-DD";
   }
   if (first.getMonth() !== last.getMonth()) {
-    return formatterFromDef("MMM DD");
+    return "MMM DD";
   }
   if (last.getDate() - first.getDate() === 1) {
-    return formatterFromDef("dd DD, HH");
+    return "dd DD, HH";
   }
   if (first.getDate() !== last.getDate()) {
-    return formatterFromDef("dd DD");
+    return "dd DD";
   }
   if (first.getHours() !== last.getHours()) {
-    return formatterFromDef("HH");
+    return "HH";
   }
-  return formatterFromDef("HH:mm");
+  return "HH:mm";
 }
 
 const floatFormat = d3.format(".1f");
@@ -68,7 +68,8 @@ const floatFormat = d3.format(".1f");
 function labelFormatter(scale: AxisScale, timezone: Timezone): Unary<Date | number, string> {
   const [start] = scale.domain();
   if (start instanceof Date) {
-    const timeFormatter = pickTimeFormatter(scale);
+    const formatDef = pickFormatDefinition(scale);
+    const timeFormatter = formatterFromDef(formatDef);
     const timezoneString = timezone.toString();
     return (value: Date) => timeFormatter(tz(value, timezoneString));
   }

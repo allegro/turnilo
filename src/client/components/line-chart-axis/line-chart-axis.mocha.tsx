@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as d3 from "d3";
 import * as moment from "moment-timezone";
 import * as React from "react";
-import { pickTimeFormatter } from "./line-chart-axis";
+import { pickFormatDefinition } from "./line-chart-axis";
 
 const start = moment(new Date(0));
 const hoursAfter = (hs: number) => moment(new Date(hs * 1000 * 60 * 60));
@@ -27,41 +27,27 @@ const scaleWithHoursAfter = (hs: number) =>
   d3.time.scale().range([0, 100]).domain([start.toDate(), hoursAfter(hs).toDate()]);
 
 describe("LineChartAxis", () => {
-  describe("pickTimeFormatter", () => {
+  describe("pickFormatDefinition", () => {
     it("should format across different years", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(24 * 365 * 3));
-
-      expect(formatter(start)).to.equal(start.format("YYYY-MM-DD"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 365 * 3))).to.equal("YYYY-MM-DD");
     });
     it("should format across different months", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(24 * 30 * 2));
-
-      expect(formatter(start)).to.equal(start.format("MMM DD"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 30 * 2))).to.equal("MMM DD");
     });
     it("should format when days differ by one", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(24));
-
-      expect(formatter(start)).to.equal(start.format("dd DD, HH"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(24))).to.equal("dd DD, HH");
     });
     it("should format across different days", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(24 * 5));
-
-      expect(formatter(start)).to.equal(start.format("dd DD"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 5))).to.equal("dd DD");
     });
     it("should format across different hours", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(12));
-
-      expect(formatter(start)).to.equal(start.format("HH"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(12))).to.equal("HH");
     });
     it("should format with smaller than hour difference", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(0.2));
-
-      expect(formatter(start)).to.equal(start.format("HH:mm"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(0.2))).to.equal("HH:mm");
     });
     it("should format correctly with not enough ticks", () => {
-      const formatter = pickTimeFormatter(scaleWithHoursAfter(0));
-
-      expect(formatter(start)).to.equal(start.format("YYYY-MM-DD HH:mm"));
+      expect(pickFormatDefinition(scaleWithHoursAfter(0))).to.equal("YYYY-MM-DD HH:mm");
     });
   });
 });
