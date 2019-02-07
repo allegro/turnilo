@@ -20,7 +20,7 @@ import * as React from "react";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Unary } from "../../../../common/utils/functional/functional";
-import { DisplayYear, formatTimeRange } from "../../../../common/utils/time/time";
+import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
 import { InputWithPresets } from "../../input-with-presets/input-with-presets";
 import { COMPARISON_PRESETS } from "./presets";
@@ -32,7 +32,7 @@ function timeShiftPreviewForRange({ shiftValue, time, timezone }: Pick<TimeShift
   const shiftedTimeRange = time
     .set("start", duration.shift(time.start, timezone, -1))
     .set("end", duration.shift(time.end, timezone, -1));
-  return formatTimeRange(shiftedTimeRange, timezone, DisplayYear.IF_DIFF);
+  return formatTimeRange(shiftedTimeRange, timezone);
 }
 
 export interface TimeShiftSelectorProps {

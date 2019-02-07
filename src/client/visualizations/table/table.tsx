@@ -33,6 +33,7 @@ import { Splits } from "../../../common/models/splits/splits";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
+import { formatTimeRange } from "../../../common/utils/time/time";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { Delta } from "../../components/delta/delta";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
@@ -53,24 +54,9 @@ const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
-function formatSegment(value: any, timezone: Timezone, split?: Split): string {
+function formatSegment(value: any, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
-    const time = moment(value.start, timezone.toString()).toDate();
-    if (split && split.bucket instanceof Duration) {
-      const duration = split.bucket;
-      switch (duration.getSingleSpan()) {
-        case "year":
-          return d3.time.format("%Y")(time);
-        case "month":
-          return d3.time.format("%Y %B")(time);
-        case "week":
-        case "day":
-          return d3.time.format("%Y-%m-%d")(time);
-        default:
-          return d3.time.format("%Y-%m-%d %I:%M %p")(time);
-      }
-    }
-    return d3.time.format("%Y-%m-%d %I:%M %p")(time);
+    return formatTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }
@@ -455,7 +441,7 @@ export class Table extends BaseVisualization<TableState> {
         const dimension = split ? dataCube.getDimension(split.reference) : null;
 
         const segmentValue = dimension ? d[dimension.name] : "";
-        const segmentName = nest ? formatSegment(segmentValue, essence.timezone, split) : "Total";
+        const segmentName = nest ? formatSegment(segmentValue, essence.timezone) : "Total";
         const left = Math.max(0, nest - 1) * INDENT_WIDTH;
         const segmentStyle = { left, width: this.getSegmentWidth() - left, top: rowY };
         const hoverClass = d === hoverRow ? "hover" : null;

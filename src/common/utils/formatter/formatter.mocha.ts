@@ -61,9 +61,9 @@ describe("General", () => {
     });
 
     const fixedTimeTests = [
-      { start: "2016-11-11", end: "2016-12-12", label: "Nov 11 - Dec 11, 2016" },
-      { start: "2015-11-11", end: "2016-12-12", label: "Nov 11, 2015 - Dec 11, 2016" },
-      { start: "2015-11-11", end: "2015-11-14", label: "Nov 11 - Nov 13, 2015" }
+      { start: "2016-11-11", end: "2016-12-12", label: "11 Nov 2016 - 11 Dec 2016" },
+      { start: "2015-11-11", end: "2016-12-12", label: "11 Nov 2015 - 11 Dec 2016" },
+      { start: "2015-11-11", end: "2015-11-14", label: "11 Nov 2015 - 13 Nov 2015" }
     ];
 
     fixedTimeTests.forEach(({ start, end, label }) => {

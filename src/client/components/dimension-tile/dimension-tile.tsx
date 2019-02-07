@@ -21,7 +21,6 @@ import { $, Dataset, Datum, Expression, NumberRange, PlywoodValue, r, SortExpres
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
-import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
@@ -42,8 +41,8 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
-import { formatGranularity, formatTimeBasedOnGranularity } from "../../../common/utils/time/time";
-import { getLocale, MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
+import { formatGranularity, formatTimeRange } from "../../../common/utils/time/time";
+import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { Checkbox } from "../checkbox/checkbox";
@@ -542,15 +541,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   private getSegmentValueString(segmentValue: PlywoodValue): string {
     const { essence: { timezone } } = this.props;
-    const { selectedGranularity } = this.state;
     const segmentValueStr = String(segmentValue);
 
     if (segmentValue instanceof TimeRange) {
-      return formatTimeBasedOnGranularity(
-        new DateRange(segmentValue),
-        (selectedGranularity as Duration),
-        timezone,
-        getLocale());
+      return formatTimeRange(segmentValue, timezone);
     }
     if (segmentValue instanceof NumberRange) {
       return formatNumberRange(segmentValue);

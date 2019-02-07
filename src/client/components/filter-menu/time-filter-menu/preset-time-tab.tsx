@@ -25,7 +25,7 @@ import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shif
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { isValidDuration } from "../../../../common/utils/plywood/duration";
-import { DisplayYear, formatTimeRange } from "../../../../common/utils/time/time";
+import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
 import { ButtonGroup, GroupMember } from "../../button-group/button-group";
 import { Button } from "../../button/button";
@@ -143,7 +143,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     const { timezone } = essence;
 
     const previewFilter = this.getFilterRange();
-    const previewText = previewFilter ? formatTimeRange(previewFilter, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
+    const previewText = previewFilter ? formatTimeRange(previewFilter, timezone) : STRINGS.noFilter;
 
     return <div className="cont">
       {essence.dataCube.isTimeAttribute(dimension.expression) && this.renderLatestPresets()}

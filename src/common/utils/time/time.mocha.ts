@@ -16,9 +16,8 @@
  */
 
 import { expect } from "chai";
-import { day, Duration, month, Timezone } from "chronoshift";
-import { DateRange } from "../../models/date-range/date-range";
-import { appendDays, datesEqual, formatTimeBasedOnGranularity, formatYearMonth, getEndWallTimeInclusive, getWallTimeDay, prependDays } from "./time";
+import { Timezone } from "chronoshift";
+import { appendDays, datesEqual, formatTimeRange, formatYearMonth, getEndWallTimeInclusive, getWallTimeDay, prependDays } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
@@ -107,42 +106,67 @@ describe("Time", () => {
     expect(formatYearMonth(date, TZ_Kiritimati), "y2k kiritimati").to.equal("January 2000");
   });
 
-  it("formats time range based off of start walltime", () => {
+  describe("formatTimeRange", () => {
+    describe("should add year correctly", () => {
+      it("should use long format for different years", () => {
+        const range = {
+          start: new Date("1997-02-21T11:00Z"),
+          end: new Date("1999-05-30T16:21Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 11:00 - 30 May 1999 16:21");
+      });
 
-    var locale = {
-      shortDays: ["2"],
-      weekStart: 0,
-      shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
-    };
+      it("should use long format for same year but not current", () => {
+        const range = {
+          start: new Date("1997-02-21T11:00Z"),
+          end: new Date("1997-05-30T16:21Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 11:00 - 30 May 1997 16:21");
+      });
 
-    var start = new Date("1965-02-02T13:00:00.000Z");
-    var end = day.shift(start, TZ_TIJUANA, 1);
-    var gran = Duration.fromJS("PT1H");
-    var range = new DateRange({ start, end });
-    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "hour tijuana").to.equal("Feb 2, 1965, 5am");
+      it("should omit year for both current years", () => {
+        const range = {
+          start: new Date("2019-02-21T11:00Z"),
+          end: new Date("2019-05-30T16:21Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 11:00 - 30 May 16:21");
+      });
+    });
 
-    start = new Date("1999-05-02T13:00:00.000Z");
-    end = month.shift(start, TZ_TIJUANA, 1);
-    gran = Duration.fromJS("PT1S");
-    range = new DateRange({ start, end });
-    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "second tijuana").to.equal("May 2, 06:00:00");
+    describe("should handle full day ranges", () => {
+      it("should show one date", () => {
+        const range = {
+          start: new Date("1999-02-21Z"),
+          end: new Date("1999-02-22Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1999");
+      });
 
-    start = new Date("1999-05-02T13:00:00.000Z");
-    end = month.shift(start, TZ_TIJUANA, 1);
-    gran = Duration.fromJS("P1W");
-    range = new DateRange({ start, end });
-    expect(formatTimeBasedOnGranularity(range, gran, TZ_TIJUANA, locale), "week tijuana").to.equal("May 2 - Jun 2, 1999 6am");
+      it("should show one short date for current year", () => {
+        const range = {
+          start: new Date("2019-02-21Z"),
+          end: new Date("2019-02-22Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb");
+      });
+    });
 
-    start = new Date("1999-05-02T13:00:00.000Z");
-    end = month.shift(start, TZ_KATHMANDU, 1);
-    gran = Duration.fromJS("P1M");
-    range = new DateRange({ start, end });
-    var monthFmt = formatTimeBasedOnGranularity(range, gran, TZ_KATHMANDU, locale);
-    expect(monthFmt, "month granularity format").to.equal("May, 1999");
-    var minFmt = formatTimeBasedOnGranularity(range, Duration.fromJS("PT1M"), TZ_KATHMANDU, locale);
-    expect(minFmt, "minute granularity format").to.equal("May 2, 6:45pm");
-    expect(monthFmt).to.not.equal(minFmt, "distinguishes between month and minute fmt");
+    describe("should omit hour and subtract day if range is multiple days", () => {
+      it("should show just dates", () => {
+        const range = {
+          start: new Date("1997-02-21Z"),
+          end: new Date("1999-05-30Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 - 29 May 1999");
+      });
 
+      it("should show just days and months", () => {
+        const range = {
+          start: new Date("2019-02-21Z"),
+          end: new Date("2019-05-30Z")
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb - 29 May");
+      });
+    });
   });
-
 });
