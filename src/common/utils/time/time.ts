@@ -18,10 +18,8 @@
 import { day, month, Timezone } from "chronoshift";
 import { Moment, tz } from "moment-timezone";
 
-const FORMAT_FULL_DATE_TIME = "YYYY-MM-DD HH:mm:ss";
-const FORMAT_DATE = "YYYY-MM-DD";
-const FORMAT_TIME = "HH:mm";
-
+const ISO_FORMAT_DATE = "YYYY-MM-DD";
+const ISO_FORMAT_TIME = "HH:mm";
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
 function getMoment(date: Date, timezone: Timezone): Moment {
@@ -156,27 +154,39 @@ export function formatTimeElapsed(date: Date, timezone: Timezone): string {
 }
 
 export function formatDateTime(date: Date, timezone: Timezone): string {
-  return getMoment(date, timezone).format(FORMAT_FULL_DATE_TIME);
+  return getMoment(date, timezone).format(FULL_FORMAT);
 }
 
-export function formatDate(date: Date, timezone: Timezone): string {
-  return getMoment(date, timezone).format(FORMAT_DATE);
+export function formatISODate(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(ISO_FORMAT_DATE);
 }
 
-export function formatTime(date: Date, timezone: Timezone): string {
-  return getMoment(date, timezone).format(FORMAT_TIME);
+export function formatISOTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(ISO_FORMAT_TIME);
 }
 
+/**
+ * @deprecated
+ * @param granularity
+ */
 export function formatGranularity(granularity: string): string {
   return granularity.replace(/^PT?/, "");
 }
 
+/**
+ * @deprecated
+ * @param date
+ */
 export function maybeFullyDefinedDate(date: string): boolean {
-  return date.length === FORMAT_DATE.length;
+  return date.length === ISO_FORMAT_DATE.length;
 }
 
+/**
+ * @deprecated
+ * @param time
+ */
 export function maybeFullyDefinedTime(time: string): boolean {
-  return time.length === FORMAT_TIME.length;
+  return time.length === ISO_FORMAT_TIME.length;
 }
 
 export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): Moment {

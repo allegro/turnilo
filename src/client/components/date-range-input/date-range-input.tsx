@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import "moment-timezone";
 import * as React from "react";
-import { combineDateAndTimeIntoMoment, formatDate, formatTime, maybeFullyDefinedDate, maybeFullyDefinedTime } from "../../../common/utils/time/time";
+import { combineDateAndTimeIntoMoment, formatISODate, formatISOTime, maybeFullyDefinedDate, maybeFullyDefinedTime } from "../../../common/utils/time/time";
 import "./date-range-input.scss";
 
 export interface DateRangeInputProps {
@@ -61,8 +61,8 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     }
 
     this.setState({
-      dateString: formatDate(time, timezone),
-      timeString: formatTime(time, timezone)
+      dateString: formatISODate(time, timezone),
+      timeString: formatISOTime(time, timezone)
     });
   }
 
