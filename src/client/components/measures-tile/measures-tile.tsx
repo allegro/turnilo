@@ -103,8 +103,11 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
   private handleGlobalKeyDown = (e: KeyboardEvent) => {
     if (e.shiftKey && e.keyCode === keyCodes.m) {
-      e.preventDefault();
-      this.toggleSearch();
+      const element = e.target as HTMLElement;
+      if (element.tagName !== "INPUT" && element.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        this.toggleSearch();
+      }
     }
   }
 
