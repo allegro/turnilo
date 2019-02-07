@@ -18,17 +18,7 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import {
-  appendDays,
-  datesEqual,
-  formatYearMonth,
-  getEndWallTimeInclusive,
-  getWallTimeDay,
-  monthToWeeks,
-  prependDays,
-  shiftOneDay,
-  wallTimeInclusiveEndEqual
-} from "../../../common/utils/time/time";
+import { appendDays, datesEqual, endingDay, formatYearMonth, getDayInMonth, monthToWeeks, prependDays, shiftOneDay, } from "../../../common/utils/time/time";
 import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
@@ -61,7 +51,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
   }
 
   componentWillMount() {
-    const { startTime, endTime, timezone } = this.props;
+    const { startTime, timezone } = this.props;
 
     const flooredStart = month.floor(startTime || new Date(), timezone);
     this.setState({
@@ -143,14 +133,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     return inHoverTimeRange && !selectionSet;
   }
 
-  getIsSelectedEdgeEnd(isSingleDate: boolean, candidate: Date) {
-    if (isSingleDate) return false;
-    const { startTime, endTime, timezone } = this.props;
-    const candidateEndPoint = shiftOneDay(candidate, timezone);
-    return wallTimeInclusiveEndEqual(endTime, candidateEndPoint, timezone) && endTime > startTime;
-  }
-
-  renderDays(weeks: Date[][], monthStart: Date, isSingleDate: boolean): JSX.Element[] {
+  renderDays(weeks: Date[][], monthStart: Date): JSX.Element[] {
     const { startTime, endTime, maxTime, timezone } = this.props;
     const nextMonthStart = month.shift(monthStart, timezone, 1);
 
@@ -160,7 +143,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
         const isFuture = dayDate >= nextMonthStart;
         const isBeyondMaxRange = dayDate > maxTime;
         const isSelectedEdgeStart = datesEqual(dayDate, day.floor(startTime, timezone));
-        const isSelectedEdgeEnd = this.getIsSelectedEdgeEnd(isSingleDate, dayDate);
+        const isSelectedEdgeEnd = datesEqual(dayDate, endingDay(endTime, timezone));
         const className = classNames("day", "value",
           {
             "past": isPast,
@@ -176,12 +159,12 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
           key={column}
           onClick={this.selectDay.bind(this, dayDate)}
           onMouseEnter={this.calculateHoverTimeRange.bind(this, dayDate)}
-        >{getWallTimeDay(dayDate, timezone)}</div>;
+        >{getDayInMonth(dayDate, timezone)}</div>;
       })}</div>;
     });
   }
 
-  renderCalendar(startDate: Date, isSingleDate: boolean): JSX.Element[] {
+  renderCalendar(startDate: Date): JSX.Element[] {
     const { timezone } = this.props;
     const weeks: Date[][] = monthToWeeks(startDate, timezone, getLocale());
     const firstWeek = weeks[0];
@@ -190,7 +173,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const countAppend = 7 - lastWeek.length;
     weeks[0] = prependDays(timezone, firstWeek, countPrepend);
     weeks[weeks.length - 1] = appendDays(timezone, lastWeek, countAppend);
-    return this.renderDays(weeks, startDate, isSingleDate);
+    return this.renderDays(weeks, startDate);
   }
 
   renderCalendarNav(startDate: Date): JSX.Element {
@@ -218,7 +201,6 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
-    const isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).date() : true;
     return <div className="date-range-picker">
       <div>
         <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange} />
@@ -235,7 +217,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
           })
           }
         </div>
-        {this.renderCalendar(activeMonthStartDate, isSingleDate)}
+        {this.renderCalendar(activeMonthStartDate)}
       </div>
     </div>;
   }

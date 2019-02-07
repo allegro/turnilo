@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
-import { appendDays, datesEqual, formatTimeRange, formatYearMonth, getEndWallTimeInclusive, getWallTimeDay, prependDays } from "./time";
+import { appendDays, datesEqual, formatTimeRange, formatYearMonth, getEndWallTimeInclusive, getDayInMonth, prependDays } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
@@ -90,9 +90,9 @@ describe("Time", () => {
 
   it("get walltime day returns day according to walltime", () => {
     var date = new Date("1995-03-09T00:00:00.000Z");
-    expect(getWallTimeDay(date, TZ_TIJUANA), "tijuana walltime").to.equal(8);
-    expect(getWallTimeDay(date, TZ_KATHMANDU), "kathmandu walltime").to.equal(9);
-    expect(getWallTimeDay(date, TZ_Kiritimati), "kiritimati walltime").to.equal(9);
+    expect(getDayInMonth(date, TZ_TIJUANA), "tijuana walltime").to.equal(8);
+    expect(getDayInMonth(date, TZ_KATHMANDU), "kathmandu walltime").to.equal(9);
+    expect(getDayInMonth(date, TZ_Kiritimati), "kiritimati walltime").to.equal(9);
   });
 
   it("get walltime month returns full month and year according to walltime", () => {

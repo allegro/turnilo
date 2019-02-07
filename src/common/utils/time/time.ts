@@ -32,14 +32,6 @@ export interface Locale {
   weekStart: number;
 }
 
-export function getEndWallTimeInclusive(exclusiveEnd: Date, timezone: Timezone): Moment {
-  return getMoment(exclusiveToInclusiveEnd(exclusiveEnd), timezone);
-}
-
-export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
-  return new Date(exclusiveEnd.valueOf() - 1);
-}
-
 const FULL_FORMAT = "D MMM YYYY H:mm";
 const WITHOUT_YEAR_FORMAT = "D MMM H:mm";
 const WITHOUT_HOUR_FORMAT = "D MMM YYYY";
@@ -127,22 +119,21 @@ export function shiftOneDay(floored: Date, timezone: Timezone): Date {
   return day.shift(floored, timezone, 1);
 }
 
+export function endingDay(date: Date, timezone: Timezone): Date {
+  const moment = getMoment(date, timezone);
+  const start = moment.clone().startOf("day");
+  if (moment.isSame(start)) return start.subtract(1, "day").toDate();
+  return start.toDate();
+}
+
 export function datesEqual(d1: Date, d2: Date): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
   if (d1 === d2) return true;
   return d1.valueOf() === d2.valueOf();
 }
 
-export function getWallTimeDay(date: Date, timezone: Timezone): number {
+export function getDayInMonth(date: Date, timezone: Timezone): number {
   return getMoment(date, timezone).date();
-}
-
-export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone): boolean {
-  if (!Boolean(d1) === Boolean(d2)) return false;
-  if (d1 === d2) return true;
-  const d1InclusiveEnd = getEndWallTimeInclusive(d1, timezone);
-  const d2InclusiveEnd = getEndWallTimeInclusive(d2, timezone);
-  return datesEqual(d1InclusiveEnd.toDate(), d2InclusiveEnd.toDate());
 }
 
 export function formatYearMonth(date: Date, timezone: Timezone): string {
@@ -165,23 +156,24 @@ export function formatISOTime(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(ISO_FORMAT_TIME);
 }
 
-/**
- * @deprecated
- * @param date
- */
-export function maybeFullyDefinedDate(date: string): boolean {
-  return date.length === ISO_FORMAT_DATE.length;
+export function trimISODate(date: string): string {
+  return date.replace(/[^\d-]/g, "");
 }
 
-/**
- * @deprecated
- * @param time
- */
-export function maybeFullyDefinedTime(time: string): boolean {
-  return time.length === ISO_FORMAT_TIME.length;
+const ISO_DATE_TEST = /^\d\d\d\d-\d\d-\d\d$/;
+export function validateISODate(date: string): boolean {
+  return ISO_DATE_TEST.test(date);
+}
+
+export function trimISOTime(time: string): string {
+  return time.replace(/[^\d:]/g, "");
+}
+
+const ISO_TIME_TEST = /^\d\d:\d\d$/;
+export function validateISOTime(time: string): boolean {
+  return ISO_TIME_TEST.test(time);
 }
 
 export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): Moment {
-  const fullDateTimeString = date + "T" + time;
-  return tz(fullDateTimeString, timezone.toString());
+  return tz(`${date}T${time}`, timezone.toString());
 }
