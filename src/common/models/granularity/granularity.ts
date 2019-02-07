@@ -221,7 +221,7 @@ export function granularityToString(input: Bucket): string {
 
 export function formatGranularity(bucket: Bucket): string {
   if (bucket instanceof Duration) {
-    return `${bucket.getSingleSpanValue()}${bucket.getSingleSpan().substr(0, 1).toUpperCase()}`;
+    return `${bucket.getSingleSpanValue()}${bucket.getSingleSpan().charAt(0).toUpperCase()}`;
   }
   return bucket.toString();
 }
