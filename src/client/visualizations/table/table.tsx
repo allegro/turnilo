@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { List, Set } from "immutable";
-import * as moment from "moment-timezone";
 import { Dataset, Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
@@ -28,12 +27,12 @@ import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFi
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
-import { Split, SplitType } from "../../../common/models/split/split";
+import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
-import { formatTimeRange } from "../../../common/utils/time/time";
+import { formatStartOfTimeRange } from "../../../common/utils/time/time";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { Delta } from "../../components/delta/delta";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
@@ -56,7 +55,7 @@ const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
-    return formatTimeRange(value, timezone);
+    return formatStartOfTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }

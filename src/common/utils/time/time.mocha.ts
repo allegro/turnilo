@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
-import { appendDays, datesEqual, formatTimeRange, formatYearMonth, getDayInMonth, prependDays } from "./time";
+import { appendDays, datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, prependDays } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
@@ -89,7 +89,7 @@ describe("Time", () => {
     expect(formatYearMonth(date, TZ_Kiritimati), "y2k kiritimati").to.equal("January 2000");
   });
 
-  describe("formatTimeRange", () => {
+  describe("formatDatesInTimeRange", () => {
 
     function coerceToYear(date: Date, year: number): Date {
       date.setFullYear(year);
@@ -107,7 +107,7 @@ describe("Time", () => {
           start: new Date("1997-02-21T11:00Z"),
           end: new Date("1999-05-30T16:21Z")
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 11:00 - 30 May 1999 16:21");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997 11:00", "30 May 1999 16:21"]);
       });
 
       it("should use long format for same year but not current", () => {
@@ -115,7 +115,7 @@ describe("Time", () => {
           start: new Date("1997-02-21T11:00Z"),
           end: new Date("1997-05-30T16:21Z")
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 11:00 - 30 May 1997 16:21");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997 11:00", "30 May 1997 16:21"]);
       });
 
       it("should use long format when just one date in current year", () => {
@@ -124,14 +124,14 @@ describe("Time", () => {
           end: coerceToCurrentYear(new Date("2019-05-30T16:21Z"))
         };
         const currentYear = new Date().getFullYear();
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq(`21 Feb 1997 11:00 - 30 May ${currentYear} 16:21`);
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997 11:00", `30 May ${currentYear} 16:21`]);
       });
 
       it("should omit year for both current years", () => {
         const start = coerceToCurrentYear(new Date("2019-02-21T11:00Z"));
         const end = coerceToCurrentYear(new Date("2019-05-30T16:21Z"));
         const range = { start, end };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 11:00 - 30 May 16:21");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 11:00", "30 May 16:21"]);
       });
     });
 
@@ -141,7 +141,7 @@ describe("Time", () => {
           start: new Date("1999-02-21Z"),
           end: new Date("1999-02-22Z")
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1999");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1999"]);
       });
 
       it("should show one short date for current year", () => {
@@ -149,7 +149,7 @@ describe("Time", () => {
           start: coerceToCurrentYear(new Date("2019-02-21Z")),
           end: coerceToCurrentYear(new Date("2019-02-22Z"))
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb"]);
       });
     });
 
@@ -159,7 +159,7 @@ describe("Time", () => {
           start: new Date("1997-02-21Z"),
           end: new Date("1999-05-30Z")
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 1997 - 29 May 1999");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb 1997", "29 May 1999"]);
       });
 
       it("should show just days and months without year when current year", () => {
@@ -167,7 +167,7 @@ describe("Time", () => {
           start: coerceToCurrentYear(new Date("2019-02-21Z")),
           end: coerceToCurrentYear(new Date("2019-05-30Z"))
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb - 29 May");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["21 Feb", "29 May"]);
       });
 
       it("should show just days and months without year for whole current year", () => {
@@ -176,7 +176,7 @@ describe("Time", () => {
           start: coerceToCurrentYear(new Date("2019-01-01Z")),
           end: coerceToYear(new Date("2020-01-01Z"), nextYear)
         };
-        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("1 Jan - 31 Dec");
+        expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["1 Jan", "31 Dec"]);
       });
     });
   });

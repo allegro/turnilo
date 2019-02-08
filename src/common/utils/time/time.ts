@@ -65,31 +65,39 @@ function formatOneWholeDay(day: Moment, timezone: Timezone): string {
   return day.format(getFormat(omitYear, true));
 }
 
-function formatDaysRange(start: Moment, end: Moment, timezone: Timezone): string {
+function formatDaysRange(start: Moment, end: Moment, timezone: Timezone): [string, string] {
   const dayBeforeEnd = end.subtract(1, "day");
   const omitYear = isCurrentYear(start, timezone) && isCurrentYear(dayBeforeEnd, timezone);
   const format = getFormat(omitYear, true);
-  return `${start.format(format)} - ${dayBeforeEnd.format(format)}`;
+  return [start.format(format), dayBeforeEnd.format(format)];
 }
 
-function formatHoursRange(start: Moment, end: Moment, timezone: Timezone) {
+function formatHoursRange(start: Moment, end: Moment, timezone: Timezone): [string, string] {
   const omitYear = isCurrentYear(start, timezone) && isCurrentYear(end, timezone);
   const format = getFormat(omitYear, false);
-  return `${start.format(format)} - ${end.format(format)}`;
+  return [start.format(format), end.format(format)];
 }
 
-export function formatTimeRange({ start, end }: { start: Date, end: Date }, timezone: Timezone): string {
+export function formatDatesInTimeRange({ start, end }: { start: Date, end: Date }, timezone: Timezone): [string, string?] {
   const startMoment = getMoment(start, timezone);
   const endMoment = getMoment(end, timezone);
 
   if (isOneWholeDay(startMoment, endMoment)) {
-    return formatOneWholeDay(startMoment, timezone);
+    return [formatOneWholeDay(startMoment, timezone)];
   }
   const hasDayBoundaries = isStartOfTheDay(startMoment) && isStartOfTheDay(endMoment);
   if (hasDayBoundaries) {
     return formatDaysRange(startMoment, endMoment, timezone);
   }
   return formatHoursRange(startMoment, endMoment, timezone);
+}
+
+export function formatStartOfTimeRange(range: { start: Date, end: Date }, timezone: Timezone): string {
+  return formatDatesInTimeRange(range, timezone)[0];
+}
+
+export function formatTimeRange(range: { start: Date, end: Date }, timezone: Timezone): string {
+  return formatDatesInTimeRange(range, timezone).join(" - ");
 }
 
 // calendar utils
