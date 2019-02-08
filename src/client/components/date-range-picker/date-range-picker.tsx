@@ -18,7 +18,7 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { appendDays, datesEqual, endingDay, formatYearMonth, getDayInMonth, monthToWeeks, prependDays, shiftOneDay } from "../../../common/utils/time/time";
+import { appendDays, datesEqual, formatYearMonth, getDayInMonth, monthToWeeks, prependDays } from "../../../common/utils/time/time";
 import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
@@ -98,7 +98,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const { onStartChange, onEndChange, timezone } = this.props;
     onStartChange(startDate);
     // real end points are exclusive so +1 full day to selection (which is floored) to get the real end point
-    if (endDate) endDate = shiftOneDay(endDate, timezone);
+    if (endDate) endDate = day.shift(endDate, timezone, 1);
     onEndChange(endDate);
   }
 
@@ -126,15 +126,14 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   getIsSelectable(date: Date): boolean {
     const { hoverTimeRange, selectionSet } = this.state;
-    let inHoverTimeRange = false;
-    if (hoverTimeRange) {
-      inHoverTimeRange = hoverTimeRange.contains(date);
-    }
+    let inHoverTimeRange = hoverTimeRange && hoverTimeRange.contains(date);
     return inHoverTimeRange && !selectionSet;
   }
 
   renderDays(weeks: Date[][], monthStart: Date): JSX.Element[] {
     const { startTime, endTime, maxTime, timezone } = this.props;
+    const startDay = day.floor(startTime, timezone);
+    const dayBeforeEnd = endTime && day.shift(endTime, timezone, -1);
     const nextMonthStart = month.shift(monthStart, timezone, 1);
 
     return weeks.map((daysInWeek: Date[], row: number) => {
@@ -142,15 +141,16 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
         const isPast = dayDate < monthStart;
         const isFuture = dayDate >= nextMonthStart;
         const isBeyondMaxRange = dayDate > maxTime;
-        const isSelectedEdgeStart = datesEqual(dayDate, day.floor(startTime, timezone));
-        const isSelectedEdgeEnd = datesEqual(dayDate, endingDay(endTime, timezone));
+        const isSelected = startDay <= dayDate && dayDate < endTime;
+        const isSelectedEdgeStart = datesEqual(dayDate, startTime);
+        const isSelectedEdgeEnd = datesEqual(dayDate, dayBeforeEnd);
         const className = classNames("day", "value",
           {
             "past": isPast,
             "future": isFuture,
             "beyond-max-range": isBeyondMaxRange,
             "selectable": this.getIsSelectable(dayDate),
-            "selected": startTime < dayDate && dayDate < endTime,
+            "selected": isSelected,
             "selected-edge": isSelectedEdgeStart || isSelectedEdgeEnd
           });
 

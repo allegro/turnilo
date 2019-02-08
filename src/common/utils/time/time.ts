@@ -133,17 +133,6 @@ export function appendDays(timezone: Timezone, weekAppendTo: Date[], countAppend
   return weekAppendTo;
 }
 
-export function shiftOneDay(floored: Date, timezone: Timezone): Date {
-  return day.shift(floored, timezone, 1);
-}
-
-export function endingDay(date: Date, timezone: Timezone): Date {
-  const moment = getMoment(date, timezone);
-  const startOfDay = moment.clone().startOf("day");
-  if (moment.isSame(startOfDay)) return startOfDay.subtract(1, "day").toDate();
-  return startOfDay.toDate();
-}
-
 export function datesEqual(d1: Date, d2: Date): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
   if (d1 === d2) return true;
