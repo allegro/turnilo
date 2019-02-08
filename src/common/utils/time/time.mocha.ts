@@ -91,10 +91,14 @@ describe("Time", () => {
 
   describe("formatTimeRange", () => {
 
+    function coerceToYear(date: Date, year: number): Date {
+      date.setFullYear(year);
+      return date;
+    }
+
     function coerceToCurrentYear(date: Date): Date {
       const currentYear = new Date().getFullYear();
-      date.setFullYear(currentYear);
-      return date;
+      return coerceToYear(date, currentYear);
     }
 
     describe("should display year correctly", () => {
@@ -117,15 +121,15 @@ describe("Time", () => {
       it("should use long format when just one date in current year", () => {
         const range = {
           start: new Date("1997-02-21T11:00Z"),
-          end: coerceToCurrentYear(new Date("1997-05-30T16:21Z"))
+          end: coerceToCurrentYear(new Date("2019-05-30T16:21Z"))
         };
         const currentYear = new Date().getFullYear();
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq(`21 Feb 1997 11:00 - 30 May ${currentYear} 16:21`);
       });
 
       it("should omit year for both current years", () => {
-        const start = coerceToCurrentYear(new Date("1999-02-21T11:00Z"));
-        const end = coerceToCurrentYear(new Date("1999-05-30T16:21Z"));
+        const start = coerceToCurrentYear(new Date("2019-02-21T11:00Z"));
+        const end = coerceToCurrentYear(new Date("2019-05-30T16:21Z"));
         const range = { start, end };
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb 11:00 - 30 May 16:21");
       });
@@ -164,6 +168,15 @@ describe("Time", () => {
           end: coerceToCurrentYear(new Date("2019-05-30Z"))
         };
         expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("21 Feb - 29 May");
+      });
+
+      it("should show just days and months without year for whole current year", () => {
+        const nextYear = new Date().getFullYear() + 1;
+        const range = {
+          start: coerceToCurrentYear(new Date("2019-01-01Z")),
+          end: coerceToYear(new Date("2020-01-01Z"), nextYear)
+        };
+        expect(formatTimeRange(range, Timezone.UTC)).to.be.eq("1 Jan - 31 Dec");
       });
     });
   });

@@ -44,9 +44,9 @@ function getFormat(omitYear: boolean, omitHour: boolean): string {
   return FULL_FORMAT;
 }
 
-function isCurrentYear(year: number, timezone: Timezone): boolean {
+function isCurrentYear(moment: Moment, timezone: Timezone): boolean {
   const nowWallTime = getMoment(new Date(), timezone);
-  return nowWallTime.year() === year;
+  return nowWallTime.year() === moment.year();
 }
 
 function isStartOfTheDay(date: Moment): boolean {
@@ -60,21 +60,36 @@ function isOneWholeDay(a: Moment, b: Moment): boolean {
   return isStartOfTheDay(a) && isStartOfTheDay(b) && b.diff(a, "days") === 1;
 }
 
+function formatOneWholeDay(day: Moment, timezone: Timezone): string {
+  const omitYear = isCurrentYear(day, timezone);
+  return day.format(getFormat(omitYear, true));
+}
+
+function formatDaysRange(start: Moment, end: Moment, timezone: Timezone): string {
+  const dayBeforeEnd = end.subtract(1, "day");
+  const omitYear = isCurrentYear(start, timezone) && isCurrentYear(dayBeforeEnd, timezone);
+  const format = getFormat(omitYear, true);
+  return `${start.format(format)} - ${dayBeforeEnd.format(format)}`;
+}
+
+function formatHoursRange(start: Moment, end: Moment, timezone: Timezone) {
+  const omitYear = isCurrentYear(start, timezone) && isCurrentYear(end, timezone);
+  const format = getFormat(omitYear, false);
+  return `${start.format(format)} - ${end.format(format)}`;
+}
+
 export function formatTimeRange({ start, end }: { start: Date, end: Date }, timezone: Timezone): string {
   const startMoment = getMoment(start, timezone);
   const endMoment = getMoment(end, timezone);
-  const omitYear = isCurrentYear(startMoment.year(), timezone) && isCurrentYear(endMoment.year(), timezone);
-  const oneWholeDay = isOneWholeDay(startMoment, endMoment);
-  if (oneWholeDay) {
-    return startMoment.format(getFormat(omitYear, true));
+
+  if (isOneWholeDay(startMoment, endMoment)) {
+    return formatOneWholeDay(startMoment, timezone);
   }
   const hasDayBoundaries = isStartOfTheDay(startMoment) && isStartOfTheDay(endMoment);
   if (hasDayBoundaries) {
-    const format = getFormat(omitYear, true);
-    return `${startMoment.format(format)} - ${endMoment.subtract(1, "day").format(format)}`;
+    return formatDaysRange(startMoment, endMoment, timezone);
   }
-  const format = getFormat(omitYear, false);
-  return `${startMoment.format(format)} - ${endMoment.format(format)}`;
+  return formatHoursRange(startMoment, endMoment, timezone);
 }
 
 // calendar utils
