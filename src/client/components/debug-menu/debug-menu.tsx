@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -26,9 +27,12 @@ export interface DebugMenuProps {
   openRawDataModal: Fn;
   openViewDefinitionModal: Fn;
   openDruidQueryModal: Fn;
+  dataCube: DataCube;
 }
 
-export const DebugMenu: React.SFC<DebugMenuProps> = ({ openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {
+export const DebugMenu: React.SFC<DebugMenuProps> = ({ dataCube, openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {
+
+  const isNativeCluster = dataCube.clusterName === "native";
 
   function displayRawData() {
     openRawDataModal();
@@ -59,9 +63,9 @@ export const DebugMenu: React.SFC<DebugMenuProps> = ({ openOn, onClose, openDrui
       <li key="display-view-definition" onClick={displayViewDefinition}>
         {STRINGS.displayViewDefinition}
       </li>
-      <li key="view-druid-query" onClick={displayDruidQuery}>
+      {!isNativeCluster && <li key="view-druid-query" onClick={displayDruidQuery}>
         {STRINGS.displayDruidQuery}
-      </li>
+      </li>}
     </ul>
   </BubbleMenu>;
 };

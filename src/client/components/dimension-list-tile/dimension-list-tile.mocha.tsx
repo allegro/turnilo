@@ -31,7 +31,6 @@ describe("DimensionListTile", () => {
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
-        triggerSplitMenu={null}
       />
     );
 

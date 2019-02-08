@@ -30,6 +30,7 @@ describe.skip("BarChart", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <BarChart
+        refreshRequestTimestamp={0}
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}

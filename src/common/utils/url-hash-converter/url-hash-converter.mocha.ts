@@ -57,6 +57,24 @@ describe("urlHashConverter", () => {
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
+    });
+  });
+
+  describe("version 4", () => {
+
+    const ver4: Array<{ version: ViewDefinitionVersion, hash: string, essence: Essence }> = [
+      { version: "4", hash: UrlHashConverterFixtures.tableHashVersion4(), essence: EssenceFixtures.wikiTable() },
+      { version: "4", hash: UrlHashConverterFixtures.lineChartVersion4(), essence: EssenceFixtures.wikiLineChart() }
+    ];
+
+    ver4.forEach(({ version, hash, essence }) => {
+      const { visualization } = essence;
+
+      it(`decodes ${visualization.name} version ${version} correctly`, () => {
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+
+        expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
+      });
 
       it(`is symmetric in decode/encode for ${visualization.name} in version ${version}`, () => {
         const encodedHash = urlHashConverter.toHash(essence, version);

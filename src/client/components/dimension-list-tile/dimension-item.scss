@@ -40,6 +40,9 @@
   }
 
   .icon {
+    @include internet-explorer {
+      top: 0;
+    }
     top: 4px;
     left: -2px;
     width: 19px;
@@ -55,6 +58,9 @@
 
   .label {
     @include ellipsis;
+    @include internet-explorer {
+      width: 100%;
+    }
     flex-grow: 1;
     min-width: 0;
     display: block;

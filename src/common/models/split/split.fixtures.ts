@@ -16,7 +16,7 @@
  */
 
 import { Duration } from "chronoshift";
-import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Sort } from "../sort/sort";
 import { Split, SplitType } from "./split";
 

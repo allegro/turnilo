@@ -92,9 +92,8 @@ export class SettingsStore {
     var settingsStore = new SettingsStore();
 
     settingsStore.readSettings = () => {
-      return Q(stateStore.readState()
-        .then(stateData => AppSettings.fromJS(JSON.parse(stateData), { visualizations: MANIFESTS }))
-      );
+      return stateStore.readState()
+        .then(stateData => AppSettings.fromJS(JSON.parse(stateData), { visualizations: MANIFESTS }));
     };
 
     settingsStore.writeSettings = (appSettings: AppSettings) => {

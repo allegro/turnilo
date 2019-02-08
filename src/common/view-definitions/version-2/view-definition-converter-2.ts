@@ -36,11 +36,11 @@ import {
 } from "plywood";
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
-import { createMeasures, Essence } from "../../models/essence/essence";
+import { Essence } from "../../models/essence/essence";
 import {
   BooleanFilterClause,
-  DateRange,
   FilterClause,
   FixedTimeFilterClause,
   NumberFilterClause,
@@ -53,6 +53,7 @@ import {
 import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
+import { SeriesList } from "../../models/series-list/series-list";
 import { Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -68,11 +69,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const visualization = NamedArray.findByName(visualizations, definition.visualization);
 
-    const measures = createMeasures({
-      isMulti: definition.multiMeasureMode,
-      single: definition.singleMeasure,
-      multi: OrderedSet(definition.selectedMeasures)
-    });
+    const series = SeriesList.fromMeasureNames(definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure]);
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
@@ -82,7 +79,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const pinnedSort = dataCube.getMeasure(definition.pinnedSort) ? definition.pinnedSort : dataCube.getDefaultSortMeasure();
     const highlight = readHighlight(definition.highlight, dataCube);
     const compare: any = null;
-    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, measures, colors, pinnedSort, compare, highlight });
+    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort, compare, highlight });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition2 {
@@ -92,9 +89,9 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
 
 function readHighlight(definition: any, dataCube: DataCube): Highlight {
   if (!definition) return null;
-  const { measure, owner } = definition;
+  const { measure } = definition;
   const delta = Filter.fromClauses(filterJSConverter(definition.delta, dataCube));
-  return new Highlight({ measure, owner, delta });
+  return new Highlight({ measure, delta });
 
 }
 
@@ -153,15 +150,13 @@ function readFixedTimeFilter(selection: LiteralExpression, dimension: Dimension)
   return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(selection.value as TimeRange)) });
 }
 
-function readRelativeTimeFilterClause(selection: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
-  const { operand, step, duration } = selection;
+function readRelativeTimeFilterClause({ step, duration, operand }: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
   const { name: reference } = dimension;
   if (operand instanceof TimeFloorExpression) {
-    // pretty sure this is only ever used for previous
     return new RelativeTimeFilterClause({
       reference,
       duration: duration.multiply(Math.abs(step)),
-      period: step > 0 ? TimeFilterPeriod.CURRENT : TimeFilterPeriod.PREVIOUS
+      period: TimeFilterPeriod.PREVIOUS
     });
   }
   return new RelativeTimeFilterClause({
@@ -236,6 +231,16 @@ function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: Dat
   }
 }
 
+// Handle change in plywood internal representation around 0.14.0
+function limitValue(limitAction: any): number {
+  return limitAction.value || limitAction.limit;
+}
+
+// Handle change in plywood internal representation around 0.14.0
+function isTimeBucket(action: any): boolean {
+  return action.op === "timeBucket" || action.action === "timeBucket";
+}
+
 function convertSplit(split: any, dataCube: DataCube): Split {
   const { sortAction, limitAction, bucketAction } = split;
   const expression = Expression.fromJS(split.expression);
@@ -246,10 +251,8 @@ function convertSplit(split: any, dataCube: DataCube): Split {
     reference: sortAction.expression.name,
     direction: sortAction.direction
   });
-  // plywood < 0.14.1 uses limit instead of value
-  const limit = limitAction && (limitAction.value || limitAction.limit);
-  // test fixtures and converter use op, real links generated using swiv use action...?
-  const bucket = bucketAction && ((bucketAction.action || bucketAction.op) === "timeBucket" ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
+  const limit = limitAction && limitValue(limitAction);
+  const bucket = bucketAction && (isTimeBucket(bucketAction) ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
   return new Split({
     type,
     reference,

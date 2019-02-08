@@ -19,20 +19,21 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
+import { Clicker } from "../../../common/models/clicker/clicker";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { MeasuresTile } from "./measures-tile";
 
 describe("MeasuresTile", () => {
   it("adds the correct class", () => {
-    var fakeClicker = {
-      toggleEffectiveMeasure: () => {},
-      toggleMultiMeasureMode: () => {}
+    const fakeClicker: Clicker = {
+      addSeries: () => {}
     };
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <MeasuresTile
         clicker={fakeClicker}
+        menuStage={null}
         essence={EssenceFixtures.wikiTotals()}
       />
     );

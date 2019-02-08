@@ -52,4 +52,8 @@ export class StageFixtures {
   static defaultB() {
     return Stage.fromJS(StageFixtures.DEFAULT_B_JS);
   }
+
+  static container() {
+    return Stage.fromSize(1000, 600);
+  }
 }

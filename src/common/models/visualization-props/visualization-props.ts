@@ -18,7 +18,6 @@
 import { Dataset } from "plywood";
 import { Fn } from "../../utils/general/general";
 import { Clicker } from "../clicker/clicker";
-import { DeviceSize } from "../device/device";
 import { Essence } from "../essence/essence";
 import { Stage } from "../stage/stage";
 import { Timekeeper } from "../timekeeper/timekeeper";
@@ -31,10 +30,35 @@ export interface VisualizationProps {
   openRawDataModal?: Fn;
   registerDownloadableDataset?: (dataset: Dataset) => void;
   isThumbnail?: boolean;
+  refreshRequestTimestamp: number;
 }
 
-export interface DatasetLoad {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: any;
+enum DatasetLoadStatus { LOADED, LOADING, ERROR }
+
+interface DatasetLoadBase {
+  status: DatasetLoadStatus;
 }
+
+interface DatasetLoading extends DatasetLoadBase {
+  status: DatasetLoadStatus.LOADING;
+}
+
+interface DatasetLoaded extends DatasetLoadBase {
+  status: DatasetLoadStatus.LOADED;
+  dataset: Dataset;
+}
+
+interface DatasetLoadError extends DatasetLoadBase {
+  status: DatasetLoadStatus.ERROR;
+  error: Error;
+}
+
+export const loading: DatasetLoading = { status: DatasetLoadStatus.LOADING };
+export const error = (error: Error): DatasetLoadError => ({ error, status: DatasetLoadStatus.ERROR });
+export const loaded = (dataset: Dataset): DatasetLoaded => ({ status: DatasetLoadStatus.LOADED, dataset });
+
+export const isLoading = (dl: DatasetLoad): dl is DatasetLoading => dl.status === DatasetLoadStatus.LOADING;
+export const isLoaded = (dl: DatasetLoad): dl is DatasetLoaded => dl.status === DatasetLoadStatus.LOADED;
+export const isError = (dl: DatasetLoad): dl is DatasetLoadError => dl.status === DatasetLoadStatus.ERROR;
+
+export type DatasetLoad = DatasetLoading | DatasetLoaded | DatasetLoadError;

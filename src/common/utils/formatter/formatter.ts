@@ -20,8 +20,10 @@ import moment = require("moment");
 import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
+import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import {
+  BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
   isTimeFilter,
@@ -32,64 +34,33 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
-import { BYTE_PREFIXES, METRIC_PREFIXES } from "../number/units";
+import { Measure } from "../../models/measure/measure";
+import { SeriesFormat, SeriesFormatType } from "../../models/series/series";
+import { Unary } from "../functional/functional";
 import { DisplayYear, formatTimeRange } from "../time/time";
 
-export type Formatter = (n: number) => string;
-
-export function getMiddleNumber(values: number[]): number {
-  const filteredAbsData: number[] = [];
-  for (let v of values) {
-    if (v === 0 || isNaN(v) || !isFinite(v)) continue;
-    filteredAbsData.push(Math.abs(v));
-  }
-
-  const n = filteredAbsData.length;
-  if (n) {
-    filteredAbsData.sort((a, b) => b - a);
-    return filteredAbsData[Math.ceil((n - 1) / 2)];
-  } else {
-    return 0;
-  }
+export function formatFnFactory(format: string): (n: number) => string {
+  return (n: number) => {
+    if (isNaN(n) || !isFinite(n)) return "-";
+    return numbro(n).format(format);
+  };
 }
 
-type FormatType = "a" | "b";
+export const exactFormat = "0,0";
+const exactFormatter = formatFnFactory(exactFormat);
+export const percentFormat = "0[.]00%";
+const percentFormatter = formatFnFactory(percentFormat);
 
-const scales: Record<FormatType, Record<string, number>> = {
-  a: METRIC_PREFIXES,
-  b: BYTE_PREFIXES
-};
-
-const baseUnits: Record<FormatType, string> = {
-  a: "",
-  b: "B"
-};
-
-function formatterUnit(middle: number, formatType: FormatType): { scale: number, unit: string } {
-  const formatMiddle = numbro(middle).format("0 " + formatType);
-  const unit = Object.keys(scales[formatType]).find(unit => formatMiddle.endsWith(unit));
-  if (!unit) return { unit: baseUnits[formatType], scale: 1 };
-  return { scale: scales[formatType][unit], unit };
-}
-
-export function formatterFromData(values: number[], format: string): Formatter {
-  const match = format.match(/^(\S*)( ?)([ab])$/);
-  if (match) {
-    const numberFormat = match[1];
-    const space = match[2];
-    const formatType = match[3] as FormatType;
-    const { unit, scale } = formatterUnit(getMiddleNumber(values), formatType);
-    const suffix = unit ? space + unit : "";
-
-    return (n: number) => {
-      if (isNaN(n) || !isFinite(n)) return "-";
-      return numbro(n / scale).format(numberFormat) + suffix;
-    };
-  } else {
-    return (n: number) => {
-      if (isNaN(n) || !isFinite(n)) return "-";
-      return numbro(n).format(format);
-    };
+export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
+  switch (format.type) {
+    case SeriesFormatType.DEFAULT:
+      return measure.formatFn;
+    case SeriesFormatType.EXACT:
+      return exactFormatter;
+    case SeriesFormatType.PERCENT:
+      return percentFormatter;
+    case SeriesFormatType.CUSTOM:
+      return formatFnFactory(format.value);
   }
 }
 
@@ -101,7 +72,7 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
   if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   } else if (TimeRange.isTimeRange(value)) {
-    return formatTimeRange(value, timezone, displayYear);
+    return formatTimeRange(new DateRange(value), timezone, displayYear);
   } else {
     return "" + value;
   }
@@ -131,6 +102,15 @@ function getFormattedStringClauseValues({ values, action }: StringFilterClause):
   }
 }
 
+function getFormattedBooleanClauseValues({ values }: BooleanFilterClause): string {
+  return values.count() > 1 ? `(${values.count()})` : values.first().toString();
+}
+
+function getFormattedNumberClauseValues(clause: NumberFilterClause): string {
+  const { start, end } = clause.values.first();
+  return `${start} to ${end}`;
+}
+
 function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string {
   if (isTimeFilter(clause)) {
     return getFormattedTimeClauseValues(clause, timezone);
@@ -138,11 +118,13 @@ function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string
   if (clause instanceof StringFilterClause) {
     return getFormattedStringClauseValues(clause);
   }
-  if (clause instanceof NumberFilterClause) {
-    const { start, end } = clause.values.first();
-    return `${start} to ${end}`;
+  if (clause instanceof BooleanFilterClause) {
+    return getFormattedBooleanClauseValues(clause);
   }
-  return clause.values.first().toString();
+  if (clause instanceof NumberFilterClause) {
+    return getFormattedNumberClauseValues(clause);
+  }
+  throw new Error(`Unknown Filter Clause: ${clause}`);
 }
 
 function getClauseLabel(clause: FilterClause, dimension: Dimension) {
@@ -161,7 +143,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
 
 function getFormattedTimeClauseValues(clause: TimeFilterClause, timezone: Timezone): string {
   if (clause instanceof FixedTimeFilterClause) {
-    return formatTimeRange(TimeRange.fromJS(clause.values.get(0)), timezone, DisplayYear.IF_DIFF);
+    return formatTimeRange(clause.values.get(0), timezone, DisplayYear.IF_DIFF);
   }
   const { period, duration } = clause;
   switch (period) {
@@ -180,22 +162,4 @@ function getQualifiedDurationDescription(duration: Duration) {
   } else {
     return duration.getDescription();
   }
-}
-
-function dateToFileString(date: Date): string {
-  return date.toISOString()
-    .replace("T", "_")
-    .replace("Z", "")
-    .replace(".000", "");
-}
-
-export function getFileString(filter: Filter): string {
-  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
-  const nonTimeClauseSize = filter.clauses.filter(clause => !(clause instanceof FixedTimeFilterClause)).count();
-  const filtersPart = nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
-  if (timeFilter) {
-    const { start, end } = timeFilter.values.first();
-    return `${dateToFileString(start)}_${dateToFileString(end)}${filtersPart}`;
-  }
-  return filtersPart;
 }
