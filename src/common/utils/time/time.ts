@@ -176,7 +176,7 @@ export function formatISOTime(date: Date, timezone: Timezone): string {
 
 const ISO_DATE_DISALLOWED = /[^\d-]/g;
 
-export function trimISODate(date: string): string {
+export function normalizeISODate(date: string): string {
   return date.replace(ISO_DATE_DISALLOWED, "");
 }
 
@@ -188,7 +188,7 @@ export function validateISODate(date: string): boolean {
 
 const ISO_TIME_DISALLOWED = /[^\d:]/g;
 
-export function trimISOTime(time: string): string {
+export function normalizeISOTime(time: string): string {
   return time.replace(ISO_TIME_DISALLOWED, "");
 }
 
