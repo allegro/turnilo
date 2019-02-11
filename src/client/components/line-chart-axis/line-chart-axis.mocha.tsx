@@ -29,25 +29,25 @@ const scaleWithHoursAfter = (hs: number) =>
 describe("LineChartAxis", () => {
   describe("pickFormatDefinition", () => {
     it("should format across different years", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 365 * 3))).to.equal("YYYY-MM-DD");
+      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 365 * 3))).to.equal("D MMM YYYY");
     });
     it("should format across different months", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 30 * 2))).to.equal("MMM DD");
+      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 30 * 2))).to.equal("D MMM");
     });
     it("should format when days differ by one", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(24))).to.equal("dd DD, HH");
+      expect(pickFormatDefinition(scaleWithHoursAfter(24))).to.equal("D H:mm");
     });
     it("should format across different days", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 5))).to.equal("dd DD");
+      expect(pickFormatDefinition(scaleWithHoursAfter(24 * 5))).to.equal("dd D");
     });
     it("should format across different hours", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(12))).to.equal("HH");
+      expect(pickFormatDefinition(scaleWithHoursAfter(12))).to.equal("H:mm");
     });
     it("should format with smaller than hour difference", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(0.2))).to.equal("HH:mm");
+      expect(pickFormatDefinition(scaleWithHoursAfter(0.2))).to.equal("H:mm");
     });
     it("should format correctly with not enough ticks", () => {
-      expect(pickFormatDefinition(scaleWithHoursAfter(0))).to.equal("YYYY-MM-DD HH:mm");
+      expect(pickFormatDefinition(scaleWithHoursAfter(0))).to.equal("D MMM YYYY H:mm");
     });
   });
 });

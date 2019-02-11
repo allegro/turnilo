@@ -40,27 +40,25 @@ type TimeFormatter = Unary<Moment, string>;
 
 const formatterFromDef = (format: string): TimeFormatter => time => time.format(format);
 
+// Formats are simillar to utils/time.ts for now. In the end we should define somewhere "short formats" for use in LineChart due to limited available space.
 export function pickFormatDefinition(scale: AxisScale): string {
   const ticks = scale.ticks();
-  if (ticks.length < 2) return "YYYY-MM-DD HH:mm";
+  if (ticks.length < 2) return "D MMM YYYY H:mm";
   const first = ticks[0];
   const last = ticks[ticks.length - 1];
   if (first.getFullYear() !== last.getFullYear()) {
-    return "YYYY-MM-DD";
+    return "D MMM YYYY";
   }
   if (first.getMonth() !== last.getMonth()) {
-    return "MMM DD";
+    return "D MMM";
   }
   if (last.getDate() - first.getDate() === 1) {
-    return "dd DD, HH";
+    return "D H:mm";
   }
   if (first.getDate() !== last.getDate()) {
-    return "dd DD";
+    return "dd D";
   }
-  if (first.getHours() !== last.getHours()) {
-    return "HH";
-  }
-  return "HH:mm";
+  return "H:mm";
 }
 
 const floatFormat = d3.format(".1f");
