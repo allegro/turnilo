@@ -35,6 +35,7 @@ import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { Delta } from "../../components/delta/delta";
+import { HighlightModal } from "../../components/highlight-modal/highglight-modal";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
@@ -415,7 +416,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   protected renderInternals() {
-    const { clicker, essence, stage, openRawDataModal } = this.props;
+    const { clicker, essence, stage } = this.props;
     const { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
     const { splits, dataCube } = essence;
 
@@ -432,7 +433,7 @@ export class Table extends BaseVisualization<TableState> {
     let rows: JSX.Element[] = [];
     let highlighter: JSX.Element = null;
     let highlighterStyle: any = null;
-    let highlightBubble: JSX.Element = null;
+    let highlightModal: JSX.Element = null;
     if (flatData) {
       const hScales = this.getScalesForColumns(essence, flatData);
 
@@ -490,17 +491,11 @@ export class Table extends BaseVisualization<TableState> {
 
           highlighter = <div className="highlighter" key="highlight" style={highlighterStyle} />;
 
-          highlightBubble = <SegmentBubble
+          highlightModal = <HighlightModal
+            clicker={clicker}
             left={stage.x + stage.width / 2}
             top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-            title={segmentName}
-            actions={<SegmentActionButtons
-              clicker={clicker}
-              segmentLabel={segmentName}
-              dimension={dimension}
-              openRawDataModal={openRawDataModal}
-            />}
-          />;
+            title={segmentName} />;
         }
 
         rowY += ROW_HEIGHT;
@@ -555,7 +550,7 @@ export class Table extends BaseVisualization<TableState> {
 
       />
 
-      {highlightBubble}
+      {highlightModal}
     </div>;
   }
 }

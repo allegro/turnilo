@@ -17,39 +17,29 @@
 
 import * as React from "react";
 import { JSXNode } from "../../utils/dom/dom";
-import { clamp } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
+import { BubbleTitle } from "../bubble-title/bubble-title";
 import { Shpitz } from "../shpitz/shpitz";
 import "./segment-bubble.scss";
 
 const OFFSET_V = -10;
-const PER_LETTER_PIXELS = 8;
-const MIN_TITLE_WIDTH = 80;
-const MAX_TITLE_WIDTH = 300;
 
 export interface SegmentBubbleProps {
   left: number;
   top: number;
   title: string;
   content?: JSXNode;
-  actions?: JSX.Element;
-}
-
-function label(title: string, content: JSXNode) {
-  const minTextWidth = clamp(title.length * PER_LETTER_PIXELS, MIN_TITLE_WIDTH, MAX_TITLE_WIDTH);
-  return <div className="text" style={{ minWidth: minTextWidth }}>
-    <div className="title">{title}</div>
-    {content ? <div className="content">{content}</div> : null}
-  </div>;
 }
 
 export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
-  const { left, top, title, content, actions } = props;
-  return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!actions}>
+  const { left, top, title, content } = props;
+  return <BodyPortal left={left} top={top + OFFSET_V}>
     <div className="segment-bubble">
-      {label(title, content)}
-      {actions}
-      <Shpitz direction="up"/>
+      <div className="text">
+        <BubbleTitle title={title} />
+        {content ? <div className="content">{content}</div> : null}
+      </div>
+      <Shpitz direction="up" />
     </div>
   </BodyPortal>;
 };
