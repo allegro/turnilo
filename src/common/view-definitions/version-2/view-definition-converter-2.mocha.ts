@@ -71,7 +71,7 @@ it("converts previous time bucket expression to time period", () => {
       operand: {
         op: "timeFloor",
         operand: {
-          op: "ref",	
+          op: "ref",
           name: "n"
         },
         duration: "P1W"
