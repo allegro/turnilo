@@ -71,11 +71,13 @@ it("converts previous time bucket expression to time period", () => {
       operand: {
         op: "timeFloor",
         operand: {
-          duration: "P1W"
+          op: "ref",	
+          name: "n"
         },
-        duration: "P1W",
-        step: -1
-      }
+        duration: "P1W"
+      },
+      duration: "P1W",
+      step: -1
     });
     const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefintiion, DataCubeFixtures.wiki(), MANIFESTS);
     const convertedClause = essence.filter.clauses.first();
