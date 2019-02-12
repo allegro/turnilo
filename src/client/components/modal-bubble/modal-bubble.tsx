@@ -45,12 +45,14 @@ export class ModalBubble extends React.Component<ModalProps, {}> {
 
   render() {
     const { className, children, left, top } = this.props;
-    return <BodyPortal left={left} top={top}>
+    return <React.Fragment>
       <GlobalEventListener mouseDown={this.onMouseDown} />
-      <div className={classNames("modal-bubble", className)} ref={this.setModalRef}>
-        {children}
-        <Shpitz direction="up" />
-      </div>
-    </BodyPortal>;
+      <BodyPortal left={left} top={top}>
+        <div className={classNames("modal-bubble", className)} ref={this.setModalRef}>
+          {children}
+          <Shpitz direction="up" />
+        </div>
+      </BodyPortal>
+    </React.Fragment>;
   }
 }
