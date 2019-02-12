@@ -39,7 +39,7 @@ describe("Clause Predicate", () => {
       expect(input.filter(predicate)).to.be.deep.eq(["bar", "baz", "spam"]);
     });
     it("Regular Expression", () => {
-      const clause = new StringFilterClause({ action: StringFilterAction.IN, values: Set.of("bar", "baz") });
+      const clause = new StringFilterClause({ action: StringFilterAction.MATCH, values: Set.of("a(r|z)") });
       const predicate = clausePredicate(clause);
       expect(input.filter(predicate)).to.be.deep.eq(["bar", "baz"]);
     });
