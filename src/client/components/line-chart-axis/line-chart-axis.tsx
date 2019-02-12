@@ -17,17 +17,17 @@
 
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
-import { Moment, tz } from "moment-timezone";
 import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
+import { getMoment, scaleTicksFormatter } from "../../../common/utils/time/time";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import "./line-chart-axis.scss";
 
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
 
-type AxisScale = d3.time.Scale<Date, number> | d3.time.Scale<number, number>;
+type AxisScale = d3.time.Scale<number, number> | d3.time.Scale<number, number>;
 
 export interface LineChartAxisProps {
   stage: Stage;
@@ -36,43 +36,15 @@ export interface LineChartAxisProps {
   timezone: Timezone;
 }
 
-type TimeFormatter = Unary<Moment, string>;
-
-const formatterFromDef = (format: string): TimeFormatter => time => time.format(format);
-
-// Formats are simillar to utils/time.ts for now. In the end we should define somewhere "short formats" for use in LineChart due to limited available space.
-export function pickFormatDefinition(scale: AxisScale): string {
-  const ticks = scale.ticks();
-  if (ticks.length < 2) return "D MMM YYYY H:mm";
-  const first = ticks[0];
-  const last = ticks[ticks.length - 1];
-  if (first.getFullYear() !== last.getFullYear()) {
-    return "D MMM YYYY";
-  }
-  if (first.getMonth() !== last.getMonth()) {
-    return "D MMM";
-  }
-  if (last.getDate() - first.getDate() === 1) {
-    return "D H:mm";
-  }
-  if (first.getDate() !== last.getDate()) {
-    return "dd D";
-  }
-  return "H:mm";
-}
-
 const floatFormat = d3.format(".1f");
 
 function labelFormatter(scale: AxisScale, timezone: Timezone): Unary<Date | number, string> {
   const [start] = scale.domain();
   if (start instanceof Date) {
-    const formatDef = pickFormatDefinition(scale);
-    const timeFormatter = formatterFromDef(formatDef);
-    const timezoneString = timezone.toString();
-    return (value: Date) => timeFormatter(tz(value, timezoneString));
+    const formatter = scaleTicksFormatter(scale);
+    return (date: Date) => formatter(getMoment(date, timezone));
   }
   return (value: number) => String(floatFormat(value));
-
 }
 
 export const LineChartAxis: React.SFC<LineChartAxisProps> = props => {

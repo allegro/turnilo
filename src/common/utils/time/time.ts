@@ -16,13 +16,15 @@
  */
 
 import { day, month, Timezone } from "chronoshift";
+import * as d3 from "d3";
 import { Moment, tz } from "moment-timezone";
+import { Unary } from "../functional/functional";
 
 const ISO_FORMAT_DATE = "YYYY-MM-DD";
 const ISO_FORMAT_TIME = "HH:mm";
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
-function getMoment(date: Date, timezone: Timezone): Moment {
+export function getMoment(date: Date, timezone: Timezone): Moment {
   return tz(date, timezone.toString());
 }
 
@@ -35,10 +37,43 @@ export interface Locale {
 const FULL_FORMAT = "D MMM YYYY H:mm";
 const WITHOUT_YEAR_FORMAT = "D MMM H:mm";
 const WITHOUT_HOUR_FORMAT = "D MMM YYYY";
-const SHORT_FORMAT = "D MMM";
+const WITHOUT_YEAR_AND_HOUR_FORMAT = "D MMM";
 
-function getFormat(omitYear: boolean, omitHour: boolean): string {
-  if (omitHour && omitYear) return SHORT_FORMAT;
+const SHORT_WITHOUT_HOUR_FORMAT = "D.MM.YY";
+const SHORT_FULL_FORMAT = "D.MM.YY HH:mm";
+const SHORT_WITHOUT_YEAR_FORMAT = "D.MM HH:mm";
+const SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT = "D.MM";
+
+function formatterFromDefinition(definition: string): Unary<Moment, string> {
+  return (date: Moment) => date.format(definition);
+}
+
+function getShortFormat(omitYear: boolean, omitHour: boolean): string {
+  if (omitYear && omitHour) return SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT;
+  if (omitYear) return SHORT_WITHOUT_YEAR_FORMAT;
+  if (omitHour) return SHORT_WITHOUT_HOUR_FORMAT;
+  return SHORT_FULL_FORMAT;
+}
+
+function hasSameHour(a: Date, b: Date): boolean {
+  return a.getHours() === b.getHours() && a.getMinutes() === b.getMinutes();
+}
+
+export function scaleTicksFormat(scale: d3.time.Scale<number, number>): string {
+  const ticks = scale.ticks();
+  if (ticks.length < 2) return SHORT_FULL_FORMAT;
+  const [first, ...rest] = ticks;
+  const sameYear = rest.every(date => date.getFullYear() ===  first.getFullYear());
+  const sameHour = rest.every(date => hasSameHour(date, first));
+  return getShortFormat(sameYear, sameHour);
+}
+
+export function scaleTicksFormatter(scale: d3.time.Scale<number, number>): Unary<Moment, string> {
+  return formatterFromDefinition(scaleTicksFormat(scale));
+}
+
+function getLongFormat(omitYear: boolean, omitHour: boolean): string {
+  if (omitHour && omitYear) return WITHOUT_YEAR_AND_HOUR_FORMAT;
   if (omitYear) return WITHOUT_YEAR_FORMAT;
   if (omitHour) return WITHOUT_HOUR_FORMAT;
   return FULL_FORMAT;
@@ -62,19 +97,19 @@ function isOneWholeDay(a: Moment, b: Moment): boolean {
 
 function formatOneWholeDay(day: Moment, timezone: Timezone): string {
   const omitYear = isCurrentYear(day, timezone);
-  return day.format(getFormat(omitYear, true));
+  return day.format(getLongFormat(omitYear, true));
 }
 
 function formatDaysRange(start: Moment, end: Moment, timezone: Timezone): [string, string] {
   const dayBeforeEnd = end.subtract(1, "day");
   const omitYear = isCurrentYear(start, timezone) && isCurrentYear(dayBeforeEnd, timezone);
-  const format = getFormat(omitYear, true);
+  const format = getLongFormat(omitYear, true);
   return [start.format(format), dayBeforeEnd.format(format)];
 }
 
 function formatHoursRange(start: Moment, end: Moment, timezone: Timezone): [string, string] {
   const omitYear = isCurrentYear(start, timezone) && isCurrentYear(end, timezone);
-  const format = getFormat(omitYear, false);
+  const format = getLongFormat(omitYear, false);
   return [start.format(format), end.format(format)];
 }
 

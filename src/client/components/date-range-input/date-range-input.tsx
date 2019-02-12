@@ -16,7 +16,6 @@
  */
 
 import { Timezone } from "chronoshift";
-import "moment-timezone";
 import * as React from "react";
 import { combineDateAndTimeIntoMoment, formatISODate, formatISOTime, normalizeISODate, normalizeISOTime, validateISODate, validateISOTime } from "../../../common/utils/time/time";
 import "./date-range-input.scss";

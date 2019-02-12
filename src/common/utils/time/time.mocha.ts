@@ -17,7 +17,8 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
-import { appendDays, datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, prependDays } from "./time";
+import * as d3 from "d3";
+import { appendDays, datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, prependDays, scaleTicksFormat, scaleTicksFormatter } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
@@ -87,6 +88,51 @@ describe("Time", () => {
     expect(formatYearMonth(date, TZ_TIJUANA), "y2k tijuana").to.equal("December 1999");
     expect(formatYearMonth(date, TZ_KATHMANDU), "y2k kathmandu").to.equal("January 2000");
     expect(formatYearMonth(date, TZ_Kiritimati), "y2k kiritimati").to.equal("January 2000");
+  });
+
+  describe("scaleTicksFormatter", () => {
+
+    const createScale = (start: Date, end: Date) => d3.time.scale().domain([start, end]).range([0, 10]);
+
+    it("should hide year when year is the same in all ticks", () => {
+      const scale = createScale(new Date("2019-01-01T03:00"), new Date("2019-01-01T21:00"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM HH:mm");
+    });
+
+    it("should hide hour when hour is the same in all ticks", () => {
+      const scale = createScale(new Date("2018-11-01"), new Date("2019-01-10"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM.YY");
+    });
+
+    it("should hide hour and year when hour and year are the same in all ticks", () => {
+      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-10"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM");
+    });
+
+    it("should show hour and year when hour and year are different in some ticks", () => {
+      const scale = createScale(new Date("2018-12-31T23:00"), new Date("2019-01-01:T01:00"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM.YY HH:mm");
+    });
+
+    it("should show full format when not enough ticks", () => {
+      const scale = createScale(new Date("2019-01-01T00:00"), new Date("2019-01-01T:00:01"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM.YY HH:mm");
+    });
   });
 
   describe("formatDatesInTimeRange", () => {
