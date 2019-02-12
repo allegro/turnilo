@@ -46,7 +46,7 @@ import { ColorEntry, ColorSwabs } from "../../components/color-swabs/color-swabs
 import { Delta } from "../../components/delta/delta";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { HighlightModal } from "../../components/highlight-modal/highglight-modal";
+import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Highlighter } from "../../components/highlighter/highlighter";
 import { HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
 import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";

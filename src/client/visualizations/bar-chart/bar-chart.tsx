@@ -36,7 +36,7 @@ import { DisplayYear } from "../../../common/utils/time/time";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { HighlightModal } from "../../components/highlight-modal/highglight-modal";
+import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";

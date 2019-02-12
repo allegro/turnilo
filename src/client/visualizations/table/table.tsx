@@ -35,7 +35,7 @@ import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { Delta } from "../../components/delta/delta";
-import { HighlightModal } from "../../components/highlight-modal/highglight-modal";
+import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
