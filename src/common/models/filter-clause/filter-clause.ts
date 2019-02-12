@@ -212,17 +212,6 @@ export function toExpression(clause: FilterClause, { expression }: Dimension): E
   }
 }
 
-export function stringSatisfyClause(value: string, { action, not, values }: StringFilterClause): boolean {
-  switch (action) {
-      case StringFilterAction.IN:
-        return not ? !values.has(value) : values.has(value);
-      case StringFilterAction.MATCH:
-        return value.match(values.first()) !== null;
-      case StringFilterAction.CONTAINS:
-        return value.includes(values.first());
-    }
-}
-
 export function fromJS(parameters: FilterDefinition): FilterClause {
   const { type, reference } = parameters;
   switch (type) {
