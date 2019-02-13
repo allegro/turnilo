@@ -169,9 +169,13 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   canDrop(): boolean {
-    const { essence: { splits } } = this.props;
+    const { essence: { splits, dataCube } } = this.props;
     const dimension = DragManager.draggingDimension();
     if (dimension) return !splits.hasSplitOn(dimension);
+    if (DragManager.isDraggingFilter()) {
+      const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
+      return dimension && !splits.hasSplitOn(dimension);
+    }
     return DragManager.isDraggingSplit();
   }
 
@@ -219,6 +223,16 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     });
   }
 
+  draggingSplit(): Split {
+    const { essence: { dataCube } } = this.props;
+    if (DragManager.isDraggingSplit()) return DragManager.draggingSplit();
+    if (DragManager.isDraggingFilter()) {
+      const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
+      return Split.fromDimension(dimension);
+    }
+    return Split.fromDimension(DragManager.draggingDimension());
+  }
+
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.preventDefault();
@@ -227,7 +241,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     this.setState({ dragPosition: null });
 
-    const split = DragManager.isDraggingSplit() ? DragManager.draggingSplit() : Split.fromDimension(DragManager.draggingDimension());
+    const split = this.draggingSplit();
     if (!split) return;
 
     let dragPosition = this.calculateDragPosition(e);
