@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +14,18 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import * as React from "react";
+import { clamp } from "../../utils/dom/dom";
 
-.hover-multi-bubble {
-  @extend %menu-cont;
-  background: rgba($white, 0.9);
-  position: absolute;
-  padding: 8px;
+const PER_LETTER_PIXELS = 8;
+const MIN_TITLE_WIDTH = 80;
+const MAX_TITLE_WIDTH = 300;
 
-  .bucket {
-    color: $text-lighterish;
-    margin-bottom: 6px;
-    white-space: nowrap;
-  }
-
-  .segment-action-buttons {
-    margin-top: 7px;
-  }
+interface BubbleTitleProps {
+  title: string;
 }
+
+export const BubbleTitle: React.SFC<BubbleTitleProps> = ({ title }) => {
+  const minWidth = clamp(title.length * PER_LETTER_PIXELS, MIN_TITLE_WIDTH, MAX_TITLE_WIDTH);
+  return <div className="title" style={{ minWidth }}>{title}</div>;
+};

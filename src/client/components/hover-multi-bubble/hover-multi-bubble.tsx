@@ -19,18 +19,11 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Fn } from "../../../common/utils/general/general";
 import { BodyPortal } from "../body-portal/body-portal";
+import { ColorEntry, ColorSwabs } from "../color-swabs/color-swabs";
 import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
 import "./hover-multi-bubble.scss";
 
 const LEFT_OFFSET = 22;
-
-export interface ColorEntry {
-  color: string;
-  name: string;
-  value: string;
-  previous?: string;
-  delta?: JSX.Element;
-}
 
 export interface HoverMultiBubbleProps {
   left: number;
@@ -41,30 +34,11 @@ export interface HoverMultiBubbleProps {
   onClose?: Fn;
 }
 
-function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
-  if (!colorEntries || !colorEntries.length) return null;
-
-  const colorSwabs = colorEntries.map(({ color, name, value, previous, delta }: ColorEntry) => {
-    const swabStyle = { background: color };
-    return <tr key={name}>
-      <td>
-        <div className="color-swab" style={swabStyle}/>
-      </td>
-      <td className="color-name">{name}</td>
-      <td className="color-value">{value}</td>
-      {previous && <td className="color-previous">{previous}</td>}
-      {delta && <td className="color-delta">{delta}</td>}
-    </tr>;
-  });
-
-  return <table className="colors">{colorSwabs}</table>;
-}
-
 export const HoverMultiBubble: React.SFC<HoverMultiBubbleProps> = ({ colorEntries, left, top, title, clicker, onClose }) => {
   return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={!clicker}>
     <div className="hover-multi-bubble">
       <div className="bucket">{title}</div>
-      {renderColorSwabs(colorEntries)}
+      <ColorSwabs colorEntries={colorEntries}/>
       {clicker && <SegmentActionButtons
         clicker={clicker}
         segmentLabel={title}

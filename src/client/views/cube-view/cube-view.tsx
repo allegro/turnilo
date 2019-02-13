@@ -710,7 +710,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       clicker: this.clicker,
       timekeeper: this.state.timekeeper,
       stage,
-      openRawDataModal: this.openRawDataModal,
       registerDownloadableDataset: (dataset: Dataset) => {
         this.downloadableDataset = { dataset, options: tabularOptions(essence) };
       }

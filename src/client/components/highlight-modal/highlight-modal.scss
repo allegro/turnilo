@@ -17,19 +17,28 @@
 
 @import '../../imports';
 
-.hover-multi-bubble {
-  @extend %menu-cont;
-  background: rgba($white, 0.9);
-  position: absolute;
-  padding: 8px;
+.highlight-modal {
+  max-width: 400px;
 
-  .bucket {
-    color: $text-lighterish;
-    margin-bottom: 6px;
+  .title {
+    color: #999;
+    line-height: 17px;
+    display: block;
+    padding-bottom: 9px;
+    overflow: hidden;
+    word-wrap: break-word;
+  }
+
+  .value {
     white-space: nowrap;
   }
 
-  .segment-action-buttons {
+  .actions {
     margin-top: 7px;
+    white-space: nowrap;
+
+    .accept {
+      margin-right: 5px;
+    }
   }
 }

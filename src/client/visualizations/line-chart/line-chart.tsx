@@ -41,14 +41,15 @@ import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/f
 import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
 import { ChartLine } from "../../components/chart-line/chart-line";
+import { ColorEntry, ColorSwabs } from "../../components/color-swabs/color-swabs";
 import { Delta } from "../../components/delta/delta";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { GridLines } from "../../components/grid-lines/grid-lines";
+import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Highlighter } from "../../components/highlighter/highlighter";
-import { ColorEntry, HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
+import { HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
 import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
-import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
@@ -337,7 +338,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     extentY: number[],
     scaleY: any
   ): JSX.Element {
-    const { clicker, essence, openRawDataModal } = this.props;
+    const { clicker, essence } = this.props;
     const { highlight, colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
@@ -361,7 +362,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         const segmentLabel = formatValue(bubbleRange, timezone);
         const firstSplit = essence.splits.splits.first();
         const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
-        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
+        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
 
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
         const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
@@ -383,30 +384,26 @@ export class LineChart extends BaseVisualization<LineChartState> {
           };
         });
 
-        return <HoverMultiBubble
+        return <HighlightModal
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
           title={segmentLabel}
-          colorEntries={colorEntries}
-          clicker={dragRange ? null : clicker}
-        />;
+          clicker={clicker}>
+          <ColorSwabs colorEntries={colorEntries} />
+        </HighlightModal>;
       } else {
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
         const segmentLabel = formatValue(shownRange, timezone);
         const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
         const measureLabel = highlightDatum ? measure.formatDatum(highlightDatum, format) : null;
 
-        return <SegmentBubble
+        return <HighlightModal
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
           title={segmentLabel}
-          content={measureLabel}
-          actions={<SegmentActionButtons
-            segmentValue={measureLabel}
-            clicker={dragRange ? null : clicker}
-            openRawDataModal={openRawDataModal}
-          />}
-        />;
+          clicker={clicker}>
+          {measureLabel}
+        </HighlightModal>;
       }
 
     } else if (!dragRange && hoverRange && hoverMeasure === measure) {
