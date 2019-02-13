@@ -15,7 +15,10 @@
  */
 
 import { expect } from "chai";
-import { complement, concatTruthy, cons, flatMap, mapTruthy, thread, threadTruthy } from "./functional";
+import * as sinon from "sinon";
+import { SinonSpy } from "sinon";
+import { sleep } from "../../../client/utils/test-utils/sleep";
+import { complement, concatTruthy, cons, debounceWithPromise, flatMap, mapTruthy, thread, threadConditionally, threadNullable } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -67,15 +70,27 @@ describe("Functional utilities", () => {
     });
   });
 
-  describe("threadTruthy", () => {
+  describe("threadNullable", () => {
     it("should thread value through all function as long all return values are truthy", () => {
-      const result = threadTruthy(1, inc, double, inc);
+      const result = threadNullable(1, inc, double, inc);
       expect(result).to.eq(5);
     });
 
     it("should return falsy value if some function in thread returns falsy value", () => {
-      const result = threadTruthy(1, inc, nil, inc, inc);
+      const result = threadNullable(1, inc, nil, inc, inc);
       expect(result).to.eq(null);
+    });
+  });
+
+  describe("threadConditionally", () => {
+    it("should thread value through all function as long all functions are callable", () => {
+      const result = threadConditionally(1, inc, double, inc);
+      expect(result).to.eq(5);
+    });
+
+    it("should omit falsy values in call chain", () => {
+      const result = threadConditionally(1, inc, undefined, double, null, inc);
+      expect(result).to.eq(5);
     });
   });
 
@@ -88,4 +103,59 @@ describe("Functional utilities", () => {
     });
   });
 
+  describe("debounceWithPromise", () => {
+    let callSpy: SinonSpy;
+
+    beforeEach(() => {
+      callSpy = sinon.spy();
+    });
+
+    it("should call function once", async () => {
+      const debounced = debounceWithPromise(callSpy, 10);
+      debounced();
+      debounced();
+      debounced();
+      expect(callSpy.callCount).to.eq(0);
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(1);
+    });
+
+    it("should call function with argument of last invocation", async () => {
+      const debounced = debounceWithPromise(callSpy, 10);
+      debounced(1);
+      debounced(2);
+      debounced(3);
+      await sleep(10);
+      expect(callSpy.calledWith(3)).to.be.true;
+    });
+
+    it("should call function again after if time passes", async () => {
+      const debounced = debounceWithPromise(callSpy, 10);
+      debounced();
+      debounced();
+      debounced();
+      expect(callSpy.callCount).to.eq(0);
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(1);
+      debounced();
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(2);
+    });
+
+    it("should not call function after cancelation", async () => {
+      const debounced = debounceWithPromise(callSpy, 10);
+      debounced();
+      debounced();
+      debounced.cancel();
+      await sleep(10);
+      expect(callSpy.callCount).to.eq(0);
+    });
+
+    it("should return promise with value", async () => {
+      const returnVal = 5;
+      const debounced = debounceWithPromise(() => returnVal, 10);
+      const x = await debounced();
+      expect(x).to.be.eq(returnVal);
+    });
+  });
 });

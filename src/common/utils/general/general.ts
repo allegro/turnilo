@@ -36,6 +36,10 @@ export function isTruthy(element: any): boolean {
   return element !== null && element !== undefined && element !== false;
 }
 
+export function isBlank(str: string): boolean {
+  return str.length === 0;
+}
+
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
   var n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");
@@ -58,12 +62,6 @@ export function makeTitle(name: string): string {
     .replace(/[a-z0-9][A-Z]/g, s => { // 'HelloWorld' -> 'Hello World'
       return s[0] + " " + s[1];
     });
-}
-
-export function immutableListsEqual<T extends Equalable>(listA: List<T>, listB: List<T>): boolean {
-  if (listA === listB) return true;
-  if (!listA !== !listB) return false;
-  return immutableArraysEqual(listA.toArray(), listB.toArray());
 }
 
 export function collect(wait: number, fn: Fn): Fn {

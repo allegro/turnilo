@@ -16,9 +16,8 @@
  */
 
 import * as React from "react";
-import { Measure } from "../../../common/models/measure/measure";
 import { Stage } from "../../../common/models/stage/stage";
-import { formatterFromData } from "../../../common/utils/formatter/formatter";
+import { Unary } from "../../../common/utils/functional/functional";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import "./vertical-axis.scss";
 
@@ -29,35 +28,24 @@ export interface VerticalAxisProps {
   stage: Stage;
   ticks: number[];
   scale: any;
+  formatter: Unary<number, string>;
   topLineExtend?: number;
   hideZero?: boolean;
 }
 
-export interface VerticalAxisState {
-}
+export const VerticalAxis: React.SFC<VerticalAxisProps> = ({ formatter, stage, ticks: inputTicks, scale, topLineExtend = 0, hideZero }) => {
+    const ticks = hideZero ? inputTicks.filter((tick: number) => tick !== 0) : inputTicks;
 
-export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxisState> {
-  static defaultProps: Partial<VerticalAxisProps> = {
-    topLineExtend: 0
-  };
-
-  render() {
-    var { stage, ticks, scale, topLineExtend, hideZero } = this.props;
-
-    if (hideZero) ticks = ticks.filter((tick: number) => tick !== 0);
-
-    var formatter = formatterFromData(ticks, Measure.DEFAULT_FORMAT);
-
-    var lines = ticks.map((tick: any) => {
-      var y = roundToHalfPx(scale(tick));
+    const lines = ticks.map((tick: any) => {
+      const y = roundToHalfPx(scale(tick));
       return <line className="tick" key={String(tick)} x1={0} y1={y} x2={TICK_WIDTH} y2={y} />;
     });
 
-    var labelX = TICK_WIDTH + TEXT_OFFSET;
-    var dy = "0.31em";
+    const labelX = TICK_WIDTH + TEXT_OFFSET;
+    const dy = "0.31em";
 
-    var labels = ticks.map((tick: any) => {
-      var y = scale(tick);
+    const labels = ticks.map((tick: any) => {
+      const y = scale(tick);
       return <text className="tick" key={String(tick)} x={labelX} y={y} dy={dy}>{formatter(tick)}</text>;
     });
 
@@ -66,5 +54,4 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
       {lines}
       {labels}
     </g>;
-  }
-}
+};

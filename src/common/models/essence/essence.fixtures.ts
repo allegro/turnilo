@@ -21,17 +21,18 @@ import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
-import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
+import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
 import { SplitFixtures } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { createMeasures, Essence, EssenceContext, EssenceValue } from "./essence";
+import { Essence, EssenceContext, EssenceValue } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
@@ -46,7 +47,7 @@ const defaultEssence: EssenceValue = {
   highlight: null,
   splits: EMPTY_SPLITS,
   timeShift: null,
-  measures: createMeasures()
+  series: EMPTY_SERIES
 };
 
 export class EssenceFixtures {
@@ -54,7 +55,7 @@ export class EssenceFixtures {
     return {
       ...defaultEssence,
       visualization: TOTALS_MANIFEST,
-      measures: createMeasures({ isMulti: true, multi: OrderedSet(["count"]) })
+      series: SeriesList.fromMeasureNames(["count"])
     };
   }
 
@@ -109,7 +110,7 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      measures: createMeasures({ isMulti: true, single: "delta", multi: OrderedSet(["count", "added"]) }),
+      series: SeriesList.fromMeasureNames(["count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: null,
       pinnedSort: "delta",
@@ -138,12 +139,12 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      measures: createMeasures({ isMulti: true, single: "delta", multi: OrderedSet(["count", "added"]) }),
+      series: SeriesList.fromMeasureNames(["count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
       compare: null,
-      highlight: new Highlight({ owner: "line-chart", measure: "count", delta: Filter.fromClauses(highlightClauses) })
+      highlight: new Highlight({ measure: "count", delta: Filter.fromClauses(highlightClauses) })
     });
   }
 

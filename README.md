@@ -40,7 +40,8 @@ this is how Turnilo emerged.
 
 ## Pre-requisites
 
-* [Node.js](https://nodejs.org/) - LTS version.
+* [Node.js](https://nodejs.org/) - 10.x or 8.x version.
+* [npm](https://www.npmjs.com/) - 6.5.0 version.
 
 :warning:
 Do not use `yarn` command for dependency managment and project build, use `npm` instead.

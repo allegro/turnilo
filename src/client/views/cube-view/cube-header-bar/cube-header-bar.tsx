@@ -23,6 +23,7 @@ import { Customization } from "../../../../common/models/customization/customiza
 import { DataCube } from "../../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Binary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { AutoRefreshMenu } from "../../../components/auto-refresh-menu/auto-refresh-menu";
 import { DebugMenu } from "../../../components/debug-menu/debug-menu";
@@ -45,6 +46,7 @@ export interface CubeHeaderBarProps {
   openRawDataModal?: Fn;
   openViewDefinitionModal?: Fn;
   openDruidQueryModal?: Fn;
+  openUrlShortenerModal?: Binary<string, string, void>;
   customization?: Customization;
   getDownloadableDataset?: () => DataSetWithTabOptions;
   changeTimezone?: (timezone: Timezone) => void;
@@ -74,15 +76,9 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
 
   componentDidMount() {
     this.mounted = true;
-    const { dataCube } = this.props.essence;
-    this.setAutoRefreshFromDataCube(dataCube);
   }
 
   componentWillReceiveProps(nextProps: CubeHeaderBarProps) {
-    if (this.props.essence.dataCube.name !== nextProps.essence.dataCube.name) {
-      this.setAutoRefreshFromDataCube(nextProps.essence.dataCube);
-    }
-
     if (!this.props.updatingMaxTime && nextProps.updatingMaxTime) {
       this.setState({ animating: true });
       setTimeout(() => {
@@ -95,12 +91,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   componentWillUnmount() {
     this.mounted = false;
     this.clearTimerIfExists();
-  }
-
-  setAutoRefreshFromDataCube(dataCube: DataCube) {
-    const { refreshRule } = dataCube;
-    if (refreshRule.isFixed()) return;
-    this.setAutoRefreshRate(Duration.fromJS("PT5M")); // ToDo: make this configurable maybe?
   }
 
   setAutoRefreshRate = (rate: Duration) => {
@@ -141,16 +131,17 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { customization, essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, openUrlShortenerModal, getCubeViewHash, getDownloadableDataset } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
     return <ShareMenu
       essence={essence}
+      openUrlShortenerModal={openUrlShortenerModal}
       timekeeper={timekeeper}
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}
-      externalViews={customization.externalViews}
+      customization={customization}
       getCubeViewHash={getCubeViewHash}
       getDownloadableDataset={getDownloadableDataset}
     />;
@@ -166,7 +157,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeAutoRefreshMenu = () => this.setState({ autoRefreshMenuAnchor: null });
 
   renderAutoRefreshMenu() {
-    const { refreshMaxTime, essence, timekeeper } = this.props;
+    const { refreshMaxTime, essence: { dataCube, timezone }, timekeeper } = this.props;
     const { autoRefreshMenuAnchor, autoRefreshRate } = this.state;
     if (!autoRefreshMenuAnchor) return null;
 
@@ -177,8 +168,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       autoRefreshRate={autoRefreshRate}
       setAutoRefreshRate={this.setAutoRefreshRate}
       refreshMaxTime={refreshMaxTime}
-      dataCube={essence.dataCube}
-      timezone={essence.timezone}
+      dataCube={dataCube}
+      timezone={timezone}
     />;
   }
 
@@ -218,8 +209,9 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     const { debugMenuAnchor } = this.state;
     if (!debugMenuAnchor) return null;
 
-    const { openRawDataModal, openViewDefinitionModal, openDruidQueryModal } = this.props;
+    const { essence: { dataCube }, openRawDataModal, openViewDefinitionModal, openDruidQueryModal } = this.props;
     return <DebugMenu
+      dataCube={dataCube}
       openRawDataModal={openRawDataModal}
       openDruidQueryModal={openDruidQueryModal}
       openViewDefinitionModal={openViewDefinitionModal}

@@ -15,56 +15,97 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
+import { render } from "enzyme";
+import { Component, DragEvent, MouseEvent } from "react";
 import * as React from "react";
-import { Component, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
+import { SeriesList } from "../../../common/models/series-list/series-list";
+import { Series } from "../../../common/models/series/series";
+import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
+import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 import keyCodes from "../../utils/key-codes/key-codes";
-import * as localStorage from "../../utils/local-storage/local-storage";
 import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
+import { MeasureActionsMenu } from "../measure-actions-menu/measure-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
-import { TileHeaderIcon } from "../tile-header/tile-header";
+import { MEASURE_CLASS_NAME } from "./measure-item";
 import { MeasureForViewType, MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
 import { MeasuresRenderer } from "./measures-renderer";
 
 export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
+  menuStage: Stage;
   style?: React.CSSProperties;
 }
 
-export const initialState = {
-  showSearch: false,
-  searchText: ""
-};
-
 export interface MeasuresTileState {
-  showSearch: boolean;
-  searchText: string;
+  menuOpenOn?: Element;
+  menuMeasure?: Measure;
+  showSearch?: boolean;
+  searchText?: string;
   highlightedMeasureName?: string;
 }
 
 export type MeasureClickHandler = (measureName: string, e: MouseEvent<HTMLElement>) => void;
+export type MeasureDragStartHandler = (measureName: string, e: DragEvent<HTMLElement>) => void;
 
 const hasSearchTextPredicate = (searchText: string) => (measure: Measure): boolean => {
   return searchText != null && searchText !== "" && measure.title.toLowerCase().includes(searchText.toLowerCase());
 };
 
-const isSelectedMeasurePredicate = (selectedMeasures: OrderedSet<string>) => (measure: Measure): boolean => {
-  return selectedMeasures.contains(measure.name);
+const isSelectedMeasurePredicate = (seriesList: SeriesList) => (measure: Measure): boolean => {
+  return seriesList.hasMeasure(measure);
 };
 
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
-  readonly state: MeasuresTileState = initialState;
+  readonly state: MeasuresTileState = {
+    showSearch: false,
+    searchText: "",
+    menuOpenOn: null,
+    menuMeasure: null
+  };
 
-  measureClick = (measureName: string) => {
-    const { clicker, essence: { dataCube } } = this.props;
+  measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
+    const { menuOpenOn } = this.state;
+    const target = findParentWithClass(e.target as Element, MEASURE_CLASS_NAME);
+    if (menuOpenOn === target) {
+      this.closeMenu();
+      return;
+    }
+
+    const { essence: { dataCube } } = this.props;
     const measure = dataCube.measures.getMeasureByName(measureName);
-    clicker.toggleEffectiveMeasure(measure);
+
+    this.setState({
+      menuOpenOn: target,
+      menuMeasure: measure
+    });
+  }
+
+  closeMenu = () => {
+    const { menuOpenOn } = this.state;
+    if (!menuOpenOn) return;
+    this.setState({
+      menuOpenOn: null,
+      menuMeasure: null
+    });
+  }
+
+  dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
+    const { essence: { dataCube } } = this.props;
+    const measure = dataCube.getMeasure(measureName);
+
+    const dataTransfer = e.dataTransfer;
+    dataTransfer.effectAllowed = "all";
+    setDragData(dataTransfer, "text/plain", measure.title);
+
+    DragManager.setDragMeasure(measure);
+    setDragGhost(dataTransfer, measure.title);
   }
 
   toggleSearch = () => {
@@ -74,8 +115,8 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   }
 
   onSearchChange = (text: string) => {
-    var { searchText } = this.state;
-    var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+    const { searchText } = this.state;
+    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
     if (searchText === newSearchText) return; // nothing to do;
 
@@ -84,21 +125,12 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     });
   }
 
-  toggleMultiMeasure = () => {
-    var { clicker, essence } = this.props;
-    clicker.toggleMultiMeasureMode();
-    localStorage.set("is-multi-measure", !essence.getEffectiveMultiMeasureMode());
-  }
-
   renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
     const { searchText } = this.state;
 
-    if (!!searchText && !measuresForView.some(measure => measure.hasSearchText)) {
-      const noMeasuresFound = `No measures for "${searchText}"`;
-      return <div className="message">{noMeasuresFound}</div>;
-    } else {
-      return null;
-    }
+    if (!searchText || measuresForView.some(measure => measure.hasSearchText)) return null;
+    const noMeasuresFound = `No measures for "${searchText}"`;
+    return <div className="message">{noMeasuresFound}</div>;
   }
 
   private handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -131,9 +163,8 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     if (highlightedMeasureName && e.keyCode === keyCodes.space) {
       e.preventDefault();
-
       const measure = essence.dataCube.measures.getMeasureByName(highlightedMeasureName);
-      clicker.toggleEffectiveMeasure(measure);
+      clicker.addSeries(Series.fromMeasure(measure));
     }
   }
 
@@ -141,43 +172,29 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     const { essence } = this.props;
     const { searchText } = this.state;
     const { dataCube } = essence;
-    const selectedMeasures = essence.getEffectiveSelectedMeasure();
-
-    const measuresConverter = new MeasuresConverter(hasSearchTextPredicate(searchText), isSelectedMeasurePredicate(selectedMeasures));
+    const measuresConverter = new MeasuresConverter(hasSearchTextPredicate(searchText), isSelectedMeasurePredicate(essence.series));
     return dataCube.measures.accept(measuresConverter).filter(item => !searchText || item.hasSearchText || item.type === MeasureForViewType.group);
   }
 
-  render() {
-    const { essence, style } = this.props;
-    const { showSearch, searchText, highlightedMeasureName } = this.state;
-    const multiMeasureMode = essence.getEffectiveMultiMeasureMode();
+    render() {
+      const { essence, style } = this.props;
+      const { showSearch, searchText, highlightedMeasureName } = this.state;
+      const { dataCube } = essence;
+      const measuresForView = this.measuresForView();
 
-    const measuresForView = this.measuresForView();
+      const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText, highlightedMeasureName);
+      const rows = measuresRenderer.render(measuresForView);
+      const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
-    const measuresRenderer = new MeasuresRenderer(this.measureClick, multiMeasureMode, searchText, highlightedMeasureName);
-    const rows = measuresRenderer.render(measuresForView);
-    const message = this.renderMessageIfNoMeasuresFound(measuresForView);
-
-    const icons: TileHeaderIcon[] = [];
-
-    if (!essence.isFixedMeasureMode()) {
-      icons.push({
-        name: "multi",
-        onClick: this.toggleMultiMeasure,
-        svg: require("../../icons/full-multi.svg"),
-        active: multiMeasureMode
-      });
-    }
-
-    icons.push({
+      const icons = [{
       name: "search",
       ref: "search",
       onClick: this.toggleSearch,
       svg: require("../../icons/full-search.svg"),
       active: showSearch
-    });
+    }];
 
-    return <SearchableTile
+      return <SearchableTile
       style={style}
       title={STRINGS.measures}
       toggleChangeFn={this.toggleSearch}
@@ -193,6 +210,24 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
         {rows}
         {message}
       </div>
+
+      {this.renderMenu()}
     </SearchableTile>;
+  }
+
+  private renderMenu() {
+    const { essence, clicker, menuStage } = this.props;
+    const { menuOpenOn, menuMeasure } = this.state;
+    if (!menuMeasure) return null;
+
+    return <MeasureActionsMenu
+      clicker={clicker}
+      essence={essence}
+      direction="right"
+      containerStage={menuStage}
+      openOn={menuOpenOn}
+      measure={menuMeasure}
+      onClose={this.closeMenu}
+    />;
   }
 }

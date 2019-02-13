@@ -17,8 +17,9 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
-import { constructFilter } from "../../../client/components/time-filter-menu/presets";
+import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
+import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
+import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
@@ -33,7 +34,8 @@ export interface FilterDefinition {
 
 interface BooleanFilterDefinition extends FilterDefinition {
   not: boolean;
-  values: ImmutableSet<boolean>;
+  // In Druid, Bools are represented as string dictionary
+  values: ImmutableSet<string | boolean>;
 }
 
 const defaultBooleanFilter: BooleanFilterDefinition = {
@@ -106,16 +108,6 @@ export class StringFilterClause extends Record<StringFilterDefinition>(defaultSt
   }
 }
 
-interface DateRangeDefinition {
-  start: Date;
-  end: Date;
-}
-
-const defaultDateRange: DateRangeDefinition = { start: null, end: null };
-
-export class DateRange extends Record<DateRangeDefinition>(defaultDateRange) {
-}
-
 interface FixedTimeFilterDefinition extends FilterDefinition {
   values?: List<DateRange>;
 }
@@ -160,6 +152,13 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
     datum[MAX_TIME_REF_NAME] = maxTimeMinuteTop;
     const { start, end }: TimeRange = selection.defineEnvironment({ timezone }).getFn()(datum);
     return new FixedTimeFilterClause({ reference: this.reference, values: List.of(new DateRange({ start, end })) });
+  }
+
+  equals(other: any): boolean {
+    return other instanceof RelativeTimeFilterClause &&
+      this.reference === other.reference &&
+      this.period === other.period &&
+      this.duration.equals(other.duration);
   }
 }
 

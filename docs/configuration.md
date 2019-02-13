@@ -472,6 +472,10 @@ The units for this measure. To be shown alongside the title.
 
 If set to true measure will be interpreted in UI as "better" when value is lower.
 
+**format** (string)  default: "0,0.0 a"
+
+Default format for measure as string in [numbro format](http://numbrojs.com/old-format.html).
+
 **formula** (string - plywood expression)
 
 The [Plywood expression](http://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.
@@ -689,6 +693,23 @@ customization:
       </svg>
 
     headerBackground: '#2D95CA'
+```
+
+### Url Shortener
+
+Turnilo supports url shorteners for generating short links for current view definitions. This is done by defining function body in configuration.
+Function will receive two arguments, `request` - [node request module](https://github.com/request/request-promise-native) and `url` with current hash. Function should return Promise with shortened url as string inside.
+
+
+
+For example:
+
+```yaml
+
+customization:
+  urlShortener: |
+    return fetch('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
+      .then(function(response){ return response.text();})
 ```
 
 ### External links

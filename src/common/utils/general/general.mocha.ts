@@ -16,7 +16,6 @@
  */
 
 import { expect } from "chai";
-
 import { List } from "immutable";
 import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
 

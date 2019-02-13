@@ -121,7 +121,7 @@ export class Measures {
     return this.flattenedMeasures.map(mapper).toArray();
   }
 
-  filterMeasures(predicate: (dimension: Measure) => boolean): Measure[] {
+  filterMeasures(predicate: (measure: Measure) => boolean): Measure[] {
     return this.flattenedMeasures.filter(predicate).toArray();
   }
 

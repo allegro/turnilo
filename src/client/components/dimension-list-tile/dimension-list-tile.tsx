@@ -26,7 +26,7 @@ import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
+import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import keyCodes from "../../utils/key-codes/key-codes";
 import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
@@ -44,7 +44,6 @@ export interface DimensionListTileProps {
   essence: Essence;
   menuStage: Stage;
   triggerFilterMenu: (dimension: Dimension) => void;
-  triggerSplitMenu: (dimension: Dimension) => void;
   style?: CSSProperties;
 }
 
@@ -122,9 +121,9 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", dimension.title);
+    setDragData(dataTransfer, "text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, "dimension-list-tile");
+    DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -147,7 +146,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
+    var { essence, clicker, menuStage, triggerFilterMenu } = this.props;
     var { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
 
@@ -159,7 +158,6 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       openOn={menuOpenOn}
       dimension={menuDimension}
       triggerFilterMenu={triggerFilterMenu}
-      triggerSplitMenu={triggerSplitMenu}
       onClose={this.closeMenu}
     />;
   }
@@ -183,7 +181,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   private handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    const { clicker, essence, triggerFilterMenu, triggerSplitMenu } = this.props;
+    const { clicker, essence, triggerFilterMenu } = this.props;
     const { highligthedDimensionName } = this.state;
 
     if (e.keyCode === keyCodes.up || e.keyCode === keyCodes.down) {
@@ -217,25 +215,12 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
           this.toggleSearch();
           break;
         }
+        case(keyCodes.equals):
         case(keyCodes.s): {
           e.preventDefault();
 
-          if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
-            triggerSplitMenu(dimension);
-          } else {
+          if (!essence.splits.hasSplitOn(dimension) || essence.splits.length() !== 1) {
             clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
-          }
-
-          this.toggleSearch();
-          break;
-        }
-        case(keyCodes.equals): {
-          e.preventDefault();
-
-          if (essence.splits.hasSplitOn(dimension)) {
-            triggerSplitMenu(dimension);
-          } else {
-            clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
           }
 
           this.toggleSearch();

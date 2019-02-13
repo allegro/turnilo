@@ -30,6 +30,7 @@ export interface SegmentActionButtonsProps {
   clicker: Clicker;
   dimension?: Dimension;
   segmentLabel?: string;
+  segmentValue?: string;
   disableMoreMenu?: boolean;
   openRawDataModal?: Fn;
   onClose?: Fn;
@@ -86,33 +87,12 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
   }
 
   renderMoreMenu() {
-    const { segmentLabel } = this.props;
+    const { segmentValue } = this.props;
     const { moreMenuOpenOn } = this.state;
     if (!moreMenuOpenOn) return null;
-    var menuSize = Stage.fromSize(160, 160);
+    const menuSize = Stage.fromSize(160, 160);
 
-    const bubbleListItems = [
-      <CopyToClipboard key="copyValue" text={segmentLabel}>
-        <li
-          className="clipboard"
-          onClick={this.closeMoreMenu}
-        >{STRINGS.copyValue}</li>
-      </CopyToClipboard>,
-      <li
-        className="view-raw-data"
-        key="view-raw-data"
-        onClick={this.openRawDataModal}
-      >{STRINGS.displayRawData}</li>
-    ];
-
-    var url = this.getUrl();
-    if (url) {
-      bubbleListItems.push(
-        <li key="goToUrl">
-          <a href={url} onClick={this.closeMoreMenu} target="_blank">{STRINGS.goToUrl}</a>
-        </li>
-      );
-    }
+    const url = this.getUrl();
 
     return <BubbleMenu
       className="more-menu"
@@ -123,7 +103,17 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
       onClose={this.closeMoreMenu}
     >
       <ul className="bubble-list">
-        {bubbleListItems}
+        {segmentValue && <CopyToClipboard key="copyValue" text={segmentValue}>
+          <li className="clipboard" onClick={this.closeMoreMenu}>{STRINGS.copyValue}</li>
+        </CopyToClipboard>}
+        <li
+          className="view-raw-data"
+          key="view-raw-data"
+          onClick={this.openRawDataModal}
+        >{STRINGS.displayRawData}</li>
+        {url && <li key="goToUrl">
+          <a href={url} onClick={this.closeMoreMenu} target="_blank">{STRINGS.goToUrl}</a>
+        </li>}
       </ul>
     </BubbleMenu>;
   }

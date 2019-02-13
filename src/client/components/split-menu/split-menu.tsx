@@ -29,6 +29,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { Button } from "../button/button";
 import { GranularityPicker } from "./granularity-picker";
 import { LimitDropdown } from "./limit-dropdown";
 import { SortDropdown } from "./sort-dropdown";
@@ -113,9 +114,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   private constructSplitCombine(): Split {
+    const { split: { type } } = this.props;
     const { limit, sort, reference } = this.state;
     const bucket = this.constructGranularity();
-    return new Split({ reference, limit, sort, bucket });
+    return new Split({ type, reference, limit, sort, bucket });
   }
 
   validate() {
@@ -159,8 +161,8 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
         limit={limit}
         includeNone={dimension.isContinuous()}/>
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick} disabled={!this.validate()}>{STRINGS.ok}</button>
-        <button className="cancel" onClick={this.onCancelClick}>{STRINGS.cancel}</button>
+        <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
+        <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
       </div>
     </BubbleMenu>;
   }

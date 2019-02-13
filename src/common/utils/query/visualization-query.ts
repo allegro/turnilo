@@ -24,13 +24,13 @@ import { Essence } from "../../models/essence/essence";
 import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
 import { Sort } from "../../models/sort/sort";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
-import { sortDirectionMapper } from "../../view-definitions/version-3/split-definition";
+import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
 import { thread } from "../functional/functional";
 
 const $main = $("main");
 
 function applyMeasures(essence: Essence, filters: Filters, nestingLevel = 0) {
-  const measures = essence.getEffectiveMeasures();
+  const measures = essence.getEffectiveSelectedMeasures();
   const hasComparison = essence.hasComparison();
 
   return (query: Expression) => {
@@ -51,7 +51,7 @@ function applySortReferenceExpression(essence: Essence, query: Expression, nesti
   const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
   if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
     const sortMeasure = essence.dataCube.getMeasure(sortMeasureName);
-    if (sortMeasure && !essence.getEffectiveMeasures().contains(sortMeasure)) {
+    if (sortMeasure && !essence.getEffectiveSelectedMeasures().contains(sortMeasure)) {
       return query.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
     }
   }
@@ -147,7 +147,7 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
   if (splits.length() > dataCube.getMaxSplits()) throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`);
 
   const hasComparison = essence.hasComparison();
-  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
+  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison });
 
   const timeDimension = dataCube.getTimeDimension();
   const filters = {

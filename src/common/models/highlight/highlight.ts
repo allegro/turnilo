@@ -17,17 +17,15 @@
 
 import { Record } from "immutable";
 import { Dimensions } from "../dimension/dimensions";
-import { Measures } from "../essence/essence";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
+import { SeriesList } from "../series-list/series-list";
 
 export interface HighlightValue {
-  owner: string;
   delta: Filter;
   measure: string;
 }
 
 const defaultHighlight: HighlightValue = {
-  owner: null,
   delta: EMPTY_FILTER,
   measure: null
 };
@@ -35,7 +33,7 @@ const defaultHighlight: HighlightValue = {
 export class Highlight extends Record<HighlightValue>(defaultHighlight) {
 
   public toString(): string {
-    return `[Highlight ${this.owner}]`;
+    return `[Highlight ${this.delta.toString()}]`;
   }
 
   public applyToFilter(filter: Filter): Filter {
@@ -49,13 +47,9 @@ export class Highlight extends Record<HighlightValue>(defaultHighlight) {
     return this.set("delta", newDelta);
   }
 
-  public validForMeasures(measures: Measures): boolean {
-    if (!this.measure) {
-      return true;
-    }
-
+  public validForSeries(series: SeriesList): boolean {
     const { measure } = this;
-    return measures.isMulti ? measures.multi.has(measure) : measure === measures.single;
-
+    if (!measure) return true;
+    return series.hasSeries(measure);
   }
 }

@@ -16,28 +16,32 @@
  */
 
 import { day, Duration, month, Timezone } from "chronoshift";
-import { Moment } from "moment";
 import * as moment from "moment-timezone";
-import { TimeRange } from "plywood";
+import { DateRange } from "../../models/date-range/date-range";
 
 const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";
+const FORMAT_FULL_DATE_TIME = "YYYY-MM-DD HH:mm:ss";
 const FORMAT_DATE = "YYYY-MM-DD";
 const FORMAT_TIME = "HH:mm";
 
 const FORMAT_WITH_YEAR = "MMM D, YYYY";
 const FORMAT_WITHOUT_YEAR = "MMM D";
 
-const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "Ha";
-const FORMAT_TIME_OF_DAY_WITH_MINUTES = "H:mma";
+const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "ha";
+const FORMAT_TIME_OF_DAY_WITH_MINUTES = "h:mma";
 
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
-function formatTimeOfDay(d: Moment): string {
+function formatTimeOfDay(d: moment.Moment): string {
   return d.minute() ? d.format(FORMAT_TIME_OF_DAY_WITH_MINUTES) : d.format(FORMAT_TIME_OF_DAY_WITHOUT_MINUTES);
 }
 
+function getMoment(date: Date, timezone: Timezone): moment.Moment {
+  return moment.tz(date, timezone.toString());
+}
+
 function isCurrentYear(year: number, timezone: Timezone): boolean {
-  const nowWallTime = moment.tz(new Date(), timezone.toString());
+  const nowWallTime = getMoment(new Date(), timezone);
   return nowWallTime.year() === year;
 }
 
@@ -51,18 +55,18 @@ export enum DisplayYear {
   ALWAYS, NEVER, IF_DIFF
 }
 
-export function getEndWallTimeInclusive(exclusiveEnd: Date, timezone: Timezone): Moment {
-  return moment.tz(exclusiveToInclusiveEnd(exclusiveEnd), timezone.toString());
+export function getEndWallTimeInclusive(exclusiveEnd: Date, timezone: Timezone): moment.Moment {
+  return getMoment(exclusiveToInclusiveEnd(exclusiveEnd), timezone);
 }
 
 export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
   return new Date(exclusiveEnd.valueOf() - 1);
 }
 
-export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displayYear: DisplayYear): string {
+export function formatTimeRange(timeRange: DateRange, timezone: Timezone, displayYear: DisplayYear): string {
   const { start, end } = timeRange;
-  const startWallTime = moment.tz(start, timezone.toString());
-  const endWallTime = moment.tz(end, timezone.toString());
+  const startWallTime = getMoment(start, timezone);
+  const endWallTime = getMoment(end, timezone);
   const endWallTimeInclusive = getEndWallTimeInclusive(end, timezone);
 
   let showingYear = true;
@@ -108,7 +112,7 @@ export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone, locale: 
   let week: Date[] = [];
   let currentPointer = day.floor(firstDayOfMonth, timezone);
   while (currentPointer < firstDayNextMonth) {
-    const wallTime = moment.tz(currentPointer, timezone.toString());
+    const wallTime = getMoment(currentPointer, timezone);
     if ((wallTime.day() === locale.weekStart || 0) && week.length > 0) {
       weeks.push(week);
       week = [];
@@ -140,7 +144,7 @@ export function appendDays(timezone: Timezone, weekAppendTo: Date[], countAppend
   return weekAppendTo;
 }
 
-export function shiftOneDay(floored: Date, timezone: Timezone) {
+export function shiftOneDay(floored: Date, timezone: Timezone): Date {
   return day.shift(floored, timezone, 1);
 }
 
@@ -150,12 +154,8 @@ export function datesEqual(d1: Date, d2: Date): boolean {
   return d1.valueOf() === d2.valueOf();
 }
 
-export function getWallTimeDay(date: Date, timezone: Timezone) {
-  return moment.tz(date, timezone.toString()).date();
-}
-
-export function getWallTimeMonthWithYear(date: Date, timezone: Timezone) {
-  return moment.tz(date, timezone.toString()).format(FORMAT_FULL_MONTH_WITH_YEAR);
+export function getWallTimeDay(date: Date, timezone: Timezone): number {
+  return getMoment(date, timezone).date();
 }
 
 export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone): boolean {
@@ -166,27 +166,33 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
   return datesEqual(d1InclusiveEnd.toDate(), d2InclusiveEnd.toDate());
 }
 
-export function getWallTimeString(date: Date, timezone: Timezone): string {
-  const wallTimeISOString = moment.tz(date, timezone.toString()).format(FORMAT_ISO_WITHOUT_TIMEZONE);
-  return wallTimeISOString.replace("T", ", ");
+export function formatYearMonth(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(FORMAT_FULL_MONTH_WITH_YEAR);
 }
 
-export function getWallTimeDateOnlyString(date: Date, timezone: Timezone): string {
-  return moment.tz(date, timezone.toString()).format(FORMAT_DATE);
+export function formatTimeElapsed(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).fromNow(true);
 }
 
-export function getWallTimeTimeOnlyString(date: Date, timezone: Timezone): string {
-  return moment.tz(date, timezone.toString()).format(FORMAT_TIME);
+export function formatDateTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(FORMAT_FULL_DATE_TIME);
 }
 
-function pad(input: number) {
+export function formatDate(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(FORMAT_DATE);
+}
+
+export function formatTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(FORMAT_TIME);
+}
+
+function pad(input: number): string {
   if (input < 10) return `0${input}`;
   return String(input);
 }
 
-export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
-  const wallTimeStart = moment.tz(range.start, timezone.toString());
-
+export function formatTimeBasedOnGranularity(range: DateRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
+  const wallTimeStart = getMoment(range.start, timezone);
   const year = wallTimeStart.year();
   const month = wallTimeStart.month();
   const day = wallTimeStart.date();
