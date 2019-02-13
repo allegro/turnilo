@@ -259,17 +259,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && essence.hasHighlight()) {
+      const { highlight: { delta, measure } } = essence;
       const existingHighlightRange = essence.getHighlightRange();
-      if (existingHighlightRange.contains(highlightRange.start)) {
-        const { highlight } = essence;
-        if (highlight.measure === dragOnMeasure.name) {
-          clicker.dropHighlight();
-        } else {
-          clicker.changeHighlight(
-            dragOnMeasure.name,
-            highlight.delta
-          );
-        }
+      if (existingHighlightRange.contains(highlightRange.start) && measure !== dragOnMeasure.name) {
+        clicker.changeHighlight(dragOnMeasure.name, delta);
         return;
       }
     }
