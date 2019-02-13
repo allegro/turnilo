@@ -30,9 +30,8 @@ import { SeriesFormat } from "../../../common/models/series/series";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
-import { isLoaded, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { isLoaded } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue, seriesFormatter } from "../../../common/utils/formatter/formatter";
-import { DisplayYear } from "../../../common/utils/time/time";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
 import { GridLines } from "../../components/grid-lines/grid-lines";
@@ -499,7 +498,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     data.forEach((d, i) => {
       let segmentValue = d[dimension.name];
-      let segmentValueStr = formatValue(segmentValue, timezone, DisplayYear.NEVER);
+      let segmentValueStr = formatValue(segmentValue, timezone);
       let subPath = path.concat(d);
 
       let bar: any;
