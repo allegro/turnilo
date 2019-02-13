@@ -121,7 +121,8 @@ describe("AppSettings", () => {
         clusters: [
           {
             name: "druid-wiki",
-            type: "druid"
+            type: "druid",
+            timeout: 30000
           }
         ],
         customization: {
