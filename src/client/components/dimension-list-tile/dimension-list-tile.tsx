@@ -26,7 +26,7 @@ import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
+import { findParentWithClass, originatesFromTextAreaOrInput, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import keyCodes from "../../utils/key-codes/key-codes";
 import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
@@ -174,6 +174,8 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   private handleGlobalKeyDown = (e: KeyboardEvent) => {
+    if (originatesFromTextAreaOrInput(e)) return;
+
     if (e.shiftKey && e.keyCode === keyCodes.d) {
       e.preventDefault();
       this.toggleSearch();
