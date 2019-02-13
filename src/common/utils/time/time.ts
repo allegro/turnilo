@@ -40,18 +40,22 @@ const WITHOUT_HOUR_FORMAT = "D MMM YYYY";
 const WITHOUT_YEAR_AND_HOUR_FORMAT = "D MMM";
 
 const SHORT_WITHOUT_HOUR_FORMAT = "D.MM.YY";
-const SHORT_FULL_FORMAT = "D.MM.YY HH:mm";
-const SHORT_WITHOUT_YEAR_FORMAT = "D.MM HH:mm";
+const SHORT_FULL_FORMAT = "D.MM.YY H:mm";
+const SHORT_WITHOUT_YEAR_FORMAT = "D.MM H:mm";
 const SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT = "D.MM";
+const SHORT_WITHOUT_YEAR_AND_DATE_FORMAT = "H:mm";
+const SHORT_WITHOUT_DATE_AND_HOUR_FORMAT = "YYYY";
 
 function formatterFromDefinition(definition: string): Unary<Moment, string> {
   return (date: Moment) => date.format(definition);
 }
 
-function getShortFormat(omitYear: boolean, omitHour: boolean): string {
-  if (omitYear && omitHour) return SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT;
-  if (omitYear) return SHORT_WITHOUT_YEAR_FORMAT;
-  if (omitHour) return SHORT_WITHOUT_HOUR_FORMAT;
+function getShortFormat(sameYear: boolean, sameDate: boolean, sameHour: boolean): string {
+  if (sameYear && sameDate && !sameHour) return SHORT_WITHOUT_YEAR_AND_DATE_FORMAT;
+  if (!sameYear && sameDate && sameHour) return SHORT_WITHOUT_DATE_AND_HOUR_FORMAT;
+  if (sameYear && !sameDate && sameHour) return SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT;
+  if (sameYear && !sameDate && !sameHour) return SHORT_WITHOUT_YEAR_FORMAT;
+  if (!sameYear && sameHour) return SHORT_WITHOUT_HOUR_FORMAT;
   return SHORT_FULL_FORMAT;
 }
 
@@ -59,13 +63,18 @@ function hasSameHour(a: Date, b: Date): boolean {
   return a.getHours() === b.getHours() && a.getMinutes() === b.getMinutes();
 }
 
+function hasSameDateAndMonth(a: Date, b: Date): boolean {
+  return a.getDate() === b.getDate() && a.getMonth() === b.getMonth();
+}
+
 export function scaleTicksFormat(scale: d3.time.Scale<number, number>): string {
   const ticks = scale.ticks();
   if (ticks.length < 2) return SHORT_FULL_FORMAT;
   const [first, ...rest] = ticks;
-  const sameYear = rest.every(date => date.getFullYear() ===  first.getFullYear());
+  const sameYear = rest.every(date => date.getFullYear() === first.getFullYear());
+  const sameDayAndMonth = rest.every(date => hasSameDateAndMonth(date, first));
   const sameHour = rest.every(date => hasSameHour(date, first));
-  return getShortFormat(sameYear, sameHour);
+  return getShortFormat(sameYear, sameDayAndMonth, sameHour);
 }
 
 export function scaleTicksFormatter(scale: d3.time.Scale<number, number>): Unary<Moment, string> {

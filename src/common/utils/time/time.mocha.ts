@@ -91,18 +91,21 @@ describe("Time", () => {
   });
 
   describe("scaleTicksFormatter", () => {
+    const createScale = (...dates: Date[]) => {
+      return {
+        ticks: () => dates
+      } as d3.time.Scale<number, number>;
+    };
 
-    const createScale = (start: Date, end: Date) => d3.time.scale().domain([start, end]).range([0, 10]);
-
-    it("should hide year when year is the same in all ticks", () => {
-      const scale = createScale(new Date("2019-01-01T03:00"), new Date("2019-01-01T21:00"));
+    it("should hide year when just year is the same in all ticks", () => {
+      const scale = createScale(new Date("2019-01-01"), new Date("2019-02-01T10:00"));
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM HH:mm");
+      expect(formatter).to.be.eq("D.MM H:mm");
     });
 
-    it("should hide hour when hour is the same in all ticks", () => {
+    it("should hide hour when just hour is the same in all ticks", () => {
       const scale = createScale(new Date("2018-11-01"), new Date("2019-01-10"));
 
       const formatter = scaleTicksFormat(scale);
@@ -110,7 +113,23 @@ describe("Time", () => {
       expect(formatter).to.be.eq("D.MM.YY");
     });
 
-    it("should hide hour and year when hour and year are the same in all ticks", () => {
+    it("should show full date when just date is the same in all ticks (degenerate case)", () => {
+      const scale = createScale(new Date("2018-01-01"), new Date("2019-01-01T10:00"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM.YY H:mm");
+    });
+
+    it("should show just hour when only hour is different in some ticks", () => {
+      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-01T10:00"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("H:mm");
+    });
+
+    it("should show just date when only date is different in some ticks", () => {
       const scale = createScale(new Date("2019-01-01"), new Date("2019-01-10"));
 
       const formatter = scaleTicksFormat(scale);
@@ -118,20 +137,36 @@ describe("Time", () => {
       expect(formatter).to.be.eq("D.MM");
     });
 
-    it("should show hour and year when hour and year are different in some ticks", () => {
+    it("should show year when just year is different in some ticks", () => {
+      const scale = createScale(new Date("2018-01-01"), new Date("2019-01-01"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("YYYY");
+    });
+
+    it("should show full date and hour when everything is the same in all ticks (degenerate case)", () => {
+      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-01"));
+
+      const formatter = scaleTicksFormat(scale);
+
+      expect(formatter).to.be.eq("D.MM.YY H:mm");
+    });
+
+    it("should show full date and hour when everything is different in some ticks", () => {
       const scale = createScale(new Date("2018-12-31T23:00"), new Date("2019-01-01:T01:00"));
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY HH:mm");
+      expect(formatter).to.be.eq("D.MM.YY H:mm");
     });
 
     it("should show full format when not enough ticks", () => {
-      const scale = createScale(new Date("2019-01-01T00:00"), new Date("2019-01-01T:00:01"));
+      const scale = createScale(new Date("2019-01-01T:00:01"));
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY HH:mm");
+      expect(formatter).to.be.eq("D.MM.YY H:mm");
     });
   });
 
