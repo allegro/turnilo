@@ -220,7 +220,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
           e.preventDefault();
 
           if (!essence.splits.hasSplitOn(dimension) || essence.splits.length() !== 1) {
-            clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+            clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
           }
 
           this.toggleSearch();
