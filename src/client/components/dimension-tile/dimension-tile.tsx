@@ -25,6 +25,7 @@ import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { clausePredicate } from "../../../common/models/filter-clause/filter-clause-predicate";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import {
   ContinuousDimensionKind,
@@ -452,8 +453,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           if (!(filterClause instanceof StringFilterClause)) {
             throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
           }
-          const values = filterClause.values;
-          rowData = rowData.filter(d => values.has(d[dimension.name] as string));
+          const predicate = clausePredicate(filterClause);
+          rowData = rowData.filter(d => predicate(d[dimension.name] as string));
         }
       }
 
