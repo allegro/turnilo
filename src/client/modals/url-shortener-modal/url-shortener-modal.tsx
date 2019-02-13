@@ -1,0 +1,121 @@
+/*
+ * Copyright 2017-2018 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Fn } from "../../../common/utils/general/general";
+import { Modal } from "../../components/modal/modal";
+import { STRINGS } from "../../config/constants";
+import "./url-shortener-modal.scss";
+
+interface UrlShortenerModalProps {
+  onClose: Fn;
+  title: string;
+}
+
+interface UrlProp {
+  url: string;
+}
+
+export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
+  return <Modal
+    className="short-url-modal"
+    title={title}
+    onClose={onClose}>
+    <UrlShortenerPrompt url={url} />
+  </Modal>;
+};
+
+interface UrlShortenerPromptState {
+  shortUrl: string;
+  error?: string;
+}
+
+export class UrlShortenerPrompt extends React.Component<UrlProp, UrlShortenerPromptState> {
+
+  state: UrlShortenerPromptState = { shortUrl: null };
+
+  componentDidMount() {
+    this.shortenUrl()
+      .then(({ shortUrl }) => {
+        this.setState({ shortUrl });
+      })
+      .catch(() => {
+        this.setState({ error: "Couldn't create short link" });
+      });
+  }
+
+  shortenUrl() {
+    return fetch("/shorten?url=" + encodeURIComponent(this.props.url))
+      .then(response => response.json());
+  }
+
+  renderShortUrl() {
+    const { shortUrl, error } = this.state;
+    if (error) return error;
+    if (!shortUrl) return STRINGS.loading;
+    return <ShortUrl url={shortUrl} />;
+  }
+
+  render() {
+    return <React.Fragment>
+      <div className="url-shortener">{this.renderShortUrl()}</div>
+      <LongUrl url={this.props.url} />
+    </React.Fragment>;
+  }
+}
+
+interface UrlState {
+  copied: boolean;
+}
+
+export class ShortUrl extends React.Component<UrlProp, UrlState> {
+
+  state = { copied: false };
+
+  copiedUrl = () => this.setState({ copied: true });
+
+  render() {
+    const { url } = this.props;
+    return <div>
+      <div className="url-group">
+        <input className="short-url" readOnly={true} value={url} />
+        <CopyToClipboard text={url} onCopy={this.copiedUrl}>
+          <button className="copy-button">Copy</button>
+        </CopyToClipboard>
+      </div>
+      {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
+    </div>;
+  }
+}
+
+export class LongUrl extends React.Component<UrlProp, UrlState> {
+
+  state = { copied: false };
+
+  copiedUrl = () => this.setState({ copied: true });
+
+  render() {
+    return <div className="url-notice">
+      Please note that, this url may expire in the future. You still can&nbsp;
+      <CopyToClipboard text={this.props.url} onCopy={this.copiedUrl}>
+        <span className="copy-action">copy full url</span>
+      </CopyToClipboard>
+      &nbsp;instead.&nbsp;
+      {this.state.copied && <span className="copied-hint">{STRINGS.copied}</span>}
+    </div>;
+  }
+}

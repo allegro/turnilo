@@ -29,6 +29,7 @@ describe.skip("Totals", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Totals
+        refreshRequestTimestamp={0}
         clicker={null}
         essence={null}
         timekeeper={TimekeeperFixtures.fixed()}
@@ -39,5 +40,4 @@ describe.skip("Totals", () => {
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
     expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("totals");
   });
-
 });

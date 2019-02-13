@@ -16,40 +16,109 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Measure } from "../../../common/models/measure/measure";
+import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 
+enum DraggedElementType { NONE, DIMENSION, MEASURE, SERIES, SPLIT, FILTER }
+
+interface DraggedElementBase<T> {
+  type: DraggedElementType;
+  element: T;
+}
+
+interface DraggedDimension extends DraggedElementBase<Dimension> {
+  type: DraggedElementType.DIMENSION;
+}
+
+interface DraggedMeasure extends DraggedElementBase<Measure> {
+  type: DraggedElementType.MEASURE;
+}
+
+interface DraggedSeries extends DraggedElementBase<Series> {
+  type: DraggedElementType.SERIES;
+}
+
+interface DraggedSplit extends DraggedElementBase<Split> {
+  type: DraggedElementType.SPLIT;
+}
+
+interface DraggedFilter extends DraggedElementBase<FilterClause> {
+  type: DraggedElementType.FILTER;
+}
+
+interface None extends DraggedElementBase<void> {
+  type: DraggedElementType.NONE;
+}
+
+type DraggedElement = DraggedDimension | DraggedMeasure | DraggedFilter | DraggedSplit | DraggedSeries | None;
+
+const none: None = { type: DraggedElementType.NONE, element: null };
+
 export class DragManager {
-  static dragOrigin: string = null;
-  static dragDimension: Dimension = null;
-  static dragSplit: Split = null;
+  static dragging: DraggedElement = none;
 
   static init() {
     document.addEventListener("dragend", () => {
-      DragManager.dragOrigin = null;
-      DragManager.dragDimension = null;
-      DragManager.dragSplit = null;
+      DragManager.dragging = none;
     }, false);
   }
 
-  static getDragOrigin(): string {
-    return DragManager.dragOrigin;
+  static isDraggingSplit(): boolean {
+    return this.dragging.type === DraggedElementType.SPLIT;
   }
 
-  static setDragDimension(dimension: Dimension, origin: string): void {
-    DragManager.dragDimension = dimension;
-    DragManager.dragOrigin = origin;
+  static isDraggingFilter(): boolean {
+    return this.dragging.type === DraggedElementType.FILTER;
   }
 
-  static getDragDimension(): Dimension {
-    return DragManager.dragDimension;
+  static isDraggingSeries(): boolean {
+    return this.dragging.type === DraggedElementType.SERIES;
   }
 
-  static setDragSplit(split: Split, origin: string): void {
-    DragManager.dragSplit = split;
-    DragManager.dragOrigin = origin;
+  static setDragDimension(element: Dimension) {
+    this.dragging = { type: DraggedElementType.DIMENSION, element };
   }
 
-  static getDragSplit(): Split {
-    return DragManager.dragSplit;
+  static setDragMeasure(element: Measure) {
+    this.dragging = { type: DraggedElementType.MEASURE, element };
+  }
+
+  static setDragSeries(element: Series) {
+    this.dragging = { type: DraggedElementType.SERIES, element };
+  }
+
+  static setDragFilter(element: FilterClause) {
+    this.dragging = { type: DraggedElementType.FILTER, element };
+  }
+
+  static setDragSplit(element: Split) {
+    this.dragging = { type: DraggedElementType.SPLIT, element };
+  }
+
+  static draggingDimension(): Dimension {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.DIMENSION ? el.element : null;
+  }
+
+  static draggingMeasure(): Measure {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.MEASURE ? el.element : null;
+  }
+
+  static draggingSplit(): Split {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.SPLIT ? el.element : null;
+  }
+
+  static draggingSeries(): Series {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.SERIES ? el.element : null;
+  }
+
+  static draggingFilter(): FilterClause {
+    const el = DragManager.dragging;
+    return el.type === DraggedElementType.FILTER ? el.element : null;
   }
 }

@@ -19,6 +19,10 @@
 
 .filter-options-dropdown {
   .selected-item {
+    @include internet-explorer {
+      overflow-x: visible;
+      padding: 4px 16px 0 4px;
+    }
     padding: 8px 16px 0 4px;
 
     .icon {
@@ -49,6 +53,7 @@
     padding: 5px 0;
     cursor: pointer;
     width: 19px;
+    height: 29px;
 
     path {
       fill: #888;

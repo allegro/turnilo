@@ -17,7 +17,6 @@
 
 import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
-import * as numbro from "numbro";
 import {
   $,
   ApplyExpression,
@@ -29,15 +28,10 @@ import {
   Expression, QuantileExpression,
   RefExpression
 } from "plywood";
+import { formatFnFactory, seriesFormatter } from "../../utils/formatter/formatter";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
+import { SeriesFormat } from "../series/series";
 import { MeasureOrGroupVisitor } from "./measure-group";
-
-function formatFnFactory(format: string): (n: number) => string {
-  return (n: number) => {
-    if (isNaN(n) || !isFinite(n)) return "-";
-    return numbro(n).format(format);
-  };
-}
 
 export interface MeasureValue {
   name: string;
@@ -83,8 +77,7 @@ export class CurrentFilter implements DerivationFilter {
 }
 
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
-  static DEFAULT_FORMAT = "0,0";
-  static INTEGER_FORMAT = "0,0";
+  static DEFAULT_FORMAT = "0,0.0 a";
   static DEFAULT_TRANSFORMATION = "none";
   static TRANSFORMATIONS = ["none", "percent-of-parent", "percent-of-total"];
 
@@ -316,12 +309,9 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     }
   }
 
-  public formatDatum(datum: Datum): string {
-    return this.formatFn(datum[this.name] as number);
+  public formatDatum(datum: Datum, format: SeriesFormat): string {
+    return seriesFormatter(format, this)(datum[this.name] as number);
   }
-
-  public getTitle: () => string;
-  public changeTitle: (newTitle: string) => this;
 
   public getTitleWithUnits(): string {
     if (this.units) {
@@ -342,12 +332,8 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return isApproximate;
   }
 
-  public getFormula: () => string;
-  public changeFormula: (newFormula: string) => this;
-
+  // Default getter from ImmutableValue
   public getFormat: () => string;
-  public changeFormat: (newFormat: string) => this;
-
 }
 
 BaseImmutable.finalize(Measure);

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
-import { createMeasures, Measures } from "../../models/essence/essence";
+import { SeriesList } from "../../models/series-list/series-list";
 
 export interface MeasuresDefinitionJS {
   isMulti: boolean;
@@ -23,15 +22,15 @@ export interface MeasuresDefinitionJS {
   multi: string[];
 }
 
-export interface MeasuresDefinitionConverter {
-  fromEssenceMeasures(measures: Measures): MeasuresDefinitionJS;
+export interface SeriesDefinitionConverter {
+  // fromEssenceSeries(series: SeriesList): MeasuresDefinitionJS;
 
-  toEssenceMeasures(measures: MeasuresDefinitionJS): Measures;
+  toEssenceSeries(measures: MeasuresDefinitionJS): SeriesList;
 }
 
-export const measuresDefinitionConverter: MeasuresDefinitionConverter = {
-  fromEssenceMeasures: ({ multi, isMulti, single }) =>
-    ({ isMulti, single, multi: multi.toArray() }),
-  toEssenceMeasures: ({ isMulti, multi, single }) =>
-    createMeasures({ isMulti, single, multi: OrderedSet.of(...multi) })
+export const seriesDefinitionConverter: SeriesDefinitionConverter = {
+  // fromEssenceSeries: ({ multi, isMulti, single }) =>
+  //   ({ isMulti, single, multi: multi.toArray() }),
+  toEssenceSeries: ({ isMulti, multi, single }) =>
+    SeriesList.fromMeasureNames(isMulti ? multi : [single])
 };

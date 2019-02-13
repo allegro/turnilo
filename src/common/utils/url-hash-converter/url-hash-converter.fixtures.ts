@@ -69,6 +69,15 @@ export class UrlHashConverterFixtures {
       "X09K7ipHV+k5RcCAAmYGeQGkYEATmCp5xwLwwKfL4AdC/gQAtSRRs8Xq9b3vHFPGfV9gQ/F8fwSDkuVgQxDjVDU4liIA==";
   }
 
+  static lineChartVersion4() {
+    return "4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADQgYC2xyOx+IAomuQHoAqgBUAwoxAAzCAjTEaUfAG1QaAJ4AHLgVZcmNYlO57JegAoKsAEyV5VIaz" +
+      "BrosuAuYCMAEUlR5mviknkwa2twI6MT+IAC+ALqxDGpaOiD+NBDYAOaShsYEVHDYJAiScOQYONxZkmCIMNEqIMS4TNiYfmCS1vrSNJLkSvHtmPR4UohQxAlMUJpIaHYOYWkZ" +
+      "WblM1hBs2FBu3EUlxGVzmHT4oPncvXJwPRCGlQcEvVDkrds5cUxILBDjACsAAYkilwrodn1trt9tVIWxJNkXNgYJFMhpuOYRJ4ABJ+c7jK5GExQh5PKruEBwd6fDY/Qg7AH4" +
+      "VEIBCzdJWJr2YlSBStD6HTAwbD0JhSc4sdCXZipG5GOBosXgBppOJgkD5fnYQUEODWXrWSQSmhSomyiGOBVKuqq7jqkYgTRZEjWbxQvZuZYgI6lSTYOBseYVPrQABKmAARmM" +
+      "QI7ncdrABlQnyu6SBDEbKfGUw1pwqm+k7ppnjVkIJj1BCNOygYHcDqSTzcKDdJgAZm4UgGTAALIclExAdxWgzqFAAHJosoTKYzJiUCDZShIJfmmRyBTLcFpUwGEkIvp6MPFL" +
+      "Nb9JoWjjEAAJmBnkBpGBAE5gteccC8MCP1+AHRf4EAFqSNmBC3vej4vp4b6eJ4n7fsCf5fkBCQcmwNLOGk5DCqK6pAA";
+  }
+
   static noSlashInEncodedDefinition2() {
     return "line-chart/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5MBuApgE4A2AhjsplqRQHYAme62ewJRAZisAxQC2RDmACWw4AF8aRAB5YuAZyViMDVrVESiA" +
       "JUYBzETWz1mm9vi68aAyfkHSaTAK4kK49RwAKARgAifEpgRDi4ALS+UjIA2ujyikQqahq4bGGcPHx2IvjikjLAAEYuEADWRGAAghCeqenawgBCpRVgfK7u" +

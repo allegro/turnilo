@@ -17,6 +17,7 @@
 
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
+import { SuccessUrlShortenerJS } from "../url-shortener/url-shortener.fixtures";
 import { Customization, CustomizationJS } from "./customization";
 
 describe("Customization", () => {
@@ -28,10 +29,12 @@ describe("Customization", () => {
         customLogoSvg: "ansvgstring"
       },
       {
+        urlShortener: SuccessUrlShortenerJS,
         headerBackground: "green",
         externalViews: []
       },
       {
+        urlShortener: SuccessUrlShortenerJS,
         externalViews: [
           {
             title: "corporate dashboard",
@@ -56,6 +59,7 @@ describe("Customization", () => {
       {
         headerBackground: "green",
         externalViews: [],
+        urlShortener: SuccessUrlShortenerJS,
         timezones: ["Pacific/Niue", "America/Los_Angeles"],
         logoutHref: "/log-me-out-now"
       }

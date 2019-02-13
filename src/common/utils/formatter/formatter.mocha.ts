@@ -17,47 +17,11 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
-import { $ } from "plywood";
 import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
-import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../models/time/time";
-import { formatFilterClause, formatterFromData, getMiddleNumber } from "./formatter";
+import { formatFilterClause } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
 describe("General", () => {
-  describe("getMiddleNumber", () => {
-    it("works in simple case", () => {
-      var values = [100, 10, 1, 0];
-      expect(getMiddleNumber(values)).to.equal(10);
-    });
-
-    it("works in more complex case", () => {
-      var values = [0, 0, -1000, -100, 10, 1, 0, 0, 0, 0];
-      expect(getMiddleNumber(values)).to.equal(10);
-    });
-  });
-
-  describe("formatterFromData", () => {
-    it("works in simple case", () => {
-      var values = [100, 10, 1, 0];
-      var formatter = formatterFromData(values, "0,0 a");
-      expect(formatter(10)).to.equal("10");
-    });
-
-    it("works in k case", () => {
-      var values = [50000, 5000, 5000, 5000, 5000, 100, 10, 1, 0];
-      var formatter = formatterFromData(values, "0,0.000 a");
-      expect(formatter(10)).to.equal("0.010 k");
-      expect(formatter(12345)).to.equal("12.345 k");
-    });
-
-    it("works in KB case", () => {
-      var values = [50000, 5000, 5000, 5000, 5000, 100, 10, 1, 0];
-      var formatter = formatterFromData(values, "0,0.000 b");
-      expect(formatter(10)).to.equal("0.010 KiB");
-      expect(formatter(12345)).to.equal("12.056 KiB");
-    });
-  });
-
   describe("formatFilterClause", () => {
     const latestDurationTests = [
       { duration: "PT1H", label: "Latest hour" },

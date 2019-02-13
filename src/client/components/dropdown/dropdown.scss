@@ -75,6 +75,7 @@
 
   .dropdown-item {
     @include ellipsis;
+
     padding: 0 10px;
     cursor: pointer;
 

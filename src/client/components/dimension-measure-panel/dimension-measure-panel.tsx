@@ -21,7 +21,6 @@ import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
-import { Fn } from "../../../common/utils/general/general";
 import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 import { MeasuresTile } from "../measures-tile/measures-tile";
@@ -36,7 +35,6 @@ export interface DimensionMeasurePanelProps {
   essence: Essence;
   menuStage: Stage;
   triggerFilterMenu: (dimension: Dimension) => void;
-  triggerSplitMenu: (dimension: Dimension) => void;
   style?: React.CSSProperties;
 }
 
@@ -92,7 +90,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
   }
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, style } = this.props;
+    const { clicker, essence, menuStage, triggerFilterMenu, style } = this.props;
     const { dividerPosition, containerHeight } = this.state;
     const { maxDividerPosition, minDividerPosition } = dividerConstraints(containerHeight);
 
@@ -113,7 +111,6 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           essence={essence}
           menuStage={menuStage}
           triggerFilterMenu={triggerFilterMenu}
-          triggerSplitMenu={triggerSplitMenu}
           style={dimensionListStyle}
         />
         {showResizeHandle && <ResizeHandle
@@ -123,6 +120,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           max={maxDividerPosition}
           initialValue={dividerPosition} />}
         <MeasuresTile
+          menuStage={menuStage}
           style={measureListStyle}
           clicker={clicker}
           essence={essence}

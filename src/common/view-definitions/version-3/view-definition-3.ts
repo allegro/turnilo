@@ -15,11 +15,11 @@
  */
 
 import { TimeShiftJS } from "../../models/time-shift/time-shift";
-import { FilterClauseDefinition } from "./filter-definition";
-import { HighlightDefinition } from "./highlight-definition";
-import { LegendDefinition } from "./legend-definition";
+import { FilterClauseDefinition } from "../version-4/filter-definition";
+import { HighlightDefinition } from "../version-4/highlight-definition";
+import { LegendDefinition } from "../version-4/legend-definition";
+import { SplitDefinition } from "../version-4/split-definition";
 import { MeasuresDefinitionJS } from "./measures-definition";
-import { SplitDefinition } from "./split-definition";
 
 export interface ViewDefinition3 {
   visualization: string;

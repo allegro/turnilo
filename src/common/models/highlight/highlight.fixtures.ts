@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { LineChart } from "../../../client/visualizations/line-chart/line-chart";
-import { Table } from "../../../client/visualizations/table/table";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "./highlight";
@@ -24,7 +22,6 @@ export class HighlightFixtures {
   static tableNoMeasure(): Highlight {
     const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
     return new Highlight({
-      owner: Table.id,
       measure: null,
       delta: Filter.fromClause(channelInFilterClause)
     });
@@ -33,7 +30,6 @@ export class HighlightFixtures {
   static lineChartWithAvgAddedMeasure(): Highlight {
     const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
     return new Highlight({
-      owner: LineChart.id,
       measure: "avg_added",
       delta: Filter.fromClause(channelInFilterClause)
     });
@@ -42,7 +38,6 @@ export class HighlightFixtures {
   static lineChartWithAddedMeasure(): Highlight {
     const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
     return new Highlight({
-      owner: LineChart.id,
       measure: "added",
       delta: Filter.fromClause(channelInFilterClause)
     });

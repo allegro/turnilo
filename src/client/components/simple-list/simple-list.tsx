@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { classNames, getYFromEvent, setDragGhost } from "../../utils/dom/dom";
+import { classNames, getYFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./simple-list.scss";
 
@@ -49,27 +49,26 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
   dragStart(item: SimpleRow, e: DragEvent) {
     this.setState({ draggedItem: item });
 
-    var dataTransfer = e.dataTransfer;
+    const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "move";
-    dataTransfer.setData("text/html", item.title);
 
+    setDragData(dataTransfer, "text/html", item.title);
     setDragGhost(dataTransfer, item.title);
   }
 
   isInTopHalf(e: DragEvent): boolean {
-    var targetRect = (e.currentTarget as any).getBoundingClientRect();
+    const targetRect = (e.currentTarget as any).getBoundingClientRect();
     return getYFromEvent(e) - targetRect.top <= targetRect.height / 2;
   }
 
   dragOver(item: SimpleRow, e: DragEvent) {
     e.preventDefault();
 
-    const { draggedItem, dropIndex } = this.state;
+    const { dropIndex } = this.state;
     const { rows } = this.props;
 
-    var sourceIndex = rows.indexOf(draggedItem);
-    var targetIndex = rows.indexOf(item);
-    var newDropIndex = this.isInTopHalf(e) ? targetIndex : targetIndex + 1;
+    const targetIndex = rows.indexOf(item);
+    const newDropIndex = this.isInTopHalf(e) ? targetIndex : targetIndex + 1;
 
     if (newDropIndex !== dropIndex) {
       this.setState({

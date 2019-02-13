@@ -19,6 +19,7 @@ import { Timezone } from "chronoshift";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
+import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 export interface CustomizationValue {
   title?: string;
@@ -27,6 +28,7 @@ export interface CustomizationValue {
   externalViews?: ExternalView[];
   timezones?: Timezone[];
   logoutHref?: string;
+  urlShortener?: UrlShortener;
 }
 
 export interface CustomizationJS {
@@ -36,6 +38,7 @@ export interface CustomizationJS {
   externalViews?: ExternalViewValue[];
   timezones?: string[];
   logoutHref?: string;
+  urlShortener?: UrlShortenerDef;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -90,6 +93,10 @@ export class Customization implements Instance<CustomizationValue, Customization
       value.timezones = timezones;
     }
 
+    if (parameters.urlShortener) {
+      value.urlShortener = UrlShortener.fromJS(parameters.urlShortener);
+    }
+
     return new Customization(value);
   }
 
@@ -99,6 +106,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public timezones: Timezone[];
   public title: string;
   public logoutHref: string;
+  public urlShortener: UrlShortener;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -107,6 +115,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (parameters.externalViews) this.externalViews = parameters.externalViews;
     if (parameters.timezones) this.timezones = parameters.timezones;
     this.logoutHref = parameters.logoutHref;
+    if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
   }
 
   public valueOf(): CustomizationValue {
@@ -116,6 +125,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       customLogoSvg: this.customLogoSvg,
       externalViews: this.externalViews,
       timezones: this.timezones,
+      urlShortener: this.urlShortener,
       logoutHref: this.logoutHref
     };
   }
@@ -130,6 +140,9 @@ export class Customization implements Instance<CustomizationValue, Customization
     }
     if (this.timezones) {
       js.timezones = this.timezones.map(tz => tz.toJS());
+    }
+    if (this.urlShortener) {
+      js.urlShortener = this.urlShortener.toJS();
     }
     if (this.logoutHref) js.logoutHref = this.logoutHref;
     return js;
@@ -149,6 +162,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       this.title === other.title &&
       this.headerBackground === other.headerBackground &&
       this.customLogoSvg === other.customLogoSvg &&
+      (!this.urlShortener || this.urlShortener.equals(other.urlShortener)) &&
       immutableArraysEqual(this.externalViews, other.externalViews) &&
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.logoutHref === other.logoutHref;

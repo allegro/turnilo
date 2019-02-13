@@ -23,12 +23,12 @@ import { Filter } from "../../models/filter/filter";
 import { Manifest } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
+import { filterDefinitionConverter } from "../version-4/filter-definition";
+import { highlightConverter } from "../version-4/highlight-definition";
+import { legendConverter } from "../version-4/legend-definition";
+import { splitConverter } from "../version-4/split-definition";
 import { ViewDefinitionConverter } from "../view-definition-converter";
-import { filterDefinitionConverter } from "./filter-definition";
-import { highlightConverter } from "./highlight-definition";
-import { legendConverter } from "./legend-definition";
-import { measuresDefinitionConverter } from "./measures-definition";
-import { splitConverter } from "./split-definition";
+import { seriesDefinitionConverter } from "./measures-definition";
 import { ViewDefinition3 } from "./view-definition-3";
 
 export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
@@ -49,7 +49,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
-    const measures = measuresDefinitionConverter.toEssenceMeasures(definition.measures);
+    const series = seriesDefinitionConverter.toEssenceSeries(definition.measures);
     const highlight = definition.highlight && highlightConverter(dataCube)
       .toHighlight(definition.highlight);
 
@@ -62,7 +62,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       timeShift,
       splits,
       pinnedDimensions,
-      measures,
+      series,
       colors,
       pinnedSort,
       compare: null,
@@ -71,19 +71,6 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
   }
 
   toViewDefinition(essence: Essence): ViewDefinition3 {
-    const { dataCube } = essence;
-
-    return {
-      visualization: essence.visualization.name,
-      timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
-      splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),
-      measures: measuresDefinitionConverter.fromEssenceMeasures(essence.measures),
-      pinnedDimensions: essence.pinnedDimensions.toArray(),
-      pinnedSort: essence.pinnedSort,
-      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
-      legend: essence.colors && legendConverter.fromColors(essence.colors),
-      highlight: essence.highlight && highlightConverter(dataCube).fromHighlight(essence.highlight)
-    };
+    throw new Error("toViewDefinition is not supported in Version 3");
   }
 }

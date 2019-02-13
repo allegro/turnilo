@@ -23,10 +23,11 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
-import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
-import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";
-import { TimeFilterMenu } from "../time-filter-menu/time-filter-menu";
+import { BooleanFilterMenu } from "./boolean-filter-menu/boolean-filter-menu";
 import "./filter-menu.scss";
+import { NumberFilterMenu } from "./number-filter-menu/number-filter-menu";
+import { StringFilterMenu } from "./string-filter-menu/string-filter-menu";
+import { TimeFilterMenu } from "./time-filter-menu/time-filter-menu";
 
 export interface FilterMenuProps {
   essence: Essence;
@@ -40,41 +41,16 @@ export interface FilterMenuProps {
   inside?: Element;
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = ({ clicker, essence, timekeeper, changePosition, containerStage, openOn, dimension, onClose, inside }) => {
-  if (!dimension) return null;
-  if (dimension.kind === "time") {
-    return <TimeFilterMenu
-      essence={essence}
-      timekeeper={timekeeper}
-      clicker={clicker}
-      dimension={dimension}
-      onClose={onClose}
-      containerStage={containerStage}
-      openOn={openOn}
-      inside={inside}
-    />;
-  } else if (dimension.kind === "number") {
-    return <NumberFilterMenu
-      essence={essence}
-      timekeeper={timekeeper}
-      clicker={clicker}
-      dimension={dimension}
-      onClose={onClose}
-      containerStage={containerStage}
-      openOn={openOn}
-      inside={inside}
-    />;
-  } else {
-    return <StringFilterMenu
-      essence={essence}
-      timekeeper={timekeeper}
-      clicker={clicker}
-      dimension={dimension}
-      changePosition={changePosition}
-      onClose={onClose}
-      containerStage={containerStage}
-      openOn={openOn}
-      inside={inside}
-    />;
+export const FilterMenu: React.SFC<FilterMenuProps> = (props: FilterMenuProps) => {
+  if (!props.dimension) return null;
+  switch (props.dimension.kind) {
+    case "time":
+      return <TimeFilterMenu {...props} />;
+    case "boolean":
+      return <BooleanFilterMenu {...props} />;
+    case "number":
+      return <NumberFilterMenu {...props} />;
+    default:
+      return <StringFilterMenu {...props} />;
   }
 };

@@ -31,8 +31,8 @@
     overflow: hidden;
 
     .split {
-      @extend %dimension-item;
-      @extend %dimension-item-h;
+      @extend %tiles-item;
+      @extend %tiles-item-h;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
     }
@@ -44,6 +44,11 @@
 
   .fancy-drag-indicator {
     @include unpin-left($bar-title-width);
+  }
+
+  .add-tile {
+    @include pin-right(25px);
+    padding-right: 5px;
   }
 }
 

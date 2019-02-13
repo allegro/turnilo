@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isTruthy } from "../general/general";
+import { Fn, isTruthy } from "../general/general";
 
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
@@ -48,10 +48,44 @@ export function thread(x: any, ...fns: Function[]) {
   return fns.reduce((x, f) => f(x), x);
 }
 
-export function threadTruthy(x: any, ...fns: Function[]) {
+export function threadNullable(x: any, ...fns: Function[]) {
   return fns.reduce((x, f) => isTruthy(x) ? f(x) : x, x);
 }
 
+const isCallable = (f: any) => typeof f === "function";
+
+export function threadConditionally(x: any, ...fns: Function[]) {
+  return fns.reduce((x, f) => isCallable(f) ? f(x) : x, x);
+}
+
 export function complement<T>(p: Predicate<T>): Predicate<T> {
- return (x: T) => !p(x);
+  return (x: T) => !p(x);
+}
+
+// TODO: fix to use infer on arguments tuple https://stackoverflow.com/a/50014868/1089761
+export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms: number): ((...args: any[]) => Promise<any>) & { cancel: Fn } {
+  let timeoutId: any;
+
+  const debouncedFn = function(...args: any[]) {
+    let resolve: Function;
+    const promise = new Promise(pResolve => {
+      resolve = pResolve;
+    });
+    const callLater = () => {
+      timeoutId = undefined;
+      resolve(fn(...args));
+    };
+
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(callLater, ms);
+
+    return promise;
+  } as any;
+
+  debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
+
+  return debouncedFn;
 }

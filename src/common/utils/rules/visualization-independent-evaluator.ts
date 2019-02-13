@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { SeriesList } from "../../models/series-list/series-list";
 import { Actions } from "./actions";
 import { Predicates } from "./predicates";
 import { RulesEvaluator } from "./rules-evaluator";
 import { Action, Predicate, RulesEvaluatorBuilder } from "./rules-evaluator-builder";
 
 export interface PredicateVariables {
-  multiMeasureMode: boolean;
-  selectedMeasures: OrderedSet<string>;
+  series: SeriesList;
 }
 
 export interface ActionVariables {

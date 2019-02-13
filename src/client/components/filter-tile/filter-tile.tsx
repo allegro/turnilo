@@ -29,9 +29,10 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
+import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
 import { FilterMenu } from "../filter-menu/filter-menu";
@@ -131,7 +132,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   clickDimension(dimension: Dimension, e: React.MouseEvent<HTMLElement>) {
     const target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
-    this.openMenu(dimension, target);
+    this.toggleMenu(dimension, target);
   }
 
   openMenuOnDimension(dimension: Dimension) {
@@ -152,17 +153,18 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
-  openMenu(dimension: Dimension, target: Element) {
+  toggleMenu(dimension: Dimension, target: Element) {
     const { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
       return;
     }
+    this.openMenu(dimension, target);
+  }
+
+  openMenu(dimension: Dimension, target: Element) {
     const overflowMenu = this.getOverflowMenu();
-    let menuInside: Element = null;
-    if (overflowMenu && isInside(target, overflowMenu)) {
-      menuInside = overflowMenu;
-    }
+    const menuInside = overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
     this.setState({
       menuOpenOn: target,
       menuDimension: dimension,
@@ -227,9 +229,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
-    dataTransfer.setData("text/plain", dimension.title);
+    setDragData(dataTransfer, "text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, "filter-tile");
+    DragManager.setDragFilter(clause);
 
     setDragGhost(dataTransfer, dimension.title);
 
@@ -246,7 +248,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   canDrop(): boolean {
-    return Boolean(DragManager.getDragDimension());
+    const { essence: { filter } } = this.props;
+    const dimension = DragManager.draggingDimension();
+    if (dimension) return !filter.getClauseForDimension(dimension);
+    return DragManager.isDraggingFilter();
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
@@ -259,7 +264,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
-    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
@@ -276,55 +280,50 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { clicker, essence } = this.props;
     const { filter, dataCube } = essence;
 
-    const newState: FilterTileState = {
-      dragPosition: null
-    };
+    this.setState({ dragPosition: null });
 
-    const dimension = DragManager.getDragDimension();
-    if (dimension) {
-      const dragPosition = this.calculateDragPosition(e);
-
+    const dragPosition = this.calculateDragPosition(e);
+    if (!DragManager.isDraggingFilter()) {
+      const dimension = DragManager.draggingDimension();
       let tryingToReplaceTime = false;
       if (dragPosition.replace !== null) {
         const targetClause = filter.clauses.get(dragPosition.replace);
         tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
       }
-
-      const existingClause = filter.clauseForReference(dimension.name);
-      if (existingClause) {
-        let newFilter: Filter;
-        if (dragPosition.isReplace()) {
-          newFilter = filter.replaceByIndex(dragPosition.replace, existingClause);
-        } else {
-          newFilter = filter.insertByIndex(dragPosition.insert, existingClause);
-        }
-
-        let newFilterSame = filter.equals(newFilter);
-        if (!newFilterSame) {
-          clicker.changeFilter(newFilter);
-        }
-
-        if (DragManager.getDragOrigin() !== "filter-tile") { // Do not open the menu if it is an internal re-arrange
-          if (newFilterSame) {
-            this.filterMenuRequest(dimension);
-          } else {
-            // Wait for the animation to finish to know where to open the menu
-            setTimeout(
-              () => this.filterMenuRequest(dimension),
-              ANIMATION_DURATION + 50
-            );
-          }
-        }
-
-      } else {
-        if (dragPosition && !tryingToReplaceTime) {
-          this.addDummy(dimension, dragPosition);
-        }
-
+      if (dragPosition && !tryingToReplaceTime) {
+        this.addDummy(dimension, dragPosition);
       }
+      return;
+    }
+    let newFilter: Filter;
+    const clause = DragManager.draggingFilter();
+    if (dragPosition.isReplace()) {
+      newFilter = filter.replaceByIndex(dragPosition.replace, clause);
+    } else {
+      newFilter = filter.insertByIndex(dragPosition.insert, clause);
     }
 
-    this.setState(newState);
+    let newFilterSame = filter.equals(newFilter);
+    if (!newFilterSame) {
+      clicker.changeFilter(newFilter);
+    }
+
+    if (DragManager.isDraggingFilter()) { // Do not open the menu if it is an internal re-arrange
+      const dimension = DragManager.draggingDimension();
+      if (newFilterSame) {
+        this.filterMenuRequest(dimension);
+      } else {
+        // Wait for the animation to finish to know where to open the menu
+        setTimeout(
+          () => this.filterMenuRequest(dimension),
+          ANIMATION_DURATION + 50
+        );
+      }
+    }
+  }
+
+  appendFilter = (dimension: Dimension) => {
+    this.addDummy(dimension, new DragPosition({ insert: this.props.essence.filter.length() }));
   }
 
   addDummy(dimension: Dimension, possiblePosition: DragPosition) {
@@ -404,7 +403,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const style = transformStyle(itemX, 0);
 
     return <div
-      className={classNames("overflow", { "all-continuous": overflowItemBlanks.every(item => item.dimension.isContinuous()) })}
+      className="overflow dimension"
       ref="overflow"
       key="overflow"
       style={style}
@@ -448,18 +447,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { dimension, clause, source } = itemBlank;
     const dimensionName = dimension.name;
 
-    const className = [
-      FILTER_CLASS_NAME,
-      "type-" + dimension.className,
-      source,
-      (clause && !isTimeFilter(clause) && clause.not) ? "excluded" : "included",
-      dimension === menuDimension ? "selected" : undefined
-    ].filter(Boolean).join(" ");
+    const selected = dimension === menuDimension;
+    const excluded = clause && !isTimeFilter(clause) && clause.not;
+    const className = classNames(FILTER_CLASS_NAME, "dimension", source, { selected, excluded, included: !excluded });
 
     if (source === "from-highlight") {
       return <div
         className={className}
-        key={dimensionName}
+        key={`highlight-${dimensionName}`}
         ref={dimensionName}
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
@@ -560,6 +555,21 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return itemBlanks;
   }
 
+  renderAddButton() {
+    const { essence: { dataCube, filter }, menuStage } = this.props;
+    const tiles = dataCube.dimensions
+      .filterDimensions(dimension => !filter.getClauseForDimension(dimension))
+      .map(dimension => {
+        return {
+          key: dimension.name,
+          label: dimension.title,
+          value: dimension
+        };
+      });
+
+    return <AddTile<Dimension> containerStage={menuStage} onSelect={this.appendFilter} tiles={tiles} />;
+  }
+
   render() {
     const { dragPosition, maxItems } = this.state;
     const itemBlanks = this.getItemBlanks();
@@ -584,6 +594,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       <div className="items" ref="items">
         {filterItems}
       </div>
+      {this.renderAddButton()}
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"

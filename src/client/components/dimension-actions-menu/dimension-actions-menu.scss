@@ -41,7 +41,16 @@ $action-size: 50px;
       }
     }
 
-    &:hover {
+    &.disabled {
+      cursor: default;
+      color: $text-light;
+
+      svg path {
+        fill: $text-light;
+      }
+    }
+
+    &:not(.disabled):hover {
       &::before {
         content: '';
         position: absolute;
