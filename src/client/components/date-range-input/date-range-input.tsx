@@ -16,9 +16,8 @@
  */
 
 import { Timezone } from "chronoshift";
-import "moment-timezone";
 import * as React from "react";
-import { combineDateAndTimeIntoMoment, formatDate, formatTime, maybeFullyDefinedDate, maybeFullyDefinedTime } from "../../../common/utils/time/time";
+import { combineDateAndTimeIntoMoment, formatISODate, formatISOTime, normalizeISODate, normalizeISOTime, validateISODate, validateISOTime } from "../../../common/utils/time/time";
 import "./date-range-input.scss";
 
 export interface DateRangeInputProps {
@@ -61,27 +60,27 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     }
 
     this.setState({
-      dateString: formatDate(time, timezone),
-      timeString: formatTime(time, timezone)
+      dateString: formatISODate(time, timezone),
+      timeString: formatISOTime(time, timezone)
     });
   }
 
   dateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateString = e.target.value.replace(/[^\d-]/g, "");
+    const dateString = normalizeISODate(e.target.value);
     this.setState({
       dateString
     });
-    if (maybeFullyDefinedDate(dateString)) {
+    if (validateISODate(dateString)) {
       this.changeDate(dateString, this.state.timeString);
     }
   }
 
   timeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const timeString = e.target.value.replace(/[^\d:]/g, "");
+    const timeString = normalizeISOTime(e.target.value);
     this.setState({
       timeString
     });
-    if (maybeFullyDefinedTime(timeString)) {
+    if (validateISOTime(timeString)) {
       this.changeDate(this.state.dateString, timeString);
     }
   }

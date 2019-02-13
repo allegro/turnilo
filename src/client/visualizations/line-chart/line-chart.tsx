@@ -40,7 +40,6 @@ import { formatValue, seriesFormatter } from "../../../common/utils/formatter/fo
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
-import { DisplayYear } from "../../../common/utils/time/time";
 import { ChartLine } from "../../components/chart-line/chart-line";
 import { ColorEntry, ColorSwabs } from "../../components/color-swabs/color-swabs";
 import { Delta } from "../../components/delta/delta";
@@ -360,7 +359,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const shownRange = roundDragRange || bubbleRange;
 
       if (colors) {
-        const segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
+        const segmentLabel = formatValue(bubbleRange, timezone);
         const firstSplit = essence.splits.splits.first();
         const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
@@ -394,7 +393,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         </HighlightModal>;
       } else {
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
-        const segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
+        const segmentLabel = formatValue(shownRange, timezone);
         const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
         const measureLabel = highlightDatum ? measure.formatDatum(highlightDatum, format) : null;
 
@@ -409,7 +408,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     } else if (!dragRange && hoverRange && hoverMeasure === measure) {
       const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
-      const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+      const segmentLabel = formatValue(hoverRange, timezone);
 
       if (colors) {
         const firstSplit = essence.splits.splits.first();
@@ -455,7 +454,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       } else {
         const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
         if (!hoverDatum) return null;
-        const title = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const title = formatValue(hoverRange, timezone);
         const content = this.renderMeasureLabel(hoverDatum, measure, format);
 
         return <SegmentBubble

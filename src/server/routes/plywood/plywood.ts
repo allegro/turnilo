@@ -18,6 +18,7 @@
 import { Timezone } from "chronoshift";
 import { Response, Router } from "express";
 import { Dataset, Expression, PlywoodValue } from "plywood";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
@@ -59,13 +60,13 @@ router.post("/", (req: SwivRequest, res: Response) => {
   }
 
   req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCube }) // later: , settingsVersion)
-    .then((appSettings: any) => {
+    .then((appSettings: AppSettings) => {
       // var settingsBehind = false;
       // if (appSettings.getVersion() < settingsVersion) {
       //   settingsBehind = true;
       // }
-
       const myDataCube = appSettings.getDataCube(dataCube);
+      req.setTimeout(myDataCube.cluster.getTimeout(), null);
       if (!myDataCube) {
         res.status(400).send({ error: "unknown data cube" });
         return null;
