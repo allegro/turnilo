@@ -168,8 +168,5 @@ export function classNames(...args: Array<string | Record<string, any>>): string
 
 export function originatesFromTextAreaOrInput(e: KeyboardEvent): boolean {
   const element = e.target as HTMLElement;
-  if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
-    return true;
-  }
-  return false;
+  return element.tagName === "INPUT" || element.tagName === "TEXTAREA";
 }
