@@ -66,7 +66,6 @@ router.post("/", (req: SwivRequest, res: Response) => {
       //   settingsBehind = true;
       // }
       const myDataCube = appSettings.getDataCube(dataCube);
-      req.setTimeout(myDataCube.cluster.getTimeout(), null);
       if (!myDataCube) {
         res.status(400).send({ error: "unknown data cube" });
         return null;
@@ -77,6 +76,10 @@ router.post("/", (req: SwivRequest, res: Response) => {
         return null;
       }
 
+      // "native" clusters are not defined, maybe they should be defined as some stub object
+      if (myDataCube.cluster) {
+        req.setTimeout(myDataCube.cluster.getTimeout(), null);
+      }
       const maxQueries = myDataCube.getMaxQueries();
       return myDataCube.executor(ex, { maxQueries, timezone: queryTimezone }).then(
         (data: PlywoodValue) => {
