@@ -102,7 +102,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM H:mm");
+      expect(formatter).to.be.eq("D MMM H:mm");
     });
 
     it("should hide hour when just hour is the same in all ticks", () => {
@@ -110,7 +110,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY");
+      expect(formatter).to.be.eq("D MMM YY");
     });
 
     it("should show full date when just date is the same in all ticks (degenerate case)", () => {
@@ -118,7 +118,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY H:mm");
+      expect(formatter).to.be.eq("D MMM YY H:mm");
     });
 
     it("should show just hour when only hour is different in some ticks", () => {
@@ -134,7 +134,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM");
+      expect(formatter).to.be.eq("D MMM");
     });
 
     it("should show year when just year is different in some ticks", () => {
@@ -150,7 +150,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY H:mm");
+      expect(formatter).to.be.eq("D MMM YY H:mm");
     });
 
     it("should show full date and hour when everything is different in some ticks", () => {
@@ -158,7 +158,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY H:mm");
+      expect(formatter).to.be.eq("D MMM YY H:mm");
     });
 
     it("should show full format when not enough ticks", () => {
@@ -166,7 +166,7 @@ describe("Time", () => {
 
       const formatter = scaleTicksFormat(scale);
 
-      expect(formatter).to.be.eq("D.MM.YY H:mm");
+      expect(formatter).to.be.eq("D MMM YY H:mm");
     });
   });
 
