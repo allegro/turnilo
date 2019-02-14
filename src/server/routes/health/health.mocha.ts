@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
+import { expect } from "chai";
 import * as express from "express";
 import { Express, RequestHandler, Response } from "express";
 import * as http from "http";
 import * as nock from "nock";
 import * as Q from "q";
+import { SinonSpy, spy } from "sinon";
 import * as supertest from "supertest";
+import { LOGGER } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
 import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 import * as healthRouter from "./health";
+
+const appSettings = AppSettingsFixtures.wikiOnly();
+const loadStatusPath = "/druid/broker/v1/loadstatus";
+const wikiBrokerNock = nock(`http://${ClusterFixtures.druidWikiClusterJS().host}`);
+const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS().host}`);
 
 const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler => {
   return (req: SwivRequest, res: Response, next: Function) => {
@@ -37,18 +45,13 @@ const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler =>
   };
 };
 
-const mockLoadStatus = (nock: nock.Scope, fixture: { status: int, initialized: boolean, delay: int }) => {
+const mockLoadStatus = (nock: nock.Scope, fixture: { status: number, initialized: boolean, delay: number }) => {
   const { status, initialized, delay } = fixture;
   nock
     .get(loadStatusPath)
     .delay(delay)
     .reply(status, { inventoryInitialized: initialized });
 };
-
-const appSettings = AppSettingsFixtures.wikiOnly();
-const loadStatusPath = "/druid/broker/v1/loadstatus";
-const wikiBrokerNock = nock(`http://${ClusterFixtures.druidWikiClusterJS().host}`);
-const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS().host}`);
 
 describe("health router", () => {
   let app: Express;
@@ -66,19 +69,32 @@ describe("health router", () => {
       server.close(done);
     });
 
+    let logSpy: SinonSpy;
+
+    beforeEach(() => {
+      logSpy = spy(LOGGER, "log");
+    });
+
+    afterEach(() => {
+      logSpy.restore();
+    });
+
     const singleClusterTests = [
-      { scenario: "healthy broker", status: 200, initialized: true, delay: 0, expectedStatus: 200 },
-      { scenario: "unhealthy broker", status: 500, initialized: false, delay: 0, expectedStatus: 503 },
-      { scenario: "uninitialized broker", status: 200, initialized: false, delay: 0, expectedStatus: 503 },
-      { scenario: "timeout to broker", status: 200, initialized: true, delay: 200, expectedStatus: 503 }
+      { scenario: "healthy broker", status: 200, initialized: true, delay: 0, expectedStatus: 200, expectedLoggerCalled: false },
+      { scenario: "unhealthy broker", status: 500, initialized: false, delay: 0, expectedStatus: 503, expectedLoggerCalled: true },
+      { scenario: "uninitialized broker", status: 200, initialized: false, delay: 0, expectedStatus: 503, expectedLoggerCalled: true },
+      { scenario: "timeout to broker", status: 200, initialized: true, delay: 200, expectedStatus: 503, expectedLoggerCalled: true }
     ];
 
-    singleClusterTests.forEach(({ scenario, status, initialized, delay, expectedStatus }) => {
+    singleClusterTests.forEach(({ scenario, status, initialized, delay, expectedStatus, expectedLoggerCalled }) => {
       it(`returns ${expectedStatus} with ${scenario}`, testComplete => {
         mockLoadStatus(wikiBrokerNock, { status, initialized, delay });
         supertest(app)
           .get("/")
-          .expect(expectedStatus, testComplete);
+          .expect(expectedStatus, () => {
+            expect(logSpy.calledOnce).to.be.eq(expectedLoggerCalled);
+            testComplete();
+          });
       });
     });
   });

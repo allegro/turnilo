@@ -17,18 +17,22 @@
 
 import { Response, Router } from "express";
 import * as request from "request-promise-native";
+import { LOGGER } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { SwivRequest } from "../../utils/general/general";
 
-var router = Router();
+let router = Router();
 
 router.get("/", (req: SwivRequest, res: Response) => {
   req
     .getSettings()
     .then(appSettings => appSettings.clusters)
     .then(checkClusters)
-    .then(clusterHealths => emitHealthStatus(clusterHealths)(res))
-    .catch(reason => res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message }));
+    .then(clusterHealths => emitHealthStatus(clusterHealths, res))
+    .catch(reason => {
+      LOGGER.log(`Health check error: ${reason.message}`);
+      res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message });
+    });
 });
 
 const unhealthyHttpStatus = 503;
@@ -83,20 +87,18 @@ const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
     });
 };
 
-const emitHealthStatus = (clusterHealths: ClusterHealth[]): (res: Response) => void => {
-  return (response: Response) => {
-    const overallHealth = clusterHealths
-      .map(clusterHealth => (clusterHealth.status))
-      .reduce(healthStatusReducer, ClusterHealthStatus.healthy);
+const emitHealthStatus = (clusterHealths: ClusterHealth[], response: Response) => {
+  const unhealthyClusters = clusterHealths.filter(({ status }) => status === ClusterHealthStatus.unhealthy);
+  unhealthyClusters.forEach(({ message, host }: ClusterHealth) => {
+    LOGGER.log(`Unhealthy cluster host: ${host}. Message: ${message}`);
+  });
 
-    const httpState = statusToHttpStatusMap[overallHealth];
+  const isSomeUnhealthy = unhealthyClusters.length > 0;
+  const overallHealthStatus = isSomeUnhealthy ? ClusterHealthStatus.unhealthy : ClusterHealthStatus.healthy;
 
-    response.status(httpState).send({ status: overallHealth, clusters: clusterHealths });
-  };
-};
+  const httpState = statusToHttpStatusMap[overallHealthStatus];
 
-const healthStatusReducer = (before: ClusterHealthStatus, current: ClusterHealthStatus): ClusterHealthStatus => {
-  return current === ClusterHealthStatus.unhealthy ? current : before;
+  response.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
 };
 
 export = router;
