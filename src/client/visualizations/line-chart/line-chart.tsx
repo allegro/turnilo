@@ -630,39 +630,41 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const isHovered = !dragRange && hoverMeasure === measure;
 
-    return <div
-      className="measure-line-chart"
-      key={measure.name}
-      onMouseDown={this.onMouseDown.bind(this, measure)}
-      onMouseMove={this.onMouseMove.bind(this, splitData, measure, scaleX)}
-      onMouseLeave={this.onMouseLeave.bind(this, measure)}
-    >
-      <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
-        {scale && this.renderHorizontalGridLines(scale, lineStage)}
-        <GridLines
-          orientation="vertical"
-          scale={scaleX}
-          ticks={xTicks}
-          stage={lineStage}
-        />
-        {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
-        {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
-        <line
-          className="vis-bottom"
-          x1="0"
-          y1={chartStage.height - 0.5}
-          x2={chartStage.width}
-          y2={chartStage.height - 0.5}
-        />
-      </svg>
-      {!isThumbnail && <VisMeasureLabel
-        measure={measure}
-        format={format}
-        datum={datum}
-        showPrevious={essence.hasComparison()} />}
-      {this.renderHighlighter()}
+    return <React.Fragment>
+      <div
+        className="measure-line-chart"
+        key={measure.name}
+        onMouseDown={this.onMouseDown.bind(this, measure)}
+        onMouseMove={this.onMouseMove.bind(this, splitData, measure, scaleX)}
+        onMouseLeave={this.onMouseLeave.bind(this, measure)}
+      >
+        <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
+          {scale && this.renderHorizontalGridLines(scale, lineStage)}
+          <GridLines
+            orientation="vertical"
+            scale={scaleX}
+            ticks={xTicks}
+            stage={lineStage}
+          />
+          {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
+          {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
+          <line
+            className="vis-bottom"
+            x1="0"
+            y1={chartStage.height - 0.5}
+            x2={chartStage.width}
+            y2={chartStage.height - 0.5}
+          />
+        </svg>
+        {!isThumbnail && <VisMeasureLabel
+          measure={measure}
+          format={format}
+          datum={datum}
+          showPrevious={essence.hasComparison()} />}
+        {this.renderHighlighter()}
+      </div>
       {scale && this.renderChartBubble(splitData, measure, format, chartIndex, containerStage, chartStage, extent, scale)}
-    </div>;
+    </React.Fragment>;
 
   }
 
