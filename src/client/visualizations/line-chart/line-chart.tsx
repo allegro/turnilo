@@ -137,6 +137,15 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
+  componentWillUpdate({ stage: { width } }: VisualizationProps) {
+    const { stage: { width: oldWidth } } = this.props;
+    if (width !== oldWidth) {
+      const { axisRange, continuousDimension } = this.state;
+      const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, width);
+      this.setState({ scaleX });
+    }
+  }
+
   protected shouldFetchData(props: VisualizationProps): boolean {
     const { essence } = props;
     return this.differentVisualizationDefinition(props) || essence.differentColors(this.props.essence);
@@ -670,13 +679,12 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const axisRange = union(filterRange, datasetRange);
     if (!axisRange) return { continuousDimension };
     const xTicks = this.getLineChartTicks(axisRange, timezone);
-    const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange);
+    const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, stage.width);
     return { continuousDimension, axisRange, scaleX, xTicks };
   }
 
-  private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {
-    const stage = this.props.stage;
-    const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
+  private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange, stageWidth: number): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {
+    const range = [0, stageWidth - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
     switch (kind) {
       case "number": {
         const domain = [start, end] as [number, number];
