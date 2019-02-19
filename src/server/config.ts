@@ -262,13 +262,6 @@ if (serverSettingsFilePath) {
         var settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
         settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
         break;
-
-      case "mysql":
-        throw new Error("todo"); // ToDo: make this not incomplete.
-
-      case "postgres":
-        throw new Error("todo");
-
       default:
         exitWithError(`unknown location '${settingsLocation.location}'`);
     }
