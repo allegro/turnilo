@@ -175,17 +175,17 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     return dataCube.measures.accept(measuresConverter).filter(item => !searchText || item.hasSearchText || item.type === MeasureForViewType.group);
   }
 
-render() {
-      const { essence, style } = this.props;
-      const { showSearch, searchText, highlightedMeasureName } = this.state;
-      const { dataCube } = essence;
-      const measuresForView = this.measuresForView();
+  render() {
+    const { essence, style } = this.props;
+    const { showSearch, searchText, highlightedMeasureName } = this.state;
+    const { dataCube } = essence;
+    const measuresForView = this.measuresForView();
 
-      const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText, highlightedMeasureName);
-      const rows = measuresRenderer.render(measuresForView);
-      const message = this.renderMessageIfNoMeasuresFound(measuresForView);
+    const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText, highlightedMeasureName);
+    const rows = measuresRenderer.render(measuresForView);
+    const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
-      const icons = [{
+    const icons = [{
       name: "search",
       ref: "search",
       onClick: this.toggleSearch,
@@ -193,7 +193,7 @@ render() {
       active: showSearch
     }];
 
-      return <SearchableTile
+    return <SearchableTile
       style={style}
       title={STRINGS.measures}
       toggleChangeFn={this.toggleSearch}
