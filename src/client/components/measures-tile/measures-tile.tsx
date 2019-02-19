@@ -16,8 +16,8 @@
  */
 
 import { render } from "enzyme";
-import { Component, DragEvent, MouseEvent } from "react";
 import * as React from "react";
+import { Component, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
@@ -25,7 +25,7 @@ import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
+import { findParentWithClass, originatesFromTextAreaOrInput, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import keyCodes from "../../utils/key-codes/key-codes";
 import { wrappingListIndex } from "../../utils/wrapping-list-index/wrapping-list-index";
@@ -134,6 +134,8 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   }
 
   private handleGlobalKeyDown = (e: KeyboardEvent) => {
+    if (originatesFromTextAreaOrInput(e)) return;
+
     if (e.shiftKey && e.keyCode === keyCodes.m) {
       e.preventDefault();
       this.toggleSearch();
@@ -173,17 +175,17 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     return dataCube.measures.accept(measuresConverter).filter(item => !searchText || item.hasSearchText || item.type === MeasureForViewType.group);
   }
 
-    render() {
-      const { essence, style } = this.props;
-      const { showSearch, searchText, highlightedMeasureName } = this.state;
-      const { dataCube } = essence;
-      const measuresForView = this.measuresForView();
+  render() {
+    const { essence, style } = this.props;
+    const { showSearch, searchText, highlightedMeasureName } = this.state;
+    const { dataCube } = essence;
+    const measuresForView = this.measuresForView();
 
-      const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText, highlightedMeasureName);
-      const rows = measuresRenderer.render(measuresForView);
-      const message = this.renderMessageIfNoMeasuresFound(measuresForView);
+    const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText, highlightedMeasureName);
+    const rows = measuresRenderer.render(measuresForView);
+    const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
-      const icons = [{
+    const icons = [{
       name: "search",
       ref: "search",
       onClick: this.toggleSearch,
@@ -191,7 +193,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       active: showSearch
     }];
 
-      return <SearchableTile
+    return <SearchableTile
       style={style}
       title={STRINGS.measures}
       toggleChangeFn={this.toggleSearch}

@@ -165,3 +165,8 @@ export function classNames(...args: Array<string | Record<string, any>>): string
 
   return classes.join(" ");
 }
+
+export function originatesFromTextAreaOrInput(e: KeyboardEvent): boolean {
+  const element = e.target as HTMLElement;
+  return element.tagName === "INPUT" || element.tagName === "TEXTAREA";
+}
