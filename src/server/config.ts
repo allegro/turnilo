@@ -260,21 +260,8 @@ if (serverSettingsFilePath) {
     switch (settingsLocation.getLocation()) {
       case "file":
         var settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
-        if (settingsLocation.getReadOnly()) {
-          settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
-        } else {
-          settingsStore = SettingsStore.fromWritableFile(settingsFilePath, settingsLocation.getFormat());
-        }
+        settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
         break;
-
-      case "mysql":
-        throw new Error("todo"); // ToDo: make this not incomplete.
-      // settingsStore = SettingsStore.fromStateStore(require('../../../swiv-mysql-state-store/index.js').stateStoreFactory());
-      // break;
-
-      case "postgres":
-        throw new Error("todo");
-
       default:
         exitWithError(`unknown location '${settingsLocation.location}'`);
     }
