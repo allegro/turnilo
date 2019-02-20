@@ -26,7 +26,8 @@ export function addErrorMonitor() {
       file,
       line,
       column,
-      stack
+      stack,
+      hash: window.location.hash
     };
 
     if (typeof console !== "undefined") {
