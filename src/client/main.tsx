@@ -18,7 +18,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { AppSettingsJS } from "../common/models/app-settings/app-settings";
-import { DataCube } from "../common/models/data-cube/data-cube";
 import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
@@ -41,7 +40,6 @@ interface Config {
   user: any;
   appSettings: AppSettingsJS;
   timekeeper: TimekeeperJS;
-  stateful: boolean;
 }
 
 const config: Config = (window as any)["__CONFIG__"];
@@ -71,7 +69,6 @@ require.ensure([], require => {
       appSettings={appSettings}
       user={config.user}
       initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
-      stateful={Boolean(config.stateful)}
     />;
 
   ReactDOM.render(app, container);

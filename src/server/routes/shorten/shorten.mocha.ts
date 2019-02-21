@@ -34,7 +34,6 @@ app.use(bodyParser.json());
 const appSettings = AppSettingsFixtures.wikiOnly();
 
 app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.user = null;
   req.version = "0.9.4";
   req.getSettings = getSettings;
   next();

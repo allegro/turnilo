@@ -32,9 +32,7 @@ app.use(bodyParser.json());
 
 var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.user = null;
   req.version = "0.9.4";
-  req.stateful = false;
   req.getSettings = (dataCubeOfInterest?: any) => Promise.resolve(appSettings);
   next();
 });

@@ -34,7 +34,6 @@ const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS()
 
 const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler => {
   return (req: SwivRequest, res: Response, next: Function) => {
-    req.user = null;
     req.version = "0.9.4";
     req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
     next();

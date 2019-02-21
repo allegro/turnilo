@@ -42,7 +42,6 @@ export interface SwivApplicationProps {
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
-  stateful?: boolean;
 }
 
 export interface SwivApplicationState {
@@ -333,7 +332,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   renderView() {
-    const { maxFilters, user, stateful } = this.props;
+    const { maxFilters, user } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor } = this.state;
     const { dataCubes, customization } = appSettings;
 
@@ -345,7 +344,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           onOpenAbout={this.openAboutModal}
           customization={customization}
           appSettings={appSettings}
-          stateful={stateful}
         />;
 
       case HOME:
@@ -371,7 +369,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           customization={customization}
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}
-          stateful={stateful}
         />;
 
       default:

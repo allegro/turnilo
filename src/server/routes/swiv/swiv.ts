@@ -29,10 +29,8 @@ router.get("/", (req: SwivRequest, res: Response, next: Function) => {
       res.send(mainLayout({
         version: req.version,
         title: appSettings.customization.getTitle(req.version),
-        user: req.user,
         appSettings: clientSettings,
         timekeeper: SETTINGS_MANAGER.getTimekeeper(),
-        stateful: req.stateful
       }));
     });
 });

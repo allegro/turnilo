@@ -16,7 +16,6 @@
  */
 
 export function addErrorMonitor() {
-  const originalOnError = window.onerror;
   window.onerror = (message, file, line, column, errorObject) => {
     column = column || (window.event && (window.event as any).errorCharacter);
     const stack = errorObject ? errorObject.stack : null;
@@ -39,8 +38,6 @@ export function addErrorMonitor() {
     request.open("POST", "error", true);
     request.setRequestHeader("Content-Type", "application/json");
     request.send(JSON.stringify(err));
-
-    window.onerror = originalOnError; // only trigger once
 
     // the error can still be triggered as usual, we just wanted to know what's happening on the client side
     return false;

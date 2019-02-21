@@ -57,6 +57,7 @@
     "lint:sass": "sass-lint -v"
   },
   "dependencies": {
+    "@sentry/browser": "4.6.3",
     "body-parser": "1.18.2",
     "chronoshift": "0.8.1",
     "compression": "1.7.1",

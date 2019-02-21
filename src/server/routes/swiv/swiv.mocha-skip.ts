@@ -30,7 +30,6 @@ var app = express();
 
 var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: express.Response, next: Function) => {
-  req.user = null;
   req.version = "0.9.4";
   req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
   next();
