@@ -98,8 +98,7 @@ router.post("/", (req: SwivRequest, res: Response) => {
           res.status(500).send(`got error ${error.message}`);
         }
       );
-    })
-    .done();
+    });
 
 });
 

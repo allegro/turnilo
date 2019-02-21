@@ -19,7 +19,6 @@ import * as express from "express";
 import { Express, RequestHandler, Response } from "express";
 import * as http from "http";
 import * as nock from "nock";
-import * as Q from "q";
 import * as supertest from "supertest";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
@@ -37,7 +36,7 @@ const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler =>
   return (req: SwivRequest, res: Response, next: Function) => {
     req.user = null;
     req.version = "0.9.4";
-    req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Q(appSettings);
+    req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
     next();
   };
 };

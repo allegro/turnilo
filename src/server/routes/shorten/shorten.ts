@@ -35,8 +35,7 @@ router.get("/", (req: SwivRequest, res: Response) => {
         error: "could not shorten url",
         message: error.message
       });
-    })
-    .done();
+    });
 });
 
 export = router;

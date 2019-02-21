@@ -16,7 +16,6 @@
  */
 
 import { Request } from "express";
-import * as Q from "q";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { User } from "../../../common/models/user/user";
 import { GetSettingsOptions } from "../settings-manager/settings-manager";
@@ -26,5 +25,5 @@ export interface SwivRequest extends Request {
   stateful: boolean;
   user: User;
 
-  getSettings(opts?: GetSettingsOptions): Q.Promise<AppSettings>;
+  getSettings(opts?: GetSettingsOptions): Promise<AppSettings>;
 }

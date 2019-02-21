@@ -17,7 +17,6 @@
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import { Response } from "express";
-import * as Q from "q";
 import * as supertest from "supertest";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
@@ -27,7 +26,7 @@ import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 import * as shortenRoute from "./shorten";
 
-let getSettings: (opts?: GetSettingsOptions) => Q.Promise<AppSettings>;
+let getSettings: (opts?: GetSettingsOptions) => Promise<AppSettings>;
 let app = express();
 
 app.use(bodyParser.json());
@@ -51,7 +50,7 @@ describe("url shortener", () => {
         urlShortener: SuccessUrlShortenerJS
       }));
 
-    getSettings = () => Q(appSettingsWithSuccessShortener);
+    getSettings = () => Promise.resolve(appSettingsWithSuccessShortener);
 
     supertest(app)
       .get(shortenPath)
@@ -68,7 +67,7 @@ describe("url shortener", () => {
         urlShortener: FailUrlShortenerJS
       }));
 
-    getSettings = () => Q(appSettingsWithFailingShortener);
+    getSettings = () => Promise.resolve(appSettingsWithFailingShortener);
 
     supertest(app)
       .get(shortenPath)

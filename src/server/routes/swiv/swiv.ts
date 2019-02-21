@@ -34,8 +34,7 @@ router.get("/", (req: SwivRequest, res: Response, next: Function) => {
         timekeeper: SETTINGS_MANAGER.getTimekeeper(),
         stateful: req.stateful
       }));
-    })
-    .done();
+    });
 });
 
 export = router;

@@ -17,47 +17,44 @@
 
 import * as fs from "fs-promise";
 import * as yaml from "js-yaml";
-import * as Q from "q";
 import { MANIFESTS } from "../../../common/manifests";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { inlineVars } from "../../../common/utils/general/general";
 import { Format } from "../../models/settings-location/settings-location";
 
-function readSettingsFactory(filepath: string, format: Format, inline = false) {
-  return () => {
-    return Q(fs.readFile(filepath, "utf-8")
-      .then(fileData => {
-        switch (format) {
-          case "json":
-            return JSON.parse(fileData);
-          case "yaml":
-            return yaml.safeLoad(fileData);
-          default:
-            throw new Error(`unsupported format '${format}'`);
-        }
-      })
-      .then(appSettingsJS => {
-        if (inline) appSettingsJS = inlineVars(appSettingsJS, process.env);
-        return AppSettings.fromJS(appSettingsJS, { visualizations: MANIFESTS });
-      })
-    );
-  };
+function readSettingsFactory(filepath: string, format: Format, inline = false): () => Promise<AppSettings> {
+  return () => fs.readFile(filepath, "utf-8")
+    .then(fileData => {
+      switch (format) {
+        case "json":
+          return JSON.parse(fileData);
+        case "yaml":
+          return yaml.safeLoad(fileData);
+        default:
+          throw new Error(`unsupported format '${format}'`);
+      }
+    })
+    .then(appSettingsJS => {
+      if (inline) appSettingsJS = inlineVars(appSettingsJS, process.env);
+      return AppSettings.fromJS(appSettingsJS, { visualizations: MANIFESTS });
+    });
 }
 
 export class SettingsStore {
   static fromTransient(initAppSettings: AppSettings): SettingsStore {
-    var settingsStore = new SettingsStore();
-    settingsStore.readSettings = () => Q(initAppSettings);
+    let settingsStore = new SettingsStore();
+    settingsStore.readSettings = () => Promise.resolve(initAppSettings);
     return settingsStore;
   }
 
   static fromReadOnlyFile(filepath: string, format: Format): SettingsStore {
-    var settingsStore = new SettingsStore();
+    let settingsStore = new SettingsStore();
     settingsStore.readSettings = readSettingsFactory(filepath, format, true);
     return settingsStore;
   }
 
-  public readSettings: () => Q.Promise<AppSettings>;
+  public readSettings: () => Promise<AppSettings>;
 
-  constructor() {}
+  constructor() {
+  }
 }
