@@ -17,27 +17,16 @@
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
-import { Response } from "express";
 import { $ } from "plywood";
 import * as supertest from "supertest";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
-import { SwivRequest } from "../../utils/general/general";
+import { plywoodRouter } from "./plywood";
 
-import * as plywoodRouter from "./plywood";
-
-var app = express();
+let app = express();
 
 app.use(bodyParser.json());
 
-var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
-app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.version = "0.9.4";
-  req.getSettings = (dataCubeOfInterest?: any) => Promise.resolve(appSettings);
-  next();
-});
-
-app.use("/", plywoodRouter);
+app.use("/", plywoodRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
 
 describe("plywood router", () => {
   it("must have dataCube", (testComplete: any) => {

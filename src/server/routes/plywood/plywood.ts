@@ -17,91 +17,90 @@
 
 import { Timezone } from "chronoshift";
 import { Response, Router } from "express";
-import { Dataset, Expression, PlywoodValue } from "plywood";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
+import { Dataset, Expression } from "plywood";
+import { TurniloRequest } from "../../utils/general/general";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
-let router = Router();
+export function plywoodRouter(getSettings: SettingsGetter) {
 
-router.post("/", (req: SwivRequest, res: Response) => {
-  const { dataSource, expression, timezone } = req.body;
-  const dataCube = req.body.dataCube || dataSource; // back compat
+  let router = Router();
 
-  if (typeof dataCube !== "string") {
-    res.status(400).send({
-      error: "must have a dataCube"
-    });
-    return;
-  }
+  router.post("/", async (req: TurniloRequest, res: Response) => {
+    const { dataSource, expression, timezone } = req.body;
+    const dataCube = req.body.dataCube || dataSource; // back compat
 
-  let queryTimezone: Timezone = null;
-  if (typeof timezone === "string") {
+    if (typeof dataCube !== "string") {
+      res.status(400).send({
+        error: "must have a dataCube"
+      });
+      return;
+    }
+
+    let queryTimezone: Timezone = null;
+    if (typeof timezone === "string") {
+      try {
+        queryTimezone = Timezone.fromJS(timezone);
+      } catch (e) {
+        res.status(400).send({
+          error: "bad timezone",
+          message: e.message
+        });
+        return;
+      }
+    }
+
+    let ex: Expression = null;
     try {
-      queryTimezone = Timezone.fromJS(timezone);
+      ex = Expression.fromJS(expression);
     } catch (e) {
       res.status(400).send({
-        error: "bad timezone",
+        error: "bad expression",
         message: e.message
       });
       return;
     }
-  }
 
-  let ex: Expression = null;
-  try {
-    ex = Expression.fromJS(expression);
-  } catch (e) {
-    res.status(400).send({
-      error: "bad expression",
-      message: e.message
-    });
-    return;
-  }
+    let settings;
+    try {
+      settings = await getSettings();
+    } catch (e) {
+      res.status(400).send({ error: "failed to get settings" });
+      return;
+    }
 
-  req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCube }) // later: , settingsVersion)
-    .then((appSettings: AppSettings) => {
-      // var settingsBehind = false;
-      // if (appSettings.getVersion() < settingsVersion) {
-      //   settingsBehind = true;
-      // }
-      const myDataCube = appSettings.getDataCube(dataCube);
-      if (!myDataCube) {
-        res.status(400).send({ error: "unknown data cube" });
-        return null;
+    const myDataCube = settings.getDataCube(dataCube);
+    if (!myDataCube) {
+      res.status(400).send({ error: "unknown data cube" });
+      return;
+    }
+
+    if (!myDataCube.executor) {
+      res.status(400).send({ error: "un queryable data cube" });
+      return;
+    }
+
+    // "native" clusters are not defined, maybe they should be defined as some stub object
+    if (myDataCube.cluster) {
+      req.setTimeout(myDataCube.cluster.getTimeout(), null);
+    }
+    const maxQueries = myDataCube.getMaxQueries();
+    try {
+      const data = await myDataCube.executor(ex, { maxQueries, timezone: queryTimezone });
+      const reply: any = {
+        result: Dataset.isDataset(data) ? data.toJS() : data
+      };
+      res.json(reply);
+    } catch (error) {
+      console.log("error:", error.message);
+      if (error.hasOwnProperty("stack")) {
+        console.log((<any> error).stack);
       }
+      res.status(500).send({
+        error: "could not compute",
+        message: error.message
+      });
+    }
+  });
 
-      if (!myDataCube.executor) {
-        res.status(400).send({ error: "un queryable data cube" });
-        return null;
-      }
-
-      // "native" clusters are not defined, maybe they should be defined as some stub object
-      if (myDataCube.cluster) {
-        req.setTimeout(myDataCube.cluster.getTimeout(), null);
-      }
-      const maxQueries = myDataCube.getMaxQueries();
-      return myDataCube.executor(ex, { maxQueries, timezone: queryTimezone }).then(
-        (data: PlywoodValue) => {
-          const reply: any = {
-            result: Dataset.isDataset(data) ? data.toJS() : data
-          };
-          // if (settingsBehind) reply.action = 'update';
-          res.json(reply);
-        },
-        (e: Error) => {
-          console.log("error:", e.message);
-          if (e.hasOwnProperty("stack")) {
-            console.log((<any> e).stack);
-          }
-          res.status(500).send({
-            error: "could not compute",
-            message: e.message
-          });
-        }
-      );
-    });
-
-});
-
-export = router;
+  return router;
+}
