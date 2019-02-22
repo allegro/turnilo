@@ -16,7 +16,6 @@
  */
 
 import { Dataset } from "plywood";
-import { Fn } from "../../utils/general/general";
 import { Clicker } from "../clicker/clicker";
 import { Essence } from "../essence/essence";
 import { Stage } from "../stage/stage";
@@ -27,7 +26,6 @@ export interface VisualizationProps {
   essence: Essence;
   timekeeper: Timekeeper;
   stage: Stage;
-  openRawDataModal?: Fn;
   registerDownloadableDataset?: (dataset: Dataset) => void;
   isThumbnail?: boolean;
   refreshRequestTimestamp: number;
