@@ -19,23 +19,18 @@ import { expect } from "chai";
 import * as express from "express";
 import * as supertest from "supertest";
 import { Response } from "supertest";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
+import { TurniloRequest } from "../../utils/general/general";
+import { turniloRouter } from "./turnilo";
 
-import * as swivRouter from "./swiv";
+let app = express();
 
-var app = express();
-
-var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
-app.use((req: SwivRequest, res: express.Response, next: Function) => {
+app.use((req: TurniloRequest, res: express.Response, next: Function) => {
   req.version = "0.9.4";
-  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
   next();
 });
 
-app.use("/", swivRouter);
+app.use("/", turniloRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
 
 describe("swiv router", () => {
   it("does a query (value)", (testComplete: any) => {

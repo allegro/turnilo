@@ -17,22 +17,28 @@
 
 import { Response, Router } from "express";
 import { SETTINGS_MANAGER } from "../../config";
-import { SwivRequest } from "../../utils/general/general";
+import { TurniloRequest } from "../../utils/general/general";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 import { mainLayout } from "../../views";
 
-var router = Router();
+export function turniloRouter(settingsGetter: SettingsGetter) {
 
-router.get("/", (req: SwivRequest, res: Response, next: Function) => {
-  req.getSettings()
-    .then(appSettings => {
-      var clientSettings = appSettings.toClientSettings();
+  let router = Router();
+
+  router.get("/", async (req: TurniloRequest, res: Response) => {
+    try {
+      const settings = await settingsGetter();
+      const clientSettings = settings.toClientSettings();
       res.send(mainLayout({
         version: req.version,
-        title: appSettings.customization.getTitle(req.version),
+        title: settings.customization.getTitle(req.version),
         appSettings: clientSettings,
-        timekeeper: SETTINGS_MANAGER.getTimekeeper(),
+        timekeeper: SETTINGS_MANAGER.getTimekeeper()
       }));
-    });
-});
+    } catch (e) {
+      res.status(400).send({ error: "Couldn't load Turnilo Application" });
+    }
+  });
 
-export = router;
+  return router;
+}
