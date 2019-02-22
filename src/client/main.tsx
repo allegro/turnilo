@@ -54,7 +54,7 @@ require.ensure([], require => {
   const { Timekeeper } = require("../common/models/timekeeper/timekeeper");
   const { AppSettings } = require("../common/models/app-settings/app-settings");
   const { MANIFESTS } = require("../common/manifests/index");
-  const { SwivApplication } = require("./applications/swiv-application/swiv-application");
+  const { TurniloApplication } = require("./applications/turnilo-application/turnilo-application");
 
   Ajax.version = version;
 
@@ -64,7 +64,7 @@ require.ensure([], require => {
   });
 
   const app =
-    <SwivApplication
+    <TurniloApplication
       version={version}
       appSettings={appSettings}
       user={config.user}
