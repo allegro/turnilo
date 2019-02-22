@@ -16,11 +16,7 @@
  */
 
 import { Request } from "express";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { GetSettingsOptions } from "../settings-manager/settings-manager";
 
-export interface SwivRequest extends Request {
+export interface TurniloRequest extends Request {
   version: string;
-
-  getSettings(opts?: GetSettingsOptions): Promise<AppSettings>;
 }

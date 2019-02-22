@@ -23,16 +23,16 @@ import { hsts } from "helmet";
 import * as path from "path";
 import { LOGGER } from "../common/logger/logger";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
-import * as errorRoutes from "./routes/error/error";
-import * as livenessRoutes from "./routes/liveness/liveness";
-import * as mkurlRoutes from "./routes/mkurl/mkurl";
-import * as plyqlRoutes from "./routes/plyql/plyql";
-import * as plywoodRoutes from "./routes/plywood/plywood";
-import * as readinessRoutes from "./routes/readiness/readiness";
-import * as shortenRoutes from "./routes/shorten/shorten";
-import * as swivRoutes from "./routes/swiv/swiv";
-import { SwivRequest } from "./utils/general/general";
-import { GetSettingsOptions } from "./utils/settings-manager/settings-manager";
+import { errorRouter } from "./routes/error/error";
+import { livenessRouter } from "./routes/liveness/liveness";
+import { mkurlRouter } from "./routes/mkurl/mkurl";
+import { plyqlRouter } from "./routes/plyql/plyql";
+import { plywoodRouter } from "./routes/plywood/plywood";
+import { readinessRouter } from "./routes/readiness/readiness";
+import { shortenRouter } from "./routes/shorten/shorten";
+import { turniloRouter } from "./routes/turnilo/turnilo";
+import { TurniloRequest } from "./utils/general/general";
+import { GetSettingsOptions, SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
 
 let app = express();
@@ -93,16 +93,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Assign basics
-app.use((req: SwivRequest, res: Response, next: Function) => {
+app.use((req: TurniloRequest, res: Response, next: Function) => {
   req.version = VERSION;
-  req.getSettings = (opts: GetSettingsOptions = {}) => {
-    return SETTINGS_MANAGER.getSettings(opts);
-  };
   next();
 });
 
+const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
+
 // Global, optional version check
-app.use((req: SwivRequest, res: Response, next: Function) => {
+app.use((req: TurniloRequest, res: Response, next: Function) => {
   const { version } = req.body;
   if (version && version !== req.version) {
     res.status(412).send({
@@ -119,15 +118,15 @@ if (AUTH) {
   app.use(AUTH);
 }
 
-addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRoutes);
-addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRoutes);
+addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
+addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-addRoutes("/plywood", plywoodRoutes);
-addRoutes("/plyql", plyqlRoutes);
-addRoutes("/mkurl", mkurlRoutes);
-addRoutes("/shorten", shortenRoutes);
-addRoutes("/error", errorRoutes);
+addRoutes("/plywood", plywoodRouter(settingsGetter));
+addRoutes("/plyql", plyqlRouter(settingsGetter));
+addRoutes("/mkurl", mkurlRouter(settingsGetter));
+addRoutes("/shorten", shortenRouter(settingsGetter));
+addRoutes("/error", errorRouter);
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {
@@ -138,7 +137,7 @@ if (SERVER_SETTINGS.getIframe() === "deny") {
   });
 }
 
-addRoutes("/", swivRoutes);
+addRoutes("/", turniloRouter(settingsGetter));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {
