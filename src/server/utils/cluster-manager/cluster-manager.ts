@@ -324,7 +324,7 @@ export class ClusterManager {
   }
 
   // See if any new sources were added to the cluster
-  public scanSourceList(): Promise<void> {
+  public scanSourceList = (): Promise<void> => {
     const { logger, cluster, verbose } = this;
     if (!cluster.shouldScanSources()) return Promise.resolve(null);
 
@@ -373,7 +373,7 @@ export class ClusterManager {
   }
 
   // See if any new dimensions or measures were added to the existing externals
-  public introspectSources(): Promise<void> {
+  public introspectSources = (): Promise<void> => {
     const { logger, cluster } = this;
 
     logger.log(`Introspecting all sources in cluster '${cluster.name}'`);
