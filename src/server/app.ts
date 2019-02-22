@@ -30,7 +30,6 @@ import * as mkurlRoutes from "./routes/mkurl/mkurl";
 import * as plyqlRoutes from "./routes/plyql/plyql";
 import * as plywoodRoutes from "./routes/plywood/plywood";
 import * as readinessRoutes from "./routes/readiness/readiness";
-import * as settingsRoutes from "./routes/settings/settings";
 import * as shortenRoutes from "./routes/shorten/shorten";
 import * as swivRoutes from "./routes/swiv/swiv";
 import { SwivRequest } from "./utils/general/general";
