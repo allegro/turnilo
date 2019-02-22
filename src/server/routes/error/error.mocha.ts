@@ -20,17 +20,17 @@ import { expect } from "chai";
 import * as express from "express";
 import * as supertest from "supertest";
 import { Response } from "supertest";
-import * as errorRouter from "./error";
+import { errorRouter } from "./error";
 
-var app = express();
+let app = express();
 
 app.use(bodyParser.json());
 
 app.use("/", errorRouter);
 
 describe("error route", () => {
-  var originalConsoleError: any;
-  var consoleError = "";
+  let originalConsoleError: any;
+  let consoleError = "";
 
   before(() => {
     originalConsoleError = console.error;
@@ -39,7 +39,7 @@ describe("error route", () => {
     };
   });
 
-  var errorObj = {
+  const errorObj = {
     message: "Uncaught TypeError: Cannot read property 'start' of null",
     file: "http://localhost:9090/swiv-main.9dcd61eb37d2c3c22868.js",
     line: 52026,
@@ -54,7 +54,7 @@ describe("error route", () => {
       .set("Content-Type", "application/json")
       .send(errorObj)
       .expect(200)
-      .end((err: any, res: Response) => {
+      .end(() => {
         expect(consoleError).to.deep.equal("Client Error: " + JSON.stringify(errorObj));
         testComplete();
       });
