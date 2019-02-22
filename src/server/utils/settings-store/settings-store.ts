@@ -18,10 +18,9 @@
 import * as fs from "fs-promise";
 import * as yaml from "js-yaml";
 import * as Q from "q";
-import { MANIFESTS } from "../../../common/manifests/index";
+import { MANIFESTS } from "../../../common/manifests";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { inlineVars } from "../../../common/utils/general/general";
-import { appSettingsToYAML } from "../../../common/utils/yaml-helper/yaml-helper";
 import { Format } from "../../models/settings-location/settings-location";
 
 function readSettingsFactory(filepath: string, format: Format, inline = false) {
@@ -45,29 +44,6 @@ function readSettingsFactory(filepath: string, format: Format, inline = false) {
   };
 }
 
-function writeSettingsFactory(filepath: string, format: Format) {
-  return (appSettings: AppSettings) => {
-    return Q.fcall(() => {
-      switch (format) {
-        case "json":
-          return JSON.stringify(appSettings);
-        case "yaml":
-          return appSettingsToYAML(appSettings, false);
-        default:
-          throw new Error(`unsupported format '${format}'`);
-      }
-    })
-      .then(appSettingsYAML => {
-        return fs.writeFile(filepath, appSettingsYAML);
-      });
-  };
-}
-
-export interface StateStore {
-  readState: () => Q.Promise<string>;
-  writeState: (state: string) => Q.Promise<any>;
-}
-
 export class SettingsStore {
   static fromTransient(initAppSettings: AppSettings): SettingsStore {
     var settingsStore = new SettingsStore();
@@ -81,33 +57,7 @@ export class SettingsStore {
     return settingsStore;
   }
 
-  static fromWritableFile(filepath: string, format: Format): SettingsStore {
-    var settingsStore = new SettingsStore();
-    settingsStore.readSettings = readSettingsFactory(filepath, format);
-    settingsStore.writeSettings = writeSettingsFactory(filepath, format);
-    return settingsStore;
-  }
-
-  static fromStateStore(stateStore: StateStore): SettingsStore {
-    var settingsStore = new SettingsStore();
-
-    settingsStore.readSettings = () => {
-      return stateStore.readState()
-        .then(stateData => AppSettings.fromJS(JSON.parse(stateData), { visualizations: MANIFESTS }));
-    };
-
-    settingsStore.writeSettings = (appSettings: AppSettings) => {
-      return Q.fcall(() => JSON.stringify(appSettings))
-        .then(appSettingsJSON => {
-          return stateStore.writeState(appSettingsJSON);
-        });
-    };
-
-    return settingsStore;
-  }
-
   public readSettings: () => Q.Promise<AppSettings>;
-  public writeSettings: (appSettings: AppSettings) => Q.Promise<any>;
 
   constructor() {}
 }

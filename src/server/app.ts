@@ -36,29 +36,6 @@ import * as swivRoutes from "./routes/swiv/swiv";
 import { SwivRequest } from "./utils/general/general";
 import { errorLayout } from "./views";
 
-function makeGuard(guard: string): Handler {
-  return (req: SwivRequest, res: Response, next: Function) => {
-    const user = req.user;
-    if (!user) {
-      next(new Error("no user"));
-      return;
-    }
-
-    const { allow } = user;
-    if (!allow) {
-      next(new Error("no user.allow"));
-      return;
-    }
-
-    if (!allow[guard]) {
-      next(new Error("not allowed"));
-      return;
-    }
-
-    next();
-  };
-}
-
 var app = express();
 app.disable("x-powered-by");
 
@@ -69,12 +46,6 @@ if (SERVER_SETTINGS.getTrustProxy() === "always") {
 function addRoutes(attach: string, router: Router | Handler): void {
   app.use(attach, router);
   app.use(SERVER_SETTINGS.getServerRoot() + attach, router);
-}
-
-function addGuardedRoutes(attach: string, guard: string, router: Router | Handler): void {
-  var guardHandler = makeGuard(guard);
-  app.use(attach, guardHandler, router);
-  app.use(SERVER_SETTINGS.getServerRoot() + attach, guardHandler, router);
 }
 
 // Add compression
@@ -138,11 +109,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 // Assign basics
-var stateful = SETTINGS_MANAGER.isStateful();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = VERSION;
-  req.stateful = stateful;
   req.getSettings = (opts: GetSettingsOptions = {}) => {
     return SETTINGS_MANAGER.getSettings(opts);
   };
@@ -190,9 +159,6 @@ addRoutes("/plyql", plyqlRoutes);
 addRoutes("/mkurl", mkurlRoutes);
 addRoutes("/shorten", shortenRoutes);
 addRoutes("/error", errorRoutes);
-if (stateful) {
-  addGuardedRoutes("/settings", "settings", settingsRoutes);
-}
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {

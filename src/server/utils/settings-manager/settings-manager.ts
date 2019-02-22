@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { SimpleArray } from "immutable-class";
-import { basicExecutorFactory, Dataset, External } from "plywood";
+import { Dataset, External } from "plywood";
 import * as Q from "q";
 import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
@@ -55,7 +54,7 @@ export class SettingsManager {
   public initialLoadTimeout: number;
 
   constructor(settingsStore: SettingsStore, options: SettingsManagerOptions) {
-    var logger = options.logger;
+    const logger = options.logger;
     this.logger = logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
@@ -77,14 +76,6 @@ export class SettingsManager {
         logger.error(e.stack);
         throw e;
       });
-  }
-
-  public isStateful(): boolean {
-    return Boolean(this.settingsStore.writeSettings);
-  }
-
-  private getClusterManagerFor(clusterName: string): ClusterManager {
-    return SimpleArray.find(this.clusterManagers, clusterManager => clusterManager.cluster.name === clusterName);
   }
 
   private addClusterManager(cluster: Cluster, dataCubes: DataCube[]): Q.Promise<any> {
@@ -119,10 +110,6 @@ export class SettingsManager {
       clusterManager.destroy();
       return false;
     });
-  }
-
-  private getFileManagerFor(uri: string): FileManager {
-    return SimpleArray.find(this.fileManagers, fileManager => fileManager.uri === uri);
   }
 
   private addFileManager(dataCube: DataCube): Q.Promise<any> {
@@ -187,7 +174,7 @@ export class SettingsManager {
   }
 
   reviseClusters(newSettings: AppSettings): Q.Promise<any> {
-    const { verbose, logger } = this;
+    const { logger } = this;
     var oldSettings = this.appSettings;
     var tasks: Array<Q.Promise<any>> = [];
 
@@ -207,7 +194,7 @@ export class SettingsManager {
   }
 
   reviseDataCubes(newSettings: AppSettings): Q.Promise<any> {
-    const { verbose, logger } = this;
+    const { logger } = this;
     var oldSettings = this.appSettings;
     var tasks: Array<Q.Promise<any>> = [];
 
@@ -236,40 +223,6 @@ export class SettingsManager {
     return Q.all(tasks);
   }
 
-  updateSettings(newSettings: AppSettings): Q.Promise<any> {
-    if (!this.settingsStore.writeSettings) return Q.reject(new Error("must be writable"));
-
-    var loadedNewSettings = newSettings.attachExecutors(dataCube => {
-      if (dataCube.clusterName === "native") {
-        var fileManager = this.getFileManagerFor(dataCube.source);
-        if (fileManager) {
-          var dataset = fileManager.dataset;
-          if (!dataset) return null;
-          return basicExecutorFactory({
-            datasets: { main: dataset }
-          });
-        }
-
-      } else {
-        var clusterManager = this.getClusterManagerFor(dataCube.clusterName);
-        if (clusterManager) {
-          var external = clusterManager.getExternalByName(dataCube.name);
-          if (!external) return null;
-          return basicExecutorFactory({
-            datasets: { main: external }
-          });
-        }
-
-      }
-      return null;
-    });
-
-    return this.settingsStore.writeSettings(loadedNewSettings)
-      .then(() => {
-        this.appSettings = loadedNewSettings;
-      });
-  }
-
   generateDataCubeName(external: External): string {
     const { appSettings } = this;
     var source = String(external.source);
@@ -284,7 +237,7 @@ export class SettingsManager {
   }
 
   onDatasetChange(dataCubeName: string, changedDataset: Dataset): void {
-    const { logger, verbose } = this;
+    const { logger } = this;
 
     logger.log(`Got native dataset update for ${dataCubeName}`);
 
@@ -303,7 +256,7 @@ export class SettingsManager {
 
   onExternalChange(cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<any> {
     if (!changedExternal.attributes || !changedExternal.requester) return Promise.resolve(null);
-    const { logger, verbose } = this;
+    const { logger } = this;
 
     logger.log(`Got queryable external dataset update for ${dataCubeName} in cluster ${cluster.name}`);
 
