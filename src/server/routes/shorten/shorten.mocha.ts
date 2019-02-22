@@ -16,64 +16,68 @@
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
-import { Response } from "express";
+import { Express } from "express";
+import * as http from "http";
 import * as supertest from "supertest";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { Customization } from "../../../common/models/customization/customization";
+import { UrlShortenerDef } from "../../../common/models/url-shortener/url-shortener";
 import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "../../../common/models/url-shortener/url-shortener.fixtures";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-import * as shortenRoute from "./shorten";
-
-let getSettings: (opts?: GetSettingsOptions) => Promise<AppSettings>;
-let app = express();
-
-app.use(bodyParser.json());
-
-const appSettings = AppSettingsFixtures.wikiOnly();
-
-app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.version = "0.9.4";
-  req.getSettings = getSettings;
-  next();
-});
+import { shortenRouter } from "./shorten";
 
 const shortenPath = "/shorten";
-app.use(shortenPath, shortenRoute);
+
+const appSettings = (urlShortener: UrlShortenerDef) => () => Promise.resolve(
+  AppSettingsFixtures.wikiOnly().changeCustomization(Customization.fromJS({
+    urlShortener
+  })));
 
 describe("url shortener", () => {
-  it("shortens url", (testComplete: any) => {
-    const appSettingsWithSuccessShortener = appSettings
-      .changeCustomization(Customization.fromJS({
-        urlShortener: SuccessUrlShortenerJS
-      }));
+  let app: Express;
+  let server: http.Server;
 
-    getSettings = () => Promise.resolve(appSettingsWithSuccessShortener);
+  describe("with succesful shortener", () => {
+    before(done => {
+      app = express();
+      app.use(shortenPath, shortenRouter(appSettings(SuccessUrlShortenerJS)));
+      server = app.listen(0, done);
+    });
 
-    supertest(app)
-      .get(shortenPath)
-      .set("Content-Type", "application/json")
-      .send({ url: "http://foobar.com?bazz=quvx" })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(200)
-      .expect({ shortUrl: "http://foobar" }, testComplete);
+    after(done => {
+      server.close(done);
+    });
+
+    it("should shorten url", (testComplete: any) => {
+      supertest(app)
+        .get(shortenPath)
+        .set("Content-Type", "application/json")
+        .send({ url: "http://foobar.com?bazz=quvx" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(200)
+        .expect({ shortUrl: "http://foobar" }, testComplete);
+    });
   });
 
-  it("should return error if shortener fails", (testComplete: any) => {
-    const appSettingsWithFailingShortener = appSettings
-      .changeCustomization(Customization.fromJS({
-        urlShortener: FailUrlShortenerJS
-      }));
+  describe("without failing shortener", () => {
+    before(done => {
+      app = express();
+      app.use(shortenPath, shortenRouter(appSettings(FailUrlShortenerJS)));
+      app.use(bodyParser.json());
+      server = app.listen(0, done);
+    });
 
-    getSettings = () => Promise.resolve(appSettingsWithFailingShortener);
+    after(done => {
+      server.close(done);
+    });
 
-    supertest(app)
-      .get(shortenPath)
-      .set("Content-Type", "application/json")
-      .send({ url: "http://foobar.com?bazz=quvx" })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(500)
-      .expect({ error: "could not shorten url", message: "error message" }, testComplete);
+    it("should return error", (testComplete: any) => {
+      supertest(app)
+        .get(shortenPath)
+        .set("Content-Type", "application/json")
+        .send({ url: "http://foobar.com?bazz=quvx" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(500)
+        .expect({ error: "could not shorten url", message: "error message" }, testComplete);
+    });
   });
 });
