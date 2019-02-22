@@ -17,30 +17,19 @@
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
-import { Response } from "express";
 import { $ } from "plywood";
 import * as supertest from "supertest";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
+import { mkurlRouter } from "./mkurl";
 
-import * as mkurlRouter from "./mkurl";
+const mkurlPath = "/mkurl";
 
-var app = express();
+let app = express();
 
 app.use(bodyParser.json());
 
-var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
-app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.version = "0.9.4";
-  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
-  next();
-});
-
-const mkurlPath = "/mkurl";
-app.use(mkurlPath, mkurlRouter);
+app.use(mkurlPath, mkurlRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
 
 describe("mkurl router", () => {
   it("gets a simple url back", (testComplete: any) => {
