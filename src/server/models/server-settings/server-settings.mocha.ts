@@ -48,7 +48,7 @@ describe("ServerSettings", () => {
         port: 9091,
         serverHost: "10.20.30.40",
         serverRoot: "/swivs",
-        healthEndpoint: "/status/health",
+        readinessEndpoint: "/status/readiness",
         pageMustLoadTimeout: 901
       },
       {
@@ -63,6 +63,14 @@ describe("ServerSettings", () => {
         }
       }
     ]);
+  });
+
+  describe("healthEndpoint backward compatibility", () => {
+    it("should interpret healthEndpoint as readinessEndpoint", () => {
+      const healthEndpoint = "/health";
+      const settings = ServerSettings.fromJS({ healthEndpoint });
+      expect(settings.getReadinessEndpoint()).to.be.eq(healthEndpoint);
+    });
   });
 
   describe("upgrades", () => {

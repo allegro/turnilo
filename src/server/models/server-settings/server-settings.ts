@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable } from "immutable-class";
+import { BackCompat, BaseImmutable } from "immutable-class";
 import { SettingsLocation } from "../settings-location/settings-location";
 
 export type Iframe = "allow" | "deny";
@@ -26,7 +26,8 @@ export interface ServerSettingsValue {
   port?: number;
   serverHost?: string;
   serverRoot?: string;
-  healthEnpoint?: string;
+  readinessEndpoint?: string;
+  livenessEndpoint?: string;
   requestLogFormat?: string;
   pageMustLoadTimeout?: number;
   iframe?: Iframe;
@@ -36,23 +37,15 @@ export interface ServerSettingsValue {
   settingsLocation?: SettingsLocation;
 }
 
-export type ServerSettingsJS = ServerSettingsValue;
-
-function ensureOneOfOrNull<T>(name: string, thing: T, things: T[]): void {
-  if (thing == null) return;
-  if (things.indexOf(thing) === -1) {
-    throw new Error(`'${thing}' is not a valid value for ${name}, must be one of: ${things.join(", ")}`);
-  }
-}
-
-function basicEqual(a: any, b: any): boolean {
-  return Boolean(a) === Boolean(b);
+export interface ServerSettingsJS extends ServerSettingsValue {
+  healthEndpoint?: string;
 }
 
 export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
   static DEFAULT_SERVER_ROOT = "/turnilo";
-  static DEFAULT_HEALTH_ENDPOINT = "/health";
+  static DEFAULT_READINESS_ENDPOINT = "/health/ready";
+  static DEFAULT_LIVENESS_ENDPOINT = "/health/alive";
   static DEFAULT_REQUEST_LOG_FORMAT = "common";
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
   static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
@@ -62,15 +55,11 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   static STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
   static DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 
-  static isServerSettings(candidate: any): candidate is ServerSettings {
-    return candidate instanceof ServerSettings;
-  }
-
   static fromJS(parameters: ServerSettingsJS): ServerSettings {
     if (typeof parameters.port === "string") parameters.port = parseInt(parameters.port, 10);
     if (parameters.serverRoot && parameters.serverRoot[0] !== "/") parameters.serverRoot = "/" + parameters.serverRoot;
     if (parameters.serverRoot === "/") parameters.serverRoot = null;
-    return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters));
+    return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters, ServerSettings.BACK_COMPATS));
   }
 
   // TODO, back to: static PROPERTIES: Property[] = [
@@ -78,7 +67,8 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: "port", defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
     { name: "serverHost", defaultValue: null },
     { name: "serverRoot", defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
-    { name: "healthEndpoint", defaultValue: ServerSettings.DEFAULT_HEALTH_ENDPOINT },
+    { name: "readinessEndpoint", defaultValue: ServerSettings.DEFAULT_READINESS_ENDPOINT },
+    { name: "livenessEndpoint", defaultValue: ServerSettings.DEFAULT_LIVENESS_ENDPOINT },
     { name: "requestLogFormat", defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
     { name: "pageMustLoadTimeout", defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
     { name: "iframe", defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
@@ -92,10 +82,19 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation }
   ];
 
+  static BACK_COMPATS: BackCompat[] = [{
+    condition: (settings: ServerSettingsJS) =>
+      !settings.readinessEndpoint && !!settings.healthEndpoint,
+    action: (settings: ServerSettingsJS) => {
+      settings.readinessEndpoint = settings.healthEndpoint;
+    }
+  }];
+
   public port: number;
   public serverHost: string;
   public serverRoot: string;
-  public healthEndpoint: string;
+  public readinessEndpoint: string;
+  public livenessEndpoint: string;
   public requestLogFormat: string;
   public pageMustLoadTimeout: number;
   public iframe: Iframe;
@@ -111,7 +110,8 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getPort: () => number;
   public getServerHost: () => string;
   public getServerRoot: () => string;
-  public getHealthEndpoint: () => string;
+  public getReadinessEndpoint: () => string;
+  public getLivenessEndpoint: () => string;
   public getPageMustLoadTimeout: () => number;
   public getIframe: () => Iframe;
   public getTrustProxy: () => TrustProxy;

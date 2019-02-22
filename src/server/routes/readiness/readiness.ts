@@ -30,7 +30,7 @@ router.get("/", (req: SwivRequest, res: Response) => {
     .then(checkClusters)
     .then(clusterHealths => emitHealthStatus(clusterHealths, res))
     .catch(reason => {
-      LOGGER.log(`Health check error: ${reason.message}`);
+      LOGGER.log(`Readiness check error: ${reason.message}`);
       res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message });
     });
 });

@@ -25,10 +25,11 @@ import { LOGGER } from "../common/logger/logger";
 import { GetSettingsOptions } from "../server/utils/settings-manager/settings-manager";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import * as errorRoutes from "./routes/error/error";
-import * as healthRoutes from "./routes/health/health";
+import * as livenessRoutes from "./routes/liveness/liveness";
 import * as mkurlRoutes from "./routes/mkurl/mkurl";
 import * as plyqlRoutes from "./routes/plyql/plyql";
 import * as plywoodRoutes from "./routes/plywood/plywood";
+import * as readinessRoutes from "./routes/readiness/readiness";
 import * as shortenRoutes from "./routes/shorten/shorten";
 import * as swivRoutes from "./routes/swiv/swiv";
 import { SwivRequest } from "./utils/general/general";
@@ -148,7 +149,8 @@ if (AUTH) {
   });
 }
 
-addRoutes(SERVER_SETTINGS.getHealthEndpoint(), healthRoutes);
+addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRoutes);
+addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRoutes);
 
 // Data routes
 addRoutes("/plywood", plywoodRoutes);

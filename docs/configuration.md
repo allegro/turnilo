@@ -42,9 +42,17 @@ A custom path to act as the server string.
 
 The Turnilo UI will be served from `http://turnilo-host:$port/` and `http://turnilo-host:$port/$serverRoot`
 
-**healthEndpoint** (string), default "/health"
+**readinessEndpoint** (string), default "/health/ready"
 
-A health endpoint location. See [Checking health of Turnilo instance](health-checking.md)
+Readiness endpoint location. Checks readiness of druid clusters. See [Checking health of Turnilo instance](health-checking.md)
+
+**livenessEndpoint** (string), default "/health/alive"
+
+Liveness endpoint location. Reports liveness status of turnilo app.
+
+**healthEndpoint** (string), deprecated
+
+Old value that will be used as readinessEndpoint.
 
 **iframe** ("allow" | "deny"), default "allow"
 
