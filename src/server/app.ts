@@ -31,8 +31,7 @@ import { plywoodRouter } from "./routes/plywood/plywood";
 import { readinessRouter } from "./routes/readiness/readiness";
 import { shortenRouter } from "./routes/shorten/shorten";
 import { turniloRouter } from "./routes/turnilo/turnilo";
-import { TurniloRequest } from "./utils/general/general";
-import { GetSettingsOptions, SettingsGetter } from "./utils/settings-manager/settings-manager";
+import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
 
 let app = express();
@@ -92,26 +91,7 @@ addRoutes("/", express.static(path.join(__dirname, "../../assets")));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Assign basics
-app.use((req: TurniloRequest, res: Response, next: Function) => {
-  req.version = VERSION;
-  next();
-});
-
 const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
-
-// Global, optional version check
-app.use((req: TurniloRequest, res: Response, next: Function) => {
-  const { version } = req.body;
-  if (version && version !== req.version) {
-    res.status(412).send({
-      error: "incorrect version",
-      action: "reload"
-    });
-    return;
-  }
-  next();
-});
 
 // Auth
 if (AUTH) {
@@ -137,7 +117,7 @@ if (SERVER_SETTINGS.getIframe() === "deny") {
   });
 }
 
-addRoutes("/", turniloRouter(settingsGetter));
+addRoutes("/", turniloRouter(settingsGetter, VERSION));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {

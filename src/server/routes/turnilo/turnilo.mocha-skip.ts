@@ -20,17 +20,11 @@ import * as express from "express";
 import * as supertest from "supertest";
 import { Response } from "supertest";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
-import { TurniloRequest } from "../../utils/general/general";
 import { turniloRouter } from "./turnilo";
 
 let app = express();
 
-app.use((req: TurniloRequest, res: express.Response, next: Function) => {
-  req.version = "0.9.4";
-  next();
-});
-
-app.use("/", turniloRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
+app.use("/", turniloRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor()), "0.9.4"));
 
 describe("swiv router", () => {
   it("does a query (value)", (testComplete: any) => {

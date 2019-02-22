@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { SETTINGS_MANAGER } from "../../config";
-import { TurniloRequest } from "../../utils/general/general";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 import { mainLayout } from "../../views";
 
-export function turniloRouter(settingsGetter: SettingsGetter) {
+export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
 
   let router = Router();
 
-  router.get("/", async (req: TurniloRequest, res: Response) => {
+  router.get("/", async (req: Request, res: Response) => {
     try {
       const settings = await settingsGetter();
       const clientSettings = settings.toClientSettings();
       res.send(mainLayout({
-        version: req.version,
-        title: settings.customization.getTitle(req.version),
+        version,
+        title: settings.customization.getTitle(version),
         appSettings: clientSettings,
         timekeeper: SETTINGS_MANAGER.getTimekeeper()
       }));

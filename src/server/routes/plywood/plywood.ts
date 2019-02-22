@@ -16,16 +16,15 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
-import { TurniloRequest } from "../../utils/general/general";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 export function plywoodRouter(getSettings: SettingsGetter) {
 
   let router = Router();
 
-  router.post("/", async (req: TurniloRequest, res: Response) => {
+  router.post("/", async (req: Request, res: Response) => {
     const { dataSource, expression, timezone } = req.body;
     const dataCube = req.body.dataCube || dataSource; // back compat
 
