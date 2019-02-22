@@ -25,7 +25,7 @@ import { AppSettingsFixtures } from "../../../common/models/app-settings/app-set
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
 import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-import * as healthRouter from "./health";
+import * as readinessRouter from "./readiness";
 
 const appSettings = AppSettingsFixtures.wikiOnly();
 const loadStatusPath = "/druid/broker/v1/loadstatus";
@@ -49,7 +49,7 @@ const mockLoadStatus = (nock: nock.Scope, fixture: { status: number, initialized
     .reply(status, { inventoryInitialized: initialized });
 };
 
-describe("health router", () => {
+describe("readiness router", () => {
   let app: Express;
   let server: http.Server;
 
@@ -57,7 +57,7 @@ describe("health router", () => {
     before(done => {
       app = express();
       app.use(appSettingsHandlerProvider(appSettings));
-      app.use("/", healthRouter);
+      app.use("/", readinessRouter);
       server = app.listen(0, done);
     });
 
@@ -86,7 +86,7 @@ describe("health router", () => {
     before(done => {
       app = express();
       app.use(appSettingsHandlerProvider(AppSettingsFixtures.wikiTwitter()));
-      app.use("/", healthRouter);
+      app.use("/", readinessRouter);
       server = app.listen(0, done);
     });
 
