@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
-import { SwivRequest } from "../../utils/general/general";
+import { Request, Response, Router } from "express";
 
 let router = Router();
 
-router.get("/", (req: SwivRequest, res: Response) => {
+router.get("/", (req: Request, res: Response) => {
   res.status(200);
 });
 
-export = router;
+export const livenessRouter = router;
