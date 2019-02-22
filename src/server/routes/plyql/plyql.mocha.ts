@@ -17,30 +17,19 @@
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
-import { Response } from "express";
 import * as mime from "mime";
 import * as supertest from "supertest";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-import * as plyqlRouter from "./plyql";
+import { plyqlRouter } from "./plyql";
 
-var app = express();
+let app = express();
 
 app.use(bodyParser.json());
 
-var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
-app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.version = "0.9.4";
-  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
-  next();
-});
+app.use("/", plyqlRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
 
-app.use("/", plyqlRouter);
-
-var pageQuery = "SELECT SUM(added) as Added FROM `wiki` GROUP BY page ORDER BY Added DESC LIMIT 10;";
-var timeQuery = "SELECT TIME_BUCKET(time, 'PT1H', 'Etc/UTC') as TimeByHour, SUM(added) as Added FROM `wiki` GROUP BY 1 ORDER BY TimeByHour ASC";
+const pageQuery = "SELECT SUM(added) as Added FROM `wiki` GROUP BY page ORDER BY Added DESC LIMIT 10;";
+const timeQuery = "SELECT TIME_BUCKET(time, 'PT1H', 'Etc/UTC') as TimeByHour, SUM(added) as Added FROM `wiki` GROUP BY 1 ORDER BY TimeByHour ASC";
 
 interface PlyQLTestQuery {
   outputType: string;
@@ -48,7 +37,7 @@ interface PlyQLTestQuery {
   testName: string;
 }
 
-var tests: PlyQLTestQuery[] = [
+const tests: PlyQLTestQuery[] = [
   {
     outputType: "json",
     query: pageQuery,
@@ -80,11 +69,6 @@ var tests: PlyQLTestQuery[] = [
     testName: "POST tsv timeseries"
   }
 ];
-
-function responseHandler(err: any, res: any) {
-  console.log("Response Type: " + res.type);
-  console.log("Response Text: " + res.text);
-}
 
 function testPlyqlHelper(testName: string, contentType: string, queryStr: string) {
   it(testName, (testComplete: any) => {
