@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +14,11 @@
  * limitations under the License.
  */
 
-import { Request } from "express";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { User } from "../../../common/models/user/user";
-import { GetSettingsOptions } from "../settings-manager/settings-manager";
-
-export interface SwivRequest extends Request {
-  version: string;
-  stateful: boolean;
-  user: User;
-
-  getSettings(opts?: GetSettingsOptions): Promise<AppSettings>;
+export function timeout(ms: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(`Timed out in ${ms}ms.`);
+    }, ms);
+  });
 }

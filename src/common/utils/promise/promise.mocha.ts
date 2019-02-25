@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +14,20 @@
  * limitations under the License.
  */
 
-import { Request } from "express";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { User } from "../../../common/models/user/user";
-import { GetSettingsOptions } from "../settings-manager/settings-manager";
+import { expect } from "chai";
+import { spy } from "sinon";
+import { sleep } from "../../../client/utils/test-utils";
+import { timeout } from "./promise";
 
-export interface SwivRequest extends Request {
-  version: string;
-  stateful: boolean;
-  user: User;
-
-  getSettings(opts?: GetSettingsOptions): Promise<AppSettings>;
-}
+describe("timeout", () => {
+  it("should reject after defined timeout in ms", async () => {
+    const successSpy = spy();
+    const failureSpy = spy();
+    timeout(10).then(successSpy).catch(failureSpy);
+    expect(successSpy.called).to.be.false;
+    expect(failureSpy.called).to.be.false;
+    await sleep(10);
+    expect(successSpy.called).to.be.false;
+    expect(failureSpy.called).to.be.true;
+  });
+});
