@@ -96,9 +96,13 @@ The name of the cluster (to be referenced later from the data cube).
 
 The database type of the cluster. Currently only Druid is supported.
 
-**host** (string)
+**url** (string)
 
-The host (hostname:port) of the cluster. In the Druid case this must be the broker.
+The url address (protocol:hostname:port) of the cluster. If not protocol, http is assumed. If no port, 80 is assumed for plain http, and 443 for secure https.
+
+**host** deprecated (string)
+
+The host (hostname:port) of the cluster. Deprecated, use **url** field
 
 **version** (string)
 

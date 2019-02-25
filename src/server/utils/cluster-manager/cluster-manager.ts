@@ -177,18 +177,10 @@ export class ClusterManager {
     }
 
     this.requester = properRequesterFactory({
-      type: cluster.type,
-      host: cluster.host,
-      timeout: cluster.getTimeout(),
+      cluster,
       verbose: this.verbose,
       concurrentLimit: 5,
-
-      druidRequestDecorator,
-
-      database: cluster.database,
-      user: cluster.user,
-      password: cluster.password,
-      protocol: cluster.protocol
+      druidRequestDecorator
     });
   }
 
@@ -295,7 +287,7 @@ export class ClusterManager {
     if (this.version) return Promise.resolve(null);
 
     const { logger, cluster } = this;
-    logger.log(`Cluster '${cluster.name}' is running ${cluster.type}@${version}`);
+    logger.log(`Cluster '${cluster.name}' is running druid@${version}`);
     this.version = version;
 
     // Update all externals if needed

@@ -29,8 +29,8 @@ import * as readinessRouter from "./readiness";
 
 const appSettings = AppSettingsFixtures.wikiOnly();
 const loadStatusPath = "/druid/broker/v1/loadstatus";
-const wikiBrokerNock = nock(`http://${ClusterFixtures.druidWikiClusterJS().host}`);
-const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS().host}`);
+const wikiBrokerNock = nock(`${ClusterFixtures.druidWikiClusterJS().url}`);
+const twitterBrokerNock = nock(`${ClusterFixtures.druidTwitterClusterJS().url}`);
 
 const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler => {
   return (req: SwivRequest, res: Response, next: Function) => {

@@ -17,40 +17,45 @@
 
 import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
-import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
-import { SupportedType } from "../../../common/models/cluster/cluster";
+import { DruidRequestDecorator, druidRequesterFactory } from "plywood-druid-requester";
+import { Cluster } from "../../../common/models/cluster/cluster";
 import { threadConditionally } from "../../../common/utils/functional/functional";
 
 export interface ProperRequesterOptions {
-  type: SupportedType;
-  host: string;
+  cluster: Cluster;
   retry?: number;
-  timeout?: number;
   verbose?: boolean;
   concurrentLimit?: number;
-
-  // Specific to type 'druid'
   druidRequestDecorator?: DruidRequestDecorator;
-  protocol?: Protocol;
-
-  // Specific to SQL drivers
-  database?: string;
-  user?: string;
-  password?: string;
 }
 
-function createRequester({ type, host, timeout, druidRequestDecorator, protocol }: ProperRequesterOptions): PlywoodRequester<any> {
-  switch (type) {
-    case "druid":
-      return druidRequesterFactory({
-        host,
-        timeout,
-        requestDecorator: druidRequestDecorator,
-        protocol
-      });
-    default:
-      throw new Error(`unknown requester type ${type}`);
+function protocolTranslator(protocol: string): "plain" | "tls" {
+  if (protocol === "https:") return "tls";
+  return "plain";
+}
+
+function defaultPorts(url: URL): URL {
+  if (url.port) return url;
+  if (url.protocol === "http:") {
+    url.port = "80";
+    return url;
   }
+  if (url.protocol === "https:") {
+    url.port = "443";
+    return url;
+  }
+  return url;
+}
+
+function createDruidRequester(cluster: Cluster, druidRequestDecorator: DruidRequestDecorator): PlywoodRequester<any> {
+  const { href, protocol } = defaultPorts(new URL(cluster.url));
+  const timeout = cluster.getTimeout();
+  return druidRequesterFactory({
+    host: href,
+    timeout,
+    requestDecorator: druidRequestDecorator,
+    protocol: protocolTranslator(protocol)
+  });
 }
 
 function setRetryOptions(retry: number) {
@@ -66,10 +71,9 @@ function setConcurrencyLimit(concurrentLimit: number) {
 }
 
 export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
-  const { retry, verbose, concurrentLimit } = options;
-
+  const { cluster, druidRequestDecorator, retry, verbose, concurrentLimit } = options;
   return threadConditionally(
-    createRequester(options),
+    createDruidRequester(cluster, druidRequestDecorator),
     retry && setRetryOptions(retry),
     verbose && setVerbose,
     concurrentLimit && setConcurrencyLimit(concurrentLimit)
