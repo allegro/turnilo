@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property } from "immutable-class";
+import { BackCompat, BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
 import { verifyUrlSafeName } from "../../utils/general/general";
 
 export type SupportedType = "druid";
 export type SourceListScan = "disable" | "auto";
 export type Protocol = "plain" | "tls-loose" | "tls";
+
+const PROTOCOL_TEST = /^https/;
 
 export interface ClusterValue {
   name: string;
@@ -97,10 +99,6 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
   static DEFAULT_PROTOCOL_TYPE = "plain";
 
-  static isCluster(candidate: any): candidate is Cluster {
-    return candidate instanceof Cluster;
-  }
-
   static fromJS(parameters: ClusterJS): Cluster {
     if (!parameters.host && ((parameters as any).druidHost || (parameters as any).brokerHost)) {
       parameters.host = (parameters as any).druidHost || (parameters as any).brokerHost;
@@ -114,7 +112,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     if (typeof parameters.sourceReintrospectInterval === "string") {
       parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
     }
-    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters));
+    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters, Cluster.BACK_COMPAT));
   }
 
   static PROPERTIES: Property[] = [
@@ -151,6 +149,14 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "password", defaultValue: null }
   ];
 
+  static BACK_COMPAT: BackCompat[] = [{
+    condition: ({ protocol, host, type }: ClusterJS) =>
+      !!protocol && type === "druid" && PROTOCOL_TEST.test(host),
+    action: (cluster: ClusterJS) => {
+      cluster.protocol = "tls";
+    }
+  }];
+
   public name: string;
   public type: SupportedType;
   public host: string;
@@ -183,7 +189,6 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
         this.database = null;
         this.user = null;
         this.password = null;
-        this.protocol = null;
         break;
     }
 
