@@ -98,11 +98,11 @@ The database type of the cluster. Currently only Druid is supported.
 
 **url** (string)
 
-The url address (protocol:hostname:port) of the cluster. If not protocol, http is assumed. If no port, 80 is assumed for plain http, and 443 for secure https.
+The url address (http[s]://hostname[:port]) of the cluster. If no port, 80 is assumed for plain http, and 443 for secure https.
 
 **host** deprecated (string)
 
-The host (hostname:port) of the cluster. Deprecated, use **url** field
+The host (hostname:port) of the cluster, http protocol is assumed. Deprecated, use **url** field
 
 **version** (string)
 
