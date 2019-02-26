@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { AttributeInfo, TabulatorOptions } from "plywood";
+import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
+    formatter: {
+      TIME_RANGE: (range: TimeRange) => range.start.toISOString()
+    },
     attributeTitle: ({ name }: AttributeInfo) => {
       const { derivation, name: measureName } = Measure.nominalName(name);
       const measure = essence.dataCube.getMeasure(measureName);

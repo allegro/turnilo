@@ -30,12 +30,12 @@ import { SeriesFormat } from "../../../common/models/series/series";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
-import { isLoaded, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { isLoaded } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue, seriesFormatter } from "../../../common/utils/formatter/formatter";
-import { DisplayYear } from "../../../common/utils/time/time";
 import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
 import { GridLines } from "../../components/grid-lines/grid-lines";
+import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
@@ -391,27 +391,16 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const topOffset = this.getBubbleTopOffset(coordinates.y, chartIndex, chartStage);
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
-    const { essence: { splits, dataCube, series }, clicker, openRawDataModal } = this.props;
-    const dimension = dataCube.getDimension(splits.splits.get(hoverInfo.splitIndex).reference);
+    const { essence: { series }, clicker } = this.props;
     const format = series.getSeries(measure.name).format;
     const segmentValue = measure.formatDatum(path[path.length - 1], format);
-    return <SegmentBubble
+    return <HighlightModal
       left={leftOffset}
       top={topOffset}
       title={segmentLabel}
-      content={segmentValue}
-      actions={<SegmentActionButtons
-        dimension={dimension}
-        segmentValue={segmentValue}
-        clicker={clicker}
-        openRawDataModal={openRawDataModal}
-        onClose={this.onBubbleClose}
-      />}
-    />;
-  }
-
-  onBubbleClose = () => {
-    this.setState({ selectionInfo: null });
+      clicker={clicker}>
+      {segmentValue}
+    </HighlightModal>;
   }
 
   renderHoverBubble(hoverInfo: BubbleInfo): JSX.Element {
@@ -499,7 +488,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     data.forEach((d, i) => {
       let segmentValue = d[dimension.name];
-      let segmentValueStr = formatValue(segmentValue, timezone, DisplayYear.NEVER);
+      let segmentValueStr = formatValue(segmentValue, timezone);
       let subPath = path.concat(d);
 
       let bar: any;

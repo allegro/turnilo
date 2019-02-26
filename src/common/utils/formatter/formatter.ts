@@ -33,11 +33,10 @@ import {
   TimeFilterClause,
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
-import { Filter } from "../../models/filter/filter";
 import { Measure } from "../../models/measure/measure";
 import { SeriesFormat, SeriesFormatType } from "../../models/series/series";
 import { Unary } from "../functional/functional";
-import { DisplayYear, formatTimeRange } from "../time/time";
+import { formatTimeRange } from "../time/time";
 
 export function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
@@ -68,11 +67,11 @@ export function formatNumberRange(value: NumberRange) {
   return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
 }
 
-export function formatValue(value: any, timezone?: Timezone, displayYear?: DisplayYear): string {
+export function formatValue(value: any, timezone?: Timezone): string {
   if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   } else if (TimeRange.isTimeRange(value)) {
-    return formatTimeRange(new DateRange(value), timezone, displayYear);
+    return formatTimeRange(new DateRange(value), timezone);
   } else {
     return "" + value;
   }
@@ -143,7 +142,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
 
 function getFormattedTimeClauseValues(clause: TimeFilterClause, timezone: Timezone): string {
   if (clause instanceof FixedTimeFilterClause) {
-    return formatTimeRange(clause.values.get(0), timezone, DisplayYear.IF_DIFF);
+    return formatTimeRange(clause.values.get(0), timezone);
   }
   const { period, duration } = clause;
   switch (period) {

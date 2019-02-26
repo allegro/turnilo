@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +14,13 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import { Response, Router } from "express";
+import { SwivRequest } from "../../utils/general/general";
 
-.hover-multi-bubble {
-  @extend %menu-cont;
-  background: rgba($white, 0.9);
-  position: absolute;
-  padding: 8px;
+let router = Router();
 
-  .bucket {
-    color: $text-lighterish;
-    margin-bottom: 6px;
-    white-space: nowrap;
-  }
+router.get("/", (req: SwivRequest, res: Response) => {
+  res.status(200);
+});
 
-  .segment-action-buttons {
-    margin-top: 7px;
-  }
-}
+export = router;

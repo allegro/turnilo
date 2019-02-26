@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-import * as Qajax from "qajax";
-
 export function addErrorMonitor() {
-  var originalOnError = window.onerror;
+  const originalOnError = window.onerror;
   window.onerror = (message, file, line, column, errorObject) => {
     column = column || (window.event && (window.event as any).errorCharacter);
-    var stack = errorObject ? errorObject.stack : null;
+    const stack = errorObject ? errorObject.stack : null;
 
-    var err = {
+    const err = {
       message,
       file,
       line,
       column,
-      stack
+      stack,
+      hash: window.location.hash
     };
 
     if (typeof console !== "undefined") {
@@ -36,11 +35,10 @@ export function addErrorMonitor() {
       console.log(JSON.stringify(err));
     }
 
-    Qajax({
-      method: "POST",
-      url: "error",
-      data: err
-    });
+    const request = new XMLHttpRequest();
+    request.open("POST", "error", true);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.send(JSON.stringify(err));
 
     window.onerror = originalOnError; // only trigger once
 

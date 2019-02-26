@@ -25,38 +25,15 @@ import { LOGGER } from "../common/logger/logger";
 import { GetSettingsOptions } from "../server/utils/settings-manager/settings-manager";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import * as errorRoutes from "./routes/error/error";
-import * as healthRoutes from "./routes/health/health";
+import * as livenessRoutes from "./routes/liveness/liveness";
 import * as mkurlRoutes from "./routes/mkurl/mkurl";
 import * as plyqlRoutes from "./routes/plyql/plyql";
 import * as plywoodRoutes from "./routes/plywood/plywood";
-import * as settingsRoutes from "./routes/settings/settings";
+import * as readinessRoutes from "./routes/readiness/readiness";
 import * as shortenRoutes from "./routes/shorten/shorten";
 import * as swivRoutes from "./routes/swiv/swiv";
 import { SwivRequest } from "./utils/general/general";
 import { errorLayout } from "./views";
-
-function makeGuard(guard: string): Handler {
-  return (req: SwivRequest, res: Response, next: Function) => {
-    const user = req.user;
-    if (!user) {
-      next(new Error("no user"));
-      return;
-    }
-
-    const { allow } = user;
-    if (!allow) {
-      next(new Error("no user.allow"));
-      return;
-    }
-
-    if (!allow[guard]) {
-      next(new Error("not allowed"));
-      return;
-    }
-
-    next();
-  };
-}
 
 var app = express();
 app.disable("x-powered-by");
@@ -68,12 +45,6 @@ if (SERVER_SETTINGS.getTrustProxy() === "always") {
 function addRoutes(attach: string, router: Router | Handler): void {
   app.use(attach, router);
   app.use(SERVER_SETTINGS.getServerRoot() + attach, router);
-}
-
-function addGuardedRoutes(attach: string, guard: string, router: Router | Handler): void {
-  var guardHandler = makeGuard(guard);
-  app.use(attach, guardHandler, router);
-  app.use(SERVER_SETTINGS.getServerRoot() + attach, guardHandler, router);
 }
 
 // Add compression
@@ -137,11 +108,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 // Assign basics
-var stateful = SETTINGS_MANAGER.isStateful();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = VERSION;
-  req.stateful = stateful;
   req.getSettings = (opts: GetSettingsOptions = {}) => {
     return SETTINGS_MANAGER.getSettings(opts);
   };
@@ -180,7 +149,8 @@ if (AUTH) {
   });
 }
 
-addRoutes(SERVER_SETTINGS.getHealthEndpoint(), healthRoutes);
+addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRoutes);
+addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRoutes);
 
 // Data routes
 addRoutes("/plywood", plywoodRoutes);
@@ -188,9 +158,6 @@ addRoutes("/plyql", plyqlRoutes);
 addRoutes("/mkurl", mkurlRoutes);
 addRoutes("/shorten", shortenRoutes);
 addRoutes("/error", errorRoutes);
-if (stateful) {
-  addGuardedRoutes("/settings", "settings", settingsRoutes);
-}
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {

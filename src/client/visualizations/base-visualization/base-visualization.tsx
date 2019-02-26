@@ -76,8 +76,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   componentWillReceiveProps(nextProps: VisualizationProps) {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
       const { essence, timekeeper } = nextProps;
+      const hadDataLoaded = isLoaded(this.state.datasetLoad);
       const essenceChanged = !essence.equals(this.props.essence);
-      this.loadData(essence, timekeeper, essenceChanged);
+      this.loadData(essence, timekeeper, hadDataLoaded && essenceChanged);
     }
   }
 

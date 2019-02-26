@@ -14,22 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
-.hover-multi-bubble {
+.modal-bubble {
   @extend %menu-cont;
-  background: rgba($white, 0.9);
   position: absolute;
-  padding: 8px;
+  background: rgba($white, 0.9);
+  padding: 10px;
+  text-align: center;
+  transform: translate(-50%, -100%);
 
-  .bucket {
-    color: $text-lighterish;
-    margin-bottom: 6px;
-    white-space: nowrap;
-  }
-
-  .segment-action-buttons {
-    margin-top: 7px;
+  .shpitz {
+    left: 50%;
+    top: 100%;
   }
 }

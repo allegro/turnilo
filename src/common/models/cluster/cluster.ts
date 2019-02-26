@@ -201,7 +201,8 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public toClientCluster(): Cluster {
     return new Cluster({
       name: this.name,
-      type: this.type
+      type: this.type,
+      timeout: this.timeout
     });
   }
 

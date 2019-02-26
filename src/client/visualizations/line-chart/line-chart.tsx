@@ -40,16 +40,16 @@ import { formatValue, seriesFormatter } from "../../../common/utils/formatter/fo
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
-import { DisplayYear } from "../../../common/utils/time/time";
 import { ChartLine } from "../../components/chart-line/chart-line";
+import { ColorEntry, ColorSwabs } from "../../components/color-swabs/color-swabs";
 import { Delta } from "../../components/delta/delta";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { GridLines } from "../../components/grid-lines/grid-lines";
+import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Highlighter } from "../../components/highlighter/highlighter";
-import { ColorEntry, HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
+import { HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
 import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
-import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
@@ -134,6 +134,15 @@ export class LineChart extends BaseVisualization<LineChartState> {
         containerYPosition: rect.top,
         containerXPosition: rect.left
       });
+    }
+  }
+
+  componentWillUpdate({ stage: { width } }: VisualizationProps) {
+    const { stage: { width: oldWidth } } = this.props;
+    if (width !== oldWidth) {
+      const { axisRange, continuousDimension } = this.state;
+      const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, width);
+      this.setState({ scaleX });
     }
   }
 
@@ -259,17 +268,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && essence.hasHighlight()) {
+      const { highlight: { delta, measure } } = essence;
       const existingHighlightRange = essence.getHighlightRange();
-      if (existingHighlightRange.contains(highlightRange.start)) {
-        const { highlight } = essence;
-        if (highlight.measure === dragOnMeasure.name) {
-          clicker.dropHighlight();
-        } else {
-          clicker.changeHighlight(
-            dragOnMeasure.name,
-            highlight.delta
-          );
-        }
+      if (existingHighlightRange.contains(highlightRange.start) && measure !== dragOnMeasure.name) {
+        clicker.changeHighlight(dragOnMeasure.name, delta);
         return;
       }
     }
@@ -338,7 +340,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     extentY: number[],
     scaleY: any
   ): JSX.Element {
-    const { clicker, essence, openRawDataModal } = this.props;
+    const { clicker, essence } = this.props;
     const { highlight, colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
@@ -359,10 +361,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const shownRange = roundDragRange || bubbleRange;
 
       if (colors) {
-        const segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
+        const segmentLabel = formatValue(bubbleRange, timezone);
         const firstSplit = essence.splits.splits.first();
         const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
-        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
+        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
 
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
         const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
@@ -384,35 +386,31 @@ export class LineChart extends BaseVisualization<LineChartState> {
           };
         });
 
-        return <HoverMultiBubble
+        return <HighlightModal
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
           title={segmentLabel}
-          colorEntries={colorEntries}
-          clicker={dragRange ? null : clicker}
-        />;
+          clicker={clicker}>
+          <ColorSwabs colorEntries={colorEntries} />
+        </HighlightModal>;
       } else {
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
-        const segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
+        const segmentLabel = formatValue(shownRange, timezone);
         const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
         const measureLabel = highlightDatum ? measure.formatDatum(highlightDatum, format) : null;
 
-        return <SegmentBubble
+        return <HighlightModal
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
           title={segmentLabel}
-          content={measureLabel}
-          actions={<SegmentActionButtons
-            segmentValue={measureLabel}
-            clicker={dragRange ? null : clicker}
-            openRawDataModal={openRawDataModal}
-          />}
-        />;
+          clicker={clicker}>
+          {measureLabel}
+        </HighlightModal>;
       }
 
     } else if (!dragRange && hoverRange && hoverMeasure === measure) {
       const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
-      const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+      const segmentLabel = formatValue(hoverRange, timezone);
 
       if (colors) {
         const firstSplit = essence.splits.splits.first();
@@ -458,7 +456,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       } else {
         const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
         if (!hoverDatum) return null;
-        const title = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const title = formatValue(hoverRange, timezone);
         const content = this.renderMeasureLabel(hoverDatum, measure, format);
 
         return <SegmentBubble
@@ -632,39 +630,41 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const isHovered = !dragRange && hoverMeasure === measure;
 
-    return <div
-      className="measure-line-chart"
-      key={measure.name}
-      onMouseDown={this.onMouseDown.bind(this, measure)}
-      onMouseMove={this.onMouseMove.bind(this, splitData, measure, scaleX)}
-      onMouseLeave={this.onMouseLeave.bind(this, measure)}
-    >
-      <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
-        {scale && this.renderHorizontalGridLines(scale, lineStage)}
-        <GridLines
-          orientation="vertical"
-          scale={scaleX}
-          ticks={xTicks}
-          stage={lineStage}
-        />
-        {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
-        {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
-        <line
-          className="vis-bottom"
-          x1="0"
-          y1={chartStage.height - 0.5}
-          x2={chartStage.width}
-          y2={chartStage.height - 0.5}
-        />
-      </svg>
-      {!isThumbnail && <VisMeasureLabel
-        measure={measure}
-        format={format}
-        datum={datum}
-        showPrevious={essence.hasComparison()} />}
-      {this.renderHighlighter()}
+    return <React.Fragment>
+      <div
+        className="measure-line-chart"
+        key={measure.name}
+        onMouseDown={this.onMouseDown.bind(this, measure)}
+        onMouseMove={this.onMouseMove.bind(this, splitData, measure, scaleX)}
+        onMouseLeave={this.onMouseLeave.bind(this, measure)}
+      >
+        <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
+          {scale && this.renderHorizontalGridLines(scale, lineStage)}
+          <GridLines
+            orientation="vertical"
+            scale={scaleX}
+            ticks={xTicks}
+            stage={lineStage}
+          />
+          {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
+          {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
+          <line
+            className="vis-bottom"
+            x1="0"
+            y1={chartStage.height - 0.5}
+            x2={chartStage.width}
+            y2={chartStage.height - 0.5}
+          />
+        </svg>
+        {!isThumbnail && <VisMeasureLabel
+          measure={measure}
+          format={format}
+          datum={datum}
+          showPrevious={essence.hasComparison()} />}
+        {this.renderHighlighter()}
+      </div>
       {scale && this.renderChartBubble(splitData, measure, format, chartIndex, containerStage, chartStage, extent, scale)}
-    </div>;
+    </React.Fragment>;
 
   }
 
@@ -681,13 +681,12 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const axisRange = union(filterRange, datasetRange);
     if (!axisRange) return { continuousDimension };
     const xTicks = this.getLineChartTicks(axisRange, timezone);
-    const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange);
+    const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, stage.width);
     return { continuousDimension, axisRange, scaleX, xTicks };
   }
 
-  private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {
-    const stage = this.props.stage;
-    const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
+  private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange, stageWidth: number): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {
+    const range = [0, stageWidth - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
     switch (kind) {
       case "number": {
         const domain = [start, end] as [number, number];
