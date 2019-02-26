@@ -98,7 +98,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     if (typeof parameters.sourceReintrospectInterval === "string") {
       parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
     }
-    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters, Cluster.BACK_COMPAT));
+    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters, Cluster.BACKWARD_COMPATIBILITY));
   }
 
   static PROPERTIES: Property[] = [
@@ -128,7 +128,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
 
   static HTTP_PROTOCOL_TEST = /^http(s?):/;
 
-  static BACK_COMPAT: BackCompat[] = [{
+  static BACKWARD_COMPATIBILITY: BackCompat[] = [{
     condition: cluster => !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
     action: cluster => {
       const oldHost = oldHostParameter(cluster);
