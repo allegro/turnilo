@@ -29,7 +29,7 @@ export interface ProperRequesterOptions {
   druidRequestDecorator?: DruidRequestDecorator;
 }
 
-function protocolTranslator(protocol: string): "plain" | "tls" {
+function httpToPlywoodProtocol(protocol: string): "plain" | "tls" {
   if (protocol === "https:") return "tls";
   return "plain";
 }
@@ -37,12 +37,14 @@ function protocolTranslator(protocol: string): "plain" | "tls" {
 function defaultPorts(url: URL): URL {
   if (url.port) return url;
   if (url.protocol === "http:") {
-    url.port = "80";
-    return url;
+    const newUrl = new URL(url.toString());
+    newUrl.port = "80";
+    return newUrl;
   }
   if (url.protocol === "https:") {
-    url.port = "443";
-    return url;
+    const newUrl = new URL(url.toString());
+    newUrl.port = "443";
+    return newUrl;
   }
   return url;
 }
@@ -54,7 +56,7 @@ function createDruidRequester(cluster: Cluster, druidRequestDecorator: DruidRequ
     host: href,
     timeout,
     requestDecorator: druidRequestDecorator,
-    protocol: protocolTranslator(protocol)
+    protocol: httpToPlywoodProtocol(protocol)
   });
 }
 
