@@ -54,7 +54,7 @@ import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
-import { Sort } from "../../models/sort/sort";
+import { Sort, SortReferenceType } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
@@ -241,25 +241,26 @@ function isTimeBucket(action: any): boolean {
   return action.op === "timeBucket" || action.action === "timeBucket";
 }
 
+function createSort(sortAction: any, dataCube: DataCube): Sort {
+  if (!sortAction) return null;
+  const type = dataCube.getDimension(sortAction.expression.name) ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
+  return new Sort({
+    reference: sortAction.expression.name,
+    direction: sortAction.direction,
+    type
+  });
+}
+
 function convertSplit(split: any, dataCube: DataCube): Split {
   const { sortAction, limitAction, bucketAction } = split;
   const expression = Expression.fromJS(split.expression);
   const dimension = dataCube.getDimensionByExpression(expression);
   const reference = dimension.name;
+  const sort = createSort(sortAction, dataCube);
   const type = kindToType(dimension.kind);
-  const sort = sortAction && new Sort({
-    reference: sortAction.expression.name,
-    direction: sortAction.direction
-  });
   const limit = limitAction && limitValue(limitAction);
   const bucket = bucketAction && (isTimeBucket(bucketAction) ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
-  return new Split({
-    type,
-    reference,
-    sort,
-    limit,
-    bucket
-  });
+  return new Split({ type, reference, sort, limit, bucket });
 }
 
 function splitJSConverter(splits: any[], dataCube: DataCube): Split[] {

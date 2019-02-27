@@ -24,7 +24,7 @@ import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filt
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { Measures } from "../measure/measures";
-import { Sort } from "../sort/sort";
+import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -89,8 +89,14 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return this.updateSplits(splits => splits.filter(s => s !== split));
   }
 
-  public changeSortExpressionFromNormalized(sort: Sort): Splits {
-    return this.updateSplits(splits => splits.map(s => s.changeSortFromNormalized(sort)));
+  public changeSort(sort: Sort): Splits {
+    return this.updateSplits(splits => splits.map(s => s.changeSort(sort)));
+  }
+
+  public setSortToDimension(): Splits {
+    return this.updateSplits(splits =>
+      splits.map(split =>
+        split.changeSort(new Sort({ reference: split.reference, type: SortReferenceType.DIMENSION }))));
   }
 
   public length(): number {

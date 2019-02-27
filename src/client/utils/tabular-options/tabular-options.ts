@@ -16,7 +16,7 @@
 
 import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
-import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { Measure, titleWithDerivation } from "../../../common/models/measure/measure";
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
@@ -27,14 +27,7 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
       const { derivation, name: measureName } = Measure.nominalName(name);
       const measure = essence.dataCube.getMeasure(measureName);
       if (measure) {
-        switch (derivation) {
-          case MeasureDerivation.CURRENT:
-            return measure.title;
-          case MeasureDerivation.PREVIOUS:
-            return `Previous ${measure.title}`;
-          case MeasureDerivation.DELTA:
-            return `Difference ${measure.title}`;
-        }
+        return titleWithDerivation(measure, derivation);
       }
       const dimension = essence.dataCube.getDimension(name);
       if (dimension) {

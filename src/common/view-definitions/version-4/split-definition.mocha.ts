@@ -15,8 +15,9 @@
  */
 
 import { expect } from "chai";
+import { SortDirection } from "../../models/sort/sort";
 import { SplitFixtures } from "../../models/split/split.fixtures";
-import { SortDirection, splitConverter } from "./split-definition";
+import { splitConverter } from "./split-definition";
 import { SplitDefinitionFixtures } from "./split-definition.fixtures";
 
 describe("SplitDefinition v3", () => {

@@ -27,9 +27,10 @@ import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, 
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
-import { Measure } from "../measure/measure";
+import { Measure, MeasureDerivation } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { Series } from "../series/series";
+import { SortOn } from "../sort-on/sort-on";
 import { Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
@@ -553,5 +554,18 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public dropHighlight(): Essence {
     return this.set("highlight", null);
+  }
+
+  public measuresSortOns(): List<SortOn> {
+    const measures = this.getEffectiveSelectedMeasures();
+    const hasComparison = this.hasComparison();
+    return measures.flatMap(measure => {
+      if (!hasComparison) return [new SortOn(measure)];
+      return [
+        new SortOn(measure),
+        new SortOn(measure, MeasureDerivation.PREVIOUS),
+        new SortOn(measure, MeasureDerivation.DELTA)
+      ];
+    });
   }
 }

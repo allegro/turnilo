@@ -40,7 +40,6 @@ import {
   SimpleFullType
 } from "plywood";
 import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
-import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
@@ -51,7 +50,7 @@ import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
-import { Sort } from "../sort/sort";
+import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -1025,6 +1024,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   public getDefaultSortExpression(): Sort {
     return new Sort({
+      type: SortReferenceType.MEASURE,
       reference: this.defaultSortMeasure,
       direction: SortDirection.descending
     });

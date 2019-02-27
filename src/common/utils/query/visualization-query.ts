@@ -47,16 +47,15 @@ function applyMeasures(essence: Essence, filters: Filters, nestingLevel = 0) {
   };
 }
 
-function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, sort: Sort): Expression {
-  const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
-  if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
-    const sortMeasure = essence.dataCube.getMeasure(sortMeasureName);
+function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, { reference, period }: Sort): Expression {
+  if (reference && period === MeasureDerivation.CURRENT) {
+    const sortMeasure = essence.dataCube.getMeasure(reference);
     if (sortMeasure && !essence.getEffectiveSelectedMeasures().contains(sortMeasure)) {
       return query.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
     }
   }
-  if (sortMeasureName && derivation === MeasureDerivation.DELTA) {
-    return query.apply(sort.reference, $(sortMeasureName).subtract($(Measure.derivedName(sortMeasureName, MeasureDerivation.PREVIOUS))));
+  if (reference && period === MeasureDerivation.DELTA) {
+    return query.apply(reference, $(reference).subtract($(Measure.derivedName(reference, MeasureDerivation.PREVIOUS))));
   }
   return query;
 }

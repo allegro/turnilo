@@ -16,18 +16,21 @@
 
 import { Duration } from "chronoshift";
 import { Direction } from "plywood";
-import { Sort } from "../../models/sort/sort";
+import { MeasureDerivation } from "../../models/measure/measure";
+import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 
-export enum SortDirection {
-  ascending = "ascending",
-  descending = "descending"
+export interface SplitSortDefinition {
+  ref: string;
+  direction: SortDirection;
+  type: SortReferenceType;
+  period?: MeasureDerivation;
 }
 
 export interface BaseSplitDefinition {
   type: SplitType;
   dimension: string;
-  sort: { ref: string, direction: SortDirection };
+  sort: SplitSortDefinition;
   limit?: number;
 }
 
@@ -58,6 +61,31 @@ interface SplitDefinitionConversion<In extends SplitDefinition> {
   fromSplitCombine(splitCombine: Split): In;
 }
 
+const PREVIOUS_PREFIX = "_previous__";
+const DELTA_PREFIX = "_delta__";
+
+function inferType(reference: string, dimensionName: string) {
+  return reference === dimensionName ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
+}
+
+function inferPeriodAndReference({ ref, period }: { ref: string, period?: MeasureDerivation }): { reference: string, period: MeasureDerivation } {
+  if (period) return { period, reference: ref };
+  if (ref.indexOf(PREVIOUS_PREFIX) === 0) return { reference: ref.substring(PREVIOUS_PREFIX.length), period: MeasureDerivation.PREVIOUS };
+  if (ref.indexOf(DELTA_PREFIX) === 0) return { reference: ref.substring(DELTA_PREFIX.length), period: MeasureDerivation.DELTA };
+  return { reference: ref, period: MeasureDerivation.CURRENT };
+}
+
+function toSort(sort: any, dimensionName: string): Sort {
+  const { reference, period } = inferPeriodAndReference(sort);
+  const type = sort.type || inferType(reference, dimensionName);
+  const { direction } = sort;
+  return new Sort({ reference, direction, type, period });
+}
+
+function fromSort({ period, type, direction, reference: ref }: Sort): SplitSortDefinition {
+  return { period, type, direction, ref };
+}
+
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
   toSplitCombine(split: NumberSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
@@ -65,7 +93,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
       type: SplitType.number,
       reference: dimension,
       bucket: granularity,
-      sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
+      sort: sort && toSort(sort, dimension),
       limit
     });
   },
@@ -76,7 +104,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
         type: SplitType.number,
         dimension: reference,
         granularity: bucket,
-        sort: sort && { ref: sort.reference, direction: sort.direction },
+        sort: sort && fromSort(sort),
         limit
       };
     } else {
@@ -92,7 +120,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
       type: SplitType.time,
       reference: dimension,
       bucket: Duration.fromJS(granularity),
-      sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
+      sort: sort && toSort(sort, dimension),
       limit
     });
   },
@@ -103,7 +131,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
         type: SplitType.time,
         dimension: reference,
         granularity: bucket.toJS(),
-        sort: sort && { ref: sort.reference, direction: sort.direction },
+        sort: sort && fromSort(sort),
         limit
       };
     } else {
@@ -118,7 +146,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     const { dimension, limit, sort } = split;
     return new Split({
       reference: dimension,
-      sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
+      sort: sort && toSort(sort, dimension),
       limit
     });
   },
@@ -127,7 +155,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     return {
       type: SplitType.string,
       dimension: reference,
-      sort: sort && { ref: sort.reference, direction: sort.direction },
+      sort: sort && fromSort(sort),
       limit
     };
   }

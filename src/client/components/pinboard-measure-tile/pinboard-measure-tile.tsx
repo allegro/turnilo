@@ -19,6 +19,7 @@ import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { concatTruthy } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
 import "./pinboard-measure-tile.scss";
 
@@ -30,28 +31,23 @@ export interface PinboardMeasureTileProps {
   onSelect: (sel: SortOn) => void;
 }
 
-export interface PinboardMeasureTileState {
-}
+export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props => {
+  const { essence, title, dimension, sortOn, onSelect } = props;
 
-export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProps, PinboardMeasureTileState> {
+  const sortOns = concatTruthy(
+    dimension && new SortOn(dimension),
+    ...essence.measuresSortOns().toArray()
+  );
 
-  render() {
-    var { essence, title, dimension, sortOn, onSelect } = this.props;
-
-    var sortOns = (dimension ? [SortOn.fromDimension(dimension)] : []).concat(
-      essence.dataCube.measures.mapMeasures(SortOn.fromMeasure)
-    );
-
-    return <div className="pinboard-measure-tile">
-      <div className="title">{title}</div>
-      <Dropdown<SortOn>
-        items={sortOns}
-        selectedItem={sortOn}
-        equal={SortOn.equal}
-        renderItem={SortOn.getTitle}
-        keyItem={SortOn.getName}
-        onSelect={onSelect}
-      />
-    </div>;
-  }
-}
+  return <div className="pinboard-measure-tile">
+    <div className="title">{title}</div>
+    <Dropdown<SortOn>
+      items={sortOns}
+      selectedItem={sortOn}
+      equal={SortOn.equals}
+      renderItem={SortOn.getTitle}
+      keyItem={SortOn.getName}
+      onSelect={onSelect}
+    />
+  </div>;
+};
