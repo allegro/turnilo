@@ -20,7 +20,7 @@ import { SwivRequest } from "../../utils/general/general";
 let router = Router();
 
 router.get("/", (req: SwivRequest, res: Response) => {
-  res.status(200);
+  res.sendStatus(200);
 });
 
 export = router;
