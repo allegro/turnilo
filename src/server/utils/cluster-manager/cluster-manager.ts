@@ -117,8 +117,8 @@ export class ClusterManager {
     }
 
     return this.establishInitialConnection()
-      .then(this.introspectSources)
-      .then(this.scanSourceList);
+      .then(() => this.introspectSources())
+      .then(() => this.scanSourceList());
   }
 
   public destroy() {
