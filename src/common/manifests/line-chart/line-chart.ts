@@ -18,12 +18,11 @@
 import { List } from "immutable";
 import { Colors } from "../../models/colors/colors";
 import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
-import { Sort } from "../../models/sort/sort";
+import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
-import { SortDirection } from "../../view-definitions/version-4/split-definition";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(({ dataCube }) => !(dataCube.getDimensionsByKind("time").length || dataCube.getDimensionsByKind("number").length))
@@ -57,12 +56,14 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     if (sortStrategy && sortStrategy !== "self") {
       sort = new Sort({
         reference: sortStrategy,
-        direction: SortDirection.ascending
+        direction: SortDirection.ascending,
+        type: SortReferenceType.DIMENSION
       });
     } else {
       sort = new Sort({
         reference: continuousDimension.name,
-        direction: SortDirection.ascending
+        direction: SortDirection.ascending,
+        type: SortReferenceType.DIMENSION
       });
     }
 
@@ -97,7 +98,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const sort: Sort = new Sort({
       reference: timeDimension.name,
-      direction: SortDirection.ascending
+      direction: SortDirection.ascending,
+      type: SortReferenceType.DIMENSION
     });
 
     // Fix time sort
@@ -137,7 +139,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const sort: Sort = new Sort({
       reference: timeDimension.name,
-      direction: SortDirection.ascending
+      direction: SortDirection.ascending,
+      type: SortReferenceType.DIMENSION
     });
 
     // Fix time sort
