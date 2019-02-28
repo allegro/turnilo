@@ -17,42 +17,45 @@
  */
 
 import { Dimension } from "../dimension/dimension";
-import { Measure } from "../measure/measure";
+import { Measure, MeasureDerivation, titleWithDerivation } from "../measure/measure";
+import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
 
 export class SortOn {
 
-  static equal(s1: SortOn, s2: SortOn): boolean {
-    return s1.equals(s2);
+  static getName(sortOn: SortOn): string {
+    return sortOn.getName();
   }
 
-  static getName(s: SortOn): string {
-    return s.getName();
+  static getTitle(sortOn: SortOn): string {
+    return sortOn.getTitle();
   }
 
-  static getTitle(s: SortOn): string {
-    return s.getTitle();
+  static equals(sortOn: SortOn, other: SortOn): boolean {
+    return sortOn.equals(other);
   }
 
-  static fromDimension(dimension: Dimension): SortOn {
-    return new SortOn(dimension);
-  }
-
-  static fromMeasure(measure: Measure): SortOn {
-    return new SortOn(measure);
-  }
-
-  constructor(public reference: Dimension | Measure) {
+  constructor(public reference: Dimension | Measure, public period?: MeasureDerivation) {
   }
 
   public getName(): string {
     return this.reference.name;
   }
 
-  public getTitle(): string {
-    return this.reference.title;
+  public equals(other: SortOn): boolean {
+    return this.reference.equals(other.reference) && this.period === other.period;
   }
 
-  public equals(other: SortOn): boolean {
-    return this.reference.equals(other.reference);
+  public toSort(direction?: SortDirection): Sort {
+    return new Sort({
+      reference: this.reference.name,
+      type: this.reference instanceof Dimension ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE,
+      period: this.period,
+      direction
+    });
+  }
+
+  public getTitle() {
+    if (this.reference instanceof Dimension) return this.reference.title;
+    return titleWithDerivation(this.reference, this.period);
   }
 }
