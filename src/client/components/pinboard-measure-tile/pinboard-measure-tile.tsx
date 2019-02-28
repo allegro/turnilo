@@ -36,7 +36,7 @@ export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props =>
 
   const sortOns = concatTruthy(
     dimension && new SortOn(dimension),
-    ...essence.measuresSortOns().toArray()
+    ...essence.measuresSortOns(false).toArray()
   );
 
   return <div className="pinboard-measure-tile">

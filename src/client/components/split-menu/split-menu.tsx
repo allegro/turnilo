@@ -137,7 +137,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const { sort: { type, reference: name, period, direction } } = this.state;
     const reference = type === SortReferenceType.DIMENSION ? dataCube.getDimension(name) : dataCube.getMeasure(name);
     const selected = new SortOn(reference, period);
-    const options = [new SortOn(dimension), ...essence.measuresSortOns().toArray()];
+    const options = [new SortOn(dimension), ...essence.measuresSortOns(true).toArray()];
     return <SortDropdown
         direction={direction}
         selected={selected}
