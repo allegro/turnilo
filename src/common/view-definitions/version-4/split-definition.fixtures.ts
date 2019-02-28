@@ -19,7 +19,7 @@ import { SplitType } from "../../models/split/split";
 import { StringSplitDefinition } from "./split-definition";
 
 export class SplitDefinitionFixtures {
-  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): StringSplitDefinition {
+  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection = SortDirection.descending, limit = 5): StringSplitDefinition {
     return {
       type: SplitType.string,
       dimension,
