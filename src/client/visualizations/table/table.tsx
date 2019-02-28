@@ -171,10 +171,9 @@ export class Table extends BaseVisualization<TableState> {
       const period = this.getSortPeriod(columnType);
       const commonSort = this.props.essence.getCommonSort();
       const reference = measure.name;
-      const isDesc = (commonSort && commonSort.reference === reference && commonSort.direction === SortDirection.descending);
-      const direction = isDesc ? SortDirection.ascending : SortDirection.descending;
-      const sort = new Sort({ reference, direction, type: SortReferenceType.MEASURE, period });
-      clicker.changeSplits(splits.changeSort(sort), VisStrategy.KeepAlways); // set all to measure
+      const sort = new Sort({ reference, period, type: SortReferenceType.MEASURE, direction: SortDirection.descending });
+      const sortWithDirection = commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
+      clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
       return;
     }
     throw new Error(`Can't create sort reference for position element: ${element}`);
@@ -324,7 +323,10 @@ export class Table extends BaseVisualization<TableState> {
 
   renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
     const commonSort = essence.getCommonSort();
-    const commonSortName = commonSort ? commonSort.reference : null;
+
+    function isCommonSortedBy(measure: Measure, period = MeasureDerivation.CURRENT): boolean {
+      return commonSort && commonSort.reference === measure.name && commonSort.period === period;
+    }
 
     const sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
       svg: require("../../icons/sort-arrow.svg"),
@@ -332,7 +334,7 @@ export class Table extends BaseVisualization<TableState> {
     }) : null;
 
     return flatMap(essence.getEffectiveSelectedMeasures().toArray(), measure => {
-      const isCurrentSorted = commonSortName === measure.name;
+      const isCurrentSorted = isCommonSortedBy(measure);
 
       const currentMeasure = <div
         className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isCurrentSorted })}
@@ -347,8 +349,8 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = commonSortName === measure.getDerivedName(MeasureDerivation.PREVIOUS);
-      const isDeltaSorted = commonSortName === measure.getDerivedName(MeasureDerivation.DELTA);
+      const isPreviousSorted = isCommonSortedBy(measure, MeasureDerivation.PREVIOUS);
+      const isDeltaSorted = isCommonSortedBy(measure, MeasureDerivation.DELTA);
       return [
         currentMeasure,
         <div
