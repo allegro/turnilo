@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SortDirection } from "../../models/sort/sort";
+import { SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { SplitType } from "../../models/split/split";
 import { StringSplitDefinition } from "./split-definition";
 
@@ -23,7 +23,11 @@ export class SplitDefinitionFixtures {
     return {
       type: SplitType.string,
       dimension,
-      sort: { ref: sortOn, direction: sortDirection },
+      sort: {
+        ref: sortOn,
+        direction: sortDirection,
+        type: sortOn === dimension ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
+      },
       limit
     };
   }
