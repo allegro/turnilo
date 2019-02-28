@@ -31,7 +31,7 @@ import { Measure, MeasureDerivation } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { Series } from "../series/series";
 import { SortOn } from "../sort-on/sort-on";
-import { Sort } from "../sort/sort";
+import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
@@ -391,7 +391,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   // Setters
 
   public changeComparisonShift(timeShift: TimeShift): Essence {
-    return this.set("timeShift", timeShift);
+    return this.set("timeShift", timeShift).updateSorts();
   }
 
   public updateDataCube(newDataCube: DataCube): Essence {
@@ -497,7 +497,27 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   changeSeriesList(series: SeriesList): Essence {
-    return this.set("series", series).resolveVisualizationAndUpdate();
+    return this
+      .set("series", series)
+      .updateSorts()
+      .resolveVisualizationAndUpdate();
+  }
+
+  private updateSorts(): Essence {
+    const seriesRefs = Set(this.series.series.map(series => series.reference));
+    return this
+      .update("pinnedSort", sort => seriesRefs.has(sort) ? sort : seriesRefs.first())
+      .update("splits", splits => splits.update("splits", splits => splits.map((split: Split) => {
+        const { sort: { type, reference, period } } = split;
+        switch (type) {
+          case SortReferenceType.DIMENSION:
+            return split;
+          case SortReferenceType.MEASURE:
+            if (!seriesRefs.has(reference)) return split.changeSort(new Sort({ reference: seriesRefs.first(), type: SortReferenceType.MEASURE }));
+            if (period !== MeasureDerivation.CURRENT && !this.hasComparison()) return split.update("sort", sort => sort.set("period", MeasureDerivation.CURRENT));
+            return split;
+        }
+      })));
   }
 
   public updateSplitsWithFilter(): Essence {
@@ -556,11 +576,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.set("highlight", null);
   }
 
-  public measuresSortOns(): List<SortOn> {
+  public measuresSortOns(withTimeShift?: boolean): List<SortOn> {
     const measures = this.getEffectiveSelectedMeasures();
-    const hasComparison = this.hasComparison();
+    const addPrevious = withTimeShift && this.hasComparison();
     return measures.flatMap(measure => {
-      if (!hasComparison) return [new SortOn(measure)];
+      if (!addPrevious) return [new SortOn(measure)];
       return [
         new SortOn(measure),
         new SortOn(measure, MeasureDerivation.PREVIOUS),
