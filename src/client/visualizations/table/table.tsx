@@ -26,19 +26,16 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
+import { Sort, SortDirection, SortReferenceType } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { formatStartOfTimeRange } from "../../../common/utils/time/time";
-import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { Delta } from "../../components/delta/delta";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
-import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
-import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
@@ -153,29 +150,34 @@ export class Table extends BaseVisualization<TableState> {
     return { element: HoverElement.ROW, row: datum };
   }
 
-  private getSortRef({ element, columnType, measure }: PositionHover): string {
-    if (element === HoverElement.CORNER) {
-      return SORT_ON_DIMENSION_PLACEHOLDER;
+  private getSortPeriod(columnType: ColumnType): MeasureDerivation {
+    switch (columnType) {
+      case ColumnType.CURRENT:
+        return MeasureDerivation.CURRENT;
+      case ColumnType.PREVIOUS:
+        return MeasureDerivation.PREVIOUS;
+      case ColumnType.DELTA:
+        return MeasureDerivation.DELTA;
     }
-    if (element === HoverElement.HEADER) {
-      switch (columnType) {
-        case ColumnType.CURRENT:
-          return measure.name;
-        case ColumnType.PREVIOUS:
-          return measure.getDerivedName(MeasureDerivation.PREVIOUS);
-        case ColumnType.DELTA:
-          return measure.getDerivedName(MeasureDerivation.DELTA);
-      }
-    }
-    throw new Error(`Can't create sort reference for position element: ${element}`);
   }
 
-  private getSortExpression(position: PositionHover): Sort {
-    const reference = this.getSortRef(position);
-    const commonSort = this.props.essence.getCommonSort();
-    const isDesc = (commonSort && commonSort.reference === reference && commonSort.direction === SortDirection.descending);
-    const direction = isDesc ? SortDirection.ascending : SortDirection.descending;
-    return new Sort({ reference, direction });
+  private setSort({ measure, element, columnType }: PositionHover) {
+    const { clicker, essence: { splits } } = this.props;
+    if (element === HoverElement.CORNER) {
+      clicker.changeSplits(splits.setSortToDimension(), VisStrategy.KeepAlways); // set each to dimension ascending
+      return;
+    }
+    if (element === HoverElement.HEADER) {
+      const period = this.getSortPeriod(columnType);
+      const commonSort = this.props.essence.getCommonSort();
+      const reference = measure.name;
+      const isDesc = (commonSort && commonSort.reference === reference && commonSort.direction === SortDirection.descending);
+      const direction = isDesc ? SortDirection.ascending : SortDirection.descending;
+      const sort = new Sort({ reference, direction, type: SortReferenceType.MEASURE, period });
+      clicker.changeSplits(splits.changeSort(sort), VisStrategy.KeepAlways); // set all to measure
+      return;
+    }
+    throw new Error(`Can't create sort reference for position element: ${element}`);
   }
 
   onClick = (x: number, y: number) => {
@@ -186,14 +188,10 @@ export class Table extends BaseVisualization<TableState> {
     const { row, element } = mousePos;
 
     if (element === HoverElement.CORNER || element === HoverElement.HEADER) {
-      if (!clicker.changeSplits) return;
-
-      const sortExpression = this.getSortExpression(mousePos);
-      clicker.changeSplits(
-        splits.changeSortExpressionFromNormalized(sortExpression),
-        VisStrategy.KeepAlways
-      );
-    } else if (element === HoverElement.ROW) {
+      this.setSort(mousePos);
+      return;
+    }
+    if (element === HoverElement.ROW) {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
       const rowHighlight = getFilterFromDatum(splits, row);
@@ -373,20 +371,6 @@ export class Table extends BaseVisualization<TableState> {
     });
   }
 
-  renderCornerSortArrow(essence: Essence): JSX.Element {
-    const commonSort = essence.getCommonSort();
-    if (!commonSort) return null;
-
-    if (commonSort.reference === SORT_ON_DIMENSION_PLACEHOLDER) {
-      return <SvgIcon
-        svg={require("../../icons/sort-arrow.svg")}
-        className={"sort-arrow " + commonSort.direction}
-      />;
-    }
-
-    return null;
-  }
-
   onSimpleScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({ scrollLeft, scrollTop });
   }
@@ -407,7 +391,6 @@ export class Table extends BaseVisualization<TableState> {
 
     const segmentTitle = splits.splits.map(split => essence.dataCube.getDimension(split.reference).title).join(", ");
 
-    const cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
     const idealWidth = this.getIdealColumnWidth(essence);
 
     const headerColumns = this.renderHeaderColumns(essence, hoverMeasure, idealWidth);
@@ -472,8 +455,6 @@ export class Table extends BaseVisualization<TableState> {
             left
           };
 
-          const dimension = essence.dataCube.getDimension(splits.splits.get(nest - 1).reference);
-
           highlighter = <div className="highlighter" key="highlight" style={highlighterStyle} />;
 
           highlightModal = <HighlightModal
@@ -498,7 +479,6 @@ export class Table extends BaseVisualization<TableState> {
 
     const corner = <div className="corner">
       <div className="corner-wrap">{segmentTitle}</div>
-      {cornerSortArrow}
     </div>;
 
     const measuresCount = essence.getEffectiveSelectedMeasures().size;
