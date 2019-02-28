@@ -24,7 +24,11 @@ export class SplitFixtures {
   static stringSplitCombine(dimension: string, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
       reference: dimension,
-      sort: new Sort({ reference: sortOn, direction, type: SortReferenceType.MEASURE }),
+      sort: new Sort({
+        reference: sortOn,
+        direction,
+        type: dimension === sortOn ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
+      }),
       limit
     });
   }
@@ -34,7 +38,11 @@ export class SplitFixtures {
       type: SplitType.number,
       reference: dimension,
       bucket: granularity,
-      sort: new Sort({ reference: sortOn, direction, type: SortReferenceType.MEASURE }),
+      sort: new Sort({
+        reference: sortOn,
+        direction,
+        type: dimension === sortOn ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
+      }),
       limit
     });
   }
@@ -44,7 +52,11 @@ export class SplitFixtures {
       type: SplitType.time,
       reference: dimension,
       bucket: Duration.fromJS(granularity),
-      sort: new Sort({ reference: sortOn, direction, type: SortReferenceType.MEASURE }),
+      sort: new Sort({
+        reference: sortOn,
+        direction,
+        type: dimension === sortOn ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
+      }),
       limit
     });
   }
