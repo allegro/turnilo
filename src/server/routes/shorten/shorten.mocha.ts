@@ -27,10 +27,15 @@ import { shortenRouter } from "./shorten";
 
 const shortenPath = "/shorten";
 
-const appSettings = (urlShortener: UrlShortenerDef) => () => Promise.resolve(
+const settingsGetterFactory = (urlShortener: UrlShortenerDef) => () => Promise.resolve(
   AppSettingsFixtures.wikiOnly().changeCustomization(Customization.fromJS({
     urlShortener
   })));
+
+const callShortener = (app: Express) => supertest(app)
+        .get(shortenPath)
+        .set("Content-Type", "application/json")
+        .send({ url: "http://foobar.com?bazz=quvx" });
 
 describe("url shortener", () => {
   let app: Express;
@@ -39,7 +44,7 @@ describe("url shortener", () => {
   describe("with succesful shortener", () => {
     before(done => {
       app = express();
-      app.use(shortenPath, shortenRouter(appSettings(SuccessUrlShortenerJS)));
+      app.use(shortenPath, shortenRouter(settingsGetterFactory(SuccessUrlShortenerJS)));
       server = app.listen(0, done);
     });
 
@@ -48,10 +53,7 @@ describe("url shortener", () => {
     });
 
     it("should shorten url", (testComplete: any) => {
-      supertest(app)
-        .get(shortenPath)
-        .set("Content-Type", "application/json")
-        .send({ url: "http://foobar.com?bazz=quvx" })
+      callShortener(app)
         .expect("Content-Type", "application/json; charset=utf-8")
         .expect(200)
         .expect({ shortUrl: "http://foobar" }, testComplete);
@@ -61,7 +63,7 @@ describe("url shortener", () => {
   describe("without failing shortener", () => {
     before(done => {
       app = express();
-      app.use(shortenPath, shortenRouter(appSettings(FailUrlShortenerJS)));
+      app.use(shortenPath, shortenRouter(settingsGetterFactory(FailUrlShortenerJS)));
       app.use(bodyParser.json());
       server = app.listen(0, done);
     });
@@ -71,10 +73,7 @@ describe("url shortener", () => {
     });
 
     it("should return error", (testComplete: any) => {
-      supertest(app)
-        .get(shortenPath)
-        .set("Content-Type", "application/json")
-        .send({ url: "http://foobar.com?bazz=quvx" })
+      callShortener(app)
         .expect("Content-Type", "application/json; charset=utf-8")
         .expect(500)
         .expect({ error: "could not shorten url", message: "error message" }, testComplete);
