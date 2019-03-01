@@ -16,11 +16,10 @@
  */
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { Sort } from "../../models/sort/sort";
+import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
-import { SortDirection } from "../../view-definitions/version-4/split-definition";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
@@ -39,12 +38,15 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
           if (sortStrategy === "self") {
             split = split.changeSort(new Sort({
               reference: splitDimension.name,
-              direction: SortDirection.descending
+              direction: SortDirection.descending,
+              type: SortReferenceType.DIMENSION
             }));
           } else {
+            const type = split.reference === sortStrategy ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
             split = split.changeSort(new Sort({
               reference: sortStrategy,
-              direction: SortDirection.descending
+              direction: SortDirection.descending,
+              type
             }));
           }
         } else {
