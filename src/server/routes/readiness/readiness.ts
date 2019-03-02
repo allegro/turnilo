@@ -29,9 +29,13 @@ enum ClusterHealthStatus {
   unhealthy = "unhealthy"
 }
 
-const statusToHttpStatusMap: { [status in ClusterHealthStatus]: number } = {
-  healthy: healthyHttpStatus,
-  unhealthy: unhealthyHttpStatus
+const statusToHttpStatus = (status: ClusterHealthStatus): number => {
+  switch (status) {
+    case ClusterHealthStatus.healthy:
+      return healthyHttpStatus;
+    case ClusterHealthStatus.unhealthy:
+      return unhealthyHttpStatus;
+  }
 };
 
 interface ClusterHealth {
@@ -45,21 +49,16 @@ async function checkDruidCluster(cluster: Cluster): Promise<ClusterHealth> {
   const loadStatusUrl = `http://${cluster.host}/druid/broker/v1/loadstatus`;
 
   try {
-    let loadStatus = await request
+    const { inventoryInitialized } = await request
       .get(loadStatusUrl, { json: true, timeout: cluster.healthCheckTimeout })
       .promise();
-    const { inventoryInitialized } = loadStatus;
-    if (inventoryInitialized) {
-      return { host, status: ClusterHealthStatus.healthy, message: "" };
-    } else {
+    if (!inventoryInitialized) {
       return { host, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
     }
+    return { host, status: ClusterHealthStatus.healthy, message: "" };
   } catch (reason) {
-    let reasonMessage: string;
-    if (reason != null && reason instanceof Error) {
-      reasonMessage = reason.message;
-    }
-    return { host, status: ClusterHealthStatus.unhealthy, message: `connection error: '${reasonMessage}'` };
+    const message = reason instanceof Error ? reason.message : "unknown";
+    return { host, status: ClusterHealthStatus.unhealthy, message: `connection error: '${message}'` };
   }
 }
 
@@ -93,7 +92,7 @@ export function readinessRouter(getSettings: SettingsGetter) {
       const clusterHealths = await checkClusters(settings.clusters);
       logUnhealthy(clusterHealths);
       const overallHealthStatus = aggregateHealthStatus(clusterHealths);
-      const httpState = statusToHttpStatusMap[overallHealthStatus];
+      const httpState = statusToHttpStatus(overallHealthStatus);
       res.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
     } catch (reason) {
       LOGGER.log(`Readiness check error: ${reason.message}`);
