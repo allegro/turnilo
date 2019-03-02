@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-import { ChainableExpression, Dataset, Environment, Executor, Expression, SplitExpression } from "plywood";
-import * as Qajax from "qajax";
+import axios from "axios";
+import { ChainableExpression, Dataset, DatasetJS, Environment, Executor, Expression, SplitExpression } from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-
-Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
@@ -51,14 +49,6 @@ function reload() {
   window.location.reload(true);
 }
 
-function parseOrNull(json: any): any {
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-}
-
 export interface AjaxOptions {
   method: "GET" | "POST";
   url: string;
@@ -66,44 +56,39 @@ export interface AjaxOptions {
   data?: any;
 }
 
+const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
+
 export class Ajax {
   static version: string;
 
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
 
-  static query({ data, url, timeout, method }: AjaxOptions): Promise<any> {
+  static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     if (data) {
       if (Ajax.version) data.version = Ajax.version;
       if (Ajax.settingsVersionGetter) data.settingsVersion = Ajax.settingsVersionGetter();
     }
 
-    return Qajax({ method, url, data })
-      .timeout(timeout)
-      .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
+    return axios({ method, url, data, timeout, validateStatus })
       .then(res => {
-        if (res && res.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
-        return res;
+        if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
+        return res.data;
       })
-      .catch((xhr: XMLHttpRequest | Error): Dataset => {
-        if (!xhr) return null; // TS needs this
-        if (xhr instanceof Error) {
-          throw new Error("client timeout");
-        } else {
-          var jsonError = parseOrNull(xhr.responseText);
-          if (jsonError) {
-            if (jsonError.action === "reload") {
-              reload();
-            } else if (jsonError.action === "update" && Ajax.onUpdate) {
-              Ajax.onUpdate();
-            }
-            throw new Error(jsonError.message || jsonError.error);
-          } else {
-            throw new Error(xhr.responseText || "connection fail");
+      .catch(error => {
+        if (error.response && error.response.data) {
+          if (error.response.data.action === "reload") {
+            reload();
+          } else if (error.response.data.action === "update" && Ajax.onUpdate) {
+            Ajax.onUpdate();
           }
+          throw new Error("error with response: " + error.response.status + ", " + error.message);
+        } else if (error.request) {
+          throw new Error("no response received, " + error.message);
+        } else {
+          throw new Error(error.message);
         }
-      }) as any;
+      });
   }
 
   static queryUrlExecutorFactory({ name, cluster }: DataCube): Executor {
@@ -113,7 +98,7 @@ export class Ajax {
       const url = `plywood?by=${getSplitsDescription(ex)}`;
       const timezone = env ? env.timezone : null;
       const data = { dataCube: name, expression: ex.toJS(), timezone };
-      return Ajax.query({ method, url, timeout, data })
+      return Ajax.query<{result: DatasetJS}>({ method, url, timeout, data })
         .then(res => Dataset.fromJS(res.result));
     };
   }
