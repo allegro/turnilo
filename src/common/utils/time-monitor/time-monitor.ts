@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import * as Q from "q";
 import { Logger } from "../../logger/logger";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
@@ -44,20 +43,14 @@ export class TimeMonitor {
     return this;
   }
 
-  removeCheck(name: string): this {
-    delete this.checks[name];
-    this.timekeeper = this.timekeeper.removeTimeTagFor(name);
-    return this;
-  }
-
-  private doCheck(name: string): Promise<any> {
+  private doCheck(name: string): Promise<void> {
     const { logger } = this;
-    var check = this.checks[name];
+    const check = this.checks[name];
     if (!check) return Promise.resolve(null);
     return check().then(updatedTime => {
         logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
         this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
-      }, e => {
+      }).catch(e => {
         logger.error(`Error getting time for '${name}': ${e.message}`);
       }
     );
@@ -67,16 +60,13 @@ export class TimeMonitor {
     const { doingChecks, timekeeper, regularCheckInterval } = this;
     if (doingChecks) return;
     const now = timekeeper.now().valueOf();
-    var timeTags = this.timekeeper.timeTags;
+    const timeTags = this.timekeeper.timeTags;
 
     this.doingChecks = true;
-    var checkTasks: Array<Promise<any>> = [];
-    for (var timeTag of timeTags) {
-      if (!timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval) {
-        checkTasks.push(this.doCheck(timeTag.name));
-      }
-    }
-    Q.allSettled(checkTasks).then(() => {
+    const checkTasks = timeTags
+      .filter(timeTag => !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval)
+      .map(timeTag => this.doCheck(timeTag.name));
+    Promise.all(checkTasks).then(() => {
       this.doingChecks = false;
     });
   }
