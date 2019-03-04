@@ -49,7 +49,7 @@ const statusToHttpStatusMap: { [status in ClusterHealthStatus]: number } = {
 };
 
 interface ClusterHealth {
-  host: string;
+  url: string;
   status: ClusterHealthStatus;
   message: string;
 }
@@ -63,8 +63,8 @@ const checkClusters = (clusters: Cluster[]): Promise<ClusterHealth[]> => {
 };
 
 const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
-  const { host } = cluster;
-  const loadStatusUrl = `http://${cluster.host}/druid/broker/v1/loadstatus`;
+  const { url } = cluster;
+  const loadStatusUrl = `${url}/druid/broker/v1/loadstatus`;
 
   return request
     .get(loadStatusUrl, { json: true, timeout: cluster.healthCheckTimeout })
@@ -73,9 +73,9 @@ const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
       const { inventoryInitialized } = loadStatus;
 
       if (inventoryInitialized) {
-        return { host, status: ClusterHealthStatus.healthy, message: "" };
+        return { url, status: ClusterHealthStatus.healthy, message: "" };
       } else {
-        return { host, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
+        return { url, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
       }
     })
     .catch(reason => {
@@ -83,14 +83,14 @@ const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
       if (reason != null && reason instanceof Error) {
         reasonMessage = reason.message;
       }
-      return { host, status: ClusterHealthStatus.unhealthy, message: `connection error: '${reasonMessage}'` };
+      return { url, status: ClusterHealthStatus.unhealthy, message: `connection error: '${reasonMessage}'` };
     });
 };
 
 const emitHealthStatus = (clusterHealths: ClusterHealth[], response: Response) => {
   const unhealthyClusters = clusterHealths.filter(({ status }) => status === ClusterHealthStatus.unhealthy);
-  unhealthyClusters.forEach(({ message, host }: ClusterHealth) => {
-    LOGGER.log(`Unhealthy cluster host: ${host}. Message: ${message}`);
+  unhealthyClusters.forEach(({ message, url }: ClusterHealth) => {
+    LOGGER.log(`Unhealthy cluster url: ${url}. Message: ${message}`);
   });
 
   const isSomeUnhealthy = unhealthyClusters.length > 0;

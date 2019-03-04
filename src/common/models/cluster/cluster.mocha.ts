@@ -23,13 +23,11 @@ describe("Cluster", () => {
   it("is an immutable class", () => {
     testImmutableClass(Cluster, [
       {
-        name: "my-druid-cluster",
-        type: "druid"
+        name: "my-druid-cluster"
       },
       {
         name: "my-druid-cluster",
-        type: "druid",
-        host: "192.168.99.100",
+        url: "192.168.99.100",
         version: "0.9.1",
         timeout: 30000,
         healthCheckTimeout: 50,
@@ -42,15 +40,13 @@ describe("Cluster", () => {
       },
       {
         name: "my-mysql-cluster",
-        type: "druid",
-        host: "192.168.99.100",
+        url: "192.168.99.100",
         timeout: 30000,
         sourceListScan: "auto"
       },
       {
         name: "my-mysql-cluster",
-        type: "druid",
-        host: "192.168.99.100",
+        url: "192.168.99.100",
         timeout: 30000,
         sourceListScan: "auto",
         sourceListRefreshInterval: 0,
