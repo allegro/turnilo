@@ -84,7 +84,7 @@ function logUnhealthy(clusterHealths: ClusterHealth[]): void {
 
 export function readinessRouter(getSettings: SettingsGetter) {
 
-  let router = Router();
+  const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     try {

@@ -35,7 +35,7 @@ const outputFunctions: PlyqlOutputFunctions = {
 
 export function plyqlRouter(settingsGetter: SettingsGetter) {
 
-  let router = Router();
+  const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
     const { query } = req.body;

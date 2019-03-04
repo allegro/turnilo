@@ -25,7 +25,7 @@ import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager
 
 export function mkurlRouter(settingsGetter: SettingsGetter) {
 
-  let router = Router();
+  const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
     const { dataCubeName, viewDefinitionVersion, viewDefinition } = req.body;

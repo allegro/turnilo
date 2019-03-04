@@ -22,7 +22,7 @@ import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 export function plywoodRouter(getSettings: SettingsGetter) {
 
-  let router = Router();
+  const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
     const { dataSource, expression, timezone } = req.body;

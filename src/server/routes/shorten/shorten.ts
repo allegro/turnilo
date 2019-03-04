@@ -20,7 +20,7 @@ import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 export function shortenRouter(settingsGetter: SettingsGetter) {
 
-  let router = Router();
+  const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     const { url } = req.query;

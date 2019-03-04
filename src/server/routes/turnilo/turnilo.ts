@@ -22,7 +22,7 @@ import { mainLayout } from "../../views";
 
 export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
 
-  let router = Router();
+  const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     try {
