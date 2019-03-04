@@ -18,7 +18,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { AppSettingsJS } from "../common/models/app-settings/app-settings";
-import { DataCube } from "../common/models/data-cube/data-cube";
 import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
@@ -41,7 +40,6 @@ interface Config {
   user: any;
   appSettings: AppSettingsJS;
   timekeeper: TimekeeperJS;
-  stateful: boolean;
 }
 
 const config: Config = (window as any)["__CONFIG__"];
@@ -56,7 +54,7 @@ require.ensure([], require => {
   const { Timekeeper } = require("../common/models/timekeeper/timekeeper");
   const { AppSettings } = require("../common/models/app-settings/app-settings");
   const { MANIFESTS } = require("../common/manifests/index");
-  const { SwivApplication } = require("./applications/swiv-application/swiv-application");
+  const { TurniloApplication } = require("./applications/turnilo-application/turnilo-application");
 
   Ajax.version = version;
 
@@ -66,12 +64,11 @@ require.ensure([], require => {
   });
 
   const app =
-    <SwivApplication
+    <TurniloApplication
       version={version}
       appSettings={appSettings}
       user={config.user}
       initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
-      stateful={Boolean(config.stateful)}
     />;
 
   ReactDOM.render(app, container);

@@ -18,6 +18,7 @@
 import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator, druidRequesterFactory } from "plywood-druid-requester";
+import { URL } from "url";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { threadConditionally } from "../../../common/utils/functional/functional";
 

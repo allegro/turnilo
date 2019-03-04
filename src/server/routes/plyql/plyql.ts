@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-
-var router = Router();
+import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;
@@ -30,76 +27,72 @@ interface PlyqlOutputFunctions {
   tsv: (data: Dataset) => string;
 }
 
-var outputFunctions: PlyqlOutputFunctions = {
+const outputFunctions: PlyqlOutputFunctions = {
   json: (data: Dataset): string => JSON.stringify(data, null, 2),
   csv: (data: Dataset): string => data.toCSV(),
   tsv: (data: Dataset): string => data.toTSV()
 };
 
-router.post("/", (req: SwivRequest, res: Response) => {
-  var { outputType, query } = req.body;
+export function plyqlRouter(settingsGetter: SettingsGetter) {
 
-  if (typeof query !== "string") {
-    var errmsg = "Query must be a string";
-    res.status(400).send(errmsg);
-    return;
-  }
+  const router = Router();
 
-  try {
-    var parsedSQL = Expression.parseSQL(query);
-  } catch (e) {
-    var errmsg = "Could not parse query as SQL: " + e.message;
-    res.status(400).send(errmsg);
-    return;
-  }
+  router.post("/", async (req: Request, res: Response) => {
+    const { query } = req.body;
+    let { outputType } = req.body;
 
-  if (typeof outputType !== "string") {
-    outputType = "json";
-  }
-
-  var outputFn: (data: Dataset) => string;
-  outputFn = outputFunctions[outputType];
-  if (outputFn === undefined) {
-    var errmsg = "Invalid output type: " + outputType;
-    res.status(400).send(errmsg);
-    return;
-  }
-
-  var parsedQuery = parsedSQL.expression;
-  var dataCube = parsedSQL.table;
-  if (!dataCube) {
-    var errmsg = "Could not determine data cube name";
-    res.status(400).send(errmsg);
-    return;
-  }
-
-  parsedQuery = parsedQuery.substitute(ex => {
-    if (ex instanceof RefExpression && ex.name === dataCube) {
-      return $("main");
+    if (typeof query !== "string") {
+      res.status(400).send("Query must be a string");
+      return;
     }
-    return null;
-  });
 
-  req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCube })
-    .then((appSettings: any) => {
-      var myDataCube = appSettings.getDataCube(dataCube);
+    let parsedSQL;
+    try {
+      parsedSQL = Expression.parseSQL(query);
+    } catch (e) {
+      res.status(400).send(`Could not parse query as SQL: ${e.message}`);
+      return;
+    }
+
+    if (typeof outputType !== "string") {
+      outputType = "json";
+    }
+
+    const outputFn = outputFunctions[outputType];
+    if (outputFn === undefined) {
+      res.status(400).send("Invalid output type: " + outputType);
+      return;
+    }
+
+    let parsedQuery = parsedSQL.expression;
+    const dataCube = parsedSQL.table;
+    if (!dataCube) {
+      res.status(400).send("Could not determine data cube name");
+      return;
+    }
+
+    parsedQuery = parsedQuery.substitute(ex => {
+      if (ex instanceof RefExpression && ex.name === dataCube) {
+        return $("main");
+      }
+      return null;
+    });
+
+    try {
+      const settings = await settingsGetter(<GetSettingsOptions> { dataCubeOfInterest: dataCube });
+      const myDataCube = settings.getDataCube(dataCube);
 
       if (!myDataCube) {
         res.status(400).send({ error: "unknown data cube" });
         return;
       }
+      const data: Dataset = await myDataCube.executor(parsedQuery) as Dataset;
+      res.type(outputType);
+      res.send(outputFn(Dataset.fromJS(data.toJS())));
+    } catch (error) {
+      res.status(500).send(`got error ${error.message}`);
+    }
+  });
 
-      myDataCube.executor(parsedQuery).then(
-        (data: Dataset) => {
-          res.type(outputType);
-          res.send(outputFn(Dataset.fromJS(data.toJS())));
-        },
-        (error: Error) => {
-          res.status(500).send(`got error ${error.message}`);
-        }
-      );
-    });
-
-});
-
-export = router;
+  return router;
+}

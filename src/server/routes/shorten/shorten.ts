@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
-import { SwivRequest } from "../../utils/general/general";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
-let router = Router();
+export function shortenRouter(settingsGetter: SettingsGetter) {
 
-router.get("/", (req: SwivRequest, res: Response) => {
-  const { url } = req.query;
-  req.getSettings()
-    .then(settings => settings.customization.urlShortener)
-    .then(shortener => shortener.shortenerFunction(url, request))
-    .then(shortUrl => res.json({ shortUrl }))
-    .catch(error => {
+  const router = Router();
+
+  router.get("/", async (req: Request, res: Response) => {
+    const { url } = req.query;
+    try {
+      const settings = await settingsGetter();
+      const shortener = settings.customization.urlShortener;
+      const shortUrl = await shortener.shortenerFunction(url, request);
+      res.json({ shortUrl });
+    } catch (error) {
       console.log("error:", error.message);
       if (error.hasOwnProperty("stack")) {
         console.log((<any> error).stack);
@@ -35,7 +38,7 @@ router.get("/", (req: SwivRequest, res: Response) => {
         error: "could not shorten url",
         message: error.message
       });
-    });
-});
-
-export = router;
+    }
+  });
+  return router;
+}

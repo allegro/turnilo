@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import * as Q from "q";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
@@ -24,6 +23,7 @@ import { DragPosition } from "../../../common/models/drag-position/drag-position
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
+import { Deferred } from "../../../common/utils/promise/promise";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -56,7 +56,7 @@ export interface SplitTileState {
 export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   private readonly overflowMenuId = uniqueId("overflow-menu-");
-  private overflowMenuDeferred: Q.Deferred<Element>;
+  private overflowMenuDeferred: Deferred<Element>;
 
   state: SplitTileState = {
     menuOpenOn: null,
@@ -134,16 +134,16 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return document.getElementById(this.overflowMenuId);
   }
 
-  openOverflowMenu(target: Element): Q.Promise<any> {
-    if (!target) return Q(null);
+  openOverflowMenu(target: Element): Promise<Element> {
+    if (!target) return Promise.resolve(null);
     var { overflowMenuOpenOn } = this.state;
 
     if (overflowMenuOpenOn === target) {
       this.closeOverflowMenu();
-      return Q(null);
+      return Promise.resolve(null);
     }
 
-    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.overflowMenuDeferred = new Deferred<Element>();
     this.setState({ overflowMenuOpenOn: target });
     return this.overflowMenuDeferred.promise;
   }

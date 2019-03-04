@@ -15,25 +15,11 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
 import { LOGGER } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
-import { SwivRequest } from "../../utils/general/general";
-
-let router = Router();
-
-router.get("/", (req: SwivRequest, res: Response) => {
-  req
-    .getSettings()
-    .then(appSettings => appSettings.clusters)
-    .then(checkClusters)
-    .then(clusterHealths => emitHealthStatus(clusterHealths, res))
-    .catch(reason => {
-      LOGGER.log(`Readiness check error: ${reason.message}`);
-      res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message });
-    });
-});
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 const unhealthyHttpStatus = 503;
 const healthyHttpStatus = 200;
@@ -43,9 +29,13 @@ enum ClusterHealthStatus {
   unhealthy = "unhealthy"
 }
 
-const statusToHttpStatusMap: { [status in ClusterHealthStatus]: number } = {
-  healthy: healthyHttpStatus,
-  unhealthy: unhealthyHttpStatus
+const statusToHttpStatus = (status: ClusterHealthStatus): number => {
+  switch (status) {
+    case ClusterHealthStatus.healthy:
+      return healthyHttpStatus;
+    case ClusterHealthStatus.unhealthy:
+      return unhealthyHttpStatus;
+  }
 };
 
 interface ClusterHealth {
@@ -54,51 +44,61 @@ interface ClusterHealth {
   message: string;
 }
 
-const checkClusters = (clusters: Cluster[]): Promise<ClusterHealth[]> => {
+async function checkDruidCluster(cluster: Cluster): Promise<ClusterHealth> {
+  const { url } = cluster;
+  const loadStatusUrl = `${url}/druid/broker/v1/loadstatus`;
+
+  try {
+    const { inventoryInitialized } = await request
+      .get(loadStatusUrl, { json: true, timeout: cluster.healthCheckTimeout })
+      .promise();
+    if (!inventoryInitialized) {
+      return { url, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
+    }
+    return { url, status: ClusterHealthStatus.healthy, message: "" };
+  } catch (reason) {
+    const message = reason instanceof Error ? reason.message : "unknown";
+    return { url, status: ClusterHealthStatus.unhealthy, message: `connection error: '${message}'` };
+  }
+}
+
+function checkClusters(clusters: Cluster[]): Promise<ClusterHealth[]> {
   const promises = clusters
     .filter(cluster => (cluster.type === "druid"))
     .map(checkDruidCluster);
 
   return Promise.all(promises);
-};
+}
 
-const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
-  const { url } = cluster;
-  const loadStatusUrl = `${url}/druid/broker/v1/loadstatus`;
+function aggregateHealthStatus(clusterHealths: ClusterHealth[]): ClusterHealthStatus {
+  const isSomeUnhealthy = clusterHealths.some(cluster => cluster.status === ClusterHealthStatus.unhealthy);
+  return isSomeUnhealthy ? ClusterHealthStatus.unhealthy : ClusterHealthStatus.healthy;
+}
 
-  return request
-    .get(loadStatusUrl, { json: true, timeout: cluster.healthCheckTimeout })
-    .promise()
-    .then(loadStatus => {
-      const { inventoryInitialized } = loadStatus;
-
-      if (inventoryInitialized) {
-        return { url, status: ClusterHealthStatus.healthy, message: "" };
-      } else {
-        return { url, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
-      }
-    })
-    .catch(reason => {
-      let reasonMessage: string;
-      if (reason != null && reason instanceof Error) {
-        reasonMessage = reason.message;
-      }
-      return { url, status: ClusterHealthStatus.unhealthy, message: `connection error: '${reasonMessage}'` };
-    });
-};
-
-const emitHealthStatus = (clusterHealths: ClusterHealth[], response: Response) => {
+function logUnhealthy(clusterHealths: ClusterHealth[]): void {
   const unhealthyClusters = clusterHealths.filter(({ status }) => status === ClusterHealthStatus.unhealthy);
   unhealthyClusters.forEach(({ message, url }: ClusterHealth) => {
     LOGGER.log(`Unhealthy cluster url: ${url}. Message: ${message}`);
   });
+}
 
-  const isSomeUnhealthy = unhealthyClusters.length > 0;
-  const overallHealthStatus = isSomeUnhealthy ? ClusterHealthStatus.unhealthy : ClusterHealthStatus.healthy;
+export function readinessRouter(getSettings: SettingsGetter) {
 
-  const httpState = statusToHttpStatusMap[overallHealthStatus];
+  const router = Router();
 
-  response.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
-};
+  router.get("/", async (req: Request, res: Response) => {
+    try {
+      const settings = await getSettings();
+      const clusterHealths = await checkClusters(settings.clusters);
+      logUnhealthy(clusterHealths);
+      const overallHealthStatus = aggregateHealthStatus(clusterHealths);
+      const httpState = statusToHttpStatus(overallHealthStatus);
+      res.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
+    } catch (reason) {
+      LOGGER.log(`Readiness check error: ${reason.message}`);
+      res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message });
+    }
+  });
 
-export = router;
+  return router;
+}
