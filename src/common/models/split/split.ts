@@ -21,7 +21,7 @@ import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywoo
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension } from "../dimension/dimension";
-import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../sort/sort";
+import { Sort } from "../sort/sort";
 
 export enum SplitType {
   number = "number",
@@ -44,7 +44,7 @@ const defaultSplit: SplitValue = {
   type: SplitType.string,
   reference: null,
   bucket: null,
-  sort: new Sort(),
+  sort: new Sort({ reference: null, type: null }),
   limit: null
 };
 
@@ -102,13 +102,6 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   public changeSort(sort: Sort): Split {
     return this.set("sort", sort);
-  }
-
-  public changeSortFromNormalized(sort: Sort): Split {
-    if (sort.reference === SORT_ON_DIMENSION_PLACEHOLDER) {
-      return this.changeSort(sort.set("reference", this.reference));
-    }
-    return this.changeSort(sort);
   }
 
   public changeLimit(limit: number): Split {

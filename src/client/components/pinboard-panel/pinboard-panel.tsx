@@ -21,9 +21,8 @@ import { Colors } from "../../../common/models/colors/colors";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
-import { Sort } from "../../../common/models/sort/sort";
+import { SortDirection } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
@@ -108,10 +107,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         if (split) {
           const sort = split.sort;
           const direction = sort ? sort.direction : SortDirection.descending;
-          const newSplit = split.changeSort(new Sort({
-            reference: sortOn.getName(),
-            direction
-          }));
+          const newSplit = split.changeSort(sortOn.toSort(direction));
           const newColors = Colors.fromLimit(colors.dimension, 5);
           clicker.changeSplits(splits.replace(split, newSplit), VisStrategy.UnfairGame, newColors);
         }
@@ -171,7 +167,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       }
     }
 
-    const pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
+    const pinnedSortSortOn = new SortOn(essence.getPinnedSortMeasure());
     let dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach(dimensionName => {
       const dimension = dataCube.getDimension(dimensionName);
