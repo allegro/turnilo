@@ -45,20 +45,20 @@ interface ClusterHealth {
 }
 
 async function checkDruidCluster(cluster: Cluster): Promise<ClusterHealth> {
-  const { host } = cluster;
-  const loadStatusUrl = `http://${cluster.host}/druid/broker/v1/loadstatus`;
+  const { url } = cluster;
+  const loadStatusUrl = `${url}/druid/broker/v1/loadstatus`;
 
   try {
     const { inventoryInitialized } = await request
       .get(loadStatusUrl, { json: true, timeout: cluster.healthCheckTimeout })
       .promise();
     if (!inventoryInitialized) {
-      return { host, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
+      return { url, status: ClusterHealthStatus.unhealthy, message: "inventory not initialized" };
     }
-    return { host, status: ClusterHealthStatus.healthy, message: "" };
+    return { url, status: ClusterHealthStatus.healthy, message: "" };
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : "unknown";
-    return { host, status: ClusterHealthStatus.unhealthy, message: `connection error: '${message}'` };
+    return { url, status: ClusterHealthStatus.unhealthy, message: `connection error: '${message}'` };
   }
 }
 
