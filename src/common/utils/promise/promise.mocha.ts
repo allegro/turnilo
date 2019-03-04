@@ -46,7 +46,7 @@ describe("Promise utils", () => {
       expect(onResolve.calledWith("resolve")).to.be.true;
     });
 
-    it("should have a method to reject reject a promise", async () => {
+    it("should reject with method", async () => {
       const onReject = spy();
       const deferred = new Deferred<string>();
       const promise = deferred.promise;
