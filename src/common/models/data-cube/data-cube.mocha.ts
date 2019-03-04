@@ -25,8 +25,7 @@ import { DataCubeFixtures } from "./data-cube.fixtures";
 
 describe("DataCube", () => {
   var druidCluster = Cluster.fromJS({
-    name: "druid",
-    type: "druid"
+    name: "druid"
   });
 
   var context = {

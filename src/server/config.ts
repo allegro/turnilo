@@ -19,7 +19,7 @@ import * as nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
 import { AppSettings } from "../common/models/app-settings/app-settings";
-import { Cluster, SupportedType } from "../common/models/cluster/cluster";
+import { Cluster } from "../common/models/cluster/cluster";
 import { DataCube } from "../common/models/data-cube/data-cube";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
@@ -250,8 +250,6 @@ if (START_SERVER) {
 
 // --- Location -------------------------------
 
-const CLUSTER_TYPES: SupportedType[] = ["druid"];
-
 var settingsStore: SettingsStore = null;
 
 if (serverSettingsFilePath) {
@@ -282,25 +280,17 @@ if (serverSettingsFilePath) {
     }));
   }
 
-  for (var clusterType of CLUSTER_TYPES) {
-    var host = parsedArgs[clusterType];
-    if (host) {
-      initAppSettings = initAppSettings.addCluster(new Cluster({
-        name: clusterType,
-        type: clusterType,
-        host,
-        sourceListScan: "auto",
-        sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-        sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
-        sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-        sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
-
-        user: parsedArgs["user"],
-        password: parsedArgs["password"],
-        database: parsedArgs["database"],
-        protocol: parsedArgs["protocol"]
-      }));
-    }
+  const url = parsedArgs.druid;
+  if (url) {
+    initAppSettings = initAppSettings.addCluster(new Cluster({
+      name: "druid",
+      url,
+      sourceListScan: "auto",
+      sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
+      sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+      sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
+      sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
+    }));
   }
 
   settingsStore = SettingsStore.fromTransient(initAppSettings);

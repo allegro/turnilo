@@ -15,14 +15,14 @@
  */
 
 import { expect } from "chai";
+import { MeasureDerivation } from "../../models/measure/measure";
+import { SortDirection } from "../../models/sort/sort";
 import { SplitFixtures } from "../../models/split/split.fixtures";
-import { SortDirection, splitConverter } from "./split-definition";
+import { splitConverter } from "./split-definition";
 import { SplitDefinitionFixtures } from "./split-definition.fixtures";
 
-describe("SplitDefinition v3", () => {
+describe("SplitDefinition v4", () => {
   describe("string split conversion", () => {
-    const converter = splitConverter;
-
     const stringSplitTests = [
       { dimension: "channel", sortOn: "channel", sortDirection: SortDirection.ascending, limit: 5 },
       { dimension: "channel", sortOn: "count", sortDirection: SortDirection.descending, limit: 15 }
@@ -31,10 +31,28 @@ describe("SplitDefinition v3", () => {
     stringSplitTests.forEach(({ dimension, sortOn, sortDirection, limit }) => {
       it(`should convert model sorted ${sortDirection} on ${sortOn} with limit ${limit}`, () => {
         const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn, sortDirection, limit);
-        const splitCombine = converter.toSplitCombine(splitDefinition);
+        const splitCombine = splitConverter.toSplitCombine(splitDefinition);
         const expectedSplitCombine = SplitFixtures.stringSplitCombine(dimension, sortOn, sortDirection, limit);
 
         expect(splitCombine.toJS()).to.deep.equal(expectedSplitCombine.toJS());
+      });
+    });
+  });
+
+  describe("legacy previous/delta sort reference", () => {
+    const legacySorts = [
+      { dimension: "channel", sortOn: "_previous__count", expectedReference: "count", expectedPeriod: MeasureDerivation.PREVIOUS },
+      { dimension: "channel", sortOn: "_delta__count", expectedReference: "count", expectedPeriod: MeasureDerivation.DELTA }
+    ];
+
+    legacySorts.forEach(({ dimension, sortOn, expectedReference, expectedPeriod }) => {
+      it(`should infer period correctly for ${sortOn}`, () => {
+        const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn);
+        const splitCombine = splitConverter.toSplitCombine(splitDefinition);
+        const { sort: { reference, period } } = splitCombine;
+
+        expect(reference).to.be.eq(expectedReference);
+        expect(period).to.be.eq(expectedPeriod);
       });
     });
   });

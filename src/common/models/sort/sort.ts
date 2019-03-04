@@ -15,21 +15,38 @@
  */
 
 import { Record } from "immutable";
-import { SortDirection } from "../../view-definitions/version-4/split-definition";
+import { RequireOnly } from "../../utils/functional/functional";
+import { MeasureDerivation } from "../measure/measure";
 
-export const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
+export enum SortReferenceType { MEASURE = "measure", DIMENSION = "dimension" } // MEASURE_EXPRESSION later?
+
+export enum SortDirection {
+  ascending = "ascending",
+  descending = "descending"
+}
 
 interface SortDefinition {
   reference: string;
+  type: SortReferenceType;
   direction: SortDirection;
+  // it make sense only for SortReferenceType.MEASURE
+  period: MeasureDerivation;
 }
 
-const defaultSort: SortDefinition = { reference: null, direction: null };
+const defaultSort: SortDefinition = {
+  reference: null,
+  type: null,
+  direction: SortDirection.descending,
+  period: MeasureDerivation.CURRENT
+};
 
 export class Sort extends Record<SortDefinition>(defaultSort) {
+
+  constructor(params: RequireOnly<SortDefinition, "reference" | "type">) {
+    super(params);
+  }
 
   empty(): boolean {
     return this.reference === defaultSort.reference && this.direction === defaultSort.direction;
   }
-
 }

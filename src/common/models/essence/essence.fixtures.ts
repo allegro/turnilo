@@ -21,7 +21,6 @@ import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
-import { SortDirection } from "../../view-definitions/version-4/split-definition";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, TimeFilterPeriod } from "../filter-clause/filter-clause";
@@ -29,6 +28,7 @@ import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
+import { SortDirection } from "../sort/sort";
 import { SplitFixtures } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
@@ -46,7 +46,7 @@ const defaultEssence: EssenceValue = {
   compare: null,
   highlight: null,
   splits: EMPTY_SPLITS,
-  timeShift: null,
+  timeShift: TimeShift.empty(),
   series: EMPTY_SERIES
 };
 

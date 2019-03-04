@@ -39,7 +39,7 @@ const statusToHttpStatus = (status: ClusterHealthStatus): number => {
 };
 
 interface ClusterHealth {
-  host: string;
+  url: string;
   status: ClusterHealthStatus;
   message: string;
 }
@@ -77,8 +77,8 @@ function aggregateHealthStatus(clusterHealths: ClusterHealth[]): ClusterHealthSt
 
 function logUnhealthy(clusterHealths: ClusterHealth[]): void {
   const unhealthyClusters = clusterHealths.filter(({ status }) => status === ClusterHealthStatus.unhealthy);
-  unhealthyClusters.forEach(({ message, host }: ClusterHealth) => {
-    LOGGER.log(`Unhealthy cluster host: ${host}. Message: ${message}`);
+  unhealthyClusters.forEach(({ message, url }: ClusterHealth) => {
+    LOGGER.log(`Unhealthy cluster url: ${url}. Message: ${message}`);
   });
 }
 

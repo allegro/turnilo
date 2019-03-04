@@ -25,8 +25,8 @@ import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures
 import { readinessRouter } from "./readiness";
 
 const loadStatusPath = "/druid/broker/v1/loadstatus";
-const wikiBrokerNock = nock(`http://${ClusterFixtures.druidWikiClusterJS().host}`);
-const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS().host}`);
+const wikiBrokerNock = nock(`${ClusterFixtures.druidWikiClusterJS().url}`);
+const twitterBrokerNock = nock(`${ClusterFixtures.druidTwitterClusterJS().url}`);
 
 const mockLoadStatus = (nock: nock.Scope, fixture: { status: number, initialized: boolean, delay: number }) => {
   const { status, initialized, delay } = fixture;
