@@ -16,6 +16,7 @@
  */
 
 import { Logger } from "../../logger/logger";
+import { TimeTag } from "../../models/time-tag/time-tag";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
 export type Check = () => Promise<Date>;
@@ -34,7 +35,7 @@ export class TimeMonitor {
     this.regularCheckInterval = 60000;
     this.specialCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
-    setInterval(this.doChecks.bind(this), 1000);
+    setInterval(this.doChecks, 1000);
   }
 
   addCheck(name: string, check: Check): this {
@@ -43,32 +44,34 @@ export class TimeMonitor {
     return this;
   }
 
-  private doCheck(name: string): Promise<void> {
-    const { logger } = this;
-    const check = this.checks[name];
+  private doCheck = ({ name }: TimeTag): Promise<void> => {
+    const { logger, checks } = this;
+    const check = checks[name];
     if (!check) return Promise.resolve(null);
     return check().then(updatedTime => {
-        logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
-        this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
-      }).catch(e => {
+      logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
+      this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
+    }).catch(e => {
         logger.error(`Error getting time for '${name}': ${e.message}`);
       }
     );
   }
 
-  private doChecks(): void {
-    const { doingChecks, timekeeper, regularCheckInterval } = this;
-    if (doingChecks) return;
+  private isStale = (timeTag: TimeTag): boolean => {
+    const { timekeeper, regularCheckInterval } = this;
     const now = timekeeper.now().valueOf();
-    const timeTags = this.timekeeper.timeTags;
+    return !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval;
+  }
+
+  private doChecks = (): void => {
+    const { doingChecks, timekeeper } = this;
+    if (doingChecks) return;
+    const timeTags = timekeeper.timeTags;
 
     this.doingChecks = true;
-    const checkTasks = timeTags
-      .filter(timeTag => !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval)
-      .map(timeTag => this.doCheck(timeTag.name));
+    const checkTasks = timeTags.filter(this.isStale).map(this.doCheck);
     Promise.all(checkTasks).then(() => {
       this.doingChecks = false;
     });
   }
-
 }
