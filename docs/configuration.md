@@ -273,8 +273,8 @@ Supported native types: "hyperUnique", "thetaSketch" and "approximateHistogram".
 
 #### Override numeric dimension
 
-Turnilo could not corretly detect numeric dimensions as Druid reports all dimensions to be strings.
-When a numeric dimension is incorrectly classified as a string its soring will appear wrong in the UI.
+Turnilo could not correctly detect numeric dimensions as Druid reports all dimensions to be strings.
+When a numeric dimension is incorrectly classified as a string its sorting will appear wrong in the UI.
 If you have a dimension with numeric values (say: `age`).
 
 You should add:
