@@ -401,7 +401,7 @@ Let's say that you are responsible for all accounts in the United States as well
   formula: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
 ```
 
-Now my account would represent a custom filter boolean diemension.
+Now my account would represent a custom filter boolean dimension.
 
 ##### Custom transformations
 
