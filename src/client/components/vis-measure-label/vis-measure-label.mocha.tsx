@@ -21,14 +21,12 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { MeasureDerivation } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
 const measure = MeasureFixtures.wikiCount();
-
-const series = new ConcreteSeries(MeasureSeries.fromMeasure(measure), measure);
+const series = fromMeasure(measure);
 
 // access private field via string
 const datum: Datum = { [measure.name]: 10000, [series["plywoodKey"](MeasureDerivation.PREVIOUS)]: 200 };

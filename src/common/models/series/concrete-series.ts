@@ -21,41 +21,39 @@ import { TimeShiftEnv } from "../time-shift/time-shift-env";
 import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
 
-export class ConcreteSeries {
+export abstract class ConcreteSeries<T extends Series = Series> {
 
-  constructor(public readonly series: Series, public readonly measure: Measure) {
+  protected constructor(public readonly series: T, public readonly measure: Measure) {
   }
 
   public key(derivation = MeasureDerivation.CURRENT): string {
-    return this.plywoodKey(derivation);
-  }
-
-  /**
-   * @deprecated
-   */
-  public formatter(): Unary<number, string> {
-    return seriesFormatter(this.series.format, this.measure);
-  }
-
-  public formatValue(datum: Datum, period = MeasureDerivation.CURRENT): string {
-    const value = this.selectValue(datum, period);
-    const formatter = seriesFormatter(this.series.format, this.measure);
-    return formatter(value);
-  }
-
-  public title(derivation = MeasureDerivation.CURRENT): string {
-    function derivationTitle(derivation: MeasureDerivation): string {
-      switch (derivation) {
-        case MeasureDerivation.CURRENT:
-          return "";
-        case MeasureDerivation.PREVIOUS:
-          return "Previous ";
-        case MeasureDerivation.DELTA:
-          return "Difference ";
-      }
+    switch (derivation) {
+      case MeasureDerivation.CURRENT:
+        return this.measure.name;
+      case MeasureDerivation.PREVIOUS:
+        return `${this.measure.name}-previous`;
+      case MeasureDerivation.DELTA:
+        return `${this.measure.name}-delta`;
     }
+  }
 
-    return `${derivationTitle(derivation)}${this.measure.title}`;
+  protected plywoodKey(derivation = MeasureDerivation.CURRENT): string {
+    const derivationStr = derivation === MeasureDerivation.CURRENT ? "" : `_${derivation}__`;
+    return `${derivationStr}${this.measure.name}`;
+  }
+
+  private filterMainRefs(exp: Expression, filter: Expression): Expression {
+    return exp.substitute(e => {
+      if (e instanceof RefExpression && e.name === "main") {
+        return $("main").filter(filter);
+      }
+      return null;
+    });
+  }
+
+  protected applyPeriod(derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): Expression {
+    if (derivation === MeasureDerivation.CURRENT) return this.measure.expression;
+    return this.filterMainRefs(this.measure.expression, timeShiftEnv.currentFilter);
   }
 
   public selectValue(datum: Datum, period = MeasureDerivation.CURRENT): number {
@@ -71,28 +69,33 @@ export class ConcreteSeries {
     }
   }
 
-  private filterMainRefs(exp: Expression, filter: Expression): Expression {
-    return exp.substitute(e => {
-      if (e instanceof RefExpression && e.name === "main") {
-        return $("main").filter(filter);
-      }
-      return null;
-    });
+  /**
+   * @deprecated
+   */
+  public formatter(): Unary<number, string> {
+    return seriesFormatter(this.series.format, this.measure);
   }
 
-  private applyPeriod(derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): Expression {
-    if (derivation === MeasureDerivation.CURRENT) return this.measure.expression;
-    return this.filterMainRefs(this.measure.expression, timeShiftEnv.currentFilter);
+  public formatValue(datum: Datum, period = MeasureDerivation.CURRENT): string {
+    const value = this.selectValue(datum, period);
+    const formatter = seriesFormatter(this.series.format, this.measure);
+    return formatter(value);
   }
 
-  public plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression {
-    const expression = this.applyPeriod(derivation, timeShiftEnv);
-    const name = this.plywoodKey(derivation);
-    return new ApplyExpression({ name, expression });
+  private derivationTitle(derivation: MeasureDerivation): string {
+    switch (derivation) {
+      case MeasureDerivation.CURRENT:
+        return "";
+      case MeasureDerivation.PREVIOUS:
+        return "Previous ";
+      case MeasureDerivation.DELTA:
+        return "Difference ";
+    }
   }
 
-  private plywoodKey(derivation = MeasureDerivation.CURRENT): string {
-    const derivationStr = derivation === MeasureDerivation.CURRENT ? "" : `_${derivation}__`;
-    return `${derivationStr}${this.measure.name}`;
+  public title(derivation = MeasureDerivation.CURRENT): string {
+    return `${this.derivationTitle(derivation)}${this.measure.title}`;
   }
+
+  public abstract plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression;
 }
