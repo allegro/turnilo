@@ -19,7 +19,7 @@ import { RequireOnly } from "../../utils/functional/functional";
 import { BasicSeriesValue, SeriesType } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
 
-enum ExpressionSeriesOperation { PERCENT_OF_PARENT = "percent_of_parent", PERCENT_OF_TOTAL = "percent_of_total" }
+export enum ExpressionSeriesOperation { PERCENT_OF_PARENT = "percent_of_parent", PERCENT_OF_TOTAL = "percent_of_total" }
 
 interface ExpressionSeriesValue extends BasicSeriesValue {
   type: SeriesType.EXPRESSION;

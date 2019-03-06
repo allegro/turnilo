@@ -36,8 +36,7 @@ import {
   granularityToString
 } from "../../../common/models/granularity/granularity";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
 import { DEFAULT_FORMAT, seriesFormatter } from "../../../common/models/series/series-format";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
@@ -186,8 +185,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (sortOn.reference instanceof Measure) {
-      const measure = sortOn.reference;
-      const series = new ConcreteSeries(MeasureSeries.fromMeasure(measure), measure);
+      const series = fromMeasure(sortOn.reference);
       // TODO: FIX that
       query = query.performAction(series.plywoodExpression(0, MeasureDerivation.CURRENT, null));
     }

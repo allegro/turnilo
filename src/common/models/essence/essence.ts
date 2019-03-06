@@ -30,7 +30,11 @@ import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure, MeasureDerivation } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { ConcreteSeries } from "../series/concrete-series";
-import { Series } from "../series/series";
+import { ExpressionConcreteSeries } from "../series/expression-concrete-series";
+import { ExpressionSeries } from "../series/expression-series";
+import { MeasureConcreteSeries } from "../series/measure-concrete-series";
+import { MeasureSeries } from "../series/measure-series";
+import { Series, SeriesType } from "../series/series";
 import { SortOn } from "../sort-on/sort-on";
 import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
@@ -356,12 +360,21 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
   }
 
+  private concreteSeriesFromSeries(series: Series): ConcreteSeries {
+    const { type, reference } = series;
+    const measure = this.dataCube.getMeasure(reference);
+    switch (type) {
+      case SeriesType.MEASURE: {
+        return new MeasureConcreteSeries(series as MeasureSeries, measure);
+      }
+      case SeriesType.EXPRESSION: {
+        return new ExpressionConcreteSeries(series as ExpressionSeries, measure);
+      }
+    }
+  }
+
   public getConcreteSeries(): List<ConcreteSeries> {
-    return this.series.series.map(series => {
-      const reference = series.reference;
-      const measure = this.dataCube.getMeasure(reference);
-      return new ConcreteSeries(series, measure);
-    });
+    return this.series.series.map(series => this.concreteSeriesFromSeries(series));
   }
 
   public differentDataCube(other: Essence): boolean {
