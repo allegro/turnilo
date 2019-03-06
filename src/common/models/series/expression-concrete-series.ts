@@ -28,23 +28,6 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     return `${super.key(derivation)}-${this.series.operation}`;
   }
 
-  title(derivation?: SeriesDerivation): string {
-    return `${super.title(derivation)} ${this.operationTitle()}`;
-  }
-
-  private operationTitle(): string {
-    switch (this.series.operation) {
-      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
-        return "(% of Parent)";
-      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
-        return "(% of Total)";
-    }
-  }
-
-  public plywoodKey(derivation: SeriesDerivation): string {
-    return `${super.plywoodKey(derivation)}__${this.series.operation}_`;
-  }
-
   private relativeNesting(nestingLevel: number): number {
     switch (this.series.operation) {
       case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
@@ -68,5 +51,22 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
       return new ApplyExpression({ name: formulaName, expression });
     }
     throw new Error(`wrong nesting level: ${relativeNesting}`);
+  }
+
+  public plywoodKey(derivation: SeriesDerivation): string {
+    return `${super.plywoodKey(derivation)}__${this.series.operation}_`;
+  }
+
+  title(derivation?: SeriesDerivation): string {
+    return `${super.title(derivation)} ${this.operationTitle()}`;
+  }
+
+  private operationTitle(): string {
+    switch (this.series.operation) {
+      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
+        return "(% of Parent)";
+      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
+        return "(% of Total)";
+    }
   }
 }
