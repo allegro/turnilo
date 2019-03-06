@@ -18,8 +18,6 @@
 import { Dataset } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
-import { seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Total } from "./total";
 import "./totals.scss";
@@ -29,21 +27,15 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
   renderTotals(dataset: Dataset): JSX.Element[] {
     const { essence } = this.props;
-    const measures = essence.getSeriesWithMeasures();
+    const series = essence.getConcreteSeries().toArray();
     const datum = dataset.data[0];
-    return measures.map(({ series, measure }) => {
-      const currentValue = datum[measure.name] as number;
-      const previousValue = essence.hasComparison() && datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
-
-      return <Total
-        key={measure.name}
-        name={measure.title}
-        value={currentValue}
-        previous={previousValue}
-        lowerIsBetter={measure.lowerIsBetter}
-        formatter={seriesFormatter(series.format, measure)}
-      />;
-    }).toArray();
+    return series.map(series =>
+      <Total
+        key={series.key()}
+        series={series}
+        datum={datum}
+        showPrevious={essence.hasComparison()}
+      />);
 
   }
 

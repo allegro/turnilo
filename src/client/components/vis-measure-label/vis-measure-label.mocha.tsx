@@ -21,18 +21,21 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { MeasureDerivation } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { DEFAULT_FORMAT } from "../../../common/models/series/series";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
 const measure = MeasureFixtures.wikiCount();
 
-const datum: Datum = { [measure.name]: 10000, [measure.getDerivedName(MeasureDerivation.PREVIOUS)]: 200 };
+const series = new ConcreteSeries(MeasureSeries.fromMeasure(measure), measure);
+
+// access private field via string
+const datum: Datum = { [measure.name]: 10000, [series["plywoodKey"](MeasureDerivation.PREVIOUS)]: 200 };
 
 const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
-  format={DEFAULT_FORMAT}
   datum={datum}
-  measure={MeasureFixtures.wikiCount()}
+  series={series}
   showPrevious={showPrevious} />);
 
 describe("VisMeasureLabel", () => {
