@@ -26,10 +26,11 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { seriesFormatter } from "../../../common/models/series/series-format";
 import { Sort, SortDirection, SortReferenceType } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
-import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
+import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { formatStartOfTimeRange } from "../../../common/utils/time/time";
@@ -126,7 +127,7 @@ export class Table extends BaseVisualization<TableState> {
 
     if (y <= HEADER_HEIGHT) {
       if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
-      const effectiveMeasures = essence.getEffectiveSelectedMeasures();
+      const effectiveMeasures = essence.getEffectiveMeasures();
 
       x = x - this.getSegmentWidth();
       const measureWidth = this.getIdealColumnWidth(this.props.essence);
@@ -237,13 +238,13 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-    const measuresArray = essence.getEffectiveSelectedMeasures().toArray();
+    const concreteSeries = essence.getConcreteSeries().toArray();
     const splitLength = essence.splits.length();
 
-    return measuresArray.map(measure => {
+    return concreteSeries.map(series => {
       let measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
-        .map((d: Datum) => d[measure.name] as number);
+        .map((d: Datum) => series.selectValue(d));
 
       // Ensure that 0 is in there
       measureValues.push(0);
@@ -269,43 +270,42 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   makeMeasuresRenderer(essence: Essence, hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
-    const measuresArray = essence.getSeriesWithMeasures().toArray();
+    const concreteSeries = essence.getConcreteSeries().toArray();
     const idealWidth = this.getIdealColumnWidth(essence);
 
     const splitLength = essence.splits.length();
-    const isSingleMeasure = measuresArray.length === 1;
-    const className = classNames("measure", { "all-alone": isSingleMeasure });
+    const isSingleSeries = concreteSeries.length === 1;
+    const className = classNames("measure", { "all-alone": isSingleSeries });
 
     return (datum: PseudoDatum): JSX.Element[] => {
       const lastLevel = datum["__nest"] === splitLength;
 
-      return flatMap(measuresArray, ({ measure, series: { format } }, i) => {
-        const currentValue = datum[measure.name];
-        const formatter = seriesFormatter(format, measure);
+      return flatMap(concreteSeries, (series, i) => {
+        const currentValue = series.selectValue(datum);
 
-        const currentCell = <div className={className} key={measure.name} style={{ width: idealWidth }}>
+        const currentCell = <div className={className} key={series.key()} style={{ width: idealWidth }}>
           {lastLevel && this.makeBackground(hScales[i](currentValue))}
-          <div className="label">{formatter(currentValue)}</div>
+          <div className="label">{series.formatValue(datum)}</div>
         </div>;
 
         if (!essence.hasComparison()) {
           return [currentCell];
         }
 
-        const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
+        const previousValue = series.selectValue(datum, MeasureDerivation.PREVIOUS);
 
         return [
           currentCell,
-          <div className={className} key={`${measure.name}-previous`} style={{ width: idealWidth }}>
+          <div className={className} key={series.key(MeasureDerivation.PREVIOUS)} style={{ width: idealWidth }}>
             {lastLevel && this.makeBackground(hScales[i](previousValue))}
-            <div className="label">{formatter(previousValue)}</div>
+            <div className="label">{series.selectValue(datum, MeasureDerivation.PREVIOUS)}</div>
           </div>,
-          <div className={className} key={`${measure.name}-delta`} style={{ width: idealWidth }}>
+          <div className={className} key={series.key(MeasureDerivation.DELTA)} style={{ width: idealWidth }}>
             <div className="label">{<Delta
               currentValue={currentValue}
               previousValue={previousValue}
-              lowerIsBetter={measure.lowerIsBetter}
-              formatter={formatter}
+              lowerIsBetter={series.measure.lowerIsBetter}
+              formatter={series.formatter()}
             />}</div>
           </div>
         ];
@@ -324,6 +324,7 @@ export class Table extends BaseVisualization<TableState> {
   renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
     const commonSort = essence.getCommonSort();
 
+    // TODO: fix for ExpressionMeasures
     function isCommonSortedBy(measure: Measure, period = MeasureDerivation.CURRENT): boolean {
       return commonSort && commonSort.reference === measure.name && commonSort.period === period;
     }
@@ -333,15 +334,11 @@ export class Table extends BaseVisualization<TableState> {
       className: "sort-arrow " + commonSort.direction
     }) : null;
 
-    return flatMap(essence.getEffectiveSelectedMeasures().toArray(), measure => {
-      const isCurrentSorted = isCommonSortedBy(measure);
+    return flatMap(essence.getConcreteSeries().toArray(), series => {
+      const isCurrentSorted = isCommonSortedBy(series.measure);
 
-      const currentMeasure = <div
-        className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isCurrentSorted })}
-        key={measure.name}
-        style={{ width: measureWidth }}
-      >
-        <div className="title-wrap">{measure.title}</div>
+      const currentMeasure = <div className="measure-name" key={series.key()} style={{ width: measureWidth }}>
+        <div className="title-wrap">{series.title()}</div>
         {isCurrentSorted ? sortArrowIcon : null}
       </div>;
 
@@ -349,23 +346,16 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = isCommonSortedBy(measure, MeasureDerivation.PREVIOUS);
-      const isDeltaSorted = isCommonSortedBy(measure, MeasureDerivation.DELTA);
+      const isPreviousSorted = isCommonSortedBy(series.measure, MeasureDerivation.PREVIOUS);
+      const isDeltaSorted = isCommonSortedBy(series.measure, MeasureDerivation.DELTA);
       return [
         currentMeasure,
-        <div
-          className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={measure.getDerivedName(MeasureDerivation.PREVIOUS)}
-          style={{ width: measureWidth }}
-        >
-          <div className="title-wrap">Previous {measure.title}</div>
+        <div className="measure-name" key={series.key(MeasureDerivation.PREVIOUS)} style={{ width: measureWidth }}>
+          <div className="title-wrap">{series.title(MeasureDerivation.PREVIOUS)}</div>
           {isPreviousSorted ? sortArrowIcon : null}
         </div>,
         <div
-          className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isDeltaSorted })}
-          key={measure.getDerivedName(MeasureDerivation.DELTA)}
-          style={{ width: measureWidth }}
-        >
+          className="measure-name measure-delta" key={series.key(MeasureDerivation.DELTA)} style={{ width: measureWidth }}>
           <div className="title-wrap">Difference</div>
           {isDeltaSorted ? sortArrowIcon : null}
         </div>
@@ -483,7 +473,7 @@ export class Table extends BaseVisualization<TableState> {
       <div className="corner-wrap">{segmentTitle}</div>
     </div>;
 
-    const measuresCount = essence.getEffectiveSelectedMeasures().size;
+    const measuresCount = essence.getConcreteSeries().size;
     const columnsCount = essence.hasComparison() ? measuresCount * 3 : measuresCount;
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
