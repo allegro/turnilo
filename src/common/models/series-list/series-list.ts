@@ -18,7 +18,8 @@ import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
-import { Series } from "../series/series";
+import { MeasureSeries } from "../series/measure-series";
+import { fromJS, Series } from "../series/series";
 
 interface SeriesListValue {
   series: List<Series>;
@@ -29,11 +30,11 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new Series({ reference }))) });
+    return new SeriesList({ series: List(names.map(reference => new MeasureSeries({ reference }))) });
   }
 
   static fromJS(seriesDefs: any[]): SeriesList {
-    const series = List(seriesDefs.map(def => Series.fromJS(def)));
+    const series = List(seriesDefs.map(def => fromJS(def)));
     return new SeriesList({ series });
   }
 
@@ -85,6 +86,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {
+    // TODO: fix conditions for ExpressionSeries
     return this.updateSeries(list => list.filter(series => measures.getMeasureByName(series.reference)));
   }
 
