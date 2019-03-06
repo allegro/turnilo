@@ -35,12 +35,14 @@ import {
   granularityEquals,
   granularityToString
 } from "../../../common/models/granularity/granularity";
-import { Measure } from "../../../common/models/measure/measure";
-import { DEFAULT_FORMAT } from "../../../common/models/series/series";
+import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { DEFAULT_FORMAT, seriesFormatter } from "../../../common/models/series/series-format";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { formatNumberRange, seriesFormatter } from "../../../common/utils/formatter/formatter";
+import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { formatTimeRange } from "../../../common/utils/time/time";
@@ -184,7 +186,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (sortOn.reference instanceof Measure) {
-      query = query.performAction(sortOn.reference.toApplyExpression(0));
+      const measure = sortOn.reference;
+      const series = new ConcreteSeries(MeasureSeries.fromMeasure(measure), measure);
+      // TODO: FIX that
+      query = query.performAction(series.plywoodExpression(0, MeasureDerivation.CURRENT, null));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
