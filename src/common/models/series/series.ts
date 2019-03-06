@@ -14,42 +14,23 @@
  * limitations under the License.
  */
 
-import { Record } from "immutable";
-import { Measure } from "../measure/measure";
+import { MeasureSeries } from "./measure-series";
 
-export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
+export enum SeriesType { MEASURE = "measures", EXPRESSION = "expression" }
 
-type FormatString = string;
-
-interface SeriesFormatValue {
-  type: SeriesFormatType;
-  value: FormatString;
+export interface BasicSeriesValue {
+  type: SeriesType;
 }
 
-const defaultFormat: SeriesFormatValue = { type: SeriesFormatType.DEFAULT, value: "" };
+export type Series = MeasureSeries;
 
-export class SeriesFormat extends Record<SeriesFormatValue>(defaultFormat) {
-}
-
-export const DEFAULT_FORMAT = new SeriesFormat(defaultFormat);
-export const EXACT_FORMAT = new SeriesFormat({ type: SeriesFormatType.EXACT });
-export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT });
-
-export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
-
-interface SeriesValue {
-  reference: string;
-  format: SeriesFormat;
-}
-
-const defaultSeries: SeriesValue = { reference: null, format: DEFAULT_FORMAT };
-
-export class Series extends Record<SeriesValue>(defaultSeries) {
-  static fromMeasure(measure: Measure) {
-    return new Series({ reference: measure.name });
-  }
-
-  static fromJS({ reference, format }: any) {
-    return new Series({ reference, format: new SeriesFormat(format) });
+export function fromJS(params: any): Series {
+  const { type } = params;
+  switch (type as SeriesType) {
+    // case SeriesType.EXPRESSION:
+    //   return new ExpressionSeries(params);
+    // case SeriesType.MEASURE:
+    default:
+      return new MeasureSeries(params);
   }
 }
