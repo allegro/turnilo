@@ -27,15 +27,14 @@ import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, 
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
-import { Measure } from "../measure/measure";
+import { Measure, MeasureDerivation } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
-import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
+import { ConcreteSeries } from "../series/concrete-series";
 import { ExpressionConcreteSeries } from "../series/expression-concrete-series";
 import { ExpressionSeries } from "../series/expression-series";
 import { MeasureConcreteSeries } from "../series/measure-concrete-series";
 import { MeasureSeries } from "../series/measure-series";
-import { Series } from "../series/series";
-import { SeriesType } from "../series/series-type";
+import { Series, SeriesType } from "../series/series";
 import { SortOn } from "../sort-on/sort-on";
 import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
@@ -643,8 +642,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       if (!addPrevious) return [new SortOn(measure)];
       return [
         new SortOn(measure),
-        new SortOn(measure, SeriesDerivation.PREVIOUS),
-        new SortOn(measure, SeriesDerivation.DELTA)
+        new SortOn(measure, MeasureDerivation.PREVIOUS),
+        new SortOn(measure, MeasureDerivation.DELTA)
       ];
     });
   }
