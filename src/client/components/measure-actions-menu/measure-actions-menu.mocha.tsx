@@ -22,7 +22,7 @@ import { SinonSpy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { Series } from "../../../common/models/series/series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { MeasureActions } from "./measure-actions-menu";
 
 const onCloseNoop = () => {
@@ -75,7 +75,7 @@ describe("<MeasureActions>", () => {
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSeriesSpy.calledOnce).to.be.true;
-        expect(addSeriesSpy.calledWith(Series.fromMeasure(measure))).to.be.true;
+        expect(addSeriesSpy.calledWith(MeasureSeries.fromMeasure(measure))).to.be.true;
       });
 
       it("calls onClose but not clicker.addSeries when measure is selected", () => {

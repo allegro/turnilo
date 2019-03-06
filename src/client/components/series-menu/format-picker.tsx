@@ -16,8 +16,7 @@
 
 import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
-import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, PERCENT_FORMAT, SeriesFormat, SeriesFormatType } from "../../../common/models/series/series";
-import { exactFormat, percentFormat, seriesFormatter } from "../../../common/utils/formatter/formatter";
+import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, exactFormat, PERCENT_FORMAT, percentFormat, SeriesFormat, seriesFormatter, SeriesFormatType } from "../../../common/models/series/series-format";
 import { concatTruthy, Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { InputWithPresets, Preset } from "../input-with-presets/input-with-presets";

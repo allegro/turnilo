@@ -19,7 +19,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
-import { Series } from "../../../common/models/series/series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -68,7 +68,7 @@ export const MeasureActions: React.SFC<MeasureActionsProps> = ({ essence, measur
   const disabled = essence.series.hasMeasure(measure);
 
   function onAdd() {
-    if (!disabled) clicker.addSeries(Series.fromMeasure(measure));
+    if (!disabled) clicker.addSeries(MeasureSeries.fromMeasure(measure));
     onClose();
   }
 
