@@ -23,18 +23,20 @@ import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure, MeasureDerivation } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
+import { ConcreteSeries } from "../series/concrete-series";
 import { Series } from "../series/series";
 import { SortOn } from "../sort-on/sort-on";
 import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
+import { TimeShiftEnv } from "../time-shift/time-shift-env";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
@@ -276,6 +278,16 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return filter.setClause(this.combinePeriods(timeFilter));
   }
 
+  public getTimeShiftEnv(timekeeper: Timekeeper): TimeShiftEnv {
+    const timeDimension = this.getTimeDimension();
+
+    return {
+      shift: this.timeShift.valueOf(),
+      currentFilter: toExpression(this.currentTimeFilter(timekeeper), timeDimension),
+      previousFilter: this.hasComparison() ? toExpression(this.previousTimeFilter(timekeeper), timeDimension) : undefined
+    };
+  }
+
   public getEffectiveFilter(
     timekeeper: Timekeeper,
     { combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
@@ -337,15 +349,19 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.filter.getClauseForDimension(timeDimension) as TimeFilterClause;
   }
 
-  public getEffectiveSelectedMeasures(): List<Measure> {
+  /**
+   * @deprecated
+   */
+  public getEffectiveMeasures(): List<Measure> {
     return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
   }
 
-  public getSeriesWithMeasures(): List<{ series: Series, measure: Measure }> {
-    return this.series.series.map(series => ({
-      series,
-      measure: this.dataCube.getMeasure(series.reference)
-    }));
+  public getConcreteSeries(): List<ConcreteSeries> {
+    return this.series.series.map(series => {
+      const reference = series.reference;
+      const measure = this.dataCube.getMeasure(reference);
+      return new ConcreteSeries(series, measure);
+    });
   }
 
   public differentDataCube(other: Essence): boolean {
@@ -607,7 +623,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public measuresSortOns(withTimeShift?: boolean): List<SortOn> {
-    const measures = this.getEffectiveSelectedMeasures();
+    const measures = this.getEffectiveMeasures();
     const addPrevious = withTimeShift && this.hasComparison();
     return measures.flatMap(measure => {
       if (!addPrevious) return [new SortOn(measure)];
