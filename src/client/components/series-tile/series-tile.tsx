@@ -20,6 +20,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Deferred } from "../../../common/utils/promise/promise";
@@ -211,7 +212,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
     this.setState({ dragPosition: null });
 
-    const newSeries: Series = DragManager.isDraggingSeries() ? DragManager.draggingSeries() : Series.fromMeasure(DragManager.draggingMeasure());
+    const newSeries: Series = DragManager.isDraggingSeries() ? DragManager.draggingSeries() : MeasureSeries.fromMeasure(DragManager.draggingMeasure());
     if (!newSeries) return;
 
     let dragPosition = this.calculateDragPosition(e);
@@ -228,7 +229,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   }
 
   appendSeries = (measure: Measure) => {
-    this.props.clicker.addSeries(Series.fromMeasure(measure));
+    this.props.clicker.addSeries(MeasureSeries.fromMeasure(measure));
   }
 
   overflowButtonTarget(): Element {
@@ -320,8 +321,6 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     const { essence, clicker, menuStage } = this.props;
     const { menuOpenOn, menuSeries, menuInside, overflowMenuOpenOn } = this.state;
     if (!menuSeries) return null;
-
-    const measure = essence.dataCube.measures.getMeasureByName(menuSeries.reference);
 
     return <SeriesMenu
       clicker={clicker}

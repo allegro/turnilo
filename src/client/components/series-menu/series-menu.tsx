@@ -17,7 +17,8 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
-import { Series, SeriesFormat } from "../../../common/models/series/series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { SeriesFormat } from "../../../common/models/series/series-format";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -33,7 +34,8 @@ interface SeriesMenuProps {
   openOn: Element;
   containerStage: Stage;
   onClose: Fn;
-  series: Series;
+  // TODO: fix
+  series: any;
   inside?: Element;
 }
 
