@@ -15,8 +15,9 @@
  */
 
 import { $, ApplyExpression } from "plywood";
-import { Measure } from "../measure/measure";
-import { ConcreteSeries, DerivationFilter, SeriesDerivation } from "./concrete-series";
+import { Measure, MeasureDerivation } from "../measure/measure";
+import { TimeShiftEnv } from "../time-shift/time-shift-env";
+import { ConcreteSeries } from "./concrete-series";
 import { ExpressionSeries, ExpressionSeriesOperation } from "./expression-series";
 
 export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
@@ -24,25 +25,8 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     super(series, measure);
   }
 
-  key(derivation?: SeriesDerivation): string {
+  key(derivation?: MeasureDerivation): string {
     return `${super.key(derivation)}-${this.series.operation}`;
-  }
-
-  title(derivation?: SeriesDerivation): string {
-    return `${super.title(derivation)} ${this.operationTitle()}`;
-  }
-
-  private operationTitle(): string {
-    switch (this.series.operation) {
-      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
-        return "(% of Parent)";
-      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
-        return "(% of Total)";
-    }
-  }
-
-  public plywoodKey(derivation: SeriesDerivation): string {
-    return `${super.plywoodKey(derivation)}__${this.series.operation}_`;
   }
 
   private relativeNesting(nestingLevel: number): number {
@@ -54,10 +38,10 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     }
   }
 
-  plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
-    const expression = this.applyPeriod(derivationFilter);
+  plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression {
+    const expression = this.applyPeriod(derivation, timeShiftEnv);
     const relativeNesting = this.relativeNesting(nestingLevel);
-    const name = this.plywoodKey(derivationFilter.derivation);
+    const name = this.plywoodKey(derivation);
     const formulaName = `__formula_${name}`;
     if (relativeNesting > 0) {
       return new ApplyExpression({
@@ -70,5 +54,22 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
       return new ApplyExpression({ name: formulaName, expression });
     }
     throw new Error(`wrong nesting level: ${relativeNesting}`);
+  }
+
+  protected plywoodKey(derivation: MeasureDerivation): string {
+    return `${super.plywoodKey(derivation)}__${this.series.operation}_`;
+  }
+
+  title(derivation?: MeasureDerivation): string {
+    return `${super.title(derivation)} ${this.operationTitle()}`;
+  }
+
+  private operationTitle(): string {
+    switch (this.series.operation) {
+      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
+        return "(% of Parent)";
+      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
+        return "(% of Total)";
+    }
   }
 }

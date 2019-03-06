@@ -16,45 +16,23 @@
 
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
-import { Measure } from "../measure/measure";
+import { Measure, MeasureDerivation } from "../measure/measure";
+import { TimeShiftEnv } from "../time-shift/time-shift-env";
 import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
-
-export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
-
-export interface DerivationFilter {
-  derivation: SeriesDerivation;
-  filter: Expression;
-}
-
-export class PreviousFilter implements DerivationFilter {
-  derivation = SeriesDerivation.PREVIOUS;
-
-  constructor(public filter: Expression) {
-  }
-}
-
-export class CurrentFilter implements DerivationFilter {
-  derivation = SeriesDerivation.CURRENT;
-
-  constructor(public filter: Expression) {
-  }
-}
 
 export abstract class ConcreteSeries<T extends Series = Series> {
 
   protected constructor(public readonly series: T, public readonly measure: Measure) {
   }
 
-  public abstract plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression;
-
-  public key(derivation = SeriesDerivation.CURRENT): string {
+  public key(derivation = MeasureDerivation.CURRENT): string {
     switch (derivation) {
-      case SeriesDerivation.CURRENT:
+      case MeasureDerivation.CURRENT:
         return this.measure.name;
-      case SeriesDerivation.PREVIOUS:
+      case MeasureDerivation.PREVIOUS:
         return `${this.measure.name}-previous`;
-      case SeriesDerivation.DELTA:
+      case MeasureDerivation.DELTA:
         return `${this.measure.name}-delta`;
     }
   }
@@ -72,19 +50,19 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     });
   }
 
-  protected applyPeriod(derivationFilter?: DerivationFilter): Expression {
-    if (!derivationFilter) return this.measure.expression;
-    return this.filterMainRefs(this.measure.expression, derivationFilter.filter);
+  protected applyPeriod(derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): Expression {
+    if (derivation === MeasureDerivation.CURRENT) return this.measure.expression;
+    return this.filterMainRefs(this.measure.expression, timeShiftEnv.currentFilter);
   }
 
-  public selectValue(datum: Datum, period = SeriesDerivation.CURRENT): number {
+  public selectValue(datum: Datum, period = MeasureDerivation.CURRENT): number {
     switch (period) {
-      case SeriesDerivation.CURRENT:
-      case SeriesDerivation.PREVIOUS:
+      case MeasureDerivation.CURRENT:
+      case MeasureDerivation.PREVIOUS:
         return datum[this.plywoodKey(period)] as number;
-      case SeriesDerivation.DELTA: {
-        const current = datum[this.plywoodKey(SeriesDerivation.CURRENT)] as number;
-        const previous = datum[this.plywoodKey(SeriesDerivation.PREVIOUS)] as number;
+      case MeasureDerivation.DELTA: {
+        const current = datum[this.plywoodKey(MeasureDerivation.CURRENT)] as number;
+        const previous = datum[this.plywoodKey(MeasureDerivation.PREVIOUS)] as number;
         return Math.abs(current - previous);
       }
     }
@@ -97,35 +75,26 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     return seriesFormatter(this.series.format, this.measure);
   }
 
-  public formatValue(datum: Datum, period = SeriesDerivation.CURRENT): string {
+  public formatValue(datum: Datum, period = MeasureDerivation.CURRENT): string {
     const value = this.selectValue(datum, period);
     const formatter = seriesFormatter(this.series.format, this.measure);
     return formatter(value);
   }
 
-  public title(derivation = SeriesDerivation.CURRENT): string {
-    return titleWithDerivation(this.measure, derivation);
+  private derivationTitle(derivation: MeasureDerivation): string {
+    switch (derivation) {
+      case MeasureDerivation.CURRENT:
+        return "";
+      case MeasureDerivation.PREVIOUS:
+        return "Previous ";
+      case MeasureDerivation.DELTA:
+        return "Difference ";
+    }
   }
-}
 
-function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
-  switch (derivation) {
-    case SeriesDerivation.CURRENT:
-      return title;
-    case SeriesDerivation.PREVIOUS:
-      return `Previous ${title}`;
-    case SeriesDerivation.DELTA:
-      return `Difference ${title}`;
-    default:
-      return title;
+  public title(derivation = MeasureDerivation.CURRENT): string {
+    return `${this.derivationTitle(derivation)}${this.measure.title}`;
   }
-}
 
-/**
- * @deprecated
- * @param reference
- * @param derivation
- */
-export function getNameWithDerivation(reference: string, derivation: SeriesDerivation) {
-  return `${derivation}${reference}`;
+  public abstract plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression;
 }
