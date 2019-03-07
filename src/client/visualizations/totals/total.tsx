@@ -16,8 +16,7 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
@@ -29,12 +28,12 @@ interface DifferenceProps {
 const Difference: React.SFC<DifferenceProps> = ({ datum, series }) => {
   return <React.Fragment>
     <div className="measure-value measure-value--previous">
-      {series.formatValue(datum, MeasureDerivation.PREVIOUS)}
+      {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
     </div>
     <div className="measure-delta-value">
       <Delta
-        previousValue={series.selectValue(datum, MeasureDerivation.PREVIOUS)}
-        currentValue={series.selectValue(datum, MeasureDerivation.CURRENT)}
+        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+        currentValue={series.selectValue(datum, SeriesDerivation.CURRENT)}
         lowerIsBetter={series.measure.lowerIsBetter}
         formatter={series.formatter()} />
     </div>
@@ -50,7 +49,7 @@ export interface TotalProps {
 export const Total: React.SFC<TotalProps> = ({ showPrevious, datum, series }) => {
   return <div className="total">
     <div className="measure-name" title={series.title()}>{series.title()}</div>
-    <div className="measure-value">{series.formatValue(datum, MeasureDerivation.CURRENT)}</div>
+    <div className="measure-value">{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
     {showPrevious && <Difference series={series} datum={datum} />}
   </div>;
 };

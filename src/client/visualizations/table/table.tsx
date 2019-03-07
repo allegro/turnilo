@@ -25,8 +25,8 @@ import { DateRange } from "../../../common/models/date-range/date-range";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
-import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { seriesFormatter } from "../../../common/models/series/series-format";
+import { Measure } from "../../../common/models/measure/measure";
+import { SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Sort, SortDirection, SortReferenceType } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
@@ -151,14 +151,14 @@ export class Table extends BaseVisualization<TableState> {
     return { element: HoverElement.ROW, row: datum };
   }
 
-  private getSortPeriod(columnType: ColumnType): MeasureDerivation {
+  private getSortPeriod(columnType: ColumnType): SeriesDerivation {
     switch (columnType) {
       case ColumnType.CURRENT:
-        return MeasureDerivation.CURRENT;
+        return SeriesDerivation.CURRENT;
       case ColumnType.PREVIOUS:
-        return MeasureDerivation.PREVIOUS;
+        return SeriesDerivation.PREVIOUS;
       case ColumnType.DELTA:
-        return MeasureDerivation.DELTA;
+        return SeriesDerivation.DELTA;
     }
   }
 
@@ -292,15 +292,15 @@ export class Table extends BaseVisualization<TableState> {
           return [currentCell];
         }
 
-        const previousValue = series.selectValue(datum, MeasureDerivation.PREVIOUS);
+        const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
 
         return [
           currentCell,
-          <div className={className} key={series.key(MeasureDerivation.PREVIOUS)} style={{ width: idealWidth }}>
+          <div className={className} key={series.key(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
             {lastLevel && this.makeBackground(hScales[i](previousValue))}
-            <div className="label">{series.selectValue(datum, MeasureDerivation.PREVIOUS)}</div>
+            <div className="label">{series.selectValue(datum, SeriesDerivation.PREVIOUS)}</div>
           </div>,
-          <div className={className} key={series.key(MeasureDerivation.DELTA)} style={{ width: idealWidth }}>
+          <div className={className} key={series.key(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
             <div className="label">{<Delta
               currentValue={currentValue}
               previousValue={previousValue}
@@ -325,7 +325,7 @@ export class Table extends BaseVisualization<TableState> {
     const commonSort = essence.getCommonSort();
 
     // TODO: fix for ExpressionMeasures
-    function isCommonSortedBy(measure: Measure, period = MeasureDerivation.CURRENT): boolean {
+    function isCommonSortedBy(measure: Measure, period = SeriesDerivation.CURRENT): boolean {
       return commonSort && commonSort.reference === measure.name && commonSort.period === period;
     }
 
@@ -346,16 +346,16 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = isCommonSortedBy(series.measure, MeasureDerivation.PREVIOUS);
-      const isDeltaSorted = isCommonSortedBy(series.measure, MeasureDerivation.DELTA);
+      const isPreviousSorted = isCommonSortedBy(series.measure, SeriesDerivation.PREVIOUS);
+      const isDeltaSorted = isCommonSortedBy(series.measure, SeriesDerivation.DELTA);
       return [
         currentMeasure,
-        <div className="measure-name" key={series.key(MeasureDerivation.PREVIOUS)} style={{ width: measureWidth }}>
-          <div className="title-wrap">{series.title(MeasureDerivation.PREVIOUS)}</div>
+        <div className="measure-name" key={series.key(SeriesDerivation.PREVIOUS)} style={{ width: measureWidth }}>
+          <div className="title-wrap">{series.title(SeriesDerivation.PREVIOUS)}</div>
           {isPreviousSorted ? sortArrowIcon : null}
         </div>,
         <div
-          className="measure-name measure-delta" key={series.key(MeasureDerivation.DELTA)} style={{ width: measureWidth }}>
+          className="measure-name measure-delta" key={series.key(SeriesDerivation.DELTA)} style={{ width: measureWidth }}>
           <div className="title-wrap">Difference</div>
           {isDeltaSorted ? sortArrowIcon : null}
         </div>

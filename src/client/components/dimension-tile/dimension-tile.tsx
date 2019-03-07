@@ -35,7 +35,7 @@ import {
   granularityEquals,
   granularityToString
 } from "../../../common/models/granularity/granularity";
-import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { Measure } from "../../../common/models/measure/measure";
 import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
 import { DEFAULT_FORMAT, seriesFormatter } from "../../../common/models/series/series-format";
 import { SortOn } from "../../../common/models/sort-on/sort-on";

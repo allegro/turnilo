@@ -16,7 +16,8 @@
 
 import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
-import { Measure, titleWithDerivation } from "../../../common/models/measure/measure";
+import { Measure } from "../../../common/models/measure/measure";
+import { titleWithDerivation } from "../../../common/models/series/concrete-series";
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {

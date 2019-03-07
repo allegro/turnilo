@@ -17,7 +17,8 @@
  */
 
 import { Dimension } from "../dimension/dimension";
-import { Measure, MeasureDerivation, titleWithDerivation } from "../measure/measure";
+import { Measure } from "../measure/measure";
+import { SeriesDerivation, titleWithDerivation } from "../series/concrete-series";
 import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
 
 export class SortOn {
@@ -35,7 +36,7 @@ export class SortOn {
     return sortOn.equals(other);
   }
 
-  constructor(public reference: Dimension | Measure, public period = MeasureDerivation.CURRENT) {
+  constructor(public reference: Dimension | Measure, public period = SeriesDerivation.CURRENT) {
   }
 
   public getName(): string {

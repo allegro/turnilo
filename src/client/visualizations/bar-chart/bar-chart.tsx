@@ -25,8 +25,8 @@ import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
-import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { Measure } from "../../../common/models/measure/measure";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
@@ -424,7 +424,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       return series.formatValue(datum);
     }
     const currentValue = series.selectValue(datum);
-    const previousValue = series.selectValue(datum, MeasureDerivation.PREVIOUS);
+    const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
     const formatter = series.formatter();
     return <MeasureBubbleContent
       lowerIsBetter={series.measure.lowerIsBetter}

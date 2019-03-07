@@ -17,8 +17,7 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Delta } from "../delta/delta";
 import "./vis-measure-label.scss";
 
@@ -29,8 +28,8 @@ export interface VisMeasureLabelProps {
 }
 
 function renderPrevious(datum: Datum, series: ConcreteSeries): JSX.Element {
-  const current = series.selectValue(datum, MeasureDerivation.CURRENT);
-  const previous = series.selectValue(datum, MeasureDerivation.PREVIOUS);
+  const current = series.selectValue(datum, SeriesDerivation.CURRENT);
+  const previous = series.selectValue(datum, SeriesDerivation.PREVIOUS);
   const formatter = series.formatter();
   return <React.Fragment>
     <span className="measure-previous-value">

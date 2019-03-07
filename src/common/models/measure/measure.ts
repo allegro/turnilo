@@ -19,6 +19,7 @@ import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
 import { $, AttributeInfo, ChainableExpression, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
+import { SeriesDerivation } from "../series/concrete-series";
 import { formatFnFactory } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
@@ -44,40 +45,6 @@ export interface MeasureJS {
   lowerIsBetter?: boolean;
 }
 
-export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
-
-export function titleWithDerivation({ title }: Measure, derivation: MeasureDerivation): string {
-  switch (derivation) {
-    case MeasureDerivation.CURRENT:
-      return title;
-    case MeasureDerivation.PREVIOUS:
-      return `Previous ${title}`;
-    case MeasureDerivation.DELTA:
-      return `Difference ${title}`;
-    default:
-      return title;
-  }
-}
-
-export interface DerivationFilter {
-  derivation: MeasureDerivation;
-  filter: Expression;
-}
-
-export class PreviousFilter implements DerivationFilter {
-  derivation = MeasureDerivation.PREVIOUS;
-
-  constructor(public filter: Expression) {
-  }
-}
-
-export class CurrentFilter implements DerivationFilter {
-  derivation = MeasureDerivation.CURRENT;
-
-  constructor(public filter: Expression) {
-  }
-}
-
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = "0,0.0 a";
   static DEFAULT_TRANSFORMATION = "none";
@@ -98,7 +65,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
    * @param name
    * @param derivation
    */
-  static derivedName(name: string, derivation: MeasureDerivation): string {
+  static derivedName(name: string, derivation: SeriesDerivation): string {
     return `${derivation}${name}`;
   }
 
@@ -106,21 +73,21 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
    * @deprecated
    * @param name
    */
-  static nominalName(name: string): { name: string, derivation: MeasureDerivation } {
-    if (name.startsWith(MeasureDerivation.DELTA)) {
+  static nominalName(name: string): { name: string, derivation: SeriesDerivation } {
+    if (name.startsWith(SeriesDerivation.DELTA)) {
       return {
-        name: name.substr(MeasureDerivation.DELTA.length),
-        derivation: MeasureDerivation.DELTA
+        name: name.substr(SeriesDerivation.DELTA.length),
+        derivation: SeriesDerivation.DELTA
       };
     }
-    if (name.startsWith(MeasureDerivation.PREVIOUS)) {
+    if (name.startsWith(SeriesDerivation.PREVIOUS)) {
       return {
-        name: name.substr(MeasureDerivation.PREVIOUS.length),
-        derivation: MeasureDerivation.PREVIOUS
+        name: name.substr(SeriesDerivation.PREVIOUS.length),
+        derivation: SeriesDerivation.PREVIOUS
       };
     }
     return {
-      derivation: MeasureDerivation.CURRENT,
+      derivation: SeriesDerivation.CURRENT,
       name
     };
   }

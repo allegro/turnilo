@@ -16,7 +16,7 @@
 
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
-import { MeasureDerivation } from "../measure/measure";
+import { SeriesDerivation } from "../series/concrete-series";
 
 export enum SortReferenceType { MEASURE = "measure", DIMENSION = "dimension" } // MEASURE_EXPRESSION later?
 
@@ -30,14 +30,14 @@ interface SortDefinition {
   type: SortReferenceType;
   direction: SortDirection;
   // it make sense only for SortReferenceType.MEASURE
-  period: MeasureDerivation;
+  period: SeriesDerivation;
 }
 
 const defaultSort: SortDefinition = {
   reference: null,
   type: null,
   direction: SortDirection.descending,
-  period: MeasureDerivation.CURRENT
+  period: SeriesDerivation.CURRENT
 };
 
 export class Sort extends Record<SortDefinition>(defaultSort) {
