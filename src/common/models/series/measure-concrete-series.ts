@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ApplyExpression } from "plywood";
+import { ApplyExpression, Expression } from "plywood";
 import { Measure } from "../measure/measure";
-import { ConcreteSeries, DerivationFilter } from "./concrete-series";
+import { ConcreteSeries } from "./concrete-series";
 import { MeasureSeries } from "./measure-series";
 
 export function fromMeasure(measure: Measure): MeasureConcreteSeries {
@@ -29,9 +29,7 @@ export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
     super(series, measure);
   }
 
-  public plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
-    const expression = this.applyPeriod(derivationFilter);
-    const name = this.plywoodKey(derivationFilter && derivationFilter.derivation);
-    return new ApplyExpression({ name, expression });
+  protected applyExpression(expression: Expression, name: string): ApplyExpression {
+    return new ApplyExpression({ expression, name });
   }
 }

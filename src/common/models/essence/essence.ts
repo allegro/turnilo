@@ -27,9 +27,9 @@ import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, 
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
-import { Measure, MeasureDerivation } from "../measure/measure";
+import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
-import { ConcreteSeries } from "../series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
 import { ExpressionConcreteSeries } from "../series/expression-concrete-series";
 import { ExpressionSeries } from "../series/expression-series";
 import { MeasureConcreteSeries } from "../series/measure-concrete-series";
@@ -41,7 +41,7 @@ import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { TimeShiftEnv } from "../time-shift/time-shift-env";
+import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
@@ -285,10 +285,15 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public getTimeShiftEnv(timekeeper: Timekeeper): TimeShiftEnv {
     const timeDimension = this.getTimeDimension();
+    const currentFilter = toExpression(this.currentTimeFilter(timekeeper), timeDimension);
+    if (!this.hasComparison()) {
+      return { type: TimeShiftEnvType.CURRENT, currentFilter };
+    }
 
     return {
+      type: TimeShiftEnvType.WITH_PREVIOUS,
       shift: this.timeShift.valueOf(),
-      currentFilter: toExpression(this.currentTimeFilter(timekeeper), timeDimension),
+      currentFilter,
       previousFilter: this.hasComparison() ? toExpression(this.previousTimeFilter(timekeeper), timeDimension) : undefined
     };
   }
@@ -643,8 +648,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       if (!addPrevious) return [new SortOn(measure)];
       return [
         new SortOn(measure),
-        new SortOn(measure, MeasureDerivation.PREVIOUS),
-        new SortOn(measure, MeasureDerivation.DELTA)
+        new SortOn(measure, SeriesDerivation.PREVIOUS),
+        new SortOn(measure, SeriesDerivation.DELTA)
       ];
     });
   }
