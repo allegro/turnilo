@@ -59,7 +59,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     }
   }
 
-  public plywoodKey(derivation = SeriesDerivation.CURRENT): string {
+ public plywoodKey(derivation = SeriesDerivation.CURRENT): string {
     return getNameWithDerivation(this.measure.name, derivation);
   }
 
