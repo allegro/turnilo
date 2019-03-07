@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { List } from "immutable";
 import { $, Expression, LimitExpression, ply, SortExpression } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
-import { CurrentFilter, getNameWithDerivation, PreviousFilter, SeriesDerivation } from "../../models/series/concrete-series";
+import { ConcreteSeries, getNameWithDerivation } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
@@ -29,38 +30,24 @@ import { thread } from "../functional/functional";
 
 const $main = $("main");
 
-function applySeries(essence: Essence, timeShiftEnv: TimeShiftEnv, nestingLevel = 0) {
-  const series = essence.getConcreteSeries();
-  const hasComparison = essence.hasComparison();
+function applySeries(series: List<ConcreteSeries>, timeShiftEnv: TimeShiftEnv, nestingLevel = 0) {
 
   return (query: Expression) => {
     return series.reduce((query, series) => {
-      if (!hasComparison) {
         return query.performAction(
-          series.plywoodExpression(nestingLevel)
+          series.plywoodExpression(nestingLevel, timeShiftEnv)
         );
-      }
-      return query
-        .performAction(series.plywoodExpression(nestingLevel, new CurrentFilter(timeShiftEnv.currentFilter)))
-        .performAction(series.plywoodExpression(nestingLevel, new PreviousFilter(timeShiftEnv.previousFilter)));
     }, query);
   };
 }
 
-function applyDeltaSortExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, { reference, period }: Sort): Expression {
-  if (period !== SeriesDerivation.DELTA) return query;
-  // TODO: FIX for non-measure series
-  return query.apply(getNameWithDerivation(reference, SeriesDerivation.DELTA), $(reference).subtract($(getNameWithDerivation(reference, SeriesDerivation.PREVIOUS))));
-}
-
-function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nestingLevel: number) {
-  return (query: Expression) => {
-    const queryWithReference = applyDeltaSortExpression(essence, query, nestingLevel, currentFilter, sort);
-    return queryWithReference.performAction(new SortExpression({
-      expression: $(sort.reference),
+function applySort(sort: Sort) {
+  return (query: Expression) =>
+    query.performAction(new SortExpression({
+      // TODO: Use plywoodKey from correct series!
+      expression: $(getNameWithDerivation(sort.reference, sort.period)),
       direction: sortDirectionMapper[sort.direction]
     }));
-  };
 }
 
 function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
@@ -116,8 +103,8 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
   return thread(
     $main.split(currentSplit, dimension.name),
     applyHaving(colors, dimension),
-    applySeries(essence, timeShiftEnv, nestingLevel),
-    applySort(essence, sort, timeShiftEnv.currentFilter, nestingLevel),
+    applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
+    applySort(sort),
     applyLimit(colors, limit, dimension),
     applySubSplit(nestingLevel, essence, timeShiftEnv)
   );
@@ -134,7 +121,7 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
 
   const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
 
-  const queryWithMeasures = applySeries(essence, timeShiftEnv)(mainExp);
+  const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
     return queryWithMeasures.apply(SPLIT, applySplit(0, essence, timeShiftEnv));

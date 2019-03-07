@@ -19,8 +19,21 @@ import { Expression } from "plywood";
 
 type FilterExpression = Expression;
 
-export interface TimeShiftEnv {
-  shift: Duration;
+export enum TimeShiftEnvType { CURRENT, WITH_PREVIOUS }
+
+interface TimeShiftEnvBase {
+  type: TimeShiftEnvType;
   currentFilter: FilterExpression;
+}
+
+export interface TimeShiftEnvCurrent extends TimeShiftEnvBase {
+  type: TimeShiftEnvType.CURRENT;
+}
+
+export interface TimeShiftEnvWithPrevious extends TimeShiftEnvBase {
+  type: TimeShiftEnvType.WITH_PREVIOUS;
+  shift: Duration;
   previousFilter: FilterExpression;
 }
+
+export type TimeShiftEnv = TimeShiftEnvCurrent | TimeShiftEnvWithPrevious;

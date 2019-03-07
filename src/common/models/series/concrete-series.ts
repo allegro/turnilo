@@ -16,29 +16,52 @@
 
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
-import { Measure, MeasureDerivation } from "../measure/measure";
-import { TimeShiftEnv } from "../time-shift/time-shift-env";
+import { Measure } from "../measure/measure";
+import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
+
+export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
 
 export abstract class ConcreteSeries<T extends Series = Series> {
 
   protected constructor(public readonly series: T, public readonly measure: Measure) {
   }
 
-  public key(derivation = MeasureDerivation.CURRENT): string {
+  public key(derivation = SeriesDerivation.CURRENT): string {
     switch (derivation) {
-      case MeasureDerivation.CURRENT:
+      case SeriesDerivation.CURRENT:
         return this.measure.name;
-      case MeasureDerivation.PREVIOUS:
+      case SeriesDerivation.PREVIOUS:
         return `${this.measure.name}-previous`;
-      case MeasureDerivation.DELTA:
+      case SeriesDerivation.DELTA:
         return `${this.measure.name}-delta`;
     }
   }
 
  public plywoodKey(derivation = SeriesDerivation.CURRENT): string {
     return getNameWithDerivation(this.measure.name, derivation);
+  }
+
+  protected abstract applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression;
+
+  public plywoodExpression(nestingLevel: number, timeShiftEnv: TimeShiftEnv): Expression {
+    const { expression } = this.measure;
+    switch (timeShiftEnv.type) {
+      case TimeShiftEnvType.CURRENT:
+        return this.applyExpression(expression, this.plywoodKey(), nestingLevel);
+      case TimeShiftEnvType.WITH_PREVIOUS: {
+        const currentName = this.plywoodKey();
+        const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
+        const current = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.currentFilter), currentName, nestingLevel);
+        const previous = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.previousFilter), previousName, nestingLevel);
+        const delta = new ApplyExpression({
+          name: this.plywoodKey(SeriesDerivation.DELTA),
+          expression: $(currentName).subtract($(previousName))
+        });
+        return current.performAction(previous).performAction(delta);
+      }
+    }
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
@@ -50,19 +73,14 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     });
   }
 
-  protected applyPeriod(derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): Expression {
-    if (derivation === MeasureDerivation.CURRENT) return this.measure.expression;
-    return this.filterMainRefs(this.measure.expression, timeShiftEnv.currentFilter);
-  }
-
-  public selectValue(datum: Datum, period = MeasureDerivation.CURRENT): number {
+  public selectValue(datum: Datum, period = SeriesDerivation.CURRENT): number {
     switch (period) {
-      case MeasureDerivation.CURRENT:
-      case MeasureDerivation.PREVIOUS:
+      case SeriesDerivation.CURRENT:
+      case SeriesDerivation.PREVIOUS:
         return datum[this.plywoodKey(period)] as number;
-      case MeasureDerivation.DELTA: {
-        const current = datum[this.plywoodKey(MeasureDerivation.CURRENT)] as number;
-        const previous = datum[this.plywoodKey(MeasureDerivation.PREVIOUS)] as number;
+      case SeriesDerivation.DELTA: {
+        const current = datum[this.plywoodKey(SeriesDerivation.CURRENT)] as number;
+        const previous = datum[this.plywoodKey(SeriesDerivation.PREVIOUS)] as number;
         return Math.abs(current - previous);
       }
     }
@@ -75,26 +93,35 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     return seriesFormatter(this.series.format, this.measure);
   }
 
-  public formatValue(datum: Datum, period = MeasureDerivation.CURRENT): string {
+  public formatValue(datum: Datum, period = SeriesDerivation.CURRENT): string {
     const value = this.selectValue(datum, period);
     const formatter = seriesFormatter(this.series.format, this.measure);
     return formatter(value);
   }
 
-  private derivationTitle(derivation: MeasureDerivation): string {
-    switch (derivation) {
-      case MeasureDerivation.CURRENT:
-        return "";
-      case MeasureDerivation.PREVIOUS:
-        return "Previous ";
-      case MeasureDerivation.DELTA:
-        return "Difference ";
-    }
+  public title(derivation = SeriesDerivation.CURRENT): string {
+    return titleWithDerivation(this.measure, derivation);
   }
+}
 
-  public title(derivation = MeasureDerivation.CURRENT): string {
-    return `${this.derivationTitle(derivation)}${this.measure.title}`;
+function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
+  switch (derivation) {
+    case SeriesDerivation.CURRENT:
+      return title;
+    case SeriesDerivation.PREVIOUS:
+      return `Previous ${title}`;
+    case SeriesDerivation.DELTA:
+      return `Difference ${title}`;
+    default:
+      return title;
   }
+}
 
-  public abstract plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression;
+/**
+ * @deprecated
+ * @param reference
+ * @param derivation
+ */
+export function getNameWithDerivation(reference: string, derivation: SeriesDerivation) {
+  return `${derivation}${reference}`;
 }

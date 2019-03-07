@@ -22,7 +22,7 @@ import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension } from "../dimension/dimension";
 import { Sort } from "../sort/sort";
-import { TimeShiftEnv } from "../time-shift/time-shift-env";
+import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 
 export enum SplitType {
   number = "number",
@@ -55,9 +55,15 @@ export function bucketToAction(bucket: Bucket): Expression {
     : new NumberBucketExpression({ size: bucket });
 }
 
-export function toExpression({ bucket, type }: Split, { expression }: Dimension, { shift, currentFilter }: TimeShiftEnv): Expression {
-  const shouldApplyShift = shift && type === SplitType.time;
-  const expWithShift = shouldApplyShift ? currentFilter.then(expression).fallback(expression.timeShift(shift)) : expression;
+function applyTimeShift(type: SplitType, expression: Expression, env: TimeShiftEnv): Expression {
+  if (env.type === TimeShiftEnvType.WITH_PREVIOUS && type === SplitType.time) {
+    env.currentFilter.then(expression).fallback(expression.timeShift(env.shift));
+  }
+  return expression;
+}
+
+export function toExpression({ bucket, type }: Split, { expression }: Dimension, env: TimeShiftEnv): Expression {
+  const expWithShift = applyTimeShift(type, expression, env);
   if (!bucket) return expWithShift;
   return expWithShift.performAction(bucketToAction(bucket));
 }
