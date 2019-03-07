@@ -17,9 +17,8 @@
 
 import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
-import { $, AttributeInfo, ChainableExpression, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
+import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
-import { SeriesDerivation } from "../series/concrete-series";
 import { formatFnFactory } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
@@ -58,58 +57,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     if (!measureName) return null;
     measureName = measureName.toLowerCase(); // Case insensitive
     return measures.find(measure => measure.name.toLowerCase() === measureName);
-  }
-
-  /**
-   * @deprecated
-   * @param name
-   * @param derivation
-   */
-  static derivedName(name: string, derivation: SeriesDerivation): string {
-    return `${derivation}${name}`;
-  }
-
-  /**
-   * @deprecated
-   * @param name
-   */
-  static nominalName(name: string): { name: string, derivation: SeriesDerivation } {
-    if (name.startsWith(SeriesDerivation.DELTA)) {
-      return {
-        name: name.substr(SeriesDerivation.DELTA.length),
-        derivation: SeriesDerivation.DELTA
-      };
-    }
-    if (name.startsWith(SeriesDerivation.PREVIOUS)) {
-      return {
-        name: name.substr(SeriesDerivation.PREVIOUS.length),
-        derivation: SeriesDerivation.PREVIOUS
-      };
-    }
-    return {
-      derivation: SeriesDerivation.CURRENT,
-      name
-    };
-  }
-
-  /**
-   * Look for all instances of aggregateAction($blah) and return the blahs
-   * @param ex
-   * @returns {string[]}
-   */
-  static getAggregateReferences(ex: Expression): string[] {
-    let references: string[] = [];
-    ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainableExpression) {
-        const actions = ex.getArgumentExpressions();
-        for (let action of actions) {
-          if (action.isAggregate()) {
-            references = references.concat(action.getFreeReferences());
-          }
-        }
-      }
-    });
-    return deduplicateSort(references);
   }
 
   static getReferences(ex: Expression): string[] {

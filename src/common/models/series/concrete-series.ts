@@ -40,6 +40,7 @@ export class CurrentFilter implements DerivationFilter {
   constructor(public filter: Expression) {
   }
 }
+
 export abstract class ConcreteSeries<T extends Series = Series> {
 
   protected constructor(public readonly series: T, public readonly measure: Measure) {
@@ -58,9 +59,8 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     }
   }
 
-  protected plywoodKey(derivation = SeriesDerivation.CURRENT): string {
-    const derivationStr = derivation === SeriesDerivation.CURRENT ? "" : `_${derivation}__`;
-    return `${derivationStr}${this.measure.name}`;
+  public plywoodKey(derivation = SeriesDerivation.CURRENT): string {
+    return getNameWithDerivation(this.measure.name, derivation);
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
@@ -108,7 +108,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 }
 
-export function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
+function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
   switch (derivation) {
     case SeriesDerivation.CURRENT:
       return title;
@@ -121,3 +121,11 @@ export function titleWithDerivation({ title }: Measure, derivation: SeriesDeriva
   }
 }
 
+/**
+ * @deprecated
+ * @param reference
+ * @param derivation
+ */
+export function getNameWithDerivation(reference: string, derivation: SeriesDerivation) {
+  return `${derivation}${reference}`;
+}

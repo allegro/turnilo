@@ -41,7 +41,7 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     }
   }
 
-  protected plywoodKey(derivation: SeriesDerivation): string {
+  public plywoodKey(derivation: SeriesDerivation): string {
     return `${super.plywoodKey(derivation)}__${this.series.operation}_`;
   }
 
