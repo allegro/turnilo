@@ -16,11 +16,30 @@
 
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
-import { DerivationFilter, Measure, MeasureDerivation } from "../measure/measure";
-import { TimeShiftEnv } from "../time-shift/time-shift-env";
+import { Measure } from "../measure/measure";
 import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
 
+export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
+
+export interface DerivationFilter {
+  derivation: SeriesDerivation;
+  filter: Expression;
+}
+
+export class PreviousFilter implements DerivationFilter {
+  derivation = SeriesDerivation.PREVIOUS;
+
+  constructor(public filter: Expression) {
+  }
+}
+
+export class CurrentFilter implements DerivationFilter {
+  derivation = SeriesDerivation.CURRENT;
+
+  constructor(public filter: Expression) {
+  }
+}
 export abstract class ConcreteSeries<T extends Series = Series> {
 
   protected constructor(public readonly series: T, public readonly measure: Measure) {
@@ -28,19 +47,19 @@ export abstract class ConcreteSeries<T extends Series = Series> {
 
   public abstract plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression;
 
-  public key(derivation = MeasureDerivation.CURRENT): string {
+  public key(derivation = SeriesDerivation.CURRENT): string {
     switch (derivation) {
-      case MeasureDerivation.CURRENT:
+      case SeriesDerivation.CURRENT:
         return this.measure.name;
-      case MeasureDerivation.PREVIOUS:
+      case SeriesDerivation.PREVIOUS:
         return `${this.measure.name}-previous`;
-      case MeasureDerivation.DELTA:
+      case SeriesDerivation.DELTA:
         return `${this.measure.name}-delta`;
     }
   }
 
-  protected plywoodKey(derivation = MeasureDerivation.CURRENT): string {
-    const derivationStr = derivation === MeasureDerivation.CURRENT ? "" : `_${derivation}__`;
+  protected plywoodKey(derivation = SeriesDerivation.CURRENT): string {
+    const derivationStr = derivation === SeriesDerivation.CURRENT ? "" : `_${derivation}__`;
     return `${derivationStr}${this.measure.name}`;
   }
 
@@ -58,14 +77,14 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     return this.filterMainRefs(this.measure.expression, derivationFilter.filter);
   }
 
-  public selectValue(datum: Datum, period = MeasureDerivation.CURRENT): number {
+  public selectValue(datum: Datum, period = SeriesDerivation.CURRENT): number {
     switch (period) {
-      case MeasureDerivation.CURRENT:
-      case MeasureDerivation.PREVIOUS:
+      case SeriesDerivation.CURRENT:
+      case SeriesDerivation.PREVIOUS:
         return datum[this.plywoodKey(period)] as number;
-      case MeasureDerivation.DELTA: {
-        const current = datum[this.plywoodKey(MeasureDerivation.CURRENT)] as number;
-        const previous = datum[this.plywoodKey(MeasureDerivation.PREVIOUS)] as number;
+      case SeriesDerivation.DELTA: {
+        const current = datum[this.plywoodKey(SeriesDerivation.CURRENT)] as number;
+        const previous = datum[this.plywoodKey(SeriesDerivation.PREVIOUS)] as number;
         return Math.abs(current - previous);
       }
     }
@@ -78,24 +97,27 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     return seriesFormatter(this.series.format, this.measure);
   }
 
-  public formatValue(datum: Datum, period = MeasureDerivation.CURRENT): string {
+  public formatValue(datum: Datum, period = SeriesDerivation.CURRENT): string {
     const value = this.selectValue(datum, period);
     const formatter = seriesFormatter(this.series.format, this.measure);
     return formatter(value);
   }
 
-  private derivationTitle(derivation: MeasureDerivation): string {
-    switch (derivation) {
-      case MeasureDerivation.CURRENT:
-        return "";
-      case MeasureDerivation.PREVIOUS:
-        return "Previous ";
-      case MeasureDerivation.DELTA:
-        return "Difference ";
-    }
-  }
-
-  public title(derivation = MeasureDerivation.CURRENT): string {
-    return `${this.derivationTitle(derivation)}${this.measure.title}`;
+  public title(derivation = SeriesDerivation.CURRENT): string {
+    return `${titleWithDerivation(this.measure, derivation)}${this.measure.title}`;
   }
 }
+
+export function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
+  switch (derivation) {
+    case SeriesDerivation.CURRENT:
+      return title;
+    case SeriesDerivation.PREVIOUS:
+      return `Previous ${title}`;
+    case SeriesDerivation.DELTA:
+      return `Difference ${title}`;
+    default:
+      return title;
+  }
+}
+

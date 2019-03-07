@@ -16,7 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { Direction } from "plywood";
-import { MeasureDerivation } from "../../models/measure/measure";
+import { SeriesDerivation } from "../../models/series/concrete-series";
 import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 
@@ -24,7 +24,7 @@ export interface SplitSortDefinition {
   ref: string;
   direction: SortDirection;
   type: SortReferenceType;
-  period?: MeasureDerivation;
+  period?: SeriesDerivation;
 }
 
 export interface BaseSplitDefinition {
@@ -68,11 +68,11 @@ function inferType(reference: string, dimensionName: string) {
   return reference === dimensionName ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
 }
 
-function inferPeriodAndReference({ ref, period }: { ref: string, period?: MeasureDerivation }): { reference: string, period: MeasureDerivation } {
+function inferPeriodAndReference({ ref, period }: { ref: string, period?: SeriesDerivation }): { reference: string, period: SeriesDerivation } {
   if (period) return { period, reference: ref };
-  if (ref.indexOf(PREVIOUS_PREFIX) === 0) return { reference: ref.substring(PREVIOUS_PREFIX.length), period: MeasureDerivation.PREVIOUS };
-  if (ref.indexOf(DELTA_PREFIX) === 0) return { reference: ref.substring(DELTA_PREFIX.length), period: MeasureDerivation.DELTA };
-  return { reference: ref, period: MeasureDerivation.CURRENT };
+  if (ref.indexOf(PREVIOUS_PREFIX) === 0) return { reference: ref.substring(PREVIOUS_PREFIX.length), period: SeriesDerivation.PREVIOUS };
+  if (ref.indexOf(DELTA_PREFIX) === 0) return { reference: ref.substring(DELTA_PREFIX.length), period: SeriesDerivation.DELTA };
+  return { reference: ref, period: SeriesDerivation.CURRENT };
 }
 
 function toSort(sort: any, dimensionName: string): Sort {

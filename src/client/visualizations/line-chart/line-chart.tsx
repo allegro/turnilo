@@ -29,8 +29,8 @@ import { Essence } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, NumberRange as FilterNumberRange } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { ContinuousDimensionKind, getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
-import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { Measure } from "../../../common/models/measure/measure";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
@@ -378,7 +378,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             value: series.formatValue(hoverDatum),
             delta: essence.hasComparison() && <Delta
               currentValue={series.selectValue(hoverDatum)}
-              previousValue={series.selectValue(hoverDatum, MeasureDerivation.PREVIOUS)}
+              previousValue={series.selectValue(hoverDatum, SeriesDerivation.PREVIOUS)}
               formatter={formatter}
               lowerIsBetter={series.measure.lowerIsBetter}
             />
@@ -434,10 +434,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
           return {
             ...currentEntry,
-            previous: series.formatValue(hoverDatum, MeasureDerivation.PREVIOUS),
+            previous: series.formatValue(hoverDatum, SeriesDerivation.PREVIOUS),
             delta: essence.hasComparison() && <Delta
               currentValue={series.selectValue(hoverDatum)}
-              previousValue={series.selectValue(hoverDatum, MeasureDerivation.PREVIOUS)}
+              previousValue={series.selectValue(hoverDatum, SeriesDerivation.PREVIOUS)}
               formatter={formatter}
               lowerIsBetter={series.measure.lowerIsBetter}
             />
@@ -475,7 +475,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       return series.formatValue(datum);
     }
     const currentValue = series.selectValue(datum);
-    const previousValue = series.selectValue(datum, MeasureDerivation.PREVIOUS);
+    const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
     const formatter = series.formatter();
     return <MeasureBubbleContent
       lowerIsBetter={series.measure.lowerIsBetter}
@@ -617,7 +617,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
     const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
-    const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, MeasureDerivation.PREVIOUS));
+    const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
 
     const datum: Datum = dataset.data[0];
     const splitData = datum[SPLIT] as Dataset;

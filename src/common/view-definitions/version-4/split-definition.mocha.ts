@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { MeasureDerivation } from "../../models/measure/measure";
+import { SeriesDerivation } from "../../models/measure/measure";
 import { SortDirection } from "../../models/sort/sort";
 import { SplitFixtures } from "../../models/split/split.fixtures";
 import { splitConverter } from "./split-definition";
@@ -41,8 +41,8 @@ describe("SplitDefinition v4", () => {
 
   describe("legacy previous/delta sort reference", () => {
     const legacySorts = [
-      { dimension: "channel", sortOn: "_previous__count", expectedReference: "count", expectedPeriod: MeasureDerivation.PREVIOUS },
-      { dimension: "channel", sortOn: "_delta__count", expectedReference: "count", expectedPeriod: MeasureDerivation.DELTA }
+      { dimension: "channel", sortOn: "_previous__count", expectedReference: "count", expectedPeriod: SeriesDerivation.PREVIOUS },
+      { dimension: "channel", sortOn: "_delta__count", expectedReference: "count", expectedPeriod: SeriesDerivation.DELTA }
     ];
 
     legacySorts.forEach(({ dimension, sortOn, expectedReference, expectedPeriod }) => {

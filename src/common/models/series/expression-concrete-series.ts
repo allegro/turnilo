@@ -15,9 +15,8 @@
  */
 
 import { $, ApplyExpression } from "plywood";
-import { DerivationFilter, Measure, MeasureDerivation } from "../measure/measure";
-import { TimeShiftEnv } from "../time-shift/time-shift-env";
-import { ConcreteSeries } from "./concrete-series";
+import { Measure } from "../measure/measure";
+import { ConcreteSeries, DerivationFilter, SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries, ExpressionSeriesOperation } from "./expression-series";
 
 export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
@@ -25,11 +24,11 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     super(series, measure);
   }
 
-  key(derivation?: MeasureDerivation): string {
+  key(derivation?: SeriesDerivation): string {
     return `${super.key(derivation)}-${this.series.operation}`;
   }
 
-  title(derivation?: MeasureDerivation): string {
+  title(derivation?: SeriesDerivation): string {
     return `${super.title(derivation)} ${this.operationTitle()}`;
   }
 
@@ -42,7 +41,7 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     }
   }
 
-  protected plywoodKey(derivation: MeasureDerivation): string {
+  protected plywoodKey(derivation: SeriesDerivation): string {
     return `${super.plywoodKey(derivation)}__${this.series.operation}_`;
   }
 

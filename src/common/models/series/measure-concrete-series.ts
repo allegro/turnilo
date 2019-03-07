@@ -15,8 +15,8 @@
  */
 
 import { ApplyExpression } from "plywood";
-import { DerivationFilter, Measure } from "../measure/measure";
-import { ConcreteSeries } from "./concrete-series";
+import { Measure } from "../measure/measure";
+import { ConcreteSeries, DerivationFilter } from "./concrete-series";
 import { MeasureSeries } from "./measure-series";
 
 export function fromMeasure(measure: Measure): MeasureConcreteSeries {
