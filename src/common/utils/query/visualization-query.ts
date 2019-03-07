@@ -20,8 +20,7 @@ import { toExpression as splitToExpression } from "../../../common/models/split/
 import { Colors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
-import { Measure } from "../../models/measure/measure";
-import { CurrentFilter, PreviousFilter, SeriesDerivation } from "../../models/series/concrete-series";
+import { CurrentFilter, getNameWithDerivation, PreviousFilter, SeriesDerivation } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
@@ -51,7 +50,7 @@ function applySeries(essence: Essence, timeShiftEnv: TimeShiftEnv, nestingLevel 
 function applyDeltaSortExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, { reference, period }: Sort): Expression {
   if (period !== SeriesDerivation.DELTA) return query;
   // TODO: FIX for non-measure series
-  return query.apply(reference, $(reference).subtract($(Measure.derivedName(reference, SeriesDerivation.PREVIOUS))));
+  return query.apply(reference, $(reference).subtract($(getNameWithDerivation(reference, SeriesDerivation.PREVIOUS))));
 }
 
 function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nestingLevel: number) {

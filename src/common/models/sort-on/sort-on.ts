@@ -18,7 +18,8 @@
 
 import { Dimension } from "../dimension/dimension";
 import { Measure } from "../measure/measure";
-import { SeriesDerivation, titleWithDerivation } from "../series/concrete-series";
+import { SeriesDerivation } from "../series/concrete-series";
+import { fromMeasure } from "../series/measure-concrete-series";
 import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
 
 export class SortOn {
@@ -58,6 +59,6 @@ export class SortOn {
 
   public getTitle() {
     if (this.reference instanceof Dimension) return this.reference.title;
-    return titleWithDerivation(this.reference, this.period);
+    return fromMeasure(this.reference).title(this.period);
   }
 }

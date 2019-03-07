@@ -15,7 +15,7 @@
  */
 
 import { ExpressionJS } from "plywood";
-import { SeriesDerivation } from "../series/concrete-series";
+import { getNameWithDerivation, SeriesDerivation } from "../series/concrete-series";
 import { Measure, MeasureJS } from "./measure";
 
 export class MeasureFixtures {
@@ -29,7 +29,7 @@ export class MeasureFixtures {
 
   static previousWikiCountJS(): MeasureJS {
     return {
-      name: Measure.derivedName("count", SeriesDerivation.PREVIOUS),
+      name: "_previous__count",
       title: "Count",
       formula: "$main.sum($count)"
     };
@@ -37,7 +37,7 @@ export class MeasureFixtures {
 
   static deltaWikiCountJS(): MeasureJS {
     return {
-      name: Measure.derivedName("count", SeriesDerivation.DELTA),
+      name: "_delta__count",
       title: "Count",
       formula: "$main.sum($count)"
     };

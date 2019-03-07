@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
+import { List } from "immutable";
 import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
-import { Measure } from "../../../common/models/measure/measure";
-import { titleWithDerivation } from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+
+function findSeries(name: string, concreteSeriesList: List<ConcreteSeries>): { series: ConcreteSeries, derivation: SeriesDerivation } {
+  for (const derivation of [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA]) {
+    const series = concreteSeriesList.find(s => s.plywoodKey(derivation) === name);
+    if (series) {
+      return { series, derivation };
+    }
+  }
+  return null;
+}
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
@@ -25,10 +35,9 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
       TIME_RANGE: (range: TimeRange) => range.start.toISOString()
     },
     attributeTitle: ({ name }: AttributeInfo) => {
-      const { derivation, name: measureName } = Measure.nominalName(name);
-      const measure = essence.dataCube.getMeasure(measureName);
-      if (measure) {
-        return titleWithDerivation(measure, derivation);
+      const { series, derivation } = findSeries(name, essence.getConcreteSeries());
+      if (series) {
+        return series.title(derivation);
       }
       const dimension = essence.dataCube.getDimension(name);
       if (dimension) {
