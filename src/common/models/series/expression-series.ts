@@ -16,8 +16,9 @@
 
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
-import { BasicSeriesValue, SeriesType } from "./series";
+import { BasicSeriesValue } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
+import { SeriesType } from "./series-type";
 
 export enum ExpressionSeriesOperation { PERCENT_OF_PARENT = "percent_of_parent", PERCENT_OF_TOTAL = "percent_of_total" }
 

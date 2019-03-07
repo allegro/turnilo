@@ -31,7 +31,7 @@ export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
 
   public plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
     const expression = this.applyPeriod(derivationFilter);
-    const name = this.plywoodKey(derivationFilter.derivation);
+    const name = this.plywoodKey(derivationFilter && derivationFilter.derivation);
     return new ApplyExpression({ name, expression });
   }
 }
