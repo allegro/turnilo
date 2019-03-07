@@ -104,7 +104,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   public title(derivation = SeriesDerivation.CURRENT): string {
-    return `${titleWithDerivation(this.measure, derivation)}${this.measure.title}`;
+    return titleWithDerivation(this.measure, derivation);
   }
 }
 
