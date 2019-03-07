@@ -15,7 +15,6 @@
  */
 
 import { ExpressionJS } from "plywood";
-import { getNameWithDerivation, SeriesDerivation } from "../series/concrete-series";
 import { Measure, MeasureJS } from "./measure";
 
 export class MeasureFixtures {
