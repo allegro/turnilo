@@ -16,7 +16,7 @@
 
 import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
-import { Measure, MeasureDerivation } from "../measure/measure";
+import { DerivationFilter, Measure, MeasureDerivation } from "../measure/measure";
 import { TimeShiftEnv } from "../time-shift/time-shift-env";
 import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
@@ -25,6 +25,8 @@ export abstract class ConcreteSeries<T extends Series = Series> {
 
   protected constructor(public readonly series: T, public readonly measure: Measure) {
   }
+
+  public abstract plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression;
 
   public key(derivation = MeasureDerivation.CURRENT): string {
     switch (derivation) {
@@ -51,9 +53,9 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     });
   }
 
-  protected applyPeriod(derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): Expression {
-    if (derivation === MeasureDerivation.CURRENT) return this.measure.expression;
-    return this.filterMainRefs(this.measure.expression, timeShiftEnv.currentFilter);
+  protected applyPeriod(derivationFilter?: DerivationFilter): Expression {
+    if (!derivationFilter) return this.measure.expression;
+    return this.filterMainRefs(this.measure.expression, derivationFilter.filter);
   }
 
   public selectValue(datum: Datum, period = MeasureDerivation.CURRENT): number {
@@ -96,6 +98,4 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   public title(derivation = MeasureDerivation.CURRENT): string {
     return `${this.derivationTitle(derivation)}${this.measure.title}`;
   }
-
-  public abstract plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression;
 }
