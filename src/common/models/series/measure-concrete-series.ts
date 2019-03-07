@@ -15,8 +15,7 @@
  */
 
 import { ApplyExpression } from "plywood";
-import { Measure, MeasureDerivation } from "../measure/measure";
-import { TimeShiftEnv } from "../time-shift/time-shift-env";
+import { DerivationFilter, Measure } from "../measure/measure";
 import { ConcreteSeries } from "./concrete-series";
 import { MeasureSeries } from "./measure-series";
 
@@ -30,9 +29,9 @@ export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
     super(series, measure);
   }
 
-  public plywoodExpression(nestingLevel: number, derivation: MeasureDerivation, timeShiftEnv: TimeShiftEnv): ApplyExpression {
-    const expression = this.applyPeriod(derivation, timeShiftEnv);
-    const name = this.plywoodKey(derivation);
+  public plywoodExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
+    const expression = this.applyPeriod(derivationFilter);
+    const name = this.plywoodKey(derivationFilter.derivation);
     return new ApplyExpression({ name, expression });
   }
 }

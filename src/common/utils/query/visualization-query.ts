@@ -20,7 +20,7 @@ import { toExpression as splitToExpression } from "../../../common/models/split/
 import { Colors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
-import { CurrentFilter, Measure, MeasureDerivation } from "../../models/measure/measure";
+import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
@@ -37,12 +37,12 @@ function applySeries(essence: Essence, timeShiftEnv: TimeShiftEnv, nestingLevel 
     return series.reduce((query, series) => {
       if (!hasComparison) {
         return query.performAction(
-          series.plywoodExpression(nestingLevel, MeasureDerivation.CURRENT, timeShiftEnv)
+          series.plywoodExpression(nestingLevel)
         );
       }
       return query
-        .performAction(series.plywoodExpression(nestingLevel, MeasureDerivation.CURRENT, timeShiftEnv))
-        .performAction(series.plywoodExpression(nestingLevel, MeasureDerivation.PREVIOUS, timeShiftEnv));
+        .performAction(series.plywoodExpression(nestingLevel, new CurrentFilter(timeShiftEnv.currentFilter)))
+        .performAction(series.plywoodExpression(nestingLevel, new PreviousFilter(timeShiftEnv.previousFilter)));
     }, query);
   };
 }

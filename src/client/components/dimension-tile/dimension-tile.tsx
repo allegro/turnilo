@@ -185,9 +185,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (sortOn.reference instanceof Measure) {
-      const series = fromMeasure(sortOn.reference);
       // TODO: FIX that
-      query = query.performAction(series.plywoodExpression(0, MeasureDerivation.CURRENT, null));
+      const series = fromMeasure(sortOn.reference);
+      query = query.performAction(series.plywoodExpression(0));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
