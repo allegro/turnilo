@@ -23,6 +23,10 @@ import { seriesFormatter } from "./series-format";
 
 export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
 
+export interface DerivationFilter {
+  derivation: SeriesDerivation;
+  filter: Expression;
+}
 export abstract class ConcreteSeries<T extends Series = Series> {
 
   protected constructor(public readonly series: T, public readonly measure: Measure) {
@@ -100,11 +104,11 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   public title(derivation = SeriesDerivation.CURRENT): string {
-    return titleWithDerivation(this.measure, derivation);
+    return `${titleWithDerivation(this.measure, derivation)}`;
   }
 }
 
-function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
+export function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
   switch (derivation) {
     case SeriesDerivation.CURRENT:
       return title;

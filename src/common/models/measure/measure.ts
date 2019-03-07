@@ -19,7 +19,6 @@ import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
 import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
-import { SeriesDerivation } from "../series/concrete-series";
 import { formatFnFactory } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
