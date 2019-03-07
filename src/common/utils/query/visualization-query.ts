@@ -50,7 +50,7 @@ function applySeries(essence: Essence, timeShiftEnv: TimeShiftEnv, nestingLevel 
 function applyDeltaSortExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, { reference, period }: Sort): Expression {
   if (period !== SeriesDerivation.DELTA) return query;
   // TODO: FIX for non-measure series
-  return query.apply(reference, $(reference).subtract($(getNameWithDerivation(reference, SeriesDerivation.PREVIOUS))));
+  return query.apply(getNameWithDerivation(reference, SeriesDerivation.DELTA), $(reference).subtract($(getNameWithDerivation(reference, SeriesDerivation.PREVIOUS))));
 }
 
 function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nestingLevel: number) {
