@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-import { ExpressionSeries } from "./expression-series";
-import { MeasureSeries } from "./measure-series";
-import { SeriesType } from "./series-type";
-
-export interface BasicSeriesValue {
-  type: SeriesType;
-}
-
-export type Series = MeasureSeries | ExpressionSeries;
-
-export function fromJS(params: any): Series {
-  const { type } = params;
-  switch (type as SeriesType) {
-    case SeriesType.EXPRESSION:
-      return new ExpressionSeries(params);
-    case SeriesType.MEASURE:
-      return new MeasureSeries(params);
-  }
-}
+export enum SeriesType { MEASURE = "measures", EXPRESSION = "expression" }

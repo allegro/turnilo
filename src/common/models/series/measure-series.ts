@@ -17,8 +17,9 @@
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
-import { BasicSeriesValue, SeriesType } from "./series";
+import { BasicSeriesValue } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
+import { SeriesType } from "./series-type";
 
 interface MeasureSeriesValue extends BasicSeriesValue {
   type: SeriesType.MEASURE;
