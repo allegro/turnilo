@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export enum SeriesType { MEASURE = "measure", EXPRESSION = "expression" }
+export enum SeriesType { MEASURE = "measures", EXPRESSION = "expression" }
