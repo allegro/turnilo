@@ -383,7 +383,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public newEffectiveMeasures(other: Essence): boolean {
-    return !this.getEffectiveSelectedMeasures().equals(other.getEffectiveSelectedMeasures());
+    return !this.getEffectiveMeasures().equals(other.getEffectiveMeasures());
   }
 
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, unfilterDimension: Dimension = null): boolean {
