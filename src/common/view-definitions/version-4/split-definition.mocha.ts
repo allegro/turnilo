@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { SeriesDerivation } from "../../models/measure/measure";
+import { SeriesDerivation } from "../../models/series/concrete-series";
 import { SortDirection } from "../../models/sort/sort";
 import { SplitFixtures } from "../../models/split/split.fixtures";
 import { splitConverter } from "./split-definition";
