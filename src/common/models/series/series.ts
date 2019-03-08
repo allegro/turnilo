@@ -16,7 +16,7 @@
 
 import { MeasureSeries } from "./measure-series";
 
-export enum SeriesType { MEASURE = "measures", EXPRESSION = "expression" }
+export enum SeriesType { MEASURE = "measure", EXPRESSION = "expression" }
 
 export interface BasicSeriesValue {
   type: SeriesType;
