@@ -40,6 +40,7 @@ import { fromMeasure } from "../../../common/models/series/measure-concrete-seri
 import { DEFAULT_FORMAT, seriesFormatter } from "../../../common/models/series/series-format";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
+import { TimeShiftEnvType } from "../../../common/models/time-shift/time-shift-env";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -185,9 +186,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (sortOn.reference instanceof Measure) {
-      // TODO: FIX that
+      // TODO: FIX creation of plywood expression and inlined timeShiftEnv
       const series = fromMeasure(sortOn.reference);
-      query = query.performAction(series.plywoodExpression(0, essence.getTimeShiftEnv(timekeeper)));
+      query = query.performAction(series.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT, currentFilter: null }));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
