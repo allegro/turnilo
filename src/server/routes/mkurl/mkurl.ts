@@ -15,73 +15,69 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { MANIFESTS } from "../../../common/manifests";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Essence } from "../../../common/models/essence/essence";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
+import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
-const router = Router();
+export function mkurlRouter(settingsGetter: SettingsGetter) {
 
-router.post("/", (req: SwivRequest, res: Response) => {
-  const { dataCubeName, viewDefinitionVersion, viewDefinition } = req.body;
+  const router = Router();
 
-  if (typeof viewDefinitionVersion !== "string") {
-    res.status(400).send({
-      error: "must have a viewDefinitionVersion"
-    });
-    return;
-  }
+  router.post("/", async (req: Request, res: Response) => {
+    const { dataCubeName, viewDefinitionVersion, viewDefinition } = req.body;
 
-  const definitionConverter = definitionConverters[viewDefinitionVersion as ViewDefinitionVersion];
+    if (typeof viewDefinitionVersion !== "string") {
+      res.status(400).send({ error: "must have a viewDefinitionVersion" });
+      return;
+    }
 
-  if (definitionConverter == null) {
-    res.status(400).send({
-      error: "unsupported viewDefinitionVersion value"
-    });
-    return;
-  }
+    const definitionConverter = definitionConverters[viewDefinitionVersion as ViewDefinitionVersion];
 
-  if (typeof dataCubeName !== "string") {
-    res.status(400).send({
-      error: "must have a dataCubeName"
-    });
-    return;
-  }
-
-  if (typeof viewDefinition !== "object") {
-    res.status(400).send({
-      error: "viewDefinition must be an object"
-    });
-    return;
-  }
-
-  req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCubeName })
-    .then((appSettings: any) => {
-      const myDataCube = appSettings.getDataCube(dataCubeName);
-      if (!myDataCube) {
-        res.status(400).send({ error: "unknown data cube" });
-        return;
-      }
-
-      let essence: Essence;
-
-      try {
-        essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube, MANIFESTS);
-      } catch (e) {
-        res.status(400).send({
-          error: "invalid viewDefinition object",
-          message: e.message
-        });
-        return;
-      }
-
-      res.json({
-        hash: `#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
+    if (definitionConverter == null) {
+      res.status(400).send({ error: "unsupported viewDefinitionVersion value"
       });
-    });
-});
+      return;
+    }
 
-export = router;
+    if (typeof dataCubeName !== "string") {
+      res.status(400).send({ error: "must have a dataCubeName" });
+      return;
+    }
+
+    if (typeof viewDefinition !== "object") {
+      res.status(400).send({ error: "viewDefinition must be an object" });
+      return;
+    }
+
+    let settings: AppSettings;
+    try {
+      settings = await settingsGetter(<GetSettingsOptions> { dataCubeOfInterest: dataCubeName });
+    } catch (e) {
+      res.status(400).send({ error: "Couldn't load settings" });
+      return;
+    }
+    const myDataCube = settings.getDataCube(dataCubeName);
+    if (!myDataCube) {
+      res.status(400).send({ error: "unknown data cube" });
+      return;
+    }
+
+    let essence: Essence;
+
+    try {
+      essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube, MANIFESTS);
+    } catch ({ message }) {
+      res.status(400).send({ error: "invalid viewDefinition object", message });
+      return;
+    }
+
+    res.json({
+      hash: `#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
+    });
+  });
+  return router;
+}

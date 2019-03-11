@@ -34,18 +34,17 @@ import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { HomeView } from "../../views/home-view/home-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
-import "./swiv-application.scss";
+import "./turnilo-application.scss";
 
-export interface SwivApplicationProps {
+export interface TurniloApplicationProps {
   version: string;
   user?: User;
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
-  stateful?: boolean;
 }
 
-export interface SwivApplicationState {
+export interface TurniloApplicationState {
   appSettings?: AppSettings;
   timekeeper?: Timekeeper;
   drawerOpen?: boolean;
@@ -64,12 +63,12 @@ export const NO_DATA: ViewType = "no-data";
 
 const transitionTimeout = { enter: 500, exit: 300 };
 
-export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
+export class TurniloApplication extends React.Component<TurniloApplicationProps, TurniloApplicationState> {
   private hashUpdating = false;
   private readonly sideBarHrefFn: FunctionSlot<string>;
   private readonly urlHashConverter: UrlHashConverter;
 
-  constructor(props: SwivApplicationProps) {
+  constructor(props: TurniloApplicationProps) {
     super(props);
 
     this.urlHashConverter = urlHashConverter;
@@ -163,7 +162,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const { dataCubes } = this.state.appSettings;
     const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
-    const newState: SwivApplicationState = {
+    const newState: TurniloApplicationState = {
       viewType,
       viewHash,
       drawerOpen: false
@@ -333,7 +332,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   renderView() {
-    const { maxFilters, user, stateful } = this.props;
+    const { maxFilters, user } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor } = this.state;
     const { dataCubes, customization } = appSettings;
 
@@ -345,7 +344,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           onOpenAbout={this.openAboutModal}
           customization={customization}
           appSettings={appSettings}
-          stateful={stateful}
         />;
 
       case HOME:
@@ -371,7 +369,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           customization={customization}
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}
-          stateful={stateful}
         />;
 
       default:
@@ -380,7 +377,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   render() {
-    return <main className="swiv-application">
+    return <main className="turnilo-application">
       {this.renderView()}
       {this.renderSideDrawerTransition()}
       {this.renderAboutModal()}

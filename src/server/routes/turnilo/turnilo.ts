@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-import { Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { SETTINGS_MANAGER } from "../../config";
-import { SwivRequest } from "../../utils/general/general";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 import { mainLayout } from "../../views";
 
-var router = Router();
+export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
 
-router.get("/", (req: SwivRequest, res: Response, next: Function) => {
-  req.getSettings()
-    .then(appSettings => {
-      var clientSettings = appSettings.toClientSettings();
+  const router = Router();
+
+  router.get("/", async (req: Request, res: Response) => {
+    try {
+      const settings = await settingsGetter();
+      const clientSettings = settings.toClientSettings();
       res.send(mainLayout({
-        version: req.version,
-        title: appSettings.customization.getTitle(req.version),
-        user: req.user,
+        version,
+        title: settings.customization.getTitle(version),
         appSettings: clientSettings,
-        timekeeper: SETTINGS_MANAGER.getTimekeeper(),
-        stateful: req.stateful
+        timekeeper: SETTINGS_MANAGER.getTimekeeper()
       }));
-    });
-});
+    } catch (e) {
+      res.status(400).send({ error: "Couldn't load Turnilo Application" });
+    }
+  });
 
-export = router;
+  return router;
+}

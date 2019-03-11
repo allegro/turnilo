@@ -35,12 +35,12 @@
   .color-previous,
   .color-value {
     line-height: 18px;
+    padding-left: 5px;
     white-space: nowrap;
     text-align: right;
   }
 
   .color-previous {
-    padding-left: 5px;
     color: $text-lighterish;
   }
 

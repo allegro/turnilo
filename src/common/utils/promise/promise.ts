@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Unary } from "../functional/functional";
+
 export function timeout(ms: number): Promise<void> {
   return new Promise((resolve, reject) => {
     const id = setTimeout(() => {
@@ -21,4 +23,17 @@ export function timeout(ms: number): Promise<void> {
       reject(`Timed out in ${ms}ms.`);
     }, ms);
   });
+}
+
+export class Deferred<T> {
+  public readonly promise: Promise<T>;
+  public resolve: Unary<T, void>;
+  public reject: Unary<unknown, void>;
+
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
 }

@@ -37,9 +37,10 @@ export interface SettingsManagerOptions {
 }
 
 export interface GetSettingsOptions {
-  dataCubeOfInterest?: string;
   timeout?: number;
 }
+
+export type SettingsGetter = (opts?: GetSettingsOptions) => Promise<AppSettings>;
 
 export class SettingsManager {
   public logger: Logger;
@@ -128,7 +129,6 @@ export class SettingsManager {
 
     // Refresh all clusters
     currentWork = currentWork.then(() => {
-      // ToDo: utilize dataCubeOfInterest
       return Promise.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
     });
 

@@ -16,30 +16,17 @@
  */
 
 import * as express from "express";
-import { Express, RequestHandler, Response } from "express";
+import { Express } from "express";
 import * as http from "http";
 import * as nock from "nock";
 import * as supertest from "supertest";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
-import { SwivRequest } from "../../utils/general/general";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-import * as readinessRouter from "./readiness";
+import { readinessRouter } from "./readiness";
 
-const appSettings = AppSettingsFixtures.wikiOnly();
 const loadStatusPath = "/druid/broker/v1/loadstatus";
-const wikiBrokerNock = nock(`http://${ClusterFixtures.druidWikiClusterJS().host}`);
-const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS().host}`);
-
-const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler => {
-  return (req: SwivRequest, res: Response, next: Function) => {
-    req.user = null;
-    req.version = "0.9.4";
-    req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Promise.resolve(appSettings);
-    next();
-  };
-};
+const wikiBrokerNock = nock(`${ClusterFixtures.druidWikiClusterJS().url}`);
+const twitterBrokerNock = nock(`${ClusterFixtures.druidTwitterClusterJS().url}`);
 
 const mockLoadStatus = (nock: nock.Scope, fixture: { status: number, initialized: boolean, delay: number }) => {
   const { status, initialized, delay } = fixture;
@@ -56,8 +43,7 @@ describe("readiness router", () => {
   describe("single druid cluster", () => {
     before(done => {
       app = express();
-      app.use(appSettingsHandlerProvider(appSettings));
-      app.use("/", readinessRouter);
+      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnly())));
       server = app.listen(0, done);
     });
 
@@ -85,8 +71,7 @@ describe("readiness router", () => {
   describe("multiple druid clusters", () => {
     before(done => {
       app = express();
-      app.use(appSettingsHandlerProvider(AppSettingsFixtures.wikiTwitter()));
-      app.use("/", readinessRouter);
+      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.wikiTwitter())));
       server = app.listen(0, done);
     });
 
@@ -94,8 +79,8 @@ describe("readiness router", () => {
       server.close(done);
     });
 
-    const multipleClustersTests = [
-      {
+    const multipleClustersTests: any[] = [
+     {
         scenario: "all healthy brokers",
         wikiBroker: { status: 200, initialized: true, delay: 0 },
         twitterBroker: { status: 200, initialized: true, delay: 0 },
