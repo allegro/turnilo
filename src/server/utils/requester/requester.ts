@@ -49,14 +49,11 @@ function defaultPort(protocol: string): number {
 }
 
 function getHostAndProtocol(url: URL): { host: string, protocol: PlywoodProtocol } {
-  const { protocol, port, host } = url;
+  const { protocol, port, hostname } = url;
   const plywoodProtocol = httpToPlywoodProtocol(protocol);
-  if (port) {
-    return { host, protocol: plywoodProtocol };
-  }
   return {
     protocol: plywoodProtocol,
-    host: `${host}:${port || defaultPort(protocol)}`
+    host: `${hostname}:${port || defaultPort(protocol)}`
   };
 }
 
