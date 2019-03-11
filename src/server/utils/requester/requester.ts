@@ -30,35 +30,37 @@ export interface ProperRequesterOptions {
   druidRequestDecorator?: DruidRequestDecorator;
 }
 
-function httpToPlywoodProtocol(protocol: string): "plain" | "tls" {
+type PlywoodProtocol = "plain" | "tls";
+
+function httpToPlywoodProtocol(protocol: string): PlywoodProtocol {
   if (protocol === "https:") return "tls";
   return "plain";
 }
 
-function defaultPorts(url: URL): URL {
-  if (url.port) return url;
-  if (url.protocol === "http:") {
-    const newUrl = new URL(url.toString());
-    newUrl.port = "80";
-    return newUrl;
+function defaultPort(protocol: string): number {
+  switch (protocol) {
+    case "http:":
+      return 80;
+    case "https:":
+      return 443;
+    default:
+      throw new Error(`Unsupported protocol: ${protocol}`);
   }
-  if (url.protocol === "https:") {
-    const newUrl = new URL(url.toString());
-    newUrl.port = "443";
-    return newUrl;
-  }
-  return url;
 }
 
-function createDruidRequester(cluster: Cluster, druidRequestDecorator: DruidRequestDecorator): PlywoodRequester<any> {
-  const { href, protocol } = defaultPorts(new URL(cluster.url));
+function getHostAndProtocol(url: URL): { host: string, protocol: PlywoodProtocol } {
+  const { protocol, port, hostname } = url;
+  const plywoodProtocol = httpToPlywoodProtocol(protocol);
+  return {
+    protocol: plywoodProtocol,
+    host: `${hostname}:${port || defaultPort(protocol)}`
+  };
+}
+
+function createDruidRequester(cluster: Cluster, requestDecorator: DruidRequestDecorator): PlywoodRequester<any> {
+  const { host, protocol } = getHostAndProtocol(new URL(cluster.url));
   const timeout = cluster.getTimeout();
-  return druidRequesterFactory({
-    host: href,
-    timeout,
-    requestDecorator: druidRequestDecorator,
-    protocol: httpToPlywoodProtocol(protocol)
-  });
+  return druidRequesterFactory({ host, timeout, requestDecorator, protocol });
 }
 
 function setRetryOptions(retry: number) {
