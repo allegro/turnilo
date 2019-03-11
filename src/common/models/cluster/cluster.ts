@@ -17,6 +17,7 @@
 
 import { BackCompat, BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
+import { URL } from "url";
 import { isTruthy, verifyUrlSafeName } from "../../utils/general/general";
 
 export type SourceListScan = "disable" | "auto";
@@ -70,6 +71,10 @@ function ensureNotTiny(v: number): void {
   }
 }
 
+function validateUrl(url: string): void {
+  new URL(url);
+}
+
 function oldHostParameter(cluster: any): string {
   return cluster.host || cluster.druidHost || cluster.brokerHost;
 }
@@ -86,9 +91,6 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
 
   static fromJS(parameters: ClusterJS): Cluster {
-    if (!parameters.url && ((parameters as any).host || (parameters as any).druidHost || (parameters as any).brokerHost)) {
-      parameters.url = (parameters as any).host || (parameters as any).druidHost || (parameters as any).brokerHost;
-    }
     if (typeof parameters.timeout === "string") {
       parameters.timeout = parseInt(parameters.timeout, 10);
     }
@@ -103,7 +105,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
 
   static PROPERTIES: Property[] = [
     { name: "name", validate: [verifyUrlSafeName, ensureNotNative] },
-    { name: "url", defaultValue: null },
+    { name: "url", defaultValue: null, validate: [validateUrl] },
     { name: "title", defaultValue: "" },
     { name: "version", defaultValue: null },
     { name: "timeout", defaultValue: Cluster.DEFAULT_TIMEOUT },
@@ -160,7 +162,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public getSourceListRefreshInterval: () => number;
   public getSourceReintrospectInterval: () => number;
   public getIntrospectionStrategy: () => string;
-  public changeHost: (newHost: string) => Cluster;
+  public changeUrl: (newUrl: string) => Cluster;
   public changeTimeout: (newTimeout: string) => Cluster;
   public changeSourceListRefreshInterval: (newSourceListRefreshInterval: string) => Cluster;
 
