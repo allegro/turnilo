@@ -18,19 +18,19 @@ import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
-import { Unary } from "../../../common/utils/functional/functional";
+import { Binary } from "../../../common/utils/functional/functional";
 import { FormatPicker } from "./format-picker";
 
 interface MeasureSeriesMenuProps {
   measure: Measure;
   series: MeasureSeries;
-  onChange: Unary<MeasureSeries, void>;
+  onChange: Binary<MeasureSeries, boolean, void>;
 }
 
 export const MeasureSeriesMenu: React.SFC<MeasureSeriesMenuProps> = ({ measure, series, onChange }) => {
 
   function onFormatChange(format: SeriesFormat) {
-    onChange(series.set("format", format));
+    onChange(series.set("format", format), true);
   }
 
   return <React.Fragment>

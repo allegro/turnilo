@@ -42,11 +42,12 @@ interface SeriesMenuProps {
 
 interface SeriesMenuState {
   series: Series;
+  isValid: boolean;
 }
 
 export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState> {
 
-  state: SeriesMenuState = { series: this.props.initialSeries };
+  state: SeriesMenuState = { series: this.props.initialSeries, isValid: true };
 
   componentDidMount() {
     window.addEventListener("keydown", this.globalKeyDownListener);
@@ -58,7 +59,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   globalKeyDownListener = (e: KeyboardEvent) => enterKey(e) && this.onOkClick();
 
-  saveSeries = (series: Series) => this.setState({ series });
+  saveSeries = (series: Series, isValid: boolean) => this.setState({ series, isValid });
 
   onCancelClick = () => this.props.onClose();
 
@@ -72,8 +73,8 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   validate() {
     const { initialSeries } = this.props;
-    const { series } = this.state;
-    return !initialSeries.equals(series);
+    const { isValid, series } = this.state;
+    return isValid && !initialSeries.equals(series);
   }
 
   render() {

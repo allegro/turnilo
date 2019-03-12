@@ -18,14 +18,14 @@ import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { ExpressionSeries, ExpressionSeriesOperation } from "../../../common/models/series/expression-series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
-import { Unary } from "../../../common/utils/functional/functional";
+import { Binary } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
 import { FormatPicker } from "./format-picker";
 
 interface ExpressionSeriesMenuProps {
   measure: Measure;
   series: ExpressionSeries;
-  onChange: Unary<ExpressionSeries, void>;
+  onChange: Binary<ExpressionSeries, boolean, void>;
 }
 
 interface Operation {
@@ -39,15 +39,23 @@ const OPERATIONS: Operation[] = [{
   id: ExpressionSeriesOperation.PERCENT_OF_TOTAL, label: "Percent of total"
 }];
 
+function isSeriesValid(series: ExpressionSeries): boolean {
+  // sometimes could yield invalid series!!
+  return true;
+}
+
 export const ExpressionSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, measure, onChange }) => {
 
+  function onSeriesChange(series: ExpressionSeries) {
+    onChange(series, isSeriesValid(series));
+  }
+
   function onFormatChange(format: SeriesFormat) {
-    onChange(series.set("format", format));
+    onSeriesChange(series.set("format", format));
   }
 
   function onOperationSelect({ id }: Operation) {
-    // sometimes could yield invalid series!!
-    onChange(series.set("operation", id));
+    onSeriesChange(series.set("operation", id));
   }
 
   return <React.Fragment>
