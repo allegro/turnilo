@@ -16,7 +16,7 @@
 
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
-import { BasicSeriesValue } from "./series";
+import { BasicSeriesValue, SeriesBehaviours } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
 import { SeriesType } from "./series-type";
 
@@ -37,9 +37,13 @@ const defaultSeries: ExpressionSeriesValue = {
   operation: null
 };
 
-export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSeries) {
+export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSeries)  implements SeriesBehaviours {
 
   constructor(params: RequireOnly<ExpressionSeriesValue, "reference" | "operation">) {
     super(params);
+  }
+
+  key() {
+    return `${this.reference}-${this.operation}${this.operand ? ` ${this.operand}` : ""}`;
   }
 }

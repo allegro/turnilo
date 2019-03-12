@@ -22,6 +22,10 @@ export interface BasicSeriesValue {
   type: SeriesType;
 }
 
+export interface SeriesBehaviours {
+  key: () => string;
+}
+
 export type Series = MeasureSeries | ExpressionSeries;
 
 export function fromJS(params: any): Series {

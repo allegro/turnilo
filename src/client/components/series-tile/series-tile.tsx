@@ -323,11 +323,12 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     if (!menuSeries) return null;
 
     return <SeriesMenu
+      key={menuSeries.key()}
       clicker={clicker}
       essence={essence}
       containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
-      series={menuSeries}
+      initialSeries={menuSeries}
       onClose={this.closeMenu}
       inside={menuInside}
     />;

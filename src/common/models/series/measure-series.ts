@@ -17,7 +17,7 @@
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
-import { BasicSeriesValue } from "./series";
+import { BasicSeriesValue, SeriesBehaviours } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
 import { SeriesType } from "./series-type";
 
@@ -33,12 +33,16 @@ const defaultMeasureSeries: MeasureSeriesValue = {
   type: SeriesType.MEASURE
 };
 
-export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeries) {
+export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeries) implements SeriesBehaviours {
   static fromMeasure(measure: Measure) {
     return new MeasureSeries({ reference: measure.name });
   }
 
   constructor(params: RequireOnly<MeasureSeriesValue, "reference">) {
     super(params);
+  }
+
+  key() {
+    return this.reference;
   }
 }

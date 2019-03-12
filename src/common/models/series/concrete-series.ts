@@ -31,11 +31,11 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   public key(derivation = SeriesDerivation.CURRENT): string {
     switch (derivation) {
       case SeriesDerivation.CURRENT:
-        return this.measure.name;
+        return this.series.key();
       case SeriesDerivation.PREVIOUS:
-        return `${this.measure.name}-previous`;
+        return `${this.series.key()}-previous`;
       case SeriesDerivation.DELTA:
-        return `${this.measure.name}-delta`;
+        return `${this.series.key()}-delta`;
     }
   }
 

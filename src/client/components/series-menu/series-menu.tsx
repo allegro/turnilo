@@ -36,7 +36,7 @@ interface SeriesMenuProps {
   openOn: Element;
   containerStage: Stage;
   onClose: Fn;
-  series: Series;
+  initialSeries: Series;
   inside?: Element;
 }
 
@@ -46,7 +46,7 @@ interface SeriesMenuState {
 
 export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState> {
 
-  state: SeriesMenuState = { series: this.props.series };
+  state: SeriesMenuState = { series: this.props.initialSeries };
 
   componentDidMount() {
     window.addEventListener("keydown", this.globalKeyDownListener);
@@ -64,13 +64,16 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   onOkClick = () => {
     if (!this.validate()) return;
-    const { series: originalSeries, clicker, essence, onClose } = this.props;
-    clicker.changeSeriesList(essence.series.replaceSeries(originalSeries, this.state.series));
+    const { initialSeries, clicker, essence, onClose } = this.props;
+    const { series } = this.state;
+    clicker.changeSeriesList(essence.series.replaceSeries(initialSeries, series));
     onClose();
   }
 
   validate() {
-    return !this.props.series.equals(this.state.series);
+    const { initialSeries } = this.props;
+    const { series } = this.state;
+    return !initialSeries.equals(series);
   }
 
   render() {
