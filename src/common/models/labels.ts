@@ -155,13 +155,9 @@ export const CLUSTER = {
     label: "Name",
     description: "The name of the cluster (to be referenced later from the data cube)"
   },
-  type: {
-    label: "Type",
-    description: "The database type of the cluster"
-  },
-  host: {
+  url: {
     label: "Host",
-    description: "The host (hostname:port) of the cluster. In the Druid case this must be the broker."
+    description: "The url address (http[s]://hostname[:port]) of the cluster. If no port, 80 is assumed for plain http, and 443 for secure https."
   },
   version: {
     label: "Version",

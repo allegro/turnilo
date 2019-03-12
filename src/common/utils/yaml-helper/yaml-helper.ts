@@ -133,8 +133,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   let props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
 
   props
-    .add("type")
-    .add("host")
+    .add("url")
     .add("version")
     .add("timeout", { defaultValue: Cluster.DEFAULT_TIMEOUT })
     .add("sourceListScan", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN })
