@@ -47,8 +47,12 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.updateSeries(list => list.filter(s => s !== series));
   }
 
-  public replaceSeries(original: Series, newSeries: Series): SeriesList {
-    return this.updateSeries(series => series.map(s => s.equals(original) ? newSeries : s));
+  public modifySeries(updatedSeries: Series): SeriesList {
+    return this.updateSeries(series => {
+      const idx = series.findIndex(s => s.key() === updatedSeries.key());
+      if (idx === -1) throw new Error(`Tried to modify series but couldn't find original one. Key: ${updatedSeries.key()}`);
+      return series.set(idx, updatedSeries);
+    });
   }
 
   public replaceByIndex(index: number, replace: Series): SeriesList {
