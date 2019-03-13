@@ -15,12 +15,12 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Essence } from "../../../common/models/essence/essence";
+import { Measure } from "../../../common/models/measure/measure";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
@@ -31,13 +31,12 @@ import { MeasureSeriesMenu } from "./measure-series-menu";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
-  clicker: Clicker;
-  essence: Essence;
-  openOn: Element;
+  saveSeries: Unary<Series, void>;
+  measure: Measure;
   containerStage: Stage;
   onClose: Fn;
   initialSeries: Series;
-  inside?: Element;
+  openOn: Element;
 }
 
 interface SeriesMenuState {
@@ -65,9 +64,9 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   onOkClick = () => {
     if (!this.validate()) return;
-    const { initialSeries, clicker, essence, onClose } = this.props;
+    const { saveSeries, onClose } = this.props;
     const { series } = this.state;
-    clicker.changeSeriesList(essence.series.replaceSeries(initialSeries, series));
+    saveSeries(series);
     onClose();
   }
 
@@ -78,10 +77,8 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { essence: { dataCube }, containerStage, openOn, onClose, inside } = this.props;
+    const { measure, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
-    const measure = dataCube.getMeasure(series.reference);
-    if (!measure) return null;
 
     return <BubbleMenu
       className="series-menu"
@@ -90,7 +87,6 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
       stage={Stage.fromSize(250, 240)}
       openOn={openOn}
       onClose={onClose}
-      inside={inside}
     >
       {series instanceof MeasureSeries && <MeasureSeriesMenu
         series={series}
