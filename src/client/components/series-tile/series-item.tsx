@@ -34,7 +34,7 @@ export interface Item {
 
 interface SeriesItemProps {
   item: Item;
-  style: React.CSSProperties;
+  style?: React.CSSProperties;
   removeSeries: Unary<Series, void>;
   saveSeries: Unary<Series, void>;
   openSeriesMenu: Unary<Series, void>;

@@ -187,8 +187,23 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     return <AddTile<Measure> containerStage={menuStage} onSelect={this.appendSeries} tiles={tiles} />;
   }
 
+  renderItem = (item: Item): JSX.Element => {
+    const { menuStage } = this.props;
+    const { series } = item;
+
+    return <SeriesItem
+      key={series.key()}
+      item={item}
+      closeSeriesMenu={this.closeSeriesMenu}
+      removeSeries={this.removeSeries}
+      dragStart={this.dragStart}
+      containerStage={menuStage}
+      openSeriesMenu={this.openSeriesMenu}
+      saveSeries={this.saveSeries} />;
+  }
+
   renderItems() {
-    const { menuStage, essence: { series, dataCube } } = this.props;
+    const { essence: { series, dataCube } } = this.props;
     const { overflowOpen, openSeriesMenu, maxItems } = this.state;
 
     const seriesItems: Item[] = series.series.toArray().map(series => {
@@ -199,38 +214,20 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
     const visibleItems = seriesItems
       .slice(0, maxItems)
-      .map((item, idx) => {
-        const { series } = item;
-        const style = transformStyle(idx * SECTION_WIDTH, 0);
-
-        return <SeriesItem
-          key={series.key()}
-          item={item}
-          style={style}
-          closeSeriesMenu={this.closeSeriesMenu}
-          removeSeries={this.removeSeries}
-          dragStart={this.dragStart}
-          containerStage={menuStage}
-          openSeriesMenu={this.openSeriesMenu}
-          saveSeries={this.saveSeries} />;
-      });
+      .map(this.renderItem)
+      .map((element, idx) => React.cloneElement(element, { style: transformStyle(idx * SECTION_WIDTH, 0) }));
 
     const overflowItems = seriesItems.slice(maxItems);
     if (overflowItems.length <= 0) return visibleItems;
 
+    const overflowOpened = overflowOpen || overflowItems.some(item => item.open);
     const seriesItemOverflow = <SeriesItemOverflow
       key="overflow-menu"
-      closeSeriesMenu={this.closeSeriesMenu}
-      removeSeries={this.removeSeries}
-      dragStart={this.dragStart}
-      containerStage={menuStage}
-      openSeriesMenu={this.openSeriesMenu}
-      saveSeries={this.saveSeries}
-      items={overflowItems}
-      open={overflowOpen}
+      items={overflowItems.map(this.renderItem)}
+      open={overflowOpened}
       openOverflowMenu={this.openOverflowMenu}
       x={visibleItems.length * SECTION_WIDTH}
-      closeOverflowMenu={this.closeOverflowMenu} />;
+      closeOverflowMenu={this.closeOverflowMenu}/>;
 
     return [...visibleItems, seriesItemOverflow];
   }

@@ -15,78 +15,49 @@
  */
 
 import * as React from "react";
-import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { CORE_ITEM_GAP } from "../../config/constants";
 import { transformStyle } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { WithRef } from "../with-ref/with-ref";
-import { Item, SeriesItem } from "./series-item";
 
 interface SeriesItemOverflowMenuProps {
-  items: Item[];
+  items: JSX.Element[];
   openOn: Element;
   closeOverflowMenu: Fn;
-  removeSeries: Unary<Series, void>;
-  saveSeries: Unary<Series, void>;
-  openSeriesMenu: Unary<Series, void>;
-  closeSeriesMenu: Fn;
-  dragStart: Ternary<string, Series, React.DragEvent<HTMLElement>, void>;
-  containerStage: Stage;
 }
 
 const SEGMENT_HEIGHT = 29 + CORE_ITEM_GAP;
 
 const SeriesItemOverflowMenu: React.SFC<SeriesItemOverflowMenuProps> = props => {
-  const { containerStage, closeSeriesMenu, openSeriesMenu, removeSeries, dragStart, items, saveSeries, openOn } = props;
-  const seriesItems = items.map((item, idx) => {
-    const { series } = item;
-    const style = transformStyle(0, CORE_ITEM_GAP + idx * SEGMENT_HEIGHT);
-    return <SeriesItem
-      key={series.key()}
-      item={item}
-      style={style}
-      closeSeriesMenu={closeSeriesMenu}
-      removeSeries={removeSeries}
-      dragStart={dragStart}
-      containerStage={containerStage}
-      openSeriesMenu={openSeriesMenu}
-      saveSeries={saveSeries}
-    />;
-  });
+  const { items, openOn } = props;
 
+  const positionedItems = items.map((item, idx) =>
+    React.cloneElement(item, { style: transformStyle(0, CORE_ITEM_GAP + idx * SEGMENT_HEIGHT) }));
   return <BubbleMenu
     className="overflow-menu"
     id={this.overflowMenuId}
     direction="down"
-    stage={Stage.fromSize(208, CORE_ITEM_GAP + (seriesItems.length * SEGMENT_HEIGHT))}
+    stage={Stage.fromSize(208, CORE_ITEM_GAP + (items.length * SEGMENT_HEIGHT))}
     fixedSize={true}
     openOn={openOn}
     onClose={close}
   >
-    {seriesItems}
+    {positionedItems}
   </BubbleMenu>;
 };
 
 interface SeriesItemOverflowProps {
   x: number;
-  items: Item[];
+  items: JSX.Element[];
   open: boolean;
   openOverflowMenu: Fn;
   closeOverflowMenu: Fn;
-  removeSeries: Unary<Series, void>;
-  saveSeries: Unary<Series, void>;
-  openSeriesMenu: Unary<Series, void>;
-  closeSeriesMenu: Fn;
-  dragStart: Ternary<string, Series, React.DragEvent<HTMLElement>, void>;
-  containerStage: Stage;
 }
 
 export const SeriesItemOverflow: React.SFC<SeriesItemOverflowProps> = props => {
-  const { x, items, dragStart, removeSeries, saveSeries, open, openSeriesMenu, openOverflowMenu, closeOverflowMenu, closeSeriesMenu, containerStage } = props;
-  const opened = open || items.some(item => item.open);
+  const { x, items, open, openOverflowMenu, closeOverflowMenu } = props;
 
   const style = transformStyle(x, 0);
   return <WithRef>
@@ -96,16 +67,10 @@ export const SeriesItemOverflow: React.SFC<SeriesItemOverflowProps> = props => {
       ref={setRef}
       onClick={openOverflowMenu}>
       <div className="count">{"+" + items.length}</div>
-      {opened && openOn && <SeriesItemOverflowMenu
+      {open && openOn && <SeriesItemOverflowMenu
         openOn={openOn}
         items={items}
-        closeOverflowMenu={closeOverflowMenu}
-        removeSeries={removeSeries}
-        saveSeries={saveSeries}
-        openSeriesMenu={openSeriesMenu}
-        closeSeriesMenu={closeSeriesMenu}
-        dragStart={dragStart}
-        containerStage={containerStage} />}
+        closeOverflowMenu={closeOverflowMenu} />}
     </div>}
   </WithRef>;
 };
