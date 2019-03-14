@@ -47,16 +47,18 @@ export const SeriesItem: React.SFC<SeriesItemProps> = props => {
   const { item, style, saveSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { series, measure, open } = item;
   return <WithRef>
-    {({ ref: openOn, setRef }) => <div
-      className={classNames(SERIES_CLASS_NAME, "measure")}
-      draggable={true}
-      ref={setRef}
-      onClick={() => openSeriesMenu(series)}
-      onDragStart={e => dragStart(measure.title, series, e)}
-      style={style}>
-      <div className="reading">{measure.title}</div>
-      <div className="remove" onClick={() => removeSeries(series)}>
-        <SvgIcon svg={require("../../icons/x.svg")} />
+    {({ ref: openOn, setRef }) => <React.Fragment>
+      <div
+        className={classNames(SERIES_CLASS_NAME, "measure")}
+        draggable={true}
+        ref={setRef}
+        onClick={() => openSeriesMenu(series)}
+        onDragStart={e => dragStart(measure.title, series, e)}
+        style={style}>
+        <div className="reading">{measure.title}</div>
+        <div className="remove" onClick={() => removeSeries(series)}>
+          <SvgIcon svg={require("../../icons/x.svg")} />
+        </div>
       </div>
       {open && openOn && <SeriesMenu
         key={series.key()}
@@ -66,6 +68,6 @@ export const SeriesItem: React.SFC<SeriesItemProps> = props => {
         initialSeries={series}
         measure={measure}
         saveSeries={saveSeries} />}
-    </div>}
+    </React.Fragment>}
   </WithRef>;
 };

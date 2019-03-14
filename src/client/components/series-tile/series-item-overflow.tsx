@@ -31,7 +31,7 @@ interface SeriesItemOverflowMenuProps {
 const SEGMENT_HEIGHT = 29 + CORE_ITEM_GAP;
 
 const SeriesItemOverflowMenu: React.SFC<SeriesItemOverflowMenuProps> = props => {
-  const { items, openOn } = props;
+  const { items, openOn, closeOverflowMenu } = props;
 
   const positionedItems = items.map((item, idx) =>
     React.cloneElement(item, { style: transformStyle(0, CORE_ITEM_GAP + idx * SEGMENT_HEIGHT) }));
@@ -42,7 +42,7 @@ const SeriesItemOverflowMenu: React.SFC<SeriesItemOverflowMenuProps> = props => 
     stage={Stage.fromSize(208, CORE_ITEM_GAP + (items.length * SEGMENT_HEIGHT))}
     fixedSize={true}
     openOn={openOn}
-    onClose={close}
+    onClose={closeOverflowMenu}
   >
     {positionedItems}
   </BubbleMenu>;
@@ -61,16 +61,18 @@ export const SeriesItemOverflow: React.SFC<SeriesItemOverflowProps> = props => {
 
   const style = transformStyle(x, 0);
   return <WithRef>
-    {({ ref: openOn, setRef }) => <div
-      className="overflow measure"
-      style={style}
-      ref={setRef}
-      onClick={openOverflowMenu}>
-      <div className="count">{"+" + items.length}</div>
+    {({ ref: openOn, setRef }) => <React.Fragment>
+      <div
+        className="overflow measure"
+        style={style}
+        ref={setRef}
+        onClick={openOverflowMenu}>
+        <div className="count">{"+" + items.length}</div>
+      </div>
       {open && openOn && <SeriesItemOverflowMenu
         openOn={openOn}
         items={items}
         closeOverflowMenu={closeOverflowMenu} />}
-    </div>}
+    </React.Fragment>}
   </WithRef>;
 };
