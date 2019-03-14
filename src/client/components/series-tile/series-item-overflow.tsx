@@ -22,7 +22,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { CORE_ITEM_GAP } from "../../config/constants";
 import { transformStyle } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { OpenOnSelf } from "../open-on-self/open-on-self";
+import { WithRef } from "../with-ref/with-ref";
 import { Item, SeriesItem } from "./series-item";
 
 interface SeriesItemOverflowMenuProps {
@@ -89,16 +89,15 @@ export const SeriesItemOverflow: React.SFC<SeriesItemOverflowProps> = props => {
   const opened = open || items.some(item => item.open);
 
   const style = transformStyle(x, 0);
-  return <OpenOnSelf open={opened}>
-    {({ element, setRef }) => <div
+  return <WithRef>
+    {({ ref: openOn, setRef }) => <div
       className="overflow measure"
       style={style}
       ref={setRef}
-      onClick={openOverflowMenu}
-    >
+      onClick={openOverflowMenu}>
       <div className="count">{"+" + items.length}</div>
-      {opened && element && <SeriesItemOverflowMenu
-        openOn={element}
+      {opened && openOn && <SeriesItemOverflowMenu
+        openOn={openOn}
         items={items}
         closeOverflowMenu={closeOverflowMenu}
         removeSeries={removeSeries}
@@ -108,5 +107,5 @@ export const SeriesItemOverflow: React.SFC<SeriesItemOverflowProps> = props => {
         dragStart={dragStart}
         containerStage={containerStage} />}
     </div>}
-  </OpenOnSelf>;
+  </WithRef>;
 };

@@ -21,7 +21,7 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
-import { OpenOnSelf } from "../open-on-self/open-on-self";
+import { WithRef } from "../with-ref/with-ref";
 import { SeriesMenu } from "../series-menu/series-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { SERIES_CLASS_NAME } from "./series-tile";
@@ -46,27 +46,26 @@ interface SeriesItemProps {
 export const SeriesItem: React.SFC<SeriesItemProps> = props => {
   const { item, style, saveSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { series, measure, open } = item;
-  return <OpenOnSelf open={open}>
-    {({ element, setRef }) => <div
+  return <WithRef>
+    {({ ref: openOn, setRef }) => <div
       className={classNames(SERIES_CLASS_NAME, "measure")}
       draggable={true}
       ref={setRef}
       onClick={() => openSeriesMenu(series)}
       onDragStart={e => dragStart(measure.title, series, e)}
-      style={style}
-    >
+      style={style}>
       <div className="reading">{measure.title}</div>
       <div className="remove" onClick={() => removeSeries(series)}>
         <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
-      {open && element && <SeriesMenu
+      {open && openOn && <SeriesMenu
         key={series.key()}
-        openOn={element}
+        openOn={openOn}
         containerStage={containerStage}
         onClose={closeSeriesMenu}
         initialSeries={series}
         measure={measure}
         saveSeries={saveSeries} />}
     </div>}
-  </OpenOnSelf>;
+  </WithRef>;
 };
