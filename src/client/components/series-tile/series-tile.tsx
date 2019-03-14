@@ -23,13 +23,14 @@ import { Measure } from "../../../common/models/measure/measure";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { Deferred } from "../../../common/utils/promise/promise";
+import { concatTruthy } from "../../../common/utils/functional/functional";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost, transformStyle } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
 import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
+import { DummySeriesItem } from "./dummy-series";
 import { Item, SeriesItem } from "./series-item";
 import { SeriesItemOverflow } from "./series-item-overflow";
 import "./series-tile.scss";
@@ -47,6 +48,7 @@ interface SeriesTileState {
   openSeriesMenu?: Series;
   overflowOpen?: boolean;
   maxItems?: number;
+  dummySeries?: Series;
 }
 
 export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState> {
@@ -70,10 +72,10 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
 
   // This will be called externally
   triggerSeriesMenu(measure: Measure) {
-    this.appendSeries(measure);
-    const series = MeasureSeries.fromMeasure(measure);
-    this.openSeriesMenu(series);
+    this.setState({ dummySeries: MeasureSeries.fromMeasure(measure) });
   }
+
+  removeDummySeries = () => this.setState({ dummySeries: null });
 
   openSeriesMenu = (series: Series) => this.setState({ openSeriesMenu: series });
 
@@ -202,32 +204,55 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
       saveSeries={this.saveSeries} />;
   }
 
+  renderDummySeriesItem(): JSX.Element {
+    const { dummySeries } = this.state;
+    if (!dummySeries) return null;
+
+    const { menuStage, essence: { dataCube } } = this.props;
+    const measure = dataCube.getMeasure(dummySeries.reference);
+
+    return <DummySeriesItem
+      key="dummy-series-item"
+      measure={measure}
+      series={dummySeries}
+      containerStage={menuStage}
+      saveSeries={this.saveSeries}
+      closeItem={this.removeDummySeries} />;
+  }
+
   renderItems() {
     const { essence: { series, dataCube } } = this.props;
     const { overflowOpen, openSeriesMenu, maxItems } = this.state;
 
-    const seriesItems: Item[] = series.series.toArray().map(series => {
-      const measure = dataCube.getMeasure(series.reference);
-      const open = openSeriesMenu && series.equals(openSeriesMenu);
-      return { series, measure, open };
-    });
+    const seriesItems: Array<Item & { dummy: boolean }> = series.series.toArray()
+      .map(series => {
+        const measure = dataCube.getMeasure(series.reference);
+        const open = openSeriesMenu && series.equals(openSeriesMenu);
+        return { series, measure, open, dummy: false };
+      });
 
-    const visibleItems = seriesItems
+    const seriesElements = concatTruthy(
+      ...seriesItems.map(this.renderItem),
+      this.renderDummySeriesItem()
+    );
+
+    const visibleItems = seriesElements
       .slice(0, maxItems)
-      .map(this.renderItem)
       .map((element, idx) => React.cloneElement(element, { style: transformStyle(idx * SECTION_WIDTH, 0) }));
 
-    const overflowItems = seriesItems.slice(maxItems);
+    const overflowItems = seriesElements.slice(maxItems);
     if (overflowItems.length <= 0) return visibleItems;
 
-    const overflowOpened = overflowOpen || overflowItems.some(item => item.open);
+    const anyOverflowItemOpen = seriesItems.slice(maxItems).some(item => item.open);
+    const isDummySeriesInOverflow = overflowItems.some(element => element.type === DummySeriesItem);
+    const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
     const seriesItemOverflow = <SeriesItemOverflow
       key="overflow-menu"
-      items={overflowItems.map(this.renderItem)}
+      items={overflowItems}
       open={overflowOpened}
       openOverflowMenu={this.openOverflowMenu}
       x={visibleItems.length * SECTION_WIDTH}
-      closeOverflowMenu={this.closeOverflowMenu}/>;
+      closeOverflowMenu={this.closeOverflowMenu} />;
 
     return [...visibleItems, seriesItemOverflow];
   }
@@ -252,5 +277,4 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
       {this.renderDragIndicator()}
     </div>;
   }
-
 }
