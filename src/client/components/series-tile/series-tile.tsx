@@ -235,25 +235,24 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     return [...visibleItems, seriesItemOverflow];
   }
 
-  render() {
+  renderDragIndicator() {
     const { dragPosition } = this.state;
-    return <div
-      className="series-tile"
-      onDragEnter={this.dragEnter}
-    >
+    return dragPosition && <React.Fragment>
+      <FancyDragIndicator dragPosition={dragPosition} />
+      <div className="drag-mask"
+           onDragOver={this.dragOver}
+           onDragLeave={this.dragLeave}
+           onDragExit={this.dragLeave}
+           onDrop={this.drop} />
+    </React.Fragment>;
+  }
+
+  render() {
+    return <div className="series-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.series}</div>
-      <div className="items" ref="items">
-        {this.renderItems()}
-      </div>
+      <div className="items" ref="items">{this.renderItems()}</div>
       {this.renderAddTileButton()}
-      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
-      {dragPosition ? <div
-        className="drag-mask"
-        onDragOver={this.dragOver}
-        onDragLeave={this.dragLeave}
-        onDragExit={this.dragLeave}
-        onDrop={this.drop}
-      /> : null}
+      {this.renderDragIndicator()}
     </div>;
   }
 
