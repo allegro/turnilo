@@ -244,11 +244,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
   }
 
-  private differentSortOn(oldSort: SortOn, newSort: SortOn): boolean {
-    if (oldSort && newSort) return !oldSort.equals(newSort);
-    return oldSort !== newSort;
-  }
-
   componentWillReceiveProps(nextProps: DimensionTileProps) {
     const { essence, timekeeper, dimension, sortOn } = this.props;
     const { selectedGranularity } = this.state;
@@ -275,7 +270,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) ||
       !dimension.equals(nextDimension) ||
-      this.differentSortOn(sortOn, nextProps.sortOn) ||
+      SortOn.equals(sortOn, nextProps.sortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {

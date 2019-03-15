@@ -31,7 +31,8 @@ export class SortOn {
   }
 
   static equals(sortOn: SortOn, other: SortOn): boolean {
-    return sortOn.equals(other);
+    if (sortOn && other) return !sortOn.equals(other);
+    return sortOn !== other;
   }
 
   constructor(public reference: Dimension | Measure, public period?: MeasureDerivation) {
