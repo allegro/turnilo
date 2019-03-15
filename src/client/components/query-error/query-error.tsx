@@ -17,26 +17,12 @@
 
 import * as React from "react";
 import { STRINGS } from "../../config/constants";
-import "./query-error.scss";
+import { ErrorMessage } from "../error-message/error-message";
 
 export interface QueryErrorProps {
-  error: any;
+  error: Error;
 }
 
-export interface QueryErrorState {
-}
-
-export class QueryError extends React.Component<QueryErrorProps, QueryErrorState> {
-
-  render() {
-    var { error } = this.props;
-
-    return <div className="query-error">
-      <div className="whiteout"></div>
-      <div className="error-container">
-        <div className="error">{STRINGS.queryError}</div>
-        <div className="message">{error.message}</div>
-      </div>
-    </div>;
-  }
-}
+export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
+  return <ErrorMessage message={error.message} title={STRINGS.queryError} />;
+};

@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +14,21 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import * as React from "react";
+import "./error-message.scss";
 
-.base-visualization {
-  @include pin-full;
-  overflow: hidden;
-
-  .internals {
-    @include pin-full;
-    overflow: auto;
-  }
-
-  .loader,
-  .error-message {
-    @include pin-full;
-  }
+interface ErrorProps {
+  message: string;
+  title?: string;
 }
+
+export const ErrorMessage: React.SFC<ErrorProps> = props => {
+  const { message, title } = props;
+  return <div className="error-message">
+    <div className="whiteout" />
+    <div className="error-container">
+      <div className="title">{title}</div>
+      <div className="message">{message}</div>
+    </div>
+  </div>;
+};

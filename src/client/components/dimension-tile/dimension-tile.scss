@@ -118,7 +118,7 @@ $folder-box-height: 32px;
   }
 
   .loader,
-  .query-error {
+  .error-message {
     @include pin-full;
   }
 }
