@@ -69,14 +69,15 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const visualization = NamedArray.findByName(visualizations, definition.visualization);
 
-    const series = SeriesList.fromMeasureNames(definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure]);
+    const measureNames = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
+    const series = SeriesList.fromMeasureNames(measureNames);
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
     const splits = Splits.fromSplits(splitJSConverter(definition.splits, dataCube));
     const timeShift = TimeShift.empty();
     const colors = definition.colors && Colors.fromJS(definition.colors);
-    const pinnedSort = dataCube.getMeasure(definition.pinnedSort) ? definition.pinnedSort : dataCube.getDefaultSortMeasure();
+    const pinnedSort = definition.pinnedSort;
     const highlight = readHighlight(definition.highlight, dataCube);
     const compare: any = null;
     return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort, compare, highlight });
