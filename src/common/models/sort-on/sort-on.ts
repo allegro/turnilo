@@ -42,7 +42,7 @@ export class SortOn {
   }
 
   public equals(other: SortOn): boolean {
-    return this.reference.equals(other.reference) && this.period === other.period;
+    return other instanceof SortOn && this.reference.equals(other.reference) && this.period === other.period;
   }
 
   public toSort(direction?: SortDirection): Sort {
