@@ -63,7 +63,7 @@ $checkbox-width: 20px;
     }
 
     .loader,
-    .error-message {
+    .message {
       @include pin-full;
     }
   }

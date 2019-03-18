@@ -14,21 +14,39 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import "./error-message.scss";
+@import '../../imports';
 
-interface ErrorProps {
-  message: string;
-  title?: string;
+$container-width: 180px;
+$container-height: 50px;
+
+.message {
+  text-align: center;
+
+  &.error {
+    .message-title {
+      color: $red;
+    }
+  }
+
+  .whiteout {
+    @include pin-full;
+    background: $white;
+    opacity: 0.5;
+  }
+
+  .message-container {
+    @include center($container-width, $container-height);
+    text-align: left;
+
+    .message-title {
+      font-size: 14px;
+    }
+
+    .message-content {
+      margin-top: 5px;
+      font-size: 13px;
+      overflow: hidden;
+    }
+  }
 }
 
-export const ErrorMessage: React.SFC<ErrorProps> = props => {
-  const { message, title } = props;
-  return <div className="error-message">
-    <div className="whiteout" />
-    <div className="error-container">
-      <div className="title">{title}</div>
-      <div className="message">{message}</div>
-    </div>
-  </div>;
-};

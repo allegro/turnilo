@@ -97,7 +97,7 @@ $row-height: 30px;
     }
 
     .loader,
-    .error-message {
+    .message {
       @include pin-full;
     }
 

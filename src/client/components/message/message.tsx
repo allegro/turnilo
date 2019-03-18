@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import * as React from "react";
+import { classNames } from "../../utils/dom/dom";
+import "./message.scss";
 
-$container-width: 180px;
-$container-height: 50px;
+type MessageLevel = "error" | "notice";
 
-.error-message {
-  text-align: center;
-
-  .whiteout {
-    @include pin-full;
-    background: $white;
-    opacity: 0.5;
-  }
-
-  .error-container {
-    @include center($container-width, $container-height);
-    color: $red;
-    text-align: left;
-
-    .title {
-      font-size: 14px;
-    }
-
-    .message {
-      margin-top: 5px;
-      font-size: 13px;
-      overflow: hidden;
-    }
-  }
+interface ErrorProps {
+  content: string;
+  title?: string;
+  level?: MessageLevel;
 }
 
+export const Message: React.SFC<ErrorProps> = props => {
+  const { content, title, level = "notice" } = props;
+  return <div className={classNames("message", level)}>
+    <div className="whiteout" />
+    <div className="message-container">
+      <div className="message-title">{title}</div>
+      <div className="message-content">{content}</div>
+    </div>
+  </div>;
+};

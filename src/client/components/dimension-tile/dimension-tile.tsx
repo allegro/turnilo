@@ -48,9 +48,9 @@ import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGH
 import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { Checkbox } from "../checkbox/checkbox";
-import { ErrorMessage } from "../error-message/error-message";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
+import { Message } from "../message/message";
 import { QueryError } from "../query-error/query-error";
 import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -660,7 +660,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       </div>
       {foldControl}
       {error && <QueryError error={error} />}
-      {!sortOn && <ErrorMessage message="No measure selected"/>}
+      {!sortOn && <Message content="No measure selected"/>}
       {loading && <Loader />}
     </SearchableTile>;
   }

@@ -17,12 +17,15 @@
 
 import * as React from "react";
 import { STRINGS } from "../../config/constants";
-import { ErrorMessage } from "../error-message/error-message";
+import { Message } from "../message/message";
 
 export interface QueryErrorProps {
   error: Error;
 }
 
 export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  return <ErrorMessage message={error.message} title={STRINGS.queryError} />;
+  return <Message
+    level="error"
+    content={error.message}
+    title={STRINGS.queryError} />;
 };

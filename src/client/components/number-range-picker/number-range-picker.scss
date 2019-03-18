@@ -54,7 +54,7 @@ $bar-height: 6px;
   }
 
   .loader,
-  .error-message {
+  .message {
     @include pin-full;
   }
 }
