@@ -30,6 +30,7 @@ import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
+import createConcreteSeries from "../series/create-concrete-series";
 import { ExpressionConcreteSeries } from "../series/expression-concrete-series";
 import { ExpressionSeries } from "../series/expression-series";
 import { MeasureConcreteSeries } from "../series/measure-concrete-series";
@@ -367,16 +368,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   private concreteSeriesFromSeries(series: Series): ConcreteSeries {
-    const { type, reference } = series;
+    const { reference } = series;
     const measure = this.dataCube.getMeasure(reference);
-    switch (type) {
-      case SeriesType.MEASURE: {
-        return new MeasureConcreteSeries(series as MeasureSeries, measure);
-      }
-      case SeriesType.EXPRESSION: {
-        return new ExpressionConcreteSeries(series as ExpressionSeries, measure);
-      }
-    }
+    return createConcreteSeries(series, measure);
   }
 
   public getConcreteSeries(): List<ConcreteSeries> {
