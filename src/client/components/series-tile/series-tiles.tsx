@@ -29,7 +29,7 @@ import { SeriesTile } from "./series-tile";
 
 export const SERIES_CLASS_NAME = "series";
 
-interface SeriesTileProps {
+interface SeriesTilesProps {
   menuStage: Stage;
   maxItems: number;
   essence: Essence;
@@ -47,7 +47,7 @@ interface SeriesTileProps {
   openOverflowMenu: Fn;
 }
 
-export const SeriesTiles: React.SFC<SeriesTileProps> = props => {
+export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   const {
     openedSeriesMenu,
     menuStage,
