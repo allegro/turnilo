@@ -22,32 +22,30 @@ import { SinonSpy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { noop } from "../../../common/utils/functional/functional";
 import { MeasureActions } from "./measure-actions-menu";
-
-const onCloseNoop = () => {
-};
 
 describe("<MeasureActions>", () => {
 
   const measureActions = (measure: Measure) => shallow(<MeasureActions
-    essence={EssenceFixtures.wikiTable()}
+    series={EssenceFixtures.wikiTable().series}
     measure={measure}
-    clicker={null}
-    onClose={onCloseNoop}
+    newExpression={null}
+    addSeries={null}
+    onClose={noop}
   />);
 
   describe("Add Action", () => {
     it("renders enabled add action when measure is not selected", () => {
       const actions = measureActions(MeasureFixtures.wikiUniqueUsers());
 
-      expect(actions.find(".add").hasClass("disabled")).to.be.false;
+      expect(actions.find(".add-series").hasClass("disabled")).to.be.false;
     });
 
     it("renders disabled add action when measure is selected", () => {
       const actions = measureActions(MeasureFixtures.wikiCount());
 
-      expect(actions.find(".add").hasClass("disabled")).to.be.true;
+      expect(actions.find(".add-series").hasClass("disabled")).to.be.true;
     });
 
     describe("click should call action", () => {
@@ -61,30 +59,67 @@ describe("<MeasureActions>", () => {
       });
 
       const measureActions = (measure: Measure) => mount(<MeasureActions
-        essence={EssenceFixtures.wikiTable()}
+        series={EssenceFixtures.wikiTable().series}
         measure={measure}
-        clicker={{ addSeries: addSeriesSpy }}
         onClose={onCloseSpy}
-      />);
+        addSeries={addSeriesSpy}
+        newExpression={null} />);
 
-      it("calls clicker.addSeries and onClose when measure is not selected", () => {
+      it("calls addSeries and onClose when measure is not selected", () => {
         const measure = MeasureFixtures.wikiUniqueUsers();
         const actions = measureActions(measure);
 
-        actions.find(".add").simulate("click");
+        actions.find(".add-series").simulate("click");
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSeriesSpy.calledOnce).to.be.true;
-        expect(addSeriesSpy.calledWith(MeasureSeries.fromMeasure(measure))).to.be.true;
+        expect(addSeriesSpy.calledWith(measure)).to.be.true;
       });
 
-      it("calls onClose but not clicker.addSeries when measure is selected", () => {
+      it("calls onClose but not addSeries when measure is selected", () => {
         const actions = measureActions(MeasureFixtures.wikiCount());
 
-        actions.find(".add").simulate("click");
+        actions.find(".add-series").simulate("click");
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSeriesSpy.notCalled).to.be.true;
+      });
+    });
+  });
+
+  describe("Expression Action", () => {
+    it("renders expression action", () => {
+      const actions = measureActions(MeasureFixtures.wikiUniqueUsers());
+
+      expect(actions.find(".new-expression").length).to.be.eq(1);
+    });
+
+    describe("click should call action", () => {
+
+      let onCloseSpy: SinonSpy;
+      let newExpressionSpy: SinonSpy;
+
+      beforeEach(() => {
+        onCloseSpy = sinon.spy();
+        newExpressionSpy = sinon.spy();
+      });
+
+      const measureActions = (measure: Measure) => mount(<MeasureActions
+        series={EssenceFixtures.wikiTable().series}
+        measure={measure}
+        onClose={onCloseSpy}
+        addSeries={null}
+        newExpression={newExpressionSpy} />);
+
+      it("calls newExpression and onClose", () => {
+        const measure = MeasureFixtures.wikiUniqueUsers();
+        const actions = measureActions(measure);
+
+        actions.find(".new-expression").simulate("click");
+
+        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(newExpressionSpy.calledOnce).to.be.true;
+        expect(newExpressionSpy.calledWith(measure)).to.be.true;
       });
     });
   });
