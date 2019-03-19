@@ -18,56 +18,38 @@ import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SeriesMenu } from "../series-menu/series-menu";
-import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
-import { SERIES_CLASS_NAME } from "./series-tile";
+import { SERIES_CLASS_NAME } from "./series-tiles";
 
-export interface Item {
-  series: Series;
+interface PlaceholderSeriesTileProps {
   measure: Measure;
-  open: boolean;
-}
-
-interface SeriesItemProps {
-  item: Item;
+  series: Series;
   style?: React.CSSProperties;
-  removeSeries: Unary<Series, void>;
-  saveSeries: Unary<Series, void>;
-  openSeriesMenu: Unary<Series, void>;
-  closeSeriesMenu: Fn;
-  dragStart: Ternary<string, Series, React.DragEvent<HTMLElement>, void>;
   containerStage: Stage;
+  saveSeries: Unary<Series, void>;
+  closeItem: Fn;
 }
 
-export const SeriesItem: React.SFC<SeriesItemProps> = props => {
-  const { item, style, saveSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
-  const { series, measure, open } = item;
+export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = props => {
+  const { series, containerStage, saveSeries, closeItem, style, measure } = props;
   return <WithRef>
-    {({ ref: openOn, setRef }) => <React.Fragment>
-      <div
-        className={classNames(SERIES_CLASS_NAME, "measure")}
-        draggable={true}
-        ref={setRef}
-        onClick={() => openSeriesMenu(series)}
-        onDragStart={e => dragStart(measure.title, series, e)}
-        style={style}>
-        <div className="reading">{measure.title}</div>
-        <div className="remove" onClick={() => removeSeries(series)}>
-          <SvgIcon svg={require("../../icons/x.svg")} />
-        </div>
-      </div>
-      {open && openOn && <SeriesMenu
+    {({ ref: openOn, setRef }) => <div
+      className={classNames(SERIES_CLASS_NAME, "measure")}
+      ref={setRef}
+      style={style}>
+      <div className="reading">{measure.title}</div>
+      {openOn && <SeriesMenu
         key={series.key()}
         openOn={openOn}
         containerStage={containerStage}
-        onClose={closeSeriesMenu}
+        onClose={closeItem}
         initialSeries={series}
         measure={measure}
         saveSeries={saveSeries} />}
-    </React.Fragment>}
+    </div>}
   </WithRef>;
 };

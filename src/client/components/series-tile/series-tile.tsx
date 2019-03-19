@@ -15,266 +15,55 @@
  */
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { DragPosition } from "../../../common/models/drag-position/drag-position";
-import { Essence } from "../../../common/models/essence/essence";
-import { Measure } from "../../../common/models/measure/measure";
-import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { concatTruthy } from "../../../common/utils/functional/functional";
-import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import { getXFromEvent, setDragData, setDragGhost, transformStyle } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
-import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
-import { AddTile } from "../add-tile/add-tile";
-import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
-import { DummySeriesItem } from "./dummy-series";
-import { Item, SeriesItem } from "./series-item";
-import { SeriesItemOverflow } from "./series-item-overflow";
-import "./series-tile.scss";
-
-export const SERIES_CLASS_NAME = "series";
+import { Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames } from "../../utils/dom/dom";
+import { SeriesMenu } from "../series-menu/series-menu";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import { WithRef } from "../with-ref/with-ref";
+import { SERIES_CLASS_NAME } from "./series-tiles";
 
 interface SeriesTileProps {
-  clicker: Clicker;
-  essence: Essence;
-  menuStage: Stage;
+  item: ConcreteSeries;
+  open: boolean;
+  style?: React.CSSProperties;
+  removeSeries: Unary<Series, void>;
+  saveSeries: Unary<Series, void>;
+  openSeriesMenu: Unary<Series, void>;
+  closeSeriesMenu: Fn;
+  dragStart: Ternary<string, Series, React.DragEvent<HTMLElement>, void>;
+  containerStage: Stage;
 }
 
-interface SeriesTileState {
-  dragPosition?: DragPosition;
-  openSeriesMenu?: Series;
-  overflowOpen?: boolean;
-  maxItems?: number;
-  dummySeries?: Series;
-}
-
-export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState> {
-
-  state: SeriesTileState = {};
-
-  componentWillReceiveProps(nextProps: SeriesTileProps) {
-    const { menuStage, essence } = nextProps;
-    const { splits } = essence;
-
-    if (menuStage) {
-      const newMaxItems = getMaxItems(menuStage.width, splits.splits.count());
-      if (newMaxItems !== this.state.maxItems) {
-        this.setState({
-          overflowOpen: false,
-          maxItems: newMaxItems
-        });
-      }
-    }
-  }
-
-  // This will be called externally
-  triggerSeriesMenu(measure: Measure) {
-    this.setState({ dummySeries: MeasureSeries.fromMeasure(measure) });
-  }
-
-  removeDummySeries = () => this.setState({ dummySeries: null });
-
-  openSeriesMenu = (series: Series) => this.setState({ openSeriesMenu: series });
-
-  closeSeriesMenu = () => this.setState({ openSeriesMenu: null });
-
-  openOverflowMenu = () => this.setState({ overflowOpen: true });
-
-  closeOverflowMenu = () => this.setState({ overflowOpen: false });
-
-  saveSeries = (series: Series) => {
-    const { essence, clicker } = this.props;
-    clicker.changeSeriesList(essence.series.modifySeries(series));
-  }
-
-  removeSeries = (series: Series) => {
-    const { clicker } = this.props;
-    clicker.removeSeries(series);
-    this.closeOverflowMenu();
-  }
-
-  canDrop(): boolean {
-    const { essence: { series: seriesList } } = this.props;
-    const measure = DragManager.draggingMeasure();
-    if (measure) return !seriesList.hasMeasure(measure);
-    return DragManager.isDraggingSeries();
-  }
-
-  dragStart = (label: string, series: Series, e: React.DragEvent<HTMLElement>) => {
-    const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = "all";
-    setDragData(dataTransfer, "text/plain", label);
-
-    DragManager.setDragSeries(series);
-    setDragGhost(dataTransfer, label);
-
-    this.closeOverflowMenu();
-  }
-
-  calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
-    const { essence } = this.props;
-    const numItems = essence.series.count();
-    const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
-    const x = getXFromEvent(e);
-    const offset = x - rect.left;
-    return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
-  }
-
-  dragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop()) return;
-    e.preventDefault();
-    this.setState({
-      dragPosition: this.calculateDragPosition(e)
-    });
-  }
-
-  dragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop()) return;
-    e.preventDefault();
-    const dragPosition = this.calculateDragPosition(e);
-    if (dragPosition.equals(this.state.dragPosition)) return;
-    this.setState({ dragPosition });
-  }
-
-  dragLeave = () => {
-    if (!this.canDrop()) return;
-    this.setState({
-      dragPosition: null
-    });
-  }
-
-  drop = (e: React.DragEvent<HTMLElement>) => {
-    if (!this.canDrop()) return;
-    e.preventDefault();
-    const { clicker, essence: { series } } = this.props;
-    const { maxItems } = this.state;
-
-    this.setState({ dragPosition: null });
-
-    const newSeries: Series = DragManager.isDraggingSeries() ? DragManager.draggingSeries() : MeasureSeries.fromMeasure(DragManager.draggingMeasure());
-    if (!newSeries) return;
-
-    let dragPosition = this.calculateDragPosition(e);
-
-    if (dragPosition.replace === maxItems) {
-      dragPosition = new DragPosition({ insert: dragPosition.replace });
-    }
-
-    if (dragPosition.isReplace()) {
-      clicker.changeSeriesList(series.replaceByIndex(dragPosition.replace, newSeries));
-    } else {
-      clicker.changeSeriesList(series.insertByIndex(dragPosition.insert, newSeries));
-    }
-  }
-
-  appendSeries = (measure: Measure) => {
-    this.props.clicker.addSeries(MeasureSeries.fromMeasure(measure));
-  }
-
-  renderAddTileButton() {
-    const { menuStage, essence: { dataCube, series } } = this.props;
-    const tiles = dataCube.measures
-      .filterMeasures(measure => !series.hasMeasure(measure))
-      .map(measure => {
-        return {
-          key: measure.name,
-          label: measure.title,
-          value: measure
-        };
-      });
-
-    return <AddTile<Measure> containerStage={menuStage} onSelect={this.appendSeries} tiles={tiles} />;
-  }
-
-  renderItem = (item: Item): JSX.Element => {
-    const { menuStage } = this.props;
-    const { series } = item;
-
-    return <SeriesItem
-      key={series.key()}
-      item={item}
-      closeSeriesMenu={this.closeSeriesMenu}
-      removeSeries={this.removeSeries}
-      dragStart={this.dragStart}
-      containerStage={menuStage}
-      openSeriesMenu={this.openSeriesMenu}
-      saveSeries={this.saveSeries} />;
-  }
-
-  renderDummySeriesItem(): JSX.Element {
-    const { dummySeries } = this.state;
-    if (!dummySeries) return null;
-
-    const { menuStage, essence: { dataCube } } = this.props;
-    const measure = dataCube.getMeasure(dummySeries.reference);
-
-    return <DummySeriesItem
-      key="dummy-series-item"
-      measure={measure}
-      series={dummySeries}
-      containerStage={menuStage}
-      saveSeries={this.saveSeries}
-      closeItem={this.removeDummySeries} />;
-  }
-
-  renderItems() {
-    const { essence: { series, dataCube } } = this.props;
-    const { overflowOpen, openSeriesMenu, maxItems } = this.state;
-
-    const seriesItems: Array<Item & { dummy: boolean }> = series.series.toArray()
-      .map(series => {
-        const measure = dataCube.getMeasure(series.reference);
-        const open = openSeriesMenu && series.equals(openSeriesMenu);
-        return { series, measure, open, dummy: false };
-      });
-
-    const seriesElements = concatTruthy(
-      ...seriesItems.map(this.renderItem),
-      this.renderDummySeriesItem()
-    );
-
-    const visibleItems = seriesElements
-      .slice(0, maxItems)
-      .map((element, idx) => React.cloneElement(element, { style: transformStyle(idx * SECTION_WIDTH, 0) }));
-
-    const overflowItems = seriesElements.slice(maxItems);
-    if (overflowItems.length <= 0) return visibleItems;
-
-    const anyOverflowItemOpen = seriesItems.slice(maxItems).some(item => item.open);
-    const isDummySeriesInOverflow = overflowItems.some(element => element.type === DummySeriesItem);
-    const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
-    const seriesItemOverflow = <SeriesItemOverflow
-      key="overflow-menu"
-      items={overflowItems}
-      open={overflowOpened}
-      openOverflowMenu={this.openOverflowMenu}
-      x={visibleItems.length * SECTION_WIDTH}
-      closeOverflowMenu={this.closeOverflowMenu} />;
-
-    return [...visibleItems, seriesItemOverflow];
-  }
-
-  renderDragIndicator() {
-    const { dragPosition } = this.state;
-    return dragPosition && <React.Fragment>
-      <FancyDragIndicator dragPosition={dragPosition} />
-      <div className="drag-mask"
-           onDragOver={this.dragOver}
-           onDragLeave={this.dragLeave}
-           onDragExit={this.dragLeave}
-           onDrop={this.drop} />
-    </React.Fragment>;
-  }
-
-  render() {
-    return <div className="series-tile" onDragEnter={this.dragEnter}>
-      <div className="title">{STRINGS.series}</div>
-      <div className="items" ref="items">{this.renderItems()}</div>
-      {this.renderAddTileButton()}
-      {this.renderDragIndicator()}
-    </div>;
-  }
-}
+export const SeriesTile: React.SFC<SeriesTileProps> = props => {
+  const { open, item, style, saveSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
+  const { series, measure } = item;
+  const title = item.title();
+  return <WithRef>
+    {({ ref: openOn, setRef }) => <React.Fragment>
+      <div
+        className={classNames(SERIES_CLASS_NAME, "measure")}
+        draggable={true}
+        ref={setRef}
+        onClick={() => openSeriesMenu(series)}
+        onDragStart={e => dragStart(measure.title, series, e)}
+        style={style}>
+        <div className="reading">{title}</div>
+        <div className="remove" onClick={() => removeSeries(series)}>
+          <SvgIcon svg={require("../../icons/x.svg")} />
+        </div>
+      </div>
+      {open && openOn && <SeriesMenu
+        key={series.key()}
+        openOn={openOn}
+        containerStage={containerStage}
+        onClose={closeSeriesMenu}
+        initialSeries={series}
+        measure={measure}
+        saveSeries={saveSeries} />}
+    </React.Fragment>}
+  </WithRef>;
+};
