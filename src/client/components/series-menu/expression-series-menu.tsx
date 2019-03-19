@@ -40,9 +40,11 @@ const OPERATIONS: Operation[] = [{
 }];
 
 function isSeriesValid(series: ExpressionSeries): boolean {
-  // sometimes could yield invalid series!!
-  return true;
+  return !!series.operation;
 }
+
+const renderOperation = (op: Operation): string =>  op.label;
+const renderSelectedOperation = (op: Operation): string => op ? renderOperation(op) : "Select operation";
 
 export const ExpressionSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, measure, onChange }) => {
 
@@ -66,6 +68,8 @@ export const ExpressionSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ ser
     />
     <Dropdown<Operation>
       items={OPERATIONS}
+      renderItem={renderOperation}
+      renderSelectedItem={renderSelectedOperation}
       equal={(a, b) => a.id === b.id}
       selectedItem={OPERATIONS.find(op => op.id === series.operation)}
       onSelect={onOperationSelect}
