@@ -20,6 +20,11 @@ import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries, ExpressionSeriesOperation } from "./expression-series";
 
 export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
+
+  static fromMeasure(measure: Measure): ExpressionConcreteSeries {
+    return new ExpressionConcreteSeries(ExpressionSeries.fromMeasure(measure), measure);
+  }
+
   constructor(series: ExpressionSeries, measure: Measure, private readonly operand?: Measure) {
     super(series, measure);
   }
