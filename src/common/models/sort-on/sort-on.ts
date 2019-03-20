@@ -31,11 +31,11 @@ export class SortOn {
   }
 
   static equals(sortOn: SortOn, other: SortOn): boolean {
-    if (sortOn && other) return !sortOn.equals(other);
-    return sortOn !== other;
+    if (!sortOn) return sortOn === other;
+    return sortOn.equals(other);
   }
 
-  constructor(public reference: Dimension | Measure, public period?: MeasureDerivation) {
+  constructor(public reference: Dimension | Measure, public period = MeasureDerivation.CURRENT) {
   }
 
   public getName(): string {

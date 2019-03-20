@@ -270,7 +270,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) ||
       !dimension.equals(nextDimension) ||
-      SortOn.equals(sortOn, nextProps.sortOn) ||
+      !SortOn.equals(sortOn, nextProps.sortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
