@@ -968,15 +968,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDefaultSortMeasure(): string {
-    if (this.defaultSortMeasure) {
-      return this.defaultSortMeasure;
-    }
-
-    if (this.measures.size() > 0) {
-      return this.measures.first().name;
-    }
-
-    return null;
+    return this.defaultSortMeasure;
   }
 
   public getMaxSplits(): number {

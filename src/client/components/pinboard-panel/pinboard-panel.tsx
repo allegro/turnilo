@@ -167,7 +167,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       }
     }
 
-    const pinnedSortSortOn = new SortOn(essence.getPinnedSortMeasure());
+    const pinnedSortMeasure = essence.getPinnedSortMeasure();
+    const pinnedSortSortOn = pinnedSortMeasure && new SortOn(pinnedSortMeasure);
     let dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach(dimensionName => {
       const dimension = dataCube.getDimension(dimensionName);

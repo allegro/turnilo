@@ -27,7 +27,7 @@ export interface PinboardMeasureTileProps {
   essence: Essence;
   title: string;
   dimension?: Dimension;
-  sortOn: SortOn;
+  sortOn?: SortOn;
   onSelect: (sel: SortOn) => void;
 }
 
@@ -41,13 +41,13 @@ export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props =>
 
   return <div className="pinboard-measure-tile">
     <div className="title">{title}</div>
-    <Dropdown<SortOn>
+    {sortOn && <Dropdown<SortOn>
       items={sortOns}
       selectedItem={sortOn}
       equal={SortOn.equals}
       renderItem={SortOn.getTitle}
       keyItem={SortOn.getName}
       onSelect={onSelect}
-    />
+    />}
   </div>;
 };

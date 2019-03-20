@@ -97,7 +97,7 @@ $row-height: 30px;
     }
 
     .loader,
-    .query-error {
+    .message {
       @include pin-full;
     }
 

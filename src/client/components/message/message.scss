@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +14,39 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { STRINGS } from "../../config/constants";
-import { Message } from "../message/message";
+@import '../../imports';
 
-export interface QueryErrorProps {
-  error: Error;
+$container-width: 180px;
+$container-height: 50px;
+
+.message {
+  text-align: center;
+
+  &.error {
+    .message-title {
+      color: $red;
+    }
+  }
+
+  .whiteout {
+    @include pin-full;
+    background: $white;
+    opacity: 0.5;
+  }
+
+  .message-container {
+    @include center($container-width, $container-height);
+    text-align: left;
+
+    .message-title {
+      font-size: 14px;
+    }
+
+    .message-content {
+      margin-top: 5px;
+      font-size: 13px;
+      overflow: hidden;
+    }
+  }
 }
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError} />;
-};

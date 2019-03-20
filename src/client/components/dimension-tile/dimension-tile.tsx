@@ -50,6 +50,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
+import { Message } from "../message/message";
 import { QueryError } from "../query-error/query-error";
 import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -69,7 +70,8 @@ export interface DimensionTileProps {
 export interface DimensionTileState {
   loading?: boolean;
   dataset?: Dataset;
-  error?: any;
+  error?: Error;
+  notice?: string;
   fetchQueued?: boolean;
   unfolded?: boolean;
   foldable?: boolean;
@@ -130,6 +132,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Bucket): void {
+    if (!sortOn) {
+      this.setState({
+        loading: false,
+        dataset: null,
+        error: null
+      });
+      return;
+    }
     const { searchText, foldable } = this.state;
     const { dataCube, colors } = essence;
 
@@ -181,6 +191,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     this.setState({
       loading: true,
+      error: null,
       fetchQueued: false,
       dataset: null
     });
@@ -257,7 +268,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
-      essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
+      essence.differentColors(nextEssence) ||
+      !dimension.equals(nextDimension) ||
+      !SortOn.equals(sortOn, nextProps.sortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
@@ -481,7 +494,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   private getFormatter(): Unary<Datum, string> {
     const { essence: { series: seriesList }, sortOn } = this.props;
 
-    const measure = sortOn.reference;
+    const measure = sortOn && sortOn.reference;
     if (!(measure instanceof Measure)) return null;
     const measureName = measure.name;
     const series = seriesList.getSeries(measureName);
@@ -579,7 +592,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    const { essence, dimension, colors, onClose } = this.props;
+    const { sortOn, essence, dimension, colors, onClose } = this.props;
     const { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText, filterMode } = this.state;
 
     const isContinuous = dimension.isContinuous();
@@ -640,16 +653,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       showSearch={showSearch}
       icons={icons}
       className={className}
-      actions={actions}
-    >
+      actions={actions}>
       <div className="rows">
         {rows}
         {message}
       </div>
       {foldControl}
-      {error ? <QueryError error={error} /> : null}
-      {loading ? <Loader /> : null}
+      {error && <QueryError error={error} />}
+      {!sortOn && <Message content="No measure selected"/>}
+      {loading && <Loader />}
     </SearchableTile>;
-
   }
 }

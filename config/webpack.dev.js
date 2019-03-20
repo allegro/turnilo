@@ -27,7 +27,7 @@ module.exports = merge.smart(common, {
     publicPath: '/',
     pathinfo: false
   },
-  devtool: "eval",
+  devtool: "source-map",
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('dev-hmr')
