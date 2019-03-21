@@ -132,6 +132,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   clickDimension(dimension: Dimension, e: React.MouseEvent<HTMLElement>) {
     const target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
     this.toggleMenu(dimension, target);
+    e.stopPropagation();
   }
 
   openMenuOnDimension(dimension: Dimension) {
