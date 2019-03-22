@@ -143,6 +143,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   selectSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {
     const target = findParentWithClass(e.target as Element, SERIES_CLASS_NAME);
     this.toggleMenu(series, target);
+    e.stopPropagation();
   }
 
   removeSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {

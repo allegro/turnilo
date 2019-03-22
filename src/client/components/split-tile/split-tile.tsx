@@ -95,6 +95,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   selectDimensionSplit = (dimension: Dimension, split: Split, e: React.MouseEvent<HTMLElement>) => {
     const target = findParentWithClass(e.target as Element, SPLIT_CLASS_NAME);
     this.toggleMenu(dimension, split, target);
+    e.stopPropagation();
   }
 
   toggleMenu(dimension: Dimension, split: Split, target: Element) {
