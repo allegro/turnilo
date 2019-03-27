@@ -32,7 +32,11 @@ export interface BodyPortalProps {
   isAboveAll?: boolean;
 }
 
-export class BodyPortal extends React.Component<BodyPortalProps, {}> {
+interface BodyPortalState {
+  isMounted: boolean;
+}
+
+export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
   public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
     isAboveAll: false
@@ -44,6 +48,9 @@ export class BodyPortal extends React.Component<BodyPortalProps, {}> {
     super(props);
     this.target = document.createElement("div");
     this.target.className = classNames("body-portal", { "full-size": props.fullSize });
+    this.state = {
+      isMounted: false
+    };
   }
 
   private readonly target: HTMLElement = null;
@@ -58,6 +65,8 @@ export class BodyPortal extends React.Component<BodyPortalProps, {}> {
       if (BodyPortal.aboveAll) throw new Error("There can be only one");
       BodyPortal.aboveAll = this;
     }
+
+    this.setState({ isMounted: true });
   }
   componentWillUnmount() {
     document.body.removeChild(this.target);
@@ -65,7 +74,8 @@ export class BodyPortal extends React.Component<BodyPortalProps, {}> {
   }
 
   render() {
+    const { isMounted } = this.state;
     Object.assign(this.target.style, normalizeStyles(this.props));
-    return ReactDOM.createPortal(this.props.children, this.target);
+    return ReactDOM.createPortal(isMounted && this.props.children, this.target);
   }
 }
