@@ -17,40 +17,50 @@
 
 import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
-import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
-import { SupportedType } from "../../../common/models/cluster/cluster";
+import { DruidRequestDecorator, druidRequesterFactory } from "plywood-druid-requester";
+import { URL } from "url";
+import { Cluster } from "../../../common/models/cluster/cluster";
 import { threadConditionally } from "../../../common/utils/functional/functional";
 
 export interface ProperRequesterOptions {
-  type: SupportedType;
-  host: string;
+  cluster: Cluster;
   retry?: number;
-  timeout?: number;
   verbose?: boolean;
   concurrentLimit?: number;
-
-  // Specific to type 'druid'
   druidRequestDecorator?: DruidRequestDecorator;
-  protocol?: Protocol;
-
-  // Specific to SQL drivers
-  database?: string;
-  user?: string;
-  password?: string;
 }
 
-function createRequester({ type, host, timeout, druidRequestDecorator, protocol }: ProperRequesterOptions): PlywoodRequester<any> {
-  switch (type) {
-    case "druid":
-      return druidRequesterFactory({
-        host,
-        timeout,
-        requestDecorator: druidRequestDecorator,
-        protocol
-      });
+type PlywoodProtocol = "plain" | "tls";
+
+function httpToPlywoodProtocol(protocol: string): PlywoodProtocol {
+  if (protocol === "https:") return "tls";
+  return "plain";
+}
+
+function defaultPort(protocol: string): number {
+  switch (protocol) {
+    case "http:":
+      return 80;
+    case "https:":
+      return 443;
     default:
-      throw new Error(`unknown requester type ${type}`);
+      throw new Error(`Unsupported protocol: ${protocol}`);
   }
+}
+
+function getHostAndProtocol(url: URL): { host: string, protocol: PlywoodProtocol } {
+  const { protocol, port, hostname } = url;
+  const plywoodProtocol = httpToPlywoodProtocol(protocol);
+  return {
+    protocol: plywoodProtocol,
+    host: `${hostname}:${port || defaultPort(protocol)}`
+  };
+}
+
+function createDruidRequester(cluster: Cluster, requestDecorator: DruidRequestDecorator): PlywoodRequester<any> {
+  const { host, protocol } = getHostAndProtocol(new URL(cluster.url));
+  const timeout = cluster.getTimeout();
+  return druidRequesterFactory({ host, timeout, requestDecorator, protocol });
 }
 
 function setRetryOptions(retry: number) {
@@ -66,10 +76,9 @@ function setConcurrencyLimit(concurrentLimit: number) {
 }
 
 export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
-  const { retry, verbose, concurrentLimit } = options;
-
+  const { cluster, druidRequestDecorator, retry, verbose, concurrentLimit } = options;
   return threadConditionally(
-    createRequester(options),
+    createDruidRequester(cluster, druidRequestDecorator),
     retry && setRetryOptions(retry),
     verbose && setVerbose,
     concurrentLimit && setConcurrencyLimit(concurrentLimit)

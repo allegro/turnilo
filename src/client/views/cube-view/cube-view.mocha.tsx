@@ -36,7 +36,6 @@ describe("CubeView", () => {
         initTimekeeper={TimekeeperFixtures.fixed()}
         dataCube={DataCubeFixtures.wiki()}
         updateViewHash={updateViewHash}
-        stateful={false}
         getCubeViewHash={getCubeViewHash}
         getEssenceFromHash={getEssenceFromHash}
       />

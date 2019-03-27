@@ -20,8 +20,7 @@ export class ClusterFixtures {
   static druidWikiClusterJS(): ClusterJS {
     return {
       name: "druid-wiki",
-      type: "druid",
-      host: "192.168.99.100",
+      url: "http://192.168.99.100",
       version: "0.9.1",
       timeout: 30000,
       healthCheckTimeout: 50,
@@ -36,8 +35,7 @@ export class ClusterFixtures {
   static druidTwitterClusterJS(): ClusterJS {
     return {
       name: "druid-twitter",
-      type: "druid",
-      host: "192.168.99.101",
+      url: "http://192.168.99.101",
       version: "0.9.1",
       timeout: 30000,
       healthCheckTimeout: 200,

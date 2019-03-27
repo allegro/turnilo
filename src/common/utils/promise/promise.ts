@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +14,26 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { STRINGS } from "../../config/constants";
-import { Message } from "../message/message";
+import { Unary } from "../functional/functional";
 
-export interface QueryErrorProps {
-  error: Error;
+export function timeout(ms: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(`Timed out in ${ms}ms.`);
+    }, ms);
+  });
 }
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError} />;
-};
+export class Deferred<T> {
+  public readonly promise: Promise<T>;
+  public resolve: Unary<T, void>;
+  public reject: Unary<unknown, void>;
+
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}

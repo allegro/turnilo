@@ -18,7 +18,6 @@
 import * as fs from "fs-promise";
 import * as path from "path";
 import { Dataset, Expression, PseudoDatum } from "plywood";
-import * as Q from "q";
 import { Logger } from "../../../common/logger/logger";
 import { noop } from "../../../common/utils/functional/functional";
 import { parseData } from "../../../common/utils/parser/parser";
@@ -69,13 +68,13 @@ export class FileManager {
   }
 
   // Do initialization
-  public init(): Q.Promise<any> {
+  public init(): Promise<void> {
     const { logger, anchorPath, uri } = this;
 
-    var filePath = path.resolve(anchorPath, uri);
+    const filePath = path.resolve(anchorPath, uri);
 
     logger.log(`Loading file ${filePath}`);
-    return Q(getFileData(filePath)
+    return getFileData(filePath)
       .then(
         rawData => {
           logger.log(`Loaded file ${filePath} (rows = ${rawData.length})`);
@@ -91,7 +90,7 @@ export class FileManager {
         e => {
           logger.error(`Failed to load file ${filePath} because: ${e.message}`);
         }
-      ));
+      );
   }
 
   public destroy(): void {

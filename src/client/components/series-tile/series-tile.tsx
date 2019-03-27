@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as Q from "q";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
@@ -23,6 +22,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
+import { Deferred } from "../../../common/utils/promise/promise";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragData, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -54,7 +54,7 @@ interface SeriesTileState {
 export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState> {
 
   private readonly overflowMenuId = uniqueId("overflow-menu-");
-  private overflowMenuDeferred: Q.Deferred<Element>;
+  private overflowMenuDeferred: Deferred<Element>;
 
   state: SeriesTileState = {};
 
@@ -87,16 +87,16 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
     return document.getElementById(this.overflowMenuId);
   }
 
-  openOverflowMenu(target: Element): Q.Promise<any> {
-    if (!target) return Q(null);
+  openOverflowMenu(target: Element): Promise<Element> {
+    if (!target) return Promise.resolve(null);
     const { overflowMenuOpenOn } = this.state;
 
     if (overflowMenuOpenOn === target) {
       this.closeOverflowMenu();
-      return Q(null);
+      return Promise.resolve(null);
     }
 
-    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.overflowMenuDeferred = new Deferred<Element>();
     this.setState({ overflowMenuOpenOn: target });
     return this.overflowMenuDeferred.promise;
   }
@@ -143,6 +143,7 @@ export class SeriesTile extends React.Component<SeriesTileProps, SeriesTileState
   selectSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {
     const target = findParentWithClass(e.target as Element, SERIES_CLASS_NAME);
     this.toggleMenu(series, target);
+    e.stopPropagation();
   }
 
   removeSeries = (series: Series, e: React.MouseEvent<HTMLElement>) => {

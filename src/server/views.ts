@@ -24,7 +24,6 @@ export interface ViewOptions {
   user?: any;
   appSettings?: AppSettings;
   timekeeper?: Timekeeper;
-  stateful?: boolean;
 }
 
 function favicon(options: ViewOptions): string {
@@ -64,9 +63,9 @@ ${content}
 }
 
 export function mainLayout(options: ViewOptions): string {
-  const { version, user, appSettings, timekeeper, stateful } = options;
+  const { version, user, appSettings, timekeeper } = options;
   return layout(options, `<div class="app-container"></div>
-<script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, timekeeper, stateful })};</script>
+<script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, timekeeper })};</script>
 <script charset="UTF-8" src="main.js?v=${version}"></script>`
   );
 }
