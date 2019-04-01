@@ -47,11 +47,11 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.updateSeries(list => list.filter(s => s !== series));
   }
 
-  public modifySeries(updatedSeries: Series): SeriesList {
+  public replaceSeries(original: Series, newSeries: Series): SeriesList {
     return this.updateSeries(series => {
-      const idx = series.findIndex(s => s.key() === updatedSeries.key());
-      if (idx === -1) throw new Error(`Tried to modify series but couldn't find original one. Key: ${updatedSeries.key()}`);
-      return series.set(idx, updatedSeries);
+      const idx = series.findIndex(s => s.equals(original));
+      if (idx === -1) throw new Error(`Couldn't replace series because couldn't find original: ${original}`);
+      return series.set(idx, newSeries);
     });
   }
 
@@ -61,12 +61,12 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
       return this.insertByIndex(index, replace);
     }
     return this.updateSeries(series => {
-      const newSplitIndex = series.findIndex(split => split.equals(replace));
-      if (newSplitIndex === -1) return series.set(index, replace);
+      const newSeriesIndex = series.findIndex(split => split.equals(replace));
+      if (newSeriesIndex === -1) return series.set(index, replace);
       const oldSplit = series.get(index);
       return series
         .set(index, replace)
-        .set(newSplitIndex, oldSplit);
+        .set(newSeriesIndex, oldSplit);
     });
   }
 
@@ -77,12 +77,13 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
         .filterNot((series, idx) => series.equals(insert) && idx !== index));
   }
 
-  public hasSeries(reference: string): boolean {
-    return this.getSeries(reference) !== undefined;
+  public hasMeasureSeries(reference: string): boolean {
+    const series = this.getSeries(reference);
+    return series && series instanceof MeasureSeries;
   }
 
   public hasMeasure({ name }: Measure): boolean {
-    return this.hasSeries(name);
+    return this.hasMeasureSeries(name);
   }
 
   public getSeries(reference: string): Series {
@@ -90,7 +91,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {
-    // TODO: fix conditions for ExpressionSeries
+    // TODO: fix conditions for ExpressionSeries with operands
     return this.updateSeries(list => list.filter(series => measures.getMeasureByName(series.reference)));
   }
 
@@ -100,6 +101,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   private updateSeries(updater: Unary<List<Series>, List<Series>>) {
     return this.update("series", updater);
+  }
+
+  public hasSeriesWithKey(key: string): boolean {
+    return !!this.series.find(series => series.key() === key);
   }
 }
 

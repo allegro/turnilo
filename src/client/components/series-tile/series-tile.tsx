@@ -18,7 +18,7 @@ import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SeriesMenu } from "../series-menu/series-menu";
@@ -31,7 +31,7 @@ interface SeriesTileProps {
   open: boolean;
   style?: React.CSSProperties;
   removeSeries: Unary<Series, void>;
-  saveSeries: Unary<Series, void>;
+  updateSeries: Binary<Series, Series, void>;
   openSeriesMenu: Unary<Series, void>;
   closeSeriesMenu: Fn;
   dragStart: Ternary<string, Series, React.DragEvent<HTMLElement>, void>;
@@ -39,9 +39,16 @@ interface SeriesTileProps {
 }
 
 export const SeriesTile: React.SFC<SeriesTileProps> = props => {
-  const { open, item, style, saveSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
+  const { open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { series, measure } = item;
   const title = item.title();
+
+  const saveSeries = (newSeries: Series) => updateSeries(series, newSeries);
+  const remove = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    removeSeries(series);
+  }
+
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
@@ -52,7 +59,7 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
         onDragStart={e => dragStart(measure.title, series, e)}
         style={style}>
         <div className="reading">{title}</div>
-        <div className="remove" onClick={() => removeSeries(series)}>
+        <div className="remove" onClick={remove}>
           <SvgIcon svg={require("../../icons/x.svg")} />
         </div>
       </div>

@@ -630,7 +630,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return <React.Fragment>
       <div
         className="measure-line-chart"
-        key={series.key()}
+        key={series.reactKey()}
         onMouseDown={this.onMouseDown.bind(this, series.measure)}
         onMouseMove={this.onMouseMove.bind(this, splitData, series.measure, scaleX)}
         onMouseLeave={this.onMouseLeave.bind(this, series.measure)}

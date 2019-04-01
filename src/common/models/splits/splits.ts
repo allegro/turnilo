@@ -24,7 +24,8 @@ import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filt
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { Measures } from "../measure/measures";
-import { Sort, SortReferenceType } from "../sort/sort";
+import { SeriesList } from "../series-list/series-list";
+import { DimensionSort, isSortEmpty, Sort, SortType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -96,7 +97,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   public setSortToDimension(): Splits {
     return this.updateSplits(splits =>
       splits.map(split =>
-        split.changeSort(new Sort({ reference: split.reference, type: SortReferenceType.DIMENSION }))));
+        split.changeSort(new DimensionSort({ reference: split.reference }))));
   }
 
   public length(): number {
@@ -158,12 +159,12 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     }));
   }
 
-  public constrainToDimensionsAndMeasures(dimensions: Dimensions, measures: Measures): Splits {
+  public constrainToDimensionsAndSeries(dimensions: Dimensions, series: SeriesList): Splits {
     function validSplit(split: Split): boolean {
       if (!dimensions.getDimensionByName(split.reference)) return false;
-      if (split.sort.empty()) return true;
+      if (isSortEmpty(split.sort)) return true;
       const sortRef = split.sort.reference;
-      return dimensions.containsDimensionWithName(sortRef) || measures.containsMeasureWithName(sortRef);
+      return dimensions.containsDimensionWithName(sortRef) || series.hasSeriesWithKey(sortRef);
     }
 
     return this.updateSplits(splits => splits.filter(validSplit));

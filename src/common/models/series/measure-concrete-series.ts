@@ -29,7 +29,7 @@ export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
     super(series, measure);
   }
 
-  protected applyExpression(expression: Expression, name: string): ApplyExpression {
+  protected applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
     return new ApplyExpression({ expression, name });
   }
 }

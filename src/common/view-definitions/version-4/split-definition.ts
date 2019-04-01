@@ -15,15 +15,14 @@
  */
 
 import { Duration } from "chronoshift";
-import { Direction } from "plywood";
 import { SeriesDerivation } from "../../models/series/concrete-series";
-import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
+import { fromJS as sortFromJS, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 
 export interface SplitSortDefinition {
   ref: string;
   direction: SortDirection;
-  type: SortReferenceType;
+  type: SortType;
   period?: SeriesDerivation;
 }
 
@@ -50,11 +49,6 @@ export interface TimeSplitDefinition extends BaseSplitDefinition {
 
 export type SplitDefinition = NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
 
-export const sortDirectionMapper: { [sort in SortDirection]: Direction; } = {
-  ascending: "ascending",
-  descending: "descending"
-};
-
 interface SplitDefinitionConversion<In extends SplitDefinition> {
   toSplitCombine(split: In): Split;
 
@@ -65,7 +59,7 @@ const PREVIOUS_PREFIX = "_previous__";
 const DELTA_PREFIX = "_delta__";
 
 function inferType(reference: string, dimensionName: string) {
-  return reference === dimensionName ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
+  return reference === dimensionName ? SortType.DIMENSION : SortType.SERIES;
 }
 
 function inferPeriodAndReference({ ref, period }: { ref: string, period?: SeriesDerivation }): { reference: string, period: SeriesDerivation } {
@@ -78,12 +72,12 @@ function inferPeriodAndReference({ ref, period }: { ref: string, period?: Series
 function toSort(sort: any, dimensionName: string): Sort {
   const { reference, period } = inferPeriodAndReference(sort);
   const type = sort.type || inferType(reference, dimensionName);
-  const { direction } = sort;
-  return new Sort({ reference, direction, type, period });
+  return sortFromJS({ ...sort, reference, type, period });
 }
 
-function fromSort({ period, type, direction, reference: ref }: Sort): SplitSortDefinition {
-  return { period, type, direction, ref };
+function fromSort(sort: Sort): SplitSortDefinition {
+  const { reference: ref, ...rest } = sort.toJS();
+  return { ref, ...rest };
 }
 
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {

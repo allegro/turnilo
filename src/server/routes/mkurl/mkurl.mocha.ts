@@ -85,7 +85,7 @@ describe("mkurl router", () => {
           pinnedDimensions: ["channel", "namespace", "isRobot"],
           pinnedSort: "delta",
           singleMeasure: "delta",
-          selectedMeasures: ["count", "added"],
+          selectedMeasures: ["delta", "count", "added"],
           multiMeasureMode: true,
           splits: [
             {

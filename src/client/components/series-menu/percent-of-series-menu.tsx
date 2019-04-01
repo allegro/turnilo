@@ -15,8 +15,10 @@
  */
 
 import * as React from "react";
+import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
+import { ExpressionPercentOf, PercentOperation } from "../../../common/models/expression/percent-of";
 import { Measure } from "../../../common/models/measure/measure";
-import { ExpressionSeries, ExpressionSeriesOperation } from "../../../common/models/series/expression-series";
+import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
@@ -29,7 +31,7 @@ interface ExpressionSeriesMenuProps {
 }
 
 interface Operation {
-  id: ExpressionSeriesOperation;
+  id: PercentOperation;
   label: string;
 }
 
@@ -39,14 +41,18 @@ const OPERATIONS: Operation[] = [{
   id: ExpressionSeriesOperation.PERCENT_OF_TOTAL, label: "Percent of total"
 }];
 
-function isSeriesValid(series: ExpressionSeries): boolean {
-  return !!series.operation;
+function operationToExpression(operation: PercentOperation): ExpressionPercentOf {
+  return new ExpressionPercentOf({ operation });
 }
 
-const renderOperation = (op: Operation): string =>  op.label;
+function isSeriesValid(series: ExpressionSeries): boolean {
+  return !!series.expression;
+}
+
+const renderOperation = (op: Operation): string => op.label;
 const renderSelectedOperation = (op: Operation): string => op ? renderOperation(op) : "Select operation";
 
-export const ExpressionSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, measure, onChange }) => {
+export const PercentOfSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, measure, onChange }) => {
 
   function onSeriesChange(series: ExpressionSeries) {
     onChange(series, isSeriesValid(series));
@@ -57,7 +63,7 @@ export const ExpressionSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ ser
   }
 
   function onOperationSelect({ id }: Operation) {
-    onSeriesChange(series.set("operation", id));
+    onSeriesChange(series.set("expression", operationToExpression(id)));
   }
 
   return <React.Fragment>
@@ -71,7 +77,7 @@ export const ExpressionSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ ser
       renderItem={renderOperation}
       renderSelectedItem={renderSelectedOperation}
       equal={(a, b) => a.id === b.id}
-      selectedItem={OPERATIONS.find(op => op.id === series.operation)}
+      selectedItem={series.expression && OPERATIONS.find(op => op.id === series.expression.operation)}
       onSelect={onOperationSelect}
     />
   </React.Fragment>;

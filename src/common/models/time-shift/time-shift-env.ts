@@ -23,7 +23,6 @@ export enum TimeShiftEnvType { CURRENT, WITH_PREVIOUS }
 
 interface TimeShiftEnvBase {
   type: TimeShiftEnvType;
-  currentFilter: FilterExpression;
 }
 
 export interface TimeShiftEnvCurrent extends TimeShiftEnvBase {
@@ -33,6 +32,7 @@ export interface TimeShiftEnvCurrent extends TimeShiftEnvBase {
 export interface TimeShiftEnvWithPrevious extends TimeShiftEnvBase {
   type: TimeShiftEnvType.WITH_PREVIOUS;
   shift: Duration;
+  currentFilter: FilterExpression;
   previousFilter: FilterExpression;
 }
 

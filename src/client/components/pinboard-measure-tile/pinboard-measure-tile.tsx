@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { concatTruthy } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
 import "./pinboard-measure-tile.scss";
@@ -35,8 +35,8 @@ export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props =>
   const { essence, title, dimension, sortOn, onSelect } = props;
 
   const sortOns = concatTruthy(
-    dimension && new SortOn(dimension),
-    ...essence.measuresSortOns(false).toArray()
+    dimension && new DimensionSortOn(dimension),
+    ...essence.seriesSortOns(false).toArray()
   );
 
   return <div className="pinboard-measure-tile">
@@ -46,7 +46,7 @@ export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props =>
       selectedItem={sortOn}
       equal={SortOn.equals}
       renderItem={SortOn.getTitle}
-      keyItem={SortOn.getName}
+      keyItem={SortOn.getKey}
       onSelect={onSelect}
     />}
   </div>;

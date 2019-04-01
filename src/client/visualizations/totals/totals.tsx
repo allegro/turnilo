@@ -31,7 +31,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const datum = dataset.data[0];
     return series.map(series =>
       <Total
-        key={series.key()}
+        key={series.reactKey()}
         series={series}
         datum={datum}
         showPrevious={essence.hasComparison()}

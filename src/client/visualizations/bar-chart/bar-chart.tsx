@@ -637,7 +637,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const yAxis: JSX.Element = <VerticalAxis
       formatter={series.formatter()}
-      key={series.key()}
+      key={series.reactKey()}
       stage={axisStage}
       ticks={yTicks}
       scale={yScale}
@@ -682,7 +682,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     // Invalid data, early return
     if (!this.hasValidYExtent(series, mySplitDataset.data)) {
       return {
-        chart: <div className="measure-bar-chart" key={series.key()} style={{ width: chartStage.width }}>
+        chart: <div className="measure-bar-chart" key={series.reactKey()} style={{ width: chartStage.width }}>
           <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)} />
           {measureLabel}
         </div>,
@@ -703,7 +703,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       highlight = renderedChart.highlight;
     }
 
-    const chart = <div className="measure-bar-chart" key={series.key()} style={{ width: chartStage.width }}>
+    const chart = <div className="measure-bar-chart" key={series.reactKey()} style={{ width: chartStage.width }}>
       <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}>
         {yGridLines}
         <g className="bars" transform={chartStage.getTransform()}>{bars}</g>

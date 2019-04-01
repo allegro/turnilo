@@ -15,6 +15,7 @@
  */
 
 import { Measure } from "../measure/measure";
+import { Measures } from "../measure/measures";
 import { ConcreteSeries } from "./concrete-series";
 import { ExpressionConcreteSeries } from "./expression-concrete-series";
 import { ExpressionSeries } from "./expression-series";
@@ -23,13 +24,13 @@ import { MeasureSeries } from "./measure-series";
 import { Series } from "./series";
 import { SeriesType } from "./series-type";
 
-export default function createConcreteSeries(series: Series, measure: Measure): ConcreteSeries {
+export default function createConcreteSeries(series: Series, measure: Measure, measures: Measures): ConcreteSeries {
   switch (series.type) {
       case SeriesType.MEASURE: {
         return new MeasureConcreteSeries(series as MeasureSeries, measure);
       }
       case SeriesType.EXPRESSION: {
-        return new ExpressionConcreteSeries(series as ExpressionSeries, measure);
+        return new ExpressionConcreteSeries(series as ExpressionSeries, measure, measures);
       }
     }
 }

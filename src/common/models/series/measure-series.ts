@@ -17,6 +17,7 @@
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
+import { getNameWithDerivation, SeriesDerivation } from "./concrete-series";
 import { BasicSeriesValue, SeriesBehaviours } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
 import { SeriesType } from "./series-type";
@@ -38,11 +39,19 @@ export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeri
     return new MeasureSeries({ reference: measure.name });
   }
 
+  static fromJS(params: any) {
+    return new MeasureSeries(params);
+  }
+
   constructor(params: RequireOnly<MeasureSeriesValue, "reference">) {
     super(params);
   }
 
   key() {
     return this.reference;
+  }
+
+  plywoodKey(derivation = SeriesDerivation.CURRENT): string {
+    return getNameWithDerivation(this.reference, derivation);
   }
 }

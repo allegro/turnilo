@@ -15,17 +15,16 @@
  */
 
 import { List } from "immutable";
-import { $, Expression, LimitExpression, ply, SortExpression } from "plywood";
+import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
-import { ConcreteSeries, getNameWithDerivation } from "../../models/series/concrete-series";
+import { ConcreteSeries } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
-import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
 import { thread } from "../functional/functional";
 
 const $main = $("main");
@@ -34,20 +33,13 @@ function applySeries(series: List<ConcreteSeries>, timeShiftEnv: TimeShiftEnv, n
 
   return (query: Expression) => {
     return series.reduce((query, series) => {
-        return query.performAction(
-          series.plywoodExpression(nestingLevel, timeShiftEnv)
-        );
+        return query.performAction(series.plywoodExpression(nestingLevel, timeShiftEnv));
     }, query);
   };
 }
 
 function applySort(sort: Sort) {
-  return (query: Expression) =>
-    query.performAction(new SortExpression({
-      // TODO: Use plywoodKey from correct series!
-      expression: $(getNameWithDerivation(sort.reference, sort.period)),
-      direction: sortDirectionMapper[sort.direction]
-    }));
+  return (query: Expression) => query.performAction(sort.toExpression());
 }
 
 function applyLimit(colors: Colors, limit: number, dimension: Dimension) {

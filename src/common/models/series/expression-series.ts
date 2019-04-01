@@ -16,20 +16,17 @@
 
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
+import { Expression, fromJS } from "../expression/expression";
 import { Measure } from "../measure/measure";
+import { getNameWithDerivation, SeriesDerivation } from "./concrete-series";
 import { BasicSeriesValue, SeriesBehaviours } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
 import { SeriesType } from "./series-type";
 
-export enum ExpressionSeriesOperation { PERCENT_OF_PARENT = "percent_of_parent", PERCENT_OF_TOTAL = "percent_of_total" }
-
-const DEFAULT_OPERATION: ExpressionSeriesOperation = ExpressionSeriesOperation.PERCENT_OF_PARENT;
-
 interface ExpressionSeriesValue extends BasicSeriesValue {
   type: SeriesType.EXPRESSION;
   reference: string;
-  operation: ExpressionSeriesOperation;
-  operand?: string;
+  expression: Expression;
   format: SeriesFormat;
 }
 
@@ -37,20 +34,29 @@ const defaultSeries: ExpressionSeriesValue = {
   reference: null,
   format: DEFAULT_FORMAT,
   type: SeriesType.EXPRESSION,
-  operation: DEFAULT_OPERATION
+  expression: null
 };
 
 export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSeries) implements SeriesBehaviours {
 
   static fromMeasure({ name }: Measure) {
-    return new ExpressionSeries({ reference: name, operation: null });
+    return new ExpressionSeries({ reference: name, expression: null });
   }
 
-  constructor(params: RequireOnly<ExpressionSeriesValue, "reference" | "operation">) {
+  static fromJS(params: any) {
+    const expression = fromJS(params.expression);
+    return new ExpressionSeries({ ...params, expression });
+  }
+
+  constructor(params: RequireOnly<ExpressionSeriesValue, "reference" | "expression">) {
     super(params);
   }
 
   key() {
-    return `${this.reference}-${this.operation}${this.operand ? ` ${this.operand}` : ""}`;
+    return `${this.reference}__${this.expression.key()}`;
+  }
+
+  plywoodKey(period = SeriesDerivation.CURRENT): string {
+    return getNameWithDerivation(this.key(), period);
   }
 }

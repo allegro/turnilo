@@ -28,7 +28,11 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   protected constructor(public readonly series: T, public readonly measure: Measure) {
   }
 
-  public key(derivation = SeriesDerivation.CURRENT): string {
+  public equals(other: ConcreteSeries): boolean {
+    return this.series.equals(other.series) && this.measure.equals(other.measure);
+  }
+
+  public reactKey(derivation = SeriesDerivation.CURRENT): string {
     switch (derivation) {
       case SeriesDerivation.CURRENT:
         return this.series.key();
@@ -39,17 +43,17 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     }
   }
 
-  public plywoodKey(derivation = SeriesDerivation.CURRENT): string {
-    return getNameWithDerivation(this.measure.name, derivation);
-  }
-
   protected abstract applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression;
+
+  public plywoodKey(period = SeriesDerivation.CURRENT): string {
+    return this.series.plywoodKey(period);
+  }
 
   public plywoodExpression(nestingLevel: number, timeShiftEnv: TimeShiftEnv): Expression {
     const { expression } = this.measure;
     switch (timeShiftEnv.type) {
       case TimeShiftEnvType.CURRENT:
-        return this.applyExpression(expression, this.plywoodKey(), nestingLevel);
+        return this.applyExpression(expression, this.series.plywoodKey(), nestingLevel);
       case TimeShiftEnvType.WITH_PREVIOUS: {
         const currentName = this.plywoodKey();
         const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
@@ -74,16 +78,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   public selectValue(datum: Datum, period = SeriesDerivation.CURRENT): number {
-    switch (period) {
-      case SeriesDerivation.CURRENT:
-      case SeriesDerivation.PREVIOUS:
-        return datum[this.plywoodKey(period)] as number;
-      case SeriesDerivation.DELTA: {
-        const current = datum[this.plywoodKey(SeriesDerivation.CURRENT)] as number;
-        const previous = datum[this.plywoodKey(SeriesDerivation.PREVIOUS)] as number;
-        return Math.abs(current - previous);
-      }
-    }
+    return datum[this.plywoodKey(period)] as number;
   }
 
   /**

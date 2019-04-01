@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries } from "./expression-series";
 import { MeasureSeries } from "./measure-series";
 import { SeriesType } from "./series-type";
@@ -24,6 +25,7 @@ export interface BasicSeriesValue {
 
 export interface SeriesBehaviours {
   key: () => string;
+  plywoodKey: (period?: SeriesDerivation) => string;
 }
 
 export type Series = MeasureSeries | ExpressionSeries;
@@ -31,9 +33,9 @@ export type Series = MeasureSeries | ExpressionSeries;
 export function fromJS(params: any): Series {
   const { type } = params;
   switch (type as SeriesType) {
-    case SeriesType.EXPRESSION:
-      return new ExpressionSeries(params);
     case SeriesType.MEASURE:
-      return new MeasureSeries(params);
+      return MeasureSeries.fromJS(params);
+    case SeriesType.EXPRESSION:
+      return ExpressionSeries.fromJS(params);
   }
 }

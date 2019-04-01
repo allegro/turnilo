@@ -43,7 +43,7 @@ export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = prop
       style={style}>
       <div className="reading">{measure.title}</div>
       {openOn && <SeriesMenu
-        key={series.key()}
+        key="placeholder-series"
         openOn={openOn}
         containerStage={containerStage}
         onClose={closeItem}

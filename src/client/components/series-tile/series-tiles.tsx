@@ -19,7 +19,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { concatTruthy, Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Binary, concatTruthy, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
@@ -34,7 +34,7 @@ interface SeriesTilesProps {
   maxItems: number;
   essence: Essence;
   removeSeries: Unary<Series, void>;
-  saveSeries: Unary<Series, void>;
+  updateSeries: Binary<Series, Series, void>;
   openedSeriesMenu?: Series;
   openSeriesMenu: Unary<Series, void>;
   closeSeriesMenu: Fn;
@@ -54,7 +54,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     removeSeries,
     dragStart,
     closeSeriesMenu,
-    saveSeries,
+    updateSeries,
     removePlaceholderSeries,
     savePlaceholderSeries,
     openOverflowMenu,
@@ -91,7 +91,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
       dragStart={dragStart}
       containerStage={menuStage}
       openSeriesMenu={openSeriesMenu}
-      saveSeries={saveSeries} />),
+      updateSeries={updateSeries} />),
     placeholderTile()
   );
 

@@ -41,7 +41,7 @@ interface SeriesTilesRowProps {
 
 interface SeriesTilesRowState {
   dragPosition?: DragPosition;
-  openSeriesMenu?: Series;
+  openedSeries?: Series;
   overflowOpen?: boolean;
   placeholderSeries?: Series;
 }
@@ -62,17 +62,17 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
 
   removePlaceholderSeries = () => this.setState({ placeholderSeries: null });
 
-  openSeriesMenu = (series: Series) => this.setState({ openSeriesMenu: series });
+  openSeriesMenu = (series: Series) => this.setState({ openedSeries: series });
 
-  closeSeriesMenu = () => this.setState({ openSeriesMenu: null });
+  closeSeriesMenu = () => this.setState({ openedSeries: null });
 
   openOverflowMenu = () => this.setState({ overflowOpen: true });
 
   closeOverflowMenu = () => this.setState({ overflowOpen: false });
 
-  saveSeries = (series: Series) => {
+  updateSeries = (oldSeries: Series, series: Series) => {
     const { essence, clicker } = this.props;
-    clicker.changeSeriesList(essence.series.modifySeries(series));
+    clicker.changeSeriesList(essence.series.replaceSeries(oldSeries, series));
   }
 
   savePlaceholderSeries = (series: Series) => {
@@ -165,7 +165,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   }
 
   render() {
-    const { dragPosition, openSeriesMenu, overflowOpen, placeholderSeries } = this.state;
+    const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;
     const { menuStage, essence } = this.props;
     return <div className="series-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.series}</div>
@@ -176,7 +176,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
           maxItems={this.maxItems()}
           essence={essence}
           removeSeries={this.removeSeries}
-          saveSeries={this.saveSeries}
+          updateSeries={this.updateSeries}
           openSeriesMenu={this.openSeriesMenu}
           closeSeriesMenu={this.closeSeriesMenu}
           dragStart={this.dragStart}
@@ -185,7 +185,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
           overflowOpen={overflowOpen}
           closeOverflowMenu={this.closeOverflowMenu}
           openOverflowMenu={this.openOverflowMenu}
-          openedSeriesMenu={openSeriesMenu} />
+          openedSeriesMenu={openedSeries} />
       </div>
       <AddSeries menuStage={menuStage} essence={essence} appendMeasureSeries={this.appendMeasureSeries} />
       <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />

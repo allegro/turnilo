@@ -16,7 +16,7 @@
  */
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
+import { DimensionSort, isSortEmpty, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -33,20 +33,17 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       const splitDimension = dataCube.getDimension(split.reference);
       const sortStrategy = splitDimension.sortStrategy;
 
-      if (split.sort.empty()) {
+      if (isSortEmpty(split.sort)) {
         if (sortStrategy) {
-          if (sortStrategy === "self") {
-            split = split.changeSort(new Sort({
+          if (sortStrategy === "self" || split.reference === sortStrategy) {
+            split = split.changeSort(new DimensionSort({
               reference: splitDimension.name,
-              direction: SortDirection.descending,
-              type: SortReferenceType.DIMENSION
+              direction: SortDirection.descending
             }));
           } else {
-            const type = split.reference === sortStrategy ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
-            split = split.changeSort(new Sort({
+            split = split.changeSort(new SeriesSort({
               reference: sortStrategy,
-              direction: SortDirection.descending,
-              type
+              direction: SortDirection.descending
             }));
           }
         } else {

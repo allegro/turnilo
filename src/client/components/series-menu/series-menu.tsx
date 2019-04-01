@@ -26,8 +26,8 @@ import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
-import { ExpressionSeriesMenu } from "./expression-series-menu";
 import { MeasureSeriesMenu } from "./measure-series-menu";
+import { PercentOfSeriesMenu } from "./percent-of-series-menu";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
@@ -80,6 +80,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
     const { measure, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
+    // FIX: conditions for specific menus
     return <BubbleMenu
       className="series-menu"
       direction="down"
@@ -93,7 +94,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         measure={measure}
         onChange={this.saveSeries}
       />}
-      {series instanceof ExpressionSeries && <ExpressionSeriesMenu
+      {series instanceof ExpressionSeries && <PercentOfSeriesMenu
         series={series}
         measure={measure}
         onChange={this.saveSeries}

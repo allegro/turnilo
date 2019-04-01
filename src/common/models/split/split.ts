@@ -21,7 +21,7 @@ import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywoo
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension } from "../dimension/dimension";
-import { Sort } from "../sort/sort";
+import { DimensionSort, fromJS, Sort } from "../sort/sort";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 
 export enum SplitType {
@@ -45,7 +45,7 @@ const defaultSplit: SplitValue = {
   type: SplitType.string,
   reference: null,
   bucket: null,
-  sort: new Sort({ reference: null, type: null }),
+  sort: new DimensionSort({ reference: null }),
   limit: null
 };
 
@@ -91,7 +91,7 @@ export class Split extends Record<SplitValue>(defaultSplit) {
       reference,
       bucket: type === SplitType.time && bucket ? Duration.fromJS(bucket) : bucket,
       limit,
-      sort: new Sort(sort)
+      sort: sort && fromJS(sort)
     });
   }
 

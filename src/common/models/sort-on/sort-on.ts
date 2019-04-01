@@ -17,19 +17,31 @@
  */
 
 import { Dimension } from "../dimension/dimension";
-import { Measure } from "../measure/measure";
-import { SeriesDerivation } from "../series/concrete-series";
-import { fromMeasure } from "../series/measure-concrete-series";
-import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
+import { Essence } from "../essence/essence";
+import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
+import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
 
-export class SortOn {
+export abstract class SortOn {
 
-  static getName(sortOn: SortOn): string {
-    return sortOn.getName();
+  static fromSort(sort: Sort, essence: Essence): SortOn {
+    const { type, reference } = sort;
+    switch (type) {
+      case SortType.DIMENSION:
+        const dimension = essence.dataCube.getDimension(reference);
+        return new DimensionSortOn(dimension);
+      case SortType.SERIES:
+        const period = (sort as SeriesSort).period;
+        const series = essence.findConcreteSeries(reference);
+        return new SeriesSortOn(series, period);
+    }
+  }
+
+  static getKey(sortOn: SortOn): string {
+    return sortOn.key;
   }
 
   static getTitle(sortOn: SortOn): string {
-    return sortOn.getTitle();
+    return sortOn.title;
   }
 
   static equals(sortOn: SortOn, other: SortOn): boolean {
@@ -37,28 +49,46 @@ export class SortOn {
     return sortOn.equals(other);
   }
 
-  constructor(public reference: Dimension | Measure, public period = SeriesDerivation.CURRENT) {
+  protected constructor(public key: string, protected title: string, protected period?: SeriesDerivation) {
   }
 
-  public getName(): string {
-    return this.reference.name;
+  abstract equals(other: SortOn): boolean;
+
+  abstract toSort(direction: SortDirection): Sort;
+}
+
+export class DimensionSortOn extends SortOn {
+
+  constructor(dimension: Dimension) {
+    super(dimension.name, dimension.title);
   }
 
-  public equals(other: SortOn): boolean {
-    return other instanceof SortOn && this.reference.equals(other.reference) && this.period === other.period;
+  equals(other: SortOn): boolean {
+    return other instanceof DimensionSortOn
+      && this.key === other.key
+      && this.title === other.title;
   }
 
-  public toSort(direction?: SortDirection): Sort {
-    return new Sort({
-      reference: this.reference.name,
-      type: this.reference instanceof Dimension ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE,
-      period: this.period,
-      direction
-    });
+  toSort(direction: SortDirection): Sort {
+    return new DimensionSort({ direction, reference: this.key });
+  }
+}
+
+export class SeriesSortOn extends SortOn {
+
+  constructor(series: ConcreteSeries, period = SeriesDerivation.CURRENT) {
+    super(series.series.key(), series.title(period), period);
   }
 
-  public getTitle() {
-    if (this.reference instanceof Dimension) return this.reference.title;
-    return fromMeasure(this.reference).title(this.period);
+  equals(other: SortOn): boolean {
+    return other instanceof SeriesSortOn
+      && this.key === other.key
+      && this.title === other.title
+      && this.period === other.period;
   }
+
+  toSort(direction: SortDirection): Sort {
+    return new SeriesSort({ reference: this.key, direction, period: this.period });
+  }
+
 }

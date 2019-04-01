@@ -26,8 +26,8 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure } from "../../../common/models/measure/measure";
-import { SeriesDerivation } from "../../../common/models/series/concrete-series";
-import { Sort, SortDirection, SortReferenceType } from "../../../common/models/sort/sort";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { formatNumberRange } from "../../../common/utils/formatter/formatter";
@@ -95,7 +95,7 @@ export enum HoverElement { CORNER, ROW, HEADER, WHITESPACE, SPACE_LEFT }
 
 export interface PositionHover {
   element: HoverElement;
-  measure?: Measure;
+  series?: ConcreteSeries;
   columnType?: ColumnType;
   row?: Datum;
 }
@@ -127,21 +127,21 @@ export class Table extends BaseVisualization<TableState> {
 
     if (y <= HEADER_HEIGHT) {
       if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
-      const effectiveMeasures = essence.getEffectiveMeasures();
+      const seriesList = essence.getConcreteSeries();
 
       x = x - this.getSegmentWidth();
-      const measureWidth = this.getIdealColumnWidth(this.props.essence);
-      const measureIndex = Math.floor(x / measureWidth);
+      const seriesWidth = this.getIdealColumnWidth(this.props.essence);
+      const seriesIndex = Math.floor(x / seriesWidth);
       if (essence.hasComparison()) {
-        const nominalIndex = integerDivision(measureIndex, 3);
-        const measure = effectiveMeasures.get(nominalIndex);
-        if (!measure) return { element: HoverElement.WHITESPACE };
-        const columnType = indexToColumnType(measureIndex);
-        return { element: HoverElement.HEADER, measure, columnType };
+        const nominalIndex = integerDivision(seriesIndex, 3);
+        const series = seriesList.get(nominalIndex);
+        if (!series) return { element: HoverElement.WHITESPACE };
+        const columnType = indexToColumnType(seriesIndex);
+        return { element: HoverElement.HEADER, series, columnType };
       }
-      const measure = effectiveMeasures.get(measureIndex);
-      if (!measure) return { element: HoverElement.WHITESPACE };
-      return { element: HoverElement.HEADER, measure, columnType: ColumnType.CURRENT };
+      const series = seriesList.get(seriesIndex);
+      if (!series) return { element: HoverElement.WHITESPACE };
+      return { element: HoverElement.HEADER, series, columnType: ColumnType.CURRENT };
     }
 
     y = y - HEADER_HEIGHT;
@@ -162,7 +162,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  private setSort({ measure, element, columnType }: PositionHover) {
+  private setSort({ series, element, columnType }: PositionHover) {
     const { clicker, essence: { splits } } = this.props;
     if (element === HoverElement.CORNER) {
       clicker.changeSplits(splits.setSortToDimension(), VisStrategy.KeepAlways); // set each to dimension ascending
@@ -171,8 +171,8 @@ export class Table extends BaseVisualization<TableState> {
     if (element === HoverElement.HEADER) {
       const period = this.getSortPeriod(columnType);
       const commonSort = this.props.essence.getCommonSort();
-      const reference = measure.name;
-      const sort = new Sort({ reference, period, type: SortReferenceType.MEASURE, direction: SortDirection.descending });
+      const reference = series.series.key();
+      const sort = new SeriesSort({ reference, period, direction: SortDirection.descending });
       const sortWithDirection = commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
       clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
       return;
@@ -212,9 +212,10 @@ export class Table extends BaseVisualization<TableState> {
   onMouseMove = (x: number, y: number) => {
     const { hoverMeasure, hoverRow } = this.state;
     const pos = this.calculateMousePosition(x, y);
-    if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
+    const measure = pos.series && pos.series.measure;
+    if (hoverMeasure !== measure || hoverRow !== pos.row) {
       this.setState({
-        hoverMeasure: pos.measure,
+        hoverMeasure: measure,
         hoverRow: pos.row
       });
     }
@@ -283,7 +284,7 @@ export class Table extends BaseVisualization<TableState> {
       return flatMap(concreteSeries, (series, i) => {
         const currentValue = series.selectValue(datum);
 
-        const currentCell = <div className={className} key={series.key()} style={{ width: idealWidth }}>
+        const currentCell = <div className={className} key={series.reactKey()} style={{ width: idealWidth }}>
           {lastLevel && this.makeBackground(hScales[i](currentValue))}
           <div className="label">{series.formatValue(datum)}</div>
         </div>;
@@ -296,11 +297,11 @@ export class Table extends BaseVisualization<TableState> {
 
         return [
           currentCell,
-          <div className={className} key={series.key(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
+          <div className={className} key={series.reactKey(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
             {lastLevel && this.makeBackground(hScales[i](previousValue))}
             <div className="label">{series.selectValue(datum, SeriesDerivation.PREVIOUS)}</div>
           </div>,
-          <div className={className} key={series.key(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
+          <div className={className} key={series.reactKey(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
             <div className="label">{<Delta
               currentValue={currentValue}
               previousValue={previousValue}
@@ -324,9 +325,8 @@ export class Table extends BaseVisualization<TableState> {
   renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
     const commonSort = essence.getCommonSort();
 
-    // TODO: fix for ExpressionMeasures
-    function isCommonSortedBy(measure: Measure, period = SeriesDerivation.CURRENT): boolean {
-      return commonSort && commonSort.reference === measure.name && commonSort.period === period;
+    function isCommonSortedBy(series: ConcreteSeries, period = SeriesDerivation.CURRENT): boolean {
+      return commonSort instanceof SeriesSort && commonSort.reference === series.series.key() && commonSort.period === period;
     }
 
     const sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
@@ -335,9 +335,9 @@ export class Table extends BaseVisualization<TableState> {
     }) : null;
 
     return flatMap(essence.getConcreteSeries().toArray(), series => {
-      const isCurrentSorted = isCommonSortedBy(series.measure);
+      const isCurrentSorted = isCommonSortedBy(series);
 
-      const currentMeasure = <div className="measure-name" key={series.key()} style={{ width: measureWidth }}>
+      const currentMeasure = <div className="measure-name" key={series.reactKey()} style={{ width: measureWidth }}>
         <div className="title-wrap">{series.title()}</div>
         {isCurrentSorted ? sortArrowIcon : null}
       </div>;
@@ -346,16 +346,16 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = isCommonSortedBy(series.measure, SeriesDerivation.PREVIOUS);
-      const isDeltaSorted = isCommonSortedBy(series.measure, SeriesDerivation.DELTA);
+      const isPreviousSorted = isCommonSortedBy(series, SeriesDerivation.PREVIOUS);
+      const isDeltaSorted = isCommonSortedBy(series, SeriesDerivation.DELTA);
       return [
         currentMeasure,
-        <div className="measure-name" key={series.key(SeriesDerivation.PREVIOUS)} style={{ width: measureWidth }}>
+        <div className="measure-name" key={series.reactKey(SeriesDerivation.PREVIOUS)} style={{ width: measureWidth }}>
           <div className="title-wrap">{series.title(SeriesDerivation.PREVIOUS)}</div>
           {isPreviousSorted ? sortArrowIcon : null}
         </div>,
         <div
-          className="measure-name measure-delta" key={series.key(SeriesDerivation.DELTA)} style={{ width: measureWidth }}>
+          className="measure-name measure-delta" key={series.reactKey(SeriesDerivation.DELTA)} style={{ width: measureWidth }}>
           <div className="title-wrap">Difference</div>
           {isDeltaSorted ? sortArrowIcon : null}
         </div>

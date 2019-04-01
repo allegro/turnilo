@@ -35,9 +35,6 @@ import {
   granularityEquals,
   granularityToString
 } from "../../../common/models/granularity/granularity";
-import { Measure } from "../../../common/models/measure/measure";
-import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
-import { DEFAULT_FORMAT, seriesFormatter } from "../../../common/models/series/series-format";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { TimeShiftEnvType } from "../../../common/models/time-shift/time-shift-env";
@@ -182,13 +179,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       sortExpression = $(dimension.name);
     } else {
       query = query.split(dimension.expression, dimension.name);
-      sortExpression = $(sortOn.getName());
+      sortExpression = $(sortOn.key);
     }
 
-    if (sortOn.reference instanceof Measure) {
-      // TODO: FIX creation of plywood expression and inlined timeShiftEnv
-      const series = fromMeasure(sortOn.reference);
-      query = query.performAction(series.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT, currentFilter: null }));
+    const sortSeries = essence.findConcreteSeries(sortOn.key);
+    if (sortSeries) {
+      query = query.performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
@@ -496,15 +492,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   private getFormatter(): Unary<Datum, string> {
-    const { essence: { series: seriesList }, sortOn } = this.props;
+    const { sortOn, essence } = this.props;
 
-    const measure = sortOn && sortOn.reference;
-    if (!(measure instanceof Measure)) return null;
-    const measureName = measure.name;
-    const series = seriesList.getSeries(measureName);
-    const format = series ? series.format : DEFAULT_FORMAT;
-    const formatter = seriesFormatter(format, measure);
-    return (datum: Datum) => formatter(datum[measureName] as number);
+    const series = essence.findConcreteSeries(sortOn.key);
+    if (!series) return null;
+    return d => series.formatValue(d);
   }
 
   private prepareRows(rowData: Datum[], continuous: boolean): JSX.Element[] {

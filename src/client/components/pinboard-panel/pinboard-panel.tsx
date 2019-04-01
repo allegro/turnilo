@@ -19,8 +19,9 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { Measure } from "../../../common/models/measure/measure";
-import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
+import { SeriesSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { STRINGS } from "../../config/constants";
@@ -89,8 +90,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       if (dimension) {
         const split = splits.findSplitForDimension(dimension);
         if (split) {
-          const sortReference = split.sort.reference;
-          return new SortOn(dataCube.getDimension(sortReference) || dataCube.getMeasure(sortReference));
+          return SortOn.fromSort(split.sort, essence);
         }
       }
     }
@@ -116,8 +116,9 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   onPinboardSortOnSelect = (sortOn: SortOn) => {
-    if (!(sortOn.reference instanceof Measure)) return;
-    this.props.clicker.changePinnedSortMeasure(sortOn.reference);
+    const { essence: { dataCube } } = this.props;
+    const measure = dataCube.getMeasure(sortOn.key);
+    this.props.clicker.changePinnedSortMeasure(measure);
   }
 
   onRemoveLegend = () => {
@@ -168,7 +169,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     }
 
     const pinnedSortMeasure = essence.getPinnedSortMeasure();
-    const pinnedSortSortOn = pinnedSortMeasure && new SortOn(pinnedSortMeasure);
+    const pinnedSortSeries = pinnedSortMeasure && essence.findConcreteSeries(pinnedSortMeasure.name);
+    const pinnedSortSortOn = pinnedSortSeries && new SeriesSortOn(pinnedSortSeries);
     let dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach(dimensionName => {
       const dimension = dataCube.getDimension(dimensionName);

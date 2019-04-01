@@ -17,7 +17,7 @@
 
 import { Dimension } from "../../models/dimension/dimension";
 import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
-import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
+import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Actions } from "../../utils/rules/actions";
@@ -39,34 +39,29 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
       const splitDimension = dataCube.getDimension(split.reference);
       const sortStrategy = splitDimension.sortStrategy;
-      if (split.sort.empty()) {
+      if (isSortEmpty(split.sort)) {
         if (sortStrategy) {
-          if (sortStrategy === "self") {
-            split = split.changeSort(new Sort({
+          if (sortStrategy === "self" || split.reference === sortStrategy) {
+            split = split.changeSort(new DimensionSort({
               reference: splitDimension.name,
-              direction: SortDirection.descending,
-              type: SortReferenceType.DIMENSION
+              direction: SortDirection.descending
             }));
           } else {
-            const type = split.reference === sortStrategy ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
-            split = split.changeSort(new Sort({
+            split = split.changeSort(new SeriesSort({
               reference: sortStrategy,
-              direction: SortDirection.descending,
-              type
+              direction: SortDirection.descending
             }));
           }
         } else if (splitDimension.kind === "boolean") {  // Must sort boolean in deciding order!
-          split = split.changeSort(new Sort({
+          split = split.changeSort(new DimensionSort({
             reference: splitDimension.name,
-            direction: SortDirection.descending,
-            type: SortReferenceType.DIMENSION
+            direction: SortDirection.descending
           }));
         } else {
           if (splitDimension.isContinuous()) {
-            split = split.changeSort(new Sort({
+            split = split.changeSort(new DimensionSort({
               reference: splitDimension.name,
-              direction: SortDirection.ascending,
-              type: SortReferenceType.DIMENSION
+              direction: SortDirection.ascending
             }));
           } else {
             split = split.changeSort(dataCube.getDefaultSortExpression());
@@ -74,10 +69,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
         }
         autoChanged = true;
       } else if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
-        split = split.changeSort(new Sort({
+        split = split.changeSort(new DimensionSort({
           reference: splitDimension.name,
-          direction: split.sort.direction,
-          type: SortReferenceType.DIMENSION
+          direction: split.sort.direction
         }));
         autoChanged = true;
       }
