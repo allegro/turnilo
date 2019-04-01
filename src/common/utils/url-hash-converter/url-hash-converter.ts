@@ -53,7 +53,7 @@ interface HashSegments {
   readonly visualization?: string;
 }
 
-function getHashSegments(hash: string): HashSegments {
+export function getHashSegments(hash: string): HashSegments {
   const hashParts = hash.split(SEGMENT_SEPARATOR);
 
   if (hashParts.length < MINIMAL_HASH_SEGMENTS_COUNT) {

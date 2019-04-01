@@ -22,7 +22,8 @@ import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
-import { Sort } from "../../../common/models/sort/sort";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Sort, SortReferenceType } from "../../../common/models/sort/sort";
 import { Bucket, Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
@@ -130,9 +131,24 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       || (originalColors && !originalColors.equals(this.state.colors));
   }
 
+  renderSortDropdown() {
+    const { essence, dimension } = this.props;
+    const { dataCube } = essence;
+    const { sort: { type, reference: name, period, direction } } = this.state;
+    const reference = type === SortReferenceType.DIMENSION ? dataCube.getDimension(name) : dataCube.getMeasure(name);
+    const selected = new SortOn(reference, period);
+    const options = [new SortOn(dimension), ...essence.measuresSortOns(true).toArray()];
+    return <SortDropdown
+        direction={direction}
+        selected={selected}
+        options={options}
+        onChange={this.saveSort}
+      />;
+  }
+
   render() {
-    const { essence: { dataCube }, containerStage, openOn, dimension, onClose, inside } = this.props;
-    const { colors, sort, granularity, limit } = this.state;
+    const { containerStage, openOn, dimension, onClose, inside } = this.props;
+    const { colors, granularity, limit } = this.state;
     if (!dimension) return null;
 
     return <BubbleMenu
@@ -149,12 +165,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
         granularityChange={this.saveGranularity}
         granularity={granularity}
       />
-      <SortDropdown
-        sort={sort}
-        dataCube={dataCube}
-        dimension={dimension}
-        onChange={this.saveSort}
-      />
+      {this.renderSortDropdown()}
       <LimitDropdown
         colors={colors}
         onLimitSelect={this.saveLimit}

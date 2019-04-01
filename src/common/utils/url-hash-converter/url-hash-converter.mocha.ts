@@ -20,7 +20,8 @@ import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { Essence } from "../../models/essence/essence";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
 import { ViewDefinitionVersion } from "../../view-definitions";
-import { urlHashConverter } from "./url-hash-converter";
+import { hashToObject } from "../../view-definitions/hash-conversions";
+import { getHashSegments, urlHashConverter } from "./url-hash-converter";
 import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
 
 describe("urlHashConverter", () => {
@@ -83,11 +84,23 @@ describe("urlHashConverter", () => {
         expect(essence.toJS()).to.deep.equal(decodedEssence.toJS());
       });
 
+      function decodeHash(hash: string): object {
+        const { encodedModel } = getHashSegments(hash);
+        return hashToObject(encodedModel);
+      }
+
       it(`is symmetric in encode/decode for ${visualization.name} in version ${version}`, () => {
         const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
         const encodedHash = urlHashConverter.toHash(decodedEssence, version);
 
-        expect(encodedHash).to.deep.equal(hash);
+        try {
+          expect(encodedHash).to.equal(hash);
+        } catch (e) {
+          // rethrow assertion on decoded hashes for readability
+          expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
+          // if test fails but expect on decoded succeeds (error in test definition) rethrow original assertion exception.
+          throw e;
+        }
       });
     });
   });

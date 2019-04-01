@@ -96,9 +96,13 @@ The name of the cluster (to be referenced later from the data cube).
 
 The database type of the cluster. Currently only Druid is supported.
 
-**host** (string)
+**url** (string)
 
-The host (hostname:port) of the cluster. In the Druid case this must be the broker.
+The url address (http[s]://hostname[:port]) of the cluster. If no port, 80 is assumed for plain http, and 443 for secure https.
+
+**host** deprecated (string)
+
+The host (hostname:port) of the cluster, http protocol is assumed. Deprecated, use **url** field
 
 **version** (string)
 
@@ -269,8 +273,8 @@ Supported native types: "hyperUnique", "thetaSketch" and "approximateHistogram".
 
 #### Override numeric dimension
 
-Turnilo could not corretly detect numeric dimensions as Druid reports all dimensions to be strings.
-When a numeric dimension is incorrectly classified as a string its soring will appear wrong in the UI.
+Turnilo could not correctly detect numeric dimensions as Druid reports all dimensions to be strings.
+When a numeric dimension is incorrectly classified as a string its sorting will appear wrong in the UI.
 If you have a dimension with numeric values (say: `age`).
 
 You should add:
@@ -397,7 +401,7 @@ Let's say that you are responsible for all accounts in the United States as well
   formula: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
 ```
 
-Now my account would represent a custom filter boolean diemension.
+Now my account would represent a custom filter boolean dimension.
 
 ##### Custom transformations
 

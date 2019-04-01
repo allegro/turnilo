@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
+import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-
-import { Cluster } from "./cluster";
+import { Cluster, ClusterJS } from "./cluster";
 
 describe("Cluster", () => {
   it("is an immutable class", () => {
     testImmutableClass(Cluster, [
       {
-        name: "my-druid-cluster",
-        type: "druid"
+        name: "my-druid-cluster"
       },
       {
         name: "my-druid-cluster",
-        type: "druid",
-        host: "192.168.99.100",
+        url: "https://192.168.99.100",
         version: "0.9.1",
         timeout: 30000,
         healthCheckTimeout: 50,
@@ -42,21 +40,30 @@ describe("Cluster", () => {
       },
       {
         name: "my-mysql-cluster",
-        type: "druid",
-        host: "192.168.99.100",
+        url: "http://192.168.99.100",
         timeout: 30000,
         sourceListScan: "auto"
       },
       {
         name: "my-mysql-cluster",
-        type: "druid",
-        host: "192.168.99.100",
+        url: "https://192.168.99.100",
         timeout: 30000,
         sourceListScan: "auto",
         sourceListRefreshInterval: 0,
         sourceReintrospectInterval: 0
       }
     ]);
+  });
+
+  describe("backward compatibility", () => {
+    it("should read old host and assume http protocol", () => {
+      const cluster = Cluster.fromJS({
+        name: "old-host",
+        host: "broker-host.com"
+      } as ClusterJS);
+
+      expect(cluster.url).to.be.eq("http://broker-host.com");
+    });
   });
 
 });

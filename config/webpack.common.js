@@ -22,12 +22,16 @@ module.exports = {
     filename: "main.js",
     chunkFilename: "[name].[hash].js"
   },
-  devtool: "source-map",
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
   module: {
     rules: [
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        use: ["source-map-loader"]
+      },
       {
         test: /\.tsx?$/,
         use: [

@@ -27,10 +27,11 @@ import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, 
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
-import { Measure } from "../measure/measure";
+import { Measure, MeasureDerivation } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { Series } from "../series/series";
-import { Sort } from "../sort/sort";
+import { SortOn } from "../sort-on/sort-on";
+import { Sort, SortReferenceType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
@@ -175,6 +176,13 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return essence.updateSplitsWithFilter();
   }
 
+  static defaultSort(series: SeriesList, dataCube: DataCube): string {
+    const seriesRefs = Set(series.series.map(series => series.reference));
+    const defaultSort = dataCube.getDefaultSortMeasure();
+    if (seriesRefs.has(defaultSort)) return defaultSort;
+    return seriesRefs.first();
+  }
+
   public visResolve: Resolve;
 
   constructor(parameters: EssenceValue) {
@@ -197,6 +205,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     const newHighlight = highlight && highlight.validForSeries(series) ? highlight : null;
 
+    const constrainedSeries = series && series.constrainToMeasures(dataCube.measures);
+
+    const isPinnedSortValid = series && constrainedSeries.hasSeries(pinnedSort);
+    const constrainedPinnedSort = isPinnedSortValid ? pinnedSort : Essence.defaultSort(constrainedSeries, dataCube);
+
     super({
       ...parameters,
       visualizations,
@@ -206,9 +219,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       timeShift,
       splits: splits && splits.constrainToDimensionsAndMeasures(dataCube.dimensions, dataCube.measures),
       filter: filter && filter.constrainToDimensions(dataCube.dimensions),
-      series: series && series.constrainToMeasures(dataCube.measures),
+      series: constrainedSeries,
       pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
-      pinnedSort: dataCube.getMeasure(pinnedSort) ? pinnedSort : dataCube.getDefaultSortMeasure(),
+      pinnedSort: constrainedPinnedSort,
       colors,
       highlight: newHighlight && newHighlight.constrainToDimensions(dataCube.dimensions),
       compare,
@@ -390,7 +403,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   // Setters
 
   public changeComparisonShift(timeShift: TimeShift): Essence {
-    return this.set("timeShift", timeShift);
+    return this.set("timeShift", timeShift).updateSorts();
   }
 
   public updateDataCube(newDataCube: DataCube): Essence {
@@ -496,7 +509,45 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   changeSeriesList(series: SeriesList): Essence {
-    return this.set("series", series).resolveVisualizationAndUpdate();
+    return this
+      .set("series", series)
+      .updateSorts()
+      .resolveVisualizationAndUpdate();
+  }
+
+  private updateSorts(): Essence {
+    const seriesRefs = Set(this.series.series.map(series => series.reference));
+    return this
+      .update("pinnedSort", sort => {
+        if (seriesRefs.has(sort)) return sort;
+        return Essence.defaultSort(this.series, this.dataCube);
+      })
+      .update("splits", splits => splits.update("splits", splits => splits.map((split: Split) => {
+        const { sort: { type, reference, period } } = split;
+        switch (type) {
+          case SortReferenceType.DIMENSION:
+            return split;
+          case SortReferenceType.MEASURE:
+            if (!seriesRefs.has(reference)) {
+              const measureSortRef = Essence.defaultSort(this.series, this.dataCube);
+              if (measureSortRef) {
+                return split.changeSort(new Sort({
+                  reference: measureSortRef,
+                  type: SortReferenceType.MEASURE
+                }));
+              }
+              return split.changeSort(new Sort({
+                reference: split.reference,
+                type: SortReferenceType.DIMENSION
+              }));
+            }
+            if (period !== MeasureDerivation.CURRENT && !this.hasComparison()) {
+              return split.update("sort", sort =>
+                sort.set("period", MeasureDerivation.CURRENT));
+            }
+            return split;
+        }
+      })));
   }
 
   public updateSplitsWithFilter(): Essence {
@@ -553,5 +604,18 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public dropHighlight(): Essence {
     return this.set("highlight", null);
+  }
+
+  public measuresSortOns(withTimeShift?: boolean): List<SortOn> {
+    const measures = this.getEffectiveSelectedMeasures();
+    const addPrevious = withTimeShift && this.hasComparison();
+    return measures.flatMap(measure => {
+      if (!addPrevious) return [new SortOn(measure)];
+      return [
+        new SortOn(measure),
+        new SortOn(measure, MeasureDerivation.PREVIOUS),
+        new SortOn(measure, MeasureDerivation.DELTA)
+      ];
+    });
   }
 }

@@ -22,21 +22,22 @@ import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import * as path from "path";
 import { LOGGER } from "../common/logger/logger";
-import { GetSettingsOptions } from "../server/utils/settings-manager/settings-manager";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
-import * as errorRoutes from "./routes/error/error";
-import * as livenessRoutes from "./routes/liveness/liveness";
-import * as mkurlRoutes from "./routes/mkurl/mkurl";
-import * as plyqlRoutes from "./routes/plyql/plyql";
-import * as plywoodRoutes from "./routes/plywood/plywood";
-import * as readinessRoutes from "./routes/readiness/readiness";
-import * as shortenRoutes from "./routes/shorten/shorten";
-import * as swivRoutes from "./routes/swiv/swiv";
-import { SwivRequest } from "./utils/general/general";
+import { errorRouter } from "./routes/error/error";
+import { livenessRouter } from "./routes/liveness/liveness";
+import { mkurlRouter } from "./routes/mkurl/mkurl";
+import { plyqlRouter } from "./routes/plyql/plyql";
+import { plywoodRouter } from "./routes/plywood/plywood";
+import { readinessRouter } from "./routes/readiness/readiness";
+import { shortenRouter } from "./routes/shorten/shorten";
+import { turniloRouter } from "./routes/turnilo/turnilo";
+import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
 
-var app = express();
+let app = express();
 app.disable("x-powered-by");
+
+const isDev = app.get("env") === "development";
 
 if (SERVER_SETTINGS.getTrustProxy() === "always") {
   app.set("trust proxy", 1); // trust first proxy
@@ -59,8 +60,7 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
   }));
 }
 
-// development error handler and HMR
-
+// development HMR
 if (app.get("env") === "dev-hmr") {
   // add hot module replacement
 
@@ -85,79 +85,28 @@ if (app.get("env") === "dev-hmr") {
   }
 }
 
-if (app.get("env") === "development") { // NODE_ENV
-                                        // add hot module replacement
-
-  // error handlers
-  // will print stacktrace
-  app.use((err: any, req: Request, res: Response, next: Function) => {
-    LOGGER.error(`Server Error: ${err.message}`);
-    LOGGER.error(err.stack);
-    res.status(err.status || 500);
-    res.send(errorLayout({ version: VERSION, title: "Error" }, err.message, err));
-  });
-
-}
-
 addRoutes("/", express.static(path.join(__dirname, "../../build/public")));
 addRoutes("/", express.static(path.join(__dirname, "../../assets")));
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Assign basics
-app.use((req: SwivRequest, res: Response, next: Function) => {
-  req.user = null;
-  req.version = VERSION;
-  req.getSettings = (opts: GetSettingsOptions = {}) => {
-    return SETTINGS_MANAGER.getSettings(opts);
-  };
-  next();
-});
-
-// Global, optional version check
-app.use((req: SwivRequest, res: Response, next: Function) => {
-  var { version } = req.body;
-  if (version && version !== req.version) {
-    res.status(412).send({
-      error: "incorrect version",
-      action: "reload"
-    });
-    return;
-  }
-  next();
-});
+const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
 
 // Auth
 if (AUTH) {
   app.use(AUTH);
-} else {
-  app.use((req: SwivRequest, res: Response, next: Function) => {
-    if (req.stateful) {
-      req.user = {
-        id: "admin",
-        email: "admin@admin.com",
-        displayName: "Admin",
-        allow: {
-          settings: true
-        }
-      };
-    }
-    next();
-  });
 }
 
-addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRoutes);
-addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRoutes);
+addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
+addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-addRoutes("/plywood", plywoodRoutes);
-addRoutes("/plyql", plyqlRoutes);
-addRoutes("/mkurl", mkurlRoutes);
-addRoutes("/shorten", shortenRoutes);
-addRoutes("/error", errorRoutes);
+addRoutes("/plywood", plywoodRouter(settingsGetter));
+addRoutes("/plyql", plyqlRouter(settingsGetter));
+addRoutes("/mkurl", mkurlRouter(settingsGetter));
+addRoutes("/shorten", shortenRouter(settingsGetter));
+addRoutes("/error", errorRouter);
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {
@@ -168,20 +117,20 @@ if (SERVER_SETTINGS.getIframe() === "deny") {
   });
 }
 
-addRoutes("/", swivRoutes);
+addRoutes("/", turniloRouter(settingsGetter, VERSION));
 
 // Catch 404 and redirect to /
-app.use((req: Request, res: Response, next: Function) => {
+app.use((req: Request, res: Response) => {
   res.redirect("/");
 });
 
-// production error handler
-// no stacktraces leaked to user
-app.use((err: any, req: Request, res: Response, next: Function) => {
+app.use((err: any, req: Request, res: Response) => {
   LOGGER.error(`Server Error: ${err.message}`);
   LOGGER.error(err.stack);
   res.status(err.status || 500);
-  res.send(errorLayout({ version: VERSION, title: "Error" }, err.message));
+  // no stacktraces leaked to user
+  const error = isDev ? err : null;
+  res.send(errorLayout({ version: VERSION, title: "Error" }, err.message, error));
 });
 
 export = app;
