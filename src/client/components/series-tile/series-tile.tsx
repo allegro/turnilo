@@ -47,7 +47,7 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
   const remove = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     removeSeries(series);
-  }
+  };
 
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
