@@ -57,6 +57,19 @@ export interface MeasureJS {
 
 export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
 
+export function titleWithDerivation({ title }: Measure, derivation: MeasureDerivation): string {
+  switch (derivation) {
+    case MeasureDerivation.CURRENT:
+      return title;
+    case MeasureDerivation.PREVIOUS:
+      return `Previous ${title}`;
+    case MeasureDerivation.DELTA:
+      return `Difference ${title}`;
+    default:
+      return title;
+  }
+}
+
 export interface DerivationFilter {
   derivation: MeasureDerivation;
   filter: Expression;
@@ -95,6 +108,10 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return `${derivation}${name}`;
   }
 
+  /**
+   * @deprecated
+   * @param name
+   */
   static nominalName(name: string): { name: string, derivation: MeasureDerivation } {
     if (name.startsWith(MeasureDerivation.DELTA)) {
       return {

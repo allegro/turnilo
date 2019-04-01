@@ -20,24 +20,19 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import { renderIntoDocument } from "../../utils/test-utils";
-import { SplitMenu } from "./split-menu";
+import { TurniloApplication } from "./turnilo-application";
 
-describe.skip("SplitMenu", () => {
+describe.skip("TurniloApplication", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
-      <SplitMenu
-        clicker={null}
-        containerStage={null}
-        dimension={null}
-        essence={null}
-        onClose={null}
-        openOn={null}
-        split={null}
+      <TurniloApplication
+        version={null}
+        appSettings={null}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("split-menu");
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("turnilo-application");
   });
 
 });

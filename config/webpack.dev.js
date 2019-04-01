@@ -28,15 +28,6 @@ module.exports = merge.smart(common, {
     pathinfo: false
   },
   devtool: "source-map",
-  module: {
-    rules: [
-      {
-        enforce: "pre",
-        test: /\.js$/,
-        use: ["source-map-loader"]
-      }
-    ]
-  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('dev-hmr')

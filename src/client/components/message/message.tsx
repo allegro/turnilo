@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +15,24 @@
  */
 
 import * as React from "react";
-import { STRINGS } from "../../config/constants";
-import { Message } from "../message/message";
+import { classNames } from "../../utils/dom/dom";
+import "./message.scss";
 
-export interface QueryErrorProps {
-  error: Error;
+type MessageLevel = "error" | "notice";
+
+interface ErrorProps {
+  content: string;
+  title?: string;
+  level?: MessageLevel;
 }
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError} />;
+export const Message: React.SFC<ErrorProps> = props => {
+  const { content, title, level = "notice" } = props;
+  return <div className={classNames("message", level)}>
+    <div className="whiteout" />
+    <div className="message-container">
+      <div className="message-title">{title}</div>
+      <div className="message-content">{content}</div>
+    </div>
+  </div>;
 };

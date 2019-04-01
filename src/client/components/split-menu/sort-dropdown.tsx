@@ -16,38 +16,29 @@
  */
 
 import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { Dimension } from "../../../common/models/dimension/dimension";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
-import { Sort } from "../../../common/models/sort/sort";
+import { Sort, SortDirection } from "../../../common/models/sort/sort";
 import { Unary } from "../../../common/utils/functional/functional";
-import { SortDirection } from "../../../common/view-definitions/version-4/split-definition";
 import { STRINGS } from "../../config/constants";
 import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface SortDropdownProps {
-  sort: Sort;
-  dimension: Dimension;
-  dataCube: DataCube;
+  direction: SortDirection;
+  selected: SortOn;
+  options: SortOn[];
   onChange: Unary<Sort, void>;
 }
 
-export const SortDropdown: React.SFC<SortDropdownProps> = ({ dataCube, dimension, sort, onChange }) => {
-  const selectedRef = dataCube.getDimension(sort.reference) || dataCube.getMeasure(sort.reference);
-  const selected = new SortOn(selectedRef);
-  const options = [SortOn.fromDimension(dimension)].concat(dataCube.measures.mapMeasures(SortOn.fromMeasure));
+export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options, selected, onChange }) => {
 
   function toggleDirection() {
-    const reference = sort.reference;
-    const direction = sort.direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;
-    onChange(new Sort({ reference, direction }));
+    const newDirection = direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;
+    onChange(selected.toSort(newDirection));
   }
 
   function selectSort(sortOn: SortOn) {
-    const reference = sortOn.getName();
-    const direction = sort ? sort.direction : SortDirection.descending;
-    onChange(new Sort({ reference, direction }));
+    onChange(sortOn.toSort(direction));
   }
 
   return <div className="sort-direction">
@@ -55,12 +46,12 @@ export const SortDropdown: React.SFC<SortDropdownProps> = ({ dataCube, dimension
       label={STRINGS.sortBy}
       items={options}
       selectedItem={selected}
-      equal={SortOn.equal}
+      equal={SortOn.equals}
       renderItem={SortOn.getTitle}
       keyItem={SortOn.getName}
       onSelect={selectSort}
     />
-    <div className={"direction " + sort.direction} onClick={toggleDirection}>
+    <div className={"direction " + direction} onClick={toggleDirection}>
       <SvgIcon svg={require("../../icons/sort-arrow.svg")}/>
     </div>
   </div>;

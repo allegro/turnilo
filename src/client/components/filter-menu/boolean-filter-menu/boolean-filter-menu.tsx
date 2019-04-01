@@ -50,7 +50,7 @@ type Booleanish = string | boolean;
 
 interface BooleanFilterMenuState {
   loading?: boolean;
-  error?: string;
+  error?: Error;
   values: Booleanish[];
   selectedValues: Set<Booleanish>;
 }

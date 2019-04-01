@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
+import { SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { SplitType } from "../../models/split/split";
-import { SortDirection, StringSplitDefinition } from "./split-definition";
+import { StringSplitDefinition } from "./split-definition";
 
 export class SplitDefinitionFixtures {
-  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): StringSplitDefinition {
+  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection = SortDirection.descending, limit = 5): StringSplitDefinition {
     return {
       type: SplitType.string,
       dimension,
-      sort: { ref: sortOn, direction: sortDirection },
+      sort: {
+        ref: sortOn,
+        direction: sortDirection,
+        type: sortOn === dimension ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
+      },
       limit
     };
   }

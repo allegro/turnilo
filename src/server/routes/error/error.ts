@@ -17,10 +17,10 @@
 
 import { Request, Response, Router } from "express";
 
-var router = Router();
+const router = Router();
 
 router.post("/", (req: Request, res: Response) => {
-  var message = req.body.message;
+  const message = req.body.message;
   if (!message || typeof message !== "string") {
     res.status(400).send({
       error: "Error must have a message"
@@ -31,4 +31,4 @@ router.post("/", (req: Request, res: Response) => {
   }
 });
 
-export = router;
+export const errorRouter = router;

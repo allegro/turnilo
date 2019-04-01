@@ -33,7 +33,6 @@ export interface NoDataViewProps {
   onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
-  stateful: boolean;
 }
 
 export interface NoDataViewState {
@@ -68,15 +67,6 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
     window.location.hash = "#settings";
   }
 
-  renderSettingsIcon() {
-    const { user, stateful } = this.props;
-    if (!user || !user.allow["settings"] || !stateful) return null;
-
-    return <div className="icon-button" onClick={this.goToSettings}>
-      <SvgIcon svg={require("../../icons/full-settings.svg")} />
-    </div>;
-  }
-
   renderTitle(mode: Mode): JSX.Element {
     return <div className="title">
       <div className="icon">
@@ -86,17 +76,8 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
     </div>;
   }
 
-  renderLink(mode: Mode): JSX.Element {
-    const link = mode === NoDataView.NO_CUBE
-      ? <a href="#settings/data-cubes">cubes settings</a>
-      : <a href="#settings/clusters">clusters settings</a>
-    ;
-
-    return <div className="action">Please go to the {link}</div>;
-  }
-
   render() {
-    const { user, onNavClick, onOpenAbout, customization, stateful } = this.props;
+    const { user, onNavClick, onOpenAbout, customization } = this.props;
     const { mode } = this.state;
 
     return <div className="no-data-view">
@@ -109,11 +90,9 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
         <button className="text-button" onClick={onOpenAbout}>
           {STRINGS.infoAndFeedback}
         </button>
-        {this.renderSettingsIcon()}
       </NoDataHeaderBar>
       <div className="container">
         {this.renderTitle(mode)}
-        {stateful ? this.renderLink(mode) : null}
       </div>
     </div>;
   }

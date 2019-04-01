@@ -100,7 +100,6 @@ export interface CubeViewProps {
   customization?: Customization;
   transitionFnSlot?: FunctionSlot<string>;
   supervisor?: ViewSupervisor;
-  stateful: boolean;
 }
 
 export interface CubeViewState {
