@@ -299,7 +299,7 @@ export class Table extends BaseVisualization<TableState> {
           currentCell,
           <div className={className} key={series.reactKey(SeriesDerivation.PREVIOUS)} style={{ width: idealWidth }}>
             {lastLevel && this.makeBackground(hScales[i](previousValue))}
-            <div className="label">{series.selectValue(datum, SeriesDerivation.PREVIOUS)}</div>
+            <div className="label">{series.formatValue(datum, SeriesDerivation.PREVIOUS)}</div>
           </div>,
           <div className={className} key={series.reactKey(SeriesDerivation.DELTA)} style={{ width: idealWidth }}>
             <div className="label">{<Delta
