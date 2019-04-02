@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-import { Manifest } from "../models/manifest/manifest";
+import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { EMPTY_SPLITS } from "../../models/splits/splits";
+import { Predicates } from "../../utils/rules/predicates";
+import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
-import { BAR_CHART_MANIFEST } from "./bar-chart/bar-chart";
-import { LINE_CHART_MANIFEST } from "./line-chart/line-chart";
-import { TABLE_MANIFEST } from "./table/table";
-import { TOTALS_MANIFEST } from "./totals/totals";
-import { HEAT_MAP_MANIFEST } from "./heat-map/heat-map";
+const rulesEvaluator = visualizationDependentEvaluatorBuilder
+  .when(Predicates.noSplits())
+  .then(() => Resolve.ready(10))
+  .otherwise(() => Resolve.automatic(3, { splits: EMPTY_SPLITS }))
+  .build();
 
-export const MANIFESTS: Manifest[] = [
-  TOTALS_MANIFEST,
-  TABLE_MANIFEST,
-  LINE_CHART_MANIFEST,
-  BAR_CHART_MANIFEST,
-  HEAT_MAP_MANIFEST
-];
+export const HEAT_MAP_MANIFEST = new Manifest(
+  "heat-map",
+  "Heatmap",
+  rulesEvaluator,
+  "multi"
+);

@@ -58,6 +58,10 @@
   },
   "dependencies": {
     "@sentry/browser": "5.0.6",
+    "@vx/group": "0.0.183",
+    "@vx/heatmap": "0.0.183",
+    "@vx/mock-data": "0.0.185",
+    "@vx/scale": "0.0.182",
     "axios": "0.18.0",
     "body-parser": "1.18.2",
     "chronoshift": "0.8.1",
