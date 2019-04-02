@@ -21,9 +21,9 @@ import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
-  .when(Predicates.noSplits())
+  .when(Predicates.numberOfSplitsIs(2))
   .then(() => Resolve.ready(10))
-  .otherwise(() => Resolve.automatic(3, { splits: EMPTY_SPLITS }))
+  .otherwise(() => Resolve.manual(3, "This visualization needs at least 2 splits", []))
   .build();
 
 export const HEAT_MAP_MANIFEST = new Manifest(

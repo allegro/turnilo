@@ -24,6 +24,7 @@ import "./heat-map.scss";
 import { Total } from "../totals/total";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
 import { HeatMapRectangles } from "./heatmap-rectangles";
+import { SPLIT } from "../../config/constants";
 
 export class HeatMap extends BaseVisualization<BaseVisualizationState> {
   protected className = HEAT_MAP_MANIFEST.name;
@@ -49,24 +50,16 @@ export class HeatMap extends BaseVisualization<BaseVisualizationState> {
   }
 
   renderInternals(dataset: Dataset) {
+    const leftLabels = (dataset.data[0][SPLIT] as Dataset).data.map(datum => datum.site);
+    const topLabels = ((dataset.data[0][SPLIT] as Dataset).data[0][SPLIT] as Dataset).data.map(datum => datum.device_type);
     return (
       <div>
         <div className="top-labels">
-          <span><span>First label</span></span>
-          <span><span>Second label</span></span>
-          <span><span>Third label</span></span>
-          <span><span>Fourth label</span></span>
-          <span><span>Looooooooooooooooooooooooooooooooooooong label</span></span>
+          {topLabels.map(label => <span><span>{label}</span></span>)}
         </div>
         <div className="left-labels-and-rectangles">
           <div className="left-labels">
-            <div><span>A label</span></div>
-            <div><span>BB label</span></div>
-            <div><span>CCC label</span></div>
-            <div><span>DDDD label</span></div>
-            <div><span>EEEEE label</span></div>
-            <div><span>FFFFFF label</span></div>
-            <div><span>Looooooooooooooooooooooooooooooooooooong label</span></div>
+            {leftLabels.map(label => <div key={label as string}><span>{label}</span></div>)}
           </div>
           <HeatMapRectangles />
         </div>
