@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
+import { Essence } from "../../models/essence/essence";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { DimensionSort, isSortEmpty, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
+import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -27,7 +28,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.supportedSplitsCount())
   .then(Actions.removeExcessiveSplits("Table"))
 
-  .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
+  .otherwise(({ series, splits, dataCube, colors, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(split.reference);
@@ -47,7 +48,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
             }));
           }
         } else {
-          split = split.changeSort(dataCube.getDefaultSortExpression());
+          split = split.changeSort(Essence.defaultSort(series, dataCube));
           autoChanged = true;
         }
       }

@@ -16,6 +16,7 @@
 
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { SeriesList } from "../../models/series-list/series-list";
 import { Splits } from "../../models/splits/splits";
 import { RulesEvaluator } from "./rules-evaluator";
 import { Action, Predicate, RulesEvaluatorBuilder, RulesEvaluatorBuilderEmpty } from "./rules-evaluator-builder";
@@ -28,6 +29,7 @@ export interface PredicateVariables {
 export interface ActionVariables {
   dataCube?: DataCube;
   splits?: Splits;
+  series: SeriesList;
   colors?: Colors;
   isSelectedVisualization?: boolean;
 }

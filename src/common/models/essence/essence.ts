@@ -114,11 +114,11 @@ function resolveVisualization({ visualization, visualizations, dataCube, splits,
   if (visualizations) {
     // Place vis here because it needs to know about splits and colors (and maybe later other things)
     if (!visualization) {
-      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, null);
+      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, series, colors, null);
       visualization = visAndResolve.visualization;
     }
 
-    const ruleVariables = { dataCube, splits, colors, isSelectedVisualization: true };
+    const ruleVariables = { dataCube, series, splits, colors, isSelectedVisualization: true };
     visResolve = visualization.evaluateRules(ruleVariables);
     if (visResolve.isAutomatic()) {
       const adjustment = visResolve.adjustment;
@@ -144,12 +144,13 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     visualizations: Manifest[],
     dataCube: DataCube,
     splits: Splits,
+    series: SeriesList,
     colors: Colors,
     currentVisualization: Manifest
   ): VisualizationAndResolve {
     const visAndResolves = visualizations.map(visualization => {
       const isSelectedVisualization = visualization === currentVisualization;
-      const ruleVariables = { dataCube, splits, colors, isSelectedVisualization };
+      const ruleVariables = { dataCube, splits, series, colors, isSelectedVisualization };
       return {
         visualization,
         resolve: visualization.evaluateRules(ruleVariables)
@@ -179,11 +180,16 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return essence.updateSplitsWithFilter();
   }
 
-  static defaultSort(series: SeriesList, dataCube: DataCube): string {
-    const seriesRefs = Set(series.series.map(series => series.reference));
+  static defaultSortReference(series: SeriesList, dataCube: DataCube): string {
+    const seriesRefs = Set(series.series.map(series => series.key()));
     const defaultSort = dataCube.getDefaultSortMeasure();
     if (seriesRefs.has(defaultSort)) return defaultSort;
     return seriesRefs.first();
+  }
+
+  static defaultSort(series: SeriesList, dataCube: DataCube): Sort {
+    const reference = Essence.defaultSortReference(series, dataCube);
+    return new SeriesSort({ reference });
   }
 
   public visResolve: Resolve;
@@ -211,7 +217,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const constrainedSeries = series && series.constrainToMeasures(dataCube.measures);
 
     const isPinnedSortValid = series && constrainedSeries.hasMeasureSeries(pinnedSort);
-    const constrainedPinnedSort = isPinnedSortValid ? pinnedSort : Essence.defaultSort(constrainedSeries, dataCube);
+    const constrainedPinnedSort = isPinnedSortValid ? pinnedSort : Essence.defaultSortReference(constrainedSeries, dataCube);
 
     super({
       ...parameters,
@@ -489,7 +495,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    const { visualizations, highlight, dataCube, visualization, visResolve, filter, colors } = this;
+    const { visualizations, highlight, dataCube, visualization, visResolve, filter, series, colors } = this;
 
     splits = splits.updateWithFilter(filter, dataCube.dimensions);
 
@@ -504,7 +510,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     let newVisualization: Manifest = visualization;
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
       const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
-      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, currentVisualization);
+      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, series, colors, currentVisualization);
       newVisualization = visAndResolve.visualization;
     }
 
@@ -548,12 +554,16 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .resolveVisualizationAndUpdate();
   }
 
+  public defaultSort(): string {
+    return Essence.defaultSortReference(this.series, this.dataCube);
+  }
+
   private updateSorts(): Essence {
     const seriesRefs = Set(this.series.series.map(series => series.reference));
     return this
       .update("pinnedSort", sort => {
         if (seriesRefs.has(sort)) return sort;
-        return Essence.defaultSort(this.series, this.dataCube);
+        return this.defaultSort();
       })
       .update("splits", splits => splits.update("splits", splits => splits.map((split: Split) => {
         const { sort } = split;
@@ -564,7 +574,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
           case SortType.SERIES: {
             const measureSort = sort as SeriesSort;
             if (!seriesRefs.has(reference)) {
-              const measureSortRef = Essence.defaultSort(this.series, this.dataCube);
+              const measureSortRef = this.defaultSort();
               if (measureSortRef) {
                 return split.changeSort(new SeriesSort({
                   reference: measureSortRef

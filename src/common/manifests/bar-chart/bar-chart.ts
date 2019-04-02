@@ -16,6 +16,7 @@
  */
 
 import { Dimension } from "../../models/dimension/dimension";
+import { Essence } from "../../models/essence/essence";
 import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
@@ -30,7 +31,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))
-  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
+  .then(({ series, splits, dataCube, colors, isSelectedVisualization }) => {
     let continuousBoost = 0;
 
     // Auto adjustment
@@ -64,7 +65,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
               direction: SortDirection.ascending
             }));
           } else {
-            split = split.changeSort(dataCube.getDefaultSortExpression());
+            split = split.changeSort(Essence.defaultSort(series, dataCube));
           }
         }
         autoChanged = true;

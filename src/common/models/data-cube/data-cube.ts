@@ -1014,13 +1014,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.change("measures", measures);
   }
 
-  public getDefaultSortExpression(): Sort {
-    return new SeriesSort({
-      reference: this.defaultSortMeasure,
-      direction: SortDirection.descending
-    });
-  }
-
   public sameGroup(otherDataCube: DataCube): boolean {
     return Boolean(this.group && this.group === otherDataCube.group);
   }
