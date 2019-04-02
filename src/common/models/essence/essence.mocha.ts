@@ -26,6 +26,7 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
+import { SeriesList } from "../series-list/series-list";
 import { MeasureSeries } from "../series/measure-series";
 import { Split, SplitType } from "../split/split";
 import { Splits } from "../splits/splits";
@@ -169,6 +170,7 @@ describe("EssenceProps", () => {
             MANIFESTS,
             DataCubeFixtures.twitter(),
             Splits.fromJS(splitDimensions),
+            SeriesList.fromMeasureNames([]),
             null,
             current);
 
