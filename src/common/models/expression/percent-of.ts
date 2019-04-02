@@ -65,21 +65,11 @@ export class ConcretePercentOf implements ConcreteExpression {
   public toExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
     const relativeNesting = this.relativeNesting(nestingLevel);
     const formulaName = `__formula_${name}`;
-    if (relativeNesting > 0) {
-      return new ApplyExpression({
-        name,
-        operand: new ApplyExpression({ expression, name: formulaName }),
-        expression: $(formulaName).divide($(formulaName, relativeNesting))
-      });
-    }
-    if (relativeNesting === 0) {
-      return new ApplyExpression({ name: formulaName, expression });
-    }
-    throw new Error(`wrong nesting level: ${relativeNesting}`);
+    if (relativeNesting < 0) throw new Error(`wrong nesting level: ${relativeNesting}`);
+    return new ApplyExpression({
+      name,
+      operand: new ApplyExpression({ expression, name: formulaName }),
+      expression: $(formulaName).divide($(formulaName, relativeNesting))
+    });
   }
-
-  plywoodKey(): string {
-    return "";
-  }
-
 }
