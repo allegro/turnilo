@@ -15,13 +15,43 @@
  * limitations under the License.
  */
 
-.totals {
-  .total-container {
-    margin: 60px 10%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-flow: row wrap;
-    align-content: center;
+ .top-labels {
+   padding-left: 105px;
+ }
+
+.top-labels > * {
+  display: inline-block;
+  width: 50px;
+  height: 70px;
+  overflow: visible;
+  white-space: nowrap;
+  transform: rotate(-45deg);
+  padding-top: 40px;
+
+  & > * {
+    display: inline-block;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.left-labels-and-rectangles {
+  display: flex;
+}
+
+.left-labels > * {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding-right: 5px;
+
+  & > * {
+    flex-grow: 1;
+    text-align: right;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

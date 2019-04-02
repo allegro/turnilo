@@ -20,39 +20,32 @@ import { genBins } from '@vx/mock-data';
 import { scaleLinear } from '@vx/scale';
 import { HeatmapRect } from '@vx/heatmap';
 
-const cool1 = '#fff';
-const cool2 = '#ff5900';
-const bg = '#fff';
+const white = '#fff';
+const orange = '#ff5900';
 
 const data = genBins(16, 16);
 
 // utils
 const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));
-const min = (data: any, value = (d: any) => d) => Math.min(...data.map(value));
 
 // accessors
 const bins = (d: any) => d.bins;
 const count = (d: any) => d.count;
 
-export class HeatMapRectangles extends React.Component {
+interface Props {
+  tileSize?: number;
+}
+
+export class HeatMapRectangles extends React.Component<Props> {
 
   render() {
-    const margin = {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0
-    };
-    const width = 500;
-    const height = 500;
-
-    let size = width;
-    if (size > margin.left + margin.right) {
-      size = width - margin.left - margin.right;
-    }
+    const { tileSize = 50 } = this.props;
 
     const colorMax = max(data, d => max(bins(d), count));
     const bucketSizeMax = max(data, d => bins(d).length);
+
+    const width = data.length * tileSize;
+    const height = bucketSizeMax * tileSize;
 
     // scales
     const xScale = scaleLinear({
@@ -63,28 +56,24 @@ export class HeatMapRectangles extends React.Component {
     });
 
     const rectColorScale = scaleLinear({
-      range: [cool1, cool2],
+      range: [white, orange],
       domain: [0, colorMax]
     });
-  
-    const xMax = size;
-    const yMax = height - margin.bottom - margin.top;
-  
-    const binWidth = xMax / data.length;
-    xScale.range([0, xMax]);
-    yScale.range([yMax - binWidth, -binWidth]);
-  
+
+    xScale.range([0, width]);
+    yScale.range([height - tileSize, -tileSize]);
+
     return (
       <div>
         <svg width={width} height={height}>
-          <rect x={0} y={0} width={width} height={height} fill={bg} />
+          <rect x={0} y={0} width={width} height={height} fill={white} />
             <HeatmapRect
               data={data}
               xScale={xScale}
               yScale={yScale}
               colorScale={rectColorScale}
-              binWidth={binWidth}
-              binHeight={binWidth}
+              binWidth={tileSize}
+              binHeight={tileSize}
               gap={2}
             >
               {(heatmap: any) => {

@@ -50,7 +50,27 @@ export class HeatMap extends BaseVisualization<BaseVisualizationState> {
 
   renderInternals(dataset: Dataset) {
     return (
-      <HeatMapRectangles />
-    );  
+      <div>
+        <div className="top-labels">
+          <span><span>First label</span></span>
+          <span><span>Second label</span></span>
+          <span><span>Third label</span></span>
+          <span><span>Fourth label</span></span>
+          <span><span>Looooooooooooooooooooooooooooooooooooong label</span></span>
+        </div>
+        <div className="left-labels-and-rectangles">
+          <div className="left-labels">
+            <div><span>A label</span></div>
+            <div><span>BB label</span></div>
+            <div><span>CCC label</span></div>
+            <div><span>DDDD label</span></div>
+            <div><span>EEEEE label</span></div>
+            <div><span>FFFFFF label</span></div>
+            <div><span>Looooooooooooooooooooooooooooooooooooong label</span></div>
+          </div>
+          <HeatMapRectangles />
+        </div>
+      </div>
+    );
   }
 }
