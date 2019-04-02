@@ -17,51 +17,32 @@
 
 import { Dataset } from "plywood";
 import * as React from "react";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
-import { seriesFormatter } from "../../../common/utils/formatter/formatter";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
-import { Total } from "../totals/total";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
 import { HeatMapRectangles } from "./heatmap-rectangles";
 import { SPLIT } from "../../config/constants";
+import { formatValue } from "../../../common/utils/formatter/formatter";
 
 export class HeatMap extends BaseVisualization<BaseVisualizationState> {
   protected className = HEAT_MAP_MANIFEST.name;
 
-  renderTotals(dataset: Dataset): JSX.Element[] {
-    const { essence } = this.props;
-    const measures = essence.getSeriesWithMeasures();
-    const datum = dataset.data[0];
-    return measures.map(({ series, measure }) => {
-      const currentValue = datum[measure.name] as number;
-      const previousValue = essence.hasComparison() && datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
-
-      return <Total
-        key={measure.name}
-        name={measure.title}
-        value={currentValue}
-        previous={previousValue}
-        lowerIsBetter={measure.lowerIsBetter}
-        formatter={seriesFormatter(series.format, measure)}
-      />;
-    }).toArray();
-
-  }
-
   renderInternals(dataset: Dataset) {
-    const leftLabels = (dataset.data[0][SPLIT] as Dataset).data.map(datum => datum.site);
-    const topLabels = ((dataset.data[0][SPLIT] as Dataset).data[0][SPLIT] as Dataset).data.map(datum => datum.device_type);
+    // console.log(dataset);
+    const [measure] = this.props.essence.getEffectiveSelectedMeasures().toArray();
+    const [firstSplit, secondSplit] = this.props.essence.splits.splits.toArray();
+    const leftLabels = (dataset.data[0][SPLIT] as Dataset).data.map(datum => formatValue(datum[firstSplit.reference], this.props.essence.timezone, { formatOnlyStartDate: true }));
+    const topLabels = ((dataset.data[0][SPLIT] as Dataset).data[0][SPLIT] as Dataset).data.map(datum => formatValue(datum[secondSplit.reference], this.props.essence.timezone, { formatOnlyStartDate: true }));
     return (
-      <div>
+      <div className="heatmap-container">
         <div className="top-labels">
-          {topLabels.map(label => <span><span>{label}</span></span>)}
+          {topLabels.map(label => <span key={label as string}><span>{label}</span></span>)}
         </div>
         <div className="left-labels-and-rectangles">
           <div className="left-labels">
             {leftLabels.map(label => <div key={label as string}><span>{label}</span></div>)}
           </div>
-          <HeatMapRectangles />
+          <HeatMapRectangles data={dataset} measureName={measure.name} />
         </div>
       </div>
     );

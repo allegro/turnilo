@@ -31,17 +31,17 @@ import {
   TimeFilterClause,
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
-import { formatTimeRange } from "../time/time";
+import { formatStartOfTimeRange, formatTimeRange } from "../time/time";
 
 export function formatNumberRange(value: NumberRange) {
   return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
 }
 
-export function formatValue(value: any, timezone?: Timezone): string {
+export function formatValue(value: any, timezone?: Timezone, { formatOnlyStartDate = false } = {}): string {
   if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   } else if (TimeRange.isTimeRange(value)) {
-    return formatTimeRange(new DateRange(value), timezone);
+    return formatOnlyStartDate ? formatStartOfTimeRange(new DateRange(value), timezone) : formatTimeRange(new DateRange(value), timezone);
   } else {
     return "" + value;
   }

@@ -15,22 +15,39 @@
  * limitations under the License.
  */
 
+  $labels-size: 120px;
+  $heatmap-rectangle-size: 25px;
+  $top-labels-height: $labels-size;
+  $left-labels-width: $labels-size * 1.8;
+
+ .heatmap-container {
+   overflow: auto;
+   height: 100%;
+   width: 100%;
+ }
+
  .top-labels {
-   padding-left: 105px;
+   padding-left: $left-labels-width + 2px;
+   height: $top-labels-height;
+   white-space: nowrap;
+   display: flex;
+   align-items: flex-end;
  }
 
 .top-labels > * {
   display: inline-block;
-  width: 50px;
-  height: 70px;
+  width: $heatmap-rectangle-size;
+  height: $heatmap-rectangle-size;
   overflow: visible;
   white-space: nowrap;
-  transform: rotate(-45deg);
-  padding-top: 40px;
+  box-sizing: border-box;
+  transform: rotate(-90deg);
 
   & > * {
     display: inline-block;
-    max-width: 80px;
+    padding-left: 5px;
+    padding-top: 5px;
+    max-width: $top-labels-height;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -41,15 +58,17 @@
 }
 
 .left-labels > * {
-  height: 50px;
+  height: $heatmap-rectangle-size;
   display: flex;
   align-items: center;
-  padding-right: 5px;
 
   & > * {
-    flex-grow: 1;
+    box-sizing: border-box;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: $left-labels-width;
     text-align: right;
-    max-width: 100px;
+    flex-grow: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

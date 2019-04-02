@@ -17,58 +17,64 @@
 
 import * as React from "react";
 import { genBins } from '@vx/mock-data';
-import { scaleLinear } from '@vx/scale';
+import { scaleLinear, scaleLog } from '@vx/scale';
 import { HeatmapRect } from '@vx/heatmap';
+import { Dataset, Datum } from "plywood";
+import { SPLIT } from "../../config/constants";
 
 const white = '#fff';
 const orange = '#ff5900';
-
-const data = genBins(16, 16);
 
 // utils
 const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));
 
 // accessors
-const bins = (d: any) => d.bins;
-const count = (d: any) => d.count;
+const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
 interface Props {
+  data: Dataset;
   tileSize?: number;
+  measureName: string;
 }
 
 export class HeatMapRectangles extends React.Component<Props> {
 
   render() {
-    const { tileSize = 50 } = this.props;
+    const { tileSize = 25, data: dataset, measureName } = this.props;
+    const datapoints = (dataset.data[0][SPLIT] as Dataset).data;
+    const count = (d: Datum) => d[measureName];
 
-    const colorMax = max(data, d => max(bins(d), count));
-    const bucketSizeMax = max(data, d => bins(d).length);
+    const colorMax = max(datapoints, d => max(bins(d), count));
+    const bucketSizeMax = max(datapoints, d => bins(d).length);
+    const dataLength = datapoints.length;
 
-    const width = data.length * tileSize;
-    const height = bucketSizeMax * tileSize;
+    const width = bucketSizeMax * tileSize;
+    const height = dataLength * tileSize;
 
     // scales
     const xScale = scaleLinear({
-      domain: [0, data.length]
-    });
-    const yScale = scaleLinear({
       domain: [0, bucketSizeMax]
     });
+    xScale.range([0, width]);
+
+    const yScale = scaleLinear({
+      domain: [dataLength, 0]
+    });
+    yScale.range([height, 0]);
 
     const rectColorScale = scaleLinear({
       range: [white, orange],
       domain: [0, colorMax]
     });
 
-    xScale.range([0, width]);
-    yScale.range([height - tileSize, -tileSize]);
-
     return (
       <div>
         <svg width={width} height={height}>
           <rect x={0} y={0} width={width} height={height} fill={white} />
             <HeatmapRect
-              data={data}
+              bins={bins}
+              count={count}
+              data={datapoints}
               xScale={xScale}
               yScale={yScale}
               colorScale={rectColorScale}
@@ -85,8 +91,8 @@ export class HeatMapRectangles extends React.Component<Props> {
                         className="vx-heatmap-rect"
                         width={bin.width}
                         height={bin.height}
-                        x={bin.x}
-                        y={bin.y}
+                        x={bin.y}
+                        y={bin.x}
                         fill={bin.color}
                         fillOpacity={bin.opacity}
                         onClick={event => {
