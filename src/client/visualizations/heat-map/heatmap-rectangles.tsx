@@ -23,7 +23,7 @@ import { Dataset, Datum } from "plywood";
 import { SPLIT } from "../../config/constants";
 
 const white = '#fff';
-const orange = '#ff5900';
+const orange = '#ff5a00';
 
 // utils
 const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));

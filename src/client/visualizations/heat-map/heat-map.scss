@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-  $labels-size: 120px;
   $heatmap-rectangle-size: 25px;
-  $top-labels-height: $labels-size;
-  $left-labels-width: $labels-size * 1.8;
+  $top-labels-height: 120px;
+  $left-labels-width: 200px;
 
  .heatmap-container {
-   overflow: auto;
-   height: 100%;
-   width: 100%;
+   .scroller {
+     height: 100%;
+   }
  }
 
  .top-labels {
-   padding-left: $left-labels-width + 2px;
+   background-color: white;
+   padding-left: 2px;
    height: $top-labels-height;
    white-space: nowrap;
    display: flex;
    align-items: flex-end;
+   z-index: 1;
  }
 
 .top-labels > * {
@@ -53,8 +54,8 @@
   }
 }
 
-.left-labels-and-rectangles {
-  display: flex;
+.left-labels {
+  background-color: white;
 }
 
 .left-labels > * {
@@ -73,4 +74,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+.top-left-corner-mask {
+  height: 100%;
+  background-color: white;
 }

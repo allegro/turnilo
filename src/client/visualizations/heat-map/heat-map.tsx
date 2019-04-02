@@ -23,6 +23,7 @@ import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
 import { HeatMapRectangles } from "./heatmap-rectangles";
 import { SPLIT } from "../../config/constants";
 import { formatValue } from "../../../common/utils/formatter/formatter";
+import { Scroller } from "../../components/scroller/scroller";
 
 export class HeatMap extends BaseVisualization<BaseVisualizationState> {
   protected className = HEAT_MAP_MANIFEST.name;
@@ -33,18 +34,32 @@ export class HeatMap extends BaseVisualization<BaseVisualizationState> {
     const [firstSplit, secondSplit] = this.props.essence.splits.splits.toArray();
     const leftLabels = (dataset.data[0][SPLIT] as Dataset).data.map(datum => formatValue(datum[firstSplit.reference], this.props.essence.timezone, { formatOnlyStartDate: true }));
     const topLabels = ((dataset.data[0][SPLIT] as Dataset).data[0][SPLIT] as Dataset).data.map(datum => formatValue(datum[secondSplit.reference], this.props.essence.timezone, { formatOnlyStartDate: true }));
-    return (
-      <div className="heatmap-container">
-        <div className="top-labels">
-          {topLabels.map(label => <span key={label as string}><span>{label}</span></span>)}
-        </div>
-        <div className="left-labels-and-rectangles">
+
+    return <div className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
+      <Scroller
+        layout={{
+          bodyHeight: leftLabels.length * 25,
+          bodyWidth: topLabels.length * 25,
+          top: 120,
+          right: 0,
+          bottom: 0,
+          left: 200
+        }}
+        topGutter={
+          <div className="top-labels">
+            {topLabels.map(label => <span key={label as string}><span>{label}</span></span>)}
+          </div>
+        }
+        leftGutter={
           <div className="left-labels">
             {leftLabels.map(label => <div key={label as string}><span>{label}</span></div>)}
           </div>
-          <HeatMapRectangles data={dataset} measureName={measure.name} />
-        </div>
-      </div>
-    );
+        }
+        topLeftCorner={<div className="top-left-corner-mask" />}
+        body={[
+          <HeatMapRectangles key="heat-map" data={dataset} measureName={measure.name} />
+        ]}
+      />
+    </div>;
   }
 }
