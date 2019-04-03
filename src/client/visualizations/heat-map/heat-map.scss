@@ -43,6 +43,7 @@
   white-space: nowrap;
   box-sizing: border-box;
   transform: rotate(-90deg);
+  flex-shrink: 0;
 
   & > * {
     display: inline-block;

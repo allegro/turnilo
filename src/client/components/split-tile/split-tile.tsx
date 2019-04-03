@@ -320,6 +320,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   renderSplit(split: Split, style: React.CSSProperties, i: number) {
+    console.log(split.toJS());
     const { essence: { dataCube } } = this.props;
     const { menuDimension } = this.state;
 

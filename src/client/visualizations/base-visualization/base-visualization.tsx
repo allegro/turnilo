@@ -66,6 +66,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentDidMount() {
     const { essence, timekeeper } = this.props;
+    console.log(essence.toJS());
     this.loadData(essence, timekeeper);
   }
 
