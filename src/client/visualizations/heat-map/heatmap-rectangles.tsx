@@ -32,12 +32,20 @@ const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));
 // accessors
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
+export interface RectangleData {
+  xLabel: string;
+  yLabel: string;
+  datum: Datum;
+}
+
 interface Props {
   dataset: Datum[];
   tileSize?: number;
   measureName: string;
+  leftLabelName: string;
+  topLabelName: string;
   mouseHoverCoordinates?: MousePosition;
-  onHover?: (bin: any) => void;
+  onHover?: (data: RectangleData) => void;
   onHoverStop?: () => void;
 }
 
@@ -48,7 +56,9 @@ export class HeatMapRectangles extends React.Component<Props> {
   componentDidMount() {
     const {
       onHoverStop = () => {},
-      onHover = () => {}
+      onHover = () => {},
+      leftLabelName,
+      topLabelName
     } = this.props;
 
     const {
@@ -72,11 +82,13 @@ export class HeatMapRectangles extends React.Component<Props> {
       const xPosition = Math.floor(xScale.invert(x - left));
       const yPosition = Math.floor(yScale.invert(y - top));
 
-      const hoveredBin = dataset.map(bins)[yPosition][xPosition];
+      const hoveredBins = dataset[yPosition];
+      const hoveredBin = bins(hoveredBins)[xPosition];
+
       onHover({
-        row: xPosition,
-        column: yPosition,
-        count: count(hoveredBin)
+        datum: hoveredBin,
+        xLabel: hoveredBins[leftLabelName] as string,
+        yLabel: hoveredBin[topLabelName] as string
       });
     });
   }

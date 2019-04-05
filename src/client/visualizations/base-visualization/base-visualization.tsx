@@ -38,10 +38,10 @@ export interface BaseVisualizationState {
   hoverMeasure?: Measure;
 }
 
-export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
+export class BaseVisualization<S extends BaseVisualizationState, P = {}> extends React.Component<VisualizationProps & P, S> {
   protected className = "base-visualization";
 
-  constructor(props: VisualizationProps) {
+  constructor(props: VisualizationProps & P) {
     super(props);
 
     this.state = this.getDefaultState() as S;

@@ -80,6 +80,8 @@ export class LabelledHeatmap extends React.PureComponent<Props> {
             mouseHoverCoordinates={mouseHoverCoordinates}
             dataset={dataset}
             measureName={measure.name}
+            leftLabelName={firstSplit.reference}
+            topLabelName={secondSplit.reference}
           />
         ]}
       />

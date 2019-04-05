@@ -19,18 +19,30 @@ import { TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import { Dataset } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
+import { formatValue } from "../../../common/utils/formatter/formatter";
+import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
+import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
 
-class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState> {
+interface TooltipProps<D> {
+  tooltipData: D;
+  tooltipLeft: number;
+  tooltipTop: number;
+  tooltipOpen: boolean;
+  showTooltip(data: any): void;
+  hideTooltip(): void;
+}
+
+class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, TooltipProps<RectangleData>> {
   protected className = HEAT_MAP_MANIFEST.name;
   private container: HTMLDivElement | null = null;
   private mouseHoverCoordinates = new MousePosition(window);
 
-  handleRectangleHover = (bin: any) => {
+  handleRectangleHover = (tooltipData: RectangleData) => {
     setTimeout(() => {
       if (!this.container) {
         return;
@@ -39,14 +51,14 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState> {
       const { top, left, right, bottom } = this.container.getBoundingClientRect();
 
       if (!(left <= x && x <= right && top <= y && y <= bottom)) {
-        (this.props as any).hideTooltip();
+        this.props.hideTooltip();
         return;
       }
 
-      (this.props as any).showTooltip({
+      this.props.showTooltip({
         tooltipLeft: x - left,
         tooltipTop: y - top,
-        tooltipData: `Row: ${bin.column}, Column: ${bin.row}, Data: ${bin.count}`
+        tooltipData
       });
     }, 0);
   }
@@ -57,8 +69,12 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState> {
       tooltipLeft,
       tooltipTop,
       tooltipOpen,
-      hideTooltip
-    } = this.props as any;
+      hideTooltip,
+      essence
+    } = this.props;
+
+    const { timezone, series } = essence;
+    const measure = essence.getEffectiveSelectedMeasures().toArray()[0];
 
     return <div ref={container => this.container = container} className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
       <LabelledHeatmap
@@ -75,7 +91,10 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState> {
           top={tooltipTop}
           left={tooltipLeft}
         >
-          <strong className="heatmap-tooltip">{tooltipData}</strong>
+          <SegmentBubbleContent
+            title={`${formatValue(tooltipData.xLabel, timezone, { formatOnlyStartDate: true })} - ${formatValue(tooltipData.yLabel, timezone, { formatOnlyStartDate: true })}`}
+            content={measure.formatDatum(tooltipData.datum, series.getSeries(measure.name).format)}
+          />
         </TooltipWithBounds>
       )}
     </div>;
