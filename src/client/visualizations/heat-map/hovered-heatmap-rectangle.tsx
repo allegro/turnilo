@@ -18,11 +18,39 @@
 
 import * as React from "react";
 
-export class HoveredHeatmapRectangle {
-  private callbacks: { [index: string]: { start(): void, end(): void } } = {};
-  private lastNotifiedRectangleIndex: string | null = null;
+type HoveredRectangleChangeCallback = (row: number, column: number) => void;
 
-  onRectangleHover(row: number, column: number, callbacks: { start(): void, end(): void }) {
+interface CallbackObject {
+  start(): void;
+  end(): void;
+}
+
+interface OnRectangleHoverCoordinates {
+  row?: number;
+  column?: number;
+}
+
+export class HoveredHeatmapRectangle {
+  private callbacks: { [index: string]: CallbackObject } = {};
+  private rowCallbacks: CallbackObject[] = [];
+  private columnCallbacks: CallbackObject[] = [];
+  private lastNotifiedRectangleIndex: [number, number] | null = null;
+
+  onRectangleHover({ row, column }: OnRectangleHoverCoordinates, callbacks: CallbackObject) {
+    if (row === undefined && column === undefined) {
+      return;
+    }
+
+    if (column === undefined) {
+      this.rowCallbacks[row] = callbacks;
+      return;
+    }
+
+    if (row === undefined) {
+      this.columnCallbacks[column] = callbacks;
+      return;
+    }
+
     this.callbacks[`${row}-${column}`] = callbacks;
   }
 
@@ -30,12 +58,20 @@ export class HoveredHeatmapRectangle {
     this.clearHoveredRectangle();
 
     this.callbacks[`${row}-${column}`].start();
-    this.lastNotifiedRectangleIndex = `${row}-${column}`;
+    this.rowCallbacks[row] && this.rowCallbacks[row].start();
+    this.columnCallbacks[column] && this.columnCallbacks[column].start();
+
+    this.lastNotifiedRectangleIndex = [row, column];
   }
 
   clearHoveredRectangle() {
     if (this.lastNotifiedRectangleIndex) {
-      this.callbacks[this.lastNotifiedRectangleIndex].end();
+      this.callbacks[this.lastNotifiedRectangleIndex.join("-")].end();
+
+      const [row, column] = this.lastNotifiedRectangleIndex;
+
+      this.rowCallbacks[row] && this.rowCallbacks[row].end();
+      this.columnCallbacks[column] && this.columnCallbacks[column].end();
     }
   }
 }
@@ -46,4 +82,3 @@ interface Props {
   hoveredRectangle: HoveredHeatmapRectangle;
   component(isHovered?: boolean): React.ReactNode;
 }
-

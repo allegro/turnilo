@@ -34,7 +34,7 @@ export class HeatMapRectangle extends React.Component<Props, State> {
 
   componentDidMount() {
     const { hoveredRectangles, bin } = this.props;
-    hoveredRectangles.onRectangleHover(bin.row, bin.column, {
+    hoveredRectangles.onRectangleHover({ row: bin.row, column: bin.column }, {
       start: () => this.setState({ hovered: true }),
       end: () => this.setState({ hovered: false })
     });
