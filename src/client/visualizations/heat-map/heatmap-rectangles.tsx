@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { scaleLinear } from '@vx/scale';
-import { HeatmapRect } from '@vx/heatmap';
+import { HeatmapRect } from "@vx/heatmap";
+import { scaleLinear } from "@vx/scale";
 import { Dataset, Datum } from "plywood";
+import * as React from "react";
 import { SPLIT } from "../../config/constants";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { HeatMapRectangle } from "./heatmap-rectangle";
 
-const white = '#fff';
-const orange = '#ff5a00';
+const white = "#fff";
+const orange = "#ff5a00";
 
 // utils
 const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));

@@ -17,13 +17,13 @@
 
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
-import "./heat-map.scss";
-import { HeatMapRectangles } from "./heatmap-rectangles";
-import { SPLIT } from "../../config/constants";
+import { Essence } from "../../../common/models/essence/essence";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { Scroller } from "../../components/scroller/scroller";
-import { Essence } from "../../../common/models/essence/essence";
+import { SPLIT } from "../../config/constants";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
+import "./heat-map.scss";
+import { HeatMapRectangles } from "./heatmap-rectangles";
 
 interface Props {
   essence: Essence;

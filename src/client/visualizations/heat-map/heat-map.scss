@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-  $heatmap-rectangle-size: 25px;
-  $top-labels-height: 120px;
-  $left-labels-width: 200px;
+$heatmap-rectangle-size: 25px;
+$top-labels-height: 120px;
+$left-labels-width: 200px;
 
- .heatmap-container {
-   .scroller {
-     height: 100%;
-   }
- }
+.heatmap-container {
+  .scroller {
+    height: 100%;
+  }
+}
 
- .top-labels {
-   background-color: white;
-   padding-left: 2px;
-   height: $top-labels-height;
-   white-space: nowrap;
-   display: flex;
-   align-items: flex-end;
- }
+.top-labels {
+  background-color: #fff;
+  padding-left: 2px;
+  height: $top-labels-height;
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-end;
+}
 
 .top-labels > * {
   display: inline-block;
@@ -55,7 +55,7 @@
 }
 
 .left-labels {
-  background-color: white;
+  background-color: #fff;
 }
 
 .left-labels > * {
@@ -78,9 +78,5 @@
 
 .top-left-corner-mask {
   height: 100%;
-  background-color: white;
-}
-
-.heatmap-tooltip {
-  
+  background-color: #fff;
 }

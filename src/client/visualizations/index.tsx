@@ -16,18 +16,18 @@
  */
 
 import { BAR_CHART_MANIFEST } from "../../common/manifests/bar-chart/bar-chart";
+import { HEAT_MAP_MANIFEST } from "../../common/manifests/heat-map/heat-map";
 import { LINE_CHART_MANIFEST } from "../../common/manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../common/manifests/table/table";
 import { TOTALS_MANIFEST } from "../../common/manifests/totals/totals";
-import { HEAT_MAP_MANIFEST } from "../../common/manifests/heat-map/heat-map";
 import { Manifest } from "../../common/models/manifest/manifest";
 import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
 import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
+import { HeatMap } from "./heat-map/heat-map";
 import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
-import { HeatMap } from "./heat-map/heat-map";
 
 type Visualisation = new(props: VisualizationProps) => BaseVisualization<BaseVisualizationState>;
 

@@ -16,9 +16,9 @@
  */
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
-import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.numberOfSplitsIs(2))

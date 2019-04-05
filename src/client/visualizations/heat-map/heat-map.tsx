@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
+import { TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import { Dataset } from "plywood";
 import * as React from "react";
+import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
+import { SPLIT } from "../../config/constants";
+import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
-import { withTooltip, TooltipWithBounds } from '@vx/tooltip';
-import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
-import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { LabelledHeatmap } from "./labelled-heatmap";
-import { SPLIT } from "../../config/constants";
 
 class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState> {
   protected className = HEAT_MAP_MANIFEST.name;
@@ -84,7 +84,7 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState> {
 
 export const HeatMap = withTooltip(UndecoratedHeatMap, {
   style: {
-    position: 'relative',
-    height: '100%',
+    position: "relative",
+    height: "100%"
   }
 });
