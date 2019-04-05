@@ -16,24 +16,42 @@
  */
 
 import * as React from "react";
+import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
 
 interface Props {
   bin: any;
+  hoveredRectangles: HoveredHeatmapRectangle;
 }
 
-export class HeatMapRectangle extends React.Component<Props> {
+interface State {
+  hovered: boolean;
+}
+
+export class HeatMapRectangle extends React.Component<Props, State> {
+  state = {
+    hovered: false
+  };
+
+  componentDidMount() {
+    const { hoveredRectangles, bin } = this.props;
+    hoveredRectangles.onRectangleHover(bin.row, bin.column, {
+      start: () => this.setState({ hovered: true }),
+      end: () => this.setState({ hovered: false })
+    });
+  }
+
   render() {
     const { bin } = this.props;
+    const { hovered } = this.state;
     return (
       <rect
-        className="vx-heatmap-rect"
+        className={hovered ? "heatmap-rectangle-hovered" : ""}
         width={bin.width}
         height={bin.height}
         x={bin.y}
         y={bin.x}
         fill={bin.color}
         fillOpacity={bin.opacity}
-        onMouseEnter={() => console.log(bin)}
         onClick={event => {
           const { row, column } = bin;
           alert(JSON.stringify({ row, column, ...bin.bin }));

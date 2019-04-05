@@ -22,6 +22,7 @@ import * as React from "react";
 import { SPLIT } from "../../config/constants";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { HeatMapRectangle } from "./heatmap-rectangle";
+import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
 
 const white = "#fff";
 const orange = "#ff5a00";
@@ -52,6 +53,7 @@ interface Props {
 export class HeatMapRectangles extends React.Component<Props> {
   private rect: SVGRectElement | null = null;
   private subscription: { unsubscribe(): void } = { unsubscribe() {} };
+  private hoveredRectangles = new HoveredHeatmapRectangle();
 
   componentDidMount() {
     const {
@@ -64,8 +66,7 @@ export class HeatMapRectangles extends React.Component<Props> {
     const {
       dataset,
       xScale,
-      yScale,
-      count
+      yScale
     } = this.setup();
 
     this.subscription = this.props.mouseHoverCoordinates.onChange(({ x, y }) => {
@@ -76,11 +77,14 @@ export class HeatMapRectangles extends React.Component<Props> {
 
       if ((y < top || y > bottom) || (x < left || x > right)) {
         onHoverStop();
+        this.hoveredRectangles.clearHoveredRectangle();
         return;
       }
 
       const xPosition = Math.floor(xScale.invert(x - left));
       const yPosition = Math.floor(yScale.invert(y - top));
+
+      this.hoveredRectangles.setHoveredRectangle(xPosition, yPosition);
 
       const hoveredBins = dataset[yPosition];
       const hoveredBin = bins(hoveredBins)[xPosition];
@@ -167,7 +171,11 @@ export class HeatMapRectangles extends React.Component<Props> {
                 return heatmap.map((bins: any) => {
                   return bins.map((bin: any) => {
                     return (
-                      <HeatMapRectangle key={`heatmap-rect-${bin.row}-${bin.column}`} bin={bin} />
+                      <HeatMapRectangle
+                        key={`heatmap-rect-${bin.row}-${bin.column}`}
+                        bin={bin}
+                        hoveredRectangles={this.hoveredRectangles}
+                      />
                     );
                   });
                 });
