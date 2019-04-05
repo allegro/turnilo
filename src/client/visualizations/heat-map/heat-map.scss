@@ -32,7 +32,6 @@
    white-space: nowrap;
    display: flex;
    align-items: flex-end;
-   z-index: 1;
  }
 
 .top-labels > * {
@@ -80,4 +79,8 @@
 .top-left-corner-mask {
   height: 100%;
   background-color: white;
+}
+
+.heatmap-tooltip {
+  
 }

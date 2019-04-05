@@ -21,6 +21,7 @@ import { scaleLinear, scaleLog } from '@vx/scale';
 import { HeatmapRect } from '@vx/heatmap';
 import { Dataset, Datum } from "plywood";
 import { SPLIT } from "../../config/constants";
+import { HeatMap, MouseHoverCoordinates } from "./heat-map";
 
 const white = '#fff';
 const orange = '#ff5a00';
@@ -35,11 +36,78 @@ interface Props {
   data: Dataset;
   tileSize?: number;
   measureName: string;
+  mouseHoverCoordinates?: MouseHoverCoordinates;
+  onHover?: (bin: any) => void;
+  onHoverStop?: () => void;
+}
+
+interface HeatMapRectangleProps {
+  bin: any;
+}
+
+export class HeatMapRectangle extends React.Component<HeatMapRectangleProps> {
+  render() {
+    const { bin } = this.props;
+    return (
+      <rect
+        className="vx-heatmap-rect"
+        width={bin.width}
+        height={bin.height}
+        x={bin.y}
+        y={bin.x}
+        fill={bin.color}
+        fillOpacity={bin.opacity}
+        onMouseEnter={() => console.log(bin)}
+        onClick={event => {
+          const { row, column } = bin;
+          alert(JSON.stringify({ row, column, ...bin.bin }));
+        }}
+      />
+    );
+  }
 }
 
 export class HeatMapRectangles extends React.Component<Props> {
+  private rect: SVGRectElement | null = null;
+  private subscription: { unsubscribe(): void } = { unsubscribe() {} };
 
-  render() {
+  componentDidMount() {
+    const {
+      onHoverStop = () => {},
+      onHover = () => {}
+    } = this.props;
+
+    const {
+      datapoints,
+      xScale,
+      yScale,
+      count
+    } = this.setup();
+
+    this.subscription = this.props.mouseHoverCoordinates.onChange(({ x, y }) => {
+      if (!this.rect) {
+        return;
+      }
+      const { top, bottom, left, right } = this.rect.getBoundingClientRect();
+
+      if ((y < top || y > bottom) || (x < left || x > right)) {
+        onHoverStop();
+        return;
+      }
+
+      const xPosition = Math.floor(xScale.invert(x - left));
+      const yPosition = Math.floor(yScale.invert(y - top));
+
+      const hoveredBin = datapoints.map(bins)[yPosition][xPosition];
+      onHover({
+        row: xPosition,
+        column: yPosition,
+        count: count(hoveredBin)
+      });
+    });
+  }
+
+  private setup() {
     const { tileSize = 25, data: dataset, measureName } = this.props;
     const datapoints = (dataset.data[0][SPLIT] as Dataset).data;
     const count = (d: Datum) => d[measureName];
@@ -67,10 +135,38 @@ export class HeatMapRectangles extends React.Component<Props> {
       domain: [0, colorMax]
     });
 
+    return {
+      width,
+      height,
+      count,
+      datapoints,
+      xScale,
+      yScale,
+      rectColorScale,
+      tileSize
+    };
+  }
+
+  componentWillUnmount() {
+    this.subscription.unsubscribe();
+  }
+
+  render() {
+    const {
+      width,
+      height,
+      count,
+      datapoints,
+      xScale,
+      yScale,
+      rectColorScale,
+      tileSize
+    } = this.setup();
+
     return (
       <div>
         <svg width={width} height={height}>
-          <rect x={0} y={0} width={width} height={height} fill={white} />
+          <rect ref={rect => this.rect = rect} x={0} y={0} width={width} height={height} fill={white} />
             <HeatmapRect
               bins={bins}
               count={count}
@@ -86,20 +182,7 @@ export class HeatMapRectangles extends React.Component<Props> {
                 return heatmap.map((bins: any) => {
                   return bins.map((bin: any) => {
                     return (
-                      <rect
-                        key={`heatmap-rect-${bin.row}-${bin.column}`}
-                        className="vx-heatmap-rect"
-                        width={bin.width}
-                        height={bin.height}
-                        x={bin.y}
-                        y={bin.x}
-                        fill={bin.color}
-                        fillOpacity={bin.opacity}
-                        onClick={event => {
-                          const { row, column } = bin;
-                          alert(JSON.stringify({ row, column, ...bin.bin }));
-                        }}
-                      />
+                      <HeatMapRectangle key={`heatmap-rect-${bin.row}-${bin.column}`} bin={bin} />
                     );
                   });
                 });
