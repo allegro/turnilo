@@ -16,12 +16,12 @@
  */
 
 import * as React from "react";
-import { genBins } from '@vx/mock-data';
-import { scaleLinear, scaleLog } from '@vx/scale';
+import { scaleLinear } from '@vx/scale';
 import { HeatmapRect } from '@vx/heatmap';
 import { Dataset, Datum } from "plywood";
 import { SPLIT } from "../../config/constants";
-import { HeatMap, MouseHoverCoordinates } from "./heat-map";
+import { MousePosition } from "../../utils/mouse-position/mouse-position";
+import { HeatMapRectangle } from "./heatmap-rectangle";
 
 const white = '#fff';
 const orange = '#ff5a00';
@@ -33,38 +33,12 @@ const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
 interface Props {
-  data: Dataset;
+  dataset: Datum[];
   tileSize?: number;
   measureName: string;
-  mouseHoverCoordinates?: MouseHoverCoordinates;
+  mouseHoverCoordinates?: MousePosition;
   onHover?: (bin: any) => void;
   onHoverStop?: () => void;
-}
-
-interface HeatMapRectangleProps {
-  bin: any;
-}
-
-export class HeatMapRectangle extends React.Component<HeatMapRectangleProps> {
-  render() {
-    const { bin } = this.props;
-    return (
-      <rect
-        className="vx-heatmap-rect"
-        width={bin.width}
-        height={bin.height}
-        x={bin.y}
-        y={bin.x}
-        fill={bin.color}
-        fillOpacity={bin.opacity}
-        onMouseEnter={() => console.log(bin)}
-        onClick={event => {
-          const { row, column } = bin;
-          alert(JSON.stringify({ row, column, ...bin.bin }));
-        }}
-      />
-    );
-  }
 }
 
 export class HeatMapRectangles extends React.Component<Props> {
@@ -78,7 +52,7 @@ export class HeatMapRectangles extends React.Component<Props> {
     } = this.props;
 
     const {
-      datapoints,
+      dataset,
       xScale,
       yScale,
       count
@@ -98,7 +72,7 @@ export class HeatMapRectangles extends React.Component<Props> {
       const xPosition = Math.floor(xScale.invert(x - left));
       const yPosition = Math.floor(yScale.invert(y - top));
 
-      const hoveredBin = datapoints.map(bins)[yPosition][xPosition];
+      const hoveredBin = dataset.map(bins)[yPosition][xPosition];
       onHover({
         row: xPosition,
         column: yPosition,
@@ -108,13 +82,12 @@ export class HeatMapRectangles extends React.Component<Props> {
   }
 
   private setup() {
-    const { tileSize = 25, data: dataset, measureName } = this.props;
-    const datapoints = (dataset.data[0][SPLIT] as Dataset).data;
+    const { tileSize = 25, dataset, measureName } = this.props;
     const count = (d: Datum) => d[measureName];
 
-    const colorMax = max(datapoints, d => max(bins(d), count));
-    const bucketSizeMax = max(datapoints, d => bins(d).length);
-    const dataLength = datapoints.length;
+    const colorMax = max(dataset, d => max(bins(d), count));
+    const bucketSizeMax = max(dataset, d => bins(d).length);
+    const dataLength = dataset.length;
 
     const width = bucketSizeMax * tileSize;
     const height = dataLength * tileSize;
@@ -139,7 +112,7 @@ export class HeatMapRectangles extends React.Component<Props> {
       width,
       height,
       count,
-      datapoints,
+      dataset,
       xScale,
       yScale,
       rectColorScale,
@@ -156,7 +129,7 @@ export class HeatMapRectangles extends React.Component<Props> {
       width,
       height,
       count,
-      datapoints,
+      dataset,
       xScale,
       yScale,
       rectColorScale,
@@ -170,7 +143,7 @@ export class HeatMapRectangles extends React.Component<Props> {
             <HeatmapRect
               bins={bins}
               count={count}
-              data={datapoints}
+              data={dataset}
               xScale={xScale}
               yScale={yScale}
               colorScale={rectColorScale}
