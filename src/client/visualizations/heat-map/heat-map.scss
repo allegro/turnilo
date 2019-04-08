@@ -32,6 +32,10 @@ $left-labels-width: 200px;
   white-space: nowrap;
   display: flex;
   align-items: flex-end;
+
+  .heatmap-label-hovered span {
+    background: linear-gradient(to right,#FFDECC, white);
+  }
 }
 
 .top-labels > * {
@@ -48,7 +52,8 @@ $left-labels-width: 200px;
     display: inline-block;
     padding-left: 5px;
     padding-top: 5px;
-    max-width: $top-labels-height;
+    width: $top-labels-height;
+    height: $heatmap-rectangle-size;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -56,6 +61,10 @@ $left-labels-width: 200px;
 
 .left-labels {
   background-color: #fff;
+
+  .heatmap-label-hovered {
+    background: linear-gradient(to left,#FFDECC, white);
+  }
 }
 
 .left-labels > * {
