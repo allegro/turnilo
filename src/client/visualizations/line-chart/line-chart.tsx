@@ -627,10 +627,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const isHovered = !dragRange && hoverMeasure === series.measure;
 
-    return <React.Fragment>
+    return <React.Fragment key={series.reactKey()}>
       <div
         className="measure-line-chart"
-        key={series.reactKey()}
         onMouseDown={this.onMouseDown.bind(this, series.measure)}
         onMouseMove={this.onMouseMove.bind(this, splitData, series.measure, scaleX)}
         onMouseLeave={this.onMouseLeave.bind(this, series.measure)}
