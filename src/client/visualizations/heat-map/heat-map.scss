@@ -19,6 +19,8 @@ $heatmap-rectangle-size: 25px;
 $top-labels-height: 120px;
 $left-labels-width: 200px;
 
+$highlight-color: #ffdecc;
+
 .heatmap-container {
   .scroller {
     height: 100%;
@@ -34,7 +36,7 @@ $left-labels-width: 200px;
   align-items: flex-end;
 
   .heatmap-label-hovered span {
-    background: linear-gradient(to right,#FFDECC, white);
+    background: linear-gradient(to right, $highlight-color, #fff);
   }
 }
 
@@ -63,7 +65,7 @@ $left-labels-width: 200px;
   background-color: #fff;
 
   .heatmap-label-hovered {
-    background: linear-gradient(to left,#FFDECC, white);
+    background: linear-gradient(to left, $highlight-color, #fff);
   }
 }
 

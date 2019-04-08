@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import { TooltipWithBounds, withTooltip } from "@vx/tooltip";
+import { TooltipWithBounds, withTooltip, WithTooltipProps } from "@vx/tooltip";
 import { Dataset } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
@@ -28,16 +29,7 @@ import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
 
-interface TooltipProps<D> {
-  tooltipData: D;
-  tooltipLeft: number;
-  tooltipTop: number;
-  tooltipOpen: boolean;
-  showTooltip(data: any): void;
-  hideTooltip(): void;
-}
-
-class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, TooltipProps<RectangleData>> {
+class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithTooltipProps<RectangleData>> {
   protected className = HEAT_MAP_MANIFEST.name;
   private container: HTMLDivElement | null = null;
   private mouseHoverCoordinates = new MousePosition(window);
@@ -101,7 +93,7 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, Toolt
   }
 }
 
-export const HeatMap = withTooltip(UndecoratedHeatMap, {
+export const HeatMap = withTooltip<VisualizationProps>(UndecoratedHeatMap, {
   style: {
     position: "relative",
     height: "100%"

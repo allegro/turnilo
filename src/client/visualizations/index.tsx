@@ -23,13 +23,12 @@ import { TOTALS_MANIFEST } from "../../common/manifests/totals/totals";
 import { Manifest } from "../../common/models/manifest/manifest";
 import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
-import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
 import { HeatMap } from "./heat-map/heat-map";
 import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
 
-type Visualisation = new(props: VisualizationProps) => BaseVisualization<BaseVisualizationState>;
+type Visualisation = React.ComponentType<VisualizationProps>;
 
 const VIS_COMPONENTS: Record<string, Visualisation> = {
   [TOTALS_MANIFEST.name]: Totals,

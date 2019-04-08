@@ -100,7 +100,7 @@ export class HeatMapRectangles extends React.Component<Props> {
 
   private setup() {
     const { tileSize = 25, dataset, measureName } = this.props;
-    const count = (d: Datum) => d[measureName];
+    const count = (d: Datum) => d[measureName] as number;
 
     const colorMax = max(dataset, d => max(bins(d), count));
     const bucketSizeMax = max(dataset, d => bins(d).length);
@@ -111,14 +111,14 @@ export class HeatMapRectangles extends React.Component<Props> {
 
     // scales
     const xScale = scaleLinear({
-      domain: [0, bucketSizeMax]
+      domain: [0, bucketSizeMax],
+      range: [0, width]
     });
-    xScale.range([0, width]);
 
     const yScale = scaleLinear({
-      domain: [dataLength, 0]
+      domain: [dataLength, 0],
+      range: [height, 0]
     });
-    yScale.range([height, 0]);
 
     const rectColorScale = scaleLinear({
       range: [white, orange],
@@ -168,9 +168,9 @@ export class HeatMapRectangles extends React.Component<Props> {
               binHeight={tileSize}
               gap={2}
             >
-              {(heatmap: any) => {
-                return heatmap.map((bins: any) => {
-                  return bins.map((bin: any) => {
+              {heatmap => {
+                return heatmap.map(bins => {
+                  return bins.map(bin => {
                     return (
                       <HeatMapRectangle
                         key={`heatmap-rect-${bin.row}-${bin.column}`}

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+import { Bin } from "@vx/heatmap";
 import * as React from "react";
 import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
 
 interface Props {
-  bin: any;
+  bin: Bin;
   hoveredRectangles: HoveredHeatmapRectangle;
 }
 
@@ -52,10 +53,6 @@ export class HeatMapRectangle extends React.Component<Props, State> {
         y={bin.x}
         fill={bin.color}
         fillOpacity={bin.opacity}
-        onClick={event => {
-          const { row, column } = bin;
-          alert(JSON.stringify({ row, column, ...bin.bin }));
-        }}
       />
     );
   }
