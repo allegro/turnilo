@@ -91,7 +91,7 @@ describe("<MeasureActions>", () => {
     it("renders expression action", () => {
       const actions = measureActions(MeasureFixtures.wikiUniqueUsers());
 
-      expect(actions.find(".new-expression").length).to.be.eq(1);
+      expect(actions.find(".new-percent-expression").length).to.be.eq(1);
     });
 
     describe("click should call action", () => {
@@ -115,7 +115,7 @@ describe("<MeasureActions>", () => {
         const measure = MeasureFixtures.wikiUniqueUsers();
         const actions = measureActions(measure);
 
-        actions.find(".new-expression").simulate("click");
+        actions.find(".new-percent-expression").simulate("click");
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(newExpressionSpy.calledOnce).to.be.true;
