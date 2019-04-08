@@ -494,7 +494,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   private getFormatter(): Unary<Datum, string> {
     const { sortOn, essence } = this.props;
 
-    const series = essence.findConcreteSeries(sortOn.key);
+    const series = sortOn && essence.findConcreteSeries(sortOn.key);
     if (!series) return null;
     return d => series.formatValue(d);
   }

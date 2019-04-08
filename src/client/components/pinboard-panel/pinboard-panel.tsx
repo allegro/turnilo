@@ -19,8 +19,6 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
 import { SeriesSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
