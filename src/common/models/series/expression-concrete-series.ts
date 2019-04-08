@@ -35,7 +35,7 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
   }
 
   title(derivation?: SeriesDerivation): string {
-    return `${super.title(derivation)} ${this.series.expression.title()}`;
+    return `${super.title(derivation)} ${this.expression.title()}`;
   }
 
   protected applyExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression {

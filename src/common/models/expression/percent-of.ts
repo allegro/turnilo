@@ -38,14 +38,6 @@ export class ExpressionPercentOf extends Record<ExpressionPercentOfValue>(defaul
     return this.operation;
   }
 
-  title(): string {
-    switch (this.operation) {
-      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
-        return "(% of Parent)";
-      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
-        return "(% of Total)";
-    }
-  }
 }
 
 export class ConcretePercentOf implements ConcreteExpression {
@@ -71,5 +63,14 @@ export class ConcretePercentOf implements ConcreteExpression {
       operand: new ApplyExpression({ expression, name: formulaName }),
       expression: $(formulaName).divide($(formulaName, relativeNesting))
     });
+  }
+
+  title(): string {
+    switch (this.operation) {
+      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
+        return "(% of Parent)";
+      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
+        return "(% of Total)";
+    }
   }
 }

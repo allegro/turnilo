@@ -36,6 +36,7 @@ export interface ExpressionValue {
 
 export interface ConcreteExpression {
   toExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression;
+  title(): string;
 }
 
 export function fromExpression(expression: Expression, measures: Measures): ConcreteExpression {
