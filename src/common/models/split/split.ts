@@ -57,7 +57,7 @@ export function bucketToAction(bucket: Bucket): Expression {
 
 function applyTimeShift(type: SplitType, expression: Expression, env: TimeShiftEnv): Expression {
   if (env.type === TimeShiftEnvType.WITH_PREVIOUS && type === SplitType.time) {
-    env.currentFilter.then(expression).fallback(expression.timeShift(env.shift));
+    return env.currentFilter.then(expression).fallback(expression.timeShift(env.shift));
   }
   return expression;
 }
