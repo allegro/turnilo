@@ -23,6 +23,7 @@ import { SeriesFormat } from "../../../common/models/series/series-format";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
 import { FormatPicker } from "./format-picker";
+import "./percent-of-series.scss";
 
 interface ExpressionSeriesMenuProps {
   measure: Measure;
@@ -73,6 +74,7 @@ export const PercentOfSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ seri
       formatChange={onFormatChange}
     />
     <Dropdown<Operation>
+      className="percent-operation-picker"
       items={OPERATIONS}
       renderItem={renderOperation}
       renderSelectedItem={renderSelectedOperation}

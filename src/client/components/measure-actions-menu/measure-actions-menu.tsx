@@ -75,7 +75,7 @@ export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
     onClose();
   }
 
-  function onNewExpression() {
+  function onNewPercentExpression() {
     newExpression(measure);
     onClose();
   }
@@ -85,9 +85,9 @@ export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
       <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
       <div className="action-label">{STRINGS.add}</div>
     </div>
-    <div className={classNames("new-expression", "action")} onClick={onNewExpression}>
-      <SvgIcon svg={require("../../icons/full-edit.svg")} />
-      <div className="action-label">Expression</div>
+    <div className={classNames("new-percent-expression", "action")} onClick={onNewPercentExpression}>
+      <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
+      <div className="action-label">Percent</div>
     </div>
   </React.Fragment>;
 };
