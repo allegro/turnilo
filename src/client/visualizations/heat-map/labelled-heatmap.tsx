@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { endianness } from "os";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
@@ -24,54 +23,16 @@ import { Scroller } from "../../components/scroller/scroller";
 import { SPLIT } from "../../config/constants";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import "./heat-map.scss";
-import { HeatMapRectangles } from "./heatmap-rectangles";
+import { HeatmapLabel } from "./heatmap-label";
+import { HeatMapRectangles, RectangleData } from "./heatmap-rectangles";
 import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
 
 interface Props {
   essence: Essence;
   dataset: Datum[];
-  handleRectangleHover?(bin: any): void;
+  handleRectangleHover?(data: RectangleData): void;
   hideTooltip?(): void;
   mouseHoverCoordinates?: MousePosition;
-}
-
-interface LabelProps {
-  label: string;
-  index: number;
-  type: "top" | "left";
-  hoveredRectangle: HoveredHeatmapRectangle;
-}
-
-interface LabelState {
-  hovered: boolean;
-}
-
-export class HeatmapLabel extends React.Component<LabelProps> {
-  state = {
-    hovered: false
-  };
-
-  componentDidMount() {
-    const { hoveredRectangle, type, index } = this.props;
-    hoveredRectangle.onRectangleHover(
-      {
-        row: type === "top" ? index : undefined,
-        column: type === "left" ? index : undefined
-      },
-      {
-        start: () => this.setState({ hovered: true }),
-        end: () => this.setState({ hovered: false })
-      }
-    );
-  }
-
-  render() {
-    const { label } = this.props;
-
-    return (
-      <span className={this.state.hovered ? "heatmap-label-hovered" : ""} key={label}><span>{label}</span></span>
-    );
-  }
 }
 
 export class LabelledHeatmap extends React.PureComponent<Props> {
