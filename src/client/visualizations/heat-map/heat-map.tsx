@@ -23,6 +23,7 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
+import { fillDataset } from "../../utils/dataset/dataset";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
@@ -67,10 +68,12 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
 
     const { timezone, series } = essence;
     const measure = essence.getEffectiveSelectedMeasures().toArray()[0];
+    const [_, secondSplit] = essence.splits.splits.toArray();
 
     return <div ref={container => this.container = container} className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
       <LabelledHeatmap
-        dataset={(dataset.data[0][SPLIT] as Dataset).data}
+        dataset={fillDataset((dataset.data[0][SPLIT] as Dataset), measure.name, secondSplit.reference).data}
+      //  dataset={(dataset.data[0][SPLIT] as Dataset).data}
         essence={this.props.essence}
         handleRectangleHover={this.handleRectangleHover}
         hideTooltip={hideTooltip}
