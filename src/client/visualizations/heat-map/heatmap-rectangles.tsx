@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { HeatmapRect } from "@vx/heatmap";
+import { HeatmapRect, HeatmapRectProps } from "@vx/heatmap";
 import { scaleLinear } from "@vx/scale";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";

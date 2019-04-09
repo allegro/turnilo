@@ -23,7 +23,7 @@ declare module "@vx/heatmap" {
     binWidth: number;
     binHeight: number;
     gap: number;
-    children: (heatmap: Bin[][]) => React.ReactNode;
+    children?: (heatmap: Bin[][]) => React.ReactNode;
   }
   export class HeatmapRect extends React.Component<HeatmapRectProps> {
 

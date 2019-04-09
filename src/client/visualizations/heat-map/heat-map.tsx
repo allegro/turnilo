@@ -16,6 +16,7 @@
  */
 
 import { TooltipWithBounds, withTooltip, WithTooltipProps } from "@vx/tooltip";
+import memoize = require("lodash.memoize");
 import { Dataset } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
@@ -31,7 +32,9 @@ import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
 
-const splitToFillSort = (split: Split): Sort<any> => {
+const memoizedFillDataset = memoize(fillDataset);
+
+const splitToFillSort = memoize((split: Split): Sort<any> => {
   const sort = split.sort;
   switch (split.type) {
     case SplitType.string:
@@ -49,7 +52,7 @@ const splitToFillSort = (split: Split): Sort<any> => {
         return sortByTimeDimensionDecreasing;
       }
   }
-};
+});
 
 class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithTooltipProps<RectangleData>> {
   protected className = HEAT_MAP_MANIFEST.name;
@@ -84,11 +87,16 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
     const { timezone, series } = essence;
     const measure = essence.getEffectiveSelectedMeasures().toArray()[0];
     const [_, secondSplit] = essence.splits.splits.toArray();
+    const preparedDataset = memoizedFillDataset(
+      (dataset.data[0][SPLIT] as Dataset),
+      measure.name,
+      secondSplit.reference,
+      splitToFillSort(secondSplit)
+    ).data;
 
     return <div ref={container => this.container = container} className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
       <LabelledHeatmap
-        dataset={fillDataset((dataset.data[0][SPLIT] as Dataset), measure.name, secondSplit.reference, splitToFillSort(secondSplit)).data}
-      //  dataset={(dataset.data[0][SPLIT] as Dataset).data}
+        dataset={preparedDataset}
         essence={this.props.essence}
         onHover={this.handleRectangleHover}
         onHoverStop={hideTooltip}
