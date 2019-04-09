@@ -22,21 +22,40 @@ import { formatValue } from "../../../common/utils/formatter/formatter";
 import { Scroller } from "../../components/scroller/scroller";
 import { SPLIT } from "../../config/constants";
 import "./heat-map.scss";
-import { HeatmapLabel } from "./heatmap-label";
+import { HeatmapLabels } from "./heatmap-labels";
 import { HeatMapRectangles, RectangleData } from "./heatmap-rectangles";
-import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
 
 interface Props {
   essence: Essence;
   dataset: Datum[];
-  handleRectangleHover?(data: RectangleData): void;
-  hideTooltip?(): void;
+  onHover?(data: RectangleData): void;
+  onHoverStop?(): void;
 }
 
-export class LabelledHeatmap extends React.PureComponent<Props> {
-  private hoveredRectangle = new HoveredHeatmapRectangle();
+interface State {
+  hoveredRectangle: RectangleData | null;
+}
+
+export class LabelledHeatmap extends React.PureComponent<Props, State> {
+  state = {
+    hoveredRectangle: null
+  } as State;
+
+  handleHover = (data: RectangleData) => {
+    this.setState({ hoveredRectangle: data });
+    const { onHover = () => {} } = this.props;
+    onHover(data);
+  }
+
+  handleHoverStop = () => {
+    this.setState({ hoveredRectangle: null });
+    const { onHoverStop = () => {} } = this.props;
+    onHoverStop();
+  }
+
   render() {
-    const { dataset, handleRectangleHover, hideTooltip } = this.props;
+    const { dataset } = this.props;
+    const { hoveredRectangle } = this.state;
 
     const [measure] = this.props.essence.getEffectiveSelectedMeasures().toArray();
     const [firstSplit, secondSplit] = this.props.essence.splits.splits.toArray();
@@ -62,27 +81,19 @@ export class LabelledHeatmap extends React.PureComponent<Props> {
           bottom: 0,
           left: 200
         }}
-        topGutter={
-          <div className="top-labels">
-            {topLabels.map((label, index) => <HeatmapLabel type="top" index={index} key={label} label={label} hoveredRectangle={this.hoveredRectangle} />)}
-          </div>
-        }
-        leftGutter={
-          <div className="left-labels">
-            {leftLabels.map((label, index) =>  <HeatmapLabel type="left" index={index} key={label} label={label} hoveredRectangle={this.hoveredRectangle} />)}
-          </div>
-        }
+        topGutter={<HeatmapLabels type="top" labels={topLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.row : -1} />}
+        leftGutter={<HeatmapLabels type="left" labels={leftLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.column : -1}  />}
         topLeftCorner={<div className="top-left-corner-mask" />}
         body={[
           <HeatMapRectangles
             key="heatmap"
-            onHover={handleRectangleHover}
-            onHoverStop={hideTooltip}
+            onHover={this.handleHover}
+            onHoverStop={this.handleHoverStop}
             dataset={dataset}
             measureName={measure.name}
+            hoveredRectangle={this.state.hoveredRectangle}
             leftLabelName={firstSplit.reference}
             topLabelName={secondSplit.reference}
-            hoveredRectangle={this.hoveredRectangle}
           />
         ]}
       />

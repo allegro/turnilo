@@ -90,8 +90,8 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
         dataset={fillDataset((dataset.data[0][SPLIT] as Dataset), measure.name, secondSplit.reference, splitToFillSort(secondSplit)).data}
       //  dataset={(dataset.data[0][SPLIT] as Dataset).data}
         essence={this.props.essence}
-        handleRectangleHover={this.handleRectangleHover}
-        hideTooltip={hideTooltip}
+        onHover={this.handleRectangleHover}
+        onHoverStop={hideTooltip}
       />
       {tooltipOpen && (
         <TooltipWithBounds

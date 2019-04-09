@@ -21,8 +21,7 @@ import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { SPLIT } from "../../config/constants";
-import { HeatMapRectangle } from "./heatmap-rectangle";
-import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
+import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
 
 const white = "#fff";
 const orange = "#ff5a00";
@@ -39,6 +38,8 @@ export interface RectangleData {
   datum: Datum;
   x: number;
   y: number;
+  column: number;
+  row: number;
 }
 
 interface Props {
@@ -47,13 +48,13 @@ interface Props {
   measureName: string;
   leftLabelName: string;
   topLabelName: string;
+  hoveredRectangle?: RectangleData;
   onHover?: (data: RectangleData) => void;
   onHoverStop?: () => void;
-  hoveredRectangle: HoveredHeatmapRectangle;
 }
 
 export class HeatMapRectangles extends React.Component<Props> {
-  private rect: SVGRectElement | null = null;
+  private rect: HTMLDivElement | null = null;
 
   handleMouseMove = (event: MouseEvent) => {
     const { clientX: x, clientY: y } = event;
@@ -63,7 +64,6 @@ export class HeatMapRectangles extends React.Component<Props> {
       onHover = () => {},
       leftLabelName,
       topLabelName,
-      hoveredRectangle,
       dataset
     } = this.props;
 
@@ -79,14 +79,11 @@ export class HeatMapRectangles extends React.Component<Props> {
 
     if ((y < top || y > bottom) || (x < left || x > right)) {
       onHoverStop();
-      hoveredRectangle.clearHoveredRectangle();
       return;
     }
 
     const xPosition = Math.floor(xScale.invert(x - left));
     const yPosition = Math.floor(yScale.invert(y - top));
-
-    hoveredRectangle.setHoveredRectangle(xPosition, yPosition);
 
     const hoveredBins = dataset[yPosition];
     const hoveredBin = bins(hoveredBins)[xPosition];
@@ -96,12 +93,14 @@ export class HeatMapRectangles extends React.Component<Props> {
       xLabel: hoveredBins[leftLabelName] as string,
       yLabel: hoveredBin[topLabelName] as string,
       x,
-      y
+      y,
+      column: yPosition,
+      row: xPosition
     });
   }
 
   private setup() {
-    const { tileSize = 25, dataset, measureName } = this.props;
+    const { tileSize = 25, dataset, measureName, hoveredRectangle } = this.props;
     const count = (d: Datum) => d[measureName] as number;
 
     const colorMax = max(dataset, d => max(bins(d), count));
@@ -135,7 +134,8 @@ export class HeatMapRectangles extends React.Component<Props> {
       xScale,
       yScale,
       rectColorScale,
-      tileSize
+      tileSize,
+      hoveredRectangle
     };
   }
 
@@ -148,13 +148,14 @@ export class HeatMapRectangles extends React.Component<Props> {
       xScale,
       yScale,
       rectColorScale,
-      tileSize
+      tileSize,
+      hoveredRectangle
     } = this.setup();
 
     return (
-      <div>
+      <div ref={rect => this.rect = rect}>
         <svg width={width} height={height}>
-          <rect ref={rect => this.rect = rect} x={0} y={0} width={width} height={height} fill={white} />
+          <rect x={0} y={0} width={width} height={height} fill={white} />
             <HeatmapRect
               bins={bins}
               count={count}
@@ -166,19 +167,15 @@ export class HeatMapRectangles extends React.Component<Props> {
               binHeight={tileSize}
               gap={2}
             >
-              {heatmap => {
-                return heatmap.map(bins => {
-                  return bins.map(bin => {
-                    return (
-                      <HeatMapRectangle
-                        key={`heatmap-rect-${bin.row}-${bin.column}`}
-                        bin={bin}
-                        hoveredRectangles={this.props.hoveredRectangle}
-                      />
-                    );
-                  });
-                });
-              }}
+              {heatmap => heatmap.map((bins, index) => (
+                    <HeatMapRectangleRow
+                      key={`heatmap-rect-row-${bins[0].column}`}
+                      bins={bins}
+                      hoveredBin={(hoveredRectangle && hoveredRectangle.column === index) ? hoveredRectangle.row : -1}
+                    />
+                  )
+                )
+              }
             </HeatmapRect>
         </svg>
         <GlobalEventListener mouseMove={this.handleMouseMove} />
