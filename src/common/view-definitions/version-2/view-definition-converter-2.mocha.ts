@@ -15,7 +15,6 @@
  */
 
 import { expect } from "chai";
-import { Duration } from "chronoshift";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";

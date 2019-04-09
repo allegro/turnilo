@@ -17,8 +17,9 @@
 
 import { List } from "immutable";
 import { Colors } from "../../models/colors/colors";
+import { Essence } from "../../models/essence/essence";
 import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
-import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
+import { DimensionSort, isSortEmpty, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
@@ -54,16 +55,14 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let sort: Sort = null;
     if (sortStrategy && sortStrategy !== "self") {
-      sort = new Sort({
+      sort = new DimensionSort({
         reference: sortStrategy,
-        direction: SortDirection.ascending,
-        type: SortReferenceType.DIMENSION
+        direction: SortDirection.ascending
       });
     } else {
-      sort = new Sort({
+      sort = new DimensionSort({
         reference: continuousDimension.name,
-        direction: SortDirection.ascending,
-        type: SortReferenceType.DIMENSION
+        direction: SortDirection.ascending
       });
     }
 
@@ -92,14 +91,13 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
-  .then(({ splits, dataCube, colors }) => {
+  .then(({ series, splits, dataCube, colors }) => {
     let timeSplit = splits.getSplit(0);
     const timeDimension = dataCube.getDimension(timeSplit.reference);
 
-    const sort: Sort = new Sort({
+    const sort: Sort = new DimensionSort({
       reference: timeDimension.name,
-      direction: SortDirection.ascending,
-      type: SortReferenceType.DIMENSION
+      direction: SortDirection.ascending
     });
 
     // Fix time sort
@@ -114,8 +112,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let colorSplit = splits.getSplit(1);
 
-    if (colorSplit.sort.empty()) {
-      colorSplit = colorSplit.changeSort(dataCube.getDefaultSortExpression());
+    if (isSortEmpty(colorSplit.sort)) {
+      colorSplit = colorSplit.changeSort(Essence.defaultSort(series, dataCube));
     }
 
     const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
@@ -131,16 +129,15 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.areExactSplitKinds("*", "time"))
   .or(Predicates.areExactSplitKinds("*", "number"))
-  .then(({ splits, dataCube, colors }) => {
+  .then(({ series, splits, dataCube, colors }) => {
     let timeSplit = splits.getSplit(1);
     const timeDimension = dataCube.getDimension(timeSplit.reference);
 
     let autoChanged = false;
 
-    const sort: Sort = new Sort({
+    const sort: Sort = new DimensionSort({
       reference: timeDimension.name,
-      direction: SortDirection.ascending,
-      type: SortReferenceType.DIMENSION
+      direction: SortDirection.ascending
     });
 
     // Fix time sort
@@ -157,8 +154,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let colorSplit = splits.getSplit(0);
 
-    if (colorSplit.sort.empty()) {
-      colorSplit = colorSplit.changeSort(dataCube.getDefaultSortExpression());
+    if (isSortEmpty(colorSplit.sort)) {
+      colorSplit = colorSplit.changeSort(Essence.defaultSort(series, dataCube));
       autoChanged = true;
     }
 

@@ -50,6 +50,6 @@ export class Highlight extends Record<HighlightValue>(defaultHighlight) {
   public validForSeries(series: SeriesList): boolean {
     const { measure } = this;
     if (!measure) return true;
-    return series.hasSeries(measure);
+    return series.hasMeasureSeries(measure);
   }
 }

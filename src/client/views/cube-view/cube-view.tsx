@@ -50,7 +50,7 @@ import { GlobalEventListener } from "../../components/global-event-listener/glob
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
-import { SeriesTile } from "../../components/series-tile/series-tile";
+import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
@@ -476,6 +476,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
   }
 
+  newMeasureExpression = (measure: Measure) => {
+    if (!measure) return;
+    (this.refs["seriesTile"] as SeriesTilesRow).newExpressionSeries(measure);
+  }
+
   changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
@@ -580,6 +585,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           essence={essence}
           menuStage={menuStage}
           triggerFilterMenu={this.triggerFilterMenu}
+          newMeasureExpression={this.newMeasureExpression}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}
@@ -610,7 +616,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 essence={essence}
                 menuStage={visualizationStage}
               />
-              <SeriesTile
+              <SeriesTilesRow
                 ref="seriesTile"
                 clicker={clicker}
                 essence={essence}

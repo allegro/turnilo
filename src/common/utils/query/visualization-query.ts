@@ -14,65 +14,32 @@
  * limitations under the License.
  */
 
-import { $, Expression, LimitExpression, ply, SortExpression } from "plywood";
+import { List } from "immutable";
+import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
-import { toExpression as filterClauseToExpression } from "../../../common/models/filter-clause/filter-clause";
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
-import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
+import { ConcreteSeries } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
+import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
-import { sortDirectionMapper } from "../../view-definitions/version-4/split-definition";
 import { thread } from "../functional/functional";
 
 const $main = $("main");
 
-function applyMeasures(essence: Essence, filters: Filters, nestingLevel = 0) {
-  const measures = essence.getEffectiveSelectedMeasures();
-  const hasComparison = essence.hasComparison();
+function applySeries(series: List<ConcreteSeries>, timeShiftEnv: TimeShiftEnv, nestingLevel = 0) {
 
   return (query: Expression) => {
-    return measures.reduce((query, measure) => {
-      if (!hasComparison) {
-        return query.performAction(
-          measure.toApplyExpression(nestingLevel)
-        );
-      }
-      return query
-        .performAction(measure.toApplyExpression(nestingLevel, new CurrentFilter(filters.current)))
-        .performAction(measure.toApplyExpression(nestingLevel, new PreviousFilter(filters.previous)));
+    return series.reduce((query, series) => {
+        return query.performAction(series.plywoodExpression(nestingLevel, timeShiftEnv));
     }, query);
   };
 }
 
-function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, { reference, period }: Sort): Expression {
-  if (reference && period === MeasureDerivation.CURRENT) {
-    const sortMeasure = essence.dataCube.getMeasure(reference);
-    if (sortMeasure && !essence.getEffectiveSelectedMeasures().contains(sortMeasure)) {
-      return query.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
-    }
-  }
-  if (reference && period === MeasureDerivation.DELTA) {
-    return query.apply(reference, $(reference).subtract($(Measure.derivedName(reference, MeasureDerivation.PREVIOUS))));
-  }
-  return query;
-}
-
-function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nestingLevel: number) {
-  // It's possible to define sort on measure that's not selected thus we need to add apply expression for that measure.
-  // We don't need add apply expressions for:
-  //   * dimensions - they're already defined as apply expressions because of splits
-  //   * selected measures - they're defined as apply expressions already
-  //   * previous - we need to define them earlier so they're present here
-  return (query: Expression) => {
-    const queryWithReference = applySortReferenceExpression(essence, query, nestingLevel, currentFilter, sort);
-    return queryWithReference.performAction(new SortExpression({
-      expression: $(sort.reference),
-      direction: sortDirectionMapper[sort.direction]
-    }));
-  };
+function applySort(sort: Sort) {
+  return (query: Expression) => query.performAction(sort.toExpression());
 }
 
 function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
@@ -105,16 +72,15 @@ function applyHaving(colors: Colors, splitDimension: Dimension) {
   };
 }
 
-function applySubSplit(nestingLevel: number, essence: Essence, filters: Filters) {
+function applySubSplit(nestingLevel: number, essence: Essence, timeShiftEnv: TimeShiftEnv) {
   return (query: Expression) => {
     if (nestingLevel >= essence.splits.length()) return query;
-    return query.apply(SPLIT, applySplit(nestingLevel, essence, filters));
+    return query.apply(SPLIT, applySplit(nestingLevel, essence, timeShiftEnv));
   };
 }
 
-function applySplit(index: number, essence: Essence, filters: Filters): Expression {
+function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const { splits, dataCube, colors } = essence;
-  const hasComparison = essence.hasComparison();
   const split = splits.getSplit(index);
   const dimension = dataCube.getDimension(split.reference);
   const { sort, limit } = split;
@@ -124,21 +90,16 @@ function applySplit(index: number, essence: Essence, filters: Filters): Expressi
 
   const nestingLevel = index + 1;
 
-  const currentSplit = splitToExpression(split, dimension, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
+  const currentSplit = splitToExpression(split, dimension, timeShiftEnv);
 
   return thread(
     $main.split(currentSplit, dimension.name),
     applyHaving(colors, dimension),
-    applyMeasures(essence, filters, nestingLevel),
-    applySort(essence, sort, filters.current, nestingLevel),
+    applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
+    applySort(sort),
     applyLimit(colors, limit, dimension),
-    applySubSplit(nestingLevel, essence, filters)
+    applySubSplit(nestingLevel, essence, timeShiftEnv)
   );
-}
-
-interface Filters {
-  current: Expression;
-  previous?: Expression;
 }
 
 export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
@@ -148,18 +109,14 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
   const hasComparison = essence.hasComparison();
   const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison });
 
-  const timeDimension = dataCube.getTimeDimension();
-  const filters = {
-    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper), timeDimension),
-    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper), timeDimension) : undefined
-  };
+  const timeShiftEnv: TimeShiftEnv = essence.getTimeShiftEnv(timekeeper);
 
   const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
 
-  const queryWithMeasures = applyMeasures(essence, filters)(mainExp);
+  const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
-    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, filters));
+    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, timeShiftEnv));
   }
   return queryWithMeasures;
 }

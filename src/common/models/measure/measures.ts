@@ -20,7 +20,8 @@ import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
 import { complement } from "../../utils/functional/functional";
 import { isNil, quoteNames } from "../../utils/general/general";
-import { Measure, MeasureDerivation } from "./measure";
+import { SeriesDerivation } from "../series/concrete-series";
+import { Measure } from "./measure";
 import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
 
 class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
@@ -54,11 +55,11 @@ function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ na
       if (isMeasureGroupJS(measureOrGroup)) {
         return null;
       }
-      if (measureOrGroup.name.startsWith(MeasureDerivation.PREVIOUS)) {
-        return { name: measureOrGroup.name, prefix: MeasureDerivation.PREVIOUS };
+      if (measureOrGroup.name.startsWith(SeriesDerivation.PREVIOUS)) {
+        return { name: measureOrGroup.name, prefix: SeriesDerivation.PREVIOUS };
       }
-      if (measureOrGroup.name.startsWith(MeasureDerivation.DELTA)) {
-        return { name: measureOrGroup.name, prefix: MeasureDerivation.DELTA };
+      if (measureOrGroup.name.startsWith(SeriesDerivation.DELTA)) {
+        return { name: measureOrGroup.name, prefix: SeriesDerivation.DELTA };
       }
       return null;
     })
