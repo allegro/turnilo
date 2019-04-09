@@ -23,12 +23,34 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
-import { fillDataset } from "../../utils/dataset/dataset";
+import { fillDataset, Sort, sortByValueDecreasing, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueIncreasing } from "../../utils/dataset/dataset";
 import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
+import { Split, SplitType } from "../../../common/models/split/split";
+import { SortDirection } from "../../../common/models/sort/sort";
+
+const splitToFillSort = (split: Split): Sort<any> => {
+  const sort = split.sort;
+  switch (split.type) {
+    case SplitType.string:
+    case SplitType.number:
+    default:
+      if (sort.direction === SortDirection.ascending) {
+        return sortByValueIncreasing;
+      } else {
+        return sortByValueDecreasing;
+      }
+    case SplitType.time:
+      if (sort.direction === SortDirection.ascending) {
+        return sortByTimeDimensionIncreasing;
+      } else {
+        return sortByTimeDimensionDecreasing;
+      }
+  }
+};
 
 class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithTooltipProps<RectangleData>> {
   protected className = HEAT_MAP_MANIFEST.name;
@@ -72,7 +94,7 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
 
     return <div ref={container => this.container = container} className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
       <LabelledHeatmap
-        dataset={fillDataset((dataset.data[0][SPLIT] as Dataset), measure.name, secondSplit.reference).data}
+        dataset={fillDataset((dataset.data[0][SPLIT] as Dataset), measure.name, secondSplit.reference, splitToFillSort(secondSplit)).data}
       //  dataset={(dataset.data[0][SPLIT] as Dataset).data}
         essence={this.props.essence}
         handleRectangleHover={this.handleRectangleHover}

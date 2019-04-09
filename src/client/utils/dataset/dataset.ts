@@ -20,7 +20,28 @@ import { Dataset, Datum, TimeRange } from "plywood";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SPLIT } from "../../config/constants";
 
-export const fillDataset = (dataset: Dataset, measureName: string, secondSplitName: string, timezone = Timezone.fromJS("Europe/Berlin")): Dataset => {
+export type Sort<D> = (a: [string, number, D], b: [string, number, D]) => number;
+
+export const sortByValueDecreasing: Sort<any> = ([_, countA], [__, countB]) => {
+  if (countA < countB) {
+    return 1;
+  }
+
+  if (countA > countB) {
+    return -1;
+  }
+
+  return 0;
+};
+
+export const sortByValueIncreasing: Sort<any> = (a, b) => {
+  return -sortByValueDecreasing(a, b);
+};
+
+export const sortByTimeDimensionDecreasing: Sort<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
+export const sortByTimeDimensionIncreasing: Sort<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
+
+export const fillDataset = (dataset: Dataset, measureName: string, secondSplitName: string, sort: Sort<any>, timezone = Timezone.fromJS("Europe/Berlin")): Dataset => {
   const labels: { [index: string]: number } = {};
   const labelsToOriginalValues: { [index: string]: any } = {};
 
@@ -42,21 +63,7 @@ export const fillDataset = (dataset: Dataset, measureName: string, secondSplitNa
 
   const sortedLabels = Object.keys(labels)
     .map(label => [label, labels[label], labelsToOriginalValues[label]] as [string, number, any])
-    .sort(([_, countA, originalA], [__, countB, originalB]) => {
-      if (TimeRange.isTimeRange(originalA) && TimeRange.isTimeRange(originalB)) {
-        return originalA.compare(originalB);
-      }
-
-      if (countA < countB) {
-        return 1;
-      }
-
-      if (countA > countB) {
-        return -1;
-      }
-
-      return 0;
-    })
+    .sort(sort)
     .map(([label]) => label);
 
   const newDataset = dataset.data.map(datum => {

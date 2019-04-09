@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Dataset } from "plywood";
 import { SPLIT } from "../../config/constants";
 import "../../utils/test-utils";
-import { fillDataset } from "./dataset";
+import { fillDataset, sortByValueDecreasing, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueIncreasing } from "./dataset";
 
 const rawDataset = {
     data: [
@@ -159,6 +159,94 @@ const expectedDataset = {
                       {
                           pv_count: 0,
                           site: "translate.googleusercontent.com"
+                      }
+                    ]
+                }
+              }
+          ]
+        }
+    }
+  ]
+} as any as Dataset;
+
+const expectedDatasetReversed = {
+  data: [
+    {
+        pv_count: 459481169,
+        SPLIT: {
+          type: "DATASET",
+          data: [
+              {
+                pv_count: 453304201,
+                service_id: "CM.991213.tz_pl",
+                SPLIT: {
+                    type: "DATASET",
+                    data: [
+                      {
+                        pv_count: 3969,
+                        site: "translate.googleusercontent.com"
+                    },
+                    {
+                      pv_count: 0,
+                      site: "bazawiedzy.allegrogroup.com"
+                    },
+                    {
+                      pv_count: 0,
+                      site: "archiwum.allegro.pl"
+                    },
+                      {
+                          pv_count: 453291667,
+                          site: "allegro.pl"
+                      }
+                    ]
+                }
+              },
+              {
+                pv_count: 6106737,
+                service_id: "CM.789253.tz_pl",
+                SPLIT: {
+                    type: "DATASET",
+                    data: [
+                      {
+                        pv_count: 2351,
+                        site: "translate.googleusercontent.com"
+                    },
+                    {
+                      pv_count: 0,
+                      site: "bazawiedzy.allegrogroup.com"
+                    },
+                    {
+                      pv_count: 6103414,
+                      site: "archiwum.allegro.pl"
+                  },
+                      {
+                        pv_count: 0,
+                        site: "allegro.pl"
+                      }
+                    ]
+                }
+              },
+              {
+                pv_count: 6512,
+                service_id: "CM.181116.tz_pl",
+                SPLIT: {
+                    type: "DATASET",
+                    data: [
+                      {
+                        pv_count: 0,
+                        site: "translate.googleusercontent.com"
+                    },
+                    {
+                      pv_count: 6512,
+                      site: "bazawiedzy.allegrogroup.com"
+                    },
+                    {
+                      pv_count: 0,
+                      site: "archiwum.allegro.pl"
+                  },
+                      {
+                        pv_count: 0,
+                        site: "allegro.pl"
                       }
                     ]
                 }
@@ -455,14 +543,24 @@ const reversedDatasetWithTimeDimension = {
   ]
 } as any as Dataset;
 
-describe("Dataset", () => {
+describe.only("Dataset", () => {
   it("works", () => {
-    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site").toJS())
+    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", sortByValueDecreasing).toJS())
       .to.deep.equal(Dataset.fromJS(expectedDataset.data[0][SPLIT] as Dataset).toJS());
   });
 
+  it("works reversed", () => {
+    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", sortByValueIncreasing).toJS())
+      .to.deep.equal(Dataset.fromJS(expectedDatasetReversed.data[0][SPLIT] as Dataset).toJS());
+  });
+
   it("works with time dimension", () => {
-    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time").toJS())
+    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", sortByTimeDimensionDecreasing).toJS())
       .to.deep.equal(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
+  });
+
+  it("works when reversing time dimension", () => {
+    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", sortByTimeDimensionIncreasing).toJS())
+    .to.deep.equal(Dataset.fromJS(reversedDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
   });
 });
