@@ -102,7 +102,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   const overflowItems = seriesElements.slice(maxItems);
   if (overflowItems.length <= 0) return <React.Fragment>{visibleItems}</React.Fragment>;
 
-  const anyOverflowItemOpen = series.slice(maxItems).some(({ series }) => series.equals(openSeriesMenu));
+  const anyOverflowItemOpen = series.slice(maxItems).some(({ series }) => series.equals(openedSeriesMenu));
   const isDummySeriesInOverflow = overflowItems.some(element => element.type === PlaceholderSeriesTile);
   const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
 
