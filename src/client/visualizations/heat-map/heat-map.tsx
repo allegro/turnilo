@@ -19,18 +19,17 @@ import { TooltipWithBounds, withTooltip, WithTooltipProps } from "@vx/tooltip";
 import { Dataset } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
+import { SortDirection } from "../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../common/models/split/split";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
-import { fillDataset, Sort, sortByValueDecreasing, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueIncreasing } from "../../utils/dataset/dataset";
-import { MousePosition } from "../../utils/mouse-position/mouse-position";
+import { fillDataset, Sort, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueDecreasing, sortByValueIncreasing } from "../../utils/dataset/dataset";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
-import { Split, SplitType } from "../../../common/models/split/split";
-import { SortDirection } from "../../../common/models/sort/sort";
 
 const splitToFillSort = (split: Split): Sort<any> => {
   const sort = split.sort;
@@ -55,20 +54,14 @@ const splitToFillSort = (split: Split): Sort<any> => {
 class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithTooltipProps<RectangleData>> {
   protected className = HEAT_MAP_MANIFEST.name;
   private container: HTMLDivElement | null = null;
-  private mouseHoverCoordinates = new MousePosition(window);
 
   handleRectangleHover = (tooltipData: RectangleData) => {
     setTimeout(() => {
       if (!this.container) {
         return;
       }
-      const { x, y } = this.mouseHoverCoordinates.getCoordinates();
-      const { top, left, right, bottom } = this.container.getBoundingClientRect();
-
-      if (!(left <= x && x <= right && top <= y && y <= bottom)) {
-        this.props.hideTooltip();
-        return;
-      }
+      const { x, y } = tooltipData;
+      const { top, left } = this.container.getBoundingClientRect();
 
       this.props.showTooltip({
         tooltipLeft: x - left,
@@ -99,7 +92,6 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
         essence={this.props.essence}
         handleRectangleHover={this.handleRectangleHover}
         hideTooltip={hideTooltip}
-        mouseHoverCoordinates={this.mouseHoverCoordinates}
       />
       {tooltipOpen && (
         <TooltipWithBounds

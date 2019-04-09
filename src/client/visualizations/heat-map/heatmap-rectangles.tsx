@@ -19,8 +19,8 @@ import { HeatmapRect } from "@vx/heatmap";
 import { scaleLinear } from "@vx/scale";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
+import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { SPLIT } from "../../config/constants";
-import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import { HeatMapRectangle } from "./heatmap-rectangle";
 import { HoveredHeatmapRectangle } from "./hovered-heatmap-rectangle";
 
@@ -37,6 +37,8 @@ export interface RectangleData {
   xLabel: string;
   yLabel: string;
   datum: Datum;
+  x: number;
+  y: number;
 }
 
 interface Props {
@@ -45,7 +47,6 @@ interface Props {
   measureName: string;
   leftLabelName: string;
   topLabelName: string;
-  mouseHoverCoordinates?: MousePosition;
   onHover?: (data: RectangleData) => void;
   onHoverStop?: () => void;
   hoveredRectangle: HoveredHeatmapRectangle;
@@ -53,48 +54,49 @@ interface Props {
 
 export class HeatMapRectangles extends React.Component<Props> {
   private rect: SVGRectElement | null = null;
-  private subscription: { unsubscribe(): void } = { unsubscribe() {} };
 
-  componentDidMount() {
+  handleMouseMove = (event: MouseEvent) => {
+    const { clientX: x, clientY: y } = event;
+
     const {
       onHoverStop = () => {},
       onHover = () => {},
       leftLabelName,
       topLabelName,
-      hoveredRectangle
+      hoveredRectangle,
+      dataset
     } = this.props;
 
     const {
-      dataset,
       xScale,
       yScale
     } = this.setup();
 
-    this.subscription = this.props.mouseHoverCoordinates.onChange(({ x, y }) => {
-      if (!this.rect) {
-        return;
-      }
-      const { top, bottom, left, right } = this.rect.getBoundingClientRect();
+    if (!this.rect) {
+      return;
+    }
+    const { top, bottom, left, right } = this.rect.getBoundingClientRect();
 
-      if ((y < top || y > bottom) || (x < left || x > right)) {
-        onHoverStop();
-        hoveredRectangle.clearHoveredRectangle();
-        return;
-      }
+    if ((y < top || y > bottom) || (x < left || x > right)) {
+      onHoverStop();
+      hoveredRectangle.clearHoveredRectangle();
+      return;
+    }
 
-      const xPosition = Math.floor(xScale.invert(x - left));
-      const yPosition = Math.floor(yScale.invert(y - top));
+    const xPosition = Math.floor(xScale.invert(x - left));
+    const yPosition = Math.floor(yScale.invert(y - top));
 
-      hoveredRectangle.setHoveredRectangle(xPosition, yPosition);
+    hoveredRectangle.setHoveredRectangle(xPosition, yPosition);
 
-      const hoveredBins = dataset[yPosition];
-      const hoveredBin = bins(hoveredBins)[xPosition];
+    const hoveredBins = dataset[yPosition];
+    const hoveredBin = bins(hoveredBins)[xPosition];
 
-      onHover({
-        datum: hoveredBin,
-        xLabel: hoveredBins[leftLabelName] as string,
-        yLabel: hoveredBin[topLabelName] as string
-      });
+    onHover({
+      datum: hoveredBin,
+      xLabel: hoveredBins[leftLabelName] as string,
+      yLabel: hoveredBin[topLabelName] as string,
+      x,
+      y
     });
   }
 
@@ -135,10 +137,6 @@ export class HeatMapRectangles extends React.Component<Props> {
       rectColorScale,
       tileSize
     };
-  }
-
-  componentWillUnmount() {
-    this.subscription.unsubscribe();
   }
 
   render() {
@@ -183,6 +181,7 @@ export class HeatMapRectangles extends React.Component<Props> {
               }}
             </HeatmapRect>
         </svg>
+        <GlobalEventListener mouseMove={this.handleMouseMove} />
       </div>
     );
   }

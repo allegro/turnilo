@@ -21,7 +21,6 @@ import { Essence } from "../../../common/models/essence/essence";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { Scroller } from "../../components/scroller/scroller";
 import { SPLIT } from "../../config/constants";
-import { MousePosition } from "../../utils/mouse-position/mouse-position";
 import "./heat-map.scss";
 import { HeatmapLabel } from "./heatmap-label";
 import { HeatMapRectangles, RectangleData } from "./heatmap-rectangles";
@@ -32,13 +31,12 @@ interface Props {
   dataset: Datum[];
   handleRectangleHover?(data: RectangleData): void;
   hideTooltip?(): void;
-  mouseHoverCoordinates?: MousePosition;
 }
 
 export class LabelledHeatmap extends React.PureComponent<Props> {
   private hoveredRectangle = new HoveredHeatmapRectangle();
   render() {
-    const { dataset, handleRectangleHover, hideTooltip, mouseHoverCoordinates } = this.props;
+    const { dataset, handleRectangleHover, hideTooltip } = this.props;
 
     const [measure] = this.props.essence.getEffectiveSelectedMeasures().toArray();
     const [firstSplit, secondSplit] = this.props.essence.splits.splits.toArray();
@@ -66,12 +64,12 @@ export class LabelledHeatmap extends React.PureComponent<Props> {
         }}
         topGutter={
           <div className="top-labels">
-            {topLabels.map((label, index) => <HeatmapLabel type="top" index={index} label={label} hoveredRectangle={this.hoveredRectangle} />)}
+            {topLabels.map((label, index) => <HeatmapLabel type="top" index={index} key={label} label={label} hoveredRectangle={this.hoveredRectangle} />)}
           </div>
         }
         leftGutter={
           <div className="left-labels">
-            {leftLabels.map((label, index) =>  <HeatmapLabel type="left" index={index} label={label} hoveredRectangle={this.hoveredRectangle} />)}
+            {leftLabels.map((label, index) =>  <HeatmapLabel type="left" index={index} key={label} label={label} hoveredRectangle={this.hoveredRectangle} />)}
           </div>
         }
         topLeftCorner={<div className="top-left-corner-mask" />}
@@ -80,7 +78,6 @@ export class LabelledHeatmap extends React.PureComponent<Props> {
             key="heatmap"
             onHover={handleRectangleHover}
             onHoverStop={hideTooltip}
-            mouseHoverCoordinates={mouseHoverCoordinates}
             dataset={dataset}
             measureName={measure.name}
             leftLabelName={firstSplit.reference}

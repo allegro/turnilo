@@ -52,7 +52,7 @@ export class HeatmapLabel extends React.Component<Props, State> {
     const { label } = this.props;
 
     return (
-      <span className={this.state.hovered ? "heatmap-label-hovered" : ""} key={label}><span>{label}</span></span>
+      <span className={this.state.hovered ? "heatmap-label-hovered" : ""}><span>{label}</span></span>
     );
   }
 }

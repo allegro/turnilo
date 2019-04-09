@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Dataset } from "plywood";
 import { SPLIT } from "../../config/constants";
 import "../../utils/test-utils";
-import { fillDataset, sortByValueDecreasing, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueIncreasing } from "./dataset";
+import { fillDataset, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueDecreasing, sortByValueIncreasing } from "./dataset";
 
 const rawDataset = {
     data: [
