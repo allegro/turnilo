@@ -26,7 +26,6 @@ interface Props {
 export class HeatMapRectangleRow extends React.PureComponent<Props> {
   render() {
     const { bins, hoveredBin } = this.props;
-    console.log("render");
     return (
       bins.map((bin, index) => (
         <rect

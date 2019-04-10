@@ -16,7 +16,7 @@
  */
 
 import { TooltipWithBounds, withTooltip, WithTooltipProps } from "@vx/tooltip";
-import memoize = require("lodash.memoize");
+import memoize = require("memoizee");
 import { Dataset } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";

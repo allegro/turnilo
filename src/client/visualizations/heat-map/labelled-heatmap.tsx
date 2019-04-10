@@ -42,7 +42,9 @@ export class LabelledHeatmap extends React.PureComponent<Props, State> {
   } as State;
 
   handleHover = (data: RectangleData) => {
-    this.setState({ hoveredRectangle: data });
+    if (!this.state.hoveredRectangle || this.state.hoveredRectangle.datum !== data.datum) {
+      this.setState({ hoveredRectangle: data });
+    }
     const { onHover = () => {} } = this.props;
     onHover(data);
   }
