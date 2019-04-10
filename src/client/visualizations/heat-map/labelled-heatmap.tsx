@@ -35,11 +35,13 @@ interface LabelledHeatmapProps {
 
 interface LabelledHeatmapState {
   hoveredRectangle: RectangleData | null;
+  maxLabelWidth: number;
 }
 
 export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, LabelledHeatmapState> {
   state: LabelledHeatmapState = {
-    hoveredRectangle: null
+    hoveredRectangle: null,
+    maxLabelWidth: 200
   };
 
   handleHover = (data: RectangleData) => {
@@ -56,9 +58,13 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
     onHoverStop();
   }
 
+  handleMaxLabelWidth = (maxLabelWidth: number) => {
+    this.setState({ maxLabelWidth: Math.min(maxLabelWidth, 200) });
+  }
+
   render() {
     const { dataset } = this.props;
-    const { hoveredRectangle } = this.state;
+    const { hoveredRectangle, maxLabelWidth } = this.state;
 
     const measure = this.props.essence.getEffectiveSelectedMeasures().first();
     const [firstSplit, secondSplit] = this.props.essence.splits.splits.slice(0, 2).toArray();
@@ -80,10 +86,10 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
           top: 120,
           right: 0,
           bottom: 0,
-          left: 200
+          left: maxLabelWidth
         }}
         topGutter={<HeatmapLabels orientation="top" labels={topLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.row : -1} />}
-        leftGutter={<HeatmapLabels orientation="left" labels={leftLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.column : -1}  />}
+        leftGutter={<HeatmapLabels orientation="left" labels={leftLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.column : -1} onMaxLabelSize={this.handleMaxLabelWidth} />}
         topLeftCorner={<div className="top-left-corner-mask" />}
         body={[
           <HeatMapRectangles

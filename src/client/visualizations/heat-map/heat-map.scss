@@ -63,6 +63,9 @@ $highlight-color: #ffdecc;
 
 .left-labels {
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 
   .heatmap-label-hovered {
     background: linear-gradient(to left, $highlight-color, #fff);
@@ -71,16 +74,15 @@ $highlight-color: #ffdecc;
 
 .left-labels > * {
   height: $heatmap-rectangle-size;
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 
   & > * {
-    box-sizing: border-box;
+    line-height: 1.5em;
     padding-left: 5px;
     padding-right: 5px;
-    width: $left-labels-width;
-    text-align: right;
-    flex-grow: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
