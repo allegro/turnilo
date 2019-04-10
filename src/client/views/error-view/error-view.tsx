@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +14,21 @@
  * limitations under the License.
  */
 
-import { Request, Response, Router } from "express";
+import * as React from "react";
+import "./error-view.scss";
 
-const router = Router();
+interface ErrorViewProps {
+  error: string;
+}
 
-router.post("/", (req: Request, res: Response) => {
-  const message = req.body.message;
-  if (!message || typeof message !== "string") {
-    res.status(400).send({
-      error: "Error must have a message"
-    });
-  } else {
-    console.error(`Client Error: ${JSON.stringify(req.body)}`);
-    res.send(`Error logged @ ${new Date().toISOString()}`);
-  }
-});
+const reload = () => window.location.reload();
 
-export const errorRouter = router;
+export const ErrorView: React.SFC<ErrorViewProps> = ({ error }) => {
+  return <div className="error-view">
+    <div className="error-view__container">
+      <div className="error-view__title">General error</div>
+      <div className="error-view__message">{error}</div>
+      <div className="error-view__reload" onClick={reload}>Reload view</div>
+    </div>
+  </div>;
+};

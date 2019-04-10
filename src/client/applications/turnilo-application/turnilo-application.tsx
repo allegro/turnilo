@@ -29,9 +29,11 @@ import { Notifications, Questions } from "../../components/notifications/notific
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
+import ErrorReporter from "../../utils/error-reporter/error-reporter";
 import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
 import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
+import { ErrorView } from "../../views/error-view/error-view";
 import { HomeView } from "../../views/home-view/home-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
 import "./turnilo-application.scss";
@@ -53,10 +55,12 @@ export interface TurniloApplicationState {
   viewHash?: string;
   showAboutModal?: boolean;
   cubeViewSupervisor?: ViewSupervisor;
+  error?: string;
 }
 
-export type ViewType = "home" | "cube" | "no-data";
+export type ViewType = "home" | "cube" | "no-data" | "general-error";
 
+const ERROR: ViewType = "general-error";
 export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
 export const NO_DATA: ViewType = "no-data";
@@ -79,8 +83,17 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       selectedItem: null,
       viewType: null,
       viewHash: null,
-      showAboutModal: false
+      showAboutModal: false,
+      error: null
     };
+  }
+
+  componentDidCatch(error: Error) {
+    ErrorReporter.captureError(error);
+    this.setState({
+      viewType: ERROR,
+      error: error.message
+    });
   }
 
   componentWillMount() {
@@ -184,7 +197,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   getViewTypeFromHash(hash: string): ViewType {
-    const { user } = this.props;
     const appSettings = this.state.appSettings || this.props.appSettings;
     const { dataCubes } = appSettings;
     const viewType = this.parseHash(hash)[0];
@@ -333,7 +345,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
   renderView() {
     const { maxFilters, user } = this.props;
-    const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor } = this.state;
+    const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor, error } = this.state;
     const { dataCubes, customization } = appSettings;
 
     switch (viewType) {
@@ -370,6 +382,9 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}
         />;
+
+      case ERROR:
+        return <ErrorView error={error}/>;
 
       default:
         throw new Error("unknown view");
