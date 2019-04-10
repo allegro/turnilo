@@ -17,7 +17,7 @@
 
 import * as Sentry from "@sentry/browser";
 
-class ErrorReporter {
+export default class ErrorReporter {
 
   static captureError(error: Error) {
     Sentry.captureException(error);
@@ -55,5 +55,3 @@ class ErrorReporter {
     };
   }
 }
-
-export default ErrorReporter;
