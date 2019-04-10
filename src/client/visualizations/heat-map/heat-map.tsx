@@ -33,6 +33,14 @@ import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
 
+export class HeatMap extends BaseVisualization<BaseVisualizationState> {
+  protected className = HEAT_MAP_MANIFEST.name;
+
+  renderInternals(dataset: Dataset) {
+    return <HeatmapWithTooltip {...this.props} dataset={dataset} />;
+  }
+}
+
 const memoizedFillDataset = memoize(fillDataset);
 
 const splitToFillOrder = memoize((split: Split): Order<any> => {
@@ -55,8 +63,7 @@ const splitToFillOrder = memoize((split: Split): Order<any> => {
   }
 });
 
-class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, TooltipProps<RectangleData>> {
-  protected className = HEAT_MAP_MANIFEST.name;
+export class UndecoratedHeatmapWithTooltip extends React.Component<VisualizationProps & TooltipProps<RectangleData> & { dataset: Dataset }> {
   private container: HTMLDivElement | null = null;
 
   handleRectangleHover = (tooltipData: RectangleData) => {
@@ -75,14 +82,15 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, Toolt
     }, 0);
   }
 
-  renderInternals(dataset: Dataset) {
+  render() {
     const {
       tooltipData,
       tooltipLeft,
       tooltipTop,
       tooltipOpen,
       hideTooltip,
-      essence
+      essence,
+      dataset
     } = this.props;
 
     const { timezone, series } = essence;
@@ -121,7 +129,7 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, Toolt
   }
 }
 
-export const HeatMap = withTooltip<VisualizationProps>(UndecoratedHeatMap, {
+export const HeatmapWithTooltip = withTooltip<VisualizationProps & { dataset: Dataset }>(UndecoratedHeatmapWithTooltip, {
   style: {
     position: "relative",
     height: "100%"
