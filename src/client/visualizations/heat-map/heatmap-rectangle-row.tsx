@@ -18,12 +18,12 @@
 import { Bin } from "@vx/heatmap";
 import * as React from "react";
 
-interface Props {
+interface HeatMapRectangleRowProps {
   bins: Bin[];
   hoveredBin: number;
 }
 
-export class HeatMapRectangleRow extends React.PureComponent<Props> {
+export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {
   render() {
     const { bins, hoveredBin } = this.props;
     return (

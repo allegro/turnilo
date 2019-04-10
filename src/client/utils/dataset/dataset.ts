@@ -20,9 +20,9 @@ import { Dataset, Datum, TimeRange } from "plywood";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SPLIT } from "../../config/constants";
 
-export type Sort<D> = (a: [string, number, D], b: [string, number, D]) => number;
+export type Order<D> = (a: [string, number, D], b: [string, number, D]) => number;
 
-export const sortByValueDecreasing: Sort<any> = ([_, countA], [__, countB]) => {
+export const orderByValueDecreasing: Order<any> = ([_, countA], [__, countB]) => {
   if (countA < countB) {
     return 1;
   }
@@ -34,14 +34,14 @@ export const sortByValueDecreasing: Sort<any> = ([_, countA], [__, countB]) => {
   return 0;
 };
 
-export const sortByValueIncreasing: Sort<any> = (a, b) => {
-  return -sortByValueDecreasing(a, b);
+export const orderByValueIncreasing: Order<any> = (a, b) => {
+  return -orderByValueDecreasing(a, b);
 };
 
-export const sortByTimeDimensionDecreasing: Sort<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
-export const sortByTimeDimensionIncreasing: Sort<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
+export const orderByTimeDimensionDecreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
+export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
 
-export const fillDataset = (dataset: Dataset, measureName: string, secondSplitName: string, sort: Sort<any>, timezone = Timezone.fromJS("Europe/Berlin")): Dataset => {
+export const fillDataset = (dataset: Dataset, measureName: string, secondSplitName: string, order: Order<any>, timezone: Timezone): Dataset => {
   const labels: { [index: string]: number } = {};
   const labelsToOriginalValues: { [index: string]: any } = {};
 
@@ -63,7 +63,7 @@ export const fillDataset = (dataset: Dataset, measureName: string, secondSplitNa
 
   const sortedLabels = Object.keys(labels)
     .map(label => [label, labels[label], labelsToOriginalValues[label]] as [string, number, any])
-    .sort(sort)
+    .sort(order)
     .map(([label]) => label);
 
   const newDataset = dataset.data.map(datum => {

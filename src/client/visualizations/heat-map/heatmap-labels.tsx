@@ -17,18 +17,18 @@
 
 import * as React from "react";
 
-interface Props {
+interface HeatmapLabelsProps {
   labels: string[];
-  type: "top" | "left";
+  orientation: "top" | "left";
   hoveredLabel: number;
 }
 
-export class HeatmapLabels extends React.Component<Props> {
+export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
   render() {
-    const { labels, type, hoveredLabel } = this.props;
+    const { labels, orientation, hoveredLabel } = this.props;
 
     return (
-      <div className={`${type}-labels`}>
+      <div className={`${orientation}-labels`}>
         {labels.map((label, index) => <span key={label} className={hoveredLabel === index ? "heatmap-label-hovered" : ""}><span>{label}</span></span>)}
       </div>
     );

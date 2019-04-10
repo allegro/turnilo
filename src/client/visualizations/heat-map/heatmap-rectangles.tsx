@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { HeatmapRect, HeatmapRectProps } from "@vx/heatmap";
+import { HeatmapRect } from "@vx/heatmap";
 import { scaleLinear } from "@vx/scale";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
@@ -26,10 +26,9 @@ import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
 const white = "#fff";
 const orange = "#ff5a00";
 
-// utils
-const max = (data: any, value = (d: any) => d) => Math.max(...data.map(value));
+const max = (data: any[], datumToNumber: (d: any) => number = (d: any) => d) =>
+  Math.max(...data.map(datumToNumber));
 
-// accessors
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
 export interface RectangleData {
@@ -42,7 +41,7 @@ export interface RectangleData {
   row: number;
 }
 
-interface Props {
+interface HeatMapRectanglesProps {
   dataset: Datum[];
   tileSize?: number;
   measureName: string;
@@ -53,7 +52,7 @@ interface Props {
   onHoverStop?: () => void;
 }
 
-export class HeatMapRectangles extends React.Component<Props> {
+export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
   private rect: HTMLDivElement | null = null;
 
   handleMouseMove = (event: MouseEvent) => {
@@ -110,7 +109,6 @@ export class HeatMapRectangles extends React.Component<Props> {
     const width = bucketSizeMax * tileSize;
     const height = dataLength * tileSize;
 
-    // scales
     const xScale = scaleLinear({
       domain: [0, bucketSizeMax],
       range: [0, width]

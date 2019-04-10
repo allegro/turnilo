@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { TooltipWithBounds, withTooltip, WithTooltipProps } from "@vx/tooltip";
+import { TooltipProps, TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import memoize = require("memoizee");
 import { Dataset } from "plywood";
 import * as React from "react";
@@ -26,35 +26,36 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
-import { fillDataset, Sort, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueDecreasing, sortByValueIncreasing } from "../../utils/dataset/dataset";
+import { fillDataset, Order, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "../../utils/dataset/dataset";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { formatSegment } from "../table/table";
 import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
 
 const memoizedFillDataset = memoize(fillDataset);
 
-const splitToFillSort = memoize((split: Split): Sort<any> => {
+const splitToFillOrder = memoize((split: Split): Order<any> => {
   const sort = split.sort;
   switch (split.type) {
     case SplitType.string:
     case SplitType.number:
     default:
       if (sort.direction === SortDirection.ascending) {
-        return sortByValueIncreasing;
+        return orderByValueIncreasing;
       } else {
-        return sortByValueDecreasing;
+        return orderByValueDecreasing;
       }
     case SplitType.time:
       if (sort.direction === SortDirection.ascending) {
-        return sortByTimeDimensionIncreasing;
+        return orderByTimeDimensionIncreasing;
       } else {
-        return sortByTimeDimensionDecreasing;
+        return orderByTimeDimensionDecreasing;
       }
   }
 });
 
-class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithTooltipProps<RectangleData>> {
+class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, TooltipProps<RectangleData>> {
   protected className = HEAT_MAP_MANIFEST.name;
   private container: HTMLDivElement | null = null;
 
@@ -85,13 +86,15 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
     } = this.props;
 
     const { timezone, series } = essence;
-    const measure = essence.getEffectiveSelectedMeasures().toArray()[0];
-    const [_, secondSplit] = essence.splits.splits.toArray();
+    const measure = essence.getEffectiveSelectedMeasures().first();
+    const secondSplit = essence.splits.splits.get(1);
+
     const preparedDataset = memoizedFillDataset(
       (dataset.data[0][SPLIT] as Dataset),
       measure.name,
       secondSplit.reference,
-      splitToFillSort(secondSplit)
+      splitToFillOrder(secondSplit),
+      timezone
     ).data;
 
     return <div ref={container => this.container = container} className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
@@ -109,7 +112,7 @@ class UndecoratedHeatMap extends BaseVisualization<BaseVisualizationState, WithT
           left={tooltipLeft}
         >
           <SegmentBubbleContent
-            title={`${formatValue(tooltipData.xLabel, timezone, { formatOnlyStartDate: true })} - ${formatValue(tooltipData.yLabel, timezone, { formatOnlyStartDate: true })}`}
+            title={`${formatSegment(tooltipData.xLabel, timezone)} - ${formatSegment(tooltipData.yLabel, timezone)}`}
             content={measure.formatDatum(tooltipData.datum, series.getSeries(measure.name).format)}
           />
         </TooltipWithBounds>

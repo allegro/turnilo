@@ -21,25 +21,26 @@ import { Essence } from "../../../common/models/essence/essence";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { Scroller } from "../../components/scroller/scroller";
 import { SPLIT } from "../../config/constants";
+import { formatSegment } from "../table/table";
 import "./heat-map.scss";
 import { HeatmapLabels } from "./heatmap-labels";
 import { HeatMapRectangles, RectangleData } from "./heatmap-rectangles";
 
-interface Props {
+interface LabelledHeatmapProps {
   essence: Essence;
   dataset: Datum[];
   onHover?(data: RectangleData): void;
   onHoverStop?(): void;
 }
 
-interface State {
+interface LabelledHeatmapState {
   hoveredRectangle: RectangleData | null;
 }
 
-export class LabelledHeatmap extends React.PureComponent<Props, State> {
-  state = {
+export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, LabelledHeatmapState> {
+  state: LabelledHeatmapState = {
     hoveredRectangle: null
-  } as State;
+  };
 
   handleHover = (data: RectangleData) => {
     if (!this.state.hoveredRectangle || this.state.hoveredRectangle.datum !== data.datum) {
@@ -59,18 +60,16 @@ export class LabelledHeatmap extends React.PureComponent<Props, State> {
     const { dataset } = this.props;
     const { hoveredRectangle } = this.state;
 
-    const [measure] = this.props.essence.getEffectiveSelectedMeasures().toArray();
-    const [firstSplit, secondSplit] = this.props.essence.splits.splits.toArray();
+    const measure = this.props.essence.getEffectiveSelectedMeasures().first();
+    const [firstSplit, secondSplit] = this.props.essence.splits.splits.slice(0, 2).toArray();
 
-    const leftLabels = dataset.map(datum => formatValue(
+    const leftLabels = dataset.map(datum => formatSegment(
       datum[firstSplit.reference],
-      this.props.essence.timezone,
-      { formatOnlyStartDate: true }
+      this.props.essence.timezone
     ));
-    const topLabels = (dataset[0][SPLIT] as Dataset).data.map(datum => formatValue(
+    const topLabels = (dataset[0][SPLIT] as Dataset).data.map(datum => formatSegment(
       datum[secondSplit.reference],
-      this.props.essence.timezone,
-      { formatOnlyStartDate: true }
+      this.props.essence.timezone
     ));
 
     return (
@@ -83,8 +82,8 @@ export class LabelledHeatmap extends React.PureComponent<Props, State> {
           bottom: 0,
           left: 200
         }}
-        topGutter={<HeatmapLabels type="top" labels={topLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.row : -1} />}
-        leftGutter={<HeatmapLabels type="left" labels={leftLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.column : -1}  />}
+        topGutter={<HeatmapLabels orientation="top" labels={topLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.row : -1} />}
+        leftGutter={<HeatmapLabels orientation="left" labels={leftLabels} hoveredLabel={hoveredRectangle ? hoveredRectangle.column : -1}  />}
         topLeftCorner={<div className="top-left-corner-mask" />}
         body={[
           <HeatMapRectangles

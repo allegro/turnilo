@@ -41,7 +41,7 @@ declare module "@vx/scale" {
 }
 
 declare module '@vx/tooltip' {
-  export interface WithTooltipProps<D> {
+  export interface TooltipProps<D> {
     tooltipOpen: boolean;
     tooltipLeft: number;
     tooltipTop: number;
@@ -51,7 +51,7 @@ declare module '@vx/tooltip' {
       args: { tooltipLeft: number; tooltipTop: number; tooltipData: D }
     ) => void;
   }
-  export const withTooltip: <P>(component: React.ComponentType<P & WithTooltipProps<any>>, options: any) => React.ComponentType<P>;
+  export const withTooltip: <P>(component: React.ComponentType<P & TooltipProps<any>>, options: any) => React.ComponentType<P>;
 
   interface TooltipWithBoundsProps {
     key: number | string;

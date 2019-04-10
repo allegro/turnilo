@@ -16,10 +16,11 @@
  */
 
 import { expect } from "chai";
+import { Timezone } from "chronoshift";
 import { Dataset } from "plywood";
 import { SPLIT } from "../../config/constants";
 import "../../utils/test-utils";
-import { fillDataset, sortByTimeDimensionDecreasing, sortByTimeDimensionIncreasing, sortByValueDecreasing, sortByValueIncreasing } from "./dataset";
+import { fillDataset, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "./dataset";
 
 const rawDataset = {
     data: [
@@ -543,24 +544,26 @@ const reversedDatasetWithTimeDimension = {
   ]
 } as any as Dataset;
 
+const timezone = Timezone.UTC;
+
 describe.only("Dataset", () => {
   it("works", () => {
-    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", sortByValueDecreasing).toJS())
+    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", orderByValueDecreasing, timezone).toJS())
       .to.deep.equal(Dataset.fromJS(expectedDataset.data[0][SPLIT] as Dataset).toJS());
   });
 
   it("works reversed", () => {
-    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", sortByValueIncreasing).toJS())
+    expect(fillDataset(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", orderByValueIncreasing, timezone).toJS())
       .to.deep.equal(Dataset.fromJS(expectedDatasetReversed.data[0][SPLIT] as Dataset).toJS());
   });
 
   it("works with time dimension", () => {
-    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", sortByTimeDimensionDecreasing).toJS())
+    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionDecreasing, timezone).toJS())
       .to.deep.equal(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
   });
 
   it("works when reversing time dimension", () => {
-    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", sortByTimeDimensionIncreasing).toJS())
+    expect(fillDataset(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionIncreasing, timezone).toJS())
     .to.deep.equal(Dataset.fromJS(reversedDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
   });
 });

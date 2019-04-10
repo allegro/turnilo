@@ -52,7 +52,7 @@ const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
-function formatSegment(value: any, timezone: Timezone): string {
+export function formatSegment(value: any, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
     return formatStartOfTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
