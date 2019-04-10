@@ -22,9 +22,7 @@ import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
 import "./polyfills";
-import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
-
-addErrorMonitor();
+import ErrorReporter from "./utils/error-reporter/error-reporter";
 
 const container = document.getElementsByClassName("app-container")[0];
 if (!container) throw new Error("container not found");
@@ -46,6 +44,8 @@ const config: Config = (window as any)["__CONFIG__"];
 if (!config || !config.version || !config.appSettings || !config.appSettings.dataCubes) {
   throw new Error("config not found");
 }
+
+ErrorReporter.init(config.appSettings.customization.sentryDSN);
 
 const version = config.version;
 
