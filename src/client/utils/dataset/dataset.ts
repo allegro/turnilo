@@ -41,7 +41,7 @@ export const orderByValueIncreasing: Order<any> = (a, b) => {
 export const orderByTimeDimensionDecreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
 export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
 
-export const fillDataset = (dataset: Dataset, measureName: string, secondSplitName: string, order: Order<any>, timezone: Timezone): Dataset => {
+export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: string, secondSplitName: string, order: Order<any>, timezone: Timezone): Dataset => {
   const labels: { [index: string]: number } = {};
   const labelsToOriginalValues: { [index: string]: any } = {};
 

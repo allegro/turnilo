@@ -26,7 +26,7 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
-import { fillDataset, Order, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "../../utils/dataset/dataset";
+import { fillDatasetWithMissingValues, Order, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "../../utils/dataset/dataset";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { formatSegment } from "../table/table";
 import "./heat-map.scss";
@@ -41,7 +41,7 @@ export class HeatMap extends BaseVisualization<BaseVisualizationState> {
   }
 }
 
-const memoizedFillDataset = memoize(fillDataset);
+const memoizedFillDatasetWithMissingValues = memoize(fillDatasetWithMissingValues);
 
 const splitToFillOrder = memoize((split: Split): Order<any> => {
   const sort = split.sort;
@@ -97,7 +97,7 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
     const measure = essence.getEffectiveSelectedMeasures().first();
     const secondSplit = essence.splits.splits.get(1);
 
-    const preparedDataset = memoizedFillDataset(
+    const preparedDataset = memoizedFillDatasetWithMissingValues(
       (dataset.data[0][SPLIT] as Dataset),
       measure.name,
       secondSplit.reference,
