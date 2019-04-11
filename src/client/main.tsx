@@ -22,7 +22,7 @@ import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
 import "./polyfills";
-import { init } from "./utils/error-reporter/error-reporter";
+import { init as errorReporterInit } from "./utils/error-reporter/error-reporter";
 
 const container = document.getElementsByClassName("app-container")[0];
 if (!container) throw new Error("container not found");
@@ -46,7 +46,7 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
 }
 
 if (config.appSettings.customization.sentryDSN) {
-  init(config.appSettings.customization.sentryDSN, config.version);
+  errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
 }
 
 const version = config.version;
