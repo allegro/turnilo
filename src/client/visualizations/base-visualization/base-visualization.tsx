@@ -27,7 +27,7 @@ import { GlobalEventListener } from "../../components/global-event-listener/glob
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
 import { classNames } from "../../utils/dom/dom";
-import ErrorReporter from "../../utils/error-reporter/error-reporter";
+import { reportError } from "../../utils/error-reporter/error-reporter";
 import "./base-visualization.scss";
 
 export interface BaseVisualizationState {
@@ -114,7 +114,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         err => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
-          ErrorReporter.captureError(err);
+          reportError(err);
           return error(err);
         })
 

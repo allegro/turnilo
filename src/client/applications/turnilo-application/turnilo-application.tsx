@@ -29,7 +29,7 @@ import { Notifications, Questions } from "../../components/notifications/notific
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
-import ErrorReporter from "../../utils/error-reporter/error-reporter";
+import { reportError } from "../../utils/error-reporter/error-reporter";
 import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
 import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
@@ -89,7 +89,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentDidCatch(error: Error) {
-    ErrorReporter.captureError(error);
+    reportError(error);
     this.setState({
       viewType: ERROR,
       error: error.message

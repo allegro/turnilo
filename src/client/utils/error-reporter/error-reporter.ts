@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,43 +14,12 @@
  * limitations under the License.
  */
 
-import * as Sentry from "@sentry/browser";
+import { captureException, init as initSentry } from "@sentry/browser";
 
-export default class ErrorReporter {
+export function reportError(error: Error) {
+  captureException(error);
+}
 
-  static captureError(error: Error) {
-    Sentry.captureException(error);
-  }
-
-  static captureMessage(msg: string, level = Sentry.Severity.Log) {
-    Sentry.captureMessage(msg, level);
-  }
-
-  static init(dsn: string) {
-    Sentry.init({ dsn });
-
-    window.onerror = (message, file, line, column, errorObject) => {
-
-      Sentry.captureException(new Error(message.toString()));
-
-      column = column || (window.event && (window.event as any).errorCharacter);
-      const stack = errorObject ? errorObject.stack : null;
-
-      const event: Sentry.Event = {
-        message: message.toString(),
-        extra: {
-          file,
-          line,
-          column,
-          stack,
-          hash: window.location.hash
-        }
-      };
-
-      Sentry.captureEvent(event);
-
-      // the error can still be triggered as usual, we just wanted to know what's happening on the client side
-      return false;
-    };
-  }
+export function init(dsn: string, release: string) {
+  initSentry({ dsn, release });
 }
