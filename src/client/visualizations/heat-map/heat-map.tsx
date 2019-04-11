@@ -15,6 +15,11 @@
  * limitations under the License.
  */
 
+// For some reason tsc compiler does not see this file.
+// Remove when issue is identified.
+// tslint:disable-next-line: no-reference
+/// <reference path="../../index.d.ts" />
+
 import { TooltipProps, TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import memoize = require("memoizee");
 import { Dataset } from "plywood";
