@@ -22,16 +22,19 @@
 
 import { TooltipProps, TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import memoize = require("memoizee");
-import { Dataset } from "plywood";
+import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
+import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues, Order, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "../../utils/dataset/dataset";
+import { JSXNode } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { formatSegment } from "../table/table";
 import "./heat-map.scss";
@@ -87,6 +90,22 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
     }, 0);
   }
 
+  renderDatum(datum: Datum, concreteSeries: ConcreteSeries): JSXNode {
+    if (!this.props.essence.hasComparison()) {
+      return concreteSeries.formatValue(datum);
+    }
+    const currentValue = concreteSeries.selectValue(datum);
+    const previousValue = concreteSeries.selectValue(datum, SeriesDerivation.PREVIOUS);
+    const formatter = concreteSeries.formatter();
+
+    return <MeasureBubbleContent
+      lowerIsBetter={concreteSeries.measure.lowerIsBetter}
+      formatter={formatter}
+      current={currentValue}
+      previous={previousValue}
+    />;
+  }
+
   render() {
     const {
       tooltipData,
@@ -126,7 +145,7 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
         >
           <SegmentBubbleContent
             title={`${formatSegment(tooltipData.xLabel, timezone)} - ${formatSegment(tooltipData.yLabel, timezone)}`}
-            content={concreteSeries.formatValue(tooltipData.datum)}
+            content={this.renderDatum(tooltipData.datum, concreteSeries)}
           />
         </TooltipWithBounds>
       )}
