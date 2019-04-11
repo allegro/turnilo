@@ -72,7 +72,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .build();
 
 export const HEAT_MAP_MANIFEST = new Manifest(
-  "heat-map",
+  "heatmap",
   "Heatmap",
   rulesEvaluator,
   "single"
