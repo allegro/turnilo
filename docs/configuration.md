@@ -763,7 +763,7 @@ These timezones will appear in the dropdown instead of the default, which are
 
 ### Sentry DSN
 
-Add you Sentry DSN to report errors to Sentry
+Add Sentry DSN to report errors to Sentry. [Sentry documentation](https://docs.sentry.io/platforms/javascript/?platform=browsernpm)
 
 ```yaml
 customization:
