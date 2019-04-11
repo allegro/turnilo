@@ -104,7 +104,7 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
 
     const preparedDataset = memoizedFillDatasetWithMissingValues(
       (dataset.data[0][SPLIT] as Dataset),
-      concreteSeries.measure.name,
+      concreteSeries.plywoodKey(),
       secondSplit.reference,
       splitToFillOrder(secondSplit),
       timezone

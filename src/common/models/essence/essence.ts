@@ -189,6 +189,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   static defaultSort(series: SeriesList, dataCube: DataCube): Sort {
     const reference = Essence.defaultSortReference(series, dataCube);
+    console.log(typeof reference);
     return new SeriesSort({ reference });
   }
 

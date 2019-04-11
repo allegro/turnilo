@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { Essence } from "../../models/essence/essence";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
+import { SplitType } from "../../models/split/split";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
@@ -43,14 +43,23 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
             }));
           }
         } else {
-          split = split.changeSort(Essence.defaultSort(series, dataCube));
+          if (split.type === SplitType.string) {
+            split = split.changeSort(new SeriesSort({
+              reference: series.series.first().reference,
+              direction: SortDirection.descending
+            }));
+          } else {
+            split = split.changeSort(new DimensionSort({
+              reference: splitDimension.name,
+              direction: SortDirection.descending
+            }));
+          }
           autoChanged = true;
         }
       }
 
-      // ToDo: review this
       if (!split.limit && splitDimension.kind !== "time") {
-        split = split.changeLimit(50);
+        split = split.changeLimit(25);
         autoChanged = true;
       }
 
@@ -66,5 +75,5 @@ export const HEAT_MAP_MANIFEST = new Manifest(
   "heat-map",
   "Heatmap",
   rulesEvaluator,
-  "multi"
+  "single"
 );

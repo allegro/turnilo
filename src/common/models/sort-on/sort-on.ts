@@ -25,6 +25,7 @@ export abstract class SortOn {
 
   static fromSort(sort: Sort, essence: Essence): SortOn {
     const { type, reference } = sort;
+    console.log(reference);
     switch (type) {
       case SortType.DIMENSION:
         const dimension = essence.dataCube.getDimension(reference);
@@ -32,6 +33,7 @@ export abstract class SortOn {
       case SortType.SERIES:
         const period = (sort as SeriesSort).period;
         const series = essence.findConcreteSeries(reference);
+        console.log(essence, series, essence.series.toJS());
         return new SeriesSortOn(series, period);
     }
   }
