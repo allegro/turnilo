@@ -22,6 +22,8 @@ $left-labels-width: 200px;
 $highlight-color: #ffdecc;
 
 .heatmap-container {
+  margin: 10px;
+
   .scroller {
     height: 100%;
   }
@@ -37,6 +39,18 @@ $highlight-color: #ffdecc;
 
   .heatmap-label-hovered span {
     background: linear-gradient(to right, $highlight-color, #fff);
+  }
+
+  &::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: '';
+    pointer-events: none;
+    box-shadow: inset -65px 0 50px -40px #fff;
+    border-radius: 2px;
   }
 }
 
@@ -65,9 +79,22 @@ $highlight-color: #ffdecc;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  height: 100%;
 
   .heatmap-label-hovered {
     background: linear-gradient(to left, $highlight-color, #fff);
+  }
+
+  &::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: '';
+    pointer-events: none;
+    box-shadow: inset 0 -65px 50px -40px #fff;
+    border-radius: 2px;
   }
 }
 
@@ -77,6 +104,7 @@ $highlight-color: #ffdecc;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-shrink: 0;
 
   & > * {
     line-height: 1.5em;
@@ -91,6 +119,23 @@ $highlight-color: #ffdecc;
 .top-left-corner-mask {
   height: 100%;
   background-color: #fff;
+}
+
+.heatmap-rectangles-container {
+  width: 100%;
+  height: 100%;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: '';
+    pointer-events: none;
+    box-shadow: inset -45px -45px 30px -30px #fff;
+    border-radius: 2px;
+  }
 }
 
 .heatmap-rectangle-hovered {

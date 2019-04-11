@@ -151,7 +151,7 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
     } = this.setup();
 
     return (
-      <div ref={rect => this.rect = rect}>
+      <div className="heatmap-rectangles-container" ref={rect => this.rect = rect}>
         <svg width={width} height={height}>
           <rect x={0} y={0} width={width} height={height} fill={white} />
             <HeatmapRect

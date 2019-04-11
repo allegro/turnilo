@@ -60,17 +60,20 @@ export const fillDataset = (dataset: Dataset, measureName: string, secondSplitNa
       }
     }
   }
-
   const sortedLabels = Object.keys(labels)
     .map(label => [label, labels[label], labelsToOriginalValues[label]] as [string, number, any])
     .sort(order)
     .map(([label]) => label);
 
   const newDataset = dataset.data.map(datum => {
-    const secondDataset = (datum[SPLIT] as Dataset).data;
+
+    const secondDatasetBySecondSplitName = (datum[SPLIT] as Dataset).data.reduce((acc, datum) => {
+      acc[formatValue(datum[secondSplitName], timezone)] = datum;
+      return acc;
+    }, {} as {[index: string]: Datum});
 
     const newSecondDataset = sortedLabels.map(label => {
-      const value = secondDataset.find(datum => formatValue(datum[secondSplitName], timezone) === label);
+      const value = secondDatasetBySecondSplitName[label];
 
       if (value) {
         return value;
