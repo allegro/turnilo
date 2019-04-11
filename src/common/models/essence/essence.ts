@@ -362,13 +362,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.filter.getClauseForDimension(timeDimension) as TimeFilterClause;
   }
 
-  /**
-   * @deprecated
-   */
-  public getEffectiveMeasures(): List<Measure> {
-    return this.series.series.map(({ reference }) => this.dataCube.getMeasure(reference));
-  }
-
   private concreteSeriesFromSeries(series: Series): ConcreteSeries {
     const { reference } = series;
     const { dataCube } = this;
@@ -404,8 +397,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return !this.colors.equals(other.colors);
   }
 
-  public newEffectiveMeasures(other: Essence): boolean {
-    return !this.getEffectiveMeasures().equals(other.getEffectiveMeasures());
+  public differentSeries(other: Essence): boolean {
+    return !this.series.equals(other.series);
   }
 
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, unfilterDimension: Dimension = null): boolean {
