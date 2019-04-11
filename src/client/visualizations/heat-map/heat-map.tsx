@@ -98,13 +98,13 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
       dataset
     } = this.props;
 
-    const { timezone, series } = essence;
-    const measure = essence.getEffectiveSelectedMeasures().first();
+    const { timezone } = essence;
+    const concreteSeries = essence.getConcreteSeries().first();
     const secondSplit = essence.splits.splits.get(1);
 
     const preparedDataset = memoizedFillDatasetWithMissingValues(
       (dataset.data[0][SPLIT] as Dataset),
-      measure.name,
+      concreteSeries.measure.name,
       secondSplit.reference,
       splitToFillOrder(secondSplit),
       timezone
@@ -126,7 +126,7 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
         >
           <SegmentBubbleContent
             title={`${formatSegment(tooltipData.xLabel, timezone)} - ${formatSegment(tooltipData.yLabel, timezone)}`}
-            content={measure.formatDatum(tooltipData.datum, series.getSeries(measure.name).format)}
+            content={concreteSeries.formatValue(tooltipData.datum)}
           />
         </TooltipWithBounds>
       )}
