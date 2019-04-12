@@ -29,7 +29,7 @@ import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
 
-type Visualisation = new(props: VisualizationProps) => BaseVisualization<BaseVisualizationState>;
+type Visualisation<S extends BaseVisualizationState = BaseVisualizationState> = new(props: VisualizationProps) => BaseVisualization<S>;
 
 const VIS_COMPONENTS: Record<string, Visualisation> = {
   [TOTALS_MANIFEST.name]: Totals,

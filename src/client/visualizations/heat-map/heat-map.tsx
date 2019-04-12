@@ -21,7 +21,6 @@
 /// <reference path="../../index.d.ts" />
 
 import { TooltipProps, TooltipWithBounds, withTooltip } from "@vx/tooltip";
-import memoize = require("memoizee");
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
@@ -49,17 +48,34 @@ import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
 
-export class HeatMap extends BaseVisualization<BaseVisualizationState> {
+type HeatmapState = BaseVisualizationState & { preparedDataset: Dataset };
+
+export class HeatMap extends BaseVisualization<HeatmapState> {
   protected className = HEAT_MAP_MANIFEST.name;
 
-  renderInternals(dataset: Dataset) {
-    return <HeatmapWithTooltip {...this.props} dataset={dataset} />;
+  renderInternals() {
+    return <HeatmapWithTooltip {...this.props} dataset={this.state.preparedDataset} />;
+  }
+
+  deriveDatasetState(dataset: Dataset): Partial<HeatmapState> {
+    const { essence } = this.props;
+    const { timezone } = essence;
+    const concreteSeries = essence.getConcreteSeries().first();
+    const secondSplit = essence.splits.splits.get(1);
+
+    const preparedDataset = fillDatasetWithMissingValues(
+      (dataset.data[0][SPLIT] as Dataset),
+      concreteSeries.plywoodKey(),
+      secondSplit.reference,
+      splitToFillOrder(secondSplit),
+      timezone
+    );
+
+    return { preparedDataset };
   }
 }
 
-const memoizedFillDatasetWithMissingValues = memoize(fillDatasetWithMissingValues);
-
-const splitToFillOrder = memoize((split: Split): Order<any> => {
+const splitToFillOrder = (split: Split): Order<any> => {
   const sort = split.sort;
   switch (split.type) {
     case SplitType.string:
@@ -82,7 +98,7 @@ const splitToFillOrder = memoize((split: Split): Order<any> => {
         return orderByNumberRangeDimensionDecreasing;
       }
   }
-});
+};
 
 export class UndecoratedHeatmapWithTooltip extends React.Component<VisualizationProps & TooltipProps<RectangleData> & { dataset: Dataset }> {
   private container: HTMLDivElement | null = null;
@@ -132,19 +148,10 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
 
     const { timezone } = essence;
     const concreteSeries = essence.getConcreteSeries().first();
-    const secondSplit = essence.splits.splits.get(1);
-
-    const preparedDataset = memoizedFillDatasetWithMissingValues(
-      (dataset.data[0][SPLIT] as Dataset),
-      concreteSeries.plywoodKey(),
-      secondSplit.reference,
-      splitToFillOrder(secondSplit),
-      timezone
-    ).data;
 
     return <div ref={container => this.container = container} className="internals heatmap-container" style={{ maxHeight: this.props.stage.height }}>
       <LabelledHeatmap
-        dataset={preparedDataset}
+        dataset={dataset.data}
         essence={this.props.essence}
         onHover={this.handleRectangleHover}
         onHoverStop={hideTooltip}
