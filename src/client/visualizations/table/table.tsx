@@ -29,6 +29,7 @@ import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/
 import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
+import { formatSegment } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { Delta } from "../../components/delta/delta";
@@ -38,7 +39,6 @@ import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./table.scss";
-import { formatSegment } from "../../../common/utils/formatter/formatter";
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
