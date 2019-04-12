@@ -18,16 +18,18 @@ import * as React from "react";
 import "./error-view.scss";
 
 interface ErrorViewProps {
-  error: string;
+  errorId: string;
 }
 
 const reload = () => window.location.reload();
 
-export const ErrorView: React.SFC<ErrorViewProps> = ({ error }) => {
+export const ErrorView: React.SFC<ErrorViewProps> = ({ errorId }) => {
   return <div className="error-view">
     <div className="error-view__container">
       <div className="error-view__title">General error</div>
-      <div className="error-view__message">{error}</div>
+      <div className="error-view__message">
+        Unexpected error occurred. We recorded it and assigned code: {errorId}.
+      </div>
       <div className="error-view__reload" onClick={reload}>Reload view</div>
     </div>
   </div>;

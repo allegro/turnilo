@@ -55,7 +55,7 @@ export interface TurniloApplicationState {
   viewHash?: string;
   showAboutModal?: boolean;
   cubeViewSupervisor?: ViewSupervisor;
-  error?: string;
+  errorId?: string;
 }
 
 export type ViewType = "home" | "cube" | "no-data" | "general-error";
@@ -84,15 +84,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       viewType: null,
       viewHash: null,
       showAboutModal: false,
-      error: null
+      errorId: null
     };
   }
 
   componentDidCatch(error: Error) {
-    reportError(error);
+    const errorId = reportError(error);
     this.setState({
       viewType: ERROR,
-      error: error.message
+      errorId
     });
   }
 
@@ -345,7 +345,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
   renderView() {
     const { maxFilters, user } = this.props;
-    const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor, error } = this.state;
+    const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
     switch (viewType) {
@@ -384,7 +384,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
         />;
 
       case ERROR:
-        return <ErrorView error={error}/>;
+        return <ErrorView errorId={errorId} />;
 
       default:
         throw new Error("unknown view");

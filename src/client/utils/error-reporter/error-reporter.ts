@@ -16,8 +16,8 @@
 
 import { captureException, init as initSentry } from "@sentry/browser";
 
-export function reportError(error: Error) {
-  captureException(error);
+export function reportError(error: Error): string {
+  return captureException(error);
 }
 
 export function init(dsn: string, release: string) {
