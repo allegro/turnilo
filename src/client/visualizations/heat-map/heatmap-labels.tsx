@@ -37,13 +37,8 @@ export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
       onMaxLabelSize = () => {}
     } = this.props;
 
-    const maxWidth = Array.from(this.container.querySelectorAll("span > span")).reduce((maxWidth, element: HTMLSpanElement) => {
-      if (element.offsetWidth > maxWidth) {
-        return element.offsetWidth;
-      }
-
-      return maxWidth;
-    }, 0);
+    const maxWidth = Array.from(this.container.querySelectorAll(".heatmap-label"))
+      .reduce((maxWidth, element: HTMLSpanElement) => Math.max(element.offsetWidth, maxWidth), 0);
 
     onMaxLabelSize(maxWidth + 10 /* consider elements padding */);
   }
@@ -53,8 +48,8 @@ export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
 
     return (
       <div ref={container => this.container = container} className={`${orientation}-labels`}>
-        {labels.map((label, index) => <span key={label} className={hoveredLabel === index ? "heatmap-label-hovered" : ""}>
-          <span style={labelSize ? { width: labelSize } : undefined}>{label}</span>
+        {labels.map((label, index) => <span key={label} className={`heatmap-label-wrapper ${hoveredLabel === index ? "heatmap-label-hovered" : ""}`}>
+          <span className="heatmap-label" style={labelSize ? { width: labelSize } : undefined}>{label}</span>
         </span>)}
       </div>
     );
