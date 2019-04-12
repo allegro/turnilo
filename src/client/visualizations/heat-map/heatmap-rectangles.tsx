@@ -86,7 +86,14 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
     const yPosition = Math.floor(yScale.invert(y - top));
 
     const hoveredBins = dataset[yPosition];
+    if (!hoveredBins) {
+      return;
+    }
+
     const hoveredBin = bins(hoveredBins)[xPosition];
+    if (!hoveredBin) {
+      return;
+    }
 
     onHover({
       datum: hoveredBin,
