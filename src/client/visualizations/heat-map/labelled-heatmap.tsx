@@ -72,11 +72,12 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
   }
 
   render() {
-    const { dataset } = this.props;
+    const { dataset, essence } = this.props;
     const { hoveredRectangle, leftLabelsWidth, topLabelsHeight } = this.state;
 
-    const measure = this.props.essence.getConcreteSeries().first().measure;
-    const [firstSplit, secondSplit] = this.props.essence.splits.splits.slice(0, 2).toArray();
+    const measure = essence.getConcreteSeries().first().measure;
+    const firstSplit = essence.splits.splits.get(0);
+    const secondSplit = essence.splits.splits.get(1);
 
     const leftLabels = dataset.map(datum => formatSegment(
       datum[firstSplit.reference],
