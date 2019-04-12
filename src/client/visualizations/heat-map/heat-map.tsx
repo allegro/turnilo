@@ -33,7 +33,16 @@ import { formatSegment } from "../../../common/utils/formatter/formatter";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
-import { fillDatasetWithMissingValues, Order, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "../../utils/dataset/dataset";
+import {
+  fillDatasetWithMissingValues,
+  Order,
+  orderByNumberRangeDimensionDecreasing,
+  orderByNumberRangeDimensionIncreasing,
+  orderByTimeDimensionDecreasing,
+  orderByTimeDimensionIncreasing,
+  orderByValueDecreasing,
+  orderByValueIncreasing
+} from "../../utils/dataset/dataset";
 import { JSXNode } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
@@ -54,7 +63,6 @@ const splitToFillOrder = memoize((split: Split): Order<any> => {
   const sort = split.sort;
   switch (split.type) {
     case SplitType.string:
-    case SplitType.number:
     default:
       if (sort.direction === SortDirection.ascending) {
         return orderByValueIncreasing;
@@ -66,6 +74,12 @@ const splitToFillOrder = memoize((split: Split): Order<any> => {
         return orderByTimeDimensionIncreasing;
       } else {
         return orderByTimeDimensionDecreasing;
+      }
+    case SplitType.number:
+      if (sort.direction === SortDirection.ascending) {
+        return orderByNumberRangeDimensionIncreasing;
+      } else {
+        return orderByNumberRangeDimensionDecreasing;
       }
   }
 });

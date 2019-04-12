@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Dataset, Datum, TimeRange } from "plywood";
+import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SPLIT } from "../../config/constants";
 
@@ -38,8 +38,11 @@ export const orderByValueIncreasing: Order<any> = (a, b) => {
   return -orderByValueDecreasing(a, b);
 };
 
-export const orderByTimeDimensionDecreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
-export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
+export const orderByTimeDimensionDecreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
+export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
+
+export const orderByNumberRangeDimensionDecreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
+export const orderByNumberRangeDimensionIncreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
 
 export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: string, secondSplitName: string, order: Order<any>, timezone: Timezone): Dataset => {
   const labels: { [index: string]: number } = {};

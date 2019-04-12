@@ -20,8 +20,15 @@ import { Timezone } from "chronoshift";
 import { Dataset } from "plywood";
 import { SPLIT } from "../../config/constants";
 import "../../utils/test-utils";
-import { fillDatasetWithMissingValues, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "./dataset";
-import { expectedDataset, expectedDatasetReversed, rawDataset, rawDatasetWithTimeDimension, reversedDatasetWithTimeDimension } from "./test-fixtures";
+import {
+  fillDatasetWithMissingValues,
+  orderByNumberRangeDimensionIncreasing,
+  orderByTimeDimensionDecreasing,
+  orderByTimeDimensionIncreasing,
+  orderByValueDecreasing,
+  orderByValueIncreasing
+} from "./dataset";
+import { expectedDataset, expectedDatasetReversed, rawDataset, rawDatasetWithTimeDimension, rawDataWithNumberRanges, reversedDatasetWithTimeDimension } from "./test-fixtures";
 
 const timezone = Timezone.UTC;
 
@@ -37,12 +44,17 @@ describe.only("Dataset", () => {
   });
 
   it("works with time dimension", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionDecreasing, timezone).toJS())
+    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionIncreasing, timezone).toJS())
       .to.deep.equal(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
   });
 
   it("works when reversing time dimension", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionIncreasing, timezone).toJS())
+    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionDecreasing, timezone).toJS())
     .to.deep.equal(Dataset.fromJS(reversedDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
+  });
+
+  it("works with number ranges", () => {
+    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDataWithNumberRanges.data[0][SPLIT] as Dataset), "added", "deltaBucket100", orderByNumberRangeDimensionIncreasing, timezone).toJS())
+    .to.deep.equal(Dataset.fromJS(rawDataWithNumberRanges.data[0][SPLIT] as Dataset).toJS());
   });
 });

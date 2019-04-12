@@ -16,6 +16,7 @@
  */
 
 import { Dataset } from "plywood";
+import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
 export const rawDataset = {
   data: [
@@ -537,4 +538,462 @@ data: [
       }
   }
 ]
+} as any as Dataset;
+
+export const rawDataWithNumberRanges = {
+     data: [
+        {
+           added: 9385573,
+           SPLIT: {
+             type: "DATASET",
+              data: [
+                 {
+                    channel: "en",
+                    added: 3045299,
+                    SPLIT: {
+                      type: "DATASET",
+                       data: [
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -500,
+                                end: -490
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -400,
+                                end: -390
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -300,
+                                end: -290
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -200,
+                                end: -190
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -100,
+                                end: -90
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 0,
+                                end: 10
+                             },
+                             added: 130552
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 100,
+                                end: 110
+                             },
+                             added: 107398
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 200,
+                                end: 210
+                             },
+                             added: 108905
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 300,
+                                end: 310
+                             },
+                             added: 94440
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 400,
+                                end: 410
+                             },
+                             added: 91709
+                          }
+                       ]
+                    }
+                 },
+                 {
+                    channel: "it",
+                    added: 711011,
+                    SPLIT: {
+                      type: "DATASET",
+                       data: [
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -500,
+                                end: -490
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -400,
+                                end: -390
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -300,
+                                end: -290
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -200,
+                                end: -190
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -100,
+                                end: -90
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 0,
+                                end: 10
+                             },
+                             added: 11798
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 100,
+                                end: 110
+                             },
+                             added: 12373
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 200,
+                                end: 210
+                             },
+                             added: 9774
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 300,
+                                end: 310
+                             },
+                             added: 6793
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 400,
+                                end: 410
+                             },
+                             added: 4435
+                          }
+                       ]
+                    }
+                 },
+                 {
+                    channel: "fr",
+                    added: 642555,
+                    SPLIT: {
+                      type: "DATASET",
+                       data: [
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -500,
+                                end: -490
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -400,
+                                end: -390
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -300,
+                                end: -290
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -200,
+                                end: -190
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -100,
+                                end: -90
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 0,
+                                end: 10
+                             },
+                             added: 26870
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 100,
+                                end: 110
+                             },
+                             added: 24478
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 200,
+                                end: 210
+                             },
+                             added: 16030
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 300,
+                                end: 310
+                             },
+                             added: 26297
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 400,
+                                end: 410
+                             },
+                             added: 18407
+                          }
+                       ]
+                    }
+                 },
+                 {
+                    channel: "ru",
+                    added: 640698,
+                    SPLIT: {
+                      type: "DATASET",
+                       data: [
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -500,
+                                end: -490
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -400,
+                                end: -390
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -300,
+                                end: -290
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -200,
+                                end: -190
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -100,
+                                end: -90
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 0,
+                                end: 10
+                             },
+                             added: 16167
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 100,
+                                end: 110
+                             },
+                             added: 15742
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 200,
+                                end: 210
+                             },
+                             added: 18279
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 300,
+                                end: 310
+                             },
+                             added: 18903
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 400,
+                                end: 410
+                             },
+                             added: 13771
+                          }
+                       ]
+                    }
+                 },
+                 {
+                    channel: "es",
+                    added: 634670,
+                    SPLIT: {
+                      type: "DATASET",
+                       data: [
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -500,
+                                end: -490
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -400,
+                                end: -390
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -300,
+                                end: -290
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -200,
+                                end: -190
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: -100,
+                                end: -90
+                             },
+                             added: 0
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 0,
+                                end: 10
+                             },
+                             added: 13295
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 100,
+                                end: 110
+                             },
+                             added: 9040
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 200,
+                                end: 210
+                             },
+                             added: 7036
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 300,
+                                end: 310
+                             },
+                             added: 12354
+                          },
+                          {
+                             deltaBucket100: {
+                                type: "NUMBER_RANGE",
+                                start: 400,
+                                end: 410
+                             },
+                             added: 8943
+                          }
+                       ]
+                    }
+                 }
+              ]
+           }
+        }
+      ]
 } as any as Dataset;
