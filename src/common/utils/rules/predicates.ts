@@ -28,7 +28,7 @@ export class Predicates {
     return ({ splits }) => splits.length() !== expected;
   }
 
-  public static numberOfMeasuresIsNot(expected: number): VisualizationDependentPredicate {
+  public static numberOfSeriesIsNot(expected: number): VisualizationDependentPredicate {
     return ({ series }) => series.count() !== expected;
   }
 

@@ -132,8 +132,4 @@ export class Dimensions {
   toJS(): DimensionOrGroupJS[] {
     return this.dimensions.map(dimensionOrGroup => dimensionOrGroup.toJS());
   }
-
-  slice(begin: number, end?: number): Dimensions {
-    return new Dimensions(this.dimensions.slice(begin, end));
-  }
 }

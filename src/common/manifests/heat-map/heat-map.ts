@@ -30,7 +30,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     "Heatmap needs exactly 2 splits",
     variables.splits.length() > 2 ? suggestRemovingSplits(variables) : suggestAddingSplits(variables)
   ))
-  .when(Predicates.numberOfMeasuresIsNot(1))
+  .when(Predicates.numberOfSeriesIsNot(1))
   .then(variables => Resolve.manual(
     3,
     "Heatmap needs exactly 1 measure",
