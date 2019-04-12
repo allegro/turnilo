@@ -17,7 +17,8 @@
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
-import { SplitType } from "../../models/split/split";
+import { Split, SplitType } from "../../models/split/split";
+import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
@@ -68,7 +69,19 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     return autoChanged ? Resolve.automatic(10, { splits: newSplits }) : Resolve.ready(10);
   })
-  .otherwise(() => Resolve.manual(3, "This visualization needs exactly 2 splits", []))
+  .otherwise(({ dataCube, splits }) => Resolve.manual(
+    3,
+    "Heatmap needs exactly 2 splits",
+    dataCube.dimensions
+      .filterDimensions(dimension => !splits.hasSplitOn(dimension))
+      .slice(0, 2)
+      .map(dimension => ({
+        description: `Add ${dimension.title} split`,
+        adjustment: {
+          splits: splits.addSplit(Split.fromDimension(dimension))
+        }
+      }))
+    ))
   .build();
 
 export const HEAT_MAP_MANIFEST = new Manifest(

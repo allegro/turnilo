@@ -57,7 +57,6 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
 
   handleMouseMove = (event: MouseEvent) => {
     const { clientX: x, clientY: y } = event;
-
     const {
       onHoverStop = () => {},
       onHover = () => {},
@@ -151,8 +150,8 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
     } = this.setup();
 
     return (
-      <div className="heatmap-rectangles-container" ref={rect => this.rect = rect}>
-        <svg width={width} height={height}>
+      <div className="heatmap-rectangles-container">
+        <svg width={width} height={height} ref={rect => this.rect = rect as any}>
           <rect x={0} y={0} width={width} height={height} fill={white} />
             <HeatmapRect
               bins={bins}
