@@ -21,11 +21,15 @@ import { VisualizationIndependentPredicate } from "./visualization-independent-e
 
 export class Predicates {
   public static noSplits(): VisualizationDependentPredicate {
-    return Predicates.numberOfSplitsIs(0);
+    return ({ splits }) => splits.length() === 0;
   }
 
-  public static numberOfSplitsIs(expected: number): VisualizationDependentPredicate {
-    return ({ splits }) => splits.length() === expected;
+  public static numberOfSplitsIsNot(expected: number): VisualizationDependentPredicate {
+    return ({ splits }) => splits.length() !== expected;
+  }
+
+  public static numberOfMeasuresIsNot(expected: number): VisualizationDependentPredicate {
+    return ({ series }) => series.count() !== expected;
   }
 
   public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {

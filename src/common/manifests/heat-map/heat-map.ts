@@ -16,15 +16,59 @@
  */
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { MeasureSeries } from "../../models/series/measure-series";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
-import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
-  .when(Predicates.numberOfSplitsIs(2))
-  .then(({ splits, dataCube, series }) => {
+  .when(Predicates.numberOfSplitsIsNot(2))
+  .then(({ dataCube, splits }) => Resolve.manual(
+    3,
+    "Heatmap needs exactly 2 splits",
+    splits.length() > 2 ?
+    splits.splits
+      .slice(-2)
+      .toArray()
+      .map(split => ({
+        description: `Remove ${dataCube.dimensions.getDimensionByName(split.reference).title} split`,
+        adjustment: {
+          splits: splits.removeSplit(split)
+        }
+      }))
+    : dataCube.dimensions
+      .filterDimensions(dimension => !splits.hasSplitOn(dimension))
+      .slice(0, 2)
+      .map(dimension => ({
+        description: `Add ${dimension.title} split`,
+        adjustment: {
+          splits: splits.addSplit(Split.fromDimension(dimension))
+        }
+      }))
+  ))
+  .when(Predicates.numberOfMeasuresIsNot(1))
+  .then(({ series, dataCube }) => Resolve.manual(
+    3,
+    "Heatmap needs exactly 1 measure",
+    series.series.size === 0 ?
+    [{
+      description: `Add measure ${dataCube.measures.first().title}`,
+      adjustment: {
+        series: series.addSeries(MeasureSeries.fromMeasure(dataCube.measures.first()))
+      }
+    }]
+    : series.series
+      .slice(-2)
+      .toArray()
+      .map(singleSeries => ({
+        description: `Remove ${dataCube.getMeasure(singleSeries.reference).title} measure`,
+        adjustment: {
+          series: series.removeSeries(singleSeries)
+        }
+      }))
+  ))
+  .otherwise(({ splits, dataCube, series }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(split.reference);
@@ -69,19 +113,6 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     return autoChanged ? Resolve.automatic(10, { splits: newSplits }) : Resolve.ready(10);
   })
-  .otherwise(({ dataCube, splits }) => Resolve.manual(
-    3,
-    "Heatmap needs exactly 2 splits",
-    dataCube.dimensions
-      .filterDimensions(dimension => !splits.hasSplitOn(dimension))
-      .slice(0, 2)
-      .map(dimension => ({
-        description: `Add ${dimension.title} split`,
-        adjustment: {
-          splits: splits.addSplit(Split.fromDimension(dimension))
-        }
-      }))
-    ))
   .build();
 
 export const HEAT_MAP_MANIFEST = new Manifest(
