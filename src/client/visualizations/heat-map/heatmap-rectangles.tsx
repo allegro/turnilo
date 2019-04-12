@@ -26,8 +26,10 @@ import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
 const white = "#fff";
 const orange = "#ff5a00";
 
-const max = (data: any[], datumToNumber: (d: any) => number = (d: any) => d) =>
+const max = (data: any[], datumToNumber: (d: any) => number) =>
   Math.max(...data.map(datumToNumber));
+const min = (data: any[], datumToNumber: (d: any) => number) =>
+  Math.min(...data.map(datumToNumber));
 
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
@@ -101,6 +103,7 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
     const { tileSize = 25, dataset, measureName, hoveredRectangle } = this.props;
     const count = (d: Datum) => d[measureName] as number;
 
+    const colorMin = min(dataset, d => min(bins(d), count));
     const colorMax = max(dataset, d => max(bins(d), count));
     const bucketSizeMax = max(dataset, d => bins(d).length);
     const dataLength = dataset.length;
@@ -120,7 +123,7 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
 
     const rectColorScale = scaleLinear({
       range: [white, orange],
-      domain: [0, colorMax]
+      domain: [Math.min(colorMin, 0), colorMax]
     });
 
     return {

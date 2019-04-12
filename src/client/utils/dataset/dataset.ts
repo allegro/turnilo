@@ -76,7 +76,10 @@ export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: stri
       const value = secondDatasetBySecondSplitName[label];
 
       if (value) {
-        return value;
+        return {
+          ...value,
+          [measureName]: Number.isNaN(Number(value[measureName])) ? 0 : value[measureName]
+        };
       } else {
         return {
           [secondSplitName]: labelsToOriginalValues[label],
