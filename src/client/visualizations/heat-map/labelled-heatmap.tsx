@@ -18,13 +18,12 @@
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { formatValue } from "../../../common/utils/formatter/formatter";
 import { Scroller } from "../../components/scroller/scroller";
 import { SPLIT } from "../../config/constants";
-import { formatSegment } from "../table/table";
 import "./heat-map.scss";
 import { HeatmapLabels } from "./heatmap-labels";
 import { HeatMapRectangles, RectangleData } from "./heatmap-rectangles";
+import { formatSegment } from "../../../common/utils/formatter/formatter";
 
 interface LabelledHeatmapProps {
   essence: Essence;

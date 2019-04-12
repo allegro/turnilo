@@ -29,17 +29,16 @@ import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { formatValue } from "../../../common/utils/formatter/formatter";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues, Order, orderByTimeDimensionDecreasing, orderByTimeDimensionIncreasing, orderByValueDecreasing, orderByValueIncreasing } from "../../utils/dataset/dataset";
 import { JSXNode } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
-import { formatSegment } from "../table/table";
 import "./heat-map.scss";
 import { RectangleData } from "./heatmap-rectangles";
 import { LabelledHeatmap } from "./labelled-heatmap";
+import { formatSegment } from "../../../common/utils/formatter/formatter";
 
 export class HeatMap extends BaseVisualization<BaseVisualizationState> {
   protected className = HEAT_MAP_MANIFEST.name;

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { List, Set } from "immutable";
-import { Dataset, Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
+import { Dataset, Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DateRange } from "../../../common/models/date-range/date-range";
@@ -30,10 +29,8 @@ import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/
 import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
-import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
-import { formatStartOfTimeRange } from "../../../common/utils/time/time";
 import { Delta } from "../../components/delta/delta";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
@@ -41,6 +38,7 @@ import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./table.scss";
+import { formatSegment } from "../../../common/utils/formatter/formatter";
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
@@ -51,15 +49,6 @@ const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
-
-export function formatSegment(value: any, timezone: Timezone): string {
-  if (TimeRange.isTimeRange(value)) {
-    return formatStartOfTimeRange(value, timezone);
-  } else if (NumberRange.isNumberRange(value)) {
-    return formatNumberRange(value);
-  }
-  return String(value);
-}
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const splitNesting = flatDatum["__nest"];
