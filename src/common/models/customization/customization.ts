@@ -29,6 +29,7 @@ export interface CustomizationValue {
   timezones?: Timezone[];
   logoutHref?: string;
   urlShortener?: UrlShortener;
+  sentryDSN?: string;
 }
 
 export interface CustomizationJS {
@@ -39,6 +40,7 @@ export interface CustomizationJS {
   timezones?: string[];
   logoutHref?: string;
   urlShortener?: UrlShortenerDef;
+  sentryDSN?: string;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -76,7 +78,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       title: parameters.title,
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
-      logoutHref: parameters.logoutHref
+      logoutHref: parameters.logoutHref,
+      sentryDSN: parameters.sentryDSN
     };
 
     var paramViewsJS = parameters.externalViews;
@@ -107,6 +110,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public title: string;
   public logoutHref: string;
   public urlShortener: UrlShortener;
+  public sentryDSN: string;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -116,6 +120,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (parameters.timezones) this.timezones = parameters.timezones;
     this.logoutHref = parameters.logoutHref;
     if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
+    if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
   }
 
   public valueOf(): CustomizationValue {
@@ -126,13 +131,15 @@ export class Customization implements Instance<CustomizationValue, Customization
       externalViews: this.externalViews,
       timezones: this.timezones,
       urlShortener: this.urlShortener,
-      logoutHref: this.logoutHref
+      logoutHref: this.logoutHref,
+      sentryDSN: this.sentryDSN
     };
   }
 
   public toJS(): CustomizationJS {
     var js: CustomizationJS = {};
     if (this.title) js.title = this.title;
+    if (this.sentryDSN) js.sentryDSN = this.sentryDSN;
     if (this.headerBackground) js.headerBackground = this.headerBackground;
     if (this.customLogoSvg) js.customLogoSvg = this.customLogoSvg;
     if (this.externalViews) {
@@ -165,6 +172,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       (!this.urlShortener || this.urlShortener.equals(other.urlShortener)) &&
       immutableArraysEqual(this.externalViews, other.externalViews) &&
       immutableArraysEqual(this.timezones, other.timezones) &&
+      this.sentryDSN === other.sentryDSN &&
       this.logoutHref === other.logoutHref;
   }
 
