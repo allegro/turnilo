@@ -32,7 +32,7 @@ import { expectedDataset, expectedDatasetReversed, rawDataset, rawDatasetWithTim
 
 const timezone = Timezone.UTC;
 
-describe.only("Dataset", () => {
+describe("Dataset", () => {
   it("works", () => {
     expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", orderByValueDecreasing, timezone).toJS())
       .to.deep.equal(Dataset.fromJS(expectedDataset.data[0][SPLIT] as Dataset).toJS());
