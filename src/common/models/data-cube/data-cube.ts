@@ -50,7 +50,7 @@ import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
-import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
+import { SeriesSort, Sort, SortDirection } from "../sort/sort";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -1012,14 +1012,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   public changeMeasures(measures: List<Measure>) {
     return this.change("measures", measures);
-  }
-
-  public getDefaultSortExpression(): Sort {
-    return new Sort({
-      type: SortReferenceType.MEASURE,
-      reference: this.defaultSortMeasure,
-      direction: SortDirection.descending
-    });
   }
 
   public sameGroup(otherDataCube: DataCube): boolean {

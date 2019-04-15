@@ -15,35 +15,38 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
-import { Essence } from "../../../common/models/essence/essence";
-import { Series, SeriesFormat } from "../../../common/models/series/series";
+import { Measure } from "../../../common/models/measure/measure";
+import { ExpressionSeries } from "../../../common/models/series/expression-series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
-import { FormatPicker } from "./format-picker";
+import { MeasureSeriesMenu } from "./measure-series-menu";
+import { PercentOfSeriesMenu } from "./percent-of-series-menu";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
-  clicker: Clicker;
-  essence: Essence;
-  openOn: Element;
+  saveSeries: Unary<Series, void>;
+  measure: Measure;
   containerStage: Stage;
   onClose: Fn;
-  series: Series;
-  inside?: Element;
+  initialSeries: Series;
+  openOn: Element;
 }
 
 interface SeriesMenuState {
-  format: SeriesFormat;
+  series: Series;
+  isValid: boolean;
 }
 
 export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState> {
 
-  state: SeriesMenuState = { format: this.props.series.format };
+  state: SeriesMenuState = { series: this.props.initialSeries, isValid: true };
 
   componentDidMount() {
     window.addEventListener("keydown", this.globalKeyDownListener);
@@ -55,35 +58,29 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
 
   globalKeyDownListener = (e: KeyboardEvent) => enterKey(e) && this.onOkClick();
 
-  saveFormat = (format: SeriesFormat) => this.setState({ format });
+  saveSeries = (series: Series, isValid: boolean) => this.setState({ series, isValid });
 
   onCancelClick = () => this.props.onClose();
 
   onOkClick = () => {
     if (!this.validate()) return;
-    const { series: originalSeries, clicker, essence, onClose } = this.props;
-    const series = this.constructSeries();
-    clicker.changeSeriesList(essence.series.replaceSeries(originalSeries, series));
+    const { saveSeries, onClose } = this.props;
+    const { series } = this.state;
+    saveSeries(series);
     onClose();
   }
 
   validate() {
-    const series = this.constructSeries();
-    return !this.props.series.equals(series);
-  }
-
-  private constructSeries() {
-    const { series } = this.props;
-    const { format } = this.state;
-    return series.set("format", format);
+    const { initialSeries } = this.props;
+    const { isValid, series } = this.state;
+    return isValid && !initialSeries.equals(series);
   }
 
   render() {
-    const { essence: { dataCube }, containerStage, openOn, series, onClose, inside } = this.props;
-    const { format } = this.state;
-    const measure = dataCube.getMeasure(series.reference);
-    if (!measure) return null;
+    const { measure, containerStage, onClose, openOn } = this.props;
+    const { series } = this.state;
 
+    // FIX: conditions for specific menus
     return <BubbleMenu
       className="series-menu"
       direction="down"
@@ -91,13 +88,17 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
       stage={Stage.fromSize(250, 240)}
       openOn={openOn}
       onClose={onClose}
-      inside={inside}
     >
-      <FormatPicker
+      {series instanceof MeasureSeries && <MeasureSeriesMenu
+        series={series}
         measure={measure}
-        format={format}
-        formatChange={this.saveFormat}
-      />
+        onChange={this.saveSeries}
+      />}
+      {series instanceof ExpressionSeries && <PercentOfSeriesMenu
+        series={series}
+        measure={measure}
+        onChange={this.saveSeries}
+      />}
       <div className="button-bar">
         <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />

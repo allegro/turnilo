@@ -63,11 +63,8 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
     }
   }
 
-  goToSettings() {
-    window.location.hash = "#settings";
-  }
-
-  renderTitle(mode: Mode): JSX.Element {
+  renderTitle(): JSX.Element {
+    const { mode } = this.state;
     return <div className="title">
       <div className="icon">
         <SvgIcon svg={require("../../icons/data-cubes.svg")} />
@@ -78,8 +75,6 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
 
   render() {
     const { user, onNavClick, onOpenAbout, customization } = this.props;
-    const { mode } = this.state;
-
     return <div className="no-data-view">
       <NoDataHeaderBar
         user={user}
@@ -92,7 +87,7 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
         </button>
       </NoDataHeaderBar>
       <div className="container">
-        {this.renderTitle(mode)}
+        {this.renderTitle()}
       </div>
     </div>;
   }

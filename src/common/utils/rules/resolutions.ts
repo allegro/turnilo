@@ -18,7 +18,7 @@ import { List, OrderedSet } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Resolution } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
-import { Series } from "../../models/series/series";
+import { MeasureSeries } from "../../models/series/measure-series";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 
@@ -51,7 +51,7 @@ export class Resolutions {
       {
         description: `Select default measures: ${measureTitles.join(", ")}`,
         adjustment: {
-          series: new SeriesList({ series: List(measures.map(measure => Series.fromMeasure(measure))) })
+          series: new SeriesList({ series: List(measures.map(measure => MeasureSeries.fromMeasure(measure))) })
         }
       }
     ];
@@ -63,7 +63,7 @@ export class Resolutions {
       {
         description: `Select measure: ${firstMeasure.title}`,
         adjustment: {
-          series: new SeriesList({ series: List.of(Series.fromMeasure(firstMeasure)) })
+          series: new SeriesList({ series: List.of(MeasureSeries.fromMeasure(firstMeasure)) })
         }
       }];
   }

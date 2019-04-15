@@ -14,50 +14,42 @@
  * limitations under the License.
  */
 
+import { Datum } from "plywood";
 import * as React from "react";
-import { Unary } from "../../../common/utils/functional/functional";
-import { isTruthy } from "../../../common/utils/general/general";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
 interface DifferenceProps {
-  currentValue: number;
-  previousValue: number;
-  lowerIsBetter?: boolean;
-  formatter: Unary<number, string>;
+  datum: Datum;
+  series: ConcreteSeries;
 }
 
-const Difference: React.SFC<DifferenceProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
+const Difference: React.SFC<DifferenceProps> = ({ datum, series }) => {
   return <React.Fragment>
     <div className="measure-value measure-value--previous">
-      {formatter(previousValue)}
+      {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
     </div>
     <div className="measure-delta-value">
       <Delta
-        previousValue={previousValue}
-        currentValue={currentValue}
-        lowerIsBetter={lowerIsBetter}
-        formatter={formatter} />
+        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+        currentValue={series.selectValue(datum, SeriesDerivation.CURRENT)}
+        lowerIsBetter={series.measure.lowerIsBetter}
+        formatter={series.formatter()} />
     </div>
   </React.Fragment>;
 };
 
 export interface TotalProps {
-  name: string;
-  value?: number;
-  lowerIsBetter?: boolean;
-  previous?: number;
-  formatter: Unary<number, string>;
+  showPrevious: boolean;
+  datum: Datum;
+  series: ConcreteSeries;
 }
 
-export const Total: React.SFC<TotalProps> = ({ lowerIsBetter, name, value, previous, formatter }) => {
+export const Total: React.SFC<TotalProps> = ({ showPrevious, datum, series }) => {
   return <div className="total">
-    <div className="measure-name" title={name}>{name}</div>
-    <div className="measure-value">{value ? formatter(value) : "-"}</div>
-    {isTruthy(previous) && <Difference
-      lowerIsBetter={lowerIsBetter}
-      currentValue={value}
-      previousValue={previous}
-      formatter={formatter} />}
+    <div className="measure-name" title={series.title()}>{series.title()}</div>
+    <div className="measure-value">{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
+    {showPrevious && <Difference series={series} datum={datum} />}
   </div>;
 };

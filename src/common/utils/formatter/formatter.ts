@@ -16,7 +16,6 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
@@ -32,35 +31,7 @@ import {
   TimeFilterClause,
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
-import { Measure } from "../../models/measure/measure";
-import { SeriesFormat, SeriesFormatType } from "../../models/series/series";
-import { Unary } from "../functional/functional";
 import { formatTimeRange } from "../time/time";
-
-export function formatFnFactory(format: string): (n: number) => string {
-  return (n: number) => {
-    if (isNaN(n) || !isFinite(n)) return "-";
-    return numbro(n).format(format);
-  };
-}
-
-export const exactFormat = "0,0";
-const exactFormatter = formatFnFactory(exactFormat);
-export const percentFormat = "0[.]00%";
-const percentFormatter = formatFnFactory(percentFormat);
-
-export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
-  switch (format.type) {
-    case SeriesFormatType.DEFAULT:
-      return measure.formatFn;
-    case SeriesFormatType.EXACT:
-      return exactFormatter;
-    case SeriesFormatType.PERCENT:
-      return percentFormatter;
-    case SeriesFormatType.CUSTOM:
-      return formatFnFactory(format.value);
-  }
-}
 
 export function formatNumberRange(value: NumberRange) {
   return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;

@@ -26,7 +26,8 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { Series } from "../series/series";
+import { SeriesList } from "../series-list/series-list";
+import { MeasureSeries } from "../series/measure-series";
 import { Split, SplitType } from "../split/split";
 import { Splits } from "../splits/splits";
 import { Essence, VisStrategy } from "./essence";
@@ -169,6 +170,7 @@ describe("EssenceProps", () => {
             MANIFESTS,
             DataCubeFixtures.twitter(),
             Splits.fromJS(splitDimensions),
+            SeriesList.fromMeasureNames([]),
             null,
             current);
 
@@ -258,7 +260,7 @@ describe("EssenceProps", () => {
           expect(withoutSplit.visualization).to.deep.equal(visualization);
           expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.be.true;
 
-          const toggledAgain = withoutSplit.addSeries(Series.fromMeasure(MeasureFixtures.twitterCount()));
+          const toggledAgain = withoutSplit.addSeries(MeasureSeries.fromMeasure(MeasureFixtures.twitterCount()));
           expect(toggledAgain.visualization).to.deep.equal(visualization);
           expect(toggledAgain.visResolve.isManual(), "is manual after second toggle").to.be.true;
         });

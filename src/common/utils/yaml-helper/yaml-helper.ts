@@ -105,6 +105,7 @@ function customizationToYAML(customization: Customization, withComments: boolean
   getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
     .add("customLogoSvg")
     .add("headerBackground")
+    .add("sentryDSN")
     .add("urlShortener");
 
   if (timezones && timezones.length) {

@@ -56,8 +56,8 @@ describe("mkurl router", () => {
       .expect(200)
       .expect(
         {
-          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAckaGQqVSItDaEm1hU2t" +
-            "nZMC7TDGxohwzJOrp8oNAE9l5kABNDcGOJCYIgwXiAAvuGKIMoQ2Ni03gAiNCZQWNga0bHxiQDKDrYWVjZCCLQA5ibe+NgBCJQAFhAVjUitRXUICOFAA"
+          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAckaGQqVSItDaEm1hU2tnZMC7TDGxohwzJ" +
+            "Orp8oNAE9l5kABNDcGOJCYIgwXiAAvpTunsx0cLAGEYogyhDY2LTeACI0JlBY2BrJqemZAMoOthZWNkIItADmJt742AEIlAAWEA2dSL1VbQgI4UA=="
         },
         testComplete
       );
@@ -85,7 +85,7 @@ describe("mkurl router", () => {
           pinnedDimensions: ["channel", "namespace", "isRobot"],
           pinnedSort: "delta",
           singleMeasure: "delta",
-          selectedMeasures: ["count", "added"],
+          selectedMeasures: ["delta", "count", "added"],
           multiMeasureMode: true,
           splits: [
             {

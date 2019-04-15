@@ -17,20 +17,9 @@
 
 import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
-import {
-  $,
-  ApplyExpression,
-  AttributeInfo,
-  ChainableExpression,
-  CountDistinctExpression,
-  Datum,
-  deduplicateSort,
-  Expression, QuantileExpression,
-  RefExpression
-} from "plywood";
-import { formatFnFactory, seriesFormatter } from "../../utils/formatter/formatter";
+import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
-import { SeriesFormat } from "../series/series";
+import { formatFnFactory } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 export interface MeasureValue {
@@ -55,40 +44,6 @@ export interface MeasureJS {
   lowerIsBetter?: boolean;
 }
 
-export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
-
-export function titleWithDerivation({ title }: Measure, derivation: MeasureDerivation): string {
-  switch (derivation) {
-    case MeasureDerivation.CURRENT:
-      return title;
-    case MeasureDerivation.PREVIOUS:
-      return `Previous ${title}`;
-    case MeasureDerivation.DELTA:
-      return `Difference ${title}`;
-    default:
-      return title;
-  }
-}
-
-export interface DerivationFilter {
-  derivation: MeasureDerivation;
-  filter: Expression;
-}
-
-export class PreviousFilter implements DerivationFilter {
-  derivation = MeasureDerivation.PREVIOUS;
-
-  constructor(public filter: Expression) {
-  }
-}
-
-export class CurrentFilter implements DerivationFilter {
-  derivation = MeasureDerivation.CURRENT;
-
-  constructor(public filter: Expression) {
-  }
-}
-
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = "0,0.0 a";
   static DEFAULT_TRANSFORMATION = "none";
@@ -102,53 +57,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     if (!measureName) return null;
     measureName = measureName.toLowerCase(); // Case insensitive
     return measures.find(measure => measure.name.toLowerCase() === measureName);
-  }
-
-  static derivedName(name: string, derivation: MeasureDerivation): string {
-    return `${derivation}${name}`;
-  }
-
-  /**
-   * @deprecated
-   * @param name
-   */
-  static nominalName(name: string): { name: string, derivation: MeasureDerivation } {
-    if (name.startsWith(MeasureDerivation.DELTA)) {
-      return {
-        name: name.substr(MeasureDerivation.DELTA.length),
-        derivation: MeasureDerivation.DELTA
-      };
-    }
-    if (name.startsWith(MeasureDerivation.PREVIOUS)) {
-      return {
-        name: name.substr(MeasureDerivation.PREVIOUS.length),
-        derivation: MeasureDerivation.PREVIOUS
-      };
-    }
-    return {
-      derivation: MeasureDerivation.CURRENT,
-      name
-    };
-  }
-
-  /**
-   * Look for all instances of aggregateAction($blah) and return the blahs
-   * @param ex
-   * @returns {string[]}
-   */
-  static getAggregateReferences(ex: Expression): string[] {
-    let references: string[] = [];
-    ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainableExpression) {
-        const actions = ex.getArgumentExpressions();
-        for (let action of actions) {
-          if (action.isAggregate()) {
-            references = references.concat(action.getFreeReferences());
-          }
-        }
-      }
-    });
-    return deduplicateSort(references);
   }
 
   static getReferences(ex: Expression): string[] {
@@ -268,66 +176,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   equals(other: any): boolean {
     return this === other || Measure.isMeasure(other) && super.equals(other);
-  }
-
-  public getDerivedName(derivation: MeasureDerivation): string {
-    return Measure.derivedName(this.name, derivation);
-  }
-
-  private filterMainRefs(exp: Expression, filter: Expression): Expression {
-    return exp.substitute(e => {
-      if (e instanceof RefExpression && e.name === "main") {
-        return $("main").filter(filter);
-      }
-      return null;
-    });
-  }
-
-  public toApplyExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
-    switch (this.transformation) {
-      case "percent-of-parent":
-        const referencedLevelDelta = Math.min(nestingLevel, 1);
-        return this.percentOfParentExpression(referencedLevelDelta, derivationFilter);
-      case "percent-of-total":
-        return this.percentOfParentExpression(nestingLevel, derivationFilter);
-      default:
-        return this.withDerivationFilter(derivationFilter);
-    }
-  }
-
-  private withDerivationFilter(derivationFilter?: DerivationFilter) {
-    const { expression } = this;
-    if (!derivationFilter) {
-      return new ApplyExpression({ name: this.name, expression });
-    }
-    const { derivation, filter } = derivationFilter;
-    return new ApplyExpression({
-      name: this.getDerivedName(derivation),
-      expression: this.filterMainRefs(expression, filter)
-    });
-  }
-
-  private percentOfParentExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
-    const formulaApplyExp = this.withDerivationFilter(derivationFilter);
-    const formulaName = `__formula_${formulaApplyExp.name}`;
-    const formula = formulaApplyExp.changeName(formulaName);
-
-    if (nestingLevel > 0) {
-      const name = derivationFilter ? this.getDerivedName(derivationFilter.derivation) : this.name;
-      return new ApplyExpression({
-        name,
-        operand: formula,
-        expression: $(formulaName).divide($(formulaName, nestingLevel)).multiply(100)
-      });
-    } else if (nestingLevel === 0) {
-      return formula;
-    } else {
-      throw new Error(`wrong nesting level: ${nestingLevel}`);
-    }
-  }
-
-  public formatDatum(datum: Datum, format: SeriesFormat): string {
-    return seriesFormatter(format, this)(datum[this.name] as number);
   }
 
   public getTitleWithUnits(): string {
