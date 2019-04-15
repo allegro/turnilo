@@ -33,7 +33,7 @@ import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
 import createConcreteSeries from "../series/create-concrete-series";
 import { Series } from "../series/series";
 import { SeriesSortOn, SortOn } from "../sort-on/sort-on";
-import { DimensionSort, SeriesSort, Sort, SortType } from "../sort/sort";
+import { DimensionSort, isSortEmpty, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
@@ -487,23 +487,41 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.changeFilter(filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone));
   }
 
+  private defaultSplitSort(split: Split): Sort {
+    const { dataCube, series } = this;
+    const dimension = dataCube.getDimension(split.reference);
+    const { sortStrategy, name } = dimension;
+    if (sortStrategy === "self" || sortStrategy === name) {
+      return new DimensionSort({ reference: name, direction: SortDirection.descending });
+    }
+    const reference = series.hasMeasureSeries(sortStrategy) ? sortStrategy : this.defaultSort();
+    return new SeriesSort({ reference, direction: SortDirection.descending });
+  }
+
+  private setSortOnSplits(splits: Splits): Splits {
+    return splits.update("splits", list => list.map(split => {
+      return isSortEmpty(split.sort) ? split.set("sort", this.defaultSplitSort(split)) : split;
+    }));
+  }
+
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
     const { visualizations, highlight, dataCube, visualization, visResolve, filter, series, colors } = this;
 
-    splits = splits.updateWithFilter(filter, dataCube.dimensions);
+    const splitsWithSorts = this.setSortOnSplits(splits);
+    const splitsWithFilters = splitsWithSorts.updateWithFilter(filter, dataCube.dimensions);
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy
     if (visResolve.isManual()) {
       strategy = VisStrategy.KeepAlways;
     }
-    if (this.splits.length() > 0 && splits.length() !== 0) {
+    if (this.splits.length() > 0 && splitsWithFilters.length() !== 0) {
       strategy = VisStrategy.UnfairGame;
     }
 
     let newVisualization: Manifest = visualization;
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
       const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
-      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, series, colors, currentVisualization);
+      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splitsWithFilters, series, colors, currentVisualization);
       newVisualization = visAndResolve.visualization;
     }
 
@@ -516,7 +534,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const withoutHighlight = highlight ? resetHighlight(this) : this;
 
     return withoutHighlight
-      .set("splits", splits)
+      .set("splits", splitsWithFilters)
       .changeVisualization(newVisualization);
   }
 

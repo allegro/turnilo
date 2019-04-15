@@ -17,9 +17,8 @@
 
 import { List } from "immutable";
 import { Colors } from "../../models/colors/colors";
-import { Essence } from "../../models/essence/essence";
 import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
-import { DimensionSort, isSortEmpty, Sort, SortDirection, SortType } from "../../models/sort/sort";
+import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
@@ -110,12 +109,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       timeSplit = timeSplit.changeLimit(null);
     }
 
-    let colorSplit = splits.getSplit(1);
-
-    if (isSortEmpty(colorSplit.sort)) {
-      colorSplit = colorSplit.changeSort(Essence.defaultSort(series, dataCube));
-    }
-
+    const colorSplit = splits.getSplit(1);
     const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
     if (!colors || colors.dimension !== colorSplitDimension.name) {
       colors = Colors.fromLimit(colorSplitDimension.name, 5);
@@ -152,13 +146,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    let colorSplit = splits.getSplit(0);
-
-    if (isSortEmpty(colorSplit.sort)) {
-      colorSplit = colorSplit.changeSort(Essence.defaultSort(series, dataCube));
-      autoChanged = true;
-    }
-
+    const colorSplit = splits.getSplit(0);
     const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
     if (!colors || colors.dimension !== colorSplitDimension.name) {
       colors = Colors.fromLimit(colorSplitDimension.name, 5);

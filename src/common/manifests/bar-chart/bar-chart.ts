@@ -16,9 +16,8 @@
  */
 
 import { Dimension } from "../../models/dimension/dimension";
-import { Essence } from "../../models/essence/essence";
 import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
-import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
+import { DimensionSort } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Actions } from "../../utils/rules/actions";
@@ -39,37 +38,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
       const splitDimension = dataCube.getDimension(split.reference);
-      const sortStrategy = splitDimension.sortStrategy;
-      if (isSortEmpty(split.sort)) {
-        if (sortStrategy) {
-          if (sortStrategy === "self" || split.reference === sortStrategy) {
-            split = split.changeSort(new DimensionSort({
-              reference: splitDimension.name,
-              direction: SortDirection.descending
-            }));
-          } else {
-            split = split.changeSort(new SeriesSort({
-              reference: sortStrategy,
-              direction: SortDirection.descending
-            }));
-          }
-        } else if (splitDimension.kind === "boolean") {  // Must sort boolean in deciding order!
-          split = split.changeSort(new DimensionSort({
-            reference: splitDimension.name,
-            direction: SortDirection.descending
-          }));
-        } else {
-          if (splitDimension.isContinuous()) {
-            split = split.changeSort(new DimensionSort({
-              reference: splitDimension.name,
-              direction: SortDirection.ascending
-            }));
-          } else {
-            split = split.changeSort(Essence.defaultSort(series, dataCube));
-          }
-        }
-        autoChanged = true;
-      } else if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
+      if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
         split = split.changeSort(new DimensionSort({
           reference: splitDimension.name,
           direction: split.sort.direction
