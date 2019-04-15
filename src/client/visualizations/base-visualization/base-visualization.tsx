@@ -146,7 +146,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
-      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.differentSeries(essence) ||
       this.differentLastRefreshRequestTimestamp(nextProps);
   }
 
