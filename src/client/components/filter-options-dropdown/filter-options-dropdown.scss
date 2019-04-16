@@ -21,9 +21,8 @@
   .selected-item {
     @include internet-explorer {
       overflow-x: visible;
-      padding: 4px 16px 0 4px;
     }
-    padding: 8px 16px 0 4px;
+    padding: 4px 16px 0 4px;
 
     .icon {
       padding: 0;
