@@ -17,6 +17,7 @@
 
 import { Record as ImmutableRecord } from "immutable";
 import { isImmutableClass } from "immutable-class";
+import isEqual = require('lodash.isequal');
 import { $, FilterExpression, LimitExpression, Set, valueFromJS, valueToJS } from "plywood";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
@@ -49,6 +50,9 @@ function valueEquals(v1: any, v2: any): boolean {
   if (!v1 !== !v2) return false;
   if (v1.toISOString && v2.toISOString) return v1.valueOf() === v2.valueOf();
   if (isImmutableClass(v1)) return v1.equals(v2);
+  if (typeof v1 === "object" && typeof v2 === "object") {
+    return isEqual(v1.toJS ? v1.toJS() : v1, v2.toJS ? v2.toJS() : v2);
+  }
   return false;
 }
 
@@ -311,7 +315,7 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
     if (values) {
       return valuesToColor.map(value => {
         if (value === null && hasNull) return NULL_COLOR;
-        var colorIdx = this.valueIndex(value);
+        var colorIdx = this.valueIndex(value !== null && value);
         return colorIdx === -1 ? null : NORMAL_COLORS[colorIdx];
       });
     } else {

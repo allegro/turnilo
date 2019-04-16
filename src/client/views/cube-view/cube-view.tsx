@@ -318,6 +318,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     try {
       essence = this.getEssenceFromHash(hash, dataCube);
     } catch (e) {
+      console.error(e);
       const { getCubeViewHash, updateViewHash } = this.props;
       essence = this.getEssenceFromDataCube(dataCube);
       updateViewHash(getCubeViewHash(essence), true);

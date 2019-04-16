@@ -28,6 +28,7 @@ import { DimensionTile } from "../dimension-tile/dimension-tile";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./pinboard-panel.scss";
+import { LegendContent } from "../legend/legend-content";
 
 export interface PinboardPanelProps {
   clicker: Clicker;
@@ -154,14 +155,13 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           onSelect={this.onLegendSortOnSelect}
         />;
 
-        legendDimensionTile = <DimensionTile
+        legendDimensionTile = <LegendContent
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
           dimension={dimension}
           sortOn={colorsSortOn}
           colors={colors}
-          onClose={this.onRemoveLegend}
         />;
       }
     }
