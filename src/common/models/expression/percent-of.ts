@@ -37,7 +37,6 @@ export class ExpressionPercentOf extends Record<ExpressionPercentOfValue>(defaul
   key(): string {
     return this.operation;
   }
-
 }
 
 export class ConcretePercentOf implements ConcreteExpression {

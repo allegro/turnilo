@@ -41,8 +41,4 @@ export class ExpressionArithmeticOperation extends Record<ExpressionArithmeticOp
   key(): string {
     return `${this.operation}__${this.reference}`;
   }
-
-  title(): string {
-    return "";
-  }
 }
