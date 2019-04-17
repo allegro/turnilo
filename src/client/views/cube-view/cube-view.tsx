@@ -476,9 +476,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
   }
 
-  newMeasureExpression = (measure: Measure) => {
-    if (!measure) return;
-    (this.refs["seriesTile"] as SeriesTilesRow).newExpressionSeries(measure);
+  newExpressionSeries = (series: Series) => {
+    if (!series) return;
+    (this.refs["seriesTile"] as SeriesTilesRow).newExpressionSeries(series);
   }
 
   changeTimezone = (newTimezone: Timezone) => {
@@ -585,7 +585,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           essence={essence}
           menuStage={menuStage}
           triggerFilterMenu={this.triggerFilterMenu}
-          newMeasureExpression={this.newMeasureExpression}
+          newSeriesExpression={this.newExpressionSeries}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}

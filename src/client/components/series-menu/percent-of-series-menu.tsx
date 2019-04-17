@@ -18,6 +18,7 @@ import * as React from "react";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { ExpressionPercentOf, PercentOperation } from "../../../common/models/expression/percent-of";
 import { Measure } from "../../../common/models/measure/measure";
+import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
 import { Binary } from "../../../common/utils/functional/functional";
@@ -28,6 +29,7 @@ import "./percent-of-series.scss";
 interface ExpressionSeriesMenuProps {
   measure: Measure;
   series: ExpressionSeries;
+  seriesList: SeriesList;
   onChange: Binary<ExpressionSeries, boolean, void>;
 }
 
@@ -46,14 +48,20 @@ function operationToExpression(operation: PercentOperation): ExpressionPercentOf
   return new ExpressionPercentOf({ operation });
 }
 
-function isSeriesValid(series: ExpressionSeries): boolean {
-  return !!series.expression;
-}
-
 const renderOperation = (op: Operation): string => op.label;
-const renderSelectedOperation = (op: Operation): string => op ? renderOperation(op) : "Select operation";
 
-export const PercentOfSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, measure, onChange }) => {
+export const PercentOfSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
+
+  const selectedOperations = seriesList
+    .getExpressionSeriesFor(measure.name)
+    .filter(s => !s.equals(series))
+    .filter(s => s.expression instanceof ExpressionPercentOf)
+    .map((s: ExpressionSeries) => s.expression.operation)
+    .toSet();
+
+  function isSeriesValid(expressionSeries: ExpressionSeries): boolean {
+    return !!expressionSeries.expression && !seriesList.hasSeriesWithKey(expressionSeries.key());
+  }
 
   function onSeriesChange(series: ExpressionSeries) {
     onChange(series, isSeriesValid(series));
@@ -68,19 +76,19 @@ export const PercentOfSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ seri
   }
 
   return <React.Fragment>
+    <Dropdown<Operation>
+      className="percent-operation-picker"
+      items={OPERATIONS.filter(({ id }) => !selectedOperations.has(id))}
+      renderItem={renderOperation}
+      renderSelectedItem={renderOperation}
+      equal={(a, b) => a.id === b.id}
+      selectedItem={series.expression && OPERATIONS.find(op => op.id === series.expression.operation)}
+      onSelect={onOperationSelect}
+    />
     <FormatPicker
       measure={measure}
       format={series.format}
       formatChange={onFormatChange}
-    />
-    <Dropdown<Operation>
-      className="percent-operation-picker"
-      items={OPERATIONS}
-      renderItem={renderOperation}
-      renderSelectedItem={renderSelectedOperation}
-      equal={(a, b) => a.id === b.id}
-      selectedItem={series.expression && OPERATIONS.find(op => op.id === series.expression.operation)}
-      onSelect={onOperationSelect}
     />
   </React.Fragment>;
 };

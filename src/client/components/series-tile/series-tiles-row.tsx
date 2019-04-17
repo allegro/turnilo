@@ -56,8 +56,8 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   }
 
   // This will be called externally
-  newExpressionSeries(measure: Measure) {
-    this.setState({ placeholderSeries: ExpressionSeries.fromMeasure(measure) });
+  newExpressionSeries(placeholderSeries: Series) {
+    this.setState({ placeholderSeries });
   }
 
   removePlaceholderSeries = () => this.setState({ placeholderSeries: null });

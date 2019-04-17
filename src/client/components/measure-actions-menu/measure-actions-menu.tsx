@@ -18,6 +18,9 @@
 import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
+import { ExpressionSeries } from "../../../common/models/series/expression-series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
@@ -25,6 +28,7 @@ import { STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import { AddPercentSeriesButton } from "./add-percent-series";
 import "./measure-actions-menu.scss";
 
 const ACTION_SIZE = 58;
@@ -36,8 +40,8 @@ export interface MeasureActionsMenuProps {
 }
 
 export interface MeasureActionsProps {
-  newExpression: Unary<Measure, void>;
-  addSeries: Unary<Measure, void>;
+  newExpression: Unary<ExpressionSeries, void>;
+  addSeries: Unary<Series, void>;
   series: SeriesList;
   measure: Measure;
   onClose: Fn;
@@ -67,27 +71,19 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
 };
 
 export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
-  const { newExpression, series, measure, onClose, addSeries } = props;
-  const disabled = series.hasMeasure(measure);
+  const { series, measure, onClose, addSeries } = props;
+  const measureDisabled = series.hasMeasure(measure);
 
   function onAddSeries() {
-    if (!disabled) addSeries(measure);
-    onClose();
-  }
-
-  function onNewPercentExpression() {
-    newExpression(measure);
+    if (!measureDisabled) addSeries(MeasureSeries.fromMeasure(measure));
     onClose();
   }
 
   return <React.Fragment>
-    <div className={classNames("add-series", "action", { disabled })} onClick={onAddSeries}>
+    <div className={classNames("add-series", "action", { disabled: measureDisabled })} onClick={onAddSeries}>
       <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
       <div className="action-label">{STRINGS.add}</div>
     </div>
-    <div className={classNames("new-percent-expression", "action")} onClick={onNewPercentExpression}>
-      <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
-      <div className="action-label">Percent</div>
-    </div>
+    <AddPercentSeriesButton {...props} />
   </React.Fragment>;
 };

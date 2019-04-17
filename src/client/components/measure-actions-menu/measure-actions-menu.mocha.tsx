@@ -22,6 +22,7 @@ import { SinonSpy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { noop } from "../../../common/utils/functional/functional";
 import { MeasureActions } from "./measure-actions-menu";
 
@@ -73,7 +74,8 @@ describe("<MeasureActions>", () => {
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSeriesSpy.calledOnce).to.be.true;
-        expect(addSeriesSpy.calledWith(measure)).to.be.true;
+        const argument = addSeriesSpy.args[0][0];
+        expect(argument.equals(MeasureSeries.fromMeasure(measure))).to.be.true;
       });
 
       it("calls onClose but not addSeries when measure is selected", () => {
@@ -83,43 +85,6 @@ describe("<MeasureActions>", () => {
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSeriesSpy.notCalled).to.be.true;
-      });
-    });
-  });
-
-  describe("Expression Action", () => {
-    it("renders expression action", () => {
-      const actions = measureActions(MeasureFixtures.wikiUniqueUsers());
-
-      expect(actions.find(".new-percent-expression").length).to.be.eq(1);
-    });
-
-    describe("click should call action", () => {
-
-      let onCloseSpy: SinonSpy;
-      let newExpressionSpy: SinonSpy;
-
-      beforeEach(() => {
-        onCloseSpy = sinon.spy();
-        newExpressionSpy = sinon.spy();
-      });
-
-      const measureActions = (measure: Measure) => mount(<MeasureActions
-        series={EssenceFixtures.wikiTable().series}
-        measure={measure}
-        onClose={onCloseSpy}
-        addSeries={null}
-        newExpression={newExpressionSpy} />);
-
-      it("calls newExpression and onClose", () => {
-        const measure = MeasureFixtures.wikiUniqueUsers();
-        const actions = measureActions(measure);
-
-        actions.find(".new-percent-expression").simulate("click");
-
-        expect(onCloseSpy.calledOnce).to.be.true;
-        expect(newExpressionSpy.calledOnce).to.be.true;
-        expect(newExpressionSpy.calledWith(measure)).to.be.true;
       });
     });
   });

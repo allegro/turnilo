@@ -73,6 +73,8 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     return <PlaceholderSeriesTile
       key="placeholder-series-tile"
       measure={measure}
+      seriesList={essence.series}
+      measures={essence.dataCube.measures}
       series={placeholderSeries}
       containerStage={menuStage}
       saveSeries={savePlaceholderSeries}
@@ -83,6 +85,8 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
 
   const seriesElements = concatTruthy(
     ...series.map(item => <SeriesTile
+      seriesList={essence.series}
+      measures={essence.dataCube.measures}
       key={item.series.key()}
       item={item}
       open={item.series.equals(openedSeriesMenu)}

@@ -15,6 +15,8 @@
  */
 
 import * as React from "react";
+import { Measures } from "../../../common/models/measure/measures";
+import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
@@ -29,6 +31,8 @@ import { SERIES_CLASS_NAME } from "./series-tiles";
 interface SeriesTileProps {
   item: ConcreteSeries;
   open: boolean;
+  seriesList: SeriesList;
+  measures: Measures;
   style?: React.CSSProperties;
   removeSeries: Unary<Series, void>;
   updateSeries: Binary<Series, Series, void>;
@@ -39,7 +43,7 @@ interface SeriesTileProps {
 }
 
 export const SeriesTile: React.SFC<SeriesTileProps> = props => {
-  const { open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
+  const { seriesList, measures, open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { series, measure } = item;
   const title = item.title();
 
@@ -66,6 +70,8 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
       {open && openOn && <SeriesMenu
         key={series.key()}
         openOn={openOn}
+        seriesList={seriesList}
+        measures={measures}
         containerStage={containerStage}
         onClose={closeSeriesMenu}
         initialSeries={series}

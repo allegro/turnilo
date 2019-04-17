@@ -15,7 +15,10 @@
  */
 
 import * as React from "react";
+import { ExpressionPercentOf } from "../../../common/models/expression/percent-of";
 import { Measure } from "../../../common/models/measure/measure";
+import { Measures } from "../../../common/models/measure/measures";
+import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
@@ -33,6 +36,8 @@ import "./series-menu.scss";
 interface SeriesMenuProps {
   saveSeries: Unary<Series, void>;
   measure: Measure;
+  measures: Measures;
+  seriesList: SeriesList;
   containerStage: Stage;
   onClose: Fn;
   initialSeries: Series;
@@ -77,7 +82,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { measure, containerStage, onClose, openOn } = this.props;
+    const { measure, seriesList, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
     // FIX: conditions for specific menus
@@ -94,7 +99,8 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         measure={measure}
         onChange={this.saveSeries}
       />}
-      {series instanceof ExpressionSeries && <PercentOfSeriesMenu
+      {series instanceof ExpressionSeries && series.expression instanceof ExpressionPercentOf && <PercentOfSeriesMenu
+        seriesList={seriesList}
         series={series}
         measure={measure}
         onChange={this.saveSeries}
