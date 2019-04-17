@@ -17,7 +17,7 @@
 
 import { Record as ImmutableRecord } from "immutable";
 import { isImmutableClass } from "immutable-class";
-import isEqual = require('lodash.isequal');
+import isEqual = require("lodash.isequal");
 import { $, FilterExpression, LimitExpression, Set, valueFromJS, valueToJS } from "plywood";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 

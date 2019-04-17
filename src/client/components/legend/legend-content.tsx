@@ -40,6 +40,7 @@ import { formatTimeRange } from "../../../common/utils/time/time";
 import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
+import "../dimension-tile/dimension-tile.scss";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { Message } from "../message/message";
@@ -47,7 +48,6 @@ import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
-import "../dimension-tile/dimension-tile.scss";
 
 export interface DimensionTileProps {
   clicker: Clicker;
@@ -66,7 +66,6 @@ export interface DimensionTileState {
   unfolded?: boolean;
   showSearch?: boolean;
   searchText?: string;
-  selectedGranularity?: Bucket;
 }
 
 export class LegendContent extends React.Component<DimensionTileProps, DimensionTileState> {
@@ -86,7 +85,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       fetchQueued: false,
       unfolded: true,
       showSearch: false,
-      selectedGranularity: null,
       searchText: ""
     };
 
@@ -99,26 +97,12 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
   }
 
-  private bucketForDimension(dimension: Dimension): Bucket {
-    const { essence, timekeeper } = this.props;
-    const clause = essence.filter.getClauseForDimension(dimension);
-    if (clause) {
-      if (isTimeFilter(clause)) {
-        const fixedTimeFilter = essence.evaluateSelection(clause, timekeeper);
-        return getBestGranularityForRange(fixedTimeFilter.values.first(), true, dimension.bucketedBy, dimension.granularities);
-      }
-      if (clause instanceof NumberFilterClause) {
-        return getBestGranularityForRange(clause.values.first(), true, dimension.bucketedBy, dimension.granularities);
-      }
-      throw new Error(`Expected Time or Number FilterClause. Got ${clause.type}`);
-    }
-    return getDefaultGranularityForKind(
-      dimension.kind as ContinuousDimensionKind,
-      dimension.bucketedBy,
-      dimension.granularities);
+  private bucketForDimension(essence: Essence, dimension: Dimension): Bucket {
+    const split = essence.splits.findSplitForDimension(dimension);
+    return split.bucket;
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Bucket): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean): void {
     if (!sortOn) {
       this.setState({
         loading: false,
@@ -154,14 +138,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       .filter(filterExpression);
 
     if (dimension.canBucketByDefault()) {
-
-      if (!selectedGranularity) {
-        selectedGranularity = this.bucketForDimension(dimension);
-      }
-
-      this.setState({ selectedGranularity });
-
-      query = query.split($(dimension.name).performAction(bucketToAction(selectedGranularity)), dimension.name);
+      query = query.split($(dimension.name).performAction(bucketToAction(this.bucketForDimension(essence, dimension))), dimension.name);
     } else {
       query = query.split(dimension.expression, dimension.name);
 
@@ -228,7 +205,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
     const { essence, timekeeper, dimension, sortOn } = this.props;
-    const { selectedGranularity } = this.state;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     const nextDimension = nextProps.dimension;
@@ -245,18 +221,17 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       this.setState({ dataset: null });
     }
 
-    const persistedGranularity = differentTimeFilterSelection ? null : selectedGranularity;
-
     if (
       essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) ||
+      essence.differentSplits(nextEssence) ||
       !dimension.equals(nextDimension) ||
       !SortOn.equals(sortOn, nextProps.sortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
-      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded, persistedGranularity);
+      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded);
     }
   }
 
@@ -318,16 +293,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       fetchQueued: true
     });
     this.collectTriggerSearch();
-  }
-
-  getTitleHeader(): string {
-    const { dimension } = this.props;
-    const { selectedGranularity } = this.state;
-
-    if (selectedGranularity && dimension.kind === "time") {
-      return `${dimension.title} (${(selectedGranularity as Duration).getDescription()})`;
-    }
-    return dimension.title;
   }
 
   private prepareRowsData(): Datum[] {
@@ -443,7 +408,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    const { sortOn, colors } = this.props;
+    const { sortOn, colors, dimension } = this.props;
     const { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
 
     const rowsData = this.prepareRowsData();
@@ -476,7 +441,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
     return <SearchableTile
       style={style}
-      title={this.getTitleHeader()}
+      title={dimension.title}
       toggleChangeFn={this.toggleSearch}
       onSearchChange={this.onSearchChange}
       searchText={searchText}

@@ -86,7 +86,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   globalKeyDownListener = (e: KeyboardEvent) => enterKey(e) && this.onOkClick();
 
-  saveGranularity = (granularity: string) => this.setState({ granularity });
+  saveGranularity = (granularity: string) => this.setState({ colors: Colors.fromLimit(this.props.dimension.name, 5), granularity });
 
   saveSort = (sort: Sort) => this.setState({ sort });
 

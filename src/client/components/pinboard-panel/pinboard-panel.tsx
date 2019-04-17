@@ -25,10 +25,10 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
+import { LegendContent } from "../legend/legend-content";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./pinboard-panel.scss";
-import { LegendContent } from "../legend/legend-content";
 
 export interface PinboardPanelProps {
   clicker: Clicker;
