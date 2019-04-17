@@ -98,7 +98,7 @@ describe("Time", () => {
     };
 
     it("should hide year when just year is the same in all ticks", () => {
-      const scale = createScale(new Date("2019-01-01"), new Date("2019-02-01T10:00"));
+      const scale = createScale(new Date(Date.UTC(2019, 0, 2, 12, 34, 0)), new Date(Date.UTC(2019, 1, 1, 10, 0, 0)));
 
       const formatter = scaleTicksFormat(scale);
 
@@ -106,7 +106,7 @@ describe("Time", () => {
     });
 
     it("should hide hour when just hour is the same in all ticks", () => {
-      const scale = createScale(new Date("2018-11-01"), new Date("2019-01-10"));
+      const scale = createScale(new Date(Date.UTC(2018, 11, 1, 18, 0, 0)), new Date(Date.UTC(2019, 0, 10, 18, 0, 0)));
 
       const formatter = scaleTicksFormat(scale);
 
@@ -122,7 +122,7 @@ describe("Time", () => {
     });
 
     it("should show just hour when only hour is different in some ticks", () => {
-      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-01T10:00"));
+      const scale = createScale(new Date(Date.UTC(2019, 0, 1, 12, 34, 0)), new Date(Date.UTC(2019, 0, 1, 10, 0, 0)));
 
       const formatter = scaleTicksFormat(scale);
 
@@ -130,7 +130,7 @@ describe("Time", () => {
     });
 
     it("should show just date when only date is different in some ticks", () => {
-      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-10"));
+      const scale = createScale(new Date(Date.UTC(2019, 0, 1, 10, 0, 0)), new Date(Date.UTC(2019, 0, 10, 10, 0, 0)));
 
       const formatter = scaleTicksFormat(scale);
 
@@ -252,10 +252,11 @@ describe("Time", () => {
       });
 
       it("should show just days and months without year for whole current year", () => {
-        const nextYear = new Date().getFullYear() + 1;
+        const currentYear = new Date().getFullYear();
+        const nextYear = currentYear + 1;
         const range = {
-          start: coerceToCurrentYear(new Date("2019-01-01Z")),
-          end: coerceToYear(new Date("2020-01-01Z"), nextYear)
+          start: new Date(Date.UTC(currentYear, 0, 1, 0, 0, 0)),
+          end: new Date(Date.UTC(nextYear, 0, 1, 0, 0, 0))
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["1 Jan", "31 Dec"]);
       });
