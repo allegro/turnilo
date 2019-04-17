@@ -16,24 +16,18 @@
  */
 
 import { Duration } from "chronoshift";
-import { Set } from "immutable";
-import { $, Dataset, Datum, Expression, NumberRange, PlywoodValue, r, SortExpression, TimeRange } from "plywood";
+import { $, Dataset, Datum, NumberRange, PlywoodValue, r, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { isTimeFilter, NumberFilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { clausePredicate } from "../../../common/models/filter-clause/filter-clause-predicate";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import {
   ContinuousDimensionKind,
-  formatGranularity,
   getBestGranularityForRange,
-  getDefaultGranularityForKind,
-  getGranularities,
-  granularityEquals,
-  granularityToString
+  getDefaultGranularityForKind
 } from "../../../common/models/granularity/granularity";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
@@ -43,15 +37,14 @@ import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { formatTimeRange } from "../../../common/utils/time/time";
-import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
-import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { Message } from "../message/message";
 import { QueryError } from "../query-error/query-error";
-import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
+import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import "../dimension-tile/dimension-tile.scss";
@@ -63,20 +56,17 @@ export interface DimensionTileProps {
   dimension: Dimension;
   sortOn: SortOn;
   colors?: Colors;
-  onClose?: any;
 }
 
 export interface DimensionTileState {
   loading?: boolean;
   dataset?: Dataset;
   error?: Error;
-  notice?: string;
   fetchQueued?: boolean;
   unfolded?: boolean;
   showSearch?: boolean;
   searchText?: string;
   selectedGranularity?: Bucket;
-  filterMode?: FilterMode;
 }
 
 export class LegendContent extends React.Component<DimensionTileProps, DimensionTileState> {
@@ -268,35 +258,21 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
     ) {
       this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded, persistedGranularity);
     }
-
-    this.setFilterModeFromProps(nextProps);
-  }
-
-  setFilterModeFromProps(props: DimensionTileProps) {
-    if (props.colors) {
-      this.setState({ filterMode: FilterMode.INCLUDE });
-    } else {
-      const filterMode = props.essence.filter.getModeForDimension(props.dimension);
-      if (filterMode) this.setState({ filterMode });
-    }
   }
 
   componentDidMount() {
     this.mounted = true;
-
-    this.setFilterModeFromProps(this.props);
   }
 
   componentWillUnmount() {
     this.mounted = false;
   }
 
-  onRowClick(value: any, event: MouseEvent) {
-    const { clicker, essence, dimension } = this.props;
-    const { dataset, filterMode } = this.state;
+  onRowClick(value: any) {
+    const { clicker, dimension } = this.props;
+    const { dataset } = this.state;
 
     let { colors } = this.props;
-    let { filter } = essence;
 
     if (colors && colors.dimension === dimension.name) {
       if (colors.limit) {
@@ -307,64 +283,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       colors = colors.toggle(value);
 
       clicker.changeColors(colors);
-    } else {
-      filter = this.selectValueInFilter(filter, dimension, value, event);
-
-      // If no longer filtered switch unfolded to true for later
-      const { unfolded } = this.state;
-      if (!unfolded && !filter.filteredOn(dimension.name)) {
-        this.setState({ unfolded: true });
-      }
-
-      clicker.changeFilter(filter.setExclusionForDimension(filterMode === FilterMode.EXCLUDE, dimension));
     }
-  }
-
-  private selectValueInFilter(filter: Filter, dimension: Dimension, value: any, event: MouseEvent): Filter {
-    const filterClause = filter.getClauseForDimension(dimension);
-    if (!filterClause) {
-      return filter.addClause(new StringFilterClause({ reference: dimension.name, values: Set.of(value), action: StringFilterAction.IN }));
-    }
-    if (!(filterClause instanceof StringFilterClause)) {
-      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
-    }
-    if (event.altKey || event.ctrlKey || event.metaKey) {
-      const values = filterClause.values;
-      const filteredOnMe = values.has(value);
-      const singleFilter = values.count() === 1;
-
-      if (filteredOnMe && singleFilter) {
-        return filter.removeClause(dimension.name);
-      }
-      return filter.removeClause(dimension.name).setClause(filterClause.update("values", values => values.add(value)));
-    }
-    return filter.setClause(filterClause.update("values", values =>
-      values.has(value) ? values.remove(value) : values.add(value)));
-  }
-
-  changeFilterMode(value: FilterMode) {
-    const { clicker, essence, dimension } = this.props;
-    this.setState({ filterMode: value }, () => {
-      clicker.changeFilter(essence.filter.setExclusionForDimension(value === FilterMode.EXCLUDE, dimension));
-    });
-  }
-
-  getFilterActions(): TileAction[] {
-    const { essence, dimension } = this.props;
-    const { filterMode } = this.state;
-
-    if (!essence || !dimension) return null;
-
-    const options: FilterMode[] = [FilterMode.INCLUDE, FilterMode.EXCLUDE];
-
-    return options.map(value => {
-      return {
-        selected: filterMode === value,
-        onSelect: this.changeFilterMode.bind(this, value),
-        displayValue: STRINGS[value],
-        keyString: value
-      };
-    });
   }
 
   toggleFold = () => {
@@ -373,17 +292,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
     unfolded = !unfolded;
     this.setState({ unfolded });
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
-  }
-
-  onDragStart = (e: React.DragEvent<HTMLElement>) => {
-    const { dimension } = this.props;
-
-    const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = "all";
-    setDragData(dataTransfer, "text/plain", dimension.title);
-
-    DragManager.setDragDimension(dimension);
-    setDragGhost(dataTransfer, dimension.title);
   }
 
   toggleSearch = () => {
@@ -420,28 +328,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       return `${dimension.title} (${(selectedGranularity as Duration).getDescription()})`;
     }
     return dimension.title;
-  }
-
-  onSelectGranularity(selectedGranularity: Bucket) {
-    if (selectedGranularity === this.state.selectedGranularity) return;
-    const { essence, timekeeper, dimension, colors, sortOn } = this.props;
-    const unfolded = this.updateFoldability(essence, dimension, colors);
-    this.setState({ dataset: null });
-    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded, selectedGranularity);
-  }
-
-  getGranularityActions(): TileAction[] {
-    const { dimension } = this.props;
-    const { selectedGranularity } = this.state;
-    const granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, true);
-    return granularities.map(g => {
-      return {
-        selected: granularityEquals(selectedGranularity, g),
-        onSelect: this.onSelectGranularity.bind(this, g),
-        displayValue: formatGranularity(g),
-        keyString: granularityToString(g)
-      };
-    });
   }
 
   private prepareRowsData(): Datum[] {
@@ -490,7 +376,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
   private prepareRows(rowData: Datum[]): JSX.Element[] {
     const { essence: { filter }, dimension, colors } = this.props;
-    const { searchText, filterMode } = this.state;
+    const { searchText } = this.state;
 
     const filterClause = filter.getClauseForDimension(dimension);
     if (filterClause && !(filterClause instanceof StringFilterClause)) {
@@ -499,28 +385,16 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
     const colorValues = this.prepareColorValues(colors, dimension, rowData);
     const formatter = this.getFormatter();
 
-    const isExcluded = filterMode === FilterMode.EXCLUDE;
-
     return rowData.map((datum, i) => {
       const segmentValue = datum[dimension.name];
 
-      let className = "row";
-      let checkbox: JSX.Element = null;
+      let className = "row color";
       let selected = false;
-      if ((filterClause || colors)) {
-        if (colors) {
-          selected = false;
-          className += " color";
-        } else {
-          selected = (filterClause as StringFilterClause).values.has(segmentValue as string);
-          className += " " + (selected ? "selected" : "not-selected");
-        }
-        checkbox = <Checkbox
-          selected={selected}
-          type={isExcluded ? "cross" : "check"}
-          color={colorValues ? colorValues[i] : null}
-        />;
-      }
+      let checkbox = <Checkbox
+        selected={selected}
+        type="check"
+        color={colorValues ? colorValues[i] : null}
+      />;
 
       const segmentValueStr = this.getSegmentValueString(segmentValue as PlywoodValue);
 
@@ -569,10 +443,9 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    const { sortOn, essence, dimension, colors, onClose } = this.props;
-    const { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText, filterMode } = this.state;
+    const { sortOn, colors } = this.props;
+    const { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
 
-    const isContinuous = dimension.isContinuous();
     const rowsData = this.prepareRowsData();
     const rows = this.prepareRows(rowsData);
     const foldControl = this.prepareFoldControl(unfolded);
@@ -584,7 +457,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
     const className = classNames(
       "dimension-tile",
-      filterMode,
       (foldControl ? "has-folder" : "no-folder"),
       (colors ? "has-colors" : "no-colors")
     );
@@ -602,34 +474,15 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       active: showSearch
     }];
 
-    if (onClose !== null) {
-      icons.push({
-        name: "close",
-        ref: "close",
-        onClick: onClose,
-        svg: require("../../icons/full-remove.svg")
-      });
-    }
-
-    let actions: TileAction[] = null;
-
-    if (dimension.canBucketByDefault()) {
-      actions = this.getGranularityActions();
-    } else if (!isContinuous && !essence.colors) {
-      actions = this.getFilterActions();
-    }
-
     return <SearchableTile
       style={style}
       title={this.getTitleHeader()}
       toggleChangeFn={this.toggleSearch}
-      onDragStart={this.onDragStart}
       onSearchChange={this.onSearchChange}
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}
-      className={className}
-      actions={actions}>
+      className={className}>
       <div className="rows">
         {rows}
         {message}
