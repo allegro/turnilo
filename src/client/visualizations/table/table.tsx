@@ -18,6 +18,7 @@
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { List, Set } from "immutable";
+import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
@@ -27,6 +28,7 @@ import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFi
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { Series } from "../../../common/models/series/series";
 import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
@@ -95,7 +97,7 @@ export enum HoverElement { CORNER, ROW, HEADER, WHITESPACE, SPACE_LEFT }
 
 export interface PositionHover {
   element: HoverElement;
-  series?: ConcreteSeries;
+  series?: Series;
   columnType?: ColumnType;
   row?: Datum;
 }
@@ -127,7 +129,7 @@ export class Table extends BaseVisualization<TableState> {
 
     if (y <= HEADER_HEIGHT) {
       if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
-      const seriesList = essence.getConcreteSeries();
+      const seriesList = essence.series.series;
 
       x = x - this.getSegmentWidth();
       const seriesWidth = this.getIdealColumnWidth(this.props.essence);
@@ -171,7 +173,7 @@ export class Table extends BaseVisualization<TableState> {
     if (element === HoverElement.HEADER) {
       const period = this.getSortPeriod(columnType);
       const commonSort = this.props.essence.getCommonSort();
-      const reference = series.series.key();
+      const reference = series.key();
       const sort = new SeriesSort({ reference, period, direction: SortDirection.descending });
       const sortWithDirection = commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
       clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
@@ -210,22 +212,21 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onMouseMove = (x: number, y: number) => {
-    const { hoverMeasure, hoverRow } = this.state;
-    const pos = this.calculateMousePosition(x, y);
-    const measure = pos.series && pos.series.measure;
-    if (hoverMeasure !== measure || hoverRow !== pos.row) {
+    const { hoverSeries, hoverRow } = this.state;
+    const { series, row } = this.calculateMousePosition(x, y);
+    if (immutableEqual(hoverSeries, series) || hoverRow !== row) {
       this.setState({
-        hoverMeasure: measure,
-        hoverRow: pos.row
+        hoverSeries: series,
+        hoverRow: row
       });
     }
   }
 
   onMouseLeave = () => {
-    const { hoverMeasure, hoverRow } = this.state;
-    if (hoverMeasure || hoverRow) {
+    const { hoverSeries, hoverRow } = this.state;
+    if (hoverSeries || hoverRow) {
       this.setState({
-        hoverMeasure: null,
+        hoverSeries: null,
         hoverRow: null
       });
     }
@@ -322,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
     >{rowMeasures}</div>;
   }
 
-  renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
+  renderHeaderColumns(essence: Essence, measureWidth: number): JSX.Element[] {
     const commonSort = essence.getCommonSort();
 
     function isCommonSortedBy(series: ConcreteSeries, period = SeriesDerivation.CURRENT): boolean {
@@ -378,14 +379,14 @@ export class Table extends BaseVisualization<TableState> {
 
   protected renderInternals() {
     const { clicker, essence, stage } = this.props;
-    const { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
+    const { flatData, scrollTop, hoverRow } = this.state;
     const { splits, dataCube } = essence;
 
     const segmentTitle = splits.splits.map(split => essence.dataCube.getDimension(split.reference).title).join(", ");
 
     const idealWidth = this.getIdealColumnWidth(essence);
 
-    const headerColumns = this.renderHeaderColumns(essence, hoverMeasure, idealWidth);
+    const headerColumns = this.renderHeaderColumns(essence, idealWidth);
 
     const rowWidth = idealWidth * headerColumns.length;
 
