@@ -15,7 +15,8 @@
  */
 
 import * as React from "react";
-import { ExpressionPercentOf } from "../../../common/models/expression/percent-of";
+import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
+import { PercentExpression } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
@@ -29,8 +30,9 @@ import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
+import { ArithmeticSeriesMenu } from "./arithmetic-series-menu";
 import { MeasureSeriesMenu } from "./measure-series-menu";
-import { PercentOfSeriesMenu } from "./percent-of-series-menu";
+import { PercentSeriesMenu } from "./percent-series-menu";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
@@ -82,10 +84,9 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { measure, seriesList, containerStage, onClose, openOn } = this.props;
+    const { measure, measures, seriesList, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
-    // FIX: conditions for specific menus
     return <BubbleMenu
       className="series-menu"
       direction="down"
@@ -99,10 +100,17 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         measure={measure}
         onChange={this.saveSeries}
       />}
-      {series instanceof ExpressionSeries && series.expression instanceof ExpressionPercentOf && <PercentOfSeriesMenu
+      {series instanceof ExpressionSeries && series.expression instanceof PercentExpression && <PercentSeriesMenu
         seriesList={seriesList}
         series={series}
         measure={measure}
+        onChange={this.saveSeries}
+      />}
+      {series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression && <ArithmeticSeriesMenu
+        seriesList={seriesList}
+        series={series}
+        measure={measure}
+        measures={measures}
         onChange={this.saveSeries}
       />}
       <div className="button-bar">

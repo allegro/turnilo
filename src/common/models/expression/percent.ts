@@ -16,6 +16,7 @@
 
 import { Record } from "immutable";
 import { $, ApplyExpression, Expression } from "plywood";
+import { Measures } from "../measure/measures";
 import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
 export type PercentOperation = ExpressionSeriesOperation.PERCENT_OF_PARENT | ExpressionSeriesOperation.PERCENT_OF_TOTAL;
@@ -28,7 +29,7 @@ const defaultPercentOf: ExpressionPercentOfValue = {
   operation: null
 };
 
-export class ExpressionPercentOf extends Record<ExpressionPercentOfValue>(defaultPercentOf) {
+export class PercentExpression extends Record<ExpressionPercentOfValue>(defaultPercentOf) {
 
   constructor(params: ExpressionPercentOfValue) {
     super(params);
@@ -37,9 +38,13 @@ export class ExpressionPercentOf extends Record<ExpressionPercentOfValue>(defaul
   key(): string {
     return this.operation;
   }
+
+  toConcreteExpression(_measures: Measures): ConcretePercentExpression {
+    return new ConcretePercentExpression(this.operation);
+  }
 }
 
-export class ConcretePercentOf implements ConcreteExpression {
+export class ConcretePercentExpression implements ConcreteExpression {
 
   constructor(private operation: PercentOperation) {
   }

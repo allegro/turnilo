@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
-import { ExpressionPercentOf, PercentOperation } from "../../../common/models/expression/percent-of";
+import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
@@ -24,7 +24,7 @@ import { SeriesFormat } from "../../../common/models/series/series-format";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
 import { FormatPicker } from "./format-picker";
-import "./percent-of-series.scss";
+import "./percent-series-menu.scss";
 
 interface ExpressionSeriesMenuProps {
   measure: Measure;
@@ -44,18 +44,18 @@ const OPERATIONS: Operation[] = [{
   id: ExpressionSeriesOperation.PERCENT_OF_TOTAL, label: "Percent of total"
 }];
 
-function operationToExpression(operation: PercentOperation): ExpressionPercentOf {
-  return new ExpressionPercentOf({ operation });
+function operationToExpression(operation: PercentOperation): PercentExpression {
+  return new PercentExpression({ operation });
 }
 
 const renderOperation = (op: Operation): string => op.label;
 
-export const PercentOfSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
+export const PercentSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
 
   const selectedOperations = seriesList
     .getExpressionSeriesFor(measure.name)
     .filter(s => !s.equals(series))
-    .filter(s => s.expression instanceof ExpressionPercentOf)
+    .filter(s => s.expression instanceof PercentExpression)
     .map((s: ExpressionSeries) => s.expression.operation)
     .toSet();
 

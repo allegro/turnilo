@@ -16,31 +16,27 @@
 
 import { Set } from "immutable";
 import * as React from "react";
+import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { Series } from "../../../common/models/series/series";
-import { PERCENT_FORMAT } from "../../../common/models/series/series-format";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-const percentOperations = Set.of<PercentOperation>(
-  ExpressionSeriesOperation.PERCENT_OF_PARENT,
-  ExpressionSeriesOperation.PERCENT_OF_TOTAL);
-
 interface AddPercentSeriesButtonProps {
-  addSeries: Unary<Series, void>;
+  addExpressionPlaceholder: Unary<Series, void>;
   series: SeriesList;
   measure: Measure;
   onClose: Fn;
 }
 
-export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = props => {
-  const { series, measure, addSeries, onClose } = props;
+export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = props => {
+  const { series, measure, addExpressionPlaceholder, onClose } = props;
 
   const percentSeries: Set<PercentOperation> = series
     .getExpressionSeriesFor(measure.name)
@@ -50,20 +46,21 @@ export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = pr
 
   const percentsDisabled = percentSeries.count() === 2;
 
-  function onNewPercentExpression() {
+  function onNewOperation() {
     if (!percentsDisabled) {
-      const operation = percentOperations.subtract(percentSeries).first();
-      addSeries(new ExpressionSeries({
+      addExpressionPlaceholder(new ExpressionSeries({
         reference: measure.name,
-        format: PERCENT_FORMAT,
-        expression: new PercentExpression({ operation })
+        expression: new ArithmeticExpression({
+          operation: ExpressionSeriesOperation.ADD,
+          reference: null
+        })
       }));
     }
     onClose();
   }
 
-  return <div className={classNames("new-percent-expression", "action", { disabled: percentsDisabled })} onClick={onNewPercentExpression}>
+  return <div className={classNames("new-arithmetic-expression", "action", { disabled: percentsDisabled })} onClick={onNewOperation}>
     <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
-    <div className="action-label">Percent</div>
+    <div className="action-label">Arithmetic</div>
   </div>;
 };

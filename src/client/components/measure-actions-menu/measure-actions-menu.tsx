@@ -28,6 +28,7 @@ import { STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
 import { AddPercentSeriesButton } from "./add-percent-series";
 import "./measure-actions-menu.scss";
 
@@ -55,7 +56,7 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
     className="measure-actions-menu"
     direction={direction}
     containerStage={containerStage}
-    stage={Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE)}
+    stage={Stage.fromSize(ACTION_SIZE * 3, ACTION_SIZE)}
     fixedSize={true}
     openOn={openOn}
     onClose={onClose}
@@ -71,7 +72,7 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
 };
 
 export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
-  const { series, measure, onClose, addSeries } = props;
+  const { series, measure, onClose, addSeries, newExpression } = props;
   const measureDisabled = series.hasMeasure(measure);
 
   function onAddSeries() {
@@ -84,6 +85,7 @@ export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
       <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
       <div className="action-label">{STRINGS.add}</div>
     </div>
-    <AddPercentSeriesButton {...props} />
+    <AddPercentSeriesButton addSeries={addSeries} measure={measure} onClose={onClose} series={series} />
+    <AddArithmeticOperationButton addExpressionPlaceholder={newExpression} series={series} measure={measure} onClose={onClose} />
   </React.Fragment>;
 };

@@ -15,7 +15,7 @@
  */
 
 import { ApplyExpression, Expression as PlywoodExpression } from "plywood";
-import { ConcreteExpression, fromExpression } from "../expression/expression";
+import { ConcreteExpression } from "../expression/expression";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
 import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
@@ -27,7 +27,7 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
 
   constructor(series: ExpressionSeries, measure: Measure, measures: Measures) {
     super(series, measure);
-    this.expression = fromExpression(this.series.expression, measures);
+    this.expression = this.series.expression.toConcreteExpression(measures);
   }
 
   reactKey(derivation?: SeriesDerivation): string {

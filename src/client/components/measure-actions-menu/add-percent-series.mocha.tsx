@@ -20,7 +20,7 @@ import * as React from "react";
 import { SinonSpy, spy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
-import { ExpressionPercentOf, PercentOperation } from "../../../common/models/expression/percent-of";
+import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { PERCENT_FORMAT } from "../../../common/models/series/series-format";
@@ -32,7 +32,7 @@ const series = essence.series;
 const firstMeasure = essence.getConcreteSeries().first().measure;
 
 const constructPercentSeries = (operation: PercentOperation) =>
-  new ExpressionSeries({ reference: firstMeasure.name, format: PERCENT_FORMAT, expression: new ExpressionPercentOf({ operation }) });
+  new ExpressionSeries({ reference: firstMeasure.name, format: PERCENT_FORMAT, expression: new PercentExpression({ operation }) });
 
 const seriesWithPercents = (...percents: PercentOperation[]): SeriesList =>
   percents.reduce((e, operation) =>
