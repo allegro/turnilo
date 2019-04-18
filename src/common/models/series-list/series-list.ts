@@ -106,6 +106,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   public hasSeriesWithKey(key: string): boolean {
     return !!this.series.find(series => series.key() === key);
   }
+
+  public slice(from: number, to?: number) {
+    return this.updateSeries(series => series.slice(from, to));
+  }
 }
 
 export const EMPTY_SERIES = new SeriesList({ series: List([]) });

@@ -83,16 +83,10 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
   .build();
 
-const suggestRemovingSplits = ({ dataCube, splits }: ActionVariables) =>
-  splits.splits
-    .slice(-2)
-    .toArray()
-    .map(split => ({
-      description: `Remove ${dataCube.dimensions.getDimensionByName(split.reference).title} split`,
-      adjustment: {
-        splits: splits.removeSplit(split)
-      }
-    }));
+const suggestRemovingSplits = ({ splits }: ActionVariables) => [{
+  description: splits.length() === 3 ? "Remove last split" : `Remove last ${splits.length() - 2} splits`,
+  adjustment: { splits: splits.slice(0, 2) }
+}];
 
 const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
   dataCube.dimensions
@@ -112,16 +106,12 @@ const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => [{
   }
 }];
 
-const suggestRemovingMeasures = ({ dataCube, series }: ActionVariables) =>
-  series.series
-    .slice(-2)
-    .toArray()
-    .map(singleSeries => ({
-      description: `Remove ${dataCube.getMeasure(singleSeries.reference).title} measure`,
-      adjustment: {
-        series: series.removeSeries(singleSeries)
-      }
-    }));
+const suggestRemovingMeasures = ({ series }: ActionVariables) => [{
+  description: series.count() === 2 ? "Remove last measure" : `Remove last ${series.count() - 1} measures`,
+  adjustment: {
+    series: series.slice(0, 1)
+  }
+}];
 
 export const HEAT_MAP_MANIFEST = new Manifest(
   "heatmap",
