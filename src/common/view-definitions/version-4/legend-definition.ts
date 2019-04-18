@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { valueFromJS } from "plywood";
 import { Colors } from "../../models/colors/colors";
+import { DataCube } from "../../models/data-cube/data-cube";
 
 export interface LegendDefinition {
   dimension: string;
@@ -22,17 +24,49 @@ export interface LegendDefinition {
   hasNull: boolean;
 }
 
+const dimensionKindToPlywoodType = (kind: string) => {
+  switch (kind) {
+    case "date":
+      return "DATE_RANGE";
+    case "number":
+      return "NUMBER_RANGE";
+    case "string":
+      return "STRING";
+    default:
+      return undefined;
+  }
+};
+
 export interface LegendDefinitionConverter {
-  toColors(legend: LegendDefinition): Colors;
+  toColors(legend: LegendDefinition, dataCube: DataCube): Colors;
 
   fromColors(colors: Colors): LegendDefinition;
 }
 
 export const legendConverter: LegendDefinitionConverter = {
-  toColors(legend: LegendDefinition) {
-    const { dimension, values, limit, hasNull } = legend;
+  toColors(legend: LegendDefinition, dataCube: DataCube) {
+    const { dimension: dimensionName, values, limit, hasNull } = legend;
 
-    return new Colors({ dimension, limit, values, hasNull });
+    const dimension = dataCube.dimensions.getDimensionByName(dimensionName);
+
+    const newValues = Object.keys(values).reduce((newValues, key) => {
+      const value = values[key];
+
+      if (typeof value === "object") {
+        newValues[key] = valueFromJS({ ...value, type: dimensionKindToPlywoodType(dimension.kind) });
+      } else {
+        newValues[key] = value;
+      }
+
+      return newValues;
+    }, {} as Record<string, any>);
+
+    return Colors.fromJS({
+      dimension: dimensionName,
+      limit,
+      values: newValues,
+      hasNull
+    });
   },
 
   fromColors(colors: Colors) {

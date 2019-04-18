@@ -139,7 +139,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.indexOfClause(reference) !== -1;
   }
 
-  public getClauseForDimension({ name }: Dimension): FilterClause {
+  public getClauseForDimension({ name }: Dimension): FilterClause | undefined {
     return this.clauses.find(clause => clause.reference === name);
   }
 

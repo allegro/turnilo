@@ -612,6 +612,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public resolveVisualizationAndUpdate() {
     const { visualization, colors, splits, dataCube, visualizations, series } = this;
     const result = resolveVisualization({ colors, splits, dataCube, visualizations, series, visualization });
+    console.log("adjusted colors", result.colors);
     return this
       .set("visResolve", result.visResolve)
       .set("colors", result.colors)

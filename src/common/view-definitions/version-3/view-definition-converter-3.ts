@@ -47,7 +47,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
-    const colors = definition.legend && legendConverter.toColors(definition.legend);
+    const colors = definition.legend && legendConverter.toColors(definition.legend, dataCube);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.measures);
     const highlight = definition.highlight && highlightConverter(dataCube)

@@ -55,17 +55,17 @@ export interface DimensionTileProps {
   timekeeper: Timekeeper;
   dimension: Dimension;
   sortOn: SortOn;
-  colors?: Colors;
+  colors: Colors;
 }
 
 export interface DimensionTileState {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: Error;
-  fetchQueued?: boolean;
-  unfolded?: boolean;
-  showSearch?: boolean;
-  searchText?: string;
+  loading: boolean;
+  dataset: Dataset | null;
+  error: Error | null;
+  fetchQueued: boolean;
+  unfolded: boolean;
+  showSearch: boolean;
+  searchText: string;
 }
 
 export class LegendContent extends React.Component<DimensionTileProps, DimensionTileState> {
@@ -90,9 +90,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      const { essence, timekeeper, dimension, sortOn } = this.props;
-      const { unfolded } = this.state;
-      this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
+      this.fetchData();
     });
 
   }
@@ -102,7 +100,9 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
     return split.bucket;
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean): void {
+  fetchData(): void {
+    const { essence, timekeeper, dimension, sortOn } = this.props;
+
     if (!sortOn) {
       this.setState({
         loading: false,
@@ -111,14 +111,16 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       });
       return;
     }
-    const { searchText } = this.state;
+
+    const { unfolded, searchText } = this.state;
     const { dataCube, colors } = essence;
 
     let filter = essence.getEffectiveFilter(timekeeper);
+    console.log(filter.toJS());
     // don't remove filter if time
-    if (unfolded && dimension !== essence.getTimeDimension()) {
-      filter = filter.removeClause(dimension.name);
-    }
+    // if (unfolded && dimension !== essence.getTimeDimension()) {
+    //   filter = filter.removeClause(dimension.name);
+    // }
 
     filter = filter.setExclusionForDimension(false, dimension);
 
@@ -179,38 +181,10 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
       );
   }
 
-  updateFoldability(essence: Essence, dimension: Dimension, colors: Colors): boolean {
-    let { unfolded } = this.state;
-    if (essence.filter.filteredOn(dimension.name)) { // has filter
-      if (colors) {
-        unfolded = false;
-      } else if (dimension.kind === "time") {
-        unfolded = true;
-      }
-    } else {
-      if (!colors) {
-        unfolded = true;
-      }
-    }
-
-    this.setState({ unfolded });
-    return unfolded;
-  }
-
-  componentWillMount() {
-    const { essence, timekeeper, dimension, colors, sortOn } = this.props;
-    const unfolded = this.updateFoldability(essence, dimension, colors);
-    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
-  }
-
-  componentWillReceiveProps(nextProps: DimensionTileProps) {
-    const { essence, timekeeper, dimension, sortOn } = this.props;
-    const nextEssence = nextProps.essence;
-    const nextTimekeeper = nextProps.timekeeper;
-    const nextDimension = nextProps.dimension;
-    const nextColors = nextProps.colors;
-    const nextSortOn = nextProps.sortOn;
-    const unfolded = this.updateFoldability(nextEssence, nextDimension, nextColors);
+  componentDidUpdate(prevProps: DimensionTileProps) {
+    const { essence, timekeeper, dimension, sortOn } = prevProps;
+    const { essence: nextEssence, timekeeper: nextTimekeeper, dimension: nextDimension, sortOn: nextSortOn } = this.props;
+    const { unfolded } = this.state;
 
     // keep granularity selection if measures change or if autoupdate
     const currentSelection = essence.getTimeClause();
@@ -223,20 +197,22 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
     if (
       essence.differentDataCube(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
+      essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper) ||
       essence.differentColors(nextEssence) ||
       essence.differentSplits(nextEssence) ||
       !dimension.equals(nextDimension) ||
-      !SortOn.equals(sortOn, nextProps.sortOn) ||
+      !SortOn.equals(sortOn, nextSortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
-      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded);
+
+      this.fetchData();
     }
   }
 
   componentDidMount() {
     this.mounted = true;
+    this.fetchData();
   }
 
   componentWillUnmount() {
@@ -262,11 +238,11 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
   }
 
   toggleFold = () => {
-    const { essence, timekeeper, dimension, sortOn } = this.props;
     let { unfolded } = this.state;
     unfolded = !unfolded;
-    this.setState({ unfolded });
-    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
+    this.setState(({ unfolded }), () => {
+      this.fetchData();
+    });
   }
 
   toggleSearch = () => {
@@ -296,23 +272,11 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
   }
 
   private prepareRowsData(): Datum[] {
-    const { essence, dimension } = this.props;
-    const { dataset, unfolded, searchText } = this.state;
-
-    const filterClause = essence.filter.getClauseForDimension(dimension);
+    const { dimension } = this.props;
+    const { dataset, searchText } = this.state;
 
     if (dataset) {
       let rowData = dataset.data.slice(0, LegendContent.TOP_N);
-
-      if (!unfolded) {
-        if (filterClause) {
-          if (!(filterClause instanceof StringFilterClause)) {
-            throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
-          }
-          const predicate = clausePredicate(filterClause);
-          rowData = rowData.filter(d => predicate(d[dimension.name] as string));
-        }
-      }
 
       if (searchText) {
         const searchTextLower = searchText.toLowerCase();
@@ -340,13 +304,9 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
   }
 
   private prepareRows(rowData: Datum[]): JSX.Element[] {
-    const { essence: { filter }, dimension, colors } = this.props;
+    const { dimension, colors } = this.props;
     const { searchText } = this.state;
 
-    const filterClause = filter.getClauseForDimension(dimension);
-    if (filterClause && !(filterClause instanceof StringFilterClause)) {
-      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
-    }
     const colorValues = this.prepareColorValues(colors, dimension, rowData);
     const formatter = this.getFormatter();
 
@@ -390,13 +350,13 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
     return segmentValueStr;
   }
 
-  private prepareFoldControl(unfolded: boolean): JSX.Element {
+  private prepareFoldControl(): JSX.Element {
     return <div
-      className={classNames("folder", unfolded ? "folded" : "unfolded")}
+      className={classNames("folder", this.state.unfolded ? "folded" : "unfolded")}
       onClick={this.toggleFold}
     >
       <SvgIcon svg={require("../../icons/caret.svg")} />
-      {unfolded ? "Show selection" : "Show all"}
+      {this.state.unfolded ? "Show selection" : "Show all"}
     </div>;
   }
 
@@ -409,11 +369,10 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
   render() {
     const { sortOn, colors, dimension } = this.props;
-    const { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
+    const { loading, dataset, error, showSearch, fetchQueued, searchText } = this.state;
 
     const rowsData = this.prepareRowsData();
     const rows = this.prepareRows(rowsData);
-    const foldControl = this.prepareFoldControl(unfolded);
 
     let message: JSX.Element = null;
     if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
@@ -422,7 +381,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
 
     const className = classNames(
       "dimension-tile",
-      (foldControl ? "has-folder" : "no-folder"),
+      "has-folder",
       (colors ? "has-colors" : "no-colors")
     );
 
@@ -452,7 +411,7 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
         {rows}
         {message}
       </div>
-      {foldControl}
+      {this.prepareFoldControl()}
       {error && <QueryError error={error} />}
       {!sortOn && <Message content="No measure selected"/>}
       {loading && <Loader />}

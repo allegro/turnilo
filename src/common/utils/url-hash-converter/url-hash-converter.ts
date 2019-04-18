@@ -91,6 +91,7 @@ export const urlHashConverter: UrlHashConverter = {
     const definitionConverter = definitionConverters[version];
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
+    console.log(definition);
     return definitionConverter.fromViewDefinition(definition, dataCube, visualizations);
   },
 
