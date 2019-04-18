@@ -58,8 +58,6 @@
   },
   "dependencies": {
     "@sentry/browser": "5.0.6",
-    "@vx/event": "0.0.182",
-    "@vx/group": "0.0.183",
     "@vx/heatmap": "0.0.183",
     "@vx/scale": "0.0.182",
     "@vx/tooltip": "0.0.184",
