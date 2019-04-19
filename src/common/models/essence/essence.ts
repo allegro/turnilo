@@ -492,7 +492,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const dimension = dataCube.getDimension(split.reference);
     const { sortStrategy, name } = dimension;
     if (sortStrategy === "self" || sortStrategy === name) {
-      return new DimensionSort({ reference: name, direction: SortDirection.descending });
+      return new DimensionSort({ reference: name, direction: SortDirection.ascending });
     }
     const reference = series.hasMeasureSeries(sortStrategy) ? sortStrategy : this.defaultSort();
     return new SeriesSort({ reference, direction: SortDirection.descending });
