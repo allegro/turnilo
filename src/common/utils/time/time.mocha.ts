@@ -18,6 +18,7 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
+import { tz } from "moment-timezone";
 import { appendDays, datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, prependDays, scaleTicksFormat, scaleTicksFormatter } from "./time";
 
 describe("Time", () => {
@@ -28,13 +29,15 @@ describe("Time", () => {
     expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:02:00.000Z")), "not equal dates").to.equal(false);
   });
 
+  const dayInMarch1995 = (day: number) => new Date(Date.UTC(1995, 2, day));
+
   it("prepends days", () => {
-    var testFirstWeek: Date[] = [];
-    for (var i = 1; i < 5; i++) {
-      testFirstWeek.push(new Date(Date.UTC(1995, 2, i)));
+    const testFirstWeek: Date[] = [];
+    for (let i = 1; i < 5; i++) {
+      testFirstWeek.push(dayInMarch1995(i));
     }
 
-    var prepended = prependDays(Timezone.UTC, testFirstWeek, 5);
+    const prepended = prependDays(Timezone.UTC, testFirstWeek, 5);
     expect(prepended).to.deep.equal([
       new Date("1995-02-24T00:00:00.000Z"),
       new Date("1995-02-25T00:00:00.000Z"),
@@ -49,12 +52,12 @@ describe("Time", () => {
   });
 
   it("appends days", () => {
-    var testWeek: Date[] = [];
-    for (var i = 1; i < 5; i++) {
-      testWeek.push(new Date(Date.UTC(1995, 2, i)));
+    const testWeek: Date[] = [];
+    for (let i = 1; i < 5; i++) {
+      testWeek.push(dayInMarch1995(i));
     }
 
-    var append = appendDays(Timezone.UTC, testWeek, 5);
+    const append = appendDays(Timezone.UTC, testWeek, 5);
     expect(append).to.deep.equal([
       new Date("1995-03-01T00:00:00.000Z"),
       new Date("1995-03-02T00:00:00.000Z"),
@@ -73,18 +76,21 @@ describe("Time", () => {
   const TZ_Kiritimati = new Timezone("Pacific/Kiritimati");  // +14.0
 
   it("get walltime day returns day according to walltime", () => {
-    var date = new Date("1995-03-09T00:00:00.000Z");
+    const date = new Date("1995-03-09T00:00:00.000Z");
     expect(getDayInMonth(date, TZ_TIJUANA), "tijuana walltime").to.equal(8);
     expect(getDayInMonth(date, TZ_KATHMANDU), "kathmandu walltime").to.equal(9);
     expect(getDayInMonth(date, TZ_Kiritimati), "kiritimati walltime").to.equal(9);
   });
 
   it("get walltime month returns full month and year according to walltime", () => {
-    var date = new Date("1965-02-02T13:00:00.000Z");
+    const date = new Date("1965-02-02T13:00:00.000Z");
     expect(formatYearMonth(date, TZ_TIJUANA), "basic tijuana").to.equal("February 1965");
     expect(formatYearMonth(date, TZ_KATHMANDU), "basic kathmandu").to.equal("February 1965");
     expect(formatYearMonth(date, TZ_Kiritimati), "basic kiritimati").to.equal("February 1965");
-    date = new Date("1999-12-31T20:15:00.000Z");
+  });
+
+  it("get walltime month returns full month and year according to walltime on year boundaries", () => {
+    const date = new Date("1999-12-31T20:15:00.000Z");
     expect(formatYearMonth(date, TZ_TIJUANA), "y2k tijuana").to.equal("December 1999");
     expect(formatYearMonth(date, TZ_KATHMANDU), "y2k kathmandu").to.equal("January 2000");
     expect(formatYearMonth(date, TZ_Kiritimati), "y2k kiritimati").to.equal("January 2000");
@@ -98,7 +104,7 @@ describe("Time", () => {
     };
 
     it("should hide year when just year is the same in all ticks", () => {
-      const scale = createScale(new Date("2019-01-01"), new Date("2019-02-01T10:00"));
+      const scale = createScale(tz("2019-01-02 12:34", "UTC").toDate(), tz("2019-02-01 10:00", "UTC").toDate());
 
       const formatter = scaleTicksFormat(scale);
 
@@ -106,7 +112,7 @@ describe("Time", () => {
     });
 
     it("should hide hour when just hour is the same in all ticks", () => {
-      const scale = createScale(new Date("2018-11-01"), new Date("2019-01-10"));
+      const scale = createScale(tz("2018-12-01 18:00", "UTC").toDate(), tz("2019-01-10 18:00", "UTC").toDate());
 
       const formatter = scaleTicksFormat(scale);
 
@@ -114,7 +120,7 @@ describe("Time", () => {
     });
 
     it("should show full date when just date is the same in all ticks (degenerate case)", () => {
-      const scale = createScale(new Date("2018-01-01"), new Date("2019-01-01T10:00"));
+      const scale = createScale(tz("2018-01-01", "UTC").toDate(), tz("2019-01-01 10:00", "UTC").toDate());
 
       const formatter = scaleTicksFormat(scale);
 
@@ -122,7 +128,7 @@ describe("Time", () => {
     });
 
     it("should show just hour when only hour is different in some ticks", () => {
-      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-01T10:00"));
+      const scale = createScale(tz("2019-01-01 12:34", "UTC").toDate(), tz("2019-01-01 15:00", "UTC").toDate());
 
       const formatter = scaleTicksFormat(scale);
 
@@ -130,7 +136,7 @@ describe("Time", () => {
     });
 
     it("should show just date when only date is different in some ticks", () => {
-      const scale = createScale(new Date("2019-01-01"), new Date("2019-01-10"));
+      const scale = createScale(tz("2019-01-01 10:00", "UTC").toDate(), tz("2019-01-10 10:00", "UTC").toDate());
 
       const formatter = scaleTicksFormat(scale);
 
@@ -252,10 +258,11 @@ describe("Time", () => {
       });
 
       it("should show just days and months without year for whole current year", () => {
-        const nextYear = new Date().getFullYear() + 1;
+        const currentYear = new Date().getFullYear();
+        const nextYear = currentYear + 1;
         const range = {
-          start: coerceToCurrentYear(new Date("2019-01-01Z")),
-          end: coerceToYear(new Date("2020-01-01Z"), nextYear)
+          start: new Date(Date.UTC(currentYear, 0, 1, 0, 0, 0)),
+          end: new Date(Date.UTC(nextYear, 0, 1, 0, 0, 0))
         };
         expect(formatDatesInTimeRange(range, Timezone.UTC)).to.be.deep.eq(["1 Jan", "31 Dec"]);
       });
