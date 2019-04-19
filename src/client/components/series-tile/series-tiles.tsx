@@ -87,9 +87,9 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     ...series.map(item => <SeriesTile
       seriesList={essence.series}
       measures={essence.dataCube.measures}
-      key={item.series.key()}
+      key={item.definition.key()}
       item={item}
-      open={item.series.equals(openedSeriesMenu)}
+      open={item.definition.equals(openedSeriesMenu)}
       closeSeriesMenu={closeSeriesMenu}
       removeSeries={removeSeries}
       dragStart={dragStart}
@@ -106,7 +106,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   const overflowItems = seriesElements.slice(maxItems);
   if (overflowItems.length <= 0) return <React.Fragment>{visibleItems}</React.Fragment>;
 
-  const anyOverflowItemOpen = series.slice(maxItems).some(({ series }) => series.equals(openedSeriesMenu));
+  const anyOverflowItemOpen = series.slice(maxItems).some(({ definition }) => definition.equals(openedSeriesMenu));
   const isDummySeriesInOverflow = overflowItems.some(element => element.type === PlaceholderSeriesTile);
   const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
 

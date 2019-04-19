@@ -27,11 +27,11 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
 
   constructor(series: ExpressionSeries, measure: Measure, measures: Measures) {
     super(series, measure);
-    this.expression = this.series.expression.toConcreteExpression(measures);
+    this.expression = this.definition.expression.toConcreteExpression(measures);
   }
 
   reactKey(derivation?: SeriesDerivation): string {
-    return `${super.reactKey(derivation)}-${this.series.expression.key()}`;
+    return `${super.reactKey(derivation)}-${this.definition.expression.key()}`;
   }
 
   title(derivation?: SeriesDerivation): string {

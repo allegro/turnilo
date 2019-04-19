@@ -327,7 +327,7 @@ export class Table extends BaseVisualization<TableState> {
     const commonSort = essence.getCommonSort();
 
     function isCommonSortedBy(series: ConcreteSeries, period = SeriesDerivation.CURRENT): boolean {
-      return commonSort instanceof SeriesSort && commonSort.reference === series.series.key() && commonSort.period === period;
+      return commonSort instanceof SeriesSort && commonSort.reference === series.definition.key() && commonSort.period === period;
     }
 
     const sortArrowIcon = commonSort ? React.createElement(SvgIcon, {

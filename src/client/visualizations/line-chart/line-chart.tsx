@@ -408,7 +408,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         </HighlightModal>;
       }
 
-    } else if (!dragRange && hoverRange && immutableEqual(hoverSeries, series.series)) {
+    } else if (!dragRange && hoverRange && immutableEqual(hoverSeries, series.definition)) {
       const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
       const segmentLabel = formatValue(hoverRange, timezone);
 
@@ -626,14 +626,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const extent = this.calculateExtend(splitData, splits, getY, getYP);
     const scale = this.getScale(extent, lineStage);
 
-    const isHovered = !dragRange && immutableEqual(hoverSeries, series.series);
+    const isHovered = !dragRange && immutableEqual(hoverSeries, series.definition);
 
     return <React.Fragment key={series.reactKey()}>
       <div
         className="measure-line-chart"
         onMouseDown={e => this.onMouseDown(series.measure, e)}
-        onMouseMove={e => this.onMouseMove(splitData, series.series, scaleX, e)}
-        onMouseLeave={() => this.onMouseLeave(series.series)}
+        onMouseMove={e => this.onMouseMove(splitData, series.definition, scaleX, e)}
+        onMouseLeave={() => this.onMouseLeave(series.definition)}
       >
         <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
           {scale && this.renderHorizontalGridLines(scale, lineStage)}

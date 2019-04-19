@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { List } from "immutable";
 import * as React from "react";
-import { ArithmeticOperation, ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
+import { ArithmeticExpression, ArithmeticOperation } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
-import { Binary, threadConditionally } from "../../../common/utils/functional/functional";
+import { Binary } from "../../../common/utils/functional/functional";
 import { isTruthy } from "../../../common/utils/general/general";
 import { Dropdown } from "../dropdown/dropdown";
 import { FormatPicker } from "./format-picker";
