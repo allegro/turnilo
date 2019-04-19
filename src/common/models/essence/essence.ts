@@ -490,12 +490,17 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   private defaultSplitSort(split: Split): Sort {
     const { dataCube, series } = this;
     const dimension = dataCube.getDimension(split.reference);
-    const { sortStrategy, name } = dimension;
+    const { sortStrategy, name, kind } = dimension;
     if (sortStrategy === "self" || sortStrategy === name) {
       return new DimensionSort({ reference: name, direction: SortDirection.ascending });
     }
-    const reference = series.hasMeasureSeries(sortStrategy) ? sortStrategy : this.defaultSort();
-    return new SeriesSort({ reference, direction: SortDirection.descending });
+    if (sortStrategy && series.hasMeasureSeries(sortStrategy)) {
+      return new SeriesSort({ reference: sortStrategy, direction: SortDirection.descending });
+    }
+    if (kind === "time") {
+      return new DimensionSort({ reference: name, direction: SortDirection.ascending });
+    }
+    return new SeriesSort({ reference: this.defaultSort(), direction: SortDirection.descending });
   }
 
   private setSortOnSplits(splits: Splits): Splits {
