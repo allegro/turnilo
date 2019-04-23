@@ -116,7 +116,6 @@ export class LegendContent extends React.Component<DimensionTileProps, Dimension
     const { dataCube, colors } = essence;
 
     let filter = essence.getEffectiveFilter(timekeeper);
-    console.log(filter.toJS());
     // don't remove filter if time
     // if (unfolded && dimension !== essence.getTimeDimension()) {
     //   filter = filter.removeClause(dimension.name);

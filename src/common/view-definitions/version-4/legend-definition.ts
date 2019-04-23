@@ -49,6 +49,15 @@ export const legendConverter: LegendDefinitionConverter = {
 
     const dimension = dataCube.dimensions.getDimensionByName(dimensionName);
 
+    if (values === null) {
+      return Colors.fromJS({
+        dimension: dimensionName,
+        limit,
+        values,
+        hasNull
+      });
+    }
+
     const newValues = Object.keys(values).reduce((newValues, key) => {
       const value = values[key];
 

@@ -595,10 +595,25 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public updateSplitsWithFilter(): Essence {
-    const { filter, dataCube: { dimensions }, splits } = this;
+    const { filter, dataCube: { dimensions }, splits, colors } = this;
+    let essence = this;
+
     const newSplits = splits.updateWithFilter(filter, dimensions);
-    if (splits === newSplits) return this;
-    return this.set("splits", newSplits).resolveVisualizationAndUpdate();
+
+    if (colors) {
+      const { dimension } = colors;
+
+      const prevSplit = splits.findSplitForDimension(dimensions.getDimensionByName(dimension));
+      const nextSplit = newSplits.findSplitForDimension(dimensions.getDimensionByName(dimension));
+
+      if (!prevSplit.equals(nextSplit)) {
+        essence = essence.set("colors", Colors.fromLimit(dimension, 5));
+      }
+    }
+
+    if (splits === newSplits) return essence;
+
+    return essence.set("splits", newSplits).resolveVisualizationAndUpdate();
   }
 
   public changeColors(colors: Colors): Essence {
@@ -612,7 +627,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public resolveVisualizationAndUpdate() {
     const { visualization, colors, splits, dataCube, visualizations, series } = this;
     const result = resolveVisualization({ colors, splits, dataCube, visualizations, series, visualization });
-    console.log("adjusted colors", result.colors);
+
     return this
       .set("visResolve", result.visResolve)
       .set("colors", result.colors)

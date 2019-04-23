@@ -183,7 +183,6 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
     var js: ColorsJS = {
       dimension: this.dimension
     };
-    console.log(this.values);
     if (this.values) js.values = valuesToJS(this.values);
     if (this.hasNull) js.hasNull = true;
     if (this.limit) js.limit = this.limit;
