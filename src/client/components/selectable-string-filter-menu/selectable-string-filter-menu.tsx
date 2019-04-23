@@ -44,7 +44,7 @@ export interface SelectableStringFilterMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
   onClose: Fn;
-  filterMode?: FilterMode;
+  filterMode?: FilterMode.INCLUDE | FilterMode.EXCLUDE;
   searchText: string;
   onClauseChange: (clause: FilterClause) => Filter;
 }
@@ -56,7 +56,6 @@ export interface SelectableStringFilterMenuState {
   fetchQueued?: boolean;
   selectedValues?: Set<string>;
   promotedValues?: Set<string>; // initial selected values
-  colors?: Colors;
 }
 
 function toggle(set: Set<string>, value: string): Set<string> {
@@ -75,8 +74,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       error: null,
       fetchQueued: false,
       selectedValues: null,
-      promotedValues: null,
-      colors: null
+      promotedValues: null
     };
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
@@ -140,25 +138,24 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
     const clause = filter.getClauseForDimension(dimension);
     if (!clause) {
-      return this.initComponent(Set.of(), myColors);
+      return this.initComponent(Set.of());
     }
     if (!(clause instanceof StringFilterClause)) {
       throw new Error(`Expected string filter clause, got: ${clause}`);
     }
     const valueSet = clause.values;
-    const nonRegexValues = (existingMode !== FilterMode.REGEX && valueSet);
-    const valuesFromColors = (myColors ? Set(myColors.toArray()) : Set.of());
+    const nonRegexValues = existingMode !== FilterMode.REGEX && valueSet;
+    const valuesFromColors = myColors ? Set(myColors.toArray()) : Set.of();
     const selectedValues = nonRegexValues || valuesFromColors; // don't want regex to show up as a promoted value
 
-    this.initComponent(selectedValues, myColors);
+    this.initComponent(selectedValues);
   }
 
-  private initComponent(selectedValues: Set<string>, colors: Colors) {
+  private initComponent(selectedValues: Set<string>) {
     const { essence, timekeeper, dimension, searchText } = this.props;
     this.setState({
       selectedValues,
-      promotedValues: selectedValues,
-      colors
+      promotedValues: selectedValues
     });
 
     this.fetchData(essence, timekeeper, dimension, searchText);
@@ -208,21 +205,31 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   onValueClick(value: any, e: MouseEvent) {
-    const { selectedValues, colors: oldColors } = this.state;
-    const colors = oldColors && oldColors.toggle(value);
+    const { selectedValues } = this.state;
     if (e.altKey || e.ctrlKey || e.metaKey) {
       const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
-      return this.setState({ colors, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
+      return this.setState({ selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
-    return this.setState({ colors, selectedValues: toggle(selectedValues, value) });
+    return this.setState({ selectedValues: toggle(selectedValues, value) });
   }
 
   onOkClick = () => {
     if (!this.actionEnabled()) return;
     const { clicker, onClose } = this.props;
-    const { colors } = this.state;
-    clicker.changeFilter(this.constructFilter(), colors);
+    clicker.changeFilter(this.constructFilter(), this.getColors());
     onClose();
+  }
+
+  getColors(): Colors {
+    const { filterMode, essence: { colors }, dimension: { name } } = this.props;
+    if (!colors || colors.dimension !== name) return null;
+    switch (filterMode) {
+      case FilterMode.EXCLUDE:
+        return Colors.fromLimit(name, 5);
+      case FilterMode.INCLUDE:
+        const { selectedValues } = this.state;
+        return Colors.fromValues(name, selectedValues.toArray());
+    }
   }
 
   onCancelClick = () => {
