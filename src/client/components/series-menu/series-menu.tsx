@@ -84,7 +84,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { measure, measures, seriesList, containerStage, onClose, openOn } = this.props;
+    const { measure, measures, initialSeries, seriesList, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
     return <BubbleMenu
@@ -109,6 +109,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
       {series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression && <ArithmeticSeriesMenu
         seriesList={seriesList}
         series={series}
+        initialSeries={initialSeries}
         measure={measure}
         measures={measures}
         onChange={this.saveSeries}

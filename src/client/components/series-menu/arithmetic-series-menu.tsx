@@ -21,10 +21,12 @@ import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
+import { Series } from "../../../common/models/series/series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
 import { Binary } from "../../../common/utils/functional/functional";
 import { isTruthy } from "../../../common/utils/general/general";
 import { Dropdown } from "../dropdown/dropdown";
+import "./arithmetic-series-menu.scss";
 import { FormatPicker } from "./format-picker";
 
 interface ArithmeticOperationSeriesMenuProps {
@@ -32,6 +34,7 @@ interface ArithmeticOperationSeriesMenuProps {
   measures: Measures;
   seriesList: SeriesList;
   series: ExpressionSeries;
+  initialSeries: Series;
   onChange: Binary<ExpressionSeries, boolean, void>;
 }
 
@@ -56,7 +59,7 @@ const renderMeasure = (m: Measure): string => m.title;
 const renderSelectedMeasure = (m: Measure): string => m ? m.title : "Select measure";
 
 export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = props => {
-  const { measure, measures, series, seriesList, onChange } = props;
+  const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
   function isSeriesValid(series: ExpressionSeries): boolean {
     return series.expression instanceof ArithmeticExpression
@@ -80,12 +83,13 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
     onSeriesChange(series.setIn(["expression", "reference"], name));
   }
 
-  const isValid = isSeriesValid(series);
+  const isDuplicate = !series.equals(initialSeries) && seriesList.hasSeriesWithKey(series.key());
   const expression = series.expression as ArithmeticExpression;
   const operation = OPERATIONS.find(op => op.id === expression.operation);
   const operand = measures.getMeasureByName(expression.reference);
 
   return <React.Fragment>
+    <div className="operation-select__title">Select operation</div>
     <Dropdown<Operation>
       className="operation-select"
       items={OPERATIONS}
@@ -94,6 +98,7 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
       selectedItem={operation}
       onSelect={onOperationSelect}
     />
+    <div className="operand-select__title">Select measure</div>
     <Dropdown<Measure>
       className="operand-select"
       items={measures.filterMeasures(m => !m.equals(measure))}
@@ -103,7 +108,10 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
       selectedItem={operand}
       onSelect={onOperandSelect}
     />
-    {!isValid && "Invalid selection"}
+    {isDuplicate &&
+    <div className="arithmetic-operation-warning">
+      You can't create duplicate expressions
+    </div>}
     <FormatPicker
       measure={measure}
       format={series.format}
