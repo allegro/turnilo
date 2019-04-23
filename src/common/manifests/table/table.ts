@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-import { Essence } from "../../models/essence/essence";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -32,26 +30,6 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(split.reference);
-      const sortStrategy = splitDimension.sortStrategy;
-
-      if (isSortEmpty(split.sort)) {
-        if (sortStrategy) {
-          if (sortStrategy === "self" || split.reference === sortStrategy) {
-            split = split.changeSort(new DimensionSort({
-              reference: splitDimension.name,
-              direction: SortDirection.descending
-            }));
-          } else {
-            split = split.changeSort(new SeriesSort({
-              reference: sortStrategy,
-              direction: SortDirection.descending
-            }));
-          }
-        } else {
-          split = split.changeSort(Essence.defaultSort(series, dataCube));
-          autoChanged = true;
-        }
-      }
 
       // ToDo: review this
       if (!split.limit && splitDimension.kind !== "time") {
@@ -67,7 +45,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 8);
+    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
   .build();
 
