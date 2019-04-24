@@ -26,6 +26,7 @@ import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { NavAction, NavList } from "../nav-list/nav-list";
+import { NavLogo } from "../nav-logo/nav-logo";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./side-drawer.scss";
 
@@ -76,6 +77,12 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   componentWillUnmount() {
     window.removeEventListener("mousedown", this.globalMouseDownListener);
     window.removeEventListener("keydown", this.globalKeyDownListener);
+  }
+
+  private renderNavLogo(): JSX.Element | null {
+    const { customization } = this.props;
+    if (!customization.customLogoSvg) return null;
+    return <NavLogo customLogoSvg={customization.customLogoSvg} />;
   }
 
   private renderHomeLink() {
@@ -142,6 +149,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   render() {
     return <div className="side-drawer">
+      {this.renderNavLogo()}
       {this.renderHomeLink()}
       {this.renderDataCubes()}
       <NavList navLinks={[this.infoLink()]} />
