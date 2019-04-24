@@ -552,7 +552,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { getCubeViewHash, onNavClick, customization } = this.props;
     const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
-    throw new Error("foobar");
     if (!essence) return null;
 
     const styles = this.calculateStyles();
