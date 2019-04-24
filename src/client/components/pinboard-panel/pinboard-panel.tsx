@@ -25,6 +25,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
+import { LegendContent } from "../legend/legend-content";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./pinboard-panel.scss";
@@ -154,7 +155,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           onSelect={this.onLegendSortOnSelect}
         />;
 
-        legendDimensionTile = <DimensionTile
+        legendDimensionTile = <LegendContent
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
