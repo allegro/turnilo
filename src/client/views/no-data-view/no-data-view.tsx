@@ -18,7 +18,6 @@
 import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Customization } from "../../../common/models/customization/customization";
-import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../config/constants";
@@ -28,7 +27,6 @@ import "./no-data-view.scss";
 export type Mode = "no-cluster" | "no-cube";
 
 export interface NoDataViewProps {
-  user?: User;
   appSettings?: AppSettings;
   onNavClick?: Fn;
   onOpenAbout: Fn;
@@ -74,10 +72,9 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
   }
 
   render() {
-    const { user, onNavClick, onOpenAbout, customization } = this.props;
+    const { onNavClick, onOpenAbout, customization } = this.props;
     return <div className="no-data-view">
       <NoDataHeaderBar
-        user={user}
         onNavClick={onNavClick}
         customization={customization}
         title={STRINGS.home}

@@ -38,7 +38,6 @@ import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { User } from "../../../common/models/user/user";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { Fn } from "../../../common/utils/general/general";
@@ -90,7 +89,6 @@ const defaultLayout: CubeViewLayout = {
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
-  user?: User;
   hash: string;
   updateViewHash: (newHash: string, force?: boolean) => void;
   getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
@@ -554,6 +552,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { getCubeViewHash, onNavClick, customization } = this.props;
     const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
+    throw new Error("foobar");
     if (!essence) return null;
 
     const styles = this.calculateStyles();
