@@ -29,9 +29,9 @@ interface DruidQueryModalProps {
 }
 
 export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({ onClose, timekeeper, essence }) => {
-  const { dataCube: { attributes, source, options: { customAggregations } } } = essence;
+  const { dataCube: { attributes, source, options: { customAggregations, customTransforms } } } = essence;
   const query = makeQuery(essence, timekeeper);
-  const external = External.fromJS({ engine: "druid", attributes, source, customAggregations });
+  const external = External.fromJS({ engine: "druid", attributes, source, customAggregations, customTransforms });
   const plan = query.simulateQueryPlan({ main: external });
   const planSource = JSON.stringify(plan, null, 2);
 
