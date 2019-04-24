@@ -107,22 +107,9 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
   }
 
   private bucketForDimension(dimension: Dimension): Bucket {
-    const { essence, timekeeper } = this.props;
-    const clause = essence.filter.getClauseForDimension(dimension);
-    if (clause) {
-      if (isTimeFilter(clause)) {
-        const fixedTimeFilter = essence.evaluateSelection(clause, timekeeper);
-        return getBestGranularityForRange(fixedTimeFilter.values.first(), true, dimension.bucketedBy, dimension.granularities);
-      }
-      if (clause instanceof NumberFilterClause) {
-        return getBestGranularityForRange(clause.values.first(), true, dimension.bucketedBy, dimension.granularities);
-      }
-      throw new Error(`Expected Time or Number FilterClause. Got ${clause.type}`);
-    }
-    return getDefaultGranularityForKind(
-      dimension.kind as ContinuousDimensionKind,
-      dimension.bucketedBy,
-      dimension.granularities);
+    const { essence } = this.props;
+    const split = essence.splits.findSplitForDimension(dimension);
+    return split.bucket;
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean): void {
@@ -219,6 +206,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) ||
+      essence.differentSplits(nextEssence) ||
       !dimension.equals(nextDimension) ||
       !SortOn.equals(sortOn, nextProps.sortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
