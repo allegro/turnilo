@@ -272,17 +272,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
   }
 
-  onDragStart = (e: React.DragEvent<HTMLElement>) => {
-    const { dimension } = this.props;
-
-    const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = "all";
-    setDragData(dataTransfer, "text/plain", dimension.title);
-
-    DragManager.setDragDimension(dimension);
-    setDragGhost(dataTransfer, dimension.title);
-  }
-
   toggleSearch = () => {
     this.setState(({ showSearch }: any) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
@@ -510,7 +499,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       style={style}
       title={this.getTitleHeader()}
       toggleChangeFn={this.toggleSearch}
-      onDragStart={this.onDragStart}
       onSearchChange={this.onSearchChange}
       searchText={searchText}
       showSearch={showSearch}
