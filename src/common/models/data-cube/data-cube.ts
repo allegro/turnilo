@@ -704,8 +704,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     // No need for the overrides
     value.attributeOverrides = null;
 
-    value.options = null;
-
     return new DataCube(value);
   }
 
