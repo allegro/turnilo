@@ -75,7 +75,6 @@ export interface LegendContentState {
   unfolded: boolean;
   showSearch?: boolean;
   searchText?: string;
-  selectedGranularity?: Bucket;
 }
 
 export class LegendContent extends React.Component<LegendContentProps, LegendContentState> {
@@ -95,7 +94,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       fetchQueued: false,
       unfolded: true,
       showSearch: false,
-      selectedGranularity: null,
       searchText: ""
     };
 
@@ -127,7 +125,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       dimension.granularities);
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Bucket): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean): void {
     if (!sortOn) {
       this.setState({
         loading: false,
@@ -161,14 +159,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     let sortExpression: Expression = null;
 
     if (dimension.canBucketByDefault()) {
-
-      if (!selectedGranularity) {
-        selectedGranularity = this.bucketForDimension(dimension);
-      }
-
-      this.setState({ selectedGranularity });
-
-      query = query.split($(dimension.name).performAction(bucketToAction(selectedGranularity)), dimension.name);
+      query = query.split($(dimension.name).performAction(bucketToAction(this.bucketForDimension(dimension))), dimension.name);
       sortExpression = $(dimension.name);
     } else {
       query = query.split(dimension.expression, dimension.name);
@@ -213,7 +204,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const { essence, timekeeper, dimension, sortOn } = prevProps;
     const nextProps = this.props;
 
-    const { selectedGranularity, unfolded } = this.state;
+    const { unfolded } = this.state;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     const nextDimension = nextProps.dimension;
@@ -224,8 +215,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const nextSelection = nextEssence.getTimeClause();
     const differentTimeFilterSelection = currentSelection ? !currentSelection.equals(nextSelection) : Boolean(nextSelection);
 
-    const persistedGranularity = differentTimeFilterSelection ? null : selectedGranularity;
-
     if (
       essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
@@ -235,7 +224,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
-      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded, persistedGranularity);
+      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded);
     }
   }
 
@@ -299,35 +288,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
   }
 
   getTitleHeader(): string {
-    const { dimension } = this.props;
-    const { selectedGranularity } = this.state;
-
-    if (selectedGranularity && dimension.kind === "time") {
-      return `${dimension.title} (${(selectedGranularity as Duration).getDescription()})`;
-    }
-    return dimension.title;
-  }
-
-  onSelectGranularity(selectedGranularity: Bucket) {
-    if (selectedGranularity === this.state.selectedGranularity) return;
-    const { essence, timekeeper, dimension, sortOn } = this.props;
-    this.setState({ dataset: null });
-    const { unfolded } = this.state;
-    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded, selectedGranularity);
-  }
-
-  getGranularityActions(): TileAction[] {
-    const { dimension } = this.props;
-    const { selectedGranularity } = this.state;
-    const granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, true);
-    return granularities.map(g => {
-      return {
-        selected: granularityEquals(selectedGranularity, g),
-        onSelect: this.onSelectGranularity.bind(this, g),
-        displayValue: formatGranularity(g),
-        keyString: granularityToString(g)
-      };
-    });
+    return this.props.dimension.title;
   }
 
   private prepareRowsData(): Datum[] {
@@ -489,12 +450,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       });
     }
 
-    let actions: TileAction[] = null;
-
-    if (dimension.canBucketByDefault()) {
-      actions = this.getGranularityActions();
-    }
-
     return <SearchableTile
       style={style}
       title={this.getTitleHeader()}
@@ -503,8 +458,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}
-      className={className}
-      actions={actions}>
+      className={className}>
       <div className="rows">
         {rows}
         {message}
