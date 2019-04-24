@@ -62,7 +62,7 @@ export interface LegendContentProps {
   timekeeper: Timekeeper;
   dimension: Dimension;
   sortOn: SortOn;
-  colors?: Colors;
+  colors: Colors;
   onClose?: any;
 }
 
@@ -217,17 +217,12 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     const nextDimension = nextProps.dimension;
-    const nextColors = nextProps.colors;
     const nextSortOn = nextProps.sortOn;
 
     // keep granularity selection if measures change or if autoupdate
     const currentSelection = essence.getTimeClause();
     const nextSelection = nextEssence.getTimeClause();
     const differentTimeFilterSelection = currentSelection ? !currentSelection.equals(nextSelection) : Boolean(nextSelection);
-    if (differentTimeFilterSelection) {
-      // otherwise render will try to format exiting dataset based off of new granularity (before fetchData returns)
-      this.setState({ dataset: null });
-    }
 
     const persistedGranularity = differentTimeFilterSelection ? null : selectedGranularity;
 
@@ -255,21 +250,18 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     this.mounted = false;
   }
 
-  onRowClick(value: any, event: MouseEvent) {
+  onRowClick(value: any) {
     const { clicker, dimension } = this.props;
     const { dataset } = this.state;
-
     let { colors } = this.props;
 
-    if (colors && colors.dimension === dimension.name) {
-      if (colors.limit) {
-        if (!dataset) return;
-        const values = dataset.data.slice(0, colors.limit).map(d => d[dimension.name]);
-        colors = Colors.fromValues(colors.dimension, values);
-      }
-      colors = colors.toggle(value);
-      clicker.changeColors(colors);
-    }
+    if (colors.limit) {
+      if (!dataset) return;
+      const values = dataset.data.slice(0, colors.limit).map(d => d[dimension.name]);
+      colors = Colors.fromValues(colors.dimension, values);
+  }
+    colors = colors.toggle(value);
+    clicker.changeColors(colors);
   }
 
   toggleFold = () => {
@@ -382,11 +374,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
   }
 
   private prepareColorValues(colors: Colors, dimension: Dimension, rowData: Datum[]): string[] {
-    if (colors) {
-      return colors.getColors(rowData.map(d => d[dimension.name]));
-    } else {
-      return null;
-    }
+    return colors.getColors(rowData.map(d => d[dimension.name]));
   }
 
   private getFormatter(): Unary<Datum, string> {
@@ -414,17 +402,12 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       let className = "row";
       let checkbox: JSX.Element = null;
       let selected = false;
-      if ((filterClause || colors) && !continuous) {
-        if (colors) {
-          selected = false;
-          className += " color";
-        } else {
-          selected = (filterClause as StringFilterClause).values.has(segmentValue as string);
-          className += " " + (selected ? "selected" : "not-selected");
-        }
+      if (!continuous) {
+        selected = false;
+        className += " color";
         checkbox = <Checkbox
           selected={selected}
-          color={colorValues ? colorValues[i] : null}
+          color={colorValues[i]}
         />;
       }
 
@@ -490,8 +473,8 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
     const className = classNames(
       "dimension-tile",
-      (foldControl ? "has-folder" : "no-folder"),
-      (colors ? "has-colors" : "no-colors"),
+      "has-folder",
+      "has-colors",
       { continuous: isContinuous }
     );
 
