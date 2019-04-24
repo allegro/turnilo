@@ -44,48 +44,53 @@ export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, origina
 export const orderByNumberRangeDimensionDecreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
 export const orderByNumberRangeDimensionIncreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
 
+const datumKey = (dataset: Datum, key: string, timezone: Timezone): string =>
+  formatValue(dataset[key], timezone);
+
 export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: string, secondSplitName: string, order: Order<any>, timezone: Timezone): Dataset => {
-  const labels: { [index: string]: number } = {};
-  const labelsToOriginalValues: { [index: string]: any } = {};
+  const totals: { [ident: string]: number } = {};
+  const identToOriginalKey: { [ident: string]: any } = {};
 
   for (const datum of dataset.data) {
-    const secondDataset = (datum[SPLIT] as Dataset).data;
+    const nestedDataset = (datum[SPLIT] as Dataset).data;
 
-    for (const secondDatum of secondDataset) {
-      const value = secondDatum[measureName] as number;
-      const label = formatValue(secondDatum[secondSplitName], timezone);
+    for (const nestedDatum of nestedDataset) {
+      const value = nestedDatum[measureName] as number;
+      const ident = datumKey(nestedDatum, secondSplitName, timezone);
 
-      if (labels[label] !== undefined) {
-        labels[label] += value;
+      if (totals[ident] !== undefined) {
+        totals[ident] += value;
       } else {
-        labels[label] = value;
-        labelsToOriginalValues[label] = secondDatum[secondSplitName];
+        totals[ident] = value;
+        identToOriginalKey[ident] = nestedDatum[secondSplitName];
       }
     }
   }
-  const sortedLabels = Object.keys(labels)
-    .map(label => [label, labels[label], labelsToOriginalValues[label]] as [string, number, any])
+
+  const sortedIdents = Object.keys(totals)
+    .map(ident => [ident, totals[ident], identToOriginalKey[ident]] as [string, number, any])
     .sort(order)
-    .map(([label]) => label);
+    .map(([ident]) => ident);
 
   const newDataset = dataset.data.map(datum => {
 
-    const secondDatasetBySecondSplitName = (datum[SPLIT] as Dataset).data.reduce((acc, datum) => {
-      acc[formatValue(datum[secondSplitName], timezone)] = datum;
-      return acc;
+    const identToNestedDatum = (datum[SPLIT] as Dataset).data.reduce((datumsByIdent, datum) => {
+      const ident = datumKey(datum, secondSplitName, timezone);
+      datumsByIdent[ident] = datum;
+      return datumsByIdent;
     }, {} as {[index: string]: Datum});
 
-    const newSecondDataset = sortedLabels.map(label => {
-      const value = secondDatasetBySecondSplitName[label];
+    const filledNestedDataset = sortedIdents.map(ident => {
+      const nestedDatum = identToNestedDatum[ident];
 
-      if (value) {
+      if (nestedDatum) {
         return {
-          ...value,
-          [measureName]: Number.isNaN(Number(value[measureName])) ? 0 : value[measureName]
+          ...nestedDatum,
+          [measureName]: Number.isNaN(Number(nestedDatum[measureName])) ? 0 : nestedDatum[measureName]
         };
       } else {
         return {
-          [secondSplitName]: labelsToOriginalValues[label],
+          [secondSplitName]: identToOriginalKey[ident],
           [measureName]: 0
         } as Datum;
       }
@@ -93,7 +98,7 @@ export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: stri
 
     return {
       ...datum,
-      [SPLIT]: (datum[SPLIT] as Dataset).changeData(newSecondDataset)
+      [SPLIT]: (datum[SPLIT] as Dataset).changeData(filledNestedDataset)
     } as Datum;
   });
 
