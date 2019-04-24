@@ -72,8 +72,7 @@ export interface LegendContentState {
   error?: Error;
   notice?: string;
   fetchQueued?: boolean;
-  unfolded?: boolean;
-  foldable?: boolean;
+  unfolded: boolean;
   showSearch?: boolean;
   searchText?: string;
   selectedGranularity?: Bucket;
@@ -95,7 +94,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       error: null,
       fetchQueued: false,
       unfolded: true,
-      foldable: false,
       showSearch: false,
       selectedGranularity: null,
       searchText: ""
@@ -138,20 +136,16 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       });
       return;
     }
-    const { searchText, foldable } = this.state;
+    const { searchText } = this.state;
     const { dataCube, colors } = essence;
 
     let filter = essence.getEffectiveFilter(timekeeper);
-    // don't remove filter if time
-    if (unfolded && dimension !== essence.getTimeDimension()) {
-      filter = filter.removeClause(dimension.name);
-    }
 
     filter = filter.setExclusionForDimension(false, dimension);
 
     let filterExpression = filter.toExpression(dataCube);
 
-    const shouldFoldRows = !unfolded && foldable && colors && colors.dimension === dimension.name && colors.values;
+    const shouldFoldRows = !unfolded && colors && colors.dimension === dimension.name && colors.values;
 
     if (shouldFoldRows) {
       filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
@@ -215,41 +209,16 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       );
   }
 
-  updateFoldability(essence: Essence, dimension: Dimension, colors: Colors): boolean {
-    let { unfolded } = this.state;
-    let foldable = true;
-    if (essence.filter.filteredOn(dimension.name)) { // has filter
-      if (colors) {
-        foldable = false;
-        unfolded = false;
-      } else if (dimension.kind === "time") {
-        foldable = false;
-        unfolded = true;
-      }
-    } else {
-      if (!colors) {
-        foldable = false;
-        unfolded = true;
-      }
-    }
-
-    if (foldable !== this.state.foldable || unfolded !== this.state.unfolded) {
-      this.setState({ foldable, unfolded });
-    }
-    return unfolded;
-  }
-
   componentDidUpdate(prevProps: LegendContentProps) {
     const { essence, timekeeper, dimension, sortOn } = prevProps;
     const nextProps = this.props;
 
-    const { selectedGranularity } = this.state;
+    const { selectedGranularity, unfolded } = this.state;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     const nextDimension = nextProps.dimension;
     const nextColors = nextProps.colors;
     const nextSortOn = nextProps.sortOn;
-    const unfolded = this.updateFoldability(nextEssence, nextDimension, nextColors);
 
     // keep granularity selection if measures change or if autoupdate
     const currentSelection = essence.getTimeClause();
@@ -277,8 +246,8 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
   componentDidMount() {
     this.mounted = true;
-    const { essence, timekeeper, dimension, colors, sortOn } = this.props;
-    const unfolded = this.updateFoldability(essence, dimension, colors);
+    const { essence, timekeeper, dimension, sortOn } = this.props;
+    const { unfolded } = this.state;
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
   }
 
@@ -360,9 +329,9 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
   onSelectGranularity(selectedGranularity: Bucket) {
     if (selectedGranularity === this.state.selectedGranularity) return;
-    const { essence, timekeeper, dimension, colors, sortOn } = this.props;
-    const unfolded = this.updateFoldability(essence, dimension, colors);
+    const { essence, timekeeper, dimension, sortOn } = this.props;
     this.setState({ dataset: null });
+    const { unfolded } = this.state;
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded, selectedGranularity);
   }
 
@@ -488,39 +457,31 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     return segmentValueStr;
   }
 
-  private prepareFoldControl(isFoldable: boolean, unfolded: boolean): JSX.Element {
-    if (isFoldable) {
-      return <div
-        className={classNames("folder", unfolded ? "folded" : "unfolded")}
-        onClick={this.toggleFold}
-      >
-        <SvgIcon svg={require("../../icons/caret.svg")} />
-        {unfolded ? "Show selection" : "Show all"}
-      </div>;
-    } else {
-      return null;
-    }
+  private prepareFoldControl(unfolded: boolean): JSX.Element {
+    return <div
+      className={classNames("folder", unfolded ? "folded" : "unfolded")}
+      onClick={this.toggleFold}
+    >
+      <SvgIcon svg={require("../../icons/caret.svg")} />
+      {unfolded ? "Show selection" : "Show all"}
+    </div>;
   }
 
-  private calculateTileHeight(rowsCount: int, isFoldable: boolean): number {
+  private calculateTileHeight(rowsCount: int): number {
     const titleAndPaddingHeight = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;
     const rowsHeightWithPaddingAndTitle = Math.max(2, rowsCount) * PIN_ITEM_HEIGHT + titleAndPaddingHeight;
 
-    if (isFoldable) {
-      return rowsHeightWithPaddingAndTitle + LegendContent.FOLDER_BOX_HEIGHT;
-    } else {
-      return rowsHeightWithPaddingAndTitle;
-    }
+    return rowsHeightWithPaddingAndTitle + LegendContent.FOLDER_BOX_HEIGHT;
   }
 
   render() {
-    const { sortOn, essence, dimension, colors, onClose } = this.props;
-    const { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText } = this.state;
+    const { sortOn, dimension, colors, onClose } = this.props;
+    const { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
 
     const isContinuous = dimension.isContinuous();
     const rowsData = this.prepareRowsData();
     const rows = this.prepareRows(rowsData, isContinuous);
-    const foldControl = this.prepareFoldControl(foldable, unfolded);
+    const foldControl = this.prepareFoldControl(unfolded);
 
     let message: JSX.Element = null;
     if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
@@ -534,7 +495,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       { continuous: isContinuous }
     );
 
-    const maxHeight = this.calculateTileHeight(rows.length, foldable);
+    const maxHeight = this.calculateTileHeight(rows.length);
     const style = {
       maxHeight
     };
