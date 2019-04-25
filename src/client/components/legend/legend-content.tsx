@@ -32,7 +32,6 @@ import { formatTimeRange } from "../../../common/utils/time/time";
 import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
-import "../dimension-tile/dimension-tile.scss";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { Message } from "../message/message";
@@ -40,6 +39,7 @@ import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
+import "./legend-content.scss";
 
 export interface LegendContentProps {
   clicker: Clicker;
@@ -273,22 +273,16 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const formatter = this.getFormatter();
 
     return rowData.map((datum, i) => {
+      const checkbox: JSX.Element = !continuous && <Checkbox
+        selected={false}
+        color={colorValues[i]}
+      />;
+
       const segmentValue = datum[dimension.name];
-
-      let className = "row";
-      let checkbox: JSX.Element = null;
-      if (!continuous) {
-        className += " color";
-        checkbox = <Checkbox
-          selected={false}
-          color={colorValues[i]}
-        />;
-      }
-
       const segmentValueStr = this.getSegmentValueString(segmentValue as PlywoodValue);
 
       return <div
-        className={className}
+        className="row"
         key={segmentValueStr}
         onClick={this.onRowClick.bind(this, segmentValue)}
       >
@@ -346,9 +340,8 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     }
 
     const className = classNames(
-      "dimension-tile",
+      "legend-content",
       "has-folder",
-      "has-colors",
       { continuous: isContinuous }
     );
 

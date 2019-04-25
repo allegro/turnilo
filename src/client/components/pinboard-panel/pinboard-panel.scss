@@ -30,12 +30,13 @@
   padding: $tile-margin-v $tile-margin-h 0 $tile-margin-h;
 
   .dimension-tile,
+  .legend-content,
   .drop-indicator-tile {
     flex-grow: 1;
     margin-bottom: 1px;
   }
 
-  .dimension-tile.has-colors {
+  .legend-content {
     margin-bottom: 5px;
   }
 
