@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
-import { Set } from "immutable";
 import { $, Dataset, Datum, Expression, NumberRange, PlywoodValue, r, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { clausePredicate } from "../../../common/models/filter-clause/filter-clause-predicate";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
-import {
-  ContinuousDimensionKind,
-  formatGranularity,
-  getBestGranularityForRange,
-  getDefaultGranularityForKind,
-  getGranularities,
-  granularityEquals,
-  granularityToString
-} from "../../../common/models/granularity/granularity";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { TimeShiftEnvType } from "../../../common/models/time-shift/time-shift-env";
@@ -43,16 +29,15 @@ import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { formatTimeRange } from "../../../common/utils/time/time";
-import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
-import { classNames, setDragData, setDragGhost } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import "../dimension-tile/dimension-tile.scss";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { Message } from "../message/message";
 import { QueryError } from "../query-error/query-error";
-import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
+import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 
@@ -70,7 +55,6 @@ export interface LegendContentState {
   loading?: boolean;
   dataset?: Dataset;
   error?: Error;
-  notice?: string;
   fetchQueued?: boolean;
   unfolded: boolean;
   showSearch?: boolean;
@@ -99,9 +83,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      const { essence, timekeeper, dimension, sortOn } = this.props;
-      const { unfolded } = this.state;
-      this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
+      this.fetchData();
     });
 
   }
@@ -112,7 +94,10 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     return split.bucket;
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean): void {
+  fetchData(): void {
+    const { essence, timekeeper, dimension, sortOn  } = this.props;
+    const { unfolded } = this.state;
+
     if (!sortOn) {
       this.setState({
         loading: false,
@@ -124,13 +109,12 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const { searchText } = this.state;
     const { dataCube, colors } = essence;
 
-    let filter = essence.getEffectiveFilter(timekeeper);
+    let filterExpression = essence
+      .getEffectiveFilter(timekeeper)
+      .setExclusionForDimension(false, dimension)
+      .toExpression(dataCube);
 
-    filter = filter.setExclusionForDimension(false, dimension);
-
-    let filterExpression = filter.toExpression(dataCube);
-
-    const shouldFoldRows = !unfolded && colors && colors.dimension === dimension.name && colors.values;
+    const shouldFoldRows = !unfolded && colors.values;
 
     if (shouldFoldRows) {
       filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
@@ -140,10 +124,10 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
     }
 
-    let query: any = $("main")
+    let query: Expression = $("main")
       .filter(filterExpression);
 
-    let sortExpression: Expression = null;
+    let sortExpression: Expression;
 
     if (dimension.canBucketByDefault()) {
       query = query.split($(dimension.name).performAction(bucketToAction(this.bucketForDimension(dimension))), dimension.name);
@@ -187,7 +171,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       );
   }
 
-  componentDidUpdate(prevProps: LegendContentProps) {
+  componentDidUpdate(prevProps: LegendContentProps, prevState: LegendContentState) {
     const { essence, timekeeper, dimension, sortOn } = prevProps;
     const nextProps = this.props;
 
@@ -195,7 +179,6 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
     const nextDimension = nextProps.dimension;
-    const nextSortOn = nextProps.sortOn;
 
     // keep granularity selection if measures change or if autoupdate
     const currentSelection = essence.getTimeClause();
@@ -204,23 +187,22 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
     if (
       essence.differentDataCube(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, unfolded ? dimension : null) ||
+      essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper) ||
       essence.differentColors(nextEssence) ||
       essence.differentSplits(nextEssence) ||
       !dimension.equals(nextDimension) ||
       !SortOn.equals(sortOn, nextProps.sortOn) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
-      differentTimeFilterSelection
+      differentTimeFilterSelection ||
+      unfolded !== prevState.unfolded
     ) {
-      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded);
+      this.fetchData();
     }
   }
 
   componentDidMount() {
     this.mounted = true;
-    const { essence, timekeeper, dimension, sortOn } = this.props;
-    const { unfolded } = this.state;
-    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
+    this.fetchData();
   }
 
   componentWillUnmount() {
@@ -236,21 +218,17 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       if (!dataset) return;
       const values = dataset.data.slice(0, colors.limit).map(d => d[dimension.name]);
       colors = Colors.fromValues(colors.dimension, values);
-  }
+    }
     colors = colors.toggle(value);
     clicker.changeColors(colors);
   }
 
   toggleFold = () => {
-    const { essence, timekeeper, dimension, sortOn } = this.props;
-    let { unfolded } = this.state;
-    unfolded = !unfolded;
-    this.setState({ unfolded });
-    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
+    this.setState(({ unfolded }) => ({ unfolded: !unfolded }));
   }
 
   toggleSearch = () => {
-    this.setState(({ showSearch }: any) => ({ showSearch: !showSearch }));
+    this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
   }
 
@@ -275,47 +253,18 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     this.collectTriggerSearch();
   }
 
-  getTitleHeader(): string {
-    return this.props.dimension.title;
-  }
-
   private prepareRowsData(): Datum[] {
-    const { essence, dimension } = this.props;
-    const { dataset, unfolded, searchText } = this.state;
-
-    const filterClause = essence.filter.getClauseForDimension(dimension);
+    const { dataset } = this.state;
 
     if (dataset) {
       let rowData = dataset.data.slice(0, LegendContent.TOP_N);
-
-      if (!unfolded) {
-        if (filterClause) {
-          if (!(filterClause instanceof StringFilterClause)) {
-            throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
-          }
-          const predicate = clausePredicate(filterClause);
-          rowData = rowData.filter(d => predicate(d[dimension.name] as string));
-        }
-      }
-
-      if (searchText) {
-        const searchTextLower = searchText.toLowerCase();
-        rowData = rowData.filter(d => {
-          return String(d[dimension.name]).toLowerCase().indexOf(searchTextLower) !== -1;
-        });
-      }
-
       return rowData;
     } else {
       return [];
     }
   }
 
-  private prepareColorValues(colors: Colors, dimension: Dimension, rowData: Datum[]): string[] {
-    return colors.getColors(rowData.map(d => d[dimension.name]));
-  }
-
-  private getFormatter(): Unary<Datum, string> {
+  private getFormatter(): Unary<Datum, string> | null {
     const { sortOn, essence } = this.props;
 
     const series = sortOn && essence.findConcreteSeries(sortOn.key);
@@ -324,14 +273,10 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
   }
 
   private prepareRows(rowData: Datum[], continuous: boolean): JSX.Element[] {
-    const { essence: { filter }, dimension, colors } = this.props;
+    const { dimension, colors } = this.props;
     const { searchText } = this.state;
 
-    const filterClause = filter.getClauseForDimension(dimension);
-    if (filterClause && !(filterClause instanceof StringFilterClause)) {
-      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
-    }
-    const colorValues = this.prepareColorValues(colors, dimension, rowData);
+    const colorValues = colors.getColors(rowData.map(d => d[dimension.name]));
     const formatter = this.getFormatter();
 
     return rowData.map((datum, i) => {
@@ -339,12 +284,10 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
       let className = "row";
       let checkbox: JSX.Element = null;
-      let selected = false;
       if (!continuous) {
-        selected = false;
         className += " color";
         checkbox = <Checkbox
-          selected={selected}
+          selected={false}
           color={colorValues[i]}
         />;
       }
@@ -396,7 +339,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
   }
 
   render() {
-    const { sortOn, dimension, colors, onClose } = this.props;
+    const { sortOn, dimension, onClose } = this.props;
     const { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
 
     const isContinuous = dimension.isContinuous();
@@ -440,7 +383,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
 
     return <SearchableTile
       style={style}
-      title={this.getTitleHeader()}
+      title={dimension.title}
       toggleChangeFn={this.toggleSearch}
       onSearchChange={this.onSearchChange}
       searchText={searchText}
