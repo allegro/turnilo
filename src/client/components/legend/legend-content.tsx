@@ -233,23 +233,16 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
   }
 
   onSearchChange = (text: string) => {
-    const { searchText, dataset, fetchQueued, loading } = this.state;
     const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+    const { searchText } = this.state;
 
     if (searchText === newSearchText) return; // nothing to do;
-
-    // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
-    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < LegendContent.TOP_N) {
-      this.setState({
-        searchText: newSearchText
-      });
-      return;
-    }
 
     this.setState({
       searchText: newSearchText,
       fetchQueued: true
     });
+
     this.collectTriggerSearch();
   }
 
@@ -335,7 +328,7 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
     const titleAndPaddingHeight = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;
     const rowsHeightWithPaddingAndTitle = Math.max(2, rowsCount) * PIN_ITEM_HEIGHT + titleAndPaddingHeight;
 
-    return rowsHeightWithPaddingAndTitle + LegendContent.FOLDER_BOX_HEIGHT;
+    return rowsHeightWithPaddingAndTitle + LegendContent.FOLDER_BOX_HEIGHT + (this.state.showSearch ? 26 : 0);
   }
 
   render() {
@@ -393,11 +386,11 @@ export class LegendContent extends React.Component<LegendContentProps, LegendCon
       <div className="rows">
         {rows}
         {message}
+        {loading && <Loader />}
       </div>
       {foldControl}
       {error && <QueryError error={error} />}
       {!sortOn && <Message content="No measure selected"/>}
-      {loading && <Loader />}
     </SearchableTile>;
   }
 }
