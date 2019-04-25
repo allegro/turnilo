@@ -19,6 +19,7 @@ import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { formatSegment } from "../../../common/utils/formatter/formatter";
+import { noop } from "../../../common/utils/functional/functional";
 import { Scroller } from "../../components/scroller/scroller";
 import { SPLIT } from "../../config/constants";
 import "./heat-map.scss";
@@ -53,13 +54,13 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
     if (!this.state.hoveredRectangle || this.state.hoveredRectangle.datum !== data.datum) {
       this.setState({ hoveredRectangle: data });
     }
-    const { onHover = () => {} } = this.props;
+    const { onHover = noop } = this.props;
     onHover(data);
   }
 
   handleHoverStop = () => {
     this.setState({ hoveredRectangle: null });
-    const { onHoverStop = () => {} } = this.props;
+    const { onHoverStop = noop } = this.props;
     onHoverStop();
   }
 
@@ -75,7 +76,7 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
     const { dataset, essence } = this.props;
     const { hoveredRectangle, leftLabelsWidth, topLabelsHeight } = this.state;
 
-    const measure = essence.getConcreteSeries().first().measure;
+    const series = essence.getConcreteSeries().first();
     const firstSplit = essence.splits.splits.get(0);
     const secondSplit = essence.splits.splits.get(1);
 
@@ -122,7 +123,7 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
             onHover={this.handleHover}
             onHoverStop={this.handleHoverStop}
             dataset={dataset}
-            measureName={measure.name}
+            series={series}
             hoveredRectangle={this.state.hoveredRectangle}
             leftLabelName={firstSplit.reference}
             topLabelName={secondSplit.reference}

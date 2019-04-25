@@ -17,19 +17,17 @@
 
 import { HeatmapRect } from "@vx/heatmap";
 import { scaleLinear } from "@vx/scale";
+import { max, min } from "d3";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { noop } from "../../../common/utils/functional/functional";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { SPLIT } from "../../config/constants";
 import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
 
 const white = "#fff";
 const orange = "#ff5a00";
-
-const max = (data: any[], datumToNumber: (d: any) => number) =>
-  Math.max(...data.map(datumToNumber));
-const min = (data: any[], datumToNumber: (d: any) => number) =>
-  Math.min(...data.map(datumToNumber));
 
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
@@ -46,7 +44,7 @@ export interface RectangleData {
 interface HeatMapRectanglesProps {
   dataset: Datum[];
   tileSize?: number;
-  measureName: string;
+  series: ConcreteSeries;
   leftLabelName: string;
   topLabelName: string;
   hoveredRectangle?: RectangleData;
@@ -60,8 +58,8 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
   handleMouseMove = (event: MouseEvent) => {
     const { clientX: x, clientY: y } = event;
     const {
-      onHoverStop = () => {},
-      onHover = () => {},
+      onHoverStop = noop,
+      onHover = noop,
       leftLabelName,
       topLabelName,
       dataset
@@ -107,8 +105,8 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
   }
 
   private setup() {
-    const { tileSize = 25, dataset, measureName, hoveredRectangle } = this.props;
-    const count = (d: Datum) => d[measureName] as number;
+    const { tileSize = 25, dataset, series, hoveredRectangle } = this.props;
+    const count = (d: Datum) => series.selectValue(d);
 
     const colorMin = min(dataset, d => min(bins(d), count));
     const colorMax = max(dataset, d => max(bins(d), count));
