@@ -81,6 +81,7 @@
     "plywood": "0.20.2",
     "plywood-base-api": "0.2.8",
     "plywood-druid-requester": "2.6.1",
+    "prom-client": "11.3.0",
     "react": "16.2.0",
     "react-copy-to-clipboard": "5.0.1",
     "react-dom": "16.2.1",
