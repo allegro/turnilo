@@ -16,19 +16,20 @@
  */
 
 import { Duration } from "chronoshift";
-import { Sort, SortDirection, SortReferenceType } from "../sort/sort";
+import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
 import { Split, SplitType } from "./split";
+
+const createSort = (isDimension: boolean, reference: string, direction: SortDirection): Sort => {
+  if (isDimension) return new DimensionSort({ reference, direction });
+  return new SeriesSort({ reference, direction });
+};
 
 export class SplitFixtures {
 
   static stringSplitCombine(dimension: string, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
       reference: dimension,
-      sort: new Sort({
-        reference: sortOn,
-        direction,
-        type: dimension === sortOn ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
-      }),
+      sort: createSort(dimension === sortOn, sortOn, direction),
       limit
     });
   }
@@ -38,11 +39,7 @@ export class SplitFixtures {
       type: SplitType.number,
       reference: dimension,
       bucket: granularity,
-      sort: new Sort({
-        reference: sortOn,
-        direction,
-        type: dimension === sortOn ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
-      }),
+      sort: createSort(dimension === sortOn, sortOn, direction),
       limit
     });
   }
@@ -52,11 +49,7 @@ export class SplitFixtures {
       type: SplitType.time,
       reference: dimension,
       bucket: Duration.fromJS(granularity),
-      sort: new Sort({
-        reference: sortOn,
-        direction,
-        type: dimension === sortOn ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE
-      }),
+      sort: createSort(dimension === sortOn, sortOn, direction),
       limit
     });
   }

@@ -64,12 +64,12 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   }
 
   globalMouseDownListener = (e: MouseEvent) => {
-    var { open } = this.state;
+    const { open } = this.state;
     if (!open) return;
 
-    var myElement = ReactDOM.findDOMNode(this);
+    const myElement = ReactDOM.findDOMNode(this);
     if (!myElement) return;
-    var target = e.target as Element;
+    const target = e.target as Element;
 
     if (isInside(target, myElement)) return;
     this.setState({ open: false });
@@ -77,23 +77,19 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
-    var { open } = this.state;
+    const { open } = this.state;
     if (!open) return;
     this.setState({ open: false });
   }
 
   renderMenu() {
-    var { items, renderItem, keyItem, selectedItem, equal, onSelect, menuClassName } = this.props;
+    const { items, renderItem = String, keyItem = renderItem, selectedItem, equal = simpleEqual, onSelect, menuClassName } = this.props;
     if (!items || !items.length) return null;
-    if (!renderItem) renderItem = String;
-    if (!keyItem) keyItem = renderItem as (item: T) => string;
-    if (!equal) equal = simpleEqual;
-    var itemElements = items.map(item => {
+    const itemElements = items.map(item => {
       return <div
-        className={classNames("dropdown-item", equal(item, selectedItem) ? "selected" : null)}
-        key={keyItem(item)}
-        onClick={() => onSelect(item)}
-      >
+        className={classNames("dropdown-item", { selected: selectedItem && equal(item, selectedItem) })}
+        key={keyItem(item) as string}
+        onClick={() => onSelect(item)}>
         {renderItem(item)}
       </div>;
     });
@@ -104,16 +100,10 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   }
 
   render() {
-    var { label, renderItem, selectedItem, direction, renderSelectedItem, className } = this.props;
-    var { open } = this.state;
-    if (!renderItem) renderItem = String;
-    if (!direction) direction = "down";
-    if (!renderSelectedItem) renderSelectedItem = renderItem as (item: T) => string;
+    const { label, renderItem = String, selectedItem, direction = "down", renderSelectedItem = renderItem, className } = this.props;
+    const { open } = this.state;
 
-    var labelElement: JSX.Element = null;
-    if (label) {
-      labelElement = <div className="dropdown-label">{label}</div>;
-    }
+    const labelElement = label && <div className="dropdown-label">{label}</div>;
 
     return <div className={classNames("dropdown", direction, className)} onClick={this.onClick}>
       {labelElement}

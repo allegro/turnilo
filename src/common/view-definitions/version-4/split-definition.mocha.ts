@@ -15,8 +15,8 @@
  */
 
 import { expect } from "chai";
-import { MeasureDerivation } from "../../models/measure/measure";
-import { SortDirection } from "../../models/sort/sort";
+import { SeriesDerivation } from "../../models/series/concrete-series";
+import { SeriesSort, SortDirection } from "../../models/sort/sort";
 import { SplitFixtures } from "../../models/split/split.fixtures";
 import { splitConverter } from "./split-definition";
 import { SplitDefinitionFixtures } from "./split-definition.fixtures";
@@ -41,16 +41,18 @@ describe("SplitDefinition v4", () => {
 
   describe("legacy previous/delta sort reference", () => {
     const legacySorts = [
-      { dimension: "channel", sortOn: "_previous__count", expectedReference: "count", expectedPeriod: MeasureDerivation.PREVIOUS },
-      { dimension: "channel", sortOn: "_delta__count", expectedReference: "count", expectedPeriod: MeasureDerivation.DELTA }
+      { dimension: "channel", sortOn: "_previous__count", expectedReference: "count", expectedPeriod: SeriesDerivation.PREVIOUS },
+      { dimension: "channel", sortOn: "_delta__count", expectedReference: "count", expectedPeriod: SeriesDerivation.DELTA }
     ];
 
     legacySorts.forEach(({ dimension, sortOn, expectedReference, expectedPeriod }) => {
       it(`should infer period correctly for ${sortOn}`, () => {
         const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn);
         const splitCombine = splitConverter.toSplitCombine(splitDefinition);
-        const { sort: { reference, period } } = splitCombine;
+        const { sort } = splitCombine;
 
+        expect(sort).to.be.instanceOf(SeriesSort);
+        const { reference, period } = sort as SeriesSort;
         expect(reference).to.be.eq(expectedReference);
         expect(period).to.be.eq(expectedPeriod);
       });
