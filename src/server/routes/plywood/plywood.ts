@@ -17,12 +17,30 @@
 
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
+import * as onFinished from "on-finished";
 import { Dataset, Expression } from "plywood";
+import * as metrics from "../../utils/prom-metrics/prom-metrics";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 export function plywoodRouter(getSettings: SettingsGetter) {
 
   const router = Router();
+
+  // Add request metrics
+  router.use((req: Request, res: Response, done) => {
+    const stopRequestTimer = metrics.plywoodRequestDuration.startTimer();
+
+    onFinished(res, function(err, res) {
+      const lables = { dataCube: req.body.dataCube, status: res.statusCode };
+
+      metrics.plywoodRequests.inc(lables);
+      stopRequestTimer(lables);
+    });
+
+    if (done) {
+      done();
+    }
+  });
 
   router.post("/", async (req: Request, res: Response) => {
     const { dataSource, expression, timezone } = req.body;
@@ -91,6 +109,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       res.json(reply);
     } catch (error) {
       console.log("error:", error.message);
+      metrics.plywoodTimeouts.inc({ dataCube });
       if (error.hasOwnProperty("stack")) {
         console.log((<any> error).stack);
       }
