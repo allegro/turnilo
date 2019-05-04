@@ -27,7 +27,6 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
-import { MeasureActionsMenu } from "../measure-actions-menu/measure-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { MEASURE_CLASS_NAME } from "./measure-item";
 import { MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
@@ -36,14 +35,11 @@ import { MeasuresRenderer } from "./measures-renderer";
 export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
-  menuStage: Stage;
   newExpression: Unary<Measure, void>;
   style?: React.CSSProperties;
 }
 
 export interface MeasuresTileState {
-  menuOpenOn?: Element;
-  menuMeasure?: Measure;
   showSearch?: boolean;
   searchText?: string;
 }
@@ -62,35 +58,20 @@ const isSelectedMeasurePredicate = (seriesList: SeriesList) => (measure: Measure
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
   readonly state: MeasuresTileState = {
     showSearch: false,
-    searchText: "",
-    menuOpenOn: null,
-    menuMeasure: null
+    searchText: ""
   };
 
   measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
-    const { menuOpenOn } = this.state;
-    const target = findParentWithClass(e.target as Element, MEASURE_CLASS_NAME);
-    if (menuOpenOn === target) {
-      this.closeMenu();
-      return;
+    const { essence, clicker } = this.props;
+    const measure = essence.dataCube.measures.getMeasureByName(measureName);
+    const included = essence.series.hasMeasure(measure);
+
+    if (included) {
+      const includedSeries = essence.series.getSeries(measureName);
+      clicker.removeSeries(includedSeries);
+    } else {
+      clicker.addSeries(MeasureSeries.fromMeasure(measure));
     }
-
-    const { essence: { dataCube } } = this.props;
-    const measure = dataCube.measures.getMeasureByName(measureName);
-
-    this.setState({
-      menuOpenOn: target,
-      menuMeasure: measure
-    });
-  }
-
-  closeMenu = () => {
-    const { menuOpenOn } = this.state;
-    if (!menuOpenOn) return;
-    this.setState({
-      menuOpenOn: null,
-      menuMeasure: null
-    });
   }
 
   dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
@@ -166,30 +147,6 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
         {rows}
         {message}
       </div>
-
-      {this.renderMenu()}
     </SearchableTile>;
-  }
-
-  private addSeries = (measure: Measure) => {
-    const { clicker } = this.props;
-    clicker.addSeries(MeasureSeries.fromMeasure(measure));
-  }
-
-  private renderMenu() {
-    const { essence, newExpression, menuStage } = this.props;
-    const { menuOpenOn, menuMeasure } = this.state;
-    if (!menuMeasure) return null;
-
-    return <MeasureActionsMenu
-      newExpression={newExpression}
-      addSeries={this.addSeries}
-      series={essence.series}
-      direction="right"
-      containerStage={menuStage}
-      openOn={menuOpenOn}
-      measure={menuMeasure}
-      onClose={this.closeMenu}
-    />;
   }
 }
