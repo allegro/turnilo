@@ -21,7 +21,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
-import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
@@ -37,7 +37,7 @@ export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  newExpression: Unary<Measure, void>;
+  newExpression: Unary<Series, void>;
   style?: React.CSSProperties;
 }
 
@@ -171,9 +171,9 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     </SearchableTile>;
   }
 
-  private addSeries = (measure: Measure) => {
+  private addSeries = (series: Series) => {
     const { clicker } = this.props;
-    clicker.addSeries(MeasureSeries.fromMeasure(measure));
+    clicker.addSeries(series);
   }
 
   private renderMenu() {

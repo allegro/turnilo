@@ -40,6 +40,10 @@ export function isBlank(str: string): boolean {
   return str.length === 0;
 }
 
+export function isFiniteNumber(n: number): boolean {
+  return typeof n === "number" && isFinite(n) && !isNaN(n);
+}
+
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
   var n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");

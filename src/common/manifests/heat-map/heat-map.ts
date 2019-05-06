@@ -109,7 +109,7 @@ const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => [{
 const suggestRemovingMeasures = ({ series }: ActionVariables) => [{
   description: series.count() === 2 ? "Remove last measure" : `Remove last ${series.count() - 1} measures`,
   adjustment: {
-    series: series.slice(0, 1)
+    series: series.shift()
   }
 }];
 

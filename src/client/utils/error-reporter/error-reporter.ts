@@ -16,10 +16,17 @@
 
 import { captureException, init as initSentry } from "@sentry/browser";
 
-export function reportError(error: Error): string {
+let isInitialised = false;
+
+export function reportError(error: Error): string | null {
+  if (!isInitialised) {
+    console.error(error);
+    return null;
+  }
   return captureException(error);
 }
 
 export function init(dsn: string, release: string) {
   initSentry({ dsn, release });
+  isInitialised = true;
 }

@@ -16,8 +16,10 @@
 
 import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
+import { Expression } from "../expression/expression";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
+import { ExpressionSeries } from "../series/expression-series";
 import { MeasureSeries } from "../series/measure-series";
 import { fromJS, Series } from "../series/series";
 
@@ -107,8 +109,13 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return !!this.series.find(series => series.key() === key);
   }
 
-  public slice(from: number, to?: number) {
-    return this.updateSeries(series => series.slice(from, to));
+  public shift() {
+    return this.updateSeries(series => series.shift());
+  }
+
+  public getExpressionSeriesFor(reference: string): List<ExpressionSeries> {
+    return this.series.filter(series =>
+      series.reference === reference && series instanceof ExpressionSeries) as List<ExpressionSeries>;
   }
 }
 

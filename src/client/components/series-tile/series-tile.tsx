@@ -15,6 +15,8 @@
  */
 
 import * as React from "react";
+import { Measures } from "../../../common/models/measure/measures";
+import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
@@ -29,6 +31,8 @@ import { SERIES_CLASS_NAME } from "./series-tiles";
 interface SeriesTileProps {
   item: ConcreteSeries;
   open: boolean;
+  seriesList: SeriesList;
+  measures: Measures;
   style?: React.CSSProperties;
   removeSeries: Unary<Series, void>;
   updateSeries: Binary<Series, Series, void>;
@@ -39,14 +43,14 @@ interface SeriesTileProps {
 }
 
 export const SeriesTile: React.SFC<SeriesTileProps> = props => {
-  const { open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
-  const { series, measure } = item;
+  const { seriesList, measures, open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
+  const { definition, measure } = item;
   const title = item.title();
 
-  const saveSeries = (newSeries: Series) => updateSeries(series, newSeries);
+  const saveSeries = (newSeries: Series) => updateSeries(definition, newSeries);
   const remove = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    removeSeries(series);
+    removeSeries(definition);
   };
 
   return <WithRef>
@@ -55,8 +59,8 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
         className={classNames(SERIES_CLASS_NAME, "measure")}
         draggable={true}
         ref={setRef}
-        onClick={() => openSeriesMenu(series)}
-        onDragStart={e => dragStart(measure.title, series, e)}
+        onClick={() => openSeriesMenu(definition)}
+        onDragStart={e => dragStart(measure.title, definition, e)}
         style={style}>
         <div className="reading">{title}</div>
         <div className="remove" onClick={remove}>
@@ -64,11 +68,13 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
         </div>
       </div>
       {open && openOn && <SeriesMenu
-        key={series.key()}
+        key={definition.key()}
         openOn={openOn}
+        seriesList={seriesList}
+        measures={measures}
         containerStage={containerStage}
         onClose={closeSeriesMenu}
-        initialSeries={series}
+        initialSeries={definition}
         measure={measure}
         saveSeries={saveSeries} />}
     </React.Fragment>}
