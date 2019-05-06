@@ -19,6 +19,7 @@ import { Timezone } from "chronoshift";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
+import { RollbarConfig, RollbarConfigValue } from "../rollbar-config/rollbar-config";
 import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 export interface CustomizationValue {
@@ -29,7 +30,7 @@ export interface CustomizationValue {
   timezones?: Timezone[];
   logoutHref?: string;
   urlShortener?: UrlShortener;
-  sentryDSN?: string;
+  rollbar?: RollbarConfig;
 }
 
 export interface CustomizationJS {
@@ -40,7 +41,7 @@ export interface CustomizationJS {
   timezones?: string[];
   logoutHref?: string;
   urlShortener?: UrlShortenerDef;
-  sentryDSN?: string;
+  rollbar?: RollbarConfigValue;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -78,8 +79,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       title: parameters.title,
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
-      logoutHref: parameters.logoutHref,
-      sentryDSN: parameters.sentryDSN
+      logoutHref: parameters.logoutHref
     };
 
     var paramViewsJS = parameters.externalViews;
@@ -100,6 +100,10 @@ export class Customization implements Instance<CustomizationValue, Customization
       value.urlShortener = UrlShortener.fromJS(parameters.urlShortener);
     }
 
+    if (parameters.rollbar) {
+      value.rollbar = RollbarConfig.fromJS(parameters.rollbar);
+    }
+
     return new Customization(value);
   }
 
@@ -110,7 +114,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public title: string;
   public logoutHref: string;
   public urlShortener: UrlShortener;
-  public sentryDSN: string;
+  public rollbar: RollbarConfig;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -120,7 +124,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (parameters.timezones) this.timezones = parameters.timezones;
     this.logoutHref = parameters.logoutHref;
     if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
-    if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
+    if (parameters.rollbar) this.rollbar = parameters.rollbar;
   }
 
   public valueOf(): CustomizationValue {
@@ -132,14 +136,13 @@ export class Customization implements Instance<CustomizationValue, Customization
       timezones: this.timezones,
       urlShortener: this.urlShortener,
       logoutHref: this.logoutHref,
-      sentryDSN: this.sentryDSN
+      rollbar: this.rollbar
     };
   }
 
   public toJS(): CustomizationJS {
     var js: CustomizationJS = {};
     if (this.title) js.title = this.title;
-    if (this.sentryDSN) js.sentryDSN = this.sentryDSN;
     if (this.headerBackground) js.headerBackground = this.headerBackground;
     if (this.customLogoSvg) js.customLogoSvg = this.customLogoSvg;
     if (this.externalViews) {
@@ -150,6 +153,9 @@ export class Customization implements Instance<CustomizationValue, Customization
     }
     if (this.urlShortener) {
       js.urlShortener = this.urlShortener.toJS();
+    }
+    if (this.rollbar) {
+      js.rollbar = this.rollbar.toJS();
     }
     if (this.logoutHref) js.logoutHref = this.logoutHref;
     return js;
@@ -172,7 +178,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       (!this.urlShortener || this.urlShortener.equals(other.urlShortener)) &&
       immutableArraysEqual(this.externalViews, other.externalViews) &&
       immutableArraysEqual(this.timezones, other.timezones) &&
-      this.sentryDSN === other.sentryDSN &&
+      (!this.rollbar || this.rollbar.equals(other.rollbar)) &&
       this.logoutHref === other.logoutHref;
   }
 

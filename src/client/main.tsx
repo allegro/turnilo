@@ -45,8 +45,8 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
   throw new Error("config not found");
 }
 
-if (config.appSettings.customization.sentryDSN) {
-  errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+if (config.appSettings.customization.rollbar && config.appSettings.customization.rollbar.client_token ) {
+  errorReporterInit(config.appSettings.customization.rollbar);
 }
 
 const version = config.version;

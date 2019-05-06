@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { captureException, init as initSentry } from "@sentry/browser";
+import * as Rollbar from "rollbar";
+import { RollbarConfig, RollbarConfigValue } from "../../../common/models/rollbar-config/rollbar-config";
+
+var rollbar: Rollbar;
 
 export function reportError(error: Error): string {
-  return captureException(error);
+  if (rollbar) {
+    return rollbar.error(error).uuid;
+  }
+  return error.name;
 }
 
-export function init(dsn: string, release: string) {
-  initSentry({ dsn, release });
+export function init(config: RollbarConfigValue) {
+   rollbar = new Rollbar({
+    accessToken: config.client_token,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+    reportLevel: config.report_level || RollbarConfig.DEFAULT_REPORT_LEVEL,
+    payload: {
+      environment: config.environment ||  RollbarConfig.DEFAULT_ENVIRONMENT
+    }
+  });
 }

@@ -57,7 +57,6 @@
     "lint:sass": "sass-lint -v"
   },
   "dependencies": {
-    "@sentry/browser": "5.0.6",
     "axios": "0.18.0",
     "body-parser": "1.18.2",
     "chronoshift": "0.8.1",
@@ -90,6 +89,7 @@
     "react-transition-group": "2.2.1",
     "request": "2.87.0",
     "request-promise-native": "1.0.5",
+    "rollbar": "2.6.1",
     "xlsx-exporter": "0.0.6"
   },
   "devDependencies": {

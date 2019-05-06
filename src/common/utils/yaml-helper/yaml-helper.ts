@@ -23,6 +23,7 @@ import { Customization } from "../../models/customization/customization";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Measure } from "../../models/measure/measure";
+import { RollbarConfig } from "../../models/rollbar-config/rollbar-config";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");
@@ -99,14 +100,25 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
 }
 
 function customizationToYAML(customization: Customization, withComments: boolean): string[] {
-  const { timezones, externalViews } = customization;
+  const { rollbar, timezones, externalViews } = customization;
   let lines: string[] = [];
 
   getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
     .add("customLogoSvg")
     .add("headerBackground")
-    .add("sentryDSN")
     .add("urlShortener");
+
+  if (rollbar) {
+    lines.push("rollbar:");
+    if (rollbar.client_token) {
+      lines.push(`- client_token: ${rollbar.client_token}`);
+    }
+    if (rollbar.server_token) {
+      lines.push(`- server_token: ${rollbar.server_token}`);
+    }
+    lines.push(`- report_level: ${rollbar.report_level || RollbarConfig.DEFAULT_REPORT_LEVEL}`);
+    lines.push(`- environment: ${rollbar.environment || RollbarConfig.DEFAULT_ENVIRONMENT}`);
+  }
 
   if (timezones && timezones.length) {
     lines.push("timezones:");
