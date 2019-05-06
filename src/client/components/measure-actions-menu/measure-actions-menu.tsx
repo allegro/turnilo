@@ -19,16 +19,13 @@ import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
-import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
-import { SvgIcon } from "../svg-icon/svg-icon";
 import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
+import { AddMeasureSeriesButton } from "./add-measure-series";
 import { AddPercentSeriesButton } from "./add-percent-series";
 import "./measure-actions-menu.scss";
 
@@ -73,19 +70,10 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
 
 export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
   const { series, measure, onClose, addSeries, newExpression } = props;
-  const measureDisabled = series.hasMeasure(measure);
-
-  function onAddSeries() {
-    if (!measureDisabled) addSeries(MeasureSeries.fromMeasure(measure));
-    onClose();
-  }
 
   return <React.Fragment>
-    <div className={classNames("add-series", "action", { disabled: measureDisabled })} onClick={onAddSeries}>
-      <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
-      <div className="action-label">{STRINGS.add}</div>
-    </div>
+    <AddMeasureSeriesButton addSeries={addSeries} series={series} measure={measure} onClose={onClose} />
     <AddPercentSeriesButton addSeries={addSeries} measure={measure} onClose={onClose} series={series} />
-    <AddArithmeticOperationButton addExpressionPlaceholder={newExpression} series={series} measure={measure} onClose={onClose} />
+    <AddArithmeticOperationButton addExpressionPlaceholder={newExpression} measure={measure} onClose={onClose} />
   </React.Fragment>;
 };

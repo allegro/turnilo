@@ -15,38 +15,34 @@
  */
 
 import * as React from "react";
-import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
-import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { Measure } from "../../../common/models/measure/measure";
-import { ExpressionSeries } from "../../../common/models/series/expression-series";
+import { SeriesList } from "../../../common/models/series-list/series-list";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-interface AddPercentSeriesButtonProps {
-  addExpressionPlaceholder: Unary<Series, void>;
+interface AddMeasureSeriesButtonProps {
+  addSeries: Unary<Series, void>;
+  series: SeriesList;
   measure: Measure;
   onClose: Fn;
 }
 
-export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = props => {
-  const { measure, addExpressionPlaceholder, onClose } = props;
+export const AddMeasureSeriesButton: React.SFC<AddMeasureSeriesButtonProps> = props => {
+  const { series, measure, onClose, addSeries } = props;
+  const measureDisabled = series.hasMeasure(measure);
 
-  function onNewOperation() {
-    addExpressionPlaceholder(new ExpressionSeries({
-      reference: measure.name,
-      expression: new ArithmeticExpression({
-        operation: ExpressionSeriesOperation.ADD,
-        reference: null
-      })
-    }));
+  function onAddSeries() {
+    if (!measureDisabled) addSeries(MeasureSeries.fromMeasure(measure));
     onClose();
   }
 
-  return <div className={classNames("new-arithmetic-expression", "action")} onClick={onNewOperation}>
-    <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
-    <div className="action-label">Arithmetic</div>
+  return <div className={classNames("add-series", "action", { disabled: measureDisabled })} onClick={onAddSeries}>
+    <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+    <div className="action-label">{STRINGS.add}</div>
   </div>;
 };
