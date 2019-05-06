@@ -17,14 +17,11 @@
 
 import * as React from "react";
 import { Customization } from "../../../../common/models/customization/customization";
-import { User } from "../../../../common/models/user/user";
 import { Fn } from "../../../../common/utils/general/general";
 import { SvgIcon } from "../../../components/svg-icon/svg-icon";
-import { UserMenu } from "../../../components/user-menu/user-menu";
 import "./home-header-bar.scss";
 
 export interface HomeHeaderBarProps {
-  user?: User;
   onNavClick: Fn;
   customization?: Customization;
   title?: string;
@@ -42,46 +39,10 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
     };
   }
 
-  // User menu
-
-  onUserMenuClick = (e: React.MouseEvent<HTMLElement>) => {
-    const { userMenuOpenOn } = this.state;
-    if (userMenuOpenOn) return this.onUserMenuClose();
-    this.setState({
-      userMenuOpenOn: e.target as Element
-    });
-  }
-
-  onUserMenuClose = () => {
-    this.setState({
-      userMenuOpenOn: null
-    });
-  }
-
-  renderUserMenu() {
-    const { user, customization } = this.props;
-    const { userMenuOpenOn } = this.state;
-    if (!userMenuOpenOn) return null;
-
-    return <UserMenu
-      openOn={userMenuOpenOn}
-      onClose={this.onUserMenuClose}
-      user={user}
-      customization={customization}
-    />;
-  }
-
   render() {
-    var { user, onNavClick, customization, title } = this.props;
+    const { onNavClick, customization, title } = this.props;
 
-    var userButton: JSX.Element = null;
-    if (user) {
-      userButton = <div className="icon-button user" onClick={this.onUserMenuClick}>
-        <SvgIcon svg={require("../../../icons/full-user.svg")} />
-      </div>;
-    }
-
-    var headerStyle: any = null;
+    let headerStyle: any = null;
     if (customization && customization.headerBackground) {
       headerStyle = {
         background: customization.headerBackground
@@ -97,9 +58,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
       </div>
       <div className="right-bar">
         {this.props.children}
-        {userButton}
       </div>
-      {this.renderUserMenu()}
     </header>;
   }
 }
