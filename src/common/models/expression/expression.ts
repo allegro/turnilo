@@ -15,9 +15,8 @@
  */
 
 import { ApplyExpression, Expression as PlywoodExpression } from "plywood";
-import { Measures } from "../measure/measures";
-import { ExpressionArithmeticOperation } from "./arithemtic-operation";
-import { ConcretePercentOf, ExpressionPercentOf } from "./percent-of";
+import { ArithmeticExpression } from "./concreteArithmeticOperation";
+import { PercentExpression } from "./percent";
 
 export enum ExpressionSeriesOperation {
   PERCENT_OF_PARENT = "percent_of_parent",
@@ -28,7 +27,7 @@ export enum ExpressionSeriesOperation {
   DIVIDE = "divide"
 }
 
-export type Expression = ExpressionPercentOf | ExpressionArithmeticOperation;
+export type Expression = PercentExpression | ArithmeticExpression;
 
 export interface ExpressionValue {
   operation: ExpressionSeriesOperation;
@@ -39,22 +38,17 @@ export interface ConcreteExpression {
   title(): string;
 }
 
-export function fromExpression(expression: Expression, measures: Measures): ConcreteExpression {
-  if (expression instanceof ExpressionPercentOf) return new ConcretePercentOf(expression.operation);
-  return null;
-}
-
 export function fromJS(params: any): Expression {
   const { operation } = params;
   switch (operation as ExpressionSeriesOperation) {
     case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
     case ExpressionSeriesOperation.PERCENT_OF_PARENT:
-      return new ExpressionPercentOf({ operation });
+      return new PercentExpression({ operation });
     case ExpressionSeriesOperation.SUBTRACT:
     case ExpressionSeriesOperation.ADD:
     case ExpressionSeriesOperation.MULTIPLY:
     case ExpressionSeriesOperation.DIVIDE:
       const reference = params.reference;
-      return new ExpressionArithmeticOperation({ operation, reference });
+      return new ArithmeticExpression({ operation, reference });
   }
 }

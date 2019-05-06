@@ -77,7 +77,7 @@ export class DimensionSortOn extends SortOn {
 export class SeriesSortOn extends SortOn {
 
   constructor(series: ConcreteSeries, period = SeriesDerivation.CURRENT) {
-    super(series.series.key(), series.title(period), period);
+    super(series.definition.key(), series.title(period), period);
   }
 
   equals(other: SortOn): boolean {
