@@ -22,7 +22,6 @@ import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { User } from "../../../common/models/user/user";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { Notifications, Questions } from "../../components/notifications/notifications";
@@ -40,7 +39,6 @@ import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
   version: string;
-  user?: User;
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
@@ -313,7 +311,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   renderSideDrawer() {
-    const { user } = this.props;
     const { viewType, selectedItem, appSettings } = this.state;
     const { dataCubes, customization } = appSettings;
 
@@ -324,7 +321,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       onOpenAbout={this.openAboutModal}
       onClose={this.sideDrawerClose}
       customization={customization}
-      user={user}
       itemHrefFn={this.sideBarHrefFn}
       viewType={viewType}
     />;
@@ -344,14 +340,13 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   renderView() {
-    const { maxFilters, user } = this.props;
+    const { maxFilters } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
     switch (viewType) {
       case NO_DATA:
         return <NoDataView
-          user={user}
           onNavClick={this.sideDrawerOpen}
           onOpenAbout={this.openAboutModal}
           customization={customization}
@@ -360,7 +355,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
       case HOME:
         return <HomeView
-          user={user}
           dataCubes={dataCubes}
           onNavClick={this.sideDrawerOpen}
           onOpenAbout={this.openAboutModal}
@@ -369,7 +363,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
       case CUBE:
         return <CubeView
-          user={user}
           dataCube={selectedItem as DataCube}
           initTimekeeper={timekeeper}
           hash={viewHash}

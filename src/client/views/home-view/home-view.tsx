@@ -18,10 +18,8 @@
 import * as React from "react";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
 import { ClearableInput } from "../../components/clearable-input/clearable-input";
-import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { DataCubeCard } from "./data-cube-card/data-cube-card";
@@ -30,7 +28,6 @@ import "./home-view.scss";
 
 export interface HomeViewProps {
   dataCubes?: DataCube[];
-  user?: User;
   onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
@@ -38,10 +35,6 @@ export interface HomeViewProps {
 
 export interface HomeViewState {
   query: string;
-}
-
-function goToSettings() {
-  window.location.hash = "#settings";
 }
 
 function goToDataCube(name: string) {
@@ -54,15 +47,6 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
 
   queryChange = (query: string) => {
     this.setState(state => ({ ...state, query }));
-  }
-
-  renderSettingsIcon() {
-    const { user } = this.props;
-    if (!user || !user.allow["settings"]) return null;
-
-    return <div className="icon-button" onClick={goToSettings}>
-      <SvgIcon svg={require("../../icons/full-settings.svg")}/>
-    </div>;
   }
 
   renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
@@ -89,12 +73,11 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   }
 
   render() {
-    const { user, onNavClick, onOpenAbout, customization } = this.props;
+    const { onNavClick, onOpenAbout, customization } = this.props;
     const { query } = this.state;
 
     return <div className="home-view">
       <HomeHeaderBar
-        user={user}
         onNavClick={onNavClick}
         customization={customization}
         title={STRINGS.home}
@@ -102,7 +85,6 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
         <button className="text-button" onClick={onOpenAbout}>
           {STRINGS.infoAndFeedback}
         </button>
-        {this.renderSettingsIcon()}
       </HomeHeaderBar>
 
       <div className="container">
