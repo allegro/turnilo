@@ -51,6 +51,10 @@ interface PropAdderOptions {
   defaultValue?: any;
 }
 
+function commentLines(comment: string): string[] {
+  return comment.split("\n").map(line => `# ${line}`);
+}
+
 function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdderOptions): void {
   const { object, propName, defaultValue, comment } = options;
 
@@ -59,7 +63,7 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
     if (withComments && typeof defaultValue !== "undefined") {
       lines.push(
         "",
-        `# ${comment}`,
+        ...commentLines(comment),
         `#${propName}: ${defaultValue} # <- default`
       );
     }
@@ -67,7 +71,7 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
     if (withComments) {
       lines.push(
         "",
-        `# ${comment}`
+        ...commentLines(comment)
       );
     }
     lines.push(`${propName}: ${value}`);
