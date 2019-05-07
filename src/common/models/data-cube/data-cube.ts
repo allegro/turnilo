@@ -39,6 +39,7 @@ import {
   RefExpression,
   SimpleFullType
 } from "plywood";
+import { shallowEqualArrays } from "../../utils/array/array";
 import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
@@ -50,7 +51,6 @@ import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
-import { SeriesSort, Sort, SortDirection } from "../sort/sort";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -74,13 +74,15 @@ function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measu
 
 export type Introspection = "none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all";
 
+export type Source = string | string[];
+
 export interface DataCubeValue {
   name: string;
   title?: string;
   description?: string;
   extendedDescription?: string;
   clusterName: string;
-  source: string;
+  source: Source;
   group?: string;
   subsetFormula?: string;
   rollup?: boolean;
@@ -114,7 +116,7 @@ export interface DataCubeJS {
   description?: string;
   extendedDescription?: string;
   clusterName: string;
-  source: string;
+  source: Source;
   group?: string;
   subsetFormula?: string;
   rollup?: boolean;
@@ -352,7 +354,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public description: string;
   public extendedDescription: string;
   public clusterName: string;
-  public source: string;
+  public source: Source;
   public group: string;
   public subsetFormula: string;
   public subsetExpression: Expression;
@@ -503,6 +505,12 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return `[DataCube: ${this.name}]`;
   }
 
+  private equalsSource(source: Source): boolean {
+    if (!Array.isArray(source)) return this.source === source;
+    if (!Array.isArray(this.source)) return false;
+    return shallowEqualArrays(this.source, source);
+  }
+
   public equals(other: DataCube): boolean {
     return DataCube.isDataCube(other) &&
       this.name === other.name &&
@@ -510,7 +518,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       this.description === other.description &&
       this.extendedDescription === other.extendedDescription &&
       this.clusterName === other.clusterName &&
-      this.source === other.source &&
+      this.equalsSource(other.source) &&
       this.group === other.group &&
       this.subsetFormula === other.subsetFormula &&
       this.rollup === other.rollup &&
