@@ -185,9 +185,9 @@ later part will be visible after clicking "Show more" button on UI.
 
 The cluster that the data cube belongs to (or "native" if this is a file based data cube).
 
-**source** (string)
+**source** (string or string[])
 
-Source of data, for Druid cluster it is a data source name.
+Druid data source name or names. Multiple names result in [Union Data Source](http://druid.io/docs/latest/querying/datasource.html)
 
 **defaultTimezone** (string - timezone)
 
