@@ -59,6 +59,7 @@ export class Resolutions {
 
   static firstMeasure = (dataCube: DataCube): Resolution[] => {
     const firstMeasure = dataCube.measures.first();
+    if (!firstMeasure) return [];
     return [
       {
         description: `Select measure: ${firstMeasure.title}`,
