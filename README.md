@@ -66,7 +66,7 @@ Or connect to the existing Druid cluster using `--druid` command line option.
 Turnilo will automatically introspect your Druid cluster and figure out available datasets.
 
 ```
-turnilo --druid broker_host:broker_port
+turnilo --druid protocol://broker_host:broker_port
 ```
 
 ## Documentation
@@ -98,7 +98,7 @@ npm run start:dev -- --examples
 Connect to the existing Druid cluster.
 
 ```
-npm run start:dev -- --druid broker_host:broker_port
+npm run start:dev -- --druid protocol://broker_host:broker_port
 ```
 
 ### Testing
