@@ -29,7 +29,9 @@ import { AddMeasureSeriesButton } from "./add-measure-series";
 import { AddPercentSeriesButton } from "./add-percent-series";
 import "./measure-actions-menu.scss";
 
-const ACTION_SIZE = 58;
+const ACTION_HEIGHT = 50;
+const ACTION_WIDTH = 58;
+const MENU_PADDING = 16;
 
 export interface MeasureActionsMenuProps {
   direction: Direction;
@@ -53,7 +55,7 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
     className="measure-actions-menu"
     direction={direction}
     containerStage={containerStage}
-    stage={Stage.fromSize(ACTION_SIZE * 3, ACTION_SIZE)}
+    stage={Stage.fromSize(MENU_PADDING + ACTION_WIDTH * 3, ACTION_HEIGHT + MENU_PADDING)}
     fixedSize={true}
     openOn={openOn}
     onClose={onClose}
