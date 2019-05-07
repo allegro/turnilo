@@ -16,7 +16,7 @@
 
 import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
-import { Expression } from "../expression/expression";
+import { isTruthy } from "../../utils/general/general";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
 import { ExpressionSeries } from "../series/expression-series";
@@ -106,7 +106,11 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public hasSeriesWithKey(key: string): boolean {
-    return !!this.series.find(series => series.key() === key);
+    return isTruthy(this.getSeriesWithKey(key));
+  }
+
+  public getSeriesWithKey(key: string): Series {
+    return this.series.find(series => series.key() === key);
   }
 
   public getExpressionSeriesFor(reference: string): List<ExpressionSeries> {
