@@ -20,26 +20,9 @@
 .segment-bubble {
   @extend %menu-cont;
   position: absolute;
+  padding: 5px;
   background: rgba($white, 0.9);
-  padding: 10px;
-  text-align: center;
   transform: translate(-50%, -100%);
-  max-width: 400px;
-
-  .text {
-    .title {
-      color: #999;
-      line-height: 17px;
-      display: block;
-      padding-bottom: 9px;
-      overflow: hidden;
-      word-wrap: break-word;
-    }
-
-    .content {
-      white-space: nowrap;
-    }
-  }
 
   .segment-action-buttons:nth-child(n+2) {
     margin-top: 7px;
@@ -48,5 +31,24 @@
   .shpitz {
     left: 50%;
     top: 100%;
+  }
+}
+
+.segment-bubble-text {
+  padding: 5px;
+  text-align: center;
+  max-width: 400px;
+
+  .title {
+    color: #999;
+    line-height: 17px;
+    display: block;
+    padding-bottom: 9px;
+    overflow: hidden;
+    word-wrap: break-word;
+  }
+
+  .content {
+    white-space: nowrap;
   }
 }

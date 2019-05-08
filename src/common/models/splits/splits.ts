@@ -188,6 +188,10 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   private updateSplits(updater: Unary<List<Split>, List<Split>>) {
     return this.update("splits", updater);
   }
+
+  public slice(from: number, to?: number) {
+    return this.updateSplits(splits => splits.slice(from, to));
+  }
 }
 
 export const EMPTY_SPLITS = new Splits({ splits: List([]) });

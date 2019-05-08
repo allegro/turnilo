@@ -19,7 +19,7 @@ import { List, OrderedSet } from "immutable";
 import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
 import { complement } from "../../utils/functional/functional";
-import { isNil, quoteNames } from "../../utils/general/general";
+import { isNil, isTruthy, quoteNames } from "../../utils/general/general";
 import { SeriesDerivation } from "../series/concrete-series";
 import { Measure } from "./measure";
 import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
@@ -132,6 +132,10 @@ export class Measures {
 
   getMeasureByName(measureName: string): Measure {
     return this.flattenedMeasures.find(measure => measure.name === measureName);
+  }
+
+  hasMeasureByName(measureName: string): boolean {
+    return isTruthy(this.getMeasureByName(measureName));
   }
 
   getMeasureByExpression(expression: Expression): Measure {
