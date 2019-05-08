@@ -90,7 +90,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
-  .then(({ series, splits, dataCube, colors }) => {
+  .then(({ splits, dataCube, colors }) => {
     let timeSplit = splits.getSplit(0);
     const timeDimension = dataCube.getDimension(timeSplit.reference);
 
@@ -173,7 +173,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     ]);
   })
 
-  .otherwise(({ splits, dataCube }) => {
+  .otherwise(({ dataCube }) => {
     let continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "The Line Chart needs one continuous dimension split",
       continuousDimensions.map(continuousDimension => {

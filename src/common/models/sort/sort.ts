@@ -93,17 +93,6 @@ export class DimensionSort extends Record<DimensionSortDefinition>(defaultDimens
   }
 }
 
-export function fromJS(parameters: any): Sort {
-  const { type } = parameters;
-  if (!type) return new SeriesSort(parameters);
-  switch (type as SortType) {
-    case SortType.DIMENSION:
-      return new DimensionSort(parameters);
-    case SortType.SERIES:
-      return new SeriesSort(parameters);
-  }
-}
-
 export function isSortEmpty(sort: Sort): boolean {
   return sort.reference === null;
 }

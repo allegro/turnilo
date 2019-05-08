@@ -30,7 +30,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))
-  .then(({ series, splits, dataCube, colors, isSelectedVisualization }) => {
+  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
     let continuousBoost = 0;
 
     // Auto adjustment
@@ -71,7 +71,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     return Resolve.ready(isSelectedVisualization ? 10 : (7 + continuousBoost));
   })
 
-  .otherwise(({ splits, dataCube }) => {
+  .otherwise(({ dataCube }) => {
     const categoricalDimensions = dataCube.dimensions.filterDimensions(dimension => dimension.kind !== "time");
 
     return Resolve.manual(
