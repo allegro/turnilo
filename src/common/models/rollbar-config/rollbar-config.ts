@@ -52,7 +52,6 @@ export class RollbarConfig implements Instance<RollbarConfigValue, RollbarConfig
 
   public toJS(): RollbarConfigValue {
     var js: RollbarConfigValue = {};
-    if (this.server_token) js.server_token = this.server_token;
     if (this.client_token) js.client_token = this.client_token;
     if (this.report_level) js.report_level = this.report_level;
     if (this.environment) js.environment = this.environment;
