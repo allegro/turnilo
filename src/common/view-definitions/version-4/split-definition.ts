@@ -16,7 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { SeriesDerivation } from "../../models/series/concrete-series";
-import { fromJS as sortFromJS, Sort, SortDirection, SortType } from "../../models/sort/sort";
+import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 
 export interface SplitSortDefinition {
@@ -77,9 +77,15 @@ function inferPeriodAndReference({ ref, period }: { ref: string, period?: Series
 }
 
 function toSort(sort: any, dimensionName: string): Sort {
+  const { direction } = sort;
   const { reference, period } = inferPeriodAndReference(sort);
   const type = inferType(sort.type, reference, dimensionName);
-  return sortFromJS({ ...sort, reference, type, period });
+  switch (type) {
+    case SortType.DIMENSION:
+      return new DimensionSort({ reference, direction });
+    case SortType.SERIES:
+      return new SeriesSort({ reference, direction, period });
+  }
 }
 
 function fromSort(sort: Sort): SplitSortDefinition {
