@@ -58,8 +58,15 @@ interface SplitDefinitionConversion<In extends SplitDefinition> {
 const PREVIOUS_PREFIX = "_previous__";
 const DELTA_PREFIX = "_delta__";
 
-function inferType(reference: string, dimensionName: string) {
-  return reference === dimensionName ? SortType.DIMENSION : SortType.SERIES;
+function inferType(type: string, reference: string, dimensionName: string) {
+  switch (type) {
+    case SortType.DIMENSION:
+      return SortType.DIMENSION;
+    case SortType.SERIES:
+      return SortType.SERIES;
+    default:
+      return reference === dimensionName ? SortType.DIMENSION : SortType.SERIES;
+  }
 }
 
 function inferPeriodAndReference({ ref, period }: { ref: string, period?: SeriesDerivation }): { reference: string, period: SeriesDerivation } {
@@ -71,7 +78,7 @@ function inferPeriodAndReference({ ref, period }: { ref: string, period?: Series
 
 function toSort(sort: any, dimensionName: string): Sort {
   const { reference, period } = inferPeriodAndReference(sort);
-  const type = sort.type || inferType(reference, dimensionName);
+  const type = inferType(sort.type, reference, dimensionName);
   return sortFromJS({ ...sort, reference, type, period });
 }
 
