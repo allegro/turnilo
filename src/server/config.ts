@@ -66,7 +66,7 @@ Usage: turnilo [options]
 Possible usage:
 
   turnilo --examples
-  turnilo --druid your.broker.host:8082
+  turnilo --druid http://your.broker.host:8082
 
 General arguments:
 
@@ -87,14 +87,7 @@ Data connection options:
   -c, --config <path>          Use this local configuration (YAML) file
       --examples               Start Turnilo with some example data for testing / demo
   -f, --file <path>            Start Turnilo on top of this file based data cube (must be JSON, CSV, or TSV)
-  -d, --druid <host>           The Druid broker node to connect to
-      --protocol	       Connection protocol to be used. Set this to 'tls' if connecting to a https broker endpoint
-      --postgres <host>        The Postgres cluster to connect to
-      --mysql <host>           The MySQL cluster to connect to
-
-      --user <string>          The cluster 'user' (if needed)
-      --password <string>      The cluster 'password' (if needed)
-      --database <string>      The cluster 'database' (if needed)
+  -d, --druid <url>            The url address (http[s]://hostname[:port]) of the druid broker. If no port, 80 is assumed for plain http, and 443 for secure https.
 
 Configuration printing utilities:
 
@@ -122,14 +115,7 @@ function parseArgs() {
       "with-comments": Boolean,
 
       "file": String,
-      "druid": String,
-      "postgres": String,
-      "mysql": String,
-
-      "user": String,
-      "password": String,
-      "database": String,
-      "protocol": String
+      "druid": String
     },
     {
       v: ["--verbose"],
