@@ -66,7 +66,7 @@ Usage: turnilo [options]
 Possible usage:
 
   turnilo --examples
-  turnilo --druid your.broker.host:8082
+  turnilo --druid http://your.broker.host:8082
 
 General arguments:
 
@@ -87,7 +87,7 @@ Data connection options:
   -c, --config <path>          Use this local configuration (YAML) file
       --examples               Start Turnilo with some example data for testing / demo
   -f, --file <path>            Start Turnilo on top of this file based data cube (must be JSON, CSV, or TSV)
-  -d, --druid <url>            The url address (http[s]://hostname[:port]) of the druid cluster. If no port, 80 is assumed for plain http, and 443 for secure https.
+  -d, --druid <url>            The url address (http[s]://hostname[:port]) of the druid broker. If no port, 80 is assumed for plain http, and 443 for secure https.
 
 Configuration printing utilities:
 
