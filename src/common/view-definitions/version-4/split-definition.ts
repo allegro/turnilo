@@ -16,7 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { SeriesDerivation } from "../../models/series/concrete-series";
-import { fromJS as sortFromJS, Sort, SortDirection, SortType } from "../../models/sort/sort";
+import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 
 export interface SplitSortDefinition {
@@ -58,8 +58,15 @@ interface SplitDefinitionConversion<In extends SplitDefinition> {
 const PREVIOUS_PREFIX = "_previous__";
 const DELTA_PREFIX = "_delta__";
 
-function inferType(reference: string, dimensionName: string) {
-  return reference === dimensionName ? SortType.DIMENSION : SortType.SERIES;
+function inferType(type: string, reference: string, dimensionName: string) {
+  switch (type) {
+    case SortType.DIMENSION:
+      return SortType.DIMENSION;
+    case SortType.SERIES:
+      return SortType.SERIES;
+    default:
+      return reference === dimensionName ? SortType.DIMENSION : SortType.SERIES;
+  }
 }
 
 function inferPeriodAndReference({ ref, period }: { ref: string, period?: SeriesDerivation }): { reference: string, period: SeriesDerivation } {
@@ -70,9 +77,15 @@ function inferPeriodAndReference({ ref, period }: { ref: string, period?: Series
 }
 
 function toSort(sort: any, dimensionName: string): Sort {
+  const { direction } = sort;
   const { reference, period } = inferPeriodAndReference(sort);
-  const type = sort.type || inferType(reference, dimensionName);
-  return sortFromJS({ ...sort, reference, type, period });
+  const type = inferType(sort.type, reference, dimensionName);
+  switch (type) {
+    case SortType.DIMENSION:
+      return new DimensionSort({ reference, direction });
+    case SortType.SERIES:
+      return new SeriesSort({ reference, direction, period });
+  }
 }
 
 function fromSort(sort: Sort): SplitSortDefinition {

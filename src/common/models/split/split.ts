@@ -21,7 +21,7 @@ import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywoo
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension } from "../dimension/dimension";
-import { DimensionSort, fromJS, Sort } from "../sort/sort";
+import { DimensionSort, Sort } from "../sort/sort";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 
 export enum SplitType {
@@ -83,16 +83,6 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   static fromDimension({ name, kind }: Dimension): Split {
     return new Split({ reference: name, type: kindToType(kind) });
-  }
-
-  static fromJS({ type, reference, bucket, sort, limit }: any): Split {
-    return new Split({
-      type,
-      reference,
-      bucket: type === SplitType.time && bucket ? Duration.fromJS(bucket) : bucket,
-      limit,
-      sort: sort && fromJS(sort)
-    });
   }
 
   public toString(): string {
