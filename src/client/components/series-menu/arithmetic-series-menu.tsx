@@ -20,6 +20,7 @@ import { ExpressionSeriesOperation } from "../../../common/models/expression/exp
 import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
+import { ExpressionConcreteSeries } from "../../../common/models/series/expression-concrete-series";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { Series } from "../../../common/models/series/series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
@@ -58,6 +59,11 @@ const renderOperation = (op: Operation): string => op.label;
 const renderMeasure = (m: Measure): string => m.title;
 const renderSelectedMeasure = (m: Measure): string => m ? m.title : "Select measure";
 
+function expressionSeriesTitle(series: ExpressionSeries, measure: Measure, measures: Measures): string {
+  const concreteSeries = new ExpressionConcreteSeries(series, measure, measures);
+  return concreteSeries.title();
+}
+
 export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = props => {
   const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
@@ -83,7 +89,7 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
     onSeriesChange(series.setIn(["expression", "reference"], name));
   }
 
-  const isDuplicate = !series.equals(initialSeries) && seriesList.hasSeriesWithKey(series.key());
+  const duplicate = !series.equals(initialSeries) && seriesList.getSeriesWithKey(series.key());
   const expression = series.expression as ArithmeticExpression;
   const operation = OPERATIONS.find(op => op.id === expression.operation);
   const operand = measures.getMeasureByName(expression.reference);
@@ -108,9 +114,9 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
       selectedItem={operand}
       onSelect={onOperandSelect}
     />
-    {isDuplicate &&
+    {duplicate &&
     <div className="arithmetic-operation-warning">
-      You can't create duplicate expressions
+      "{expressionSeriesTitle(duplicate as ExpressionSeries, measure, measures)}" is already defined
     </div>}
     <FormatPicker
       measure={measure}

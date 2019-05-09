@@ -17,15 +17,16 @@
 
 @import '../../imports';
 
-$action-size: 50px;
+$action-height: 50px;
+$action-width: 58px;
 
 .measure-actions-menu {
   padding: 8px;
 
   .action {
     display: inline-block;
-    width: $action-size;
-    height: $action-size;
+    width: $action-width;
+    height: $action-height;
     cursor: pointer;
     text-align: center;
     color: $brand;
