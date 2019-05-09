@@ -21,6 +21,7 @@ import { Customization } from "../../../common/models/customization/customizatio
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
+import { ViewType } from "../../applications/turnilo-application/turnilo-application";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
@@ -37,7 +38,7 @@ export interface SideDrawerProps {
   onClose: Fn;
   customization?: Customization;
   itemHrefFn?: (oldItem?: DataCube, newItem?: DataCube) => string;
-  viewType: "home" | "cube" | "settings" | "no-data";
+  viewType: ViewType;
 }
 
 function openHome() {

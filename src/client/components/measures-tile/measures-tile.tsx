@@ -21,8 +21,9 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
-import { Series } from "../../../common/models/series/series";
+import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import { findParentWithClass, originatesFromTextAreaOrInput, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -39,6 +40,7 @@ export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+  newExpression: Unary<Measure, void>;
   style?: React.CSSProperties;
 }
 
@@ -162,7 +164,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     if (highlightedMeasureName && e.keyCode === keyCodes.space) {
       e.preventDefault();
       const measure = essence.dataCube.measures.getMeasureByName(highlightedMeasureName);
-      clicker.addSeries(Series.fromMeasure(measure));
+      clicker.addSeries(MeasureSeries.fromMeasure(measure));
     }
   }
 
@@ -213,14 +215,20 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     </SearchableTile>;
   }
 
+  private addSeries = (measure: Measure) => {
+    const { clicker } = this.props;
+    clicker.addSeries(MeasureSeries.fromMeasure(measure));
+  }
+
   private renderMenu() {
-    const { essence, clicker, menuStage } = this.props;
+    const { essence, newExpression, menuStage } = this.props;
     const { menuOpenOn, menuMeasure } = this.state;
     if (!menuMeasure) return null;
 
     return <MeasureActionsMenu
-      clicker={clicker}
-      essence={essence}
+      newExpression={newExpression}
+      addSeries={this.addSeries}
+      series={essence.series}
       direction="right"
       containerStage={menuStage}
       openOn={menuOpenOn}

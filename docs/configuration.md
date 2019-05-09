@@ -760,3 +760,14 @@ These timezones will appear in the dropdown instead of the default, which are
 
 `['America/Juneau', 'America/Los_Angeles', 'America/Yellowknife', 'America/Phoenix', 'America/Denver', 'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Argentina/Buenos_Aires', 'Etc/UTC',
 'Asia/Jerusalem', 'Europe/Paris', 'Asia/Kathmandu', 'Asia/Hong_Kong', 'Asia/Seoul', 'Pacific/Guam']`
+
+### Rollbar logging
+
+```yaml
+customization:
+  rollbar:
+    server_token: ''
+    client_token: ''
+    report_level: ''
+    environment: ''
+```

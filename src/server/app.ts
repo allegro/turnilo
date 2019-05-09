@@ -21,9 +21,9 @@ import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import * as path from "path";
+import { collectDefaultMetrics, register } from "prom-client";
 import { LOGGER } from "../common/logger/logger";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
-import { errorRouter } from "./routes/error/error";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -106,7 +106,11 @@ addRoutes("/plywood", plywoodRouter(settingsGetter));
 addRoutes("/plyql", plyqlRouter(settingsGetter));
 addRoutes("/mkurl", mkurlRouter(settingsGetter));
 addRoutes("/shorten", shortenRouter(settingsGetter));
-addRoutes("/error", errorRouter);
+
+app.get("/metrics", (req, res) => {
+  res.set("Content-Type", register.contentType);
+  res.end(register.metrics());
+});
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {
@@ -132,5 +136,7 @@ app.use((err: any, req: Request, res: Response) => {
   const error = isDev ? err : null;
   res.send(errorLayout({ version: VERSION, title: "Error" }, err.message, error));
 });
+
+collectDefaultMetrics({ timeout: 5000, prefix: "turnilo_" });
 
 export = app;

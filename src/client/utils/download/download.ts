@@ -132,11 +132,11 @@ function datasetToRows(essence: Essence, dataset: Dataset): any[] {
   });
 
   essence
-    .getEffectiveSelectedMeasures()
+    .getConcreteSeries()
     .toArray()
-    .forEach(measure => {
-      measureNames.push(measure.name);
-      columnHeadings.push(measure.title);
+    .forEach(series => {
+      measureNames.push(series.measure.name);
+      columnHeadings.push(series.measure.title);
     });
 
   rows.push(columnHeadings);

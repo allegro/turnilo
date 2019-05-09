@@ -54,7 +54,7 @@ import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
-import { Sort, SortReferenceType } from "../../models/sort/sort";
+import { DimensionSort, SeriesSort, Sort, SortType } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
@@ -244,12 +244,12 @@ function isTimeBucket(action: any): boolean {
 
 function createSort(sortAction: any, dataCube: DataCube): Sort {
   if (!sortAction) return null;
-  const type = dataCube.getDimension(sortAction.expression.name) ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
-  return new Sort({
-    reference: sortAction.expression.name,
-    direction: sortAction.direction,
-    type
-  });
+  const reference = sortAction.expression.name;
+  const direction = sortAction.direction;
+  if (dataCube.getDimension(sortAction.expression.name)) {
+    return new DimensionSort({ reference, direction });
+  }
+  return new SeriesSort({ reference, direction });
 }
 
 function convertSplit(split: any, dataCube: DataCube): Split {

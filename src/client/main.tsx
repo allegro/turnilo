@@ -22,9 +22,7 @@ import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
 import "./polyfills";
-import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
-
-addErrorMonitor();
+import { init as errorReporterInit } from "./utils/error-reporter/error-reporter";
 
 const container = document.getElementsByClassName("app-container")[0];
 if (!container) throw new Error("container not found");
@@ -47,6 +45,10 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
   throw new Error("config not found");
 }
 
+if (config.appSettings.customization.rollbar && config.appSettings.customization.rollbar.client_token ) {
+  errorReporterInit(config.appSettings.customization.rollbar);
+}
+
 const version = config.version;
 
 require.ensure([], require => {
@@ -60,7 +62,7 @@ require.ensure([], require => {
 
   const appSettings = AppSettings.fromJS(config.appSettings, {
     visualizations: MANIFESTS,
-    executorFactory:  Ajax.queryUrlExecutorFactory
+    executorFactory: Ajax.queryUrlExecutorFactory
   });
 
   const app =

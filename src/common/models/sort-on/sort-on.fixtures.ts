@@ -17,7 +17,8 @@
 
 import { Dimension } from "../dimension/dimension";
 import { Measure } from "../measure/measure";
-import { SortOn } from "./sort-on";
+import { fromMeasure } from "../series/measure-concrete-series";
+import { DimensionSortOn, SeriesSortOn, SortOn } from "./sort-on";
 
 export class SortOnFixtures {
   public static get DEFAULT_A_JS(): Measure {
@@ -46,14 +47,14 @@ export class SortOnFixtures {
   }
 
   static defaultA() {
-    return new SortOn(SortOnFixtures.DEFAULT_A_JS);
+    return new SeriesSortOn(fromMeasure(SortOnFixtures.DEFAULT_A_JS));
   }
 
   static defaultB() {
-    return new SortOn(SortOnFixtures.DEFAULT_B_JS);
+    return new SeriesSortOn(fromMeasure(SortOnFixtures.DEFAULT_B_JS));
   }
 
   static defaultC() {
-    return new SortOn(SortOnFixtures.DEFAULT_C_JS);
+    return new DimensionSortOn(SortOnFixtures.DEFAULT_C_JS);
   }
 }

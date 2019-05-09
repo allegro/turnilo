@@ -48,7 +48,7 @@ export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options,
       selectedItem={selected}
       equal={SortOn.equals}
       renderItem={SortOn.getTitle}
-      keyItem={SortOn.getName}
+      keyItem={SortOn.getKey}
       onSelect={selectSort}
     />
     <div className={"direction " + direction} onClick={toggleDirection}>

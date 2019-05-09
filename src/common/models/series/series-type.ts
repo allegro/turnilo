@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +14,4 @@
  * limitations under the License.
  */
 
-import { Request, Response, Router } from "express";
-
-const router = Router();
-
-router.post("/", (req: Request, res: Response) => {
-  const message = req.body.message;
-  if (!message || typeof message !== "string") {
-    res.status(400).send({
-      error: "Error must have a message"
-    });
-  } else {
-    console.error(`Client Error: ${JSON.stringify(req.body)}`);
-    res.send(`Error logged @ ${new Date().toISOString()}`);
-  }
-});
-
-export const errorRouter = router;
+export enum SeriesType { MEASURE = "measure", EXPRESSION = "expression" }

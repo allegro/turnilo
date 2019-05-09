@@ -16,7 +16,6 @@
  */
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { Sort, SortDirection, SortReferenceType } from "../../models/sort/sort";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -27,33 +26,10 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.supportedSplitsCount())
   .then(Actions.removeExcessiveSplits("Table"))
 
-  .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
+  .otherwise(({ series, splits, dataCube, colors, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(split.reference);
-      const sortStrategy = splitDimension.sortStrategy;
-
-      if (split.sort.empty()) {
-        if (sortStrategy) {
-          if (sortStrategy === "self") {
-            split = split.changeSort(new Sort({
-              reference: splitDimension.name,
-              direction: SortDirection.descending,
-              type: SortReferenceType.DIMENSION
-            }));
-          } else {
-            const type = split.reference === sortStrategy ? SortReferenceType.DIMENSION : SortReferenceType.MEASURE;
-            split = split.changeSort(new Sort({
-              reference: sortStrategy,
-              direction: SortDirection.descending,
-              type
-            }));
-          }
-        } else {
-          split = split.changeSort(dataCube.getDefaultSortExpression());
-          autoChanged = true;
-        }
-      }
 
       // ToDo: review this
       if (!split.limit && splitDimension.kind !== "time") {
@@ -69,7 +45,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 8);
+    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
   .build();
 

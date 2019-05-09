@@ -19,20 +19,20 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import { Datum } from "plywood";
 import * as React from "react";
-import { MeasureDerivation } from "../../../common/models/measure/measure";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
-import { DEFAULT_FORMAT } from "../../../common/models/series/series";
+import { SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
 const measure = MeasureFixtures.wikiCount();
+const series = fromMeasure(measure);
 
-const datum: Datum = { [measure.name]: 10000, [measure.getDerivedName(MeasureDerivation.PREVIOUS)]: 200 };
+const datum: Datum = { [measure.name]: 10000, [series.plywoodKey(SeriesDerivation.PREVIOUS)]: 200 };
 
 const renderLabel = (showPrevious = false) => shallow(<VisMeasureLabel
-  format={DEFAULT_FORMAT}
   datum={datum}
-  measure={MeasureFixtures.wikiCount()}
+  series={series}
   showPrevious={showPrevious} />);
 
 describe("VisMeasureLabel", () => {

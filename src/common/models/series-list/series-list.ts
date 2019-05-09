@@ -18,7 +18,8 @@ import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
-import { Series } from "../series/series";
+import { MeasureSeries } from "../series/measure-series";
+import { fromJS, Series } from "../series/series";
 
 interface SeriesListValue {
   series: List<Series>;
@@ -29,11 +30,11 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new Series({ reference }))) });
+    return new SeriesList({ series: List(names.map(reference => new MeasureSeries({ reference }))) });
   }
 
   static fromJS(seriesDefs: any[]): SeriesList {
-    const series = List(seriesDefs.map(def => Series.fromJS(def)));
+    const series = List(seriesDefs.map(def => fromJS(def)));
     return new SeriesList({ series });
   }
 
@@ -47,7 +48,11 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public replaceSeries(original: Series, newSeries: Series): SeriesList {
-    return this.updateSeries(series => series.map(s => s.equals(original) ? newSeries : s));
+    return this.updateSeries(series => {
+      const idx = series.findIndex(s => s.equals(original));
+      if (idx === -1) throw new Error(`Couldn't replace series because couldn't find original: ${original}`);
+      return series.set(idx, newSeries);
+    });
   }
 
   public replaceByIndex(index: number, replace: Series): SeriesList {
@@ -56,12 +61,12 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
       return this.insertByIndex(index, replace);
     }
     return this.updateSeries(series => {
-      const newSplitIndex = series.findIndex(split => split.equals(replace));
-      if (newSplitIndex === -1) return series.set(index, replace);
+      const newSeriesIndex = series.findIndex(split => split.equals(replace));
+      if (newSeriesIndex === -1) return series.set(index, replace);
       const oldSplit = series.get(index);
       return series
         .set(index, replace)
-        .set(newSplitIndex, oldSplit);
+        .set(newSeriesIndex, oldSplit);
     });
   }
 
@@ -72,12 +77,13 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
         .filterNot((series, idx) => series.equals(insert) && idx !== index));
   }
 
-  public hasSeries(reference: string): boolean {
-    return this.getSeries(reference) !== undefined;
+  public hasMeasureSeries(reference: string): boolean {
+    const series = this.getSeries(reference);
+    return series && series instanceof MeasureSeries;
   }
 
   public hasMeasure({ name }: Measure): boolean {
-    return this.hasSeries(name);
+    return this.hasMeasureSeries(name);
   }
 
   public getSeries(reference: string): Series {
@@ -85,6 +91,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {
+    // TODO: fix conditions for ExpressionSeries with operands
     return this.updateSeries(list => list.filter(series => measures.getMeasureByName(series.reference)));
   }
 
@@ -94,6 +101,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   private updateSeries(updater: Unary<List<Series>, List<Series>>) {
     return this.update("series", updater);
+  }
+
+  public hasSeriesWithKey(key: string): boolean {
+    return !!this.series.find(series => series.key() === key);
   }
 }
 
