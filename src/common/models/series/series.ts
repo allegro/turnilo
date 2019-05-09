@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isTruthy } from "../../utils/general/general";
 import { SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries } from "./expression-series";
 import { MeasureSeries } from "./measure-series";
@@ -32,6 +33,7 @@ export type Series = MeasureSeries | ExpressionSeries;
 
 export function fromJS(params: any): Series {
   const { type } = params;
+  if (!isTruthy(type)) return MeasureSeries.fromJS(params);
   switch (type as SeriesType) {
     case SeriesType.MEASURE:
       return MeasureSeries.fromJS(params);
