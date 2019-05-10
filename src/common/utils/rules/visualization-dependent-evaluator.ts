@@ -24,6 +24,7 @@ import { Action, Predicate, RulesEvaluatorBuilder, RulesEvaluatorBuilderEmpty } 
 export interface PredicateVariables {
   dataCube?: DataCube;
   splits: Splits;
+  series: SeriesList;
 }
 
 export interface ActionVariables {

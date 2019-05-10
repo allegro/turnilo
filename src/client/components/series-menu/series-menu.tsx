@@ -15,7 +15,11 @@
  */
 
 import * as React from "react";
+import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
+import { PercentExpression } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
+import { Measures } from "../../../common/models/measure/measures";
+import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
@@ -26,13 +30,16 @@ import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
+import { ArithmeticSeriesMenu } from "./arithmetic-series-menu";
 import { MeasureSeriesMenu } from "./measure-series-menu";
-import { PercentOfSeriesMenu } from "./percent-of-series-menu";
+import { PercentSeriesMenu } from "./percent-series-menu";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
   saveSeries: Unary<Series, void>;
   measure: Measure;
+  measures: Measures;
+  seriesList: SeriesList;
   containerStage: Stage;
   onClose: Fn;
   initialSeries: Series;
@@ -77,7 +84,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
   }
 
   render() {
-    const { measure, containerStage, onClose, openOn } = this.props;
+    const { measure, measures, initialSeries, seriesList, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
     // FIX: conditions for specific menus
@@ -94,9 +101,18 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         measure={measure}
         onChange={this.saveSeries}
       />}
-      {series instanceof ExpressionSeries && <PercentOfSeriesMenu
+      {series instanceof ExpressionSeries && series.expression instanceof PercentExpression && <PercentSeriesMenu
+        seriesList={seriesList}
         series={series}
         measure={measure}
+        onChange={this.saveSeries}
+      />}
+      {series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression && <ArithmeticSeriesMenu
+        seriesList={seriesList}
+        series={series}
+        initialSeries={initialSeries}
+        measure={measure}
+        measures={measures}
         onChange={this.saveSeries}
       />}
       <div className="button-bar">

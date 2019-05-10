@@ -173,7 +173,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     ]);
   })
 
-  .otherwise(({ splits, dataCube }) => {
+  .otherwise(({ dataCube }) => {
     let continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "The Line Chart needs one continuous dimension split",
       continuousDimensions.map(continuousDimension => {

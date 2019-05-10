@@ -25,35 +25,35 @@ export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "
 
 export abstract class ConcreteSeries<T extends Series = Series> {
 
-  protected constructor(public readonly series: T, public readonly measure: Measure) {
+  protected constructor(public readonly definition: T, public readonly measure: Measure) {
   }
 
   public equals(other: ConcreteSeries): boolean {
-    return this.series.equals(other.series) && this.measure.equals(other.measure);
+    return this.definition.equals(other.definition) && this.measure.equals(other.measure);
   }
 
   public reactKey(derivation = SeriesDerivation.CURRENT): string {
     switch (derivation) {
       case SeriesDerivation.CURRENT:
-        return this.series.key();
+        return this.definition.key();
       case SeriesDerivation.PREVIOUS:
-        return `${this.series.key()}-previous`;
+        return `${this.definition.key()}-previous`;
       case SeriesDerivation.DELTA:
-        return `${this.series.key()}-delta`;
+        return `${this.definition.key()}-delta`;
     }
   }
 
   protected abstract applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression;
 
   public plywoodKey(period = SeriesDerivation.CURRENT): string {
-    return this.series.plywoodKey(period);
+    return this.definition.plywoodKey(period);
   }
 
   public plywoodExpression(nestingLevel: number, timeShiftEnv: TimeShiftEnv): Expression {
     const { expression } = this.measure;
     switch (timeShiftEnv.type) {
       case TimeShiftEnvType.CURRENT:
-        return this.applyExpression(expression, this.series.plywoodKey(), nestingLevel);
+        return this.applyExpression(expression, this.definition.plywoodKey(), nestingLevel);
       case TimeShiftEnvType.WITH_PREVIOUS: {
         const currentName = this.plywoodKey();
         const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
@@ -85,12 +85,12 @@ export abstract class ConcreteSeries<T extends Series = Series> {
    * @deprecated
    */
   public formatter(): Unary<number, string> {
-    return seriesFormatter(this.series.format, this.measure);
+    return seriesFormatter(this.definition.format, this.measure);
   }
 
   public formatValue(datum: Datum, period = SeriesDerivation.CURRENT): string {
     const value = this.selectValue(datum, period);
-    const formatter = seriesFormatter(this.series.format, this.measure);
+    const formatter = seriesFormatter(this.definition.format, this.measure);
     return formatter(value);
   }
 

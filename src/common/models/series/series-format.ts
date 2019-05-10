@@ -32,6 +32,9 @@ interface SeriesFormatValue {
 const defaultFormat: SeriesFormatValue = { type: SeriesFormatType.DEFAULT, value: "" };
 
 export class SeriesFormat extends Record<SeriesFormatValue>(defaultFormat) {
+  static fromJS(params: any): SeriesFormat {
+    return new SeriesFormat(params);
+  }
 }
 
 export const DEFAULT_FORMAT = new SeriesFormat(defaultFormat);

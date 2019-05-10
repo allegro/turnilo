@@ -73,6 +73,8 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     return <PlaceholderSeriesTile
       key="placeholder-series-tile"
       measure={measure}
+      seriesList={essence.series}
+      measures={essence.dataCube.measures}
       series={placeholderSeries}
       containerStage={menuStage}
       saveSeries={savePlaceholderSeries}
@@ -83,9 +85,11 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
 
   const seriesElements = concatTruthy(
     ...series.map(item => <SeriesTile
-      key={item.series.key()}
+      seriesList={essence.series}
+      measures={essence.dataCube.measures}
+      key={item.definition.key()}
       item={item}
-      open={item.series.equals(openedSeriesMenu)}
+      open={item.definition.equals(openedSeriesMenu)}
       closeSeriesMenu={closeSeriesMenu}
       removeSeries={removeSeries}
       dragStart={dragStart}
@@ -102,7 +106,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   const overflowItems = seriesElements.slice(maxItems);
   if (overflowItems.length <= 0) return <React.Fragment>{visibleItems}</React.Fragment>;
 
-  const anyOverflowItemOpen = series.slice(maxItems).some(({ series }) => series.equals(openedSeriesMenu));
+  const anyOverflowItemOpen = series.slice(maxItems).some(({ definition }) => definition.equals(openedSeriesMenu));
   const isDummySeriesInOverflow = overflowItems.some(element => element.type === PlaceholderSeriesTile);
   const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
 

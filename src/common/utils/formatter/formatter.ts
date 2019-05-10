@@ -17,7 +17,6 @@
 
 import { Duration, Timezone } from "chronoshift";
 import moment = require("moment");
-import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
@@ -33,7 +32,7 @@ import {
   TimeFilterClause,
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
-import { formatTimeRange } from "../time/time";
+import { formatStartOfTimeRange, formatTimeRange } from "../time/time";
 
 export function formatNumberRange(value: NumberRange) {
   return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
@@ -55,6 +54,15 @@ export function formatDate(value: Date, timezone: Timezone) {
 
 export function formatDateWithoutTime(value: Date, timezone: Timezone) {
   return moment.tz(value, timezone.toString()).format("YYYY-MM-DD");
+}
+
+export function formatSegment(value: any, timezone: Timezone): string {
+  if (TimeRange.isTimeRange(value)) {
+    return formatStartOfTimeRange(value, timezone);
+  } else if (NumberRange.isNumberRange(value)) {
+    return formatNumberRange(value);
+  }
+  return String(value);
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {

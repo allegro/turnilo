@@ -19,7 +19,6 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
 import { ViewType } from "../../applications/turnilo-application/turnilo-application";
 import { STRINGS } from "../../config/constants";
@@ -27,11 +26,11 @@ import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { NavAction, NavList } from "../nav-list/nav-list";
+import { NavLogo } from "../nav-logo/nav-logo";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./side-drawer.scss";
 
 export interface SideDrawerProps {
-  user: User;
   selectedItem: DataCube;
   dataCubes: DataCube[];
   onOpenAbout: Fn;
@@ -43,10 +42,6 @@ export interface SideDrawerProps {
 
 function openHome() {
   window.location.hash = "#";
-}
-
-function openSettings() {
-  window.location.hash = "#settings";
 }
 
 export interface SideDrawerState {
@@ -84,6 +79,12 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
+  private renderNavLogo(): JSX.Element | null {
+    const { customization } = this.props;
+    if (!customization.customLogoSvg) return null;
+    return <NavLogo customLogoSvg={customization.customLogoSvg} />;
+  }
+
   private renderHomeLink() {
     const { viewType } = this.props;
 
@@ -92,7 +93,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         className={classNames("home-link", { selected: viewType === "home" })}
         onClick={openHome}
       >
-        <SvgIcon svg={require("../../icons/home.svg")}/>
+        <SvgIcon svg={require("../../icons/home.svg")} />
         <span>Home</span>
       </div>
     </div>;
@@ -126,16 +127,16 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
     return <div className="data-cubes__list">
       <div className="search-input">
-        <ClearableInput value={query} onChange={this.queryChange} placeholder="Search data cubes..."/>
+        <ClearableInput value={query} onChange={this.queryChange} placeholder="Search data cubes..." />
       </div>
       {this.renderDataCubeList()}
     </div>;
   }
 
-  private otherNavLinks(): NavAction[] {
-    const { user, onClose, onOpenAbout } = this.props;
+  private infoLink(): NavAction {
+    const { onClose, onOpenAbout } = this.props;
 
-    const info: NavAction = {
+    return {
       name: "info",
       title: STRINGS.infoAndFeedback,
       tooltip: "Learn more about Turnilo",
@@ -144,31 +145,14 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         onOpenAbout();
       }
     };
-
-    if (user && user.allow["settings"]) {
-      const settings: NavAction = {
-        name: "settings",
-        title: STRINGS.settings,
-        tooltip: "Settings",
-        onClick: () => {
-          onClose();
-          openSettings();
-        }
-      };
-      return [settings, info];
-    }
-
-    return [info];
   }
 
   render() {
-    const { onClose, customization } = this.props;
-    const customLogoSvg = customization ? customization.customLogoSvg : null;
-
     return <div className="side-drawer">
+      {this.renderNavLogo()}
       {this.renderHomeLink()}
       {this.renderDataCubes()}
-      <NavList navLinks={this.otherNavLinks()}/>
+      <NavList navLinks={[this.infoLink()]} />
     </div>;
   }
 }
