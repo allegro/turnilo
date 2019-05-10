@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-import { expect } from "chai";
+import { Bin } from "@vx/heatmap";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
 
-import { renderIntoDocument } from "../../utils/test-utils";
+interface HeatMapRectangleRowProps {
+  bins: Bin[];
+  hoveredBin: number;
+}
 
-import { NavLogo } from "./nav-logo";
-
-describe("NavLogo", () => {
-  it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
-      <NavLogo
-
-      />
+export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {
+  render() {
+    const { bins, hoveredBin } = this.props;
+    return (
+      bins.map((bin, index) => (
+        <rect
+          key={`heatmap-rect-${bin.row}-${bin.column}`}
+          className={index === hoveredBin ? "heatmap-rectangle-hovered" : ""}
+          width={bin.width}
+          height={bin.height}
+          x={bin.y}
+          y={bin.x}
+          fill={bin.color}
+          fillOpacity={bin.opacity}
+        />
+      ))
     );
-
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("nav-logo");
-  });
-
-});
+  }
+}

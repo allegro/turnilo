@@ -23,7 +23,6 @@ import { Dimensions } from "../dimension/dimensions";
 import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
-import { Measures } from "../measure/measures";
 import { SeriesList } from "../series-list/series-list";
 import { DimensionSort, isSortEmpty, Sort, SortType } from "../sort/sort";
 import { Split } from "../split/split";
@@ -43,11 +42,6 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
 
   static fromSplits(splits: Split[]): Splits {
     return new Splits({ splits: List(splits) });
-  }
-
-  static fromJS(splitsJS: any[]): Splits {
-    const splits = List(splitsJS.map(split => Split.fromJS(split)));
-    return new Splits({ splits });
   }
 
   static fromDimensions(dimensions: List<Dimension>): Splits {
@@ -187,6 +181,10 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
 
   private updateSplits(updater: Unary<List<Split>, List<Split>>) {
     return this.update("splits", updater);
+  }
+
+  public slice(from: number, to?: number) {
+    return this.updateSplits(splits => splits.slice(from, to));
   }
 }
 

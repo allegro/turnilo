@@ -71,7 +71,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     return Resolve.ready(isSelectedVisualization ? 10 : (7 + continuousBoost));
   })
 
-  .otherwise(({ splits, dataCube }) => {
+  .otherwise(({ dataCube }) => {
     const categoricalDimensions = dataCube.dimensions.filterDimensions(dimension => dimension.kind !== "time");
 
     return Resolve.manual(

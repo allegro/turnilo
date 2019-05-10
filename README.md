@@ -62,11 +62,11 @@ and open [http://localhost:9090/](http://localhost:9090/).
 turnilo --examples
 ```
 
-Or connect to the existing Druid cluster using `--druid` command line option.
-Turnilo will automatically introspect your Druid cluster and figure out available datasets.
+Or connect to the existing Druid broker using `--druid` command line option.
+Turnilo will automatically introspect your Druid broker and figure out available datasets.
 
 ```
-turnilo --druid broker_host:broker_port
+turnilo --druid http[s]://druid-broker-hostname[:port]
 ```
 
 ## Documentation
@@ -91,9 +91,14 @@ npm run build:dev
 
 Copy `chef.new/cookbooks/turnilo/templates/config.yaml` to this repo. Change its `clusters: host` entry to `broker1.dw1.remerge.io:8082`
 
-
 ```
 npm run start:dev -- --config config.yaml
+```
+
+Connect to the existing Druid broker.
+
+```
+npm run start:dev -- --druid http[s]://druid-broker-hostname[:port]
 ```
 
 ### Testing

@@ -34,7 +34,6 @@ $error-msg-top-margin: 6px;
 .error-message {
   font-size: 10px;
   color: $negative;
-  float: right;
   margin-top: -$error-msg-top-margin;
-  padding-right: 5px;
+  padding-left: 3px;
 }

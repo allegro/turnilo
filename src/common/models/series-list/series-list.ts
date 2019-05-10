@@ -16,8 +16,11 @@
 
 import { List, Record } from "immutable";
 import { Unary } from "../../utils/functional/functional";
+import { isTruthy } from "../../utils/general/general";
+import { ArithmeticExpression } from "../expression/concreteArithmeticOperation";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
+import { ExpressionSeries } from "../series/expression-series";
 import { MeasureSeries } from "../series/measure-series";
 import { fromJS, Series } from "../series/series";
 
@@ -36,6 +39,13 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   static fromJS(seriesDefs: any[]): SeriesList {
     const series = List(seriesDefs.map(def => fromJS(def)));
     return new SeriesList({ series });
+  }
+
+  static validSeries(series: Series, measures: Measures): boolean {
+    if (series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression) {
+      return measures.hasMeasureByName(series.reference) && measures.hasMeasureByName(series.expression.reference);
+    }
+    return measures.hasMeasureByName(series.reference);
   }
 
   public addSeries(newSeries: Series): SeriesList {
@@ -91,8 +101,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public constrainToMeasures(measures: Measures): SeriesList {
-    // TODO: fix conditions for ExpressionSeries with operands
-    return this.updateSeries(list => list.filter(series => measures.getMeasureByName(series.reference)));
+    return this.updateSeries(list => list.filter(series => SeriesList.validSeries(series, measures)));
   }
 
   public count(): number {
@@ -104,7 +113,20 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public hasSeriesWithKey(key: string): boolean {
-    return !!this.series.find(series => series.key() === key);
+    return isTruthy(this.getSeriesWithKey(key));
+  }
+
+  public getSeriesWithKey(key: string): Series {
+    return this.series.find(series => series.key() === key);
+  }
+
+  public takeFirst() {
+    return this.updateSeries(series => series.take(1));
+  }
+
+  public getExpressionSeriesFor(reference: string): List<ExpressionSeries> {
+    return this.series.filter(series =>
+      series.reference === reference && series instanceof ExpressionSeries) as List<ExpressionSeries>;
   }
 }
 

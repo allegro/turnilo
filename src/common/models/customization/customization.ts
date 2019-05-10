@@ -79,7 +79,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       title: parameters.title,
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
-      logoutHref: parameters.logoutHref
+      logoutHref: parameters.logoutHref,
     };
 
     var paramViewsJS = parameters.externalViews;

@@ -35,7 +35,6 @@ ReactDOM.render(
 
 interface Config {
   version: string;
-  user: any;
   appSettings: AppSettingsJS;
   timekeeper: TimekeeperJS;
 }
@@ -69,7 +68,6 @@ require.ensure([], require => {
     <TurniloApplication
       version={version}
       appSettings={appSettings}
-      user={config.user}
       initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
     />;
 

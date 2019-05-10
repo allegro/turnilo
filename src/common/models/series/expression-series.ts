@@ -17,7 +17,6 @@
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
 import { Expression, fromJS } from "../expression/expression";
-import { Measure } from "../measure/measure";
 import { getNameWithDerivation, SeriesDerivation } from "./concrete-series";
 import { BasicSeriesValue, SeriesBehaviours } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
@@ -39,20 +38,20 @@ const defaultSeries: ExpressionSeriesValue = {
 
 export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSeries) implements SeriesBehaviours {
 
-  static fromMeasure({ name }: Measure) {
-    return new ExpressionSeries({ reference: name, expression: null });
-  }
-
-  static fromJS(params: any) {
-    const expression = fromJS(params.expression);
-    return new ExpressionSeries({ ...params, expression });
+  static fromJS({ type, reference, expression, format }: any): ExpressionSeries {
+    return new ExpressionSeries({
+      type,
+      reference,
+      expression: fromJS(expression),
+      format: SeriesFormat.fromJS(format)
+    });
   }
 
   constructor(params: RequireOnly<ExpressionSeriesValue, "reference" | "expression">) {
     super(params);
   }
 
-  key() {
+  key(): string {
     return `${this.reference}__${this.expression.key()}`;
   }
 

@@ -24,22 +24,29 @@ import "./segment-bubble.scss";
 
 const OFFSET_V = -10;
 
-export interface SegmentBubbleProps {
+export interface SegmentBubbleProps extends SegmentBubbleContentProps {
   left: number;
   top: number;
-  title: string;
-  content?: JSXNode;
 }
 
 export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
   const { left, top, title, content } = props;
   return <BodyPortal left={left} top={top + OFFSET_V}>
     <div className="segment-bubble">
-      <div className="text">
-        <BubbleTitle title={title} />
-        {content ? <div className="content">{content}</div> : null}
-      </div>
+      <SegmentBubbleContent title={title} content={content} />
       <Shpitz direction="up" />
     </div>
   </BodyPortal>;
 };
+
+export interface SegmentBubbleContentProps {
+  title: string;
+  content?: JSXNode;
+}
+
+export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => (
+  <div className="segment-bubble-text">
+    <BubbleTitle title={title} />
+    {content ? <div className="content">{content}</div> : null}
+  </div>
+);

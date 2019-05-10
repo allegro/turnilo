@@ -16,6 +16,8 @@
 
 import * as React from "react";
 import { Measure } from "../../../common/models/measure/measure";
+import { Measures } from "../../../common/models/measure/measures";
+import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -27,6 +29,8 @@ import { SERIES_CLASS_NAME } from "./series-tiles";
 
 interface PlaceholderSeriesTileProps {
   measure: Measure;
+  measures: Measures;
+  seriesList: SeriesList;
   series: Series;
   style?: React.CSSProperties;
   containerStage: Stage;
@@ -35,7 +39,7 @@ interface PlaceholderSeriesTileProps {
 }
 
 export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = props => {
-  const { series, containerStage, saveSeries, closeItem, style, measure } = props;
+  const { series, measures, seriesList, containerStage, saveSeries, closeItem, style, measure } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div
       className={classNames(SERIES_CLASS_NAME, "measure")}
@@ -44,6 +48,8 @@ export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = prop
       <div className="reading">{measure.title}</div>
       {openOn && <SeriesMenu
         key="placeholder-series"
+        measures={measures}
+        seriesList={seriesList}
         openOn={openOn}
         containerStage={containerStage}
         onClose={closeItem}
