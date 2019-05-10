@@ -19,7 +19,12 @@ import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 
-function findSeries(name: string, concreteSeriesList: List<ConcreteSeries>): { series: ConcreteSeries, derivation: SeriesDerivation } {
+interface SeriesWithDerivation {
+  series: ConcreteSeries;
+  derivation: SeriesDerivation;
+}
+
+function findSeriesAndDerivation(name: string, concreteSeriesList: List<ConcreteSeries>): SeriesWithDerivation {
   for (const derivation of [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA]) {
     const series = concreteSeriesList.find(s => s.plywoodKey(derivation) === name);
     if (series) {
@@ -35,8 +40,9 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
       TIME_RANGE: (range: TimeRange) => range.start.toISOString()
     },
     attributeTitle: ({ name }: AttributeInfo) => {
-      const { series, derivation } = findSeries(name, essence.getConcreteSeries());
-      if (series) {
+      const seriesWithDerivation = findSeriesAndDerivation(name, essence.getConcreteSeries());
+      if (seriesWithDerivation) {
+        const { series, derivation } = seriesWithDerivation;
         return series.title(derivation);
       }
       const dimension = essence.dataCube.getDimension(name);
