@@ -146,7 +146,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
-    if (enterKey(e)) {
+    if (!this.state.importMode && enterKey(e)) {
       this.onOkClick();
     }
   }
