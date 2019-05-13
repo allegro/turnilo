@@ -27,6 +27,13 @@ $checkbox-width: 20px;
     background: $hover;
   }
 
+  .value-wrapper {
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    height: 100%;
+  }
+
   .label {
     display: inline-block;
     vertical-align: top;
