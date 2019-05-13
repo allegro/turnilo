@@ -19,7 +19,15 @@ import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
-export function constructQuery(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string, limit: number): Expression {
+interface Params {
+  essence: Essence;
+  timekeeper: Timekeeper;
+  limit: number;
+  dimension: Dimension;
+  searchText: string;
+}
+
+export function stringFilterOptionsQuery({ essence, timekeeper, limit, dimension, searchText }: Params): Expression {
   const { dataCube } = essence;
   const nativeCount = dataCube.getMeasure("count");
   const $main = $("main");

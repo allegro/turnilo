@@ -20,40 +20,12 @@ import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Binary } from "../../../common/utils/functional/functional";
-import { classNames } from "../../utils/dom/dom";
-import { Checkbox, CheckboxType } from "../checkbox/checkbox";
-import { HighlightString } from "../highlight-string/highlight-string";
+import { StringValue } from "./string-value";
 
-interface RowProps {
-  value: unknown;
-  selected: boolean;
-  checkboxStyle: string;
-  highlight: string;
-  onRowSelect: Binary<unknown, React.MouseEvent<HTMLDivElement>, void>;
-}
-
-const Row: React.SFC<RowProps> = props => {
-  const { value, selected, checkboxStyle, highlight, onRowSelect } = props;
-  const segmentValueStr = String(value);
-
-  return <div
-    className={classNames("row", { selected })}
-    title={segmentValueStr}
-    onClick={e => onRowSelect(value, e)}
-  >
-    <div className="row-wrapper">
-      <Checkbox type={checkboxStyle as CheckboxType} selected={selected} />
-      <HighlightString className="label" text={segmentValueStr} highlight={highlight} />
-    </div>
-  </div>;
-};
-
-function filterRows(rows: string[], searchText: string): string[] {
+function filterRows(rows: Array<unknown>, searchText: string): Array<unknown> {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
-  return rows.filter(d => {
-    return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
-  });
+  return rows.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
 }
 
 interface RowsListProps {
@@ -66,7 +38,7 @@ interface RowsListProps {
   onRowSelect: Binary<unknown, React.MouseEvent<HTMLDivElement>, void>;
 }
 
-export const RowsList: React.SFC<RowsListProps> = props => {
+export const StringValuesList: React.SFC<RowsListProps> = props => {
   const { onRowSelect, filterMode, dataset, dimension, searchText, limit, selectedValues } = props;
   const rows = dataset.data.slice(0, limit).map(d => d[dimension.name] as string);
   const matchingRows = filterRows(rows, searchText);
@@ -76,12 +48,13 @@ export const RowsList: React.SFC<RowsListProps> = props => {
 
   const checkboxStyle = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
   return <React.Fragment>
-    {matchingRows.map(value => <Row
-      key={String(value)}
-      value={value}
-      onRowSelect={onRowSelect}
-      selected={selectedValues && selectedValues.contains(value)}
-      checkboxStyle={checkboxStyle}
-      highlight={searchText} />)}
+    {matchingRows.map(value => (
+      <StringValue
+        key={String(value)}
+        value={value}
+        onRowSelect={onRowSelect}
+        selected={selectedValues && selectedValues.contains(value)}
+        checkboxStyle={checkboxStyle}
+        highlight={searchText} />))}
   </React.Fragment>;
 };
