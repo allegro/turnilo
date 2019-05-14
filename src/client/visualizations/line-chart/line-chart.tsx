@@ -200,7 +200,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  getDragRange(e: MouseEvent): PlywoodRange {
+  getDragRange(e: MouseEvent): PlywoodRange | null {
     const { dragStartValue, axisRange, scaleX } = this.state;
 
     let dragEndValue = scaleX.invert(this.getMyEventX(e));
@@ -220,7 +220,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   }
 
-  floorRange(dragRange: PlywoodRange): PlywoodRange {
+  floorRange(dragRange: PlywoodRange): PlywoodRange | null {
     const { essence } = this.props;
     const { splits, timezone } = essence;
     const continuousSplit = splits.splits.last();
@@ -232,7 +232,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
         start: duration.floor(dragRange.start, timezone),
         end: duration.shift(duration.floor(dragRange.end, timezone), timezone, 1)
       });
-    } else {
+    }
+    if (NumberRange.isNumberRange(dragRange)) {
       const bucketSize = continuousSplit.bucket as number;
       const startFloored = roundTo((dragRange as NumberRange).start, bucketSize);
       let endFloored = roundTo((dragRange as NumberRange).end, bucketSize);
@@ -246,6 +247,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
         end: endFloored
       });
     }
+
+    return null;
   }
 
   globalMouseMoveListener = (e: MouseEvent) => {
@@ -264,8 +267,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { continuousDimension, dragStartValue, dragRange, dragOnMeasure } = this.state;
     if (dragStartValue === null) return;
 
-    const highlightRange = this.floorRange(this.getDragRange(e));
+    const newDragRange = this.getDragRange(e);
     this.resetDrag();
+    if (!newDragRange) return;
+    const highlightRange = this.floorRange(newDragRange);
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && essence.hasHighlight()) {
