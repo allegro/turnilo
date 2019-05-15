@@ -17,48 +17,41 @@
 
 import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { classNames, roundToHalfPx } from "../../utils/dom/dom";
 import "./grid-lines.scss";
 
 export interface GridLinesProps {
-  orientation: string;
+  orientation: "horizontal" | "vertical";
   stage: Stage;
-  ticks: any[];
-  scale: any;
+  ticks: Array<unknown>;
+  scale: Unary<unknown, number>;
 }
 
-export interface GridLinesState {
+interface Coordinates {
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
 }
 
-export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
-
-  render() {
-    var { orientation, stage, ticks, scale } = this.props;
-
-    var lines = ticks.map((tick: any) => {
-      var lineProps: any = {
-        key: String(tick)
-      };
-
-      if (orientation === "horizontal") {
-        var y = roundToHalfPx(scale(tick));
-        lineProps.x1 = 0;
-        lineProps.x2 = stage.width;
-        lineProps.y1 = y;
-        lineProps.y2 = y;
-      } else {
-        var x = roundToHalfPx(scale(tick));
-        lineProps.x1 = x;
-        lineProps.x2 = x;
-        lineProps.y1 = 0;
-        lineProps.y2 = stage.height;
-      }
-
-      return React.createElement("line", lineProps);
-    });
-
-    return <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>
-      {lines}
-    </g>;
+function lineCoordinates(orientation: "horizontal" | "vertical", value: number, stage: Stage): Coordinates {
+  switch (orientation) {
+    case "horizontal":
+      return { x1: 0, x2: stage.width, y1: value, y2: value };
+    case "vertical":
+      return { x1: value, x2: value, y1: 0, y2: stage.height };
   }
 }
+
+export const GridLines: React.SFC<GridLinesProps> = props => {
+  const { orientation, stage, ticks, scale } = props;
+
+  return <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>
+    {ticks.map((tick: unknown) => {
+      const value = roundToHalfPx(scale(tick));
+      const coordinates = lineCoordinates(orientation, value, stage);
+      return <line key={String(tick)} {...coordinates} />;
+    })}
+  </g>;
+};
