@@ -645,6 +645,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             ticks={xTicks}
             stage={lineStage}
           />
+          {this.renderHoverGuide(scale(0), lineStage)}
           {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
           {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
           <line
@@ -674,6 +675,20 @@ export class LineChart extends BaseVisualization<LineChartState> {
   private getContinuousSplit(): Split {
     const { essence: { splits } } = this.props;
     return splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
+  }
+
+  renderHoverGuide(height: number, stage: Stage): JSX.Element {
+    const { scaleX, hoverRange, dragRange } = this.state;
+    if (dragRange || !hoverRange) return null;
+    const midpoint = hoverRange.midpoint();
+    const x = scaleX(midpoint);
+    return <line
+      x1={x}
+      x2={x}
+      y1={0}
+      y2={height}
+      className="hover-guide"
+      transform={stage.getTransform()} />;
   }
 
   deriveDatasetState(dataset: Dataset): Partial<LineChartState> {
