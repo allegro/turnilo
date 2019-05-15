@@ -19,7 +19,6 @@ import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
-import { Series } from "../../../common/models/series/series";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise, noop } from "../../../common/utils/functional/functional";
@@ -36,7 +35,6 @@ export interface BaseVisualizationState {
   dragOnMeasure?: Measure;
   scrollLeft?: number;
   scrollTop?: number;
-  hoverSeries?: Series;
 }
 
 export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
@@ -52,8 +50,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return {
       datasetLoad: loading,
       scrollLeft: 0,
-      scrollTop: 0,
-      hoverSeries: null
+      scrollTop: 0
     };
   }
 

@@ -31,7 +31,6 @@ import { Filter } from "../../../common/models/filter/filter";
 import { ContinuousDimensionKind, getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
-import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
@@ -170,9 +169,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  onMouseMove = (dataset: Dataset, series: Series, scaleX: any, e: React.MouseEvent<HTMLDivElement>) => {
+  onMouseMove = (dataset: Dataset, scaleX: any, e: React.MouseEvent<HTMLDivElement>) => {
     const { essence } = this.props;
-    const { hoverRange, hoverSeries } = this.state;
+    const { hoverRange } = this.state;
     if (!dataset) return;
 
     const splitLength = essence.splits.length();
@@ -192,10 +191,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const currentHoverRange: any = closestDatum ? (closestDatum[continuousDimension.name]) : null;
 
-    if (!hoverRange || !immutableEqual(hoverRange, currentHoverRange) || !immutableEqual(series, hoverSeries)) {
+    if (!hoverRange || !immutableEqual(hoverRange, currentHoverRange)) {
       this.setState({
-        hoverRange: currentHoverRange,
-        hoverSeries: series
+        hoverRange: currentHoverRange
       });
     }
   }
@@ -313,14 +311,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  onMouseLeave = (series: Series) => {
-    const { hoverSeries } = this.state;
-    if (immutableEqual(hoverSeries, series)) {
-      this.setState({
-        hoverRange: null,
-        hoverSeries: null
-      });
-    }
+  onMouseLeave = () => {
+    this.setState({
+      hoverRange: null
+    });
   }
 
   renderHighlighter(): JSX.Element {
@@ -350,7 +344,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { highlight, colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
-    const { dragOnMeasure, scaleX, hoverRange, hoverSeries } = this.state;
+    const { dragOnMeasure, scaleX, hoverRange } = this.state;
     const continuousDimension = this.getContinuousDimension();
 
     const formatter = series.formatter();
@@ -415,7 +409,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         </HighlightModal>;
       }
 
-    } else if (!dragRange && hoverRange && immutableEqual(hoverSeries, series.definition)) {
+    } else if (!dragRange && hoverRange) {
       const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
       const segmentLabel = formatValue(hoverRange, timezone);
 
@@ -620,7 +614,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { splits } = essence;
     const formatter = series.formatter();
 
-    const { hoverSeries, dragRange, scaleX, xTicks } = this.state;
+    const { dragRange, scaleX, xTicks } = this.state;
 
     const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
@@ -634,14 +628,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const extent = this.calculateExtend(splitData, splits, getY, getYP);
     const scale = this.getScale(extent, lineStage);
 
-    const isHovered = !dragRange && immutableEqual(hoverSeries, series.definition);
+    const isHovered = !dragRange;
 
     return <React.Fragment key={series.reactKey()}>
       <div
         className="measure-line-chart"
         onMouseDown={e => this.onMouseDown(series.measure, e)}
-        onMouseMove={e => this.onMouseMove(splitData, series.definition, scaleX, e)}
-        onMouseLeave={() => this.onMouseLeave(series.definition)}
+        onMouseMove={e => this.onMouseMove(splitData, scaleX, e)}
+        onMouseLeave={() => this.onMouseLeave()}
       >
         <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
           {scale && this.renderHorizontalGridLines(scale, lineStage)}
