@@ -25,10 +25,10 @@ import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
+import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { stringFilterOptionsQuery } from "../../../common/utils/query/string-filter-query";
+import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { reportError } from "../../utils/error-reporter/error-reporter";
@@ -91,7 +91,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       });
   }
 
-  private sendQueryFilter(props: QueryProps) {
+  private sendQueryFilter(props: QueryProps): Promise<DatasetLoad> {
     this.lastSearchText = props.searchText;
     return this.debouncedQueryFilter(props);
   }
@@ -105,10 +105,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
       })
-      .catch(error => {
+      .catch(err => {
           if (this.lastSearchText !== searchText) return null;
-          reportError(error);
-          return error(error);
+          reportError(err);
+          return error(err);
         }
       );
   }
