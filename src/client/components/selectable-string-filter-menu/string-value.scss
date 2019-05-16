@@ -27,10 +27,12 @@ $checkbox-width: 20px;
     background: $hover;
   }
 
+  &:last-child {
+    margin-bottom: 12px;
+  }
+
   .value-wrapper {
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    @include ellipsis;
     height: 100%;
   }
 

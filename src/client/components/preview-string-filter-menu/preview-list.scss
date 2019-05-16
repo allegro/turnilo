@@ -1,4 +1,5 @@
 /*
+ * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +14,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
-.import-field {
-  @extend %default-input;
-  height: 280px;
-  font-size: 13px;
-  padding: 1px;
+
+.error-notice {
+  padding: 4px 10px;
+  color: $text-light;
+  font-style: italic;
 }
 
-.import-actions {
-  margin-top: 12px;
+.matching-values-message {
+  padding: 4px 10px;
+  color: $text-light;
+}
 
-  button {
-    min-width: 70px;
+.row {
+  height: 24px;
+  cursor: pointer;
+  padding: 0 $padding-compact;
 
-    &:not(:last-child) {
-      margin-right: 6px;
+  .row-wrapper {
+    @include ellipsis;
+
+    height: 100%;
+
+    .label {
+      display: inline-block;
+      vertical-align: top;
+      padding-top: 4px;
     }
   }
+
+  &:hover {
+    background: $hover;
+  }
+
+  &:last-child {
+    margin-bottom: 12px;
+  }
+
+  &.no-select {
+    pointer-events: none;
+    user-select: none;
+  }
 }
+
+
+

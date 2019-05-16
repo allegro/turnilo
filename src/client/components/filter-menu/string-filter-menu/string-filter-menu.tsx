@@ -85,7 +85,6 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     return filterOptions;
   }
 
-
   renderFilterControls(): JSX.Element {
     const { dimension, clicker, essence, timekeeper, onClose } = this.props;
     const { filterMode } = this.state;
@@ -117,12 +116,14 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       onClose={onClose}
       inside={inside}
     >
-      <FilterOptionsDropdown
-        selectedOption={filterMode}
-        onSelectOption={this.onSelectFilterOption}
-        filterOptions={this.getFilterOptions()}
-      />
-      {this.renderFilterControls()}
+      <div className="string-filter-content">
+        <FilterOptionsDropdown
+          selectedOption={filterMode}
+          onSelectOption={this.onSelectFilterOption}
+          filterOptions={this.getFilterOptions()}
+        />
+        {this.renderFilterControls()}
+      </div>
     </BubbleMenu>;
   }
 }

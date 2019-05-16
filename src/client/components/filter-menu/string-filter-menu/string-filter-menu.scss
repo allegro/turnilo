@@ -19,92 +19,12 @@
 
 .string-filter-menu {
 
-  .side-by-side {
-    @extend %side-by-side;
-
-    :not(:last-child) {
-      margin-right: 0;
-    }
+  .string-filter-content {
+    display: flex;
+    flex-wrap: wrap;
   }
 
-  .search-box {
-    height: 30px;
-    margin-left: 6px;
-    width: 100%;
-
-    .clearable-input {
-      @extend %input-cont-inset;
-      width: 100%;
-      height: $input-height;
-      padding-left: 6px;
-    }
-  }
-
-  .menu-table {
-
-    @extend %white-shadow;
-    background: $white;
-    color: $text-standard;
-
-    &::after {
-      @include unpin-full(0, -14px, 0, -14px);
-    }
-
-    .rows {
-      height: 280px;
-      margin-top: 10px;
-      margin-left: -$padding-compact;
-      margin-right: -$padding-compact;
-
-      overflow: auto;
-    }
-
-    .row {
-      height: 24px;
-      cursor: pointer;
-      padding: 0 $padding-compact;
-
-      .row-wrapper {
-        @include ellipsis;
-
-
-        height: 100%;
-
-        .label {
-          display: inline-block;
-          vertical-align: top;
-          padding-top: 4px;
-        }
-      }
-
-      &:hover {
-        background: $hover;
-      }
-
-      &:last-child {
-        margin-bottom: 12px;
-      }
-
-      &.no-select {
-        pointer-events: none;
-        user-select: none;
-      }
-    }
-
-    .message {
-      padding: 4px 10px;
-      color: $text-light;
-      font-style: italic;
-    }
-
-    .matching-values-message {
-      padding: 4px 10px;
-      color: $text-light;
-    }
-
-    .loader,
-    .message {
-      @include pin-full;
-    }
+  .filter-options-dropdown {
+    margin-right: 6px;
   }
 }

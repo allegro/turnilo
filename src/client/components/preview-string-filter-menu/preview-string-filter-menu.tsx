@@ -200,6 +200,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
     const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
     return <React.Fragment>
+      <GlobalEventListener keyDown={this.globalKeyDownListener} />
       <div className="search-box">
         <ClearableInput
           placeholder="Search"
@@ -208,21 +209,19 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
           onChange={this.updateSearchText}
         />
       </div>
-      <div className={classNames("string-filter-menu", filterMode)}>
-        <GlobalEventListener keyDown={this.globalKeyDownListener} />
-
+      <div className="preview-string-filter-menu">
         <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-          {isLoaded(dataset) && <div className="rows">
-            <PreviewList
+          <div className="rows">
+          {isLoaded(dataset) && <PreviewList
               dimension={dimension}
               dataset={dataset.dataset}
               searchText={searchText}
               regexErrorMessage={this.regexErrorMessage()}
               limit={TOP_N}
-              filterMode={filterMode} />
-          </div>}
+              filterMode={filterMode} />}
           {isError(dataset) ? <QueryError error={dataset.error} /> : null}
           {isLoading(dataset) ? <Loader /> : null}
+          </div>
         </div>
         <div className="ok-cancel-bar">
           <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />

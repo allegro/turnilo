@@ -220,7 +220,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
           onChange={this.updateSearchText}
         />
       </div>
-      <div className={classNames("string-filter-menu", filterMode)}>
+      <div className={classNames("selectable-string-filter-menu", filterMode)}>
         <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
           <div className="rows">
             {isLoaded(dataset) && <StringValuesList
@@ -244,9 +244,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   renderImportMode(): JSX.Element {
-    const { filterMode } = this.props;
     const { selectedValues } = this.state;
-    return <div className={classNames("string-filter-menu", filterMode)}>
+    return <div className="import-form">
       <ImportForm onSave={this.importValues} onClose={this.hideImportField} initialValues={selectedValues} />
     </div>;
   }

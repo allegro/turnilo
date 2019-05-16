@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
-.import-field {
-  @extend %default-input;
-  height: 280px;
-  font-size: 13px;
-  padding: 1px;
+.no-string-values {
+  @include pin-full;
+  padding: 4px 10px;
+  color: $text-light;
+  font-style: italic;
 }
 
-.import-actions {
-  margin-top: 12px;
-
-  button {
-    min-width: 70px;
-
-    &:not(:last-child) {
-      margin-right: 6px;
-    }
-  }
-}

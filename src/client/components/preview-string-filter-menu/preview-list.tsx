@@ -20,6 +20,7 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { HighlightString } from "../highlight-string/highlight-string";
+import "./preview-list.scss";
 import { PreviewFilterMode } from "./preview-string-filter-menu";
 
 interface PreviewListProps {
@@ -31,7 +32,7 @@ interface PreviewListProps {
   filterMode: PreviewFilterMode;
 }
 
-export const message = (content: string) => <div className="message">{content}</div>;
+const errorNotice = (content: string) => <div className="error-notice">{content}</div>;
 
 export const row = (content: string, highlight: string) => <div className="row no-select" key={content} title={content}>
   <div className="row-wrapper">
@@ -58,10 +59,10 @@ function filterValues(list: Array<unknown>, filterMode: PreviewFilterMode, searc
 export const PreviewList: React.SFC<PreviewListProps> = props => {
   const { regexErrorMessage, searchText, dataset, filterMode, dimension, limit } = props;
 
-  if (regexErrorMessage) return message(regexErrorMessage);
+  if (regexErrorMessage) return errorNotice(regexErrorMessage);
 
   const data = dataset.data;
-  if (searchText && data.length === 0) return message(`No results for "${searchText}"`);
+  if (searchText && data.length === 0) return errorNotice(`No results for "${searchText}"`);
 
   const list = data.slice(0, limit).map(d => d[dimension.name]);
   const filtered = filterValues(list, filterMode, searchText);

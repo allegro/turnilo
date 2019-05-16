@@ -21,6 +21,7 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Binary } from "../../../common/utils/functional/functional";
 import { StringValue } from "./string-value";
+import "./string-values-list.scss";
 
 function filterRows(rows: Array<unknown>, searchText: string): Array<unknown> {
   if (!searchText) return rows;
@@ -43,7 +44,7 @@ export const StringValuesList: React.SFC<RowsListProps> = props => {
   const rows = dataset.data.slice(0, limit).map(d => d[dimension.name] as string);
   const matchingRows = filterRows(rows, searchText);
   if (searchText && matchingRows.length === 0) {
-    return <div className="message">{'No results for "' + searchText + '"'}</div>;
+    return <div className="no-string-values">{`No results for "${searchText}"`}</div>;
   }
 
   const checkboxStyle = filterMode === FilterMode.EXCLUDE ? "cross" : "check";

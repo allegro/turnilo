@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 @import '../../imports';
 
 .paste-icon {
@@ -25,5 +26,40 @@
 
   svg path {
     fill: $background-dark;
+  }
+}
+
+
+.import-form {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.selectable-string-filter-menu {
+  width: 100%;
+
+  .menu-table {
+
+    @extend %white-shadow;
+    background: $white;
+    color: $text-standard;
+
+    &::after {
+      @include unpin-full(0, -14px, 0, -14px);
+    }
+
+    .rows {
+      height: 280px;
+      margin-top: 10px;
+      margin-left: -$padding-compact;
+      margin-right: -$padding-compact;
+
+      overflow: auto;
+
+      .loader {
+        @include pin-full;
+      }
+    }
+
   }
 }
