@@ -33,10 +33,13 @@ import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { Button } from "../button/button";
+import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
+import { SvgIcon } from "../svg-icon/svg-icon";
 import { ImportForm } from "./import-form";
+import "./selectable-string-filter-menu.scss";
 import { StringValuesList } from "./string-values-list";
 
 const TOP_N = 100;
@@ -48,11 +51,11 @@ export interface SelectableStringFilterMenuProps {
   timekeeper: Timekeeper;
   onClose: Fn;
   filterMode?: FilterMode;
-  searchText: string;
   onClauseChange: (clause: FilterClause) => Filter;
 }
 
 export interface SelectableStringFilterMenuState {
+  searchText: string;
   dataset: DatasetLoad;
   selectedValues?: Set<string>;
   colors?: Colors;
@@ -77,12 +80,13 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     importMode: false,
     dataset: loading,
     selectedValues: null,
-    colors: null
+    colors: null,
+    searchText: ""
   };
 
-  private loadRows(props: QueryProps) {
+  private loadRows() {
     this.setState({ dataset: loading });
-    this.sendQueryFilter(props)
+    this.sendQueryFilter()
       .then(dataset => {
         // TODO: encode it better
         // null is here when we get out of order request, so we just ignore it
@@ -91,9 +95,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       });
   }
 
-  private sendQueryFilter(props: QueryProps): Promise<DatasetLoad> {
-    this.lastSearchText = props.searchText;
-    return this.debouncedQueryFilter(props);
+  private sendQueryFilter(): Promise<DatasetLoad> {
+    const { searchText } = this.state;
+    this.lastSearchText = searchText;
+    return this.debouncedQueryFilter({ ...this.props, searchText });
   }
 
   private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
@@ -124,7 +129,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const selectedValues = this.initialSelection() || valuesFromColors;
     this.setState({ selectedValues, colors });
 
-    this.loadRows(this.props);
+    this.loadRows();
   }
 
   private initialSelection(): Set<string> | null {
@@ -141,8 +146,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     this.debouncedQueryFilter.cancel();
   }
 
-  componentWillReceiveProps(props: SelectableStringFilterMenuProps) {
-    this.loadRows(props);
+  componentDidUpdate(prevProps: SelectableStringFilterMenuProps, prevState: SelectableStringFilterMenuState) {
+    if (this.state.searchText !== prevState.searchText) {
+      this.loadRows();
+    }
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
@@ -150,6 +157,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       this.onOkClick();
     }
   }
+
+  updateSearchText = (searchText: string) => this.setState({ searchText });
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
@@ -194,15 +203,24 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     return !this.props.essence.filter.equals(this.constructFilter());
   }
 
-  render() {
-    const { filterMode, onClose, dimension, searchText } = this.props;
-    const { dataset, selectedValues, importMode } = this.state;
+  renderSelectMode(): JSX.Element {
+    const { filterMode, onClose, dimension } = this.props;
+    const { dataset, selectedValues, searchText } = this.state;
 
     const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
-    return <div className={classNames("string-filter-menu", filterMode)}>
-      <GlobalEventListener keyDown={this.globalKeyDownListener} />
-      {importMode && <ImportForm onSave={this.importValues} onClose={this.hideImportField} initialValues={selectedValues} />}
-      {!importMode && <React.Fragment>
+    return <React.Fragment>
+      <div className="paste-icon" onClick={this.showImportField}>
+        <SvgIcon svg={require("../../icons/full-multi.svg")} />
+      </div>
+      <div className="search-box">
+        <ClearableInput
+          placeholder="Search"
+          focusOnMount={true}
+          value={searchText}
+          onChange={this.updateSearchText}
+        />
+      </div>
+      <div className={classNames("string-filter-menu", filterMode)}>
         <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
           <div className="rows">
             {isLoaded(dataset) && <StringValuesList
@@ -220,9 +238,24 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         <div className="ok-cancel-bar">
           <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.hasFilterChanged()} />
           <Button type="secondary" title={STRINGS.cancel} onClick={onClose} />
-          <Button type="secondary" title="Import" onClick={this.showImportField} />
         </div>
-      </React.Fragment>}
+      </div>
+    </React.Fragment>;
+  }
+
+  renderImportMode(): JSX.Element {
+    const { filterMode } = this.props;
+    const { selectedValues } = this.state;
+    return <div className={classNames("string-filter-menu", filterMode)}>
+      <ImportForm onSave={this.importValues} onClose={this.hideImportField} initialValues={selectedValues} />
     </div>;
+  }
+
+  render() {
+    const { importMode } = this.state;
+    return <React.Fragment>
+      <GlobalEventListener keyDown={this.globalKeyDownListener} />
+      {importMode ? this.renderImportMode() : this.renderSelectMode()}
+    </React.Fragment>;
   }
 }
