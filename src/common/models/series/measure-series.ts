@@ -39,8 +39,8 @@ export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeri
     return new MeasureSeries({ reference: measure.name });
   }
 
-  static fromJS(params: any) {
-    return new MeasureSeries(params);
+  static fromJS({ reference, format, type }: any) {
+    return new MeasureSeries({ reference, type, format: SeriesFormat.fromJS(format) });
   }
 
   constructor(params: RequireOnly<MeasureSeriesValue, "reference">) {

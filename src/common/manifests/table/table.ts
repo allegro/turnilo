@@ -26,7 +26,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.supportedSplitsCount())
   .then(Actions.removeExcessiveSplits("Table"))
 
-  .otherwise(({ series, splits, dataCube, colors, isSelectedVisualization }) => {
+  .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(split.reference);

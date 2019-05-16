@@ -24,6 +24,14 @@ export class Predicates {
     return ({ splits }) => splits.length() === 0;
   }
 
+  public static numberOfSplitsIsNot(expected: number): VisualizationDependentPredicate {
+    return ({ splits }) => splits.length() !== expected;
+  }
+
+  public static numberOfSeriesIsNot(expected: number): VisualizationDependentPredicate {
+    return ({ series }) => series.count() !== expected;
+  }
+
   public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
       const kinds: string[] = splits.splits.map((split: Split) => dataCube.getDimension(split.reference).kind).toArray();

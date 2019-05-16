@@ -31,7 +31,7 @@ import {
   TimeFilterClause,
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
-import { formatTimeRange } from "../time/time";
+import { formatStartOfTimeRange, formatTimeRange } from "../time/time";
 
 export function formatNumberRange(value: NumberRange) {
   return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
@@ -45,6 +45,15 @@ export function formatValue(value: any, timezone?: Timezone): string {
   } else {
     return "" + value;
   }
+}
+
+export function formatSegment(value: any, timezone: Timezone): string {
+  if (TimeRange.isTimeRange(value)) {
+    return formatStartOfTimeRange(value, timezone);
+  } else if (NumberRange.isNumberRange(value)) {
+    return formatNumberRange(value);
+  }
+  return String(value);
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
