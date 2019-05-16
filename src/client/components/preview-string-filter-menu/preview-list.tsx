@@ -67,7 +67,7 @@ export const PreviewList: React.SFC<PreviewListProps> = props => {
   const filtered = filterValues(list, filterMode, searchText);
 
   return <React.Fragment>
-    <div className="matching-values-message">Matching Values</div>
+    {searchText && <div className="matching-values-message">Matching Values</div>}
     {filtered.map(value => row(String(value), searchText))}
   </React.Fragment>;
 };
