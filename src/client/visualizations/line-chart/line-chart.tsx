@@ -108,7 +108,6 @@ export interface LineChartState extends BaseVisualizationState {
   containerXPosition?: number;
 
   // Cached props
-  continuousDimension?: Dimension;
   axisRange?: PlywoodRange;
   // TODO: fix this type
   scaleX?: any;
@@ -141,8 +140,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
   componentWillUpdate({ stage: { width } }: VisualizationProps) {
     const { stage: { width: oldWidth } } = this.props;
     if (width !== oldWidth) {
-      const { axisRange, continuousDimension } = this.state;
-      const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, width);
+      const { axisRange } = this.state;
+      const scaleX = this.getScaleX(this.getContinuousDimension().kind as ContinuousDimensionKind, axisRange, width);
       this.setState({ scaleX });
     }
   }
@@ -173,10 +172,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   onMouseMove = (dataset: Dataset, series: Series, scaleX: any, e: React.MouseEvent<HTMLDivElement>) => {
     const { essence } = this.props;
-    const { continuousDimension, hoverRange, hoverSeries } = this.state;
+    const { hoverRange, hoverSeries } = this.state;
     if (!dataset) return;
 
     const splitLength = essence.splits.length();
+    const continuousDimension = this.getContinuousDimension();
 
     const myDOM = ReactDOM.findDOMNode(this);
     const rect = myDOM.getBoundingClientRect();
@@ -261,7 +261,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   globalMouseUpListener = (e: MouseEvent) => {
     const { clicker, essence } = this.props;
-    const { continuousDimension, dragStartValue, dragRange, dragOnMeasure } = this.state;
+    const { dragStartValue, dragRange, dragOnMeasure } = this.state;
     if (dragStartValue === null) return;
 
     const highlightRange = this.floorRange(this.getDragRange(e));
@@ -277,6 +277,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
     }
 
+    const continuousDimension = this.getContinuousDimension();
     const reference = continuousDimension.name;
     const { start, end } = highlightRange;
     const filterClause = continuousDimension.kind === "number"
@@ -344,7 +345,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { highlight, colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
-    const { dragOnMeasure, scaleX, hoverRange, hoverSeries, continuousDimension } = this.state;
+    const { dragOnMeasure, scaleX, hoverRange, hoverSeries } = this.state;
+    const continuousDimension = this.getContinuousDimension();
 
     const formatter = series.formatter();
 
@@ -514,7 +516,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const hasComparison = essence.hasComparison();
     const { splits, colors } = essence;
 
-    const { hoverRange, scaleX, continuousDimension } = this.state;
+    const { hoverRange, scaleX } = this.state;
+    const continuousDimension = this.getContinuousDimension();
     const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
 
     if (splits.length() === 1) {
@@ -661,24 +664,34 @@ export class LineChart extends BaseVisualization<LineChartState> {
       </div>
       {scale && this.renderChartBubble(splitData, series, chartIndex, containerStage, chartStage, extent, scale)}
     </React.Fragment>;
+  }
 
+  private getContinuousDimension(): Dimension {
+    const { essence: { dataCube } } = this.props;
+    const continuousSplit = this.getContinuousSplit();
+    return dataCube.getDimension(continuousSplit.reference);
+  }
+
+  private getContinuousSplit(): Split {
+    const { essence: { splits } } = this.props;
+    return splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
   }
 
   deriveDatasetState(dataset: Dataset): Partial<LineChartState> {
     const { essence, timekeeper, stage } = this.props;
-    const { splits, timezone, dataCube } = essence;
+    const { splits, timezone } = essence;
 
     if (!splits.length()) return {};
-    const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
-    const continuousDimension = dataCube.getDimension(continuousSplit.reference);
+    const continuousSplit = this.getContinuousSplit();
+    const continuousDimension = this.getContinuousDimension();
     if (!continuousDimension) return {};
     const filterRange = this.getFilterRange(essence, continuousSplit, timekeeper);
     const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
     const axisRange = union(filterRange, datasetRange);
-    if (!axisRange) return { continuousDimension };
+    if (!axisRange) return {};
     const xTicks = this.getLineChartTicks(axisRange, timezone);
     const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, stage.width);
-    return { continuousDimension, axisRange, scaleX, xTicks };
+    return { axisRange, scaleX, xTicks };
   }
 
   private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange, stageWidth: number): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {
