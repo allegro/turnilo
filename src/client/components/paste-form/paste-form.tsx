@@ -19,26 +19,26 @@ import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../button/button";
-import "./import-form.scss";
+import "./paste-form.scss";
 
-interface ImportFieldProps {
+interface PasteFormProps {
   initialValues: Set<string>;
-  onSave: Unary<Set<string>, void>;
+  onSelect: Unary<Set<string>, void>;
   onClose: Fn;
 }
 
-interface ImportFieldState {
+interface PasteFormState {
   value: string;
 }
 
-export class ImportForm extends React.Component<ImportFieldProps, ImportFieldState> {
+export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
 
-  state: ImportFieldState = { value: this.props.initialValues.join("\n") };
+  state: PasteFormState = { value: this.props.initialValues.join("\n") };
 
-  import = () => {
-    const { onClose, onSave } = this.props;
+  select = () => {
+    const { onClose, onSelect } = this.props;
     const { value } = this.state;
-    onSave(Set(value.split("\n")));
+    onSelect(Set(value.split("\n")));
     onClose();
   }
 
@@ -49,10 +49,10 @@ export class ImportForm extends React.Component<ImportFieldProps, ImportFieldSta
   render() {
     const { value } = this.state;
     const {} = this.props;
-    return <div className="import-form">
-      <textarea className="import-field" value={value} onChange={this.saveValue} />
-      <div className="import-actions">
-        <Button type="primary" title="Import!" onClick={this.import} />
+    return <div>
+      <textarea className="paste-field" value={value} onChange={this.saveValue} />
+      <div className="paste-actions">
+        <Button type="primary" title="Select" onClick={this.select} />
         <Button type="secondary" title="Cancel" onClick={this.cancel} />
       </div>
     </div>;

@@ -36,9 +36,9 @@ import { Button } from "../button/button";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { Loader } from "../loader/loader";
+import { PasteForm } from "../paste-form/paste-form";
 import { QueryError } from "../query-error/query-error";
 import { SvgIcon } from "../svg-icon/svg-icon";
-import { ImportForm } from "./import-form";
 import "./selectable-string-filter-menu.scss";
 import { StringValuesList } from "./string-values-list";
 
@@ -59,7 +59,7 @@ export interface SelectableStringFilterMenuState {
   dataset: DatasetLoad;
   selectedValues?: Set<string>;
   colors?: Colors;
-  importMode: boolean;
+  pasteModeEnabled: boolean;
 }
 
 function toggle(set: Set<string>, value: string): Set<string> {
@@ -77,7 +77,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   private lastSearchText: string;
 
   state: SelectableStringFilterMenuState = {
-    importMode: false,
+    pasteModeEnabled: false,
     dataset: loading,
     selectedValues: null,
     colors: null,
@@ -153,7 +153,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
-    if (!this.state.importMode && enterKey(e)) {
+    if (!this.state.pasteModeEnabled && enterKey(e)) {
       this.onOkClick();
     }
   }
@@ -193,11 +193,11 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     onClose();
   }
 
-  showImportField = () => this.setState({ importMode: true });
+  enablePasteMode = () => this.setState({ pasteModeEnabled: true });
 
-  hideImportField = () => this.setState({ importMode: false });
+  disablePasteMode = () => this.setState({ pasteModeEnabled: false });
 
-  importValues = (values: Set<string>) => this.setState({ selectedValues: values });
+  selectValues = (values: Set<string>) => this.setState({ selectedValues: values });
 
   hasFilterChanged() {
     return !this.props.essence.filter.equals(this.constructFilter());
@@ -209,7 +209,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
     const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
     return <React.Fragment>
-      <div className="paste-icon" onClick={this.showImportField}>
+      <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
         <SvgIcon svg={require("../../icons/full-multi.svg")} />
       </div>
       <div className="search-box">
@@ -245,16 +245,19 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   renderImportMode(): JSX.Element {
     const { selectedValues } = this.state;
-    return <div className="import-form">
-      <ImportForm onSave={this.importValues} onClose={this.hideImportField} initialValues={selectedValues} />
-    </div>;
+    return <React.Fragment>
+      <div className="paste-prompt">Paste values separated by newlines</div>
+      <div className="paste-form">
+        <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} initialValues={selectedValues} />
+    </div>
+    </React.Fragment>;
   }
 
   render() {
-    const { importMode } = this.state;
+    const { pasteModeEnabled } = this.state;
     return <React.Fragment>
       <GlobalEventListener keyDown={this.globalKeyDownListener} />
-      {importMode ? this.renderImportMode() : this.renderSelectMode()}
+      {pasteModeEnabled ? this.renderImportMode() : this.renderSelectMode()}
     </React.Fragment>;
   }
 }

@@ -16,14 +16,14 @@
 
 @import '../../imports';
 
-.import-field {
+.paste-field {
   @extend %default-input;
   height: 280px;
   font-size: 13px;
   padding: 1px;
 }
 
-.import-actions {
+.paste-actions {
   margin-top: 12px;
 
   button {

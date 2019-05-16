@@ -21,7 +21,6 @@
 
   width: 30px;
   height: 30px;
-
   padding: 4px;
 
   svg path {
@@ -29,8 +28,13 @@
   }
 }
 
+.paste-prompt {
+  flex-grow: 1;
+  line-height: 30px;
+  color: $text-standard;
+}
 
-.import-form {
+.paste-form {
   width: 100%;
   margin-top: 6px;
 }
