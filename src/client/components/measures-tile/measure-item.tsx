@@ -49,12 +49,8 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureD
     measureDragStart(name, e);
   };
 
-  return <div
-    className={classNames(MEASURE_CLASS_NAME, "row", { selected })}
-    onClick={handleClick}
-    draggable={true}
-    onDragStart={handleDragStart}>
-    <div className="measure-item-name">
+  return <div className={classNames(MEASURE_CLASS_NAME, "row", { selected })}>
+    <div className="measure-item-name" onClick={handleClick} draggable={true} onDragStart={handleDragStart}>
       <HighlightString className="label measure-item-label" text={title} highlight={searchText} />
       {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")} />}
     </div>
