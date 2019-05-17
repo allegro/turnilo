@@ -164,7 +164,6 @@ export const STRINGS: any = {
   displayDruidQuery: "Display Druid query",
   displayViewDefinition: "Display view definition",
   viewDefinition: "View definition",
-  viewDefinitionSubtitle: "View definition for mkurl",
   yes: "Yes"
 };
 

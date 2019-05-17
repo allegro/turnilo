@@ -20,11 +20,16 @@ import { Fn, makeTitle } from "../../../common/utils/general/general";
 import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter } from "../../../common/view-definitions";
 import { STRINGS } from "../../config/constants";
 import { SourceModal } from "../source-modal/source-modal";
+import "./view-definition-modal.scss";
 
 export interface ViewDefinitionModalProps {
   onClose: Fn;
   essence: Essence;
 }
+
+const header = <React.Fragment>
+  View definition for <a className="mkurl-link" target="_blank" href="https://github.com/allegro/turnilo/blob/master/docs/generating-links.md">mkurl</a>
+</React.Fragment>;
 
 export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({ essence, onClose }) => {
 
@@ -37,7 +42,7 @@ export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({ essen
 
   return <SourceModal
     onClose={onClose}
-    header={STRINGS.viewDefinitionSubtitle}
+    header={header}
     title={`${makeTitle(STRINGS.viewDefinition)}`}
     source={viewDefinitionAsJson} />;
 };
