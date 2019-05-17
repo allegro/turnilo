@@ -51,7 +51,7 @@ function predicate(filterMode: PreviewFilterMode, searchText: string): Unary<unk
   }
 }
 
-function filterValues(list: Array<unknown>, filterMode: PreviewFilterMode, searchText: string): Array<unknown> {
+function filterValues<T>(list: T[], filterMode: PreviewFilterMode, searchText: string): T[] {
   if (!searchText) return list;
   return list.filter(predicate(filterMode, searchText));
 }

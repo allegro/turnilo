@@ -23,7 +23,7 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { StringValue } from "./string-value";
 import "./string-values-list.scss";
 
-function filterRows(rows: Array<unknown>, searchText: string): Array<unknown> {
+function filterRows<T>(rows: T[], searchText: string): T[] {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
   return rows.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
@@ -36,7 +36,7 @@ interface RowsListProps {
   limit: number;
   selectedValues: Set<unknown>;
   filterMode: FilterMode;
-  onRowSelect: Binary<unknown, React.MouseEvent<HTMLDivElement>, void>;
+  onRowSelect: Binary<unknown, boolean, void>;
 }
 
 export const StringValuesList: React.SFC<RowsListProps> = props => {
