@@ -42,7 +42,7 @@ export interface PreviewStringFilterMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
   onClose: Fn;
-  filterMode: FilterMode;
+  filterMode: FilterMode.REGEX | FilterMode.CONTAINS;
   searchText: string;
   onClauseChange: (clause: FilterClause) => Filter;
 }
@@ -174,24 +174,24 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange, searchText } = this.props;
+    if (!searchText) return null;
+
     const { name: reference } = dimension;
 
-    if (searchText) {
-      if (filterMode === FilterMode.REGEX) {
-        return onClauseChange(new StringFilterClause({
-          reference,
-          values: Set.of(searchText),
-          action: StringFilterAction.MATCH
-        }));
-      } else if (filterMode === FilterMode.CONTAINS) {
+    switch (filterMode) {
+      case FilterMode.CONTAINS:
         return onClauseChange(new StringFilterClause({
           reference,
           values: Set.of(searchText),
           action: StringFilterAction.CONTAINS
         }));
-      }
+      case FilterMode.REGEX:
+        return onClauseChange(new StringFilterClause({
+          reference,
+          values: Set.of(searchText),
+          action: StringFilterAction.MATCH
+        }));
     }
-    return null;
   }
 
   onOkClick = () => {
@@ -209,7 +209,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const { regexErrorMessage } = this.state;
     const { essence } = this.props;
     if (regexErrorMessage) return false;
-    return !essence.filter.equals(this.constructFilter());
+    const newFilter = this.constructFilter();
+    return newFilter && !essence.filter.equals(newFilter);
   }
 
   renderList() {
