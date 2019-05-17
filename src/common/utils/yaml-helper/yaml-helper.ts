@@ -20,7 +20,7 @@ import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../../common/models/labels
 import { AppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { DataCube, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Measure } from "../../models/measure/measure";
 
@@ -218,12 +218,21 @@ function measureToYAML(measure: Measure): string[] {
   return yamlObject(lines);
 }
 
+function yamlArray(values: string[]) {
+  return `[${values.map(s => `"${s}"`).join(", ")}]`;
+}
+
+function sourceToYAML(source: Source): string {
+  if (!Array.isArray(source)) return source;
+  return yamlArray(source);
+}
+
 function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   let lines: string[] = [
     `name: ${dataCube.name}`,
     `title: ${dataCube.title}`,
     `clusterName: ${dataCube.clusterName}`,
-    `source: ${dataCube.source}`
+    `source: ${sourceToYAML(dataCube.source)}`
   ];
 
   const timeAttribute = dataCube.timeAttribute;
