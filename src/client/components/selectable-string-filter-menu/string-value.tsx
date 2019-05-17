@@ -26,8 +26,10 @@ interface StringValueProps {
   selected: boolean;
   checkboxStyle: string;
   highlight: string;
-  onRowSelect: Binary<unknown, React.MouseEvent<HTMLDivElement>, void>;
+  onRowSelect: Binary<unknown, boolean, void>;
 }
+
+const hasModKey = (e: React.MouseEvent<unknown>) => e.altKey || e.ctrlKey || e.metaKey;
 
 export const StringValue: React.SFC<StringValueProps> = props => {
   const { value, selected, checkboxStyle, highlight, onRowSelect } = props;
@@ -36,7 +38,7 @@ export const StringValue: React.SFC<StringValueProps> = props => {
   return <div
     className={classNames("string-value", { selected })}
     title={label}
-    onClick={e => onRowSelect(value, e)}
+    onClick={e => onRowSelect(value, hasModKey(e))}
   >
     <div className="value-wrapper">
       <Checkbox type={checkboxStyle as CheckboxType} selected={selected} />

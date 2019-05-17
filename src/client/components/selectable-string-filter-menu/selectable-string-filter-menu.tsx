@@ -92,6 +92,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         // null is here when we get out of order request, so we just ignore it
         if (!dataset) return;
         this.setState({ dataset });
+      })
+      .catch(_ => {
+        // Some weird internal error. All application logic errors are handled earlier
+        this.setState({ dataset: error(new Error("Unknown error")) });
       });
   }
 
@@ -175,10 +179,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     return onClauseChange(clause);
   }
 
-  onValueClick = (value: string, e: React.MouseEvent<HTMLDivElement>) => {
+  onValueClick = (value: string, withModKey: boolean) => {
     const { selectedValues, colors: oldColors } = this.state;
     const colors = oldColors && oldColors.toggle(value);
-    if (e.altKey || e.ctrlKey || e.metaKey) {
+    if (withModKey) {
       const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
       return this.setState({ colors, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
