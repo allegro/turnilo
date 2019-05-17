@@ -38,5 +38,6 @@ export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({ onClose, time
   return <SourceModal
     onClose={onClose}
     title="Druid query"
+    copyLabel="Copy query"
     source={planSource} />;
 };

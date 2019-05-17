@@ -22,14 +22,15 @@ import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
-import { classNames } from "../../utils/dom/dom";
+import { classNames, JSXNode } from "../../utils/dom/dom";
 import "./source-modal.scss";
 
 interface SourceModalProps {
   onClose: Fn;
   title: string;
-  header?: string;
+  header?: JSXNode;
   className?: string;
+  copyLabel?: string;
   source: string;
 }
 
@@ -44,7 +45,7 @@ export class SourceModal extends React.Component<SourceModalProps, SourceModalSt
   onCopy = () => this.setState({ copied: true });
 
   render() {
-    const { onClose, source, title, className, header } = this.props;
+    const { copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header } = this.props;
 
     return <Modal
       onClose={onClose}
@@ -59,7 +60,7 @@ export class SourceModal extends React.Component<SourceModalProps, SourceModalSt
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
           <CopyToClipboard text={source} onCopy={this.onCopy}>
-            <Button type="secondary" title={STRINGS.copyDefinition} />
+            <Button type="secondary" title={copyLabel} />
           </CopyToClipboard>
           {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
         </div>
