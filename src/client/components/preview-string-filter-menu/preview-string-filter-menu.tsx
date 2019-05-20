@@ -59,7 +59,6 @@ export interface PreviewStringFilterMenuProps {
   timekeeper: Timekeeper;
   onClose: Fn;
   filterMode: FilterMode.REGEX | FilterMode.CONTAINS;
-  searchText: string;
   onClauseChange: (clause: FilterClause) => Filter;
 }
 
@@ -72,7 +71,6 @@ interface QueryProps {
   essence: Essence;
   timekeeper: Timekeeper;
   dimension: Dimension;
-  searchText: string;
   filterMode: PreviewFilterMode;
 }
 
@@ -117,8 +115,9 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
-    const { essence, searchText } = props;
-    const query = previewStringFilterQuery({ ...props, limit: TOP_N + 1 });
+    const { essence } = props;
+    const { searchText } = this.state;
+    const query = previewStringFilterQuery({ ...props, searchText, limit: TOP_N + 1 });
 
     return essence.dataCube.executor(query, { timezone: essence.timezone })
       .then((dataset: Dataset) => {
@@ -156,7 +155,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   constructFilter(): Filter {
-    const { dimension, filterMode, onClauseChange, searchText } = this.props;
+    const { dimension, filterMode, onClauseChange } = this.props;
+    const { searchText } = this.state;
     if (!searchText) return null;
     const { name: reference } = dimension;
 
