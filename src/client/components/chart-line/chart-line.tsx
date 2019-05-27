@@ -37,11 +37,13 @@ export interface ChartLineProps {
   hoverRange?: PlywoodRange;
 }
 
+type DataPoint = [number, number];
+
 export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, getX, scaleX, scaleY, color, showArea, hoverRange, dashed }) => {
   if (!dataset || !color) return null;
 
-  let dataPoints: Array<[number, number]> = [];
-  let hoverDataPoint: [number, number] = null;
+  let dataPoints: DataPoint[] = [];
+  let hoverDataPoint: DataPoint = null;
 
   const ds = dataset.data;
   for (let i = 0; i < ds.length; i++) {
@@ -68,7 +70,7 @@ export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, get
 
     // Add the point itself
     const y = scaleY(isNaN(measureValue) ? 0 : measureValue);
-    const dataPoint: [number, number] = [scaleX(rangeMidpoint), y];
+    const dataPoint: DataPoint = [scaleX(rangeMidpoint), y];
     dataPoints.push(dataPoint);
     if (hoverRange && immutableEqual(hoverRange, range)) {
       hoverDataPoint = dataPoint;
@@ -104,10 +106,10 @@ export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, get
   if (dataPoints.length > 1) {
     if (showArea) {
       const areaFn = d3.svg.area().y0(scaleY(0));
-      areaPath = <path className="area" d={areaFn(dataPoints)}/>;
+      areaPath = <path className="area" d={areaFn(dataPoints)} />;
     }
 
-    linePath = <path className="line" d={lineFn(dataPoints)} style={strokeStyle}/>;
+    linePath = <path className="line" d={lineFn(dataPoints)} style={strokeStyle} />;
   } else if (dataPoints.length === 1) {
     singletonCircle = <circle
       className="singleton"
@@ -118,21 +120,10 @@ export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, get
     />;
   }
 
-  let hoverCircle: JSX.Element = null;
-  if (hoverDataPoint) {
-    hoverCircle = <circle
-      className="hover"
-      cx={hoverDataPoint[0]}
-      cy={hoverDataPoint[1]}
-      r="2.5"
-      style={strokeStyle}
-    />;
-  }
-
   return <g className="chart-line" transform={stage.getTransform()}>
     {areaPath}
     {linePath}
     {singletonCircle}
-    {hoverCircle}
+    {hoverDataPoint && <circle className="hover" cx={hoverDataPoint[0]} cy={hoverDataPoint[1]} r="2.5" style={strokeStyle} />}
   </g>;
 };
