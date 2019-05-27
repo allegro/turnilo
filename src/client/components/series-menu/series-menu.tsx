@@ -25,7 +25,7 @@ import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
-import { Fn } from "../../../common/utils/general/general";
+import { Fn, isTruthy } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
@@ -77,10 +77,13 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
     onClose();
   }
 
-  validate() {
-    const { initialSeries } = this.props;
+  validate(): boolean {
     const { isValid, series } = this.state;
-    return isValid && !initialSeries.equals(series);
+    const { initialSeries, seriesList } = this.props;
+    const isModified = !initialSeries.equals(series);
+    const otherSeries = seriesList.series.filter(s => !s.equals(initialSeries));
+    const isUnique = !isTruthy(otherSeries.find(s => s.key() === series.key()));
+    return isValid && isModified && isUnique;
   }
 
   render() {
