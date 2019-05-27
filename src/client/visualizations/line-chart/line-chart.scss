@@ -39,6 +39,11 @@
       stroke: $gray;
     }
 
+    .hover-guide {
+      stroke-width: 1;
+      stroke: $background-brand-light;
+    }
+
     .highlighter {
       @include pin-full;
     }
