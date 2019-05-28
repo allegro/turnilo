@@ -14,17 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import '../../imports';
 
-@import '../../../imports';
+$checkbox-width: 20px;
 
-.string-filter-menu {
+.string-value {
+  height: 24px;
+  cursor: pointer;
+  padding: 0 $padding-compact;
 
-  .string-filter-content {
-    display: flex;
-    flex-wrap: wrap;
+  &:hover {
+    background: $hover;
   }
 
-  .filter-options-dropdown {
-    margin-right: 6px;
+  &:last-child {
+    margin-bottom: 12px;
+  }
+
+  .value-wrapper {
+    @include ellipsis;
+    height: 100%;
+  }
+
+  .label {
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 4px;
   }
 }
