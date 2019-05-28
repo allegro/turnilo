@@ -330,10 +330,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     if (highlight && !essence.highlightOn(series.measure.name)) return null;
 
-    let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
+    const topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
-
-    topOffset += containerYPosition;
 
     if ((dragRange && dragOnMeasure === series.measure) || (!dragRange && essence.highlightOn(series.measure.name))) {
       const highlightRange = dragRange || essence.getHighlightRange();
@@ -344,10 +342,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
         series={series}
         essence={essence}
         clicker={clicker}
-        topOffset={topOffset}
+        topOffset={topOffset + containerYPosition}
         leftOffset={leftOffset} />;
     } else if (!dragRange && hoverRange) {
-      const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
+      const leftOffset = VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
       return <HoverTooltip
         hoverRange={hoverRange}
         dataset={dataset}
