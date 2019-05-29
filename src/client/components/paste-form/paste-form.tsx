@@ -22,7 +22,6 @@ import { Button } from "../button/button";
 import "./paste-form.scss";
 
 interface PasteFormProps {
-  initialValues: Set<string>;
   onSelect: Unary<Set<string>, void>;
   onClose: Fn;
 }
@@ -31,14 +30,28 @@ interface PasteFormState {
   value: string;
 }
 
+function focus(textArea: HTMLTextAreaElement): void {
+  if (!textArea) return;
+  textArea.focus();
+}
+
 export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
 
-  state: PasteFormState = { value: this.props.initialValues.join("\n") };
+  state: PasteFormState = { value: "" };
+
+  values = (): Set<string> => {
+    const { value } = this.state;
+    return Set(value
+      .split("\n")
+      .map(s => s.trim())
+      .filter(s => s.length > 0));
+  }
 
   select = () => {
     const { onClose, onSelect } = this.props;
-    const { value } = this.state;
-    onSelect(Set(value.split("\n")));
+    const values = this.values();
+    if (values.isEmpty()) return;
+    onSelect(Set(values));
     onClose();
   }
 
@@ -48,11 +61,11 @@ export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
 
   render() {
     const { value } = this.state;
-    const {} = this.props;
+    const disabled = this.values().isEmpty();
     return <div>
-      <textarea className="paste-field" value={value} onChange={this.saveValue} />
+      <textarea ref={focus} className="paste-field" value={value} onChange={this.saveValue} />
       <div className="paste-actions">
-        <Button type="primary" title="Select" onClick={this.select} />
+        <Button type="primary" title="Select" disabled={disabled}  onClick={this.select} />
         <Button type="secondary" title="Cancel" onClick={this.cancel} />
       </div>
     </div>;
