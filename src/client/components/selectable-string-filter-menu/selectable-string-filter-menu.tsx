@@ -248,11 +248,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   renderImportMode(): JSX.Element {
-    const { selectedValues } = this.state;
     return <React.Fragment>
       <div className="paste-prompt">Paste values separated by newlines</div>
       <div className="paste-form">
-        <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} initialValues={selectedValues} />
+        <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} />
     </div>
     </React.Fragment>;
   }
