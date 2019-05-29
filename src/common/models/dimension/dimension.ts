@@ -22,12 +22,6 @@ import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } 
 import { Bucket } from "../split/split";
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
-const geoName = /continent|country|city|region/i;
-
-function isGeo(name: string): boolean {
-  return geoName.test(name);
-}
-
 function typeToKind(type: string): string {
   if (!type) return type;
   return type.toLowerCase().replace(/_/g, "-").replace(/-range$/, "");
@@ -131,12 +125,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
     const kind = parameters.kind || typeToKind(this.expression.type) || "string";
     this.kind = kind;
+    this.className = kind;
 
-    if (kind === "string" && isGeo(name)) {
-      this.className = "string-geo";
-    } else {
-      this.className = kind;
-    }
     if (parameters.url) {
       if (typeof parameters.url !== "string") {
         throw new Error(`unsupported url: ${parameters.url}: only strings are supported`);
