@@ -98,7 +98,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       case FilterMode.REGEX:
       case FilterMode.CONTAINS:
         const previewProps = { ...props, filterMode };
-        return <PreviewStringFilterMenu {...previewProps} />;
+        return <PreviewStringFilterMenu key={filterMode} {...previewProps} />;
     }
   }
 
