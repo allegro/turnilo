@@ -65,7 +65,7 @@ export class ConcretePercentExpression implements ConcreteExpression {
     return new ApplyExpression({
       name,
       operand: new ApplyExpression({ expression, name: formulaName }),
-      expression: $(formulaName).divide($(formulaName, relativeNesting))
+      expression: $(formulaName).divide($(formulaName, relativeNesting)).fallback(0)
     });
   }
 
