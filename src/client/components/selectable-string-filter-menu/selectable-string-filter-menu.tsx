@@ -57,7 +57,7 @@ export interface SelectableStringFilterMenuProps {
 export interface SelectableStringFilterMenuState {
   searchText: string;
   dataset: DatasetLoad;
-  selectedValues?: Set<string>;
+  selectedValues: Set<string>;
   colors?: Colors;
   pasteModeEnabled: boolean;
 }
@@ -79,7 +79,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   state: SelectableStringFilterMenuState = {
     pasteModeEnabled: false,
     dataset: loading,
-    selectedValues: null,
+    selectedValues: Set(),
     colors: null,
     searchText: ""
   };
@@ -136,14 +136,14 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     this.loadRows();
   }
 
-  private initialSelection(): Set<string> | null {
+  private initialSelection(): Set<string> {
     const { essence: { filter }, dimension } = this.props;
     const clause = filter.getClauseForDimension(dimension);
-    if (!clause) return null;
+    if (!clause) return Set();
     if (!(clause instanceof StringFilterClause)) {
       throw new Error(`Expected string filter clause, got: ${clause}`);
     }
-    return clause.action === StringFilterAction.IN && clause.values;
+    return clause.action === StringFilterAction.IN ? clause.values : Set();
   }
 
   componentWillUnmount() {
@@ -190,7 +190,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   onOkClick = () => {
-    if (!this.hasFilterChanged()) return;
+    if (!this.isFilterValid()) return;
     const { clicker, onClose } = this.props;
     const { colors } = this.state;
     clicker.changeFilter(this.constructFilter(), colors);
@@ -203,15 +203,17 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   selectValues = (values: Set<string>) => this.setState({ selectedValues: values });
 
-  hasFilterChanged() {
+  isFilterValid(): boolean {
+    const { selectedValues } = this.state;
+    if (selectedValues.isEmpty()) return false;
     return !this.props.essence.filter.equals(this.constructFilter());
   }
 
   renderSelectMode(): JSX.Element {
     const { filterMode, onClose, dimension } = this.props;
     const { dataset, selectedValues, searchText } = this.state;
-
     const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
+
     return <React.Fragment>
       <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
         <SvgIcon svg={require("../../icons/full-multi.svg")} />
@@ -234,13 +236,14 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
               searchText={searchText}
               limit={TOP_N}
               selectedValues={selectedValues}
+              promotedValues={this.initialSelection()}
               filterMode={filterMode} />}
             {isError(dataset) && <QueryError error={dataset.error} />}
             {isLoading(dataset) && <Loader />}
           </div>
         </div>
         <div className="ok-cancel-bar">
-          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.hasFilterChanged()} />
+          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.isFilterValid()} />
           <Button type="secondary" title={STRINGS.cancel} onClick={onClose} />
         </div>
       </div>
@@ -252,7 +255,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       <div className="paste-prompt">Paste values separated by newlines</div>
       <div className="paste-form">
         <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} />
-    </div>
+      </div>
     </React.Fragment>;
   }
 

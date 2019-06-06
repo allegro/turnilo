@@ -50,6 +50,10 @@
       margin-right: -$padding-compact;
 
       overflow: auto;
+
+      .loader {
+        @include pin-full;
+      }
     }
   }
 }
