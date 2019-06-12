@@ -21,6 +21,7 @@
   height: 30px;
   margin-left: 6px;
   flex-grow: 1;
+  flex-basis: 160px;
 
   .clearable-input {
     @extend %input-cont-inset;
