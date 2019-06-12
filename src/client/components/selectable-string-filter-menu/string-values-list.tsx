@@ -35,21 +35,30 @@ interface RowsListProps {
   searchText: string;
   limit: number;
   selectedValues: Set<unknown>;
+  promotedValues: Set<unknown>;
   filterMode: FilterMode;
   onRowSelect: Binary<unknown, boolean, void>;
 }
 
+function sortRows<T>(rows: T[], promoted: Set<T>): T[] {
+  return rows.sort((a, b) => {
+    if (promoted.has(a) && !promoted.has(b)) return -1;
+    if (!promoted.has(a) && promoted.has(b)) return 1;
+    return 0;
+  });
+}
+
 export const StringValuesList: React.SFC<RowsListProps> = props => {
-  const { onRowSelect, filterMode, dataset, dimension, searchText, limit, selectedValues } = props;
+  const { onRowSelect, filterMode, dataset, dimension, searchText, limit, promotedValues, selectedValues } = props;
   const rows = dataset.data.slice(0, limit).map(d => d[dimension.name] as string);
   const matchingRows = filterRows(rows, searchText);
   if (searchText && matchingRows.length === 0) {
     return <div className="no-string-values">{`No results for "${searchText}"`}</div>;
   }
-
+  const sortedRows = sortRows(matchingRows, promotedValues);
   const checkboxStyle = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
   return <React.Fragment>
-    {matchingRows.map(value => (
+    {sortedRows.map(value => (
       <StringValue
         key={String(value)}
         value={value}
