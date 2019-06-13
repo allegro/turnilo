@@ -29,6 +29,7 @@ import { ButtonGroup } from "../../button-group/button-group";
 import { FixedTimeTab } from "./fixed-time-tab";
 import { PresetTimeTab } from "./preset-time-tab";
 import "./time-filter-menu.scss";
+import {Timezone} from "chronoshift";
 
 const MENU_WIDTH = 250;
 

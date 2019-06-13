@@ -23,10 +23,11 @@ import "./date-range-input.scss";
 export interface DateRangeInputProps {
   time: Date;
   timezone: Timezone;
-  onChange: (t: Date) => void;
+  onChange: (t: Date, i: int) => void;
   hide?: boolean;
   type?: string;
   label: string;
+  index: int;
 }
 
 export interface DateRangeInputState {
@@ -86,11 +87,12 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
   }
 
   changeDate(possibleDateString: string, possibleTimeString: string): void {
-    const { timezone, onChange } = this.props;
+    const { timezone, onChange, index } = this.props;
 
     const possibleMoment = combineDateAndTimeIntoMoment(possibleDateString, possibleTimeString, timezone);
     if (possibleMoment && possibleMoment.isValid()) {
-      onChange(possibleMoment.toDate());
+      console.log("Date in date range input: ", possibleMoment.toDate());
+      onChange(possibleMoment.toDate(), index);
     }
   }
 
@@ -99,7 +101,6 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     const { dateString, timeString } = this.state;
     const dateValue = hide ? "" : dateString;
     const timeValue = hide ? "" : timeString;
-
     return <div className="date-range-input">
       <div className="label">{label}</div>
       <input placeholder="YYYY-MM-DD" className="date-field" value={dateValue} onChange={this.dateChange} />

@@ -90,9 +90,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       };
       res.json(reply);
     } catch (error) {
-      console.log("error:", error.message);
       if (error.hasOwnProperty("stack")) {
-        console.log((<any> error).stack);
       }
       res.status(500).send({
         error: "could not compute",
