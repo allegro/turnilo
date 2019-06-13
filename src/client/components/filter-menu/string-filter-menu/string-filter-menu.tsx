@@ -20,13 +20,12 @@ import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../../common/models/filter/filter";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
-import { ClearableInput } from "../../clearable-input/clearable-input";
 import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
 import { PreviewStringFilterMenu } from "../../preview-string-filter-menu/preview-string-filter-menu";
 import { SelectableStringFilterMenu } from "../../selectable-string-filter-menu/selectable-string-filter-menu";
@@ -46,47 +45,19 @@ export interface StringFilterMenuProps {
 
 export interface StringFilterMenuState {
   filterMode?: FilterMode;
-  searchText?: string;
 }
 
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
-  public mounted: boolean;
 
-  constructor(props: StringFilterMenuProps) {
-    super(props);
-    this.state = {
-      filterMode: null,
-      searchText: ""
-    };
-  }
-
-  componentWillMount() {
-    const { essence: { colors, filter }, dimension } = this.props;
-
+  private initialFilterMode = (): FilterMode => {
+    const { essence: { filter }, dimension } = this.props;
     const filterMode = filter.getModeForDimension(dimension);
-    if (filterMode && !this.state.filterMode) {
-      const searchText = this.getInitialSearchText();
-      this.setState({ filterMode, searchText });
-    } else if (colors) {
-      this.setState({ filterMode: FilterMode.INCLUDE });
-    }
+    return filterMode || FilterMode.INCLUDE;
   }
 
-  getInitialSearchText(): string {
-    const { essence, dimension } = this.props;
-    const filterClause = essence.filter.getClauseForDimension(dimension);
-    if (!(filterClause instanceof StringFilterClause)) throw new Error(`Expected StringFilterClause. Got ${filterClause}`);
-    if (filterClause.action === StringFilterAction.IN) return "";
-    return filterClause.values.first();
-  }
+  state: StringFilterMenuState = { filterMode: this.initialFilterMode() };
 
-  onSelectFilterOption = (filterMode: FilterMode) => {
-    this.setState({ filterMode });
-  }
-
-  updateSearchText = (searchText: string) => {
-    this.setState({ searchText });
-  }
+  onSelectFilterOption = (filterMode: FilterMode) => this.setState({ filterMode });
 
   updateFilter: (clause: FilterClause) => Filter = clause => {
     const { essence, dimension, changePosition } = this.props;
@@ -114,73 +85,45 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     return filterOptions;
   }
 
-  renderMenuControls() {
-    const { filterMode, searchText } = this.state;
-
-    return <div className="string-filter-menu-controls">
-      <div className="side-by-side">
-        <FilterOptionsDropdown
-          selectedOption={filterMode}
-          onSelectOption={this.onSelectFilterOption}
-          filterOptions={this.getFilterOptions()}
-        />
-        <div className="search-box">
-          <ClearableInput
-            placeholder="Search"
-            focusOnMount={true}
-            value={searchText}
-            onChange={this.updateSearchText}
-          />
-        </div>
-      </div>
-    </div>;
+  renderFilterControls(): JSX.Element {
+    const { dimension, clicker, essence, timekeeper, onClose } = this.props;
+    const { filterMode } = this.state;
+    const onClauseChange = this.updateFilter;
+    const props = { dimension, clicker, essence, timekeeper, onClose, onClauseChange };
+    switch (filterMode) {
+      case FilterMode.EXCLUDE:
+      case FilterMode.INCLUDE:
+        const selectableProps = { ...props, filterMode };
+        return <SelectableStringFilterMenu {...selectableProps} />;
+      case FilterMode.REGEX:
+      case FilterMode.CONTAINS:
+        const previewProps = { ...props, filterMode };
+        return <PreviewStringFilterMenu key={filterMode} {...previewProps} />;
+    }
   }
 
   render() {
-    const { dimension, clicker, essence, timekeeper, onClose, containerStage, openOn, inside } = this.props;
-    const { filterMode, searchText } = this.state;
+    const { dimension, onClose, containerStage, openOn, inside } = this.props;
+    const { filterMode } = this.state;
     if (!dimension) return null;
-
-    let menuSize: Stage = null;
-    let menuCont: JSX.Element = null;
-
-    if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
-      menuSize = Stage.fromSize(350, 410);
-      menuCont = <PreviewStringFilterMenu
-        dimension={dimension}
-        clicker={clicker}
-        essence={essence}
-        timekeeper={timekeeper}
-        onClose={onClose}
-        searchText={searchText}
-        filterMode={filterMode}
-        onClauseChange={this.updateFilter}
-      />;
-    } else {
-      menuSize = Stage.fromSize(250, 410);
-      menuCont = <SelectableStringFilterMenu
-        dimension={dimension}
-        clicker={clicker}
-        essence={essence}
-        timekeeper={timekeeper}
-        onClose={onClose}
-        searchText={searchText}
-        filterMode={filterMode}
-        onClauseChange={this.updateFilter}
-      />;
-    }
 
     return <BubbleMenu
       className="string-filter-menu"
       direction="down"
       containerStage={containerStage}
-      stage={menuSize}
+      stage={Stage.fromSize(300, 410)}
       openOn={openOn}
       onClose={onClose}
       inside={inside}
     >
-      {this.renderMenuControls()}
-      {menuCont}
+      <div className="string-filter-content">
+        <FilterOptionsDropdown
+          selectedOption={filterMode}
+          onSelectOption={this.onSelectFilterOption}
+          filterOptions={this.getFilterOptions()}
+        />
+        {this.renderFilterControls()}
+      </div>
     </BubbleMenu>;
   }
 }

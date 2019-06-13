@@ -67,10 +67,8 @@ function expressionSeriesTitle(series: ExpressionSeries, measure: Measure, measu
 export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = props => {
   const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
-  function isSeriesValid(series: ExpressionSeries): boolean {
-    return series.expression instanceof ArithmeticExpression
-      && isTruthy(series.expression.reference)
-      && !seriesList.hasSeriesWithKey(series.key());
+  function isSeriesValid({ expression }: ExpressionSeries): boolean {
+    return expression instanceof ArithmeticExpression && isTruthy(expression.reference);
   }
 
   function onSeriesChange(series: ExpressionSeries) {

@@ -16,7 +16,7 @@
  */
 
 import { Set } from "immutable";
-import { $, Dataset, r, SortExpression } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
@@ -24,17 +24,33 @@ import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { collect, Fn } from "../../../common/utils/general/general";
+import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
+import { debounceWithPromise } from "../../../common/utils/functional/functional";
+import { Fn } from "../../../common/utils/general/general";
+import { previewStringFilterQuery } from "../../../common/utils/query/preview-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
+import { reportError } from "../../utils/error-reporter/error-reporter";
 import { Button } from "../button/button";
+import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
-import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
+import { PreviewList } from "./preview-list";
 import "./preview-string-filter-menu.scss";
 
+function checkRegex(text: string): string {
+  try {
+    new RegExp(text);
+  } catch (e) {
+    return e.message;
+  }
+  return null;
+}
+
 const TOP_N = 100;
+
+export type PreviewFilterMode = FilterMode.CONTAINS | FilterMode.REGEX;
 
 export interface PreviewStringFilterMenuProps {
   clicker: Clicker;
@@ -42,128 +58,94 @@ export interface PreviewStringFilterMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
   onClose: Fn;
-  filterMode: FilterMode;
-  searchText: string;
+  filterMode: FilterMode.REGEX | FilterMode.CONTAINS;
   onClauseChange: (clause: FilterClause) => Filter;
 }
 
 export interface PreviewStringFilterMenuState {
-  loading?: boolean;
-  dataset?: Dataset;
-  queryError?: any;
-  fetchQueued?: boolean;
-  regexErrorMessage?: string;
+  searchText: string;
+  dataset: DatasetLoad;
+}
+
+interface QueryProps {
+  essence: Essence;
+  timekeeper: Timekeeper;
+  dimension: Dimension;
+  filterMode: PreviewFilterMode;
 }
 
 export class PreviewStringFilterMenu extends React.Component<PreviewStringFilterMenuProps, PreviewStringFilterMenuState> {
-  public mounted: boolean;
-  public collectTriggerSearch: Fn;
+  private lastSearchText: string;
 
-  constructor(props: PreviewStringFilterMenuProps) {
-    super(props);
-    this.state = {
-      loading: false,
-      dataset: null,
-      queryError: null,
-      fetchQueued: false,
-      regexErrorMessage: ""
-    };
-
-    this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
-      if (!this.mounted) return;
-      const { essence, timekeeper, dimension, searchText } = this.props;
-      this.fetchData(essence, timekeeper, dimension, searchText);
-    });
+  initialSearchText = (): string => {
+    const { essence, dimension } = this.props;
+    const clause = essence.filter.getClauseForDimension(dimension);
+    if (clause && clause instanceof StringFilterClause && clause.action !== StringFilterAction.IN) {
+      return clause.values.first();
+    }
+    return "";
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
-    const { dataCube } = essence;
-    const nativeCount = dataCube.getMeasure("count");
-    const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
+  state: PreviewStringFilterMenuState = { dataset: loading, searchText: this.initialSearchText() };
 
-    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+  updateSearchText = (searchText: string) => this.setState({ searchText });
 
-    if (searchText) {
-      const { filterMode } = this.props;
-      if (filterMode === FilterMode.CONTAINS) {
-        filterExpression = filterExpression.and(dimension.expression.contains(r(searchText)));
-      } else if (filterMode === FilterMode.REGEX) {
-        filterExpression = filterExpression.and(dimension.expression.match(searchText));
-      }
-    }
+  private loadRows() {
+    if (this.regexErrorMessage()) return;
+    this.setState({ dataset: loading });
+    this.sendQueryFilter()
+      .then(dataset => {
+        // TODO: encode it better
+        // null is here when we get out of order request, so we just ignore it
+        if (!dataset) return;
+        this.setState({ dataset });
+      });
+  }
 
-    const query = $("main")
-      .filter(filterExpression)
-      .split(dimension.expression, dimension.name)
-      .apply("MEASURE", measureExpression)
-      .sort($("MEASURE"), SortExpression.DESCENDING)
-      .limit(TOP_N + 1);
+  private sendQueryFilter(): Promise<DatasetLoad> {
+    const { searchText } = this.state;
+    this.lastSearchText = searchText;
+    return this.debouncedQueryFilter({ ...this.props, searchText });
+  }
 
-    this.setState({
-      loading: true,
-      fetchQueued: false
-    });
-    dataCube.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.setState({
-            loading: false,
-            dataset,
-            queryError: null
-          });
-        },
-        error => {
-          if (!this.mounted) return;
-          this.setState({
-            loading: false,
-            dataset: null,
-            queryError: error
-          });
+  private regexErrorMessage(): string {
+    const { filterMode } = this.props;
+    const { searchText } = this.state;
+    return filterMode === FilterMode.REGEX && searchText && checkRegex(searchText);
+  }
+
+  private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
+    const { essence } = props;
+    const { searchText } = this.state;
+    const query = previewStringFilterQuery({ ...props, searchText, limit: TOP_N + 1 });
+
+    return essence.dataCube.executor(query, { timezone: essence.timezone })
+      .then((dataset: Dataset) => {
+        if (this.lastSearchText !== searchText) return null;
+        return loaded(dataset);
+      })
+      .catch(err => {
+          if (this.lastSearchText !== searchText) return null;
+          reportError(err);
+          return error(err);
         }
       );
   }
 
-  componentWillMount() {
-    const { essence, timekeeper, dimension, searchText, filterMode } = this.props;
-    if (searchText && filterMode === FilterMode.REGEX && !this.checkRegex(searchText)) return;
-    this.fetchData(essence, timekeeper, dimension, searchText);
-  }
+  private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
-  componentDidMount() {
-    this.mounted = true;
+  componentWillMount() {
+    this.loadRows();
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this.debouncedQueryFilter.cancel();
   }
 
-  componentWillReceiveProps(nextProps: PreviewStringFilterMenuProps) {
-    const { searchText, filterMode } = this.props;
-    const incomingSearchText = nextProps.searchText;
-    const { fetchQueued, loading, dataset } = this.state;
-    if (incomingSearchText && filterMode === FilterMode.REGEX) this.checkRegex(incomingSearchText);
-
-    // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
-    if (incomingSearchText && incomingSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
-      return;
-    } else {
-      this.setState({
-        fetchQueued: true
-      });
-      this.collectTriggerSearch();
+  componentDidUpdate(prevProps: PreviewStringFilterMenuProps, prevState: PreviewStringFilterMenuState): void {
+    if (this.state.searchText !== prevState.searchText) {
+      this.loadRows();
     }
-  }
-
-  checkRegex(text: string): boolean {
-    try {
-      new RegExp(text);
-      this.setState({ regexErrorMessage: null });
-    } catch (e) {
-      this.setState({ regexErrorMessage: e.message });
-      return false;
-    }
-    return true;
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
@@ -173,25 +155,25 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   constructFilter(): Filter {
-    const { dimension, filterMode, onClauseChange, searchText } = this.props;
+    const { dimension, filterMode, onClauseChange } = this.props;
+    const { searchText } = this.state;
+    if (!searchText) return null;
     const { name: reference } = dimension;
 
-    if (searchText) {
-      if (filterMode === FilterMode.REGEX) {
-        return onClauseChange(new StringFilterClause({
-          reference,
-          values: Set.of(searchText),
-          action: StringFilterAction.MATCH
-        }));
-      } else if (filterMode === FilterMode.CONTAINS) {
+    switch (filterMode) {
+      case FilterMode.CONTAINS:
         return onClauseChange(new StringFilterClause({
           reference,
           values: Set.of(searchText),
           action: StringFilterAction.CONTAINS
         }));
-      }
+      case FilterMode.REGEX:
+        return onClauseChange(new StringFilterClause({
+          reference,
+          values: Set.of(searchText),
+          action: StringFilterAction.MATCH
+        }));
     }
-    return null;
   }
 
   onOkClick = () => {
@@ -206,96 +188,46 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   actionEnabled() {
-    const { regexErrorMessage } = this.state;
     const { essence } = this.props;
-    if (regexErrorMessage) return false;
-    return !essence.filter.equals(this.constructFilter());
-  }
-
-  renderList() {
-    const { searchText } = this.props;
-    const rows = this.renderRows();
-    const grayMessage = this.renderMessage(rows.length > 0);
-
-    return <div className="rows">
-      {(rows.length === 0 || !searchText) ? null : <div className="matching-values-message">Matching Values</div>}
-      {rows}
-      {grayMessage}
-    </div>;
-  }
-
-  private renderMessage(hasRows: boolean) {
-    const { loading, dataset, fetchQueued, regexErrorMessage } = this.state;
-    const { searchText } = this.props;
-    if (regexErrorMessage) {
-      return <div className="message">{regexErrorMessage}</div>;
-    }
-    if (!loading && dataset && !fetchQueued && searchText && !hasRows) {
-      return <div className="message">{'No results for "' + searchText + '"'}</div>;
-    }
-    return null;
-  }
-
-  private renderRows() {
-    const { dataset } = this.state;
-    if (!dataset) {
-      return [];
-    }
-
-    const { dimension, searchText, filterMode } = this.props;
-    let search: string | RegExp = null;
-    let rowStrings = dataset.data.slice(0, TOP_N).map(d => d[dimension.name]);
-
-    if (searchText) {
-      rowStrings = rowStrings.filter(d => {
-        if (filterMode === FilterMode.REGEX) {
-          try {
-            const escaped = searchText.replace(/\\[^\\]]/g, "\\\\");
-            search = new RegExp(escaped);
-            return search.test(String(d));
-          } catch (e) {
-            return false;
-          }
-        } else if (filterMode === FilterMode.CONTAINS) {
-          search = searchText;
-          return String(d).indexOf(searchText) !== -1;
-        }
-        return false;
-      });
-    }
-
-    return rowStrings.map(segmentValue => {
-      const segmentValueStr = String(segmentValue);
-      return <div
-        className="row no-select"
-        key={segmentValueStr}
-        title={segmentValueStr}
-      >
-        <div className="row-wrapper">
-          <HighlightString className="label" text={segmentValueStr} highlight={search} />
-        </div>
-      </div>;
-    });
+    if (this.regexErrorMessage()) return false;
+    const filter = this.constructFilter();
+    return filter && !essence.filter.equals(filter);
   }
 
   render() {
-    const { filterMode } = this.props;
-    const { dataset, loading, queryError } = this.state;
+    const { filterMode, dimension } = this.props;
+    const { dataset, searchText } = this.state;
 
-    const hasMore = dataset && dataset.data.length > TOP_N;
-    return <div className={classNames("string-filter-menu", filterMode)}>
-      <GlobalEventListener
-        keyDown={this.globalKeyDownListener}
-      />
-      <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-        {this.renderList()}
-        {queryError ? <QueryError error={queryError} /> : null}
-        {loading ? <Loader /> : null}
+    const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
+    return <React.Fragment>
+      <GlobalEventListener keyDown={this.globalKeyDownListener} />
+      <div className="search-box">
+        <ClearableInput
+          placeholder="Search"
+          focusOnMount={true}
+          value={searchText}
+          onChange={this.updateSearchText}
+        />
       </div>
-      <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
+      <div className="preview-string-filter-menu">
+        <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
+          <div className="rows">
+          {isLoaded(dataset) && <PreviewList
+              dimension={dimension}
+              dataset={dataset.dataset}
+              searchText={searchText}
+              regexErrorMessage={this.regexErrorMessage()}
+              limit={TOP_N}
+              filterMode={filterMode} />}
+          {isError(dataset) ? <QueryError error={dataset.error} /> : null}
+          {isLoading(dataset) ? <Loader /> : null}
+          </div>
+        </div>
+        <div className="ok-cancel-bar">
+          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
+          <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
+        </div>
       </div>
-    </div>;
+    </React.Fragment>;
   }
 }

@@ -105,6 +105,7 @@ export class SettingsManager {
 
   private addFileManager(dataCube: DataCube): Promise<void> {
     if (dataCube.clusterName !== "native") throw new Error(`data cube '${dataCube.name}' must be native to have a file manager`);
+    if (Array.isArray(dataCube.source)) throw new Error(`native data cube can't have multiple sources: ${dataCube.source.join(", ")}`);
     const { verbose, logger, anchorPath } = this;
 
     var fileManager = new FileManager({

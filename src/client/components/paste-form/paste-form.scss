@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +14,23 @@
  * limitations under the License.
  */
 
-import { LOWEST_PRIORITY_ACTION, Manifest, Resolve } from "../../models/manifest/manifest";
+@import '../../imports';
 
-function rulesEvaluator(): Resolve {
-  return Resolve.manual(LOWEST_PRIORITY_ACTION, "The Geo visualization is not ready, please select another visualization.", []);
+.paste-field {
+  @extend %default-input;
+  height: 280px;
+  font-size: 13px;
+  padding: 1px;
 }
 
-export const GEO_MANIFEST = new Manifest(
-  "geo",
-  "Geo",
-  rulesEvaluator
-);
+.paste-actions {
+  margin-top: 12px;
+
+  button {
+    min-width: 70px;
+
+    &:not(:last-child) {
+      margin-right: 6px;
+    }
+  }
+}

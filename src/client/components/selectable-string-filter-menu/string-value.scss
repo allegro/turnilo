@@ -16,45 +16,29 @@
  */
 @import '../../imports';
 
+$checkbox-width: 20px;
 
-.search-box {
-  height: 30px;
-  margin-left: 6px;
-  flex-grow: 1;
-  flex-basis: 160px;
+.string-value {
+  height: 24px;
+  cursor: pointer;
+  padding: 0 $padding-compact;
 
-  .clearable-input {
-    @extend %input-cont-inset;
-    width: 100%;
-    height: $input-height;
-    padding-left: 6px;
+  &:hover {
+    background: $hover;
   }
-}
 
-.preview-string-filter-menu {
-  width: 100%;
+  &:last-child {
+    margin-bottom: 12px;
+  }
 
-  .menu-table {
+  .value-wrapper {
+    @include ellipsis;
+    height: 100%;
+  }
 
-    @extend %white-shadow;
-    background: $white;
-    color: $text-standard;
-
-    &::after {
-      @include unpin-full(0, -14px, 0, -14px);
-    }
-
-    .rows {
-      height: 280px;
-      margin-top: 10px;
-      margin-left: -$padding-compact;
-      margin-right: -$padding-compact;
-
-      overflow: auto;
-
-      .loader {
-        @include pin-full;
-      }
-    }
+  .label {
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 4px;
   }
 }

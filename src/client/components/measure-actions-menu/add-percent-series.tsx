@@ -63,7 +63,7 @@ export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = pr
   }
 
   return <div className={classNames("new-percent-expression", "action", { disabled: percentsDisabled })} onClick={onNewPercentExpression}>
-    <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
+    <SvgIcon svg={require("../../icons/full-percent.svg")} />
     <div className="action-label">Percent</div>
   </div>;
 };

@@ -26,7 +26,7 @@ import { Dropdown } from "../dropdown/dropdown";
 import { FormatPicker } from "./format-picker";
 import "./percent-series-menu.scss";
 
-interface ExpressionSeriesMenuProps {
+interface PercentSeriesMenuProps {
   measure: Measure;
   series: ExpressionSeries;
   seriesList: SeriesList;
@@ -50,7 +50,7 @@ function operationToExpression(operation: PercentOperation): PercentExpression {
 
 const renderOperation = (op: Operation): string => op.label;
 
-export const PercentSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
+export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
 
   const selectedOperations = seriesList
     .getExpressionSeriesFor(measure.name)
@@ -59,8 +59,8 @@ export const PercentSeriesMenu: React.SFC<ExpressionSeriesMenuProps> = ({ series
     .map((s: ExpressionSeries) => s.expression.operation)
     .toSet();
 
-  function isSeriesValid(expressionSeries: ExpressionSeries): boolean {
-    return !!expressionSeries.expression && !seriesList.hasSeriesWithKey(expressionSeries.key());
+  function isSeriesValid(series: ExpressionSeries): boolean {
+    return series.expression instanceof PercentExpression;
   }
 
   function onSeriesChange(series: ExpressionSeries) {

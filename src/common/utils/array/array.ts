@@ -29,3 +29,17 @@ export function indexByAttribute(array: any[], key: string, value: string): any 
 
   return -1;
 }
+
+export function shallowEqualArrays(a: Array<unknown>, b: Array<unknown>): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (b.length !== a.length) return false;
+
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}

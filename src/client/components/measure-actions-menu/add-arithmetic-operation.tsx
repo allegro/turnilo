@@ -46,7 +46,7 @@ export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps
   }
 
   return <div className={classNames("new-arithmetic-expression", "action")} onClick={onNewOperation}>
-    <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
+    <SvgIcon svg={require("../../icons/full-arithmetic.svg")} />
     <div className="action-label">Calculate</div>
   </div>;
 };

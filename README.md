@@ -38,6 +38,10 @@ this is how Turnilo emerged.
 
 ![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/showcase.gif)
 
+## Join us!
+
+[Join the chat on Slack](https://bit.ly/2WgiCNr)
+
 ## Pre-requisites
 
 * [Node.js](https://nodejs.org/) - 10.x or 8.x version.

@@ -16,7 +16,7 @@
  */
 
 import { Set } from "immutable";
-import { $, Dataset, r, SortExpression } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
@@ -25,16 +25,22 @@ import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { collect, Fn } from "../../../common/utils/general/general";
+import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
+import { debounceWithPromise } from "../../../common/utils/functional/functional";
+import { Fn } from "../../../common/utils/general/general";
+import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
+import { reportError } from "../../utils/error-reporter/error-reporter";
 import { Button } from "../button/button";
-import { Checkbox, CheckboxType } from "../checkbox/checkbox";
+import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
-import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
+import { PasteForm } from "../paste-form/paste-form";
 import { QueryError } from "../query-error/query-error";
+import { SvgIcon } from "../svg-icon/svg-icon";
 import "./selectable-string-filter-menu.scss";
+import { StringValuesList } from "./string-values-list";
 
 const TOP_N = 100;
 
@@ -45,152 +51,118 @@ export interface SelectableStringFilterMenuProps {
   timekeeper: Timekeeper;
   onClose: Fn;
   filterMode?: FilterMode;
-  searchText: string;
   onClauseChange: (clause: FilterClause) => Filter;
 }
 
 export interface SelectableStringFilterMenuState {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: any;
-  fetchQueued?: boolean;
-  selectedValues?: Set<string>;
-  promotedValues?: Set<string>; // initial selected values
+  searchText: string;
+  dataset: DatasetLoad;
+  selectedValues: Set<string>;
   colors?: Colors;
+  pasteModeEnabled: boolean;
 }
 
 function toggle(set: Set<string>, value: string): Set<string> {
   return set.has(value) ? set.remove(value) : set.add(value);
 }
 
+interface QueryProps {
+  essence: Essence;
+  timekeeper: Timekeeper;
+  dimension: Dimension;
+  searchText: string;
+}
+
 export class SelectableStringFilterMenu extends React.Component<SelectableStringFilterMenuProps, SelectableStringFilterMenuState> {
-  public mounted: boolean;
-  public collectTriggerSearch: Fn;
+  private lastSearchText: string;
 
-  constructor(props: SelectableStringFilterMenuProps) {
-    super(props);
-    this.state = {
-      loading: false,
-      dataset: null,
-      error: null,
-      fetchQueued: false,
-      selectedValues: null,
-      promotedValues: null,
-      colors: null
-    };
+  state: SelectableStringFilterMenuState = {
+    pasteModeEnabled: false,
+    dataset: loading,
+    selectedValues: Set(),
+    colors: null,
+    searchText: ""
+  };
 
-    this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
-      if (!this.mounted) return;
-      const { essence, timekeeper, dimension, searchText } = this.props;
-      this.fetchData(essence, timekeeper, dimension, searchText);
-    });
+  private loadRows() {
+    this.setState({ dataset: loading });
+    this.sendQueryFilter()
+      .then(dataset => {
+        // TODO: encode it better
+        // null is here when we get out of order request, so we just ignore it
+        if (!dataset) return;
+        this.setState({ dataset });
+      })
+      .catch(_ => {
+        // Some weird internal error. All application logic errors are handled earlier
+        this.setState({ dataset: error(new Error("Unknown error")) });
+      });
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
-    const { dataCube } = essence;
-    const nativeCount = dataCube.getMeasure("count");
-    const $main = $("main");
-    const measureExpression = nativeCount ? nativeCount.expression : $main.count();
+  private sendQueryFilter(): Promise<DatasetLoad> {
+    const { searchText } = this.state;
+    this.lastSearchText = searchText;
+    return this.debouncedQueryFilter({ ...this.props, searchText });
+  }
 
-    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
+  private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
+    const { essence, searchText } = props;
+    const query = stringFilterOptionsQuery({ ...props, limit: TOP_N + 1 });
 
-    if (searchText) {
-      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
-    }
-
-    const query = $main
-      .filter(filterExpression)
-      .split(dimension.expression, dimension.name)
-      .apply("MEASURE", measureExpression)
-      .sort($("MEASURE"), SortExpression.DESCENDING)
-      .limit(TOP_N + 1);
-
-    this.setState({
-      loading: true,
-      fetchQueued: false
-    });
-    dataCube.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.setState({
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        error => {
-          if (!this.mounted) return;
-          this.setState({
-            loading: false,
-            dataset: null,
-            error
-          });
+    return essence.dataCube.executor(query, { timezone: essence.timezone })
+      .then((dataset: Dataset) => {
+        if (this.lastSearchText !== searchText) return null;
+        return loaded(dataset);
+      })
+      .catch(err => {
+          if (this.lastSearchText !== searchText) return null;
+          reportError(err);
+          return error(err);
         }
       );
   }
 
+  private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
+
   componentWillMount() {
     const { essence, dimension } = this.props;
-    const { filter, colors } = essence;
+    const { colors } = essence;
 
-    const myColors = (colors && colors.dimension === dimension.name ? colors : null);
+    const hasColors = colors && colors.dimension === dimension.name;
+    const valuesFromColors = (hasColors ? Set(colors.toArray()) : Set.of());
+    const selectedValues = this.initialSelection() || valuesFromColors;
+    this.setState({ selectedValues, colors });
 
-    const existingMode = filter.getModeForDimension(dimension);
+    this.loadRows();
+  }
 
+  private initialSelection(): Set<string> {
+    const { essence: { filter }, dimension } = this.props;
     const clause = filter.getClauseForDimension(dimension);
-    if (!clause) {
-      return this.initComponent(Set.of(), myColors);
-    }
+    if (!clause) return Set();
     if (!(clause instanceof StringFilterClause)) {
       throw new Error(`Expected string filter clause, got: ${clause}`);
     }
-    const valueSet = clause.values;
-    const nonRegexValues = (existingMode !== FilterMode.REGEX && valueSet);
-    const valuesFromColors = (myColors ? Set(myColors.toArray()) : Set.of());
-    const selectedValues = nonRegexValues || valuesFromColors; // don't want regex to show up as a promoted value
-
-    this.initComponent(selectedValues, myColors);
-  }
-
-  private initComponent(selectedValues: Set<string>, colors: Colors) {
-    const { essence, timekeeper, dimension, searchText } = this.props;
-    this.setState({
-      selectedValues,
-      promotedValues: selectedValues,
-      colors
-    });
-
-    this.fetchData(essence, timekeeper, dimension, searchText);
-  }
-
-  componentDidMount() {
-    this.mounted = true;
+    return clause.action === StringFilterAction.IN ? clause.values : Set();
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this.debouncedQueryFilter.cancel();
   }
 
-  componentWillReceiveProps(nextProps: SelectableStringFilterMenuProps) {
-    const { searchText } = this.props;
-    const { fetchQueued, loading, dataset } = this.state;
-    // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
-    if (nextProps.searchText && nextProps.searchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
-      return;
-    } else {
-      this.setState({
-        fetchQueued: true
-      });
-      this.collectTriggerSearch();
+  componentDidUpdate(prevProps: SelectableStringFilterMenuProps, prevState: SelectableStringFilterMenuState) {
+    if (this.state.searchText !== prevState.searchText) {
+      this.loadRows();
     }
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
-    if (enterKey(e)) {
+    if (!this.state.pasteModeEnabled && enterKey(e)) {
       this.onOkClick();
     }
   }
+
+  updateSearchText = (searchText: string) => this.setState({ searchText });
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
@@ -207,10 +179,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     return onClauseChange(clause);
   }
 
-  onValueClick(value: any, e: MouseEvent) {
+  onValueClick = (value: string, withModKey: boolean) => {
     const { selectedValues, colors: oldColors } = this.state;
     const colors = oldColors && oldColors.toggle(value);
-    if (e.altKey || e.ctrlKey || e.metaKey) {
+    if (withModKey) {
       const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
       return this.setState({ colors, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
@@ -218,94 +190,80 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   onOkClick = () => {
-    if (!this.actionEnabled()) return;
+    if (!this.isFilterValid()) return;
     const { clicker, onClose } = this.props;
     const { colors } = this.state;
     clicker.changeFilter(this.constructFilter(), colors);
     onClose();
   }
 
-  onCancelClick = () => {
-    this.props.onClose();
-  }
+  enablePasteMode = () => this.setState({ pasteModeEnabled: true });
 
-  actionEnabled() {
+  disablePasteMode = () => this.setState({ pasteModeEnabled: false });
+
+  selectValues = (values: Set<string>) => this.setState({ selectedValues: values });
+
+  isFilterValid(): boolean {
+    const { selectedValues } = this.state;
+    if (selectedValues.isEmpty()) return false;
     return !this.props.essence.filter.equals(this.constructFilter());
   }
 
-  renderList() {
-    const rows = this.renderRows();
-    const message = this.renderMessage(rows.length > 0);
+  renderSelectMode(): JSX.Element {
+    const { filterMode, onClose, dimension } = this.props;
+    const { dataset, selectedValues, searchText } = this.state;
+    const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
 
-    return <div className="rows">
-      {rows}
-      {message}
-    </div>;
-  }
-
-  private renderMessage(hasRows: boolean) {
-    const { searchText } = this.props;
-    const { loading, dataset, fetchQueued } = this.state;
-    if (loading || !dataset || fetchQueued || !searchText || hasRows) {
-      return null;
-    }
-    return <div className="message">{'No results for "' + searchText + '"'}</div>;
-  }
-
-  private renderRows() {
-    const { dataset, selectedValues, promotedValues } = this.state;
-    if (!dataset) return [];
-    const { dimension, filterMode, searchText } = this.props;
-    const promotedElements = promotedValues ? promotedValues.toArray() : [];
-    const rowData = dataset.data.slice(0, TOP_N).filter(d => {
-      return promotedElements.indexOf(d[dimension.name] as string) === -1;
-    });
-    let rowStrings = promotedElements.concat(rowData.map(d => d[dimension.name] as string));
-
-    if (searchText) {
-      const searchTextLower = searchText.toLowerCase();
-      rowStrings = rowStrings.filter(d => {
-        return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
-      });
-    }
-
-    const checkboxType = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
-    return rowStrings.map(segmentValue => {
-      const segmentValueStr = String(segmentValue);
-      const selected = selectedValues && selectedValues.contains(segmentValue);
-
-      return <div
-        className={classNames("row", { selected })}
-        key={segmentValueStr}
-        title={segmentValueStr}
-        onClick={this.onValueClick.bind(this, segmentValue)}
-      >
-        <div className="row-wrapper">
-          <Checkbox type={checkboxType as CheckboxType} selected={selected} />
-          <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
+    return <React.Fragment>
+      <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
+        <SvgIcon svg={require("../../icons/full-multi.svg")} />
+      </div>
+      <div className="search-box">
+        <ClearableInput
+          placeholder="Search"
+          focusOnMount={true}
+          value={searchText}
+          onChange={this.updateSearchText}
+        />
+      </div>
+      <div className={classNames("selectable-string-filter-menu", filterMode)}>
+        <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
+          <div className="rows">
+            {isLoaded(dataset) && <StringValuesList
+              onRowSelect={this.onValueClick}
+              dimension={dimension}
+              dataset={dataset.dataset}
+              searchText={searchText}
+              limit={TOP_N}
+              selectedValues={selectedValues}
+              promotedValues={this.initialSelection()}
+              filterMode={filterMode} />}
+            {isError(dataset) && <QueryError error={dataset.error} />}
+            {isLoading(dataset) && <Loader />}
+          </div>
         </div>
-      </div>;
-    });
+        <div className="ok-cancel-bar">
+          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.isFilterValid()} />
+          <Button type="secondary" title={STRINGS.cancel} onClick={onClose} />
+        </div>
+      </div>
+    </React.Fragment>;
+  }
+
+  renderImportMode(): JSX.Element {
+    return <React.Fragment>
+      <div className="paste-prompt">Paste values separated by newlines</div>
+      <div className="paste-form">
+        <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} />
+      </div>
+    </React.Fragment>;
   }
 
   render() {
-    const { filterMode } = this.props;
-    const { dataset, loading, error } = this.state;
-
-    const hasMore = dataset && dataset.data.length > TOP_N;
-    return <div className={classNames("string-filter-menu", filterMode)}>
-      <GlobalEventListener
-        keyDown={this.globalKeyDownListener}
-      />
-      <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-        {this.renderList()}
-        {error ? <QueryError error={error} /> : null}
-        {loading ? <Loader /> : null}
-      </div>
-      <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
-      </div>
-    </div>;
+    const { pasteModeEnabled } = this.state;
+    return <React.Fragment>
+      <GlobalEventListener keyDown={this.globalKeyDownListener} />
+      {pasteModeEnabled ? this.renderImportMode() : this.renderSelectMode()}
+    </React.Fragment>;
   }
 }

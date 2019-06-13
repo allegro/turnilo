@@ -31,31 +31,24 @@ import { Filter } from "../../../common/models/filter/filter";
 import { ContinuousDimensionKind, getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
-import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { formatValue } from "../../../common/utils/formatter/formatter";
-import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
+import { concatTruthy, flatMap, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
 import { ChartLine } from "../../components/chart-line/chart-line";
-import { ColorEntry, ColorSwabs } from "../../components/color-swabs/color-swabs";
-import { Delta } from "../../components/delta/delta";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Highlighter } from "../../components/highlighter/highlighter";
-import { HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
 import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";
-import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
-import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
+import { HighlightTooltip, HoverTooltip } from "../../components/line-chart-tooltip/line-chart-tooltip";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
-import { escapeKey, getXFromEvent, JSXNode } from "../../utils/dom/dom";
+import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 import Linear = d3.scale.Linear;
@@ -64,8 +57,6 @@ const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
 const MIN_CHART_HEIGHT = 140;
-const HOVER_BUBBLE_V_OFFSET = -7;
-const HOVER_MULTI_BUBBLE_V_OFFSET = -8;
 const MAX_HOVER_DIST = 50;
 const MAX_ASPECT_RATIO = 1; // width / height
 
@@ -90,25 +81,16 @@ function roundTo(v: number, roundTo: number) {
   return Math.round(Math.floor(v / roundTo)) * roundTo;
 }
 
-function splitRangeExtractor(dimensionName: string, range: PlywoodRange): (d: Datum) => Datum {
-  return (d: Datum): Datum => {
-    const dataset = d[SPLIT] as Dataset;
-    return dataset != null ? dataset.findDatumByAttribute(dimensionName, range) : null;
-  };
-}
-
 export type continuousValueType = Date | number;
 
 export interface LineChartState extends BaseVisualizationState {
   dragStartValue?: continuousValueType;
   dragRange?: PlywoodRange;
-  roundDragRange?: PlywoodRange;
   hoverRange?: PlywoodRange;
   containerYPosition?: number;
   containerXPosition?: number;
 
   // Cached props
-  continuousDimension?: Dimension;
   axisRange?: PlywoodRange;
   // TODO: fix this type
   scaleX?: any;
@@ -141,8 +123,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
   componentWillUpdate({ stage: { width } }: VisualizationProps) {
     const { stage: { width: oldWidth } } = this.props;
     if (width !== oldWidth) {
-      const { axisRange, continuousDimension } = this.state;
-      const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, width);
+      const { axisRange } = this.state;
+      const scaleX = this.getScaleX(this.getContinuousDimension().kind as ContinuousDimensionKind, axisRange, width);
       this.setState({ scaleX });
     }
   }
@@ -171,12 +153,13 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  onMouseMove = (dataset: Dataset, series: Series, scaleX: any, e: React.MouseEvent<HTMLDivElement>) => {
+  onMouseMove = (dataset: Dataset, scaleX: any, e: React.MouseEvent<HTMLDivElement>) => {
     const { essence } = this.props;
-    const { continuousDimension, hoverRange, hoverSeries } = this.state;
+    const { hoverRange } = this.state;
     if (!dataset) return;
 
     const splitLength = essence.splits.length();
+    const continuousDimension = this.getContinuousDimension();
 
     const myDOM = ReactDOM.findDOMNode(this);
     const rect = myDOM.getBoundingClientRect();
@@ -192,15 +175,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const currentHoverRange: any = closestDatum ? (closestDatum[continuousDimension.name]) : null;
 
-    if (!hoverRange || !immutableEqual(hoverRange, currentHoverRange) || !immutableEqual(series, hoverSeries)) {
+    if (!hoverRange || !immutableEqual(hoverRange, currentHoverRange)) {
       this.setState({
-        hoverRange: currentHoverRange,
-        hoverSeries: series
+        hoverRange: currentHoverRange
       });
     }
   }
 
-  getDragRange(e: MouseEvent): PlywoodRange {
+  getDragRange(e: MouseEvent): PlywoodRange | null {
     const { dragStartValue, axisRange, scaleX } = this.state;
 
     let dragEndValue = scaleX.invert(this.getMyEventX(e));
@@ -220,7 +202,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   }
 
-  floorRange(dragRange: PlywoodRange): PlywoodRange {
+  floorRange(dragRange: PlywoodRange): PlywoodRange | null {
     const { essence } = this.props;
     const { splits, timezone } = essence;
     const continuousSplit = splits.splits.last();
@@ -232,7 +214,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
         start: duration.floor(dragRange.start, timezone),
         end: duration.shift(duration.floor(dragRange.end, timezone), timezone, 1)
       });
-    } else {
+    }
+    if (NumberRange.isNumberRange(dragRange)) {
       const bucketSize = continuousSplit.bucket as number;
       const startFloored = roundTo((dragRange as NumberRange).start, bucketSize);
       let endFloored = roundTo((dragRange as NumberRange).end, bucketSize);
@@ -246,6 +229,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
         end: endFloored
       });
     }
+
+    return null;
   }
 
   globalMouseMoveListener = (e: MouseEvent) => {
@@ -254,18 +239,19 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const dragRange = this.getDragRange(e);
     this.setState({
-      dragRange,
-      roundDragRange: this.floorRange(dragRange)
+      dragRange
     });
   }
 
   globalMouseUpListener = (e: MouseEvent) => {
     const { clicker, essence } = this.props;
-    const { continuousDimension, dragStartValue, dragRange, dragOnMeasure } = this.state;
+    const { dragStartValue, dragRange, dragOnMeasure } = this.state;
     if (dragStartValue === null) return;
 
-    const highlightRange = this.floorRange(this.getDragRange(e));
+    const newDragRange = this.getDragRange(e);
     this.resetDrag();
+    if (!newDragRange) return;
+    const highlightRange = this.floorRange(newDragRange);
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && essence.hasHighlight()) {
@@ -277,6 +263,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
     }
 
+    const continuousDimension = this.getContinuousDimension();
     const reference = continuousDimension.name;
     const { start, end } = highlightRange;
     const filterClause = continuousDimension.kind === "number"
@@ -302,19 +289,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState({
       dragStartValue: null,
       dragRange: null,
-      roundDragRange: null,
       dragOnMeasure: null
     });
   }
 
-  onMouseLeave = (series: Series) => {
-    const { hoverSeries } = this.state;
-    if (immutableEqual(hoverSeries, series)) {
-      this.setState({
-        hoverRange: null,
-        hoverSeries: null
-      });
-    }
+  onMouseLeave = () => {
+    this.setState({
+      hoverRange: null
+    });
   }
 
   renderHighlighter(): JSX.Element {
@@ -341,148 +323,40 @@ export class LineChart extends BaseVisualization<LineChartState> {
     scaleY: any
   ): JSX.Element {
     const { clicker, essence } = this.props;
-    const { highlight, colors, timezone } = essence;
+    const { highlight } = essence;
 
-    const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
-    const { dragOnMeasure, scaleX, hoverRange, hoverSeries, continuousDimension } = this.state;
-
-    const formatter = series.formatter();
+    const { containerYPosition, containerXPosition, scrollTop, dragRange } = this.state;
+    const { dragOnMeasure, scaleX, hoverRange } = this.state;
 
     if (highlight && !essence.highlightOn(series.measure.name)) return null;
 
-    let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
+    const topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
 
-    topOffset += containerYPosition;
-
     if ((dragRange && dragOnMeasure === series.measure) || (!dragRange && essence.highlightOn(series.measure.name))) {
-      const bubbleRange = dragRange || essence.getHighlightRange();
-
-      const shownRange = roundDragRange || bubbleRange;
-
-      if (colors) {
-        const segmentLabel = formatValue(bubbleRange, timezone);
-        const firstSplit = essence.splits.splits.first();
-        const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
-        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
-
-        const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
-        const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-        const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
-          const segment = d[categoryDimension.name];
-          const hoverDatum = hoverDatums[i];
-          if (!hoverDatum) return null;
-
-          return {
-            color: colorValues[i],
-            name: String(segment),
-            value: series.formatValue(hoverDatum),
-            delta: essence.hasComparison() && <Delta
-              currentValue={series.selectValue(hoverDatum)}
-              previousValue={series.selectValue(hoverDatum, SeriesDerivation.PREVIOUS)}
-              formatter={formatter}
-              lowerIsBetter={series.measure.lowerIsBetter}
-            />
-          };
-        });
-
-        return <HighlightModal
-          left={leftOffset}
-          top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
-          title={segmentLabel}
-          clicker={clicker}>
-          <ColorSwabs colorEntries={colorEntries} />
-        </HighlightModal>;
-      } else {
-        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
-        const segmentLabel = formatValue(shownRange, timezone);
-        const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
-        const measureLabel = highlightDatum ? series.formatValue(highlightDatum) : null;
-
-        return <HighlightModal
-          left={leftOffset}
-          top={topOffset + HOVER_BUBBLE_V_OFFSET}
-          title={segmentLabel}
-          clicker={clicker}>
-          {measureLabel}
-        </HighlightModal>;
-      }
-
-    } else if (!dragRange && hoverRange && immutableEqual(hoverSeries, series.definition)) {
-      const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
-      const segmentLabel = formatValue(hoverRange, timezone);
-
-      if (colors) {
-        const firstSplit = essence.splits.splits.first();
-        const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
-        const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
-        const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-        const hasComparison = essence.hasComparison();
-        const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
-          const segment = d[categoryDimension.name];
-          const hoverDatum = hoverDatums[i];
-          if (!hoverDatum) return null;
-
-          const currentEntry: ColorEntry = {
-            color: colorValues[i],
-            name: String(segment),
-            value: series.formatValue(hoverDatum)
-          };
-
-          if (!hasComparison) {
-            return currentEntry;
-          }
-
-          return {
-            ...currentEntry,
-            previous: series.formatValue(hoverDatum, SeriesDerivation.PREVIOUS),
-            delta: essence.hasComparison() && <Delta
-              currentValue={series.selectValue(hoverDatum)}
-              previousValue={series.selectValue(hoverDatum, SeriesDerivation.PREVIOUS)}
-              formatter={formatter}
-              lowerIsBetter={series.measure.lowerIsBetter}
-            />
-          };
-        });
-
-        return <HoverMultiBubble
-          left={leftOffset}
-          top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
-          title={segmentLabel}
-          colorEntries={colorEntries}
-        />;
-
-      } else {
-        const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
-        if (!hoverDatum) return null;
-        const title = formatValue(hoverRange, timezone);
-        const content = this.renderMeasureLabel(hoverDatum, series);
-
-        return <SegmentBubble
-          left={leftOffset}
-          top={topOffset + HOVER_BUBBLE_V_OFFSET}
-          title={title}
-          content={content}
-        />;
-      }
-
+      const highlightRange = dragRange || essence.getHighlightRange();
+      const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(highlightRange.midpoint());
+      return <HighlightTooltip
+        highlightRange={highlightRange}
+        dataset={dataset}
+        series={series}
+        essence={essence}
+        clicker={clicker}
+        topOffset={topOffset + containerYPosition}
+        leftOffset={leftOffset} />;
+    } else if (!dragRange && hoverRange) {
+      const leftOffset = VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
+      return <HoverTooltip
+        hoverRange={hoverRange}
+        dataset={dataset}
+        series={series}
+        essence={essence}
+        topOffset={topOffset}
+        leftOffset={leftOffset}
+      />;
     }
 
     return null;
-  }
-
-  private renderMeasureLabel(datum: Datum, series: ConcreteSeries): JSXNode {
-    if (!this.props.essence.hasComparison()) {
-      return series.formatValue(datum);
-    }
-    const currentValue = series.selectValue(datum);
-    const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
-    const formatter = series.formatter();
-    return <MeasureBubbleContent
-      lowerIsBetter={series.measure.lowerIsBetter}
-      current={currentValue}
-      previous={previousValue}
-      formatter={formatter} />;
   }
 
   calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {
@@ -509,69 +383,61 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  renderChartLines(splitData: Dataset, isHovered: boolean, lineStage: Stage, getY: Unary<Datum, number>, getYP: Unary<Datum, number>, scaleY: Linear<number, number>) {
+  renderChartLines(dataset: Dataset, showHoverPoint: boolean, stage: Stage, getY: Unary<Datum, number>, getYP: Unary<Datum, number>, scaleY: Linear<number, number>) {
     const { essence } = this.props;
     const hasComparison = essence.hasComparison();
     const { splits, colors } = essence;
 
-    const { hoverRange, scaleX, continuousDimension } = this.state;
+    const { hoverRange, scaleX } = this.state;
+    const continuousDimension = this.getContinuousDimension();
     const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
 
-    if (splits.length() === 1) {
-      const curriedSingleChartLine = (getter: Unary<Datum, number>, isPrevious = false) =>
-        <ChartLine
-          key={`single-${isPrevious ? "previous" : "current"}`}
-          dataset={splitData}
-          getX={getX}
-          getY={getter}
-          scaleX={scaleX}
-          scaleY={scaleY}
-          stage={lineStage}
-          dashed={isPrevious}
-          showArea={true}
-          hoverRange={isHovered ? hoverRange : null}
-          color="default"
-        />;
+    const lineProps = {
+      getX,
+      scaleX,
+      scaleY,
+      stage,
+      hoverRange: showHoverPoint ? hoverRange : null
+    };
 
+    if (splits.length() === 1) {
+      const singleSplitProps = { ...lineProps, dataset, showArea: true, color: "default" };
       return concatTruthy(
-        curriedSingleChartLine(getY),
-        hasComparison && curriedSingleChartLine(getYP, true));
+        <ChartLine {...{
+          ...singleSplitProps,
+          key: "single-current",
+          getY
+        }} />,
+        hasComparison && <ChartLine {...{
+          ...singleSplitProps,
+          key: "single-previous",
+          getY: getYP,
+          dashed: true
+        }} />);
     }
-    let colorValues: string[] = null;
+
     const firstSplit = essence.splits.splits.first();
     const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
+    const colorValues = colors && colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
 
-    if (colors) {
-      colorValues = colors.getColors(splitData.data.map(d => d[categoryDimension.name]));
-    }
-
-    return flatMap(splitData.data, (datum, i) => {
+    return flatMap(dataset.data, (datum, i) => {
       const subDataset = datum[SPLIT] as Dataset;
       if (!subDataset) return [];
-      return concatTruthy(<ChartLine
-        key={"single-current-" + i}
-        dataset={subDataset}
-        getX={getX}
-        getY={getY}
-        scaleX={scaleX}
-        scaleY={scaleY}
-        stage={lineStage}
-        showArea={false}
-        hoverRange={isHovered ? hoverRange : null}
-        color={colorValues ? colorValues[i] : null}
-      />, hasComparison && <ChartLine
-        key={"single-previous-" + i}
-        dataset={subDataset}
-        getX={getX}
-        getY={getYP}
-        scaleX={scaleX}
-        scaleY={scaleY}
-        stage={lineStage}
-        dashed={true}
-        showArea={false}
-        hoverRange={isHovered ? hoverRange : null}
-        color={colorValues ? colorValues[i] : null}
-      />);
+      const color = colorValues && colorValues[i];
+      const doubleSplitProps = { ...lineProps, color, dataset: subDataset, showArea: false };
+      return concatTruthy(
+        <ChartLine {...{
+          ...doubleSplitProps,
+          key: `multi-current-${i}`,
+          getY
+        }} />,
+        hasComparison && <ChartLine {...{
+          ...doubleSplitProps,
+          key: `multi-current-${i}`,
+          getY: getYP,
+          dashed: true
+        }} />
+      );
     });
   }
 
@@ -612,7 +478,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { splits } = essence;
     const formatter = series.formatter();
 
-    const { hoverSeries, dragRange, scaleX, xTicks } = this.state;
+    const { dragRange, hoverRange, scaleX, xTicks } = this.state;
 
     const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
@@ -626,14 +492,16 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const extent = this.calculateExtend(splitData, splits, getY, getYP);
     const scale = this.getScale(extent, lineStage);
 
-    const isHovered = !dragRange && immutableEqual(hoverSeries, series.definition);
+    const hasHighlight = !!essence.getHighlightRange();
+    const isHovered = !dragRange && !!hoverRange;
+    const isHoveredWithoutHighlight = isHovered && !hasHighlight;
 
     return <React.Fragment key={series.reactKey()}>
       <div
         className="measure-line-chart"
         onMouseDown={e => this.onMouseDown(series.measure, e)}
-        onMouseMove={e => this.onMouseMove(splitData, series.definition, scaleX, e)}
-        onMouseLeave={() => this.onMouseLeave(series.definition)}
+        onMouseMove={e => this.onMouseMove(splitData, scaleX, e)}
+        onMouseLeave={() => this.onMouseLeave()}
       >
         <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
           {scale && this.renderHorizontalGridLines(scale, lineStage)}
@@ -643,7 +511,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
             ticks={xTicks}
             stage={lineStage}
           />
-          {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
+          {isHoveredWithoutHighlight && this.renderHoverGuide(scale(0), lineStage)}
+          {scale && this.renderChartLines(splitData, isHoveredWithoutHighlight, lineStage, getY, getYP, scale)}
           {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
           <line
             className="vis-bottom"
@@ -661,24 +530,48 @@ export class LineChart extends BaseVisualization<LineChartState> {
       </div>
       {scale && this.renderChartBubble(splitData, series, chartIndex, containerStage, chartStage, extent, scale)}
     </React.Fragment>;
+  }
 
+  private getContinuousDimension(): Dimension {
+    const { essence: { dataCube } } = this.props;
+    const continuousSplit = this.getContinuousSplit();
+    return dataCube.getDimension(continuousSplit.reference);
+  }
+
+  private getContinuousSplit(): Split {
+    const { essence: { splits } } = this.props;
+    return splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
+  }
+
+  renderHoverGuide(height: number, stage: Stage): JSX.Element {
+    const { scaleX, hoverRange, dragRange } = this.state;
+    if (dragRange || !hoverRange) return null;
+    const midpoint = hoverRange.midpoint();
+    const x = scaleX(midpoint);
+    return <line
+      x1={x}
+      x2={x}
+      y1={0}
+      y2={height}
+      className="hover-guide"
+      transform={stage.getTransform()} />;
   }
 
   deriveDatasetState(dataset: Dataset): Partial<LineChartState> {
     const { essence, timekeeper, stage } = this.props;
-    const { splits, timezone, dataCube } = essence;
+    const { splits, timezone } = essence;
 
     if (!splits.length()) return {};
-    const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
-    const continuousDimension = dataCube.getDimension(continuousSplit.reference);
+    const continuousSplit = this.getContinuousSplit();
+    const continuousDimension = this.getContinuousDimension();
     if (!continuousDimension) return {};
     const filterRange = this.getFilterRange(essence, continuousSplit, timekeeper);
     const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
     const axisRange = union(filterRange, datasetRange);
-    if (!axisRange) return { continuousDimension };
+    if (!axisRange) return {};
     const xTicks = this.getLineChartTicks(axisRange, timezone);
     const scaleX = this.getScaleX(continuousDimension.kind as ContinuousDimensionKind, axisRange, stage.width);
-    return { continuousDimension, axisRange, scaleX, xTicks };
+    return { axisRange, scaleX, xTicks };
   }
 
   private getScaleX(kind: ContinuousDimensionKind, { start, end }: PlywoodRange, stageWidth: number): d3.time.Scale<number, number> | d3.scale.Linear<number, number> {

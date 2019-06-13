@@ -200,23 +200,17 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onMouseMove = (x: number, y: number) => {
-    const { hoverSeries, hoverRow } = this.state;
-    const { series, row } = this.calculateMousePosition(x, y);
-    if (immutableEqual(hoverSeries, series) || hoverRow !== row) {
-      this.setState({
-        hoverSeries: series,
-        hoverRow: row
-      });
+    const { hoverRow } = this.state;
+    const { row } = this.calculateMousePosition(x, y);
+    if (hoverRow !== row) {
+      this.setState({ hoverRow: row });
     }
   }
 
   onMouseLeave = () => {
-    const { hoverSeries, hoverRow } = this.state;
-    if (hoverSeries || hoverRow) {
-      this.setState({
-        hoverSeries: null,
-        hoverRow: null
-      });
+    const { hoverRow } = this.state;
+    if (hoverRow) {
+      this.setState({ hoverRow: null });
     }
   }
 
