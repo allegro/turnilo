@@ -25,8 +25,8 @@ export interface DateRangePickerProps {
   endTime?: Date;
   maxTime?: Date;
   timezone: Timezone;
-  onStartChange: (t: Date, i: int) => void;
-  onEndChange: (t: Date, i: int) => void;
+  onStartChange: (t: Date, i: number) => void;
+  onEndChange: (t: Date, i: number) => void;
   index: int;
 }
 

@@ -50,15 +50,11 @@ export interface FixedTimeTabProps {
 }
 
 export interface FixedTimeTabState {
-  start?: Date;
-  end?: Date;
   shift: string;
   activeMonthStartDate?: Date;
   hoverTimeRange?: TimeRange;
   selectionSet?: boolean;
-  dateRangePickers: List<any>;
-  timeRanges: List<any>;
-  numTimeRanges: int;
+  timeRanges: List<TimeRange>;
 }
 
 export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTabState> {
@@ -67,26 +63,21 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     const shift = essence.timeShift.toJS();
     const timeFilter = essence.getEffectiveFilter(timekeeper).clauseForReference(name);
     if (timeFilter && timeFilter instanceof FixedTimeFilterClause && !timeFilter.values.isEmpty()) {
-      if (timeFilter.values.size === 1) {
-        const { start, end } = timeFilter.values.get(0);
-        return { start, end, shift, activeMonthStartDate: null, hoverTimeRange: null, selectionSet: false, dateRangePickers: List(), timeRanges: List(), numTimeRanges: 1 };
-      } else {
-        const { start, end } = timeFilter.values.get(0);
-        let dateRanges = List();
-        for (let i = 0; i < timeFilter.values.size; i++) {
-          dateRanges = dateRanges.push([timeFilter.values.get(i).start, timeFilter.values.get(i).end]);
-        }
-        return { start, end, shift, activeMonthStartDate: null, hoverTimeRange: null, selectionSet: false,
-          dateRangePickers: List(), timeRanges: dateRanges, numTimeRanges: timeFilter.values.size };
+      let dateRanges = List();
+      for (let i = 0; i < timeFilter.values.size; i++) {
+        let start = timeFilter.values.get(i).start;
+        let end = timeFilter.values.get(i).end;
+        dateRanges = dateRanges.push(new TimeRange({ start, end, bounds: "[]" }));
       }
+      return { shift, activeMonthStartDate: null, hoverTimeRange: null, selectionSet: false, timeRanges: dateRanges };
     }
-    return { start: null, end: null, shift, activeMonthStartDate: null, hoverTimeRange: null, selectionSet: false, dateRangePickers: List(), timeRanges: List(), numTimeRanges: 1 };
+    return { shift, activeMonthStartDate: null, hoverTimeRange: null, selectionSet: false, timeRanges: List() };
   }
 
   componentWillMount() {
-    const { start } = this.state;
+    const { timeRanges } = this.state;
     const { essence: { timezone } } = this.props;
-    const flooredStart = month.floor(start || new Date(), timezone);
+    const flooredStart = month.floor(timeRanges.get(0).start || new Date(), timezone);
     this.setState({
       activeMonthStartDate: flooredStart,
       selectionSet: true
@@ -94,23 +85,17 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   onStartChange = (start: Date, index: int) => {
-    const { timeRanges, numTimeRanges } = this.state;
-    if (numTimeRanges === 1) {
-      this.setState( { start });
-    } else {
-      let dateRanges = timeRanges.update(index, val => [start, timeRanges.get(index)[1]] );
-      this.setState( { timeRanges: dateRanges });
-    }
+    const { timeRanges } = this.state;
+    let end = timeRanges.get(index).end;
+    const dateRanges = timeRanges.set(index, new TimeRange({ start, end, bounds: "[]" }));
+    this.setState( { timeRanges: dateRanges });
   }
 
   onEndChange = (end: Date, index: int) => {
-    const { timeRanges, numTimeRanges } = this.state;
-    if (numTimeRanges === 1) {
-      this.setState( { end });
-    } else {
-      let dateRanges = timeRanges.update(index, val => [timeRanges.get(index)[0], end]);
-      this.setState( { timeRanges: dateRanges });
-    }
+    const { timeRanges } = this.state;
+    let start = timeRanges.get(index).start;
+    let dateRanges = timeRanges.set(index, new TimeRange({ start, end, bounds: "[]" }));
+    this.setState( { timeRanges: dateRanges });
   }
 
   setTimeShift = (shift: string) => this.setState({ shift });
@@ -140,22 +125,13 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   validate(): boolean {
     let dateRanges = List();
-    const { timeRanges, numTimeRanges } = this.state;
-    if (numTimeRanges === 1) {
-      const { start, end } = this.state;
-      let dateRange = this.createDateRange(start, end);
+    const { timeRanges } = this.state;
+    for (let i = 0; i < timeRanges.size; i++) {
+      let date = timeRanges.get(i);
+      let dateRange = this.createDateRange(date.start, date.end);
       if (!dateRange) return false;
       else {
         dateRanges = dateRanges.push(dateRange);
-      }
-    } else {
-      for (let i = 0; i < numTimeRanges; i++) {
-        let date = timeRanges.get(i);
-        let dateRange = this.createDateRange(date[0], date[1]);
-        if (!dateRange) return false;
-        else {
-          dateRanges = dateRanges.push(dateRange);
-        }
       }
     }
     if (!this.validateTimeShift()) return false;
@@ -166,43 +142,31 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   onOkClick = () => {
-    const { timeRanges, start, end, numTimeRanges } = this.state;
+    const { timeRanges } = this.state;
     if (!this.validate()) return;
     const { clicker, onClose } = this.props;
-    if (timeRanges.size === 0) {
-      let dateRanges = List(this.createDateRange(start, end));
-      clicker.changeFilter(this.constructFixedFilter(dateRanges));
-      clicker.changeComparisonShift(this.constructTimeShift());
-      this.setState({ timeRanges: dateRanges });
-      onClose();
-    } else {
-      let dateRanges = List();
-      for (let i = 0; i < numTimeRanges; i++) {
-        dateRanges = dateRanges.push(this.createDateRange(timeRanges.get(i)[0], timeRanges.get(i)[1]));
-      }
-      clicker.changeFilter(this.constructFixedFilter(dateRanges));
-      clicker.changeComparisonShift(this.constructTimeShift());
-      onClose();
+    let dateRanges = List();
+    for (let i = 0; i < timeRanges.size; i++) {
+      dateRanges = dateRanges.push(this.createDateRange(timeRanges.get(i).start, timeRanges.get(i).end));
     }
+    clicker.changeFilter(this.constructFixedFilter(dateRanges));
+    clicker.changeComparisonShift(this.constructTimeShift());
+    onClose();
   }
 
   onTimeRangeClick = () => {
-    const { timeRanges, numTimeRanges } = this.state;
+    const { timeRanges } = this.state;
     let dateRanges = timeRanges;
-    if ( numTimeRanges === 1 ) {
-      const { start, end } = this.state;
-      dateRanges = timeRanges.push( [start, end]);
-    }
-    let start = dateRanges.get(numTimeRanges - 1)[0];
-    let end = dateRanges.get(numTimeRanges - 1)[1];
-    dateRanges = dateRanges.push( [start, end]);
-    this.setState( { numTimeRanges: numTimeRanges + 1, timeRanges: dateRanges });
+    let start = dateRanges.get(timeRanges.size - 1).start;
+    let end = dateRanges.get(timeRanges.size - 1).end;
+    dateRanges = dateRanges.push( new TimeRange({ start, end, bounds: "[]" }));
+    this.setState( { timeRanges: dateRanges });
   }
 
   selectNewRange(startDate: Date, endDate?: Date) {
     const { essence: { timezone } } = this.props;
-    const { numTimeRanges } = this.state;
-    if (numTimeRanges === 1) {
+    const { timeRanges } = this.state;
+    if (timeRanges.size === 1) {
       this.onStartChange(startDate, 0);
       // real end points are exclusive so +1 full day to selection (which is floored) to get the real end point
       if (endDate) endDate = day.shift(endDate, timezone, 1);
@@ -224,15 +188,15 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   goToNextMonth = () => this.navigateToMonth(1);
 
   calculateHoverTimeRange(mouseEnteredDay: Date) {
-    const { start, end } = this.state;
+    const { timeRanges } = this.state;
     let hoverTimeRange: TimeRange = null;
-    if (start && !end) {
-      let start = this.state.start;
+    if (timeRanges.get(0).start && !timeRanges.get(0).end) {
+      let start = timeRanges.get(0).start;
       let end = mouseEnteredDay;
       // if mousing over backwards, set end to old start time
       if (mouseEnteredDay < start) {
         start = mouseEnteredDay;
-        end = this.state.start;
+        end = timeRanges.get(0).start;
       }
       hoverTimeRange = new TimeRange({ start, end, bounds: "[]" });
     }
@@ -245,21 +209,21 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   selectDay(selection: Date): void {
-    const { selectionSet, start } = this.state;
+    const { selectionSet, timeRanges } = this.state;
 
     if (selectionSet) {
       this.setState({ hoverTimeRange: null, selectionSet: false });
       this.selectNewRange(selection, null);
     } else {
-      const isDoubleClickSameDay = datesEqual(selection, start);
-      const isBackwardSelection = selection < start;
+      const isDoubleClickSameDay = datesEqual(selection, timeRanges.get(0).start);
+      const isBackwardSelection = selection < timeRanges.get(0).start;
 
       if (isDoubleClickSameDay) {
-        this.selectNewRange(start, start);
+        this.selectNewRange(timeRanges.get(0).start, timeRanges.get(0).start);
       } else if (isBackwardSelection) {
-        this.selectNewRange(selection, start);
+        this.selectNewRange(selection, timeRanges.get(0).start);
       } else {
-        this.selectNewRange(start, selection);
+        this.selectNewRange(timeRanges.get(0).start, selection);
       }
       this.setState({ selectionSet: true });
     }
@@ -273,9 +237,9 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   renderDays(weeks: Date[][], monthStart: Date): JSX.Element[] {
     const { essence: { timezone, dataCube }, timekeeper } = this.props;
-    const { start, end } = this.state;
-    const startDay = day.floor(start, timezone);
-    const dayBeforeEnd = end && day.shift(end, timezone, -1);
+    const { timeRanges } = this.state;
+    const startDay = day.floor(timeRanges.get(0).start, timezone);
+    const dayBeforeEnd = timeRanges.get(0).end && day.shift(timeRanges.get(0).end, timezone, -1);
     const nextMonthStart = month.shift(monthStart, timezone, 1);
 
     return weeks.map((daysInWeek: Date[], row: number) => {
@@ -283,8 +247,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
         const isPast = dayDate < monthStart;
         const isFuture = dayDate >= nextMonthStart;
         const isBeyondMaxRange = dayDate > dataCube.getMaxTime(timekeeper);
-        const isSelected = startDay <= dayDate && dayDate < end;
-        const isSelectedEdgeStart = datesEqual(dayDate, start);
+        const isSelected = startDay <= dayDate && dayDate < timeRanges.get(0).end;
+        const isSelectedEdgeStart = datesEqual(dayDate, timeRanges.get(0).start);
         const isSelectedEdgeEnd = datesEqual(dayDate, dayBeforeEnd);
         const className = classNames("day", "value",
             {
@@ -337,16 +301,16 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     </div>;
   }
   createDateRangePickers = () => {
-    const { timeRanges, numTimeRanges } = this.state;
+    const { timeRanges } = this.state;
     const { essence: { dataCube, timezone }, timekeeper } = this.props;
     let pickers = [];
-    for (let i = 0; i < numTimeRanges; i++) {
+    for (let i = 0; i < timeRanges.size; i++) {
       pickers.push(
       <div>
-      <Button type="secondary" title={"Delete"} onClick={() => this.setState( { timeRanges: timeRanges.splice(i, 1), numTimeRanges: numTimeRanges - 1 })} />
+      <Button type="secondary" title={"Delete"} onClick={() => this.setState( { timeRanges: timeRanges.splice(i, 1) })} />
       <DateRangePicker
-        startTime={timeRanges.get(i)[0]}
-        endTime={timeRanges.get(i)[1]}
+        startTime={timeRanges.get(i).start}
+        endTime={timeRanges.get(i).end}
         maxTime={dataCube.getMaxTime(timekeeper)}
         timezone={timezone}
         onStartChange={this.onStartChange}
@@ -357,15 +321,14 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   render() {
-    const { numTimeRanges } = this.state;
     const { essence: { dataCube, timezone }, timekeeper, dimension, onClose } = this.props;
+    const { shift, timeRanges, activeMonthStartDate } = this.state;
     if (!dimension) return null;
-    const { shift, start, end, activeMonthStartDate } = this.state;
-    if (numTimeRanges === 1) {
+    if (timeRanges.size === 1) {
       return <div>
         <DateRangePicker
-            startTime={start}
-            endTime={end}
+            startTime={timeRanges.get(0).start}
+            endTime={timeRanges.get(0).end}
             maxTime={dataCube.getMaxTime(timekeeper)}
             timezone={timezone}
             onStartChange={this.onStartChange}
@@ -388,7 +351,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
         <div className="cont">
           <TimeShiftSelector
               shift={shift}
-              time={this.createDateRange(start, end)}
+              time={this.createDateRange(timeRanges.get(0).start, timeRanges.get(0).end)}
               onShiftChange={this.setTimeShift}
               timezone={timezone}
               shiftValue={isValidTimeShift(shift) ? TimeShift.fromJS(shift) : null}
@@ -402,23 +365,13 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
         </div>
       </div>;
     } else {
-      if (numTimeRanges < 5) {
-        return <div><div className="datePickers">{this.createDateRangePickers()}</div>
-          <div className="ok-cancel-bar">
-            <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok}/>
-            <Button type="secondary" onClick={onClose} title={STRINGS.cancel}/>
-            <Button type="secondary" title="Add Time Range" onClick={this.onTimeRangeClick}/>
-          </div>
-        </div>;
-      } else {
-        return <div><div className="datePickers">{this.createDateRangePickers()}</div>
-          <div className="ok-cancel-bar">
-            <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok}/>
-            <Button type="secondary" onClick={onClose} title={STRINGS.cancel}/>
-            <Button type="secondary" title="Add Time Range" onClick={this.onTimeRangeClick}/>
-          </div>
-        </div>;
-      }
+      return <div><div className="datePickers">{this.createDateRangePickers()}</div>
+        <div className="ok-cancel-bar">
+          <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok}/>
+          <Button type="secondary" onClick={onClose} title={STRINGS.cancel}/>
+          <Button type="secondary" title="Add Time Range" onClick={this.onTimeRangeClick}/>
+        </div>
+      </div>;
     }
   }
 }

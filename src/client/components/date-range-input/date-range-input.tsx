@@ -23,7 +23,7 @@ import "./date-range-input.scss";
 export interface DateRangeInputProps {
   time: Date;
   timezone: Timezone;
-  onChange: (t: Date, i: int) => void;
+  onChange: (t: Date, i: number) => void;
   hide?: boolean;
   type?: string;
   label: string;
@@ -91,7 +91,6 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
 
     const possibleMoment = combineDateAndTimeIntoMoment(possibleDateString, possibleTimeString, timezone);
     if (possibleMoment && possibleMoment.isValid()) {
-      console.log("Date in date range input: ", possibleMoment.toDate());
       onChange(possibleMoment.toDate(), index);
     }
   }
