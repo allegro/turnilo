@@ -158,5 +158,4 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       </div>
     </div>;
   }
-
 }

@@ -524,7 +524,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     if (this.splits.length() > 0 && splitsWithFilters.length() !== 0) {
       strategy = VisStrategy.UnfairGame;
     }
-""
     let newVisualization: Manifest = visualization;
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
       const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
