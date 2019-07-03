@@ -77,7 +77,8 @@ export function plywoodRouter(getSettings: SettingsGetter) {
     if (!myDataCube.executor) {
       res.status(400).send({ error: "un queryable data cube" });
       return;
-	}
+    }
+	 
     if (!(checkAccess(myDataCube, req))) {
       res.status(403).send({ error: "access denied" });
       return null;
