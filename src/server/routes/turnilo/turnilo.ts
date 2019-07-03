@@ -18,6 +18,7 @@
 import { Request, Response, Router } from "express";
 import { SETTINGS_MANAGER } from "../../config";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { mainLayout } from "../../views";
 
 export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
@@ -28,6 +29,7 @@ export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
     try {
       const settings = await settingsGetter();
       const clientSettings = settings.toClientSettings();
+      clientSettings.dataCubes = clientSettings.dataCubes.filter(checkAccess, req);
       res.send(mainLayout({
         version,
         title: settings.customization.getTitle(version),

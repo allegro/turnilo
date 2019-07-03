@@ -19,6 +19,7 @@ import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 
 export function plywoodRouter(getSettings: SettingsGetter) {
 
@@ -76,6 +77,10 @@ export function plywoodRouter(getSettings: SettingsGetter) {
     if (!myDataCube.executor) {
       res.status(400).send({ error: "un queryable data cube" });
       return;
+	}
+    if (!(checkAccess(myDataCube, req))) {
+      res.status(403).send({ error: "access denied" });
+      return null;
     }
 
     // "native" clusters are not defined, maybe they should be defined as some stub object

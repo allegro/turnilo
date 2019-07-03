@@ -90,6 +90,7 @@
     "react-syntax-highlighter": "7.0.2",
     "react-transition-group": "2.2.1",
     "request": "2.87.0",
+    "request-context": "2.0.0",
     "request-promise-native": "1.0.5"
   },
   "devDependencies": {
