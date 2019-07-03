@@ -18,10 +18,10 @@ This will prevent any data cube not explicitly defined from being queried throug
 Alternatively you can set up auth proxy (eg. nginx) which will be adding header 'x-turnilo-allow-datacubes'.
 It have to contains names of datacubes which have to be accessible for user, delimited by comma. Wildcard(\*) means all datacubes.
 Examples of 'x-turnilo-allow-datacubes':
--'\*'
--'some-name'
--'name1,name2'
--'name1,name2,\*'
+- '\*'
+- 'some-name'
+- 'name1,name2'
+- 'name1,name2,\*'
 
 Additionally, enable guard by adding in config in cluster section:
 ```yaml
