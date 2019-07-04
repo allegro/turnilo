@@ -51,7 +51,7 @@ const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
-const MAX_SEGMENT_WIDTH = 1000;
+const MAX_SEGMENT_WIDTH = Number.MAX_SAFE_INTEGER;
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const splitNesting = flatDatum["__nest"];
