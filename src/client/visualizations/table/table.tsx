@@ -35,6 +35,7 @@ import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { Delta } from "../../components/delta/delta";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
+import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
@@ -50,6 +51,7 @@ const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
+const MAX_SEGMENT_WIDTH = 1000;
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const splitNesting = flatDatum["__nest"];
@@ -93,6 +95,7 @@ export interface PositionHover {
 export interface TableState extends BaseVisualizationState {
   flatData?: PseudoDatum[];
   hoverRow?: Datum;
+  segmentWidth?: number;
 }
 
 export class Table extends BaseVisualization<TableState> {
@@ -102,10 +105,15 @@ export class Table extends BaseVisualization<TableState> {
     return { flatData: null, hoverRow: null, ...super.getDefaultState() };
   }
 
-  getSegmentWidth(): number {
+  defaultSegmentWidth(): number {
     const { isThumbnail } = this.props;
 
     return isThumbnail ? THUMBNAIL_SEGMENT_WIDTH : SEGMENT_WIDTH;
+  }
+
+  getSegmentWidth(): number {
+    const { segmentWidth } = this.state;
+    return segmentWidth || this.defaultSegmentWidth();
   }
 
   calculateMousePosition(x: number, y: number): PositionHover {
@@ -365,6 +373,10 @@ export class Table extends BaseVisualization<TableState> {
     ];
   }
 
+  setSegmentWidth = (segmentWidth: number) => {
+    this.setState({ segmentWidth });
+  }
+
   protected renderInternals() {
     const { clicker, essence, stage } = this.props;
     const { flatData, scrollTop, hoverRow } = this.state;
@@ -458,8 +470,16 @@ export class Table extends BaseVisualization<TableState> {
       <div className="highlight">{highlighter}</div>
     </div>;
 
+    const defaultSegmentWidth = this.defaultSegmentWidth();
     const corner = <div className="corner">
       <div className="corner-wrap">{segmentTitle}</div>
+      <ResizeHandle
+        direction={Direction.LEFT}
+        onResize={this.setSegmentWidth}
+        min={defaultSegmentWidth}
+        max={MAX_SEGMENT_WIDTH}
+        initialValue={defaultSegmentWidth}
+      />
     </div>;
 
     const measuresCount = essence.getConcreteSeries().size;
