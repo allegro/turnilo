@@ -373,7 +373,7 @@ export class Table extends BaseVisualization<TableState> {
 
   protected renderInternals() {
     const { clicker, essence, stage } = this.props;
-    const { flatData, scrollTop, hoverRow } = this.state;
+    const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const { splits, dataCube } = essence;
 
     const segmentTitle = splits.splits.map(split => essence.dataCube.getDimension(split.reference).title).join(", ");
@@ -472,7 +472,7 @@ export class Table extends BaseVisualization<TableState> {
         onResize={this.setSegmentWidth}
         min={defaultSegmentWidth}
         max={MAX_SEGMENT_WIDTH}
-        initialValue={defaultSegmentWidth}
+        initialValue={segmentWidth || defaultSegmentWidth}
         children={null}
       />
     </div>;
