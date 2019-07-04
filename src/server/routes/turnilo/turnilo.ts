@@ -17,8 +17,8 @@
 
 import { Request, Response, Router } from "express";
 import { SETTINGS_MANAGER } from "../../config";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 import { mainLayout } from "../../views";
 
 export function turniloRouter(settingsGetter: SettingsGetter, version: string) {

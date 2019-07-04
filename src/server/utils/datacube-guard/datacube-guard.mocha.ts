@@ -14,80 +14,80 @@
  * limitations under the License.
  */
 
-import { checkAccess } from "./datacube-guard";
 import { Request } from "express";
+import { checkAccess } from "./datacube-guard";
 
-const assert = require('assert');
+const assert = require("assert");
 
-describe('Guard test', ()=> {
-	it('Guard off -> access to all dataCubes', ()=>{
-		var req = {
-			headers: {}
-		}
-		var dataCube = {
-			name: "some-name",
-			cluster: {
-				guardDataCubes: false
-			}
-		}
-        assert.equal(checkAccess(dataCube, req), true);
-    })
+describe("Guard test", () => {
+  it("Guard off -> access to all dataCubes", () => {
+    var req = {
+      headers: {}
+    };
+    var dataCube = {
+      name: "some-name",
+      cluster: {
+        guardDataCubes: false
+      }
+    };
+    assert.equal(checkAccess(dataCube, req), true);
+  });
 
-	it('Guard on -> access denied', ()=>{
-		var req = {
-			headers: {}
-		}
-		var dataCube = {
-			name: "some-name",
-			cluster: {
-				guardDataCubes: true
-			}
-		}
-        assert.equal(checkAccess(dataCube, req), false);
-    })
+  it("Guard on -> access denied", () => {
+    var req = {
+      headers: {}
+    };
+    var dataCube = {
+      name: "some-name",
+      cluster: {
+        guardDataCubes: true
+      }
+    };
+    assert.equal(checkAccess(dataCube, req), false);
+  });
 
-	it('Guard on -> access denied', ()=>{
-		var req = {
-			headers: {
-				"x-turnilo-allow-datacubes": "some,name"
-			}
-		}
-		var dataCube = {
-			name: "some-name",
-			cluster: {
-				guardDataCubes: true
-			}
-		}
-        assert.equal(checkAccess(dataCube, req), false);
-    })
+  it("Guard on -> access denied", () => {
+    var req = {
+      headers: {
+        "x-turnilo-allow-datacubes": "some,name"
+      }
+    };
+    var dataCube = {
+      name: "some-name",
+      cluster: {
+        guardDataCubes: true
+      }
+    };
+    assert.equal(checkAccess(dataCube, req), false);
+  });
 
-	it('Guard on -> access allowed: wildchar', ()=>{
-		var req = {
-			headers: {
-				"x-turnilo-allow-datacubes": "*,some-other-name"
-			}
-		}
-		var dataCube = {
-			name: "some-name",
-			cluster: {
-				guardDataCubes: true
-			}
-		}
-        assert.equal(checkAccess(dataCube, req), true);
-    })
+  it("Guard on -> access allowed: wildchar", () => {
+    var req = {
+      headers: {
+        "x-turnilo-allow-datacubes": "*,some-other-name"
+      }
+    };
+    var dataCube = {
+      name: "some-name",
+      cluster: {
+        guardDataCubes: true
+      }
+    };
+    assert.equal(checkAccess(dataCube, req), true);
+  });
 
-	it('Guard on -> access allowed: datacube allowed', ()=>{
-		var req = {
-			headers: {
-				"x-turnilo-allow-datacubes": "some-name,some-other-name"
-			}
-		}
-		var dataCube = {
-			name: "some-name",
-			cluster: {
-				guardDataCubes: true
-			}
-		}
-        assert.equal(checkAccess(dataCube, req), true);
-    })
-})
+  it("Guard on -> access allowed: datacube allowed", () => {
+    var req = {
+      headers: {
+        "x-turnilo-allow-datacubes": "some-name,some-other-name"
+      }
+    };
+    var dataCube = {
+      name: "some-name",
+      cluster: {
+        guardDataCubes: true
+      }
+    };
+    assert.equal(checkAccess(dataCube, req), true);
+  });
+});

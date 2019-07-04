@@ -15,20 +15,20 @@
  */
 
 export function checkAccess(dataCube: any, req: any) {
-    var guard = dataCube.cluster.guardDataCubes || false;
+  var guard = dataCube.cluster.guardDataCubes || false;
 
-    if (!guard) {
-        return true;
-    }
+  if (!guard) {
+    return true;
+  }
 
-    if ("headers" in this){
-        req =  this;
-    }
+  if ("headers" in this) {
+    req =  this;
+  }
 
-    if (!("x-turnilo-allow-datacubes" in req.headers)){
-        return false;
-	}
+  if (!("x-turnilo-allow-datacubes" in req.headers)) {
+    return false;
+  }
 
-    var allowed_datasources = (<string>req.headers['x-turnilo-allow-datacubes']).split(',');
-	return  allowed_datasources.indexOf(dataCube.name) > -1 ||  allowed_datasources.indexOf('*') > -1;
+  var allowed_datasources = (<string> req.headers["x-turnilo-allow-datacubes"]).split(",");
+  return  allowed_datasources.indexOf(dataCube.name) > -1 ||  allowed_datasources.indexOf("*") > -1;
 }
