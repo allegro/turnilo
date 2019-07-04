@@ -107,7 +107,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   }
 
   render() {
-    const { direction } = this.props;
+    const { direction, children } = this.props;
 
     const style: React.CSSProperties = {
       [direction]: this.state.currentValue
@@ -118,7 +118,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
       style={style}
       onMouseDown={this.onMouseDown}
     >
-      <SvgIcon svg={require("../../icons/drag-handle.svg")} />
+      {children === undefined ? <SvgIcon svg={require("../../icons/drag-handle.svg")} /> : children}
     </div>;
   }
 }
