@@ -44,6 +44,8 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   state: ResizeHandleState = {};
 
   onMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
 
