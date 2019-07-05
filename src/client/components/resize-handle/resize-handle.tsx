@@ -27,14 +27,13 @@ export interface ResizeHandleProps {
   direction: Direction;
   min: number;
   max: number;
-  initialValue: number;
+  value: number;
   onResize?: (newX: number) => void;
-  onResizeEnd?: (newX: number) => void;
+  onResizeEnd?: () => void;
 }
 
 export interface ResizeHandleState {
   dragging?: boolean;
-  currentValue?: number;
   anchor?: number;
 }
 
@@ -46,13 +45,12 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
 
-    const newX = this.state.currentValue;
+    const { value } = this.props;
     const eventX = this.getValue(event);
 
     this.setState({
       dragging: true,
-      currentValue: newX,
-      anchor: eventX - newX
+      anchor: eventX - value
     });
 
     event.preventDefault();
@@ -66,21 +64,14 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
 
     if (isFunction(this.props.onResizeEnd)) {
-      this.props.onResizeEnd(this.state.currentValue);
+      this.props.onResizeEnd();
     }
   }
 
   onGlobalMouseMove = (event: MouseEvent) => {
     const { anchor } = this.state;
     const currentValue = this.constrainValue(this.getCoordinate(event) - anchor);
-    this.setState({ currentValue });
     if (!!this.props.onResize) this.props.onResize(currentValue);
-  }
-
-  componentDidMount() {
-    this.setState({
-      currentValue: this.constrainValue(this.props.initialValue)
-    });
   }
 
   private getValue(event: MouseEvent | React.MouseEvent<HTMLElement>): number {
@@ -105,10 +96,10 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   }
 
   render() {
-    const { direction, children } = this.props;
+    const { direction, children, value } = this.props;
 
     const style: React.CSSProperties = {
-      [direction]: this.state.currentValue
+      [direction]: value
     };
 
     return <div
