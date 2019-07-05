@@ -34,7 +34,6 @@ export interface ResizeHandleProps {
 
 export interface ResizeHandleState {
   dragging?: boolean;
-  startValue?: number;
   currentValue?: number;
   anchor?: number;
 }
@@ -52,7 +51,6 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
 
     this.setState({
       dragging: true,
-      startValue: newX,
       currentValue: newX,
       anchor: eventX - newX
     });
