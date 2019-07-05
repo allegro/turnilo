@@ -117,6 +117,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           style={dimensionListStyle}
         />
         {showResizeHandle && <ResizeHandle
+          renderIcon={true}
           onResize={this.saveDividerPosition}
           direction={Direction.TOP}
           min={minDividerPosition}

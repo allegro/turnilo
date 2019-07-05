@@ -587,6 +587,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           newSeriesExpression={this.newExpressionSeries}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
+          renderIcon={true}
           direction={Direction.LEFT}
           value={layout.factPanel.width}
           onResize={this.onFactPanelResize}
@@ -646,6 +647,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         </div>
 
         {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
+          renderIcon={true}
           direction={Direction.RIGHT}
           value={layout.pinboard.width}
           onResize={this.onPinboardPanelResize}

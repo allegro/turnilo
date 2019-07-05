@@ -30,6 +30,7 @@ export interface ResizeHandleProps {
   value: number;
   onResize?: (newX: number) => void;
   onResizeEnd?: () => void;
+  renderIcon?: boolean;
 }
 
 export interface ResizeHandleState {
@@ -96,7 +97,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   }
 
   render() {
-    const { direction, children, value } = this.props;
+    const { direction, children, value, renderIcon } = this.props;
 
     const style: React.CSSProperties = {
       [direction]: value
@@ -107,7 +108,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
       style={style}
       onMouseDown={this.onMouseDown}
     >
-      {children === undefined ? <SvgIcon svg={require("../../icons/drag-handle.svg")} /> : children}
+      {renderIcon && <SvgIcon svg={require("../../icons/drag-handle.svg")} />}
     </div>;
   }
 }

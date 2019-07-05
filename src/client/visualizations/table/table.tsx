@@ -478,7 +478,6 @@ export class Table extends BaseVisualization<TableState> {
         min={this.defaultSegmentWidth()}
         max={MAX_SEGMENT_WIDTH}
         value={segmentWidth}
-        children={null}
       />
     </div>;
 
