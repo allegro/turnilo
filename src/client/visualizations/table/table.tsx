@@ -95,14 +95,14 @@ export interface PositionHover {
 export interface TableState extends BaseVisualizationState {
   flatData?: PseudoDatum[];
   hoverRow?: Datum;
-  segmentWidth?: number;
+  segmentWidth: number;
 }
 
 export class Table extends BaseVisualization<TableState> {
   protected className = TABLE_MANIFEST.name;
 
   getDefaultState(): TableState {
-    return { flatData: null, hoverRow: null, ...super.getDefaultState() };
+    return { flatData: null, hoverRow: null, segmentWidth: this.defaultSegmentWidth(), ...super.getDefaultState() };
   }
 
   defaultSegmentWidth(): number {
@@ -464,15 +464,14 @@ export class Table extends BaseVisualization<TableState> {
       <div className="highlight">{highlighter}</div>
     </div>;
 
-    const defaultSegmentWidth = this.defaultSegmentWidth();
     const corner = <div className="corner">
       <div className="corner-wrap">{segmentTitle}</div>
       <ResizeHandle
         direction={Direction.LEFT}
         onResize={this.setSegmentWidth}
-        min={defaultSegmentWidth}
+        min={this.defaultSegmentWidth()}
         max={MAX_SEGMENT_WIDTH}
-        initialValue={segmentWidth || defaultSegmentWidth}
+        value={segmentWidth}
         children={null}
       />
     </div>;

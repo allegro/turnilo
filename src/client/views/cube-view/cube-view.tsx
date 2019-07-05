@@ -587,7 +587,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}
-          initialValue={layout.factPanel.width}
+          value={layout.factPanel.width}
           onResize={this.onFactPanelResize}
           onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
@@ -646,7 +646,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
         {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
           direction={Direction.RIGHT}
-          initialValue={layout.pinboard.width}
+          value={layout.pinboard.width}
           onResize={this.onPinboardPanelResize}
           onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}

@@ -121,7 +121,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           direction={Direction.TOP}
           min={minDividerPosition}
           max={maxDividerPosition}
-          initialValue={dividerPosition} />}
+          value={dividerPosition} />}
         <MeasuresTile
           menuStage={menuStage}
           style={measureListStyle}
