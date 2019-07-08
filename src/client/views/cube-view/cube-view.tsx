@@ -48,7 +48,7 @@ import { FilterTile } from "../../components/filter-tile/filter-tile";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
-import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
+import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
@@ -587,14 +587,15 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           newSeriesExpression={this.newExpressionSeries}
         />}
         {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
-          renderIcon={true}
           direction={Direction.LEFT}
           value={layout.factPanel.width}
           onResize={this.onFactPanelResize}
           onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        />}
+        >
+          <DragHandle />
+        </ResizeHandle>}
 
         <div className="center-panel" style={styles.centerPanel}>
           <div className="center-top-bar">
@@ -647,14 +648,15 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         </div>
 
         {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
-          renderIcon={true}
           direction={Direction.RIGHT}
           value={layout.pinboard.width}
           onResize={this.onPinboardPanelResize}
           onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        />}
+        >
+          <DragHandle />
+         </ResizeHandle>}
         {!layout.pinboard.hidden && <PinboardPanel
           style={styles.pinboardPanel}
           clicker={clicker}
