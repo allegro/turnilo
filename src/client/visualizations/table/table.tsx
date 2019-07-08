@@ -51,7 +51,7 @@ const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
-const MAX_SEGMENT_WIDTH = Number.MAX_SAFE_INTEGER;
+const MIN_DIMENSION_WIDTH = 100;
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const splitNesting = flatDatum["__nest"];
@@ -100,6 +100,7 @@ export interface TableState extends BaseVisualizationState {
 
 export class Table extends BaseVisualization<TableState> {
   protected className = TABLE_MANIFEST.name;
+  protected innerTableRef?: HTMLDivElement;
 
   getDefaultState(): TableState {
     return { flatData: null, hoverRow: null, segmentWidth: this.defaultSegmentWidth(), ...super.getDefaultState() };
@@ -109,6 +110,14 @@ export class Table extends BaseVisualization<TableState> {
     const { isThumbnail } = this.props;
 
     return isThumbnail ? THUMBNAIL_SEGMENT_WIDTH : SEGMENT_WIDTH;
+  }
+
+  maxSegmentWidth(): number {
+    if (this.innerTableRef) {
+      return this.innerTableRef.clientWidth - MIN_DIMENSION_WIDTH;
+    }
+
+    return this.defaultSegmentWidth();
   }
 
   getSegmentWidth(): number {
@@ -377,6 +386,10 @@ export class Table extends BaseVisualization<TableState> {
     this.setState({ segmentWidth });
   }
 
+  setInnerTableRef = (element: HTMLDivElement) => {
+    this.innerTableRef = element;
+  }
+
   protected renderInternals() {
     const { clicker, essence, stage } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
@@ -488,12 +501,12 @@ export class Table extends BaseVisualization<TableState> {
       left: this.getSegmentWidth()
     };
 
-    return <div className="internals table-inner">
+    return <div className="internals table-inner" ref={this.setInnerTableRef}>
       <ResizeHandle
         direction={Direction.LEFT}
         onResize={this.setSegmentWidth}
         min={this.defaultSegmentWidth()}
-        max={MAX_SEGMENT_WIDTH}
+        max={this.maxSegmentWidth()}
         value={segmentWidth}
       />
       <Scroller
