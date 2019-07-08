@@ -472,13 +472,6 @@ export class Table extends BaseVisualization<TableState> {
 
     const corner = <div className="corner">
       <div className="corner-wrap">{segmentTitle}</div>
-      <ResizeHandle
-        direction={Direction.LEFT}
-        onResize={this.setSegmentWidth}
-        min={this.defaultSegmentWidth()}
-        max={MAX_SEGMENT_WIDTH}
-        value={segmentWidth}
-      />
     </div>;
 
     const measuresCount = essence.getConcreteSeries().size;
@@ -496,6 +489,13 @@ export class Table extends BaseVisualization<TableState> {
     };
 
     return <div className="internals table-inner">
+      <ResizeHandle
+        direction={Direction.LEFT}
+        onResize={this.setSegmentWidth}
+        min={this.defaultSegmentWidth()}
+        max={MAX_SEGMENT_WIDTH}
+        value={segmentWidth}
+      />
       <Scroller
         ref="scroller"
         layout={scrollerLayout}
