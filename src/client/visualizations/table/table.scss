@@ -82,6 +82,7 @@ $header-padding-top: 12px;
       background-color: $white;
       border-top-left-radius: $corner;
       border-bottom-left-radius: $corner;
+      border-right: 1px solid $border-super-light;
     }
 
 
@@ -108,7 +109,7 @@ $header-padding-top: 12px;
 
       .resize-handle {
         top: 0;
-        background-color: $background-lightest;
+        margin-left: 0;
       }
     }
 
