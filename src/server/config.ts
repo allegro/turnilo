@@ -297,13 +297,13 @@ if (PRINT_CONFIG) {
   SETTINGS_MANAGER.getSettings({
     timeout: 10000
   }).then(appSettings => {
-    console.log(appSettingsToYAML(appSettings, withComments, {
+    const config = appSettingsToYAML(appSettings, withComments, {
       header: true,
       version: VERSION,
       verbose: VERBOSE,
       port: SERVER_SETTINGS.getPort()
-    }));
-    process.exit();
+    });
+    process.stdout.write(config, () => process.exit());
   }).catch((e: Error) => {
     exitWithError("There was an error generating a config: " + e.message);
   });
