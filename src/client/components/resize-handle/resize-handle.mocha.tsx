@@ -30,7 +30,7 @@ describe("ResizeHandle", () => {
         direction={Direction.LEFT}
         min={240}
         max={400}
-        initialValue={100}
+        value={300}
       />
     );
 

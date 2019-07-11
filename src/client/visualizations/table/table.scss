@@ -18,7 +18,6 @@
 @import '../../imports';
 
 $header-height: 38px;
-$segment-width: 300px;
 $measure-width: 130px;
 $row-height: 30px;
 $space-left: 10px;
@@ -83,6 +82,7 @@ $header-padding-top: 12px;
       background-color: $white;
       border-top-left-radius: $corner;
       border-bottom-left-radius: $corner;
+      border-right: 1px solid $border-super-light;
     }
 
 
@@ -91,7 +91,7 @@ $header-padding-top: 12px;
       background-color: $white;
       left: 0;
       top: 0;
-      width: $segment-width - $space-left;
+      width: calc(100% - #{$space-left});
       height: $header-height;
       overflow: hidden;
       padding: $header-padding-top 0 0 6px;
@@ -105,6 +105,11 @@ $header-padding-top: 12px;
 
       .sort-arrow {
         @include sort-arrow;
+      }
+
+      .resize-handle {
+        top: 0;
+        margin-left: 0;
       }
     }
 
