@@ -35,6 +35,7 @@ import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
 import { Delta } from "../../components/delta/delta";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
+import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
@@ -50,6 +51,7 @@ const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
+const MIN_DIMENSION_WIDTH = 100;
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   const splitNesting = flatDatum["__nest"];
@@ -93,19 +95,34 @@ export interface PositionHover {
 export interface TableState extends BaseVisualizationState {
   flatData?: PseudoDatum[];
   hoverRow?: Datum;
+  segmentWidth: number;
 }
 
 export class Table extends BaseVisualization<TableState> {
   protected className = TABLE_MANIFEST.name;
+  protected innerTableRef?: HTMLDivElement;
 
   getDefaultState(): TableState {
-    return { flatData: null, hoverRow: null, ...super.getDefaultState() };
+    return { flatData: null, hoverRow: null, segmentWidth: this.defaultSegmentWidth(), ...super.getDefaultState() };
   }
 
-  getSegmentWidth(): number {
+  defaultSegmentWidth(): number {
     const { isThumbnail } = this.props;
 
     return isThumbnail ? THUMBNAIL_SEGMENT_WIDTH : SEGMENT_WIDTH;
+  }
+
+  maxSegmentWidth(): number {
+    if (this.innerTableRef) {
+      return this.innerTableRef.clientWidth - MIN_DIMENSION_WIDTH;
+    }
+
+    return this.defaultSegmentWidth();
+  }
+
+  getSegmentWidth(): number {
+    const { segmentWidth } = this.state;
+    return segmentWidth || this.defaultSegmentWidth();
   }
 
   calculateMousePosition(x: number, y: number): PositionHover {
@@ -359,9 +376,17 @@ export class Table extends BaseVisualization<TableState> {
     ];
   }
 
+  setSegmentWidth = (segmentWidth: number) => {
+    this.setState({ segmentWidth });
+  }
+
+  setInnerTableRef = (element: HTMLDivElement) => {
+    this.innerTableRef = element;
+  }
+
   protected renderInternals() {
     const { clicker, essence, stage } = this.props;
-    const { flatData, scrollTop, hoverRow } = this.state;
+    const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const { splits, dataCube } = essence;
 
     const segmentTitle = splits.splits.map(split => essence.dataCube.getDimension(split.reference).title).join(", ");
@@ -470,7 +495,14 @@ export class Table extends BaseVisualization<TableState> {
       left: this.getSegmentWidth()
     };
 
-    return <div className="internals table-inner">
+    return <div className="internals table-inner" ref={this.setInnerTableRef}>
+      <ResizeHandle
+        direction={Direction.LEFT}
+        onResize={this.setSegmentWidth}
+        min={this.defaultSegmentWidth()}
+        max={this.maxSegmentWidth()}
+        value={segmentWidth}
+      />
       <Scroller
         ref="scroller"
         layout={scrollerLayout}
