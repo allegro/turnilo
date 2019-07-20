@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Duration } from "chronoshift";
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
@@ -111,12 +112,28 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
 
   const timeShiftEnv: TimeShiftEnv = essence.getTimeShiftEnv(timekeeper);
 
-  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
+  const currentTimeFilter = essence.currentTimeFilter(timekeeper);
+  if (currentTimeFilter.values.isEmpty()) {
+    throw new Error("Time filter is empty.");
+  }
+  const { start, end } = currentTimeFilter.values.get(0);
+  const currentTimeRange = new Duration(start, end, essence.timezone);
+  const timeFilterCanonicalLength = currentTimeRange.getCanonicalLength();
+
+  const mainExp: Expression = ply()
+    .apply("main", $main.filter(mainFilter.toExpression(dataCube)))
+    .apply("MillisecondsInInterval", timeFilterCanonicalLength);
 
   const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
-    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, timeShiftEnv));
+    const timeDimension = splits.findSplitForDimension(dataCube.getTimeDimension());
+    const timeSplitCanonicalLength = (timeDimension === undefined ?
+    timeFilterCanonicalLength : (timeDimension.bucket as Duration).getCanonicalLength());
+
+    return queryWithMeasures
+      .apply("MillisecondsInInterval", timeSplitCanonicalLength)
+      .apply(SPLIT, applySplit(0, essence, timeShiftEnv));
   }
   return queryWithMeasures;
 }
