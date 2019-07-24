@@ -456,7 +456,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     if (this.hasAnySelectionGoingOn()) return false;
     if (!hoverInfo) return false;
-    if (hoverInfo.series !== series) return false;
+    if (!hoverInfo.series.equals(series)) return false;
 
     const filter = (path: Datum[]) => getFilterFromDatum(splits, path);
 
