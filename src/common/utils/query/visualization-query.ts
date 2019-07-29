@@ -18,8 +18,9 @@ import { Duration } from "chronoshift";
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
-import { toExpression as splitToExpression } from "../../../common/models/split/split";
+import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { ConcreteSeries } from "../../models/series/concrete-series";
@@ -80,6 +81,20 @@ function applySubSplit(nestingLevel: number, essence: Essence, timeShiftEnv: Tim
   };
 }
 
+function splitCanonicalLength(split: Split, dataCube: DataCube): number | null {
+  const { reference, bucket } = split;
+  if (reference !== dataCube.timeAttribute.name) return null;
+  return (bucket as Duration).getCanonicalLength();
+}
+
+function applyCanonicalLength(split: Split, dataCube: DataCube) {
+  return (exp: Expression) => {
+    const canonicalLength = splitCanonicalLength(split, dataCube);
+    if (!canonicalLength) return exp;
+    return exp.apply("MillisecondsInInterval", canonicalLength);
+  };
+}
+
 function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const { splits, dataCube, colors } = essence;
   const split = splits.getSplit(index);
@@ -95,12 +110,23 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
 
   return thread(
     $main.split(currentSplit, dimension.name),
+    applyCanonicalLength(split, dataCube),
     applyHaving(colors, dimension),
     applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
     applySort(sort),
     applyLimit(colors, limit, dimension),
     applySubSplit(nestingLevel, essence, timeShiftEnv)
   );
+}
+
+function timeFilterCanonicalLength(essence: Essence, timekeeper: Timekeeper): number {
+  const currentTimeFilter = essence.currentTimeFilter(timekeeper);
+  if (currentTimeFilter.values.isEmpty()) {
+    throw new Error("Time filter is empty.");
+  }
+  const { start, end } = currentTimeFilter.values.get(0);
+  const currentTimeRange = new Duration(start, end, essence.timezone);
+  return currentTimeRange.getCanonicalLength();
 }
 
 export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
@@ -112,27 +138,14 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
 
   const timeShiftEnv: TimeShiftEnv = essence.getTimeShiftEnv(timekeeper);
 
-  const currentTimeFilter = essence.currentTimeFilter(timekeeper);
-  if (currentTimeFilter.values.isEmpty()) {
-    throw new Error("Time filter is empty.");
-  }
-  const { start, end } = currentTimeFilter.values.get(0);
-  const currentTimeRange = new Duration(start, end, essence.timezone);
-  const timeFilterCanonicalLength = currentTimeRange.getCanonicalLength();
-
   const mainExp: Expression = ply()
     .apply("main", $main.filter(mainFilter.toExpression(dataCube)))
-    .apply("MillisecondsInInterval", timeFilterCanonicalLength);
+    .apply("MillisecondsInInterval", timeFilterCanonicalLength(essence, timekeeper));
 
   const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
-    const timeDimension = splits.findSplitForDimension(dataCube.getTimeDimension());
-    const timeSplitCanonicalLength = (timeDimension === undefined ?
-    timeFilterCanonicalLength : (timeDimension.bucket as Duration).getCanonicalLength());
-
     return queryWithMeasures
-      .apply("MillisecondsInInterval", timeSplitCanonicalLength)
       .apply(SPLIT, applySplit(0, essence, timeShiftEnv));
   }
   return queryWithMeasures;
