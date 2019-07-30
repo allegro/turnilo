@@ -802,11 +802,12 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     measures.forEachMeasure(measure => {
       const references = Measure.getReferences(measure.expression);
-      const countDistinctReferences = Measure.getCountDistinctReferences(measure.expression);
       for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
-        if (countDistinctReferences.indexOf(reference) !== -1) {
-          attributes.push(AttributeInfo.fromJS({ name: reference, type: "STRING", nativeType: "hyperUnique" }));
+        if (Measure.isCountDistinctReferences(measure.expression)) {
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NULL", nativeType: "hyperUnique" }));
+        } else if (Measure.isQuantileReferences(measure.expression)) {
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NULL", nativeType: "approximateHistogram" }));
         } else {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
         }
@@ -855,23 +856,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "STRING":
-          if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
-            if (!autofillMeasures) continue;
-
-            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
-            newMeasures.forEach(newMeasure => {
-              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
-              measures = measures.append(newMeasure);
-            });
-          } else {
-            if (!autofillDimensions) continue;
-            expression = $(name);
-            if (this.getDimensionByExpression(expression)) continue;
-            dimensions = dimensions.append(new Dimension({
-              name: urlSafeName,
-              formula: expression.toString()
-            }));
-          }
+          if (!autofillDimensions) continue;
+          expression = $(name);
+          if (this.getDimensionByExpression(expression)) continue;
+          dimensions = dimensions.append(new Dimension({
+            name: urlSafeName,
+            formula: expression.toString()
+          }));
           break;
 
         case "SET/STRING":
@@ -896,6 +887,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "NUMBER":
+        case "NULL":
           if (!autofillMeasures) continue;
 
           const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
@@ -905,22 +897,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           });
           break;
 
-        // TODO: quick fix after upgrade of Plywood to 0.17.26
-        case "NULL":
-          if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "approximateHistogram") {
-            if (!autofillMeasures) continue;
-
-            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
-            newMeasures.forEach(newMeasure => {
-              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
-              measures = measures.append(newMeasure);
-            });
-          } else {
-            throw new Error(`unsupported type ${type} with nativeType ${nativeType}`);
-          }
-          break;
         default:
-          throw new Error(`unsupported type ${type}`);
+          throw new Error(`unsupported attribute ${name}; type ${type}, native type ${nativeType}`);
       }
     }
 

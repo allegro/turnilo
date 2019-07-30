@@ -69,19 +69,24 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return deduplicateSort(references);
   }
 
-  /**
-   * Look for all instances of countDistinct($blah) and return the blahs
-   * @param ex
-   * @returns {string[]}
-   */
-  static getCountDistinctReferences(ex: Expression): string[] {
-    let references: string[] = [];
+  static isCountDistinctReferences(ex: Expression): boolean {
+    let isCountDistinct = false;
     ex.forEach((ex: Expression) => {
       if (ex instanceof CountDistinctExpression) {
-        references = references.concat(this.getReferences(ex));
+        isCountDistinct = true;
       }
     });
-    return deduplicateSort(references);
+    return isCountDistinct;
+  }
+
+  static isQuantileReferences(ex: Expression): boolean {
+    let isQuantile = false;
+    ex.forEach((ex: Expression) => {
+      if (ex instanceof QuantileExpression) {
+        isQuantile = true;
+      }
+    });
+    return isQuantile;
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
@@ -97,7 +102,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
             formula: $main.countDistinct(ref).toString()
           })
         ];
-      } else if (nativeType === "approximateHistogram") {
+      } else if (nativeType === "approximateHistogram" || nativeType === "quantilesDoublesSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name + "_p98"),
@@ -190,7 +195,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     // Expression.some is bugged
     let isApproximate = false;
     this.expression.forEach((exp: Expression) => {
-      if (exp instanceof CountDistinctExpression || exp instanceof QuantileExpression) {
+      if (Measure.isCountDistinctReferences(exp) || Measure.isQuantileReferences(exp)) {
         isApproximate = true;
       }
     });

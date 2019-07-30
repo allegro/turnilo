@@ -417,7 +417,7 @@ describe("DataCube", () => {
         {
           name: "unique_user",
           nativeType: "hyperUnique",
-          type: "STRING"
+          type: "NULL"
         }
       ]);
 
