@@ -804,9 +804,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       const references = Measure.getReferences(measure.expression);
       for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
-        if (Measure.isCountDistinctReferences(measure.expression)) {
+        if (Measure.hasCountDistinctReferences(measure.expression)) {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: "NULL", nativeType: "hyperUnique" }));
-        } else if (Measure.isQuantileReferences(measure.expression)) {
+        } else if (Measure.hasQuantileReferences(measure.expression)) {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: "NULL", nativeType: "approximateHistogram" }));
         } else {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));

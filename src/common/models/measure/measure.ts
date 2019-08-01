@@ -69,7 +69,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return deduplicateSort(references);
   }
 
-  static isCountDistinctReferences(ex: Expression): boolean {
+  static hasCountDistinctReferences(ex: Expression): boolean {
     let isCountDistinct = false;
     ex.forEach((ex: Expression) => {
       if (ex instanceof CountDistinctExpression) {
@@ -79,7 +79,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return isCountDistinct;
   }
 
-  static isQuantileReferences(ex: Expression): boolean {
+  static hasQuantileReferences(ex: Expression): boolean {
     let isQuantile = false;
     ex.forEach((ex: Expression) => {
       if (ex instanceof QuantileExpression) {
@@ -192,14 +192,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   public isApproximate(): boolean {
-    // Expression.some is bugged
-    let isApproximate = false;
-    this.expression.forEach((exp: Expression) => {
-      if (Measure.isCountDistinctReferences(exp) || Measure.isQuantileReferences(exp)) {
-        isApproximate = true;
-      }
-    });
-    return isApproximate;
+    return Measure.hasCountDistinctReferences(this.expression) || Measure.hasQuantileReferences(this.expression);
   }
 
   // Default getter from ImmutableValue
