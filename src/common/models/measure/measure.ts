@@ -19,6 +19,7 @@ import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
 import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
+import some from "../../utils/plywood/some";
 import { formatFnFactory } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
@@ -70,23 +71,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   static hasCountDistinctReferences(ex: Expression): boolean {
-    let isCountDistinct = false;
-    ex.forEach((ex: Expression) => {
-      if (ex instanceof CountDistinctExpression) {
-        isCountDistinct = true;
-      }
-    });
-    return isCountDistinct;
+    return some(ex, e => e instanceof CountDistinctExpression);
   }
 
   static hasQuantileReferences(ex: Expression): boolean {
-    let isQuantile = false;
-    ex.forEach((ex: Expression) => {
-      if (ex instanceof QuantileExpression) {
-        isQuantile = true;
-      }
-    });
-    return isQuantile;
+    return some(ex, e => e instanceof QuantileExpression);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
