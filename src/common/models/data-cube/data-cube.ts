@@ -241,7 +241,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const ex = ply().apply("maxTime", $("main").max(dataCube.timeAttribute));
 
     return dataCube.executor(ex).then((dataset: Dataset) => {
-      const maxTimeDate = <Date> dataset.data[0]["maxTime"];
+      const maxTimeDate = dataset.data[0]["maxTime"] as Date;
       if (isNaN(maxTimeDate as any)) return null;
       return maxTimeDate;
     });
@@ -620,7 +620,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     for (let name in derivedAttributes) {
       datasetType[name] = {
-        type: <PlyTypeSimple> derivedAttributes[name].type
+        type: derivedAttributes[name].type as PlyTypeSimple
       };
     }
 
@@ -804,13 +804,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       const references = Measure.getReferences(measure.expression);
       for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
-        if (Measure.hasCountDistinctReferences(measure.expression)) {
-          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NULL", nativeType: "hyperUnique" }));
-        } else if (Measure.hasQuantileReferences(measure.expression)) {
-          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NULL", nativeType: "approximateHistogram" }));
-        } else {
-          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
-        }
+        if (Measure.hasCountDistinctReferences(measure.expression)) continue;
+        if (Measure.hasQuantileReferences(measure.expression)) continue;
+        attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
       }
     });
 
@@ -919,7 +915,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     }
 
     if (!value.timeAttribute && dimensions.size && dimensions.first().kind === "time") {
-      value.timeAttribute = <RefExpression> dimensions.first().expression;
+      value.timeAttribute = dimensions.first().expression as RefExpression;
     }
 
     return new DataCube(value);
