@@ -27,6 +27,7 @@ import { ConcreteSeries } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
+import { CANONICAL_LENGTH_ID } from "../canonical-length/query";
 import splitCanonicalLength from "../canonical-length/split-canonical-length";
 import timeFilterCanonicalLength from "../canonical-length/time-filter-canonical-length";
 import { thread } from "../functional/functional";
@@ -87,7 +88,7 @@ function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
   return (exp: Expression) => {
     const canonicalLength = splitCanonicalLength(split, dataCube);
     if (!canonicalLength) return exp;
-    return exp.apply("MillisecondsInInterval", canonicalLength);
+    return exp.apply(CANONICAL_LENGTH_ID, canonicalLength);
   };
 }
 
@@ -126,7 +127,7 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
 
   const mainExp: Expression = ply()
     .apply("main", $main.filter(mainFilter.toExpression(dataCube)))
-    .apply("MillisecondsInInterval", timeFilterCanonicalLength(essence, timekeeper));
+    .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper));
 
   const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
