@@ -27,6 +27,8 @@ import { ConcreteSeries } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
+import splitCanonicalLength from "../canonical-length/split-canonical-length";
+import timeFilterCanonicalLength from "../canonical-length/time-filter-canonical-length";
 import { thread } from "../functional/functional";
 
 const $main = $("main");
@@ -81,13 +83,7 @@ function applySubSplit(nestingLevel: number, essence: Essence, timeShiftEnv: Tim
   };
 }
 
-function splitCanonicalLength(split: Split, dataCube: DataCube): number | null {
-  const { reference, bucket } = split;
-  if (reference !== dataCube.timeAttribute.name) return null;
-  return (bucket as Duration).getCanonicalLength();
-}
-
-function applyCanonicalLength(split: Split, dataCube: DataCube) {
+function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
   return (exp: Expression) => {
     const canonicalLength = splitCanonicalLength(split, dataCube);
     if (!canonicalLength) return exp;
@@ -110,23 +106,13 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
 
   return thread(
     $main.split(currentSplit, dimension.name),
-    applyCanonicalLength(split, dataCube),
+    applyCanonicalLengthForTimeSplit(split, dataCube),
     applyHaving(colors, dimension),
     applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
     applySort(sort),
     applyLimit(colors, limit, dimension),
     applySubSplit(nestingLevel, essence, timeShiftEnv)
   );
-}
-
-function timeFilterCanonicalLength(essence: Essence, timekeeper: Timekeeper): number {
-  const currentTimeFilter = essence.currentTimeFilter(timekeeper);
-  if (currentTimeFilter.values.isEmpty()) {
-    throw new Error("Time filter is empty.");
-  }
-  const { start, end } = currentTimeFilter.values.get(0);
-  const currentTimeRange = new Duration(start, end, essence.timezone);
-  return currentTimeRange.getCanonicalLength();
 }
 
 export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
