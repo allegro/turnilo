@@ -165,8 +165,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     let query: any = $("main")
-      .filter(filterExpression)
-      .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper));
+      .filter(filterExpression);
 
     let sortExpression: Expression = null;
 
@@ -187,7 +186,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const sortSeries = essence.findConcreteSeries(sortOn.key);
     if (sortSeries) {
-      query = query.performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
+      query = query
+        .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper))
+        .performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
