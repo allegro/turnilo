@@ -20,9 +20,6 @@ import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
 export default function timeFilterCanonicalLength(essence: Essence, timekeeper: Timekeeper): number {
   const currentTimeFilter = essence.currentTimeFilter(timekeeper);
-  if (currentTimeFilter.values.isEmpty()) {
-    throw new Error("Time filter is empty.");
-  }
   const { start, end } = currentTimeFilter.values.get(0);
   const currentTimeRange = new Duration(start, end, essence.timezone);
   return currentTimeRange.getCanonicalLength();
