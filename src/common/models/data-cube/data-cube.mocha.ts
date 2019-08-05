@@ -381,10 +381,6 @@ describe("DataCube", () => {
           {
             name: "addedByDeleted",
             formula: "$main.sum($added) / $main.sum($deleted)"
-          },
-          {
-            name: "unique_user",
-            formula: "$main.countDistinct($unique_user)"
           }
         ]
       }, context);
@@ -413,14 +409,53 @@ describe("DataCube", () => {
         {
           name: "deleted",
           type: "NUMBER"
-        },
-        {
-          name: "unique_user",
-          nativeType: "hyperUnique",
-          type: "STRING"
         }
       ]);
+    });
 
+    it("omits unsupported expressions", () => {
+      var dataCube = DataCube.fromJS({
+        name: "wiki",
+        clusterName: "druid",
+        source: "wiki",
+        introspection: "autofill-all",
+        defaultSortMeasure: "added",
+        defaultTimezone: "Etc/UTC",
+        dimensions: [],
+        measures: [
+          {
+            name: "added",
+            formula: "$main.sum($added)"
+          },
+          {
+            name: "addedByDeleted",
+            formula: "$main.sum($added) / $main.sum($deleted)"
+          },
+          {
+            name: "unsupported_unique_user",
+            formula: "$main.countDistinct($unique_user)"
+          },
+          {
+            name: "unsupported_click_percentile",
+            formula: "$main.quantile($click_histogram,0.95)"
+          }
+        ]
+      }, context);
+
+      expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
+        {
+          name: "__time",
+          type: "TIME"
+        },
+        {
+          name: "added",
+          type: "NUMBER"
+        },
+        {
+          name: "deleted",
+          type: "NUMBER"
+        }
+      ]);
     });
 
   });
