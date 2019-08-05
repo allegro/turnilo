@@ -241,7 +241,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const ex = ply().apply("maxTime", $("main").max(dataCube.timeAttribute));
 
     return dataCube.executor(ex).then((dataset: Dataset) => {
-      const maxTimeDate = <Date> dataset.data[0]["maxTime"];
+      const maxTimeDate = dataset.data[0]["maxTime"] as Date;
       if (isNaN(maxTimeDate as any)) return null;
       return maxTimeDate;
     });
@@ -620,7 +620,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     for (let name in derivedAttributes) {
       datasetType[name] = {
-        type: <PlyTypeSimple> derivedAttributes[name].type
+        type: derivedAttributes[name].type as PlyTypeSimple
       };
     }
 
@@ -802,14 +802,11 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     measures.forEachMeasure(measure => {
       const references = Measure.getReferences(measure.expression);
-      const countDistinctReferences = Measure.getCountDistinctReferences(measure.expression);
       for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
-        if (countDistinctReferences.indexOf(reference) !== -1) {
-          attributes.push(AttributeInfo.fromJS({ name: reference, type: "STRING", nativeType: "hyperUnique" }));
-        } else {
-          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
-        }
+        if (Measure.hasCountDistinctReferences(measure.expression)) continue;
+        if (Measure.hasQuantileReferences(measure.expression)) continue;
+        attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
       }
     });
 
@@ -855,23 +852,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "STRING":
-          if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
-            if (!autofillMeasures) continue;
-
-            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
-            newMeasures.forEach(newMeasure => {
-              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
-              measures = measures.append(newMeasure);
-            });
-          } else {
-            if (!autofillDimensions) continue;
-            expression = $(name);
-            if (this.getDimensionByExpression(expression)) continue;
-            dimensions = dimensions.append(new Dimension({
-              name: urlSafeName,
-              formula: expression.toString()
-            }));
-          }
+          if (!autofillDimensions) continue;
+          expression = $(name);
+          if (this.getDimensionByExpression(expression)) continue;
+          dimensions = dimensions.append(new Dimension({
+            name: urlSafeName,
+            formula: expression.toString()
+          }));
           break;
 
         case "SET/STRING":
@@ -896,6 +883,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "NUMBER":
+        case "NULL":
           if (!autofillMeasures) continue;
 
           const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
@@ -905,22 +893,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           });
           break;
 
-        // TODO: quick fix after upgrade of Plywood to 0.17.26
-        case "NULL":
-          if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "approximateHistogram") {
-            if (!autofillMeasures) continue;
-
-            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
-            newMeasures.forEach(newMeasure => {
-              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
-              measures = measures.append(newMeasure);
-            });
-          } else {
-            throw new Error(`unsupported type ${type} with nativeType ${nativeType}`);
-          }
-          break;
         default:
-          throw new Error(`unsupported type ${type}`);
+          throw new Error(`unsupported attribute ${name}; type ${type}, native type ${nativeType}`);
       }
     }
 
@@ -941,7 +915,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     }
 
     if (!value.timeAttribute && dimensions.size && dimensions.first().kind === "time") {
-      value.timeAttribute = <RefExpression> dimensions.first().expression;
+      value.timeAttribute = dimensions.first().expression as RefExpression;
     }
 
     return new DataCube(value);
