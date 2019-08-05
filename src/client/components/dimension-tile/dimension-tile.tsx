@@ -39,6 +39,8 @@ import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { TimeShiftEnvType } from "../../../common/models/time-shift/time-shift-env";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { CANONICAL_LENGTH_ID } from "../../../common/utils/canonical-length/query";
+import timeFilterCanonicalLength from "../../../common/utils/canonical-length/time-filter-canonical-length";
 import { formatNumberRange } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { collect, Fn } from "../../../common/utils/general/general";
@@ -184,7 +186,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const sortSeries = essence.findConcreteSeries(sortOn.key);
     if (sortSeries) {
-      query = query.performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
+      query = query
+        .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper))
+        .performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);

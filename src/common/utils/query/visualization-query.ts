@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
+import { Duration } from "chronoshift";
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
-import { toExpression as splitToExpression } from "../../../common/models/split/split";
+import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Colors } from "../../models/colors/colors";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { ConcreteSeries } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
+import { CANONICAL_LENGTH_ID } from "../canonical-length/query";
+import splitCanonicalLength from "../canonical-length/split-canonical-length";
+import timeFilterCanonicalLength from "../canonical-length/time-filter-canonical-length";
 import { thread } from "../functional/functional";
 
 const $main = $("main");
@@ -79,6 +84,14 @@ function applySubSplit(nestingLevel: number, essence: Essence, timeShiftEnv: Tim
   };
 }
 
+function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
+  return (exp: Expression) => {
+    const canonicalLength = splitCanonicalLength(split, dataCube);
+    if (!canonicalLength) return exp;
+    return exp.apply(CANONICAL_LENGTH_ID, canonicalLength);
+  };
+}
+
 function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const { splits, dataCube, colors } = essence;
   const split = splits.getSplit(index);
@@ -94,6 +107,7 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
 
   return thread(
     $main.split(currentSplit, dimension.name),
+    applyCanonicalLengthForTimeSplit(split, dataCube),
     applyHaving(colors, dimension),
     applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
     applySort(sort),
@@ -111,12 +125,15 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
 
   const timeShiftEnv: TimeShiftEnv = essence.getTimeShiftEnv(timekeeper);
 
-  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression(dataCube)));
+  const mainExp: Expression = ply()
+    .apply("main", $main.filter(mainFilter.toExpression(dataCube)))
+    .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper));
 
   const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
-    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, timeShiftEnv));
+    return queryWithMeasures
+      .apply(SPLIT, applySplit(0, essence, timeShiftEnv));
   }
   return queryWithMeasures;
 }
