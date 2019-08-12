@@ -511,7 +511,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             ticks={xTicks}
             stage={lineStage}
           />
-          {isHoveredWithoutHighlight && this.renderHoverGuide(scale(0), lineStage)}
+          {scale && isHoveredWithoutHighlight && this.renderHoverGuide((0), lineStage)}
           {scale && this.renderChartLines(splitData, isHoveredWithoutHighlight, lineStage, getY, getYP, scale)}
           {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
           <line
