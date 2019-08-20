@@ -26,7 +26,7 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 import { MeasuresTile } from "../measures-tile/measures-tile";
-import { Direction, ResizeHandle } from "../resize-handle/resize-handle";
+import { Direction, DragHandle, ResizeHandle } from "../resize-handle/resize-handle";
 import "./dimension-measure-panel.scss";
 
 export const MIN_PANEL_SIZE = 100;
@@ -116,12 +116,15 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           triggerFilterMenu={triggerFilterMenu}
           style={dimensionListStyle}
         />
-        {showResizeHandle && <ResizeHandle
-          onResize={this.saveDividerPosition}
-          direction={Direction.TOP}
-          min={minDividerPosition}
-          max={maxDividerPosition}
-          initialValue={dividerPosition} />}
+        {showResizeHandle &&
+            <ResizeHandle
+              onResize={this.saveDividerPosition}
+              direction={Direction.TOP}
+              min={minDividerPosition}
+              max={maxDividerPosition}
+              value={dividerPosition}>
+              <DragHandle />
+            </ResizeHandle>}
         <MeasuresTile
           menuStage={menuStage}
           style={measureListStyle}

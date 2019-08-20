@@ -16,47 +16,47 @@
 @import '../../imports';
 
 
-.error-notice {
-  padding: 4px 10px;
-  color: $text-light;
-  font-style: italic;
-}
+.preview-string-filter-menu {
 
-.matching-values-message {
-  padding: 4px 10px;
-  color: $text-light;
-}
+  .error-notice {
+    padding: 4px 10px;
+    color: $text-light;
+    font-style: italic;
+  }
 
-.row {
-  height: 24px;
-  cursor: pointer;
-  padding: 0 $padding-compact;
+  .matching-values-message {
+    padding: 4px 10px;
+    color: $text-light;
+  }
 
-  .row-wrapper {
-    @include ellipsis;
+  .row {
+    height: 24px;
+    cursor: pointer;
+    padding: 0 $padding-compact;
 
-    height: 100%;
+    .row-wrapper {
+      @include ellipsis;
 
-    .label {
-      display: inline-block;
-      vertical-align: top;
-      padding-top: 4px;
+      height: 100%;
+
+      .label {
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 4px;
+      }
+    }
+
+    &:hover {
+      background: $hover;
+    }
+
+    &:last-child {
+      margin-bottom: 12px;
+    }
+
+    &.no-select {
+      pointer-events: none;
+      user-select: none;
     }
   }
-
-  &:hover {
-    background: $hover;
-  }
-
-  &:last-child {
-    margin-bottom: 12px;
-  }
-
-  &.no-select {
-    pointer-events: none;
-    user-select: none;
-  }
 }
-
-
-

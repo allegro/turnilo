@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.16.1",
+  "version": "1.17.0",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -81,7 +81,7 @@
     "node-spawn-server": "1.0.1",
     "nopt": "4.0.1",
     "numbro": "2.1.0",
-    "plywood": "0.20.2",
+    "plywood": "0.20.13",
     "plywood-base-api": "0.2.8",
     "plywood-druid-requester": "2.6.1",
     "react": "16.2.0",

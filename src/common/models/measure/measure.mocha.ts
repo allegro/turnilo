@@ -148,9 +148,9 @@ describe("Measure", () => {
       ]);
     });
 
-    it("works with histogram", () => {
+    it("works with approximate histogram", () => {
       const attribute = AttributeInfo.fromJS({
-        name: "delta_hist",
+        name: "delta_histogram",
         nativeType: "approximateHistogram",
         type: "NUMBER"
       });
@@ -158,9 +158,26 @@ describe("Measure", () => {
       const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          name: "delta_hist_p98",
-          title: "Delta Hist P98",
-          formula: "$main.quantile($delta_hist,0.98)"
+          name: "delta_histogram_p98",
+          title: "Delta Histogram P98",
+          formula: "$main.quantile($delta_histogram,0.98)"
+        }
+      ]);
+    });
+
+    it("works with quantiles double sketch", () => {
+      const attribute = AttributeInfo.fromJS({
+        name: "delta_quantiles",
+        nativeType: "quantilesDoublesSketch",
+        type: "NUMBER"
+      });
+
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      expect(measures).to.deep.equal([
+        {
+          name: "delta_quantiles_p98",
+          title: "Delta Quantiles P98",
+          formula: "$main.quantile($delta_quantiles,0.98)"
         }
       ]);
     });

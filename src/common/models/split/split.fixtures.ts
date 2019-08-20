@@ -16,7 +16,7 @@
  */
 
 import { Duration } from "chronoshift";
-import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
+import { DimensionSort, SeriesSort, Sort, SortDirection } from "../sort/sort";
 import { Split, SplitType } from "./split";
 
 const createSort = (isDimension: boolean, reference: string, direction: SortDirection): Sort => {
@@ -26,7 +26,7 @@ const createSort = (isDimension: boolean, reference: string, direction: SortDire
 
 export class SplitFixtures {
 
-  static stringSplitCombine(dimension: string, sortOn: string, direction: SortDirection, limit: number): Split {
+  static stringSplitCombine(dimension: string, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
     return new Split({
       reference: dimension,
       sort: createSort(dimension === sortOn, sortOn, direction),
@@ -34,7 +34,7 @@ export class SplitFixtures {
     });
   }
 
-  static numberSplitCombine(dimension: string, granularity: number, sortOn: string, direction: SortDirection, limit: number): Split {
+  static numberSplitCombine(dimension: string, granularity = 100, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
     return new Split({
       type: SplitType.number,
       reference: dimension,
@@ -44,7 +44,7 @@ export class SplitFixtures {
     });
   }
 
-  static timeSplitCombine(dimension: string, granularity: string, sortOn: string, direction: SortDirection, limit: number): Split {
+  static timeSplitCombine(dimension: string, granularity = "PT1H", sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
     return new Split({
       type: SplitType.time,
       reference: dimension,
