@@ -58,7 +58,7 @@ export interface SelectableStringFilterMenuState {
   searchText: string;
   dataset: DatasetLoad;
   selectedValues: Set<string>;
-  colors?: Colors;
+  colorsForDimension?: Colors;
   pasteModeEnabled: boolean;
 }
 
@@ -80,7 +80,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     pasteModeEnabled: false,
     dataset: loading,
     selectedValues: Set(),
-    colors: null,
+    colorsForDimension: null,
     searchText: ""
   };
 
@@ -128,10 +128,11 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const { essence, dimension } = this.props;
     const { colors } = essence;
 
-    const hasColors = colors && colors.dimension === dimension.name;
-    const valuesFromColors = (hasColors ? Set(colors.toArray()) : Set.of());
+    const ownsColors = colors && colors.dimension === dimension.name;
+    const colorsForDimension = ownsColors ? colors : null;
+    const valuesFromColors = (ownsColors ? Set(colors.toArray()) : Set.of());
     const selectedValues = this.initialSelection() || valuesFromColors;
-    this.setState({ selectedValues, colors });
+    this.setState({ selectedValues, colorsForDimension });
 
     this.loadRows();
   }
@@ -180,20 +181,20 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   onValueClick = (value: string, withModKey: boolean) => {
-    const { selectedValues, colors: oldColors } = this.state;
-    const colors = oldColors && oldColors.toggle(value);
+    const { selectedValues, colorsForDimension: oldColors } = this.state;
+    const colorsForDimension = oldColors && oldColors.toggle(value);
     if (withModKey) {
       const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
-      return this.setState({ colors, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
+      return this.setState({ colorsForDimension, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
-    return this.setState({ colors, selectedValues: toggle(selectedValues, value) });
+    return this.setState({ colorsForDimension, selectedValues: toggle(selectedValues, value) });
   }
 
   onOkClick = () => {
     if (!this.isFilterValid()) return;
     const { clicker, onClose } = this.props;
-    const { colors } = this.state;
-    clicker.changeFilter(this.constructFilter(), colors);
+    const { colorsForDimension } = this.state;
+    clicker.changeFilter(this.constructFilter(), colorsForDimension);
     onClose();
   }
 

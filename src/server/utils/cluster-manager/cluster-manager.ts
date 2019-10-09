@@ -37,7 +37,7 @@ export interface DruidRequestDecoratorModule {
   druidRequestDecoratorFactory: (logger: Logger, params: RequestDecoratorFactoryParams) => DruidRequestDecorator;
 }
 
-// For each external we want to maintain its source and weather it should introspect at all
+// For each external we want to maintain its source and whether it should introspect at all
 export interface ManagedExternal {
   name: string;
   external: External;
