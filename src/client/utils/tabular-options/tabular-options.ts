@@ -39,6 +39,10 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
     formatter: {
       TIME_RANGE: (range: TimeRange) => range.start.toISOString()
     },
+    attributeFilter: ({ name }: AttributeInfo) => {
+      return findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null
+        || essence.dataCube.getDimension(name) !== undefined;
+    },
     attributeTitle: ({ name }: AttributeInfo) => {
       const seriesWithDerivation = findSeriesAndDerivation(name, essence.getConcreteSeries());
       if (seriesWithDerivation) {
