@@ -84,7 +84,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     const ref = $(name);
 
     if (nativeType) {
-      if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
+      if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "HLLSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name),
@@ -113,7 +113,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
           expression = $main.max(ref);
           break;
 
-        // default: // sum, count
+          // default: // sum, count
       }
     }
 
@@ -189,3 +189,4 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 }
 
 BaseImmutable.finalize(Measure);
+
