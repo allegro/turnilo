@@ -166,7 +166,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   accept<R>(visitor: MeasureOrGroupVisitor<R>): R {
     return visitor.visitMeasure(this);
-    return visitor.visitMeasure(this);
   }
 
   equals(other: any): boolean {
