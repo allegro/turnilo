@@ -93,12 +93,10 @@ function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
   };
 }
 
-function applyListFilterExpression(split: Split, dimension: Dimension, { filter, dataCube }: Essence) {
-  const { name } = dimension;
-  const { type } = dataCube.attributes.find(a => a.name === name);
+function applyListFilterExpression(split: Split, dimension: Dimension, { filter }: Essence) {
   return (query: Expression) => {
-    if (type !== "SET/STRING") return query;
-    const clause = filter.clauseForReference(name);
+    if (dimension.kind !== "set") return query;
+    const clause = filter.clauseForReference(split.reference);
     return query.filter(toExpression(clause, dimension));
   };
 }
