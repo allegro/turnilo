@@ -23,6 +23,7 @@ import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { DimensionKind } from "../dimension/dimension";
 import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
@@ -43,13 +44,13 @@ describe("EssenceProps", () => {
     introspection: ("none" as Introspection),
     dimensions: [
       {
-        kind: "time",
+        kind: "time" as DimensionKind,
         name: "time",
         title: "Time",
         formula: "$time"
       },
       {
-        kind: "string",
+        kind: "string" as DimensionKind,
         name: "twitterHandle",
         title: "Twitter Handle",
         formula: "$twitterHandle"

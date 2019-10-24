@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
 
-import { BucketingStrategy, Dimension, DimensionJS } from "./dimension";
+import { BucketingStrategy, Dimension, DimensionJS, DimensionKind } from "./dimension";
 
 describe("Dimension", () => {
   it("is an immutable class", () => {
@@ -114,7 +114,7 @@ describe("Dimension", () => {
       var dimJS = {
         name: "mixed_granularities",
         title: "Mixed Granularities",
-        kind: "string",
+        kind: "string" as DimensionKind,
         granularities: [5, 50, "P1W", 800, 1000]
       };
 
