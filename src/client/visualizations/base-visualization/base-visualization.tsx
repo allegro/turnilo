@@ -145,7 +145,13 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.differentSeries(essence) ||
+      this.differentBucketingTimezone(nextEssence) ||
       this.differentLastRefreshRequestTimestamp(nextProps);
+  }
+
+  private differentBucketingTimezone(newEssence: Essence): boolean {
+    const { essence } = this.props;
+    return !essence.timezone.equals(newEssence.timezone) && newEssence.splits.hasSplitOn(essence.getTimeDimension());
   }
 
   private differentLastRefreshRequestTimestamp({ refreshRequestTimestamp }: VisualizationProps): boolean {
