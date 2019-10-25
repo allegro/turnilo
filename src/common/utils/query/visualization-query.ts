@@ -24,6 +24,7 @@ import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { toExpression } from "../../models/filter-clause/filter-clause";
+import { Filter } from "../../models/filter/filter";
 import { ConcreteSeries } from "../../models/series/concrete-series";
 import { Sort } from "../../models/sort/sort";
 import { TimeShiftEnv } from "../../models/time-shift/time-shift-env";
@@ -93,11 +94,11 @@ function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
   };
 }
 
-function applyListFilterExpression(split: Split, dimension: Dimension, { filter }: Essence) {
+function applyDimensionFilter(dimension: Dimension, filter: Filter) {
   return (query: Expression) => {
-    if (dimension.kind !== "set") return query;
-    const clause = filter.clauseForReference(split.reference);
-    return query.filter(toExpression(clause, dimension));
+    if (!dimension.multiValue) return query;
+    const filterClause = filter.clauseForReference(dimension.name);
+    return query.filter(toExpression(filterClause, dimension));
   };
 }
 
@@ -116,7 +117,7 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
 
   return thread(
     $main.split(currentSplit, dimension.name),
-    applyListFilterExpression(split, dimension, essence),
+    applyDimensionFilter(dimension, essence.filter),
     applyCanonicalLengthForTimeSplit(split, dataCube),
     applyHaving(colors, dimension),
     applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),

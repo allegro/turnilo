@@ -22,10 +22,10 @@ import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } 
 import { Bucket } from "../split/split";
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
-export type DimensionKind = "string" | "boolean" | "time" | "number" | "set";
+export type DimensionKind = "string" | "boolean" | "time" | "number";
 
 function readKind(kind: string): DimensionKind {
-  if (kind === "string" || kind === "boolean" || kind === "time" || kind === "number" || kind === "set") return kind;
+  if (kind === "string" || kind === "boolean" || kind === "time" || kind === "number") return kind;
   throw new Error(`Unrecognized kind: ${kind}`);
 }
 
@@ -50,6 +50,7 @@ export interface DimensionValue {
   description?: string;
   formula?: string;
   kind?: DimensionKind;
+  multiValue?: boolean;
   url?: string;
   granularities?: Bucket[];
   bucketedBy?: Bucket;
@@ -63,6 +64,7 @@ export interface DimensionJS {
   description?: string;
   formula?: string;
   kind?: DimensionKind;
+  multiValue?: boolean;
   url?: string;
   granularities?: GranularityJS[];
   bucketedBy?: GranularityJS;
@@ -86,6 +88,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       description: parameters.description,
       formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
       kind: parameters.kind ? readKind(parameters.kind) : typeToKind((parameters as any).type),
+      multiValue: parameters.multiValue === true,
       url: parameters.url
     };
 
@@ -111,6 +114,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public formula: string;
   public expression: Expression;
   public kind: DimensionKind;
+  public multiValue: boolean;
   public className: string;
   public url: string;
   public granularities: Bucket[];
@@ -132,6 +136,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
     const kind = parameters.kind ? readKind(parameters.kind) : typeToKind(this.expression.type);
     this.kind = kind;
+    this.multiValue = true === parameters.multiValue;
     this.className = kind;
 
     if (parameters.url) {
@@ -166,6 +171,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       formula: this.formula,
       description: this.description,
       kind: this.kind,
+      multiValue: this.multiValue,
       url: this.url,
       granularities: this.granularities,
       bucketedBy: this.bucketedBy,
@@ -183,6 +189,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     };
     if (this.description) js.description = this.description;
     if (this.url) js.url = this.url;
+    if (this.multiValue) js.multiValue = this.multiValue;
     if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
     if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
@@ -205,6 +212,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.description === other.description &&
       this.formula === other.formula &&
       this.kind === other.kind &&
+      this.multiValue === other.multiValue &&
       this.url === other.url &&
       this.granularitiesEqual(other.granularities) &&
       granularityEquals(this.bucketedBy, other.bucketedBy) &&
