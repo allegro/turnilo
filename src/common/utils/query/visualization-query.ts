@@ -98,6 +98,7 @@ function applyDimensionFilter(dimension: Dimension, filter: Filter) {
   return (query: Expression) => {
     if (!dimension.multiValue) return query;
     const filterClause = filter.clauseForReference(dimension.name);
+    if (!filterClause) return query;
     return query.filter(toExpression(filterClause, dimension));
   };
 }
