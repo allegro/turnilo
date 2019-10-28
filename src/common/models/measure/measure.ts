@@ -84,7 +84,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     const ref = $(name);
 
     if (nativeType) {
-      if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
+      if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "HLLSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name),
