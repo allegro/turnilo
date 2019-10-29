@@ -345,6 +345,14 @@ Specify whether or not the dimension should be bucketed by default. If unspecifi
 
 Specify a specific sort strategy for this dimension in visualizations. If unspecified defaults to best sort strategy based on the visualization.
 
+**kind** ("string" | "boolean" | "number" | "time")
+
+Specify kind of data inside dimension. It defaults to "string".
+
+**multiValue** (boolean)
+
+Set to true if dimension holds multiple values. [Druid Multi-Value Dimensions](https://druid.apache.org/docs/latest/querying/multi-value-dimensions.html)
+
 **formula** (string - plywood expression)
 
 The [Plywood expression](http://plywood.imply.io/expressions) for this dimension.

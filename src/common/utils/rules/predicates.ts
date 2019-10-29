@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { DimensionKind } from "../../models/dimension/dimension";
 import { Split } from "../../models/split/split";
 import { VisualizationDependentPredicate } from "./visualization-dependent-evaluator";
 import { VisualizationIndependentPredicate } from "./visualization-independent-evaluator";
@@ -62,7 +63,7 @@ export class Predicates {
     return result;
   }
 
-  public static haveAtLeastSplitKinds(...kinds: string[]): VisualizationDependentPredicate {
+  public static haveAtLeastSplitKinds(...kinds: DimensionKind[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
       let getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
 
