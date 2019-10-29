@@ -20,7 +20,6 @@
 .bubble-menu {
   @extend %menu-cont;
   padding: $padding-compact;
-  overflow-y: auto;
 
   &.mini {
     padding: $padding-mini;
