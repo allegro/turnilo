@@ -433,7 +433,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         }} />,
         hasComparison && <ChartLine {...{
           ...doubleSplitProps,
-          key: `multi-current-${i}`,
+          key: `multi-previous-${i}`,
           getY: getYP,
           dashed: true
         }} />
