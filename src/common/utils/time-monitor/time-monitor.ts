@@ -38,6 +38,12 @@ export class TimeMonitor {
     setInterval(this.doChecks, 1000);
   }
 
+  removeCheck(name: string): this {
+    this.checks[name] = null;
+    this.timekeeper = this.timekeeper.removeTimeTagFor(name);
+    return this;
+  }
+
   addCheck(name: string, check: Check): this {
     this.checks[name] = check;
     this.timekeeper = this.timekeeper.addTimeTagFor(name);
