@@ -341,7 +341,7 @@ export class ClusterManager {
               logger.log(`Missing source '${String(ex.external.source)}' + " for cluster '${cluster.name}', removing...`);
               introspectionTasks.push(this.removeManagedExternal(ex));
             }
-          })
+          });
 
           sources.forEach(source => {
             const existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
@@ -425,4 +425,3 @@ export class ClusterManager {
   }
 
 }
-

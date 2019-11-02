@@ -233,7 +233,4 @@ export class SettingsManager {
     }
     return Promise.resolve(null);
   }
-
-
 }
-
