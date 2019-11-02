@@ -214,6 +214,22 @@ describe("Measure", () => {
       ]);
     });
 
+    it("works with hll", () => {
+      const attribute = AttributeInfo.fromJS({
+        name: "page_hll",
+        nativeType: "HLLSketch",
+        type: "STRING"
+      });
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      expect(measures).to.deep.equal([
+        {
+          name: "page_hll",
+          title: "Page Hll",
+          formula: "$main.countDistinct($page_hll)"
+        }
+      ]);
+    });
+
   });
 
   // TODO: move to ConcreteSeries !!!

@@ -866,6 +866,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.append(new Dimension({
+            kind: "string",
+            multiValue: true,
             name: urlSafeName,
             formula: expression.toString()
           }));

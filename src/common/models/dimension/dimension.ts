@@ -22,9 +22,16 @@ import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } 
 import { Bucket } from "../split/split";
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
-function typeToKind(type: string): string {
-  if (!type) return type;
-  return type.toLowerCase().replace(/_/g, "-").replace(/-range$/, "");
+export type DimensionKind = "string" | "boolean" | "time" | "number";
+
+function readKind(kind: string): DimensionKind {
+  if (kind === "string" || kind === "boolean" || kind === "time" || kind === "number") return kind;
+  throw new Error(`Unrecognized kind: ${kind}`);
+}
+
+function typeToKind(type: string): DimensionKind {
+  if (!type) return "string";
+  return readKind(type.toLowerCase().replace(/_/g, "-").replace(/-range$/, ""));
 }
 
 export enum BucketingStrategy {
@@ -42,7 +49,8 @@ export interface DimensionValue {
   title?: string;
   description?: string;
   formula?: string;
-  kind?: string;
+  kind?: DimensionKind;
+  multiValue?: boolean;
   url?: string;
   granularities?: Bucket[];
   bucketedBy?: Bucket;
@@ -55,7 +63,8 @@ export interface DimensionJS {
   title?: string;
   description?: string;
   formula?: string;
-  kind?: string;
+  kind?: DimensionKind;
+  multiValue?: boolean;
   url?: string;
   granularities?: GranularityJS[];
   bucketedBy?: GranularityJS;
@@ -78,7 +87,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       title: parameters.title,
       description: parameters.description,
       formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
-      kind: parameters.kind || typeToKind((parameters as any).type),
+      kind: parameters.kind ? readKind(parameters.kind) : typeToKind((parameters as any).type),
+      multiValue: parameters.multiValue === true,
       url: parameters.url
     };
 
@@ -103,7 +113,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public description?: string;
   public formula: string;
   public expression: Expression;
-  public kind: string;
+  public kind: DimensionKind;
+  public multiValue: boolean;
   public className: string;
   public url: string;
   public granularities: Bucket[];
@@ -123,8 +134,9 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     this.formula = formula;
     this.expression = Expression.parse(formula);
 
-    const kind = parameters.kind || typeToKind(this.expression.type) || "string";
+    const kind = parameters.kind ? readKind(parameters.kind) : typeToKind(this.expression.type);
     this.kind = kind;
+    this.multiValue = true === parameters.multiValue;
     this.className = kind;
 
     if (parameters.url) {
@@ -159,6 +171,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       formula: this.formula,
       description: this.description,
       kind: this.kind,
+      multiValue: this.multiValue,
       url: this.url,
       granularities: this.granularities,
       bucketedBy: this.bucketedBy,
@@ -176,6 +189,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     };
     if (this.description) js.description = this.description;
     if (this.url) js.url = this.url;
+    if (this.multiValue) js.multiValue = this.multiValue;
     if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
     if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
@@ -198,6 +212,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.description === other.description &&
       this.formula === other.formula &&
       this.kind === other.kind &&
+      this.multiValue === other.multiValue &&
       this.url === other.url &&
       this.granularitiesEqual(other.granularities) &&
       granularityEquals(this.bucketedBy, other.bucketedBy) &&
@@ -231,7 +246,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     return new Dimension(v);
   }
 
-  changeKind(newKind: string): Dimension {
+  changeKind(newKind: DimensionKind): Dimension {
     return this.change("kind", newKind);
   }
 
