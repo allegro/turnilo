@@ -45,7 +45,7 @@ export class TimeMonitor {
   }
 
   addCheck(name: string, check: Check): this {
-    this.checks.set(name,check);
+    this.checks.set(name, check);
     this.timekeeper = this.timekeeper.addTimeTagFor(name);
     return this;
   }
