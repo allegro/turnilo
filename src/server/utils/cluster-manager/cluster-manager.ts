@@ -337,7 +337,7 @@ export class ClusterManager {
           let introspectionTasks: Array<Promise<void>> = [];
 
           this.managedExternals.forEach(ex => {
-            if (sources.filter(src => src === String(ex.external.source)).length === 0) {
+            if (sources.find(src => src === String(ex.external.source)) == null) {
               logger.log(`Missing source '${String(ex.external.source)}' + " for cluster '${cluster.name}', removing...`);
               introspectionTasks.push(this.removeManagedExternal(ex));
             }

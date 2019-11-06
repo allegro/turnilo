@@ -26,12 +26,12 @@ export class TimeMonitor {
   public regularCheckInterval: number;
   public specialCheckInterval: number;
   public timekeeper: Timekeeper;
-  public checks: Record<string, Check>;
+  public checks: Map<string, Check>;
   private doingChecks = false;
 
   constructor(logger: Logger) {
     this.logger = logger;
-    this.checks = {};
+    this.checks = new Map();
     this.regularCheckInterval = 60000;
     this.specialCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
@@ -39,20 +39,20 @@ export class TimeMonitor {
   }
 
   removeCheck(name: string): this {
-    this.checks[name] = null;
+    this.checks.delete(name);
     this.timekeeper = this.timekeeper.removeTimeTagFor(name);
     return this;
   }
 
   addCheck(name: string, check: Check): this {
-    this.checks[name] = check;
+    this.checks.set(name,check);
     this.timekeeper = this.timekeeper.addTimeTagFor(name);
     return this;
   }
 
   private doCheck = ({ name }: TimeTag): Promise<void> => {
     const { logger, checks } = this;
-    const check = checks[name];
+    const check = checks.get(name);
     if (!check) return Promise.resolve(null);
     return check().then(updatedTime => {
       logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
