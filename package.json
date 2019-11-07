@@ -77,7 +77,7 @@
     "lz-string": "1.4.4",
     "marked": "0.7.0",
     "moment": "2.20.1",
-    "moment-timezone": "0.5.14",
+    "moment-timezone": "0.5.26",
     "node-spawn-server": "1.0.1",
     "nopt": "4.0.1",
     "numbro": "2.1.0",
