@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { QuantileExpression } from "plywood";
 import { isTruthy } from "../../utils/general/general";
+import { Measure } from "../measure/measure";
 import { SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries } from "./expression-series";
 import { MeasureSeries } from "./measure-series";
+import { QuantileSeries } from "./quantile-series";
 import { SeriesType } from "./series-type";
 
 export interface BasicSeriesValue {
@@ -29,15 +32,31 @@ export interface SeriesBehaviours {
   plywoodKey: (period?: SeriesDerivation) => string;
 }
 
-export type Series = MeasureSeries | ExpressionSeries;
+export type Series = MeasureSeries | ExpressionSeries | QuantileSeries;
 
-export function fromJS(params: any): Series {
+export function fromMeasure(measure: Measure): MeasureSeries | QuantileSeries {
+  if (measure.expression instanceof QuantileExpression) {
+    return QuantileSeries.fromQuantileMeasure(measure);
+  }
+  return MeasureSeries.fromMeasure(measure);
+}
+
+function fromJSWithMeasure(params: any, { expression }: Measure): MeasureSeries | QuantileSeries {
+  if (expression instanceof QuantileExpression) {
+    return QuantileSeries.fromJS(params);
+  }
+  return MeasureSeries.fromJS(params);
+}
+
+export function fromJS(params: any, measure: Measure): Series {
   const { type } = params;
-  if (!isTruthy(type)) return MeasureSeries.fromJS(params);
+  if (!isTruthy(type)) return fromJSWithMeasure(params, measure);
   switch (type as SeriesType) {
     case SeriesType.MEASURE:
-      return MeasureSeries.fromJS(params);
+      return fromJSWithMeasure(params, measure);
     case SeriesType.EXPRESSION:
       return ExpressionSeries.fromJS(params);
+    case SeriesType.QUANTILE:
+      return QuantileSeries.fromJS(params);
   }
 }

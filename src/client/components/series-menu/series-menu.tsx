@@ -22,6 +22,7 @@ import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
+import { QuantileSeries } from "../../../common/models/series/quantile-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -33,6 +34,7 @@ import { Button } from "../button/button";
 import { ArithmeticSeriesMenu } from "./arithmetic-series-menu";
 import { MeasureSeriesMenu } from "./measure-series-menu";
 import { PercentSeriesMenu } from "./percent-series-menu";
+import { QuantileSeriesMenu } from "./quantile-series-menu";
 import "./series-menu.scss";
 
 interface SeriesMenuProps {
@@ -116,6 +118,13 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
         measure={measure}
         measures={measures}
         onChange={this.saveSeries}
+      />}
+      {series instanceof QuantileSeries && <QuantileSeriesMenu
+        seriesList={seriesList}
+        measure={measure}
+        onChange={this.saveSeries}
+        initialSeries={initialSeries}
+        series={series}
       />}
       <div className="button-bar">
         <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
