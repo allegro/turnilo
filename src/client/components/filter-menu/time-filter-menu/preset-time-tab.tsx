@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { Duration, second } from "chronoshift";
+import { Duration } from "chronoshift";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
-import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
@@ -29,7 +28,7 @@ import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
 import { ButtonGroup, GroupMember } from "../../button-group/button-group";
 import { Button } from "../../button/button";
-import { InputWithPresets } from "../../input-with-presets/input-with-presets";
+import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
 import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
 import { TimeShiftSelector } from "./time-shift-selector";
 
@@ -94,7 +93,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     });
 
     const latestPeriod = filterPeriod === TimeFilterPeriod.LATEST;
-    return <InputWithPresets
+    return <StringInputWithPresets
       title={STRINGS.latest}
       presets={presets}
       errorMessage={latestPeriod && !isValidDuration(filterDuration) && STRINGS.invalidDurationFormat}

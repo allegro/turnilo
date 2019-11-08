@@ -17,8 +17,8 @@
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
-import { noop } from "../../../common/utils/functional/functional";
-import { ButtonGroup } from "../button-group/button-group";
+import { identity, noop } from "../../../common/utils/functional/functional";
+import { ButtonGroup, GroupMember } from "../button-group/button-group";
 import { InputWithPresets, Preset } from "./input-with-presets";
 
 const PRESETS: Preset[] = [{
@@ -28,7 +28,7 @@ const PRESETS: Preset[] = [{
 }];
 
 function renderInputWithPresets(selected: string, errorMessage?: string) {
-  return shallow(<InputWithPresets presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected}/>);
+  return shallow(<InputWithPresets presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected} formatCustomValue={identity} parseCustomValue={identity}/>);
 }
 
 describe("<InputWithPresets>", () => {
@@ -36,7 +36,7 @@ describe("<InputWithPresets>", () => {
   it("should select one of <ButtonGroup> members if one of presets selected", () => {
     const inputWithPresets = renderInputWithPresets("a");
     const buttonGroup = inputWithPresets.find(ButtonGroup);
-    const groupMembers = buttonGroup.prop("groupMembers");
+    const groupMembers = buttonGroup.prop("groupMembers") as GroupMember[];
     const selectedMember = groupMembers.find(({ isSelected }) => isSelected);
 
     expect(selectedMember, "one member is selected").to.exist;

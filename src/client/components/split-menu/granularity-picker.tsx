@@ -20,7 +20,8 @@ import { ContinuousDimensionKind, formatGranularity, getGranularities, granulari
 import { Bucket } from "../../../common/models/split/split";
 import { Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
-import { InputWithPresets, Preset } from "../input-with-presets/input-with-presets";
+import { Preset } from "../input-with-presets/input-with-presets";
+import { StringInputWithPresets } from "../input-with-presets/string-input-with-presets";
 
 export interface GranularityPickerProps {
   dimension: Dimension;
@@ -41,7 +42,7 @@ export const GranularityPicker: React.SFC<GranularityPickerProps> = ({ dimension
 
   const placeholder = dimension.kind === "time" ? STRINGS.floorableDurationsExamples : "Bucket size";
 
-  return <InputWithPresets
+  return <StringInputWithPresets
     title={STRINGS.granularity}
     selected={granularity}
     errorMessage={validateGranularity(dimension.kind, granularity)}
