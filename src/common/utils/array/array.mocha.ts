@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { expect } from "chai";
-import { shallowEqualArrays } from "./array";
+import { insert, shallowEqualArrays } from "./array";
 
 describe("shallowArrayEquals", () => {
   it("should return false when A is falsy", () => {
@@ -39,10 +39,24 @@ describe("shallowArrayEquals", () => {
   });
 
   it("should return false when have different elements", () => {
-    expect(shallowEqualArrays([1, 2, 3], [1, 2,  4])).to.be.false;
+    expect(shallowEqualArrays([1, 2, 3], [1, 2, 4])).to.be.false;
   });
 
   it("should return true when all elements are the same", () => {
     expect(shallowEqualArrays([1, "foobar", true], [1, "foobar", true])).to.be.true;
+  });
+});
+
+describe("insert", () => {
+  it("inserts element at the begining", () => {
+    expect(insert([3, 7, 9], 0, 66)).to.be.deep.eq([66, 3, 7, 9]);
+  });
+
+  it("inserts element at the end", () => {
+    expect(insert([3, 7, 9], 4, 66)).to.be.deep.eq([3, 7, 9, 66]);
+  });
+
+  it("inserts element in the middle", () => {
+    expect(insert([3, 7, 9], 2, 66)).to.be.deep.eq([3, 7, 66, 9]);
   });
 });
