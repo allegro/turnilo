@@ -20,9 +20,9 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
-import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
-import { Series } from "../../../common/models/series/series";
+import { QuantileSeries } from "../../../common/models/series/quantile-series";
+import { fromMeasure, Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
@@ -39,11 +39,16 @@ interface SeriesTilesRowProps {
   menuStage: Stage;
 }
 
+export interface Placeholder {
+  series: Series;
+  index: number;
+}
+
 interface SeriesTilesRowState {
   dragPosition?: DragPosition;
   openedSeries?: Series;
   overflowOpen?: boolean;
-  placeholderSeries?: Series;
+  placeholderSeries?: Placeholder;
 }
 
 export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
@@ -56,8 +61,9 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   }
 
   // This will be called externally
-  newExpressionSeries(placeholderSeries: Series) {
-    this.setState({ placeholderSeries });
+  appendDirtySeries(series: Series) {
+    const index = this.props.essence.series.count();
+    this.setState({ placeholderSeries: { series, index } });
   }
 
   removePlaceholderSeries = () => this.setState({ placeholderSeries: null });
@@ -111,7 +117,11 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
-    return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
+    const position = DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
+    if (position.replace === this.maxItems()) {
+      return new DragPosition({ insert: position.replace });
+    }
+    return position;
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
@@ -140,28 +150,52 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.preventDefault();
-    const { clicker, essence: { series } } = this.props;
-
     this.setState({ dragPosition: null });
 
-    const newSeries: Series = DragManager.isDraggingSeries() ? DragManager.draggingSeries() : MeasureSeries.fromMeasure(DragManager.draggingMeasure());
-    if (!newSeries) return;
-
-    let dragPosition = this.calculateDragPosition(e);
-
-    if (dragPosition.replace === this.maxItems()) {
-      dragPosition = new DragPosition({ insert: dragPosition.replace });
+    if (DragManager.isDraggingSeries()) {
+      this.rearrangeSeries(DragManager.draggingSeries(), this.calculateDragPosition(e));
+    } else {
+      this.dropNewSeries(fromMeasure(DragManager.draggingMeasure()), this.calculateDragPosition(e));
     }
+  }
+
+  private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
+    const { clicker, essence: { series } } = this.props;
+    const isSeriesValid = newSeries instanceof MeasureSeries || (newSeries instanceof QuantileSeries && !series.hasSeries(newSeries));
+    if (isSeriesValid) {
+      this.rearrangeSeries(newSeries, dragPosition);
+    } else {
+      if (dragPosition.isReplace()) {
+        clicker.removeSeries(series.series.get(dragPosition.replace));
+        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.replace } });
+      } else {
+        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.insert } });
+      }
+    }
+  }
+
+  private rearrangeSeries(series: Series, dragPosition: DragPosition) {
+    const { clicker, essence } = this.props;
 
     if (dragPosition.isReplace()) {
-      clicker.changeSeriesList(series.replaceByIndex(dragPosition.replace, newSeries));
+      clicker.changeSeriesList(essence.series.replaceByIndex(dragPosition.replace, series));
     } else {
-      clicker.changeSeriesList(series.insertByIndex(dragPosition.insert, newSeries));
+      clicker.changeSeriesList(essence.series.insertByIndex(dragPosition.insert, series));
     }
   }
 
   appendMeasureSeries = (measure: Measure) => {
-    this.props.clicker.addSeries(MeasureSeries.fromMeasure(measure));
+    const series = fromMeasure(measure);
+    if (series instanceof MeasureSeries) {
+      this.props.clicker.addSeries(series);
+      return;
+    }
+    if (!this.props.essence.series.hasSeries(series)) {
+      this.props.clicker.addSeries(series);
+      return;
+    }
+    const index = this.props.essence.series.count();
+    this.setState({ placeholderSeries: { series, index } });
   }
 
   render() {
