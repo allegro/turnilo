@@ -25,10 +25,6 @@ export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
     super(series, measure);
   }
 
-  reactKey(derivation?: SeriesDerivation): string {
-    return `${super.reactKey(derivation)}-p${this.definition.formattedPercentile()}`;
-  }
-
   title(derivation?: SeriesDerivation): string {
     return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;
   }
