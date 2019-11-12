@@ -36,21 +36,17 @@ interface AddQuantileSeriesButtonProps {
 export const AddQuantileSeriesButton: React.SFC<AddQuantileSeriesButtonProps> = props => {
   const { series, measure, appendDirtySeries, addSeries, onClose } = props;
 
-  const disabled = !measure.isQuantile();
-
   function onNewQuantileSeries() {
-    if (!disabled) {
-      const quantileSeries = QuantileSeries.fromQuantileMeasure(measure);
-      if (series.hasSeriesWithKey(quantileSeries.key())) {
-        appendDirtySeries(quantileSeries);
-      } else {
-        addSeries(quantileSeries);
-      }
+    const quantileSeries = QuantileSeries.fromQuantileMeasure(measure);
+    if (series.hasSeriesWithKey(quantileSeries.key())) {
+      appendDirtySeries(quantileSeries);
+    } else {
+      addSeries(quantileSeries);
     }
     onClose();
   }
 
-  return <div className={classNames("new-quantile-expression", "action", { disabled })} onClick={onNewQuantileSeries}>
+  return <div className={classNames("new-quantile-expression", "action")} onClick={onNewQuantileSeries}>
     <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
     <div className="action-label">{STRINGS.add}</div>
   </div>;
