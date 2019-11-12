@@ -18,7 +18,6 @@
 import { Timezone } from "chronoshift";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
@@ -49,9 +48,8 @@ import { GlobalEventListener } from "../../components/global-event-listener/glob
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
-import { SeriesTile } from "../../components/series-tile/series-tile";
 import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
-import { SplitTile } from "../../components/split-tile/split-tile";
+import { SplitTilesRow } from "../../components/split-tile/split-tiles-row";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
@@ -139,7 +137,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private container = React.createRef<HTMLDivElement>();
   private filterTile = React.createRef<FilterTile>();
   private seriesTile = React.createRef<SeriesTilesRow>();
-  private splitTile = React.createRef<SplitTile>();
+  private splitTile = React.createRef<SplitTilesRow>();
 
     constructor(props: CubeViewProps) {
     super(props);
@@ -615,7 +613,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 timekeeper={timekeeper}
                 menuStage={visualizationStage}
               />
-              <SplitTile
+              <SplitTilesRow
                 ref={this.splitTile}
                 clicker={clicker}
                 essence={essence}

@@ -27,8 +27,8 @@ import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants"
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
+import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSeries } from "./add-series";
-import { DragIndicator } from "./drag-indicator";
 import { SeriesTiles } from "./series-tiles";
 import "./series-tiles-row.scss";
 

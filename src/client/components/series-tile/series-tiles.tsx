@@ -24,8 +24,8 @@ import { Binary, Ternary, Unary } from "../../../common/utils/functional/functio
 import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { TileOverflowContainer } from "../tile-overflow-container/tile-overflow-container";
 import { PlaceholderSeriesTile } from "./placeholder-series";
-import { SeriesItemOverflow } from "./series-item-overflow";
 import { SeriesTile } from "./series-tile";
 import { Placeholder } from "./series-tiles-row";
 
@@ -114,13 +114,14 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   const isDummySeriesInOverflow = overflowItems.some(element => element.type === PlaceholderSeriesTile);
   const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
 
-  const seriesItemOverflow = <SeriesItemOverflow
+  const seriesItemOverflow = <TileOverflowContainer
     key="overflow-menu"
     items={overflowItems}
     open={overflowOpened}
     openOverflowMenu={openOverflowMenu}
     x={visibleItems.length * SECTION_WIDTH}
-    closeOverflowMenu={closeOverflowMenu} />;
+    closeOverflowMenu={closeOverflowMenu}
+    className="measure" />;
 
   return <React.Fragment>
     {[...visibleItems, seriesItemOverflow]}

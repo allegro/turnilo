@@ -18,11 +18,11 @@ import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { CORE_ITEM_GAP } from "../../config/constants";
-import { transformStyle } from "../../utils/dom/dom";
+import { classNames, transformStyle } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { WithRef } from "../with-ref/with-ref";
 
-interface SeriesItemOverflowMenuProps {
+interface TileOverflowContainerMenuProps {
   items: JSX.Element[];
   openOn: Element;
   closeOverflowMenu: Fn;
@@ -30,7 +30,7 @@ interface SeriesItemOverflowMenuProps {
 
 const SEGMENT_HEIGHT = 29 + CORE_ITEM_GAP;
 
-const SeriesItemOverflowMenu: React.SFC<SeriesItemOverflowMenuProps> = props => {
+const TileOverflowContainerMenu: React.SFC<TileOverflowContainerMenuProps> = props => {
   const { items, openOn, closeOverflowMenu } = props;
 
   const positionedItems = items.map((item, idx) =>
@@ -48,7 +48,8 @@ const SeriesItemOverflowMenu: React.SFC<SeriesItemOverflowMenuProps> = props => 
   </BubbleMenu>;
 };
 
-interface SeriesItemOverflowProps {
+interface TileOverflowContainerProps {
+  className: string;
   x: number;
   items: JSX.Element[];
   open: boolean;
@@ -56,20 +57,20 @@ interface SeriesItemOverflowProps {
   closeOverflowMenu: Fn;
 }
 
-export const SeriesItemOverflow: React.SFC<SeriesItemOverflowProps> = props => {
-  const { x, items, open, openOverflowMenu, closeOverflowMenu } = props;
+export const TileOverflowContainer: React.SFC<TileOverflowContainerProps> = props => {
+  const { x, items, open, openOverflowMenu, className, closeOverflowMenu } = props;
 
   const style = transformStyle(x, 0);
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className="overflow measure"
+        className={classNames("overflow", className)}
         style={style}
         ref={setRef}
         onClick={openOverflowMenu}>
         <div className="count">{"+" + items.length}</div>
       </div>
-      {open && openOn && <SeriesItemOverflowMenu
+      {open && openOn && <TileOverflowContainerMenu
         openOn={openOn}
         items={items}
         closeOverflowMenu={closeOverflowMenu} />}

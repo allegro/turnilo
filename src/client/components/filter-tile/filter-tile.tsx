@@ -33,7 +33,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { AddTile } from "../add-tile/add-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
+import { FancyDragIndicator } from "../drag-indicator/fancy-drag-indicator";
 import { FilterMenu } from "../filter-menu/filter-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./filter-tile.scss";
