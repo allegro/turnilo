@@ -18,7 +18,7 @@ import * as React from "react";
 import { Omit } from "../../../common/utils/functional/functional";
 import { InputWithPresets, InputWithPresetsProps } from "../input-with-presets/input-with-presets";
 
-type NumberInputWithPresetsProps = Omit<InputWithPresetsProps<number>, "parseCustomValue" | "formatCustomValue">;
+type QuantilePickerProps = Omit<InputWithPresetsProps<number>, "parseCustomValue" | "formatCustomValue">;
 
 function parse(s: string): number | null {
   const n = parseFloat(s);
@@ -29,5 +29,5 @@ function format(n: number): string {
   return n.toString();
 }
 
-export const QuantilePicker: React.SFC<NumberInputWithPresetsProps> = props =>
+export const QuantilePicker: React.SFC<QuantilePickerProps> = props =>
   <InputWithPresets<number> {...props} parseCustomValue={parse} formatCustomValue={format} />;

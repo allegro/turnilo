@@ -20,7 +20,7 @@ import { classNames } from "../../utils/dom/dom";
 import { ButtonGroup, GroupMember } from "../button-group/button-group";
 import "./input-with-presets.scss";
 
-export interface Preset<T = string> {
+export interface Preset<T> {
   name: string;
   identity: T;
 }
@@ -41,7 +41,7 @@ interface InputWithPresetsState {
   customValue: string;
 }
 
-export class InputWithPresets<T = string> extends React.Component<InputWithPresetsProps<T>, InputWithPresetsState> {
+export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T>, InputWithPresetsState> {
 
   initialState(): InputWithPresetsState {
     const { selected, presets, formatCustomValue } = this.props;

@@ -26,7 +26,7 @@ import { Fn } from "../../../../common/utils/general/general";
 import { isValidDuration } from "../../../../common/utils/plywood/duration";
 import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
-import { ButtonGroup, GroupMember } from "../../button-group/button-group";
+import { ButtonGroup } from "../../button-group/button-group";
 import { Button } from "../../button/button";
 import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
 import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
@@ -106,7 +106,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     const { filterDuration, filterPeriod } = this.state;
     const activePeriod = period === filterPeriod;
     const presets = getTimeFilterPresets(period);
-    const groupMembers: GroupMember[] = presets.map(({ duration, name }) => {
+    const groupMembers = presets.map(({ duration, name }) => {
       return {
         title: name,
         key: name,
