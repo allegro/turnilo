@@ -112,8 +112,6 @@ export function titleWithDerivation({ title }: Measure, derivation: SeriesDeriva
       return `Previous ${title}`;
     case SeriesDerivation.DELTA:
       return `Difference ${title}`;
-    default:
-      return title;
   }
 }
 

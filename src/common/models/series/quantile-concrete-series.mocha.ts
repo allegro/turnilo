@@ -21,11 +21,17 @@ import { SeriesDerivation } from "./concrete-series";
 import { QuantileConcreteSeries } from "./quantile-concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
-const quantileMeasure = Measure.fromJS({ title: "Quantile Title", name: "my-quantile", formula: "$main.quantile($histogram, 0.93, 'tuning')" });
+const quantileMeasure = Measure.fromJS({
+  title: "Quantile Title",
+  name: "my-quantile",
+  formula: "$main.quantile($histogram, 0.93, 'tuning')"
+});
+
 const quantileSeries = new QuantileSeries({
   reference: "my-quantile",
   percentile: 75
 });
+
 const quantileConcreteSeries = new QuantileConcreteSeries(quantileSeries, quantileMeasure);
 
 describe("QuantileConcreteSeries", () => {
@@ -56,22 +62,26 @@ describe("QuantileConcreteSeries", () => {
   describe("applyExpression", () => {
     it("should throw if expression is not a quantile expression", () => {
       const expression = Expression.parse("$main.count()");
-      expect(() => quantileConcreteSeries["applyExpression"](expression, "name", 0)).throws();
+      // @ts-ignore: access protected property
+      expect(() => quantileConcreteSeries.applyExpression(expression, "name", 0)).throws();
     });
 
     it("should create ApplyExpression", () => {
       const expression = quantileMeasure.expression;
-      expect(quantileConcreteSeries["applyExpression"](expression, "name", 0)).to.be.instanceOf(ApplyExpression);
+      // @ts-ignore: access protected property
+      expect(quantileConcreteSeries.applyExpression(expression, "name", 0)).to.be.instanceOf(ApplyExpression);
     });
 
     it("should pass name to new ApplyExpression", () => {
       const expression = quantileMeasure.expression;
-      expect(quantileConcreteSeries["applyExpression"](expression, "new-name", 0).name).to.be.eq("new-name");
+      // @ts-ignore: access protected property
+      expect(quantileConcreteSeries.applyExpression(expression, "new-name", 0).name).to.be.eq("new-name");
     });
 
     it("should override percentile in inner expression", () => {
       const expression = quantileMeasure.expression;
-      const applyExpression = quantileConcreteSeries["applyExpression"](expression, "name", 0);
+      // @ts-ignore: access protected property
+      const applyExpression = quantileConcreteSeries.applyExpression(expression, "name", 0);
       expect(applyExpression.expression).to.be.instanceOf(QuantileExpression);
       expect((applyExpression.expression as QuantileExpression).value).to.be.eq(0.75);
     });

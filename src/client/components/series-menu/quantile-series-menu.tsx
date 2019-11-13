@@ -24,6 +24,7 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { Preset } from "../input-with-presets/input-with-presets";
 import { FormatPicker } from "./format-picker";
 import { QuantilePicker } from "./quantile-picker";
+import "./quantile-series-menu.scss";
 
 interface QuantileSeriesMenuProps {
   measure: Measure;
@@ -72,13 +73,15 @@ export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesL
   const error = validateSeries(series);
 
   return <React.Fragment>
-    <QuantilePicker
-      title="Percentile"
-      placeholder="Type percentile e.g. 55"
-      selected={series.percentile}
-      presets={percentiles}
-      onChange={onPercentileChange} />
-    {error && <div>{error}</div>}
+    <div className="percentile-picker">
+      <QuantilePicker
+        title="Percentile"
+        placeholder="Type percentile e.g. 55"
+        selected={series.percentile}
+        presets={percentiles}
+        errorMessage={error}
+        onChange={onPercentileChange} />
+    </div>
     <FormatPicker
       measure={measure}
       format={series.format}
