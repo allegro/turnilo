@@ -21,7 +21,24 @@ import { mockReq } from "../request/request.fixtures"
 
 const assert = require("assert");
 
-describe("Guard test", () => {
+describe("Guard test -> ", () => {
+
+  it("Guard off -> header for cube A and accessing cube B", () => {
+    let dataCubeA = DataCubeFixtures.customCubeWithGuard()
+    let dataCubeB = DataCubeFixtures.customCubeWithGuard()
+
+    dataCubeA.name = 'cubeA'
+    dataCubeB.name = 'cubeB'
+
+    dataCubeA.cluster.guardDataCubes = false
+    dataCubeB.cluster.guardDataCubes = false
+
+    let req = mockReq()
+    req.headers["x-turnilo-allow-datacubes"] = "cubeA"
+
+    assert.equal(checkAccess(dataCubeB, req), true);
+  });
+
 
   it("Guard off -> access to all dataCubes", () => {
     let dataCube = DataCubeFixtures.customCubeWithGuard()
