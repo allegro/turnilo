@@ -41,7 +41,7 @@ import {
 } from "plywood";
 import { shallowEqualArrays } from "../../utils/array/array";
 import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
-import { Cluster } from "../cluster/cluster";
+import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
@@ -71,7 +71,6 @@ function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measu
     }
   }
 }
-
 export type Introspection = "none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all";
 
 export type Source = string | string[];
@@ -139,6 +138,8 @@ export interface DataCubeJS {
   refreshRule?: RefreshRuleJS;
   maxSplits?: number;
   maxQueries?: number;
+
+  cluster?: ClusterJS;
 }
 
 export interface DataCubeOptions {

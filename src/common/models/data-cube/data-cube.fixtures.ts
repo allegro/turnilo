@@ -18,7 +18,8 @@
 import { basicExecutorFactory, Dataset } from "plywood";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
-import { DataCube, DataCubeJS } from "./data-cube";
+import { DataCube, DataCubeJS, DataCubeValue } from "./data-cube";
+import { ClusterFixtures } from '../cluster/cluster.fixtures'
 
 var executor = basicExecutorFactory({
   datasets: {
@@ -107,5 +108,26 @@ export class DataCubeFixtures {
         rule: "realtime"
       }
     }, { executor });
+  }
+
+    static customCubeWithGuard(): DataCube {
+    return DataCube.fromJS({
+      name: "some-name",
+      title: "customDataCubeWithGuard",
+      description: "",
+      extendedDescription: "",
+      clusterName: "druid-custom",
+      source: "custom",
+      introspection: "none",
+      dimensions: [],
+      measures: [],
+      timeAttribute: "time",
+      defaultTimezone: "Etc/UTC",
+      defaultDuration: "P3D",
+      maxSplits: 4,
+      refreshRule: {
+        rule: "realtime"
+      }
+    }, { executor, cluster: ClusterFixtures.druidTwitterClusterJSWithGuard()});
   }
 }

@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-export function checkAccess(dataCube: any, req: any) {
-  var guard = dataCube.cluster.guardDataCubes || false;
+import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { Request } from "express";
+import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
+
+
+export function checkAccess(dataCube: DataCube, req: Request) {
+  var guard = dataCube && dataCube.cluster && dataCube.cluster.guardDataCubes || false;
 
   if (!guard) {
     return true;
-  }
-
-  if ("headers" in this) {
-    req =  this;
   }
 
   if (!("x-turnilo-allow-datacubes" in req.headers)) {
     return false;
   }
 
-  var allowed_datasources = (<string> req.headers["x-turnilo-allow-datacubes"]).split(",");
-  return  allowed_datasources.indexOf(dataCube.name) > -1 ||  allowed_datasources.indexOf("*") > -1;
+  const allowed_datasources = (req.headers["x-turnilo-allow-datacubes"] as string).split(",");
+  return  allowed_datasources.indexOf("*") > -1 || allowed_datasources.indexOf(dataCube.name) > -1;
+
 }
