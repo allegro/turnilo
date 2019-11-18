@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Stage } from "../../../common/models/stage/stage";
 import { firstUp } from "../../../common/utils/string/string";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
@@ -91,6 +90,10 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     [Scroller.LEFT_GUTTER, Scroller.BODY, Scroller.RIGHT_GUTTER],
     [Scroller.BOTTOM_LEFT_CORNER, Scroller.BOTTOM_GUTTER, Scroller.BOTTOM_RIGHT_CORNER]
   ];
+
+  private container = React.createRef<HTMLDivElement>();
+  // TODO: fix with React.forwardRef?
+  public scroller = React.createRef<HTMLDivElement>();
 
   constructor(props: ScrollerProps) {
     super(props);
@@ -212,10 +215,6 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     };
   }
 
-  private getDOMElement(refName: string): any {
-    return ReactDOM.findDOMNode(this.refs[refName]) as any;
-  }
-
   private onScroll = (e: React.UIEvent<HTMLElement>) => {
     const { bodyWidth, bodyHeight } = this.props.layout;
     const { viewportWidth, viewportHeight } = this.state;
@@ -239,7 +238,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
   getRelativeMouseCoordinates(event: React.MouseEvent<HTMLElement>): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
-    const container = this.getDOMElement("eventContainer");
+    const container = this.container.current;
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
     const rect = container.getBoundingClientRect();
 
@@ -334,7 +333,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   }
 
   updateViewport() {
-    const scroller = this.getDOMElement("Scroller");
+    const scroller = this.scroller.current;
     if (!scroller) return;
 
     const rect = scroller.getBoundingClientRect();
@@ -346,7 +345,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (this.state.viewportHeight !== newHeight || this.state.viewportWidth !== newWidth) {
       this.setState({ viewportHeight: newHeight, viewportWidth: newWidth });
 
-      const { x, y } = rect;
+      const { left: x, top: y } = rect;
       const { onViewportUpdate } = this.props;
 
       onViewportUpdate && onViewportUpdate(new Stage({ x, y, width: newWidth, height: newHeight }));
@@ -378,7 +377,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       }
     );
 
-    return <div className={scrollerClasses} ref="Scroller">
+    return <div className={scrollerClasses} ref={this.scroller}>
 
       <div className="body" style={this.getBodyStyle()}>{body}</div>
 
@@ -401,7 +400,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
       <div
         className={eventContainerClasses}
-        ref="eventContainer"
+        ref={this.container}
         onScroll={this.onScroll}
         onClick={this.onClick}
         onMouseMove={this.onMouseMove}

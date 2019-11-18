@@ -46,7 +46,7 @@ export default function normalizeStyles(source: StyleDefinition): React.CSSPrope
   };
   return {
     ...omitFalsyValues(dimensions),
-    "z-index": 200 + (isAboveAll ? 1 : 0),
-    "pointer-events": disablePointerEvents ? "none" : "auto"
+    zIndex: 200 + (isAboveAll ? 1 : 0),
+    pointerEvents: disablePointerEvents ? "none" : "auto"
   };
 }

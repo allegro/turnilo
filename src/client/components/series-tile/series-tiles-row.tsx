@@ -15,7 +15,6 @@
  */
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
@@ -54,6 +53,7 @@ interface SeriesTilesRowState {
 export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
 
   state: SeriesTilesRowState = {};
+  private items = React.createRef<HTMLDivElement>();
 
   private maxItems(): number {
     const { menuStage, essence: { series } } = this.props;
@@ -122,7 +122,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
     const numItems = essence.series.count();
-    const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
+    const rect = this.items.current.getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
     const position = DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
@@ -208,7 +208,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const { menuStage, essence } = this.props;
     return <div className="series-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.series}</div>
-      <div className="items" ref="items">
+      <div className="items" ref={this.items}>
         <SeriesTiles
           menuStage={menuStage}
           placeholderSeries={placeholderSeries}

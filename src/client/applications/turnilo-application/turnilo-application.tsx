@@ -385,12 +385,14 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    return <main className="turnilo-application">
-      {this.renderView()}
-      {this.renderSideDrawerTransition()}
-      {this.renderAboutModal()}
-      {this.renderNotifications()}
-      {this.renderQuestions()}
-    </main>;
+    return <React.StrictMode>
+      <main className="turnilo-application">
+        {this.renderView()}
+        {this.renderSideDrawerTransition()}
+        {this.renderAboutModal()}
+        {this.renderNotifications()}
+        {this.renderQuestions()}
+      </main>
+    </React.StrictMode>;
   }
 }

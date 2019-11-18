@@ -150,6 +150,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
+  private scroller = React.createRef<Scroller>();
 
   getDefaultState(): BarChartState {
     return { hoverInfo: null, maxNumberOfLeaves: [], flatData: [], ...super.getDefaultState() };
@@ -158,10 +159,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
   componentDidUpdate() {
     const { scrollerYPosition, scrollerXPosition } = this.state;
 
-    let node = ReactDOM.findDOMNode(this.refs["scroller"]);
-    if (!node) return;
+    let scrollerComponent = this.scroller.current;
+    if (!scrollerComponent) return;
 
-    const rect = node.getBoundingClientRect();
+    const rect = scrollerComponent.scroller.current.getBoundingClientRect();
 
     if (scrollerYPosition !== rect.top || scrollerXPosition !== rect.left) {
       this.setState({ scrollerYPosition: rect.top, scrollerXPosition: rect.left });
@@ -927,7 +928,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return <div className="internals measure-bar-charts" style={{ maxHeight: stage.height }}>
       <Scroller
         layout={scrollerLayout}
-        ref="scroller"
+        ref={this.scroller}
 
         bottomGutter={xAxis}
         rightGutter={rightGutter}
