@@ -78,7 +78,12 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   public selectValue(datum: Datum, period = SeriesDerivation.CURRENT): number {
-    return datum[this.plywoodKey(period)] as number;
+    const value = datum[this.plywoodKey(period)];
+    if (typeof value === "number") return value;
+    if (value === "NaN") return NaN;
+    if (value === "Infinity") return Infinity;
+    if (value === "-Infinity") return -Infinity;
+    return NaN;
   }
 
   /**

@@ -433,7 +433,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         }} />,
         hasComparison && <ChartLine {...{
           ...doubleSplitProps,
-          key: `multi-current-${i}`,
+          key: `multi-previous-${i}`,
           getY: getYP,
           dashed: true
         }} />
@@ -511,7 +511,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             ticks={xTicks}
             stage={lineStage}
           />
-          {isHoveredWithoutHighlight && this.renderHoverGuide(scale(0), lineStage)}
+          {scale && isHoveredWithoutHighlight && this.renderHoverGuide(scale(0), lineStage)}
           {scale && this.renderChartLines(splitData, isHoveredWithoutHighlight, lineStage, getY, getYP, scale)}
           {scale && this.renderVerticalAxis(scale, formatter, yAxisStage)}
           <line

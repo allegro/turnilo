@@ -191,6 +191,10 @@ function dimensionToYAML(dimension: Dimension): string[] {
     lines.push(`kind: ${dimension.kind}`);
   }
 
+  if (dimension.multiValue) {
+    lines.push("multiValue: true");
+  }
+
   lines.push(`formula: ${dimension.formula}`);
 
   lines.push("");
