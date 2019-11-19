@@ -44,10 +44,6 @@ const percentiles: Array<Preset<number>> = [
 
 export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesList, initialSeries, measure, series, onChange }) => {
 
-  function isSeriesValid(series: QuantileSeries) {
-    return validateSeries(series) === null;
-  }
-
   function validateSeries(series: QuantileSeries): string | null {
     if (series.percentile <= 0 || series.percentile >= 100) {
       return "Percentile must be a number between 0 and 100";
@@ -56,6 +52,10 @@ export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesL
       return "This percentile is already define for this measure";
     }
     return null;
+  }
+
+  function isSeriesValid(series: QuantileSeries) {
+    return validateSeries(series) === null;
   }
 
   function onSeriesChange(series: QuantileSeries) {

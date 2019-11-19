@@ -30,7 +30,7 @@ const quantileSeries = QuantileSeries.fromQuantileMeasure(quantileMeasure);
 describe("QuantileSeries", () => {
   describe("fromQuantileMeasure", () => {
     it("throws when measure expression is not a quantile", () => {
-      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount())).throws();
+      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount())).throws(/Expected QuantileExpression/);
     });
 
     it("creates QuantileSeries from Measure with quantile expression", () => {

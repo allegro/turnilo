@@ -25,7 +25,7 @@ export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "
 
 export abstract class ConcreteSeries<T extends Series = Series> {
 
-  protected constructor(public readonly definition: T, public readonly measure: Measure) {
+  constructor(public readonly definition: T, public readonly measure: Measure) {
   }
 
   public equals(other: ConcreteSeries): boolean {

@@ -20,7 +20,7 @@ import { InputWithPresets, InputWithPresetsProps } from "../input-with-presets/i
 
 type QuantilePickerProps = Omit<InputWithPresetsProps<number>, "parseCustomValue" | "formatCustomValue">;
 
-function parse(s: string): number | null {
+function parse(s: string): number {
   const n = parseFloat(s);
   return isNaN(n) ? 0 : n;
 }

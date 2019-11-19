@@ -62,8 +62,16 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
 
   // This will be called externally
   appendDirtySeries(series: Series) {
-    const index = this.props.essence.series.count();
-    this.setState({ placeholderSeries: { series, index } });
+    this.appendPlaceholder(series);
+  }
+
+  private appendPlaceholder(series: Series) {
+    this.setState({
+      placeholderSeries: {
+        series,
+        index: this.props.essence.series.count()
+      }
+    });
   }
 
   removePlaceholderSeries = () => this.setState({ placeholderSeries: null });
@@ -161,16 +169,16 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
 
   private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
     const { clicker, essence: { series } } = this.props;
-    const isSeriesValid = newSeries instanceof MeasureSeries || (newSeries instanceof QuantileSeries && !series.hasSeries(newSeries));
-    if (isSeriesValid) {
-      this.rearrangeSeries(newSeries, dragPosition);
-    } else {
+    const isDuplicateQuantile = newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
+    if (isDuplicateQuantile) {
       if (dragPosition.isReplace()) {
         clicker.removeSeries(series.series.get(dragPosition.replace));
         this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.replace } });
       } else {
         this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.insert } });
       }
+    } else {
+      this.rearrangeSeries(newSeries, dragPosition);
     }
   }
 
@@ -186,16 +194,13 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
 
   appendMeasureSeries = (measure: Measure) => {
     const series = fromMeasure(measure);
-    if (series instanceof MeasureSeries) {
+    const isMeasureSeries = series instanceof MeasureSeries;
+    const isUniqueQuantile = !this.props.essence.series.hasSeries(series);
+    if (isMeasureSeries || isUniqueQuantile) {
       this.props.clicker.addSeries(series);
       return;
     }
-    if (!this.props.essence.series.hasSeries(series)) {
-      this.props.clicker.addSeries(series);
-      return;
-    }
-    const index = this.props.essence.series.count();
-    this.setState({ placeholderSeries: { series, index } });
+    this.appendPlaceholder(series);
   }
 
   render() {

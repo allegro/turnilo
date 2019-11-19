@@ -476,7 +476,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   appendDirtySeries = (series: Series) => {
     if (!series) return;
-    (this.refs["seriesTile"] as SeriesTilesRow).appendDirtySeries(series);
+    (this.refs.seriesTile as SeriesTilesRow).appendDirtySeries(series);
   }
 
   changeTimezone = (newTimezone: Timezone) => {

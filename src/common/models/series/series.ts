@@ -43,11 +43,9 @@ export function fromMeasure(measure: Measure): MeasureSeries | QuantileSeries {
 
 function inferTypeAndConstruct({ expression }: Measure, params: any): MeasureSeries | QuantileSeries {
   if (expression instanceof QuantileExpression) {
-    const type = SeriesType.QUANTILE;
-    return QuantileSeries.fromJS({ ...params, type });
+    return QuantileSeries.fromJS({ ...params, type: SeriesType.QUANTILE });
   }
-  const type = SeriesType.MEASURE;
-  return MeasureSeries.fromJS({ ...params, type });
+  return MeasureSeries.fromJS({ ...params, type: SeriesType.MEASURE });
 }
 
 export function fromJS(params: any, measure: Measure): Series {
