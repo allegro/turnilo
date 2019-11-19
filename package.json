@@ -56,10 +56,8 @@
     "lint:ts": "tslint -p . --format verbose",
     "lint:sass": "sass-lint -v",
     "start:examples": "npm run start -- --examples",
-    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready cy:run",
-    "e2e:dev": "start-server-and-test start:examples http://localhost:9090/health/ready cy:open",
-    "cy:run": "cypress run",
-    "cy:open": "cypress open"
+    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
+    "e2e:dev": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress open'"
   },
   "dependencies": {
     "@sentry/browser": "5.0.6",
