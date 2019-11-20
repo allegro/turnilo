@@ -16,12 +16,40 @@
 
 import { SortDirection, SortType } from "../../models/sort/sort";
 import { SplitType } from "../../models/split/split";
-import { StringSplitDefinition } from "./split-definition";
+import { NumberSplitDefinition, StringSplitDefinition, TimeSplitDefinition } from "./split-definition";
 
 export class SplitDefinitionFixtures {
-  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection = SortDirection.descending, limit = 5): StringSplitDefinition {
+  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection = SortDirection.ascending, limit = 50): StringSplitDefinition {
     return {
       type: SplitType.string,
+      dimension,
+      sort: {
+        ref: sortOn,
+        direction: sortDirection,
+        type: sortOn === dimension ? SortType.DIMENSION : SortType.SERIES
+      },
+      limit
+    };
+  }
+
+  static timeSplitDefinition(dimension: string, granularity: string, sortOn: string, sortDirection = SortDirection.ascending, limit = 50): TimeSplitDefinition {
+    return {
+      granularity,
+      type: SplitType.time,
+      dimension,
+      sort: {
+        ref: sortOn,
+        direction: sortDirection,
+        type: sortOn === dimension ? SortType.DIMENSION : SortType.SERIES
+      },
+      limit
+    };
+  }
+
+  static numberSplitDefinition(dimension: string, granularity: number, sortOn: string, sortDirection = SortDirection.ascending, limit = 50): NumberSplitDefinition {
+    return {
+      granularity,
+      type: SplitType.number,
       dimension,
       sort: {
         ref: sortOn,

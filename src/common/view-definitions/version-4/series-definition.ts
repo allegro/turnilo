@@ -16,10 +16,29 @@
 
 import { Measures } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
+import { SeriesFormat } from "../../models/series/series-format";
+import { SeriesType } from "../../models/series/series-type";
 
-export interface SeriesDefinition {
+interface BaseSeriesDefinition {
   reference: string;
+  type?: SeriesType;
+  format?: SeriesFormat;
 }
+
+interface MeasureSeriesDefinition extends BaseSeriesDefinition {
+  type: SeriesType.MEASURE;
+}
+
+interface QuantileSeriesDefinition extends BaseSeriesDefinition {
+  type: SeriesType.QUANTILE;
+  percentile: number;
+}
+
+interface ExpressionSeriesDefinition extends BaseSeriesDefinition {
+  type: SeriesType.EXPRESSION;
+}
+
+export type SeriesDefinition = BaseSeriesDefinition | MeasureSeriesDefinition | QuantileSeriesDefinition | ExpressionSeriesDefinition;
 
 type SeriesDefinitionsList = SeriesDefinition[];
 

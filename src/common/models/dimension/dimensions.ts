@@ -59,6 +59,10 @@ export class Dimensions {
     return new Dimensions(parameters.map(dimensionOrGroupFromJS));
   }
 
+  static fromDimensions(dimensions: Dimension[]): Dimensions {
+    return new Dimensions(dimensions);
+  }
+
   private readonly dimensions: DimensionOrGroup[];
   private readonly flattenedDimensions: List<Dimension>;
 

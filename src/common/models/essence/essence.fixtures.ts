@@ -43,7 +43,6 @@ const defaultEssence: EssenceValue = {
   filter: new Filter({ clauses: List.of(new NumberFilterClause({ reference: "commentLength", values: List.of(new NumberRange({ start: 1, end: 100 })) })) }),
   colors: null,
   pinnedSort: null,
-  compare: null,
   highlight: null,
   splits: EMPTY_SPLITS,
   timeShift: TimeShift.empty(),
@@ -114,7 +113,6 @@ export class EssenceFixtures {
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: null,
       pinnedSort: "delta",
-      compare: null,
       highlight: null
     });
   }
@@ -143,7 +141,6 @@ export class EssenceFixtures {
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
-      compare: null,
       highlight: new Highlight({ measure: "count", delta: Filter.fromClauses(highlightClauses) })
     });
   }
