@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression } from "plywood";
-import { Measure } from "../measure/measure";
-import { ConcreteSeries } from "./concrete-series";
-import { MeasureSeries } from "./measure-series";
+import * as React from "react";
+import { identity, Omit } from "../../../common/utils/functional/functional";
+import { InputWithPresets, InputWithPresetsProps } from "./input-with-presets";
 
-export function fromMeasure(measure: Measure): MeasureConcreteSeries {
-  return new MeasureConcreteSeries(MeasureSeries.fromMeasure(measure), measure);
-}
+type StringInputWithPresetsProps = Omit<InputWithPresetsProps<string>, "parseCustomValue" | "formatCustomValue">;
 
-export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
-
-  protected applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
-    return new ApplyExpression({ expression, name });
-  }
-}
+export const StringInputWithPresets: React.SFC<StringInputWithPresetsProps> = props =>
+  <InputWithPresets<string> {...props} parseCustomValue={identity} formatCustomValue={identity} />;

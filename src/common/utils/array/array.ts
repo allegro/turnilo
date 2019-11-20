@@ -30,6 +30,10 @@ export function indexByAttribute(array: any[], key: string, value: string): any 
   return -1;
 }
 
+export function insert<T>(array: T[], index: number, element: T): T[] {
+  return [...array.slice(0, index), element, ...array.slice(index)];
+}
+
 export function shallowEqualArrays(a: Array<unknown>, b: Array<unknown>): boolean {
   if (a === b) return true;
   if (!a || !b) return false;

@@ -22,7 +22,7 @@ import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
-import { InputWithPresets } from "../../input-with-presets/input-with-presets";
+import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
 import { COMPARISON_PRESETS } from "./presets";
 
 function timeShiftPreviewForRange({ shiftValue, time, timezone }: Pick<TimeShiftSelectorProps, "shiftValue" | "time" | "timezone">): string {
@@ -53,7 +53,7 @@ export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {
   }));
 
   return <React.Fragment>
-    <InputWithPresets
+    <StringInputWithPresets
       title={STRINGS.timeShift}
       presets={presets}
       selected={selectedTimeShift}

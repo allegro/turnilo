@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression } from "plywood";
-import { Measure } from "../measure/measure";
-import { ConcreteSeries } from "./concrete-series";
-import { MeasureSeries } from "./measure-series";
-
-export function fromMeasure(measure: Measure): MeasureConcreteSeries {
-  return new MeasureConcreteSeries(MeasureSeries.fromMeasure(measure), measure);
-}
-
-export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
-
-  protected applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
-    return new ApplyExpression({ expression, name });
-  }
+.percentile-picker {
+  margin-bottom: 12px;
 }

@@ -49,7 +49,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
-    const series = seriesDefinitionConverter.toEssenceSeries(definition.series);
+    const series = seriesDefinitionConverter.toEssenceSeries(definition.series, dataCube.measures);
     const highlight = definition.highlight && highlightConverter(dataCube)
       .toHighlight(definition.highlight);
 

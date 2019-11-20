@@ -126,6 +126,10 @@ export class Measures {
     return this.flattenedMeasures.filter(predicate).toArray();
   }
 
+  getMeasuresByNames(names: string[]): Measure[] {
+    return names.map(name => this.getMeasureByName(name));
+  }
+
   forEachMeasure(sideEffect: (measure: Measure) => void): void {
     this.flattenedMeasures.forEach(sideEffect);
   }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Measures } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 
 export interface SeriesDefinition {
@@ -25,12 +26,12 @@ type SeriesDefinitionsList = SeriesDefinition[];
 export interface SeriesDefinitionConverter {
   fromEssenceSeries(series: SeriesList): SeriesDefinitionsList;
 
-  toEssenceSeries(seriesDefs: SeriesDefinitionsList): SeriesList;
+  toEssenceSeries(seriesDefs: SeriesDefinitionsList, measures: Measures): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
   fromEssenceSeries: (seriesList: SeriesList) =>
     seriesList.series.toArray().map(series => series.toJS()),
-  toEssenceSeries: (seriesDefs: SeriesDefinitionsList) =>
-    SeriesList.fromJS(seriesDefs)
+  toEssenceSeries: (seriesDefs: SeriesDefinitionsList, measures: Measures) =>
+    SeriesList.fromJS(seriesDefs, measures)
 };

@@ -184,8 +184,13 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return Measure.hasCountDistinctReferences(this.expression) || Measure.hasQuantileReferences(this.expression);
   }
 
+  public isQuantile() {
+    return this.expression instanceof QuantileExpression;
+  }
+
   // Default getter from ImmutableValue
   public getFormat: () => string;
+
 }
 
 BaseImmutable.finalize(Measure);
