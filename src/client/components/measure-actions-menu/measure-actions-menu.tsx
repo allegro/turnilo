@@ -27,6 +27,7 @@ import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
 import { AddMeasureSeriesButton } from "./add-measure-series";
 import { AddPercentSeriesButton } from "./add-percent-series";
+import { AddQuantileSeriesButton } from "./add-quantile-series";
 import "./measure-actions-menu.scss";
 
 const ACTION_HEIGHT = 50;
@@ -40,7 +41,7 @@ export interface MeasureActionsMenuProps {
 }
 
 export interface MeasureActionsProps {
-  newExpression: Unary<ExpressionSeries, void>;
+  appendDirtySeries: Unary<Series, void>;
   addSeries: Unary<Series, void>;
   series: SeriesList;
   measure: Measure;
@@ -48,34 +49,67 @@ export interface MeasureActionsProps {
 }
 
 export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = props => {
-  const { newExpression, series, addSeries, direction, containerStage, openOn, measure, onClose } = props;
+  const { direction, containerStage, openOn, measure, onClose } = props;
   if (!measure) return null;
+
+  const actions = measureActions(props);
 
   return <BubbleMenu
     className="measure-actions-menu"
     direction={direction}
     containerStage={containerStage}
-    stage={Stage.fromSize(MENU_PADDING + ACTION_WIDTH * 3, ACTION_HEIGHT + MENU_PADDING)}
+    stage={Stage.fromSize(MENU_PADDING + ACTION_WIDTH * actions.length, ACTION_HEIGHT + MENU_PADDING)}
     fixedSize={true}
     openOn={openOn}
     onClose={onClose}
   >
-    <MeasureActions
-      series={series}
-      onClose={onClose}
-      addSeries={addSeries}
-      newExpression={newExpression}
-      measure={measure}
-    />
+    {actions}
   </BubbleMenu>;
 };
 
-export const MeasureActions: React.SFC<MeasureActionsProps> = props => {
-  const { series, measure, onClose, addSeries, newExpression } = props;
+function measureActions(props: MeasureActionsProps): JSX.Element[] {
+  const { series, measure, onClose, addSeries, appendDirtySeries } = props;
 
-  return <React.Fragment>
-    <AddMeasureSeriesButton addSeries={addSeries} series={series} measure={measure} onClose={onClose} />
-    <AddPercentSeriesButton addSeries={addSeries} measure={measure} onClose={onClose} series={series} />
-    <AddArithmeticOperationButton addExpressionPlaceholder={newExpression} measure={measure} onClose={onClose} />
-  </React.Fragment>;
-};
+  if (measure.isQuantile()) {
+    return [
+      <AddQuantileSeriesButton
+        key="Add"
+        addSeries={addSeries}
+        appendDirtySeries={appendDirtySeries}
+        measure={measure}
+        series={series}
+        onClose={onClose} />
+    ];
+  }
+
+  if (measure.isApproximate()) {
+    return [
+      <AddMeasureSeriesButton
+        key="Add"
+        addSeries={addSeries}
+        series={series}
+        measure={measure}
+        onClose={onClose} />
+    ];
+  }
+
+  return [
+    <AddMeasureSeriesButton
+      key="Add"
+      addSeries={addSeries}
+      series={series}
+      measure={measure}
+      onClose={onClose} />,
+    <AddPercentSeriesButton
+      key="Percent"
+      addSeries={addSeries}
+      measure={measure}
+      onClose={onClose}
+      series={series} />,
+    <AddArithmeticOperationButton
+      key="Arithmetic"
+      addExpressionPlaceholder={appendDirtySeries}
+      measure={measure}
+      onClose={onClose} />
+  ];
+}

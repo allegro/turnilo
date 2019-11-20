@@ -37,7 +37,7 @@ export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  newExpression: Unary<Series, void>;
+  appendDirtySeries: Unary<Series, void>;
   style?: React.CSSProperties;
 }
 
@@ -177,12 +177,12 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   }
 
   private renderMenu() {
-    const { essence, newExpression, menuStage } = this.props;
+    const { essence, appendDirtySeries, menuStage } = this.props;
     const { menuOpenOn, menuMeasure } = this.state;
     if (!menuMeasure) return null;
 
     return <MeasureActionsMenu
-      newExpression={newExpression}
+      appendDirtySeries={appendDirtySeries}
       addSeries={this.addSeries}
       series={essence.series}
       direction="right"

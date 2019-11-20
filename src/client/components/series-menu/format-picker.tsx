@@ -19,7 +19,7 @@ import { Measure } from "../../../common/models/measure/measure";
 import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, exactFormat, PERCENT_FORMAT, percentFormat, SeriesFormat, seriesFormatter, SeriesFormatType } from "../../../common/models/series/series-format";
 import { concatTruthy, Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
-import { InputWithPresets, Preset } from "../input-with-presets/input-with-presets";
+import { StringInputWithPresets } from "../input-with-presets/string-input-with-presets";
 
 const PREVIEW_VALUE = 23667.25431;
 
@@ -58,7 +58,7 @@ function printFormat(format: SeriesFormat, measureFormat: string): string {
 export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, formatChange }) => {
   const measureFormat = measure.getFormat();
 
-  const formatPresets: Preset[] = concatTruthy(
+  const formatPresets = concatTruthy(
     { name: "Default", identity: measureFormat },
     measureFormat !== exactFormat && { name: "Exact", identity: exactFormat },
     { name: "Percent", identity: percentFormat }
@@ -69,7 +69,7 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, fo
   }
 
   return <React.Fragment>
-    <InputWithPresets
+    <StringInputWithPresets
       presets={formatPresets}
       title={STRINGS.format}
       selected={printFormat(format, measureFormat)}
