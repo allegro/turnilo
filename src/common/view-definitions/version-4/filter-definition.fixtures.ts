@@ -23,56 +23,54 @@ import {
   TimeFilterClauseDefinition
 } from "./filter-definition";
 
-export class FilterDefinitionFixtures {
-  static booleanFilterDefinition(ref: string, values: boolean[], not = false): BooleanFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.boolean,
-      not,
-      values
-    };
-  }
+export function booleanFilterDefinition(ref: string, values: boolean[], not = false): BooleanFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.boolean,
+    not,
+    values
+  };
+}
 
-  static stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.string,
-      action,
-      not,
-      values
-    };
-  }
+export function stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.string,
+    action,
+    not,
+    values
+  };
+}
 
-  static numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", not = false): NumberFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.number,
-      not,
-      ranges: [{ start, end, bounds }]
-    };
-  }
+export function numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", not = false): NumberFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.number,
+    not,
+    ranges: [{ start, end, bounds }]
+  };
+}
 
-  static timeRangeFilterDefinition(ref: string, start: string, end: string): TimeFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.time,
-      timeRanges: [{ start, end }]
-    };
-  }
+export function timeRangeFilterDefinition(ref: string, start: string, end: string): TimeFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.time,
+    timeRanges: [{ start, end }]
+  };
+}
 
-  static latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.time,
-      timePeriods: [{ type: "latest", duration, step: multiple }]
-    };
-  }
+export function latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.time,
+    timePeriods: [{ type: "latest", duration, step: multiple }]
+  };
+}
 
-  static flooredTimeFilterDefinition(ref: string, step: number, duration: string): TimeFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.time,
-      timePeriods: [{ type: "floored", duration, step }]
-    };
-  }
+export function flooredTimeFilterDefinition(ref: string, step: number, duration: string): TimeFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.time,
+    timePeriods: [{ type: "floored", duration, step }]
+  };
 }

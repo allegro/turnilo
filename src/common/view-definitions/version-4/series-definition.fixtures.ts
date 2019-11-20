@@ -18,25 +18,23 @@ import { DEFAULT_FORMAT, SeriesFormat } from "../../models/series/series-format"
 import { SeriesType } from "../../models/series/series-type";
 import { SeriesDefinition } from "./series-definition";
 
-export class SeriesDefinitionFixtures {
-  static fromReference(reference: string): SeriesDefinition {
-    return { reference };
-  }
+export function fromReference(reference: string): SeriesDefinition {
+  return { reference };
+}
 
-  static measureSeriesDefinition(reference: string, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
-    return {
-      reference,
-      format,
-      type: SeriesType.MEASURE
-    };
-  }
+export function measureSeriesDefinition(reference: string, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
+  return {
+    reference,
+    format,
+    type: SeriesType.MEASURE
+  };
+}
 
-  static quantileSeriesDefinition(reference: string, percentile = 95, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
-    return {
-      reference,
-      format,
-      percentile,
-      type: SeriesType.QUANTILE
-    };
-  }
+export function quantileSeriesDefinition(reference: string, percentile = 95, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
+  return {
+    reference,
+    format,
+    percentile,
+    type: SeriesType.QUANTILE
+  };
 }

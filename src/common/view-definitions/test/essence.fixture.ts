@@ -58,7 +58,7 @@ const defaults: EssenceOptions = {
   visualization: TOTALS_MANIFEST
 };
 
-export function essence(opts: Partial<EssenceOptions> = {}) {
+export function mockEssence(opts: Partial<EssenceOptions> = {}) {
   return new Essence({
     dataCube,
     visualizations: MANIFESTS,

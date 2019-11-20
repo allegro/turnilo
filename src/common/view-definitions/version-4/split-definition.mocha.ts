@@ -17,9 +17,9 @@
 import { expect } from "chai";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { SeriesSort, SortDirection } from "../../models/sort/sort";
-import { SplitFixtures } from "../../models/split/split.fixtures";
+import { stringSplitCombine } from "../../models/split/split.fixtures";
 import { splitConverter } from "./split-definition";
-import { SplitDefinitionFixtures } from "./split-definition.fixtures";
+import { stringSplitDefinition } from "./split-definition.fixtures";
 
 describe("SplitDefinition v4", () => {
   describe("string split conversion", () => {
@@ -30,9 +30,9 @@ describe("SplitDefinition v4", () => {
 
     stringSplitTests.forEach(({ dimension, sortOn, sortDirection, limit }) => {
       it(`should convert model sorted ${sortDirection} on ${sortOn} with limit ${limit}`, () => {
-        const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn, sortDirection, limit);
+        const splitDefinition = stringSplitDefinition(dimension, sortOn, sortDirection, limit);
         const splitCombine = splitConverter.toSplitCombine(splitDefinition);
-        const expectedSplitCombine = SplitFixtures.stringSplitCombine(dimension, sortOn, sortDirection, limit);
+        const expectedSplitCombine = stringSplitCombine(dimension, sortOn, sortDirection, limit);
 
         expect(splitCombine.toJS()).to.deep.equal(expectedSplitCombine.toJS());
       });
@@ -47,7 +47,7 @@ describe("SplitDefinition v4", () => {
 
     legacySorts.forEach(({ dimension, sortOn, expectedReference, expectedPeriod }) => {
       it(`should infer period correctly for ${sortOn}`, () => {
-        const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn);
+        const splitDefinition = stringSplitDefinition(dimension, sortOn);
         const splitCombine = splitConverter.toSplitCombine(splitDefinition);
         const { sort } = splitCombine;
 

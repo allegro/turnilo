@@ -16,11 +16,11 @@
 
 import { Timezone } from "chronoshift";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
-import { FilterDefinitionFixtures } from "./filter-definition.fixtures";
+import { flooredTimeFilterDefinition } from "./filter-definition.fixtures";
 import { ViewDefinition4 } from "./view-definition-4";
 
 const defaults: ViewDefinition4 = {
-  filters: [FilterDefinitionFixtures.flooredTimeFilterDefinition("time", -1, "P1D")],
+  filters: [flooredTimeFilterDefinition("time", -1, "P1D")],
   splits: [],
   series: [{ reference: "count" }, { reference: "sum" }],
   pinnedDimensions: ["string_a"],
@@ -28,6 +28,6 @@ const defaults: ViewDefinition4 = {
   visualization: TOTALS_MANIFEST.name
 };
 
-export function viewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
+export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
   return { ...defaults, ...opts };
 }

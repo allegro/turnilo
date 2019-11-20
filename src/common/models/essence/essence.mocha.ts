@@ -25,7 +25,7 @@ import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { DimensionKind } from "../dimension/dimension";
 import { Highlight } from "../highlight/highlight";
-import { HighlightFixtures } from "../highlight/highlight.fixtures";
+import { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SeriesList } from "../series-list/series-list";
 import { MeasureSeries } from "../series/measure-series";
@@ -78,8 +78,6 @@ describe("EssenceProps", () => {
   const dataCube = DataCube.fromJS(dataCubeJS);
 
   describe("removes highlight when necessary", () => {
-    const { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } = HighlightFixtures;
-
     const tests: Array<{ highlight: Highlight, expected: Highlight, description: string }> = [
       { highlight: lineChartWithAddedMeasure(), expected: lineChartWithAddedMeasure(), description: "is kept when measure is selected" },
       { highlight: tableNoMeasure(), expected: tableNoMeasure(), description: "is kept when contains no measure" },

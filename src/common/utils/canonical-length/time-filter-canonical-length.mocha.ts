@@ -18,7 +18,7 @@ import { day, month } from "chronoshift";
 import { List } from "immutable";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
-import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
+import { timePeriod } from "../../models/filter-clause/filter-clause.fixtures";
 import { Filter } from "../../models/filter/filter";
 import { TimekeeperFixtures } from "../../models/timekeeper/timekeeper.fixtures";
 import timeFilterCanonicalLength from "./time-filter-canonical-length";
@@ -33,7 +33,7 @@ describe("Time filter canonical length", () => {
 
   it("returns canonical length of time filter for one month", () => {
     const essence = EssenceFixtures.wikiTable();
-    const oneMonthTimeClause = FilterClauseFixtures.timePeriod("time", "P1M", TimeFilterPeriod.CURRENT);
+    const oneMonthTimeClause = timePeriod("time", "P1M", TimeFilterPeriod.CURRENT);
     const oneMonthFilter = new Filter({ clauses: List.of(oneMonthTimeClause) });
     const essenceWithOneMonthFilter = essence.changeFilter(oneMonthFilter);
     expect(timeFilterCanonicalLength(essenceWithOneMonthFilter, timekeeper)).to.equal(month.canonicalLength);

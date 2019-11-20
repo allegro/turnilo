@@ -18,19 +18,17 @@ import { MeasureSeries } from "./measure-series";
 import { QuantileSeries } from "./quantile-series";
 import { DEFAULT_FORMAT } from "./series-format";
 
-export class SeriesFixtures {
-  static measureSeries(reference: string, format = DEFAULT_FORMAT): MeasureSeries {
-    return new MeasureSeries({
-      reference,
-      format
-    });
-  }
+export function measureSeries(reference: string, format = DEFAULT_FORMAT): MeasureSeries {
+  return new MeasureSeries({
+    reference,
+    format
+  });
+}
 
-  static quantileSeries(reference: string, percentile = 95, format = DEFAULT_FORMAT): QuantileSeries {
-    return new QuantileSeries({
-      reference,
-      percentile,
-      format
-    });
-  }
+export function quantileSeries(reference: string, percentile = 95, format = DEFAULT_FORMAT): QuantileSeries {
+  return new QuantileSeries({
+    reference,
+    percentile,
+    format
+  });
 }

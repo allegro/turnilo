@@ -24,33 +24,30 @@ const createSort = (isDimension: boolean, reference: string, direction: SortDire
   return new SeriesSort({ reference, direction });
 };
 
-export class SplitFixtures {
+export function stringSplitCombine(dimension: string, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
+  return new Split({
+    reference: dimension,
+    sort: createSort(dimension === sortOn, sortOn, direction),
+    limit
+  });
+}
 
-  static stringSplitCombine(dimension: string, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
-    return new Split({
-      reference: dimension,
-      sort: createSort(dimension === sortOn, sortOn, direction),
-      limit
-    });
-  }
+export function numberSplitCombine(dimension: string, granularity = 100, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
+  return new Split({
+    type: SplitType.number,
+    reference: dimension,
+    bucket: granularity,
+    sort: createSort(dimension === sortOn, sortOn, direction),
+    limit
+  });
+}
 
-  static numberSplitCombine(dimension: string, granularity = 100, sortOn = dimension, direction = SortDirection.descending, limit = 50): Split {
-    return new Split({
-      type: SplitType.number,
-      reference: dimension,
-      bucket: granularity,
-      sort: createSort(dimension === sortOn, sortOn, direction),
-      limit
-    });
-  }
-
-  static timeSplitCombine(dimension: string, granularity = "PT1H", sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
-    return new Split({
-      type: SplitType.time,
-      reference: dimension,
-      bucket: Duration.fromJS(granularity),
-      sort: createSort(dimension === sortOn, sortOn, direction),
-      limit
-    });
-  }
+export function timeSplitCombine(dimension: string, granularity = "PT1H", sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
+  return new Split({
+    type: SplitType.time,
+    reference: dimension,
+    bucket: Duration.fromJS(granularity),
+    sort: createSort(dimension === sortOn, sortOn, direction),
+    limit
+  });
 }

@@ -14,32 +14,30 @@
  * limitations under the License.
  */
 
-import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
+import { stringIn } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "./highlight";
 
-export class HighlightFixtures {
-  static tableNoMeasure(): Highlight {
-    const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
-    return new Highlight({
-      measure: null,
-      delta: Filter.fromClause(channelInFilterClause)
-    });
-  }
+export function tableNoMeasure(): Highlight {
+  const channelInFilterClause = stringIn("channel", ["en"]);
+  return new Highlight({
+    measure: null,
+    delta: Filter.fromClause(channelInFilterClause)
+  });
+}
 
-  static lineChartWithAvgAddedMeasure(): Highlight {
-    const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
-    return new Highlight({
-      measure: "avg_added",
-      delta: Filter.fromClause(channelInFilterClause)
-    });
-  }
+export function lineChartWithAvgAddedMeasure(): Highlight {
+  const channelInFilterClause = stringIn("channel", ["en"]);
+  return new Highlight({
+    measure: "avg_added",
+    delta: Filter.fromClause(channelInFilterClause)
+  });
+}
 
-  static lineChartWithAddedMeasure(): Highlight {
-    const channelInFilterClause = FilterClauseFixtures.stringIn("channel", ["en"]);
-    return new Highlight({
-      measure: "added",
-      delta: Filter.fromClause(channelInFilterClause)
-    });
-  }
+export function lineChartWithAddedMeasure(): Highlight {
+  const channelInFilterClause = stringIn("channel", ["en"]);
+  return new Highlight({
+    measure: "added",
+    delta: Filter.fromClause(channelInFilterClause)
+  });
 }
