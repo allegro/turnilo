@@ -34,7 +34,7 @@ export class SplitFixtures {
     });
   }
 
-  static numberSplitCombine(dimension: string, granularity = 100, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
+  static numberSplitCombine(dimension: string, granularity = 100, sortOn = dimension, direction = SortDirection.descending, limit = 50): Split {
     return new Split({
       type: SplitType.number,
       reference: dimension,
