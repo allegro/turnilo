@@ -22,12 +22,14 @@ import { SeriesList } from "../../models/series-list/series-list";
 import { PERCENT_FORMAT } from "../../models/series/series-format";
 import { measureSeries, quantileSeries } from "../../models/series/series.fixtures";
 import { SortDirection } from "../../models/sort/sort";
+import { Split } from "../../models/split/split";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../../models/split/split.fixtures";
 import { Splits } from "../../models/splits/splits";
 import { dataCube } from "../test/data-cube.fixture";
 import { mockEssence } from "../test/essence.fixture";
 import { count, quantile, sum } from "../test/measure";
 import { fromReference, measureSeriesDefinition, quantileSeriesDefinition } from "./series-definition.fixtures";
+import { SplitDefinition } from "./split-definition";
 import { numberSplitDefinition, stringSplitDefinition, timeSplitDefinition } from "./split-definition.fixtures";
 import { ViewDefinition4 } from "./view-definition-4";
 import { mockViewDefinition } from "./view-definition-4.fixture";
@@ -45,6 +47,10 @@ function assertEqlEssence(actual: Essence, expected: Essence) {
   }
 }
 
+function assertConversionToEssence(viewDef: ViewDefinition4, essence: Essence) {
+  assertEqlEssence(toEssence(viewDef), essence);
+}
+
 function assertEqlEssenceWithoutVisResolve(actual: Essence, expected: Essence) {
   assertEqlEssence(actual.set("visResolve", null), expected.set("visResolve", null));
 }
@@ -59,118 +65,64 @@ describe("ViewDefinitionConverter4", () => {
   });
 
   describe("Splits", () => {
+    const mockViewDefinitionWithSplits = (...splits: SplitDefinition[]) =>
+      mockViewDefinition({ splits, visualization: TABLE_MANIFEST.name });
+
+    const mockEssenceWithSplits = (...splits: Split[]) =>
+      mockEssence({ splits: Splits.fromSplits(splits), visualization: TABLE_MANIFEST });
+
     it("reads string split", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [stringSplitDefinition("string_a")],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(stringSplitCombine("string_a")),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(stringSplitDefinition("string_a")),
+        mockEssenceWithSplits(stringSplitCombine("string_a")));
     });
 
-    it("reads string split with sort", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [stringSplitDefinition("string_a", "count")],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(stringSplitCombine("string_a", "count")),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+    it("reads string split with sort on measure", () => {
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "count")),
+        mockEssenceWithSplits(stringSplitCombine("string_a", "count")));
     });
 
     it("reads string split with descending sort", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [stringSplitDefinition("string_a", "count", SortDirection.descending)],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(stringSplitCombine("string_a", "count", SortDirection.descending)),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "string_a", SortDirection.descending)),
+        mockEssenceWithSplits(stringSplitCombine("string_a", "string_a", SortDirection.descending)));
     });
 
     it("reads string split with limit", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [stringSplitDefinition("string_a", "string_a", SortDirection.descending, 10)],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(stringSplitCombine("string_a", "string_a", SortDirection.descending, 10)),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "string_a", SortDirection.descending, 10)),
+        mockEssenceWithSplits(stringSplitCombine("string_a", "string_a", SortDirection.descending, 10)));
     });
 
     it("reads time split", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [timeSplitDefinition("time", "P1D")],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(timeSplitCombine("time", "P1D")),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(timeSplitDefinition("time", "P1D")),
+        mockEssenceWithSplits(timeSplitCombine("time", "P1D")));
     });
 
     it("reads time split with granularity", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [timeSplitDefinition("time", "PT2M")],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(timeSplitCombine("time", "PT2M")),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(timeSplitDefinition("time", "PT2M")),
+        mockEssenceWithSplits(timeSplitCombine("time", "PT2M")));
     });
 
     it("reads number split", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [numberSplitDefinition("numeric", 100)],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(numberSplitCombine("numeric", 100)),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(numberSplitDefinition("numeric", 100)),
+        mockEssenceWithSplits(numberSplitCombine("numeric", 100)));
     });
 
     it("omits split on non existing dimension", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [
-          stringSplitDefinition("string_a"),
-          stringSplitDefinition("foobar-dimension")
-        ],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(stringSplitCombine("string_a")),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(stringSplitDefinition("string_a"), stringSplitDefinition("foobar-dimension")),
+        mockEssenceWithSplits(stringSplitCombine("string_a")));
     });
 
     it("omits dimension with non existing sort reference", () => {
-      const result = toEssence(mockViewDefinition({
-        splits: [
-          stringSplitDefinition("string_a"),
-          stringSplitDefinition("string_b", "foobar-dimension")
-        ],
-        visualization: TABLE_MANIFEST.name
-      }));
-      const expected = mockEssence({
-        splits: Splits.fromSplit(stringSplitCombine("string_a")),
-        visualization: TABLE_MANIFEST
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSplits(stringSplitDefinition("string_a"), stringSplitDefinition("string_b", "foobar-dimension")),
+        mockEssenceWithSplits(stringSplitCombine("string_a")));
     });
   });
 
