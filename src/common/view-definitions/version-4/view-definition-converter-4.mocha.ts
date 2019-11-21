@@ -19,6 +19,7 @@ import { MANIFESTS } from "../../manifests";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { Essence } from "../../models/essence/essence";
 import { SeriesList } from "../../models/series-list/series-list";
+import { Series } from "../../models/series/series";
 import { PERCENT_FORMAT } from "../../models/series/series-format";
 import { measureSeries, quantileSeries } from "../../models/series/series.fixtures";
 import { SortDirection } from "../../models/sort/sort";
@@ -28,6 +29,7 @@ import { Splits } from "../../models/splits/splits";
 import { dataCube } from "../test/data-cube.fixture";
 import { mockEssence } from "../test/essence.fixture";
 import { count, quantile, sum } from "../test/measure";
+import { SeriesDefinition } from "./series-definition";
 import { fromReference, measureSeriesDefinition, quantileSeriesDefinition } from "./series-definition.fixtures";
 import { SplitDefinition } from "./split-definition";
 import { numberSplitDefinition, stringSplitDefinition, timeSplitDefinition } from "./split-definition.fixtures";
@@ -127,80 +129,52 @@ describe("ViewDefinitionConverter4", () => {
   });
 
   describe("Series", () => {
+    const mockViewDefinitionWithSeries = (...series: SeriesDefinition[]) =>
+      mockViewDefinition({ series });
+
+    const mockEssenceWithSeries = (...series: Series[]) =>
+      mockEssence({ series: SeriesList.fromSeries(series) });
+
     it("reads simple series", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [fromReference("count")]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([measureSeries("count")])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(fromReference("count")),
+        mockEssenceWithSeries(measureSeries("count")));
     });
 
     it("reads multiple simple series", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [
-          fromReference("count"),
-          fromReference("sum")
-        ]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([
-          measureSeries("count"),
-          measureSeries("sum")
-        ])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(fromReference("count"), fromReference("sum")),
+        mockEssenceWithSeries(measureSeries("count"), measureSeries("sum")));
     });
 
     it("reads measure series", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [measureSeriesDefinition("sum")]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([measureSeries("sum")])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(measureSeriesDefinition("count")),
+        mockEssenceWithSeries(measureSeries("count")));
     });
 
     it("reads measure series with custom format", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [measureSeriesDefinition("sum", PERCENT_FORMAT)]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([measureSeries("sum", PERCENT_FORMAT)])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(measureSeriesDefinition("sum", PERCENT_FORMAT)),
+        mockEssenceWithSeries(measureSeries("sum", PERCENT_FORMAT)));
     });
 
     it("reads quantile series", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [quantileSeriesDefinition("quantile")]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([quantileSeries("quantile")])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile")),
+        mockEssenceWithSeries(quantileSeries("quantile")));
     });
 
     it("reads quantile series with custom percentile", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [quantileSeriesDefinition("quantile", 90)]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([quantileSeries("quantile", 90)])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile", 90)),
+        mockEssenceWithSeries(quantileSeries("quantile", 90)));
     });
 
     it("infers quantile series from reference to measure that has quantile expression", () => {
-      const result = toEssence(mockViewDefinition({
-        series: [fromReference("quantile")]
-      }));
-      const expected = mockEssence({
-        series: SeriesList.fromSeries([quantileSeries("quantile")])
-      });
-      assertEqlEssence(result, expected);
+      assertConversionToEssence(
+        mockViewDefinitionWithSeries(fromReference("quantile")),
+        mockEssenceWithSeries(quantileSeries("quantile")));
     });
   });
 });
