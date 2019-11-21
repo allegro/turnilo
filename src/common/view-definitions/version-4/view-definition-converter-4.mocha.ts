@@ -174,7 +174,7 @@ describe("ViewDefinitionConverter4", () => {
         const viewDefinition = mockViewDefinitionWithSplits(stringSplitDefinition("foobar-dimension"));
         const essence = mockEssenceWithSplits();
         const resultEssence = toEssence(viewDefinition);
-        assertEqlEssence(resultEssence, essence);
+        assertEqlEssenceWithoutVisResolve(resultEssence, essence);
         // TODO:
         /*
           Currently we run visResolve before constraining splits
