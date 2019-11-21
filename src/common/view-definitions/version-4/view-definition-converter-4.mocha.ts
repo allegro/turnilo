@@ -59,7 +59,7 @@ function assertEqlEssenceWithoutVisResolve(actual: Essence, expected: Essence) {
 
 describe("ViewDefinitionConverter4", () => {
   describe("Base case", () => {
-    it("converts to default essence", () => {
+    it("converts base view definition mock to base essence mock", () => {
       const result = toEssence(mockViewDefinition());
       const expected = mockEssence();
       assertEqlEssence(result, expected);
@@ -73,58 +73,116 @@ describe("ViewDefinitionConverter4", () => {
     const mockEssenceWithSplits = (...splits: Split[]) =>
       mockEssence({ splits: Splits.fromSplits(splits), visualization: TABLE_MANIFEST });
 
-    it("reads string split", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(stringSplitDefinition("string_a")),
-        mockEssenceWithSplits(stringSplitCombine("string_a")));
+    describe("String Dimensions", () => {
+      it("reads basic split", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(stringSplitDefinition("string_a")),
+          mockEssenceWithSplits(stringSplitCombine("string_a")));
+      });
+
+      it("reads split with sort on measure", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "count")),
+          mockEssenceWithSplits(stringSplitCombine("string_a", "count")));
+      });
+
+      it("reads split with descending sort", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "string_a", SortDirection.descending)),
+          mockEssenceWithSplits(stringSplitCombine("string_a", "string_a", SortDirection.descending)));
+      });
+
+      it("reads split with limit", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "string_a", SortDirection.descending, 10)),
+          mockEssenceWithSplits(stringSplitCombine("string_a", "string_a", SortDirection.descending, 10)));
+      });
     });
 
-    it("reads string split with sort on measure", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "count")),
-        mockEssenceWithSplits(stringSplitCombine("string_a", "count")));
+    describe("Time Dimension", () => {
+      it("reads basic split", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(timeSplitDefinition("time", "P1D")),
+          mockEssenceWithSplits(timeSplitCombine("time", "P1D")));
+      });
+
+      it("reads split with granularity", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(timeSplitDefinition("time", "PT2M")),
+          mockEssenceWithSplits(timeSplitCombine("time", "PT2M")));
+      });
+
+      it("reads split with sort on measure", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(timeSplitDefinition("time", "P1D", "count")),
+          mockEssenceWithSplits(timeSplitCombine("time", "P1D", "count")));
+      });
+
+      it("reads split with descending sort", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(timeSplitDefinition("time", "P1D", "time", SortDirection.descending)),
+          mockEssenceWithSplits(timeSplitCombine("time", "P1D", "time", SortDirection.descending)));
+      });
+
+      it("reads split with limit", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(timeSplitDefinition("time", "P1D", "time", SortDirection.descending, 10)),
+          mockEssenceWithSplits(timeSplitCombine("time", "P1D", "time", SortDirection.descending, 10)));
+      });
     });
 
-    it("reads string split with descending sort", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "string_a", SortDirection.descending)),
-        mockEssenceWithSplits(stringSplitCombine("string_a", "string_a", SortDirection.descending)));
+    describe("Numeric Dimensions", () => {
+      it("reads basic split", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(numberSplitDefinition("numeric", 100)),
+          mockEssenceWithSplits(numberSplitCombine("numeric", 100)));
+      });
+
+      it("reads split with sort on measure", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(numberSplitDefinition("numeric", 100, "count")),
+          mockEssenceWithSplits(numberSplitCombine("numeric", 100, "count")));
+      });
+
+      it("reads split with descending sort", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(numberSplitDefinition("numeric", 100, "numeric", SortDirection.descending)),
+          mockEssenceWithSplits(numberSplitCombine("numeric", 100, "numeric", SortDirection.descending)));
+      });
+
+      it("reads split with limit", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(numberSplitDefinition("numeric", 100, "numeric", SortDirection.descending, 10)),
+          mockEssenceWithSplits(numberSplitCombine("numeric", 100, "numeric", SortDirection.descending, 10)));
+      });
     });
 
-    it("reads string split with limit", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(stringSplitDefinition("string_a", "string_a", SortDirection.descending, 10)),
-        mockEssenceWithSplits(stringSplitCombine("string_a", "string_a", SortDirection.descending, 10)));
-    });
+    describe("Edge cases", () => {
+      it("omits split on non existing dimension", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(stringSplitDefinition("string_a"), stringSplitDefinition("foobar-dimension")),
+          mockEssenceWithSplits(stringSplitCombine("string_a")));
+      });
 
-    it("reads time split", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(timeSplitDefinition("time", "P1D")),
-        mockEssenceWithSplits(timeSplitCombine("time", "P1D")));
-    });
+      it("omits dimension with non existing sort reference", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSplits(stringSplitDefinition("string_a"), stringSplitDefinition("string_b", "foobar-dimension")),
+          mockEssenceWithSplits(stringSplitCombine("string_a")));
+      });
 
-    it("reads time split with granularity", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(timeSplitDefinition("time", "PT2M")),
-        mockEssenceWithSplits(timeSplitCombine("time", "PT2M")));
-    });
-
-    it("reads number split", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(numberSplitDefinition("numeric", 100)),
-        mockEssenceWithSplits(numberSplitCombine("numeric", 100)));
-    });
-
-    it("omits split on non existing dimension", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(stringSplitDefinition("string_a"), stringSplitDefinition("foobar-dimension")),
-        mockEssenceWithSplits(stringSplitCombine("string_a")));
-    });
-
-    it("omits dimension with non existing sort reference", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSplits(stringSplitDefinition("string_a"), stringSplitDefinition("string_b", "foobar-dimension")),
-        mockEssenceWithSplits(stringSplitCombine("string_a")));
+      it.skip("omits split on single non existing dimension and advises visualisation change", () => {
+        const viewDefinition = mockViewDefinitionWithSplits(stringSplitDefinition("foobar-dimension"));
+        const essence = mockEssenceWithSplits();
+        const resultEssence = toEssence(viewDefinition);
+        assertEqlEssence(resultEssence, essence);
+        // TODO:
+        /*
+          Currently we run visResolve before constraining splits
+          In this case that means that we satisfy predicate with at least one split.
+          But in next step we will remove it and we get "valid" Table without splits.
+         */
+        expect(resultEssence.visResolve.isManual()).to.be.true;
+      });
     });
   });
 
@@ -135,46 +193,78 @@ describe("ViewDefinitionConverter4", () => {
     const mockEssenceWithSeries = (...series: Series[]) =>
       mockEssence({ series: SeriesList.fromSeries(series) });
 
-    it("reads simple series", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(fromReference("count")),
-        mockEssenceWithSeries(measureSeries("count")));
+    describe("Just reference in Definition", () => {
+      it("reads single series", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(fromReference("count")),
+          mockEssenceWithSeries(measureSeries("count")));
+      });
+
+      it("reads multiple series", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(fromReference("count"), fromReference("sum")),
+          mockEssenceWithSeries(measureSeries("count"), measureSeries("sum")));
+      });
+
+      it("infers quantile series from reference to measure that has quantile expression", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(fromReference("quantile")),
+          mockEssenceWithSeries(quantileSeries("quantile")));
+      });
     });
 
-    it("reads multiple simple series", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(fromReference("count"), fromReference("sum")),
-        mockEssenceWithSeries(measureSeries("count"), measureSeries("sum")));
+    describe("Measure Series", () => {
+      it("reads series", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(measureSeriesDefinition("count")),
+          mockEssenceWithSeries(measureSeries("count")));
+      });
+
+      it("reads series with custom format", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(measureSeriesDefinition("sum", PERCENT_FORMAT)),
+          mockEssenceWithSeries(measureSeries("sum", PERCENT_FORMAT)));
+      });
     });
 
-    it("reads measure series", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(measureSeriesDefinition("count")),
-        mockEssenceWithSeries(measureSeries("count")));
+    describe("Quantile series", () => {
+      it("reads series", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile")),
+          mockEssenceWithSeries(quantileSeries("quantile")));
+      });
+
+      it("reads series with custom format", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile", 90, PERCENT_FORMAT)),
+          mockEssenceWithSeries(quantileSeries("quantile", 90, PERCENT_FORMAT)));
+      });
+
+      it("reads series with custom percentile", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile", 90)),
+          mockEssenceWithSeries(quantileSeries("quantile", 90)));
+      });
+
+      it.skip("omit quantile series referencing non quantile measure", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(fromReference("sum"), quantileSeriesDefinition("count")),
+          mockEssenceWithSeries(measureSeries("sum")));
+      });
     });
 
-    it("reads measure series with custom format", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(measureSeriesDefinition("sum", PERCENT_FORMAT)),
-        mockEssenceWithSeries(measureSeries("sum", PERCENT_FORMAT)));
-    });
+    describe.skip("Edge cases", () => {
+      it("omits series for existing measure", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(fromReference("sum"), fromReference("foobar")),
+          mockEssenceWithSeries(measureSeries("sum")));
+      });
 
-    it("reads quantile series", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile")),
-        mockEssenceWithSeries(quantileSeries("quantile")));
-    });
-
-    it("reads quantile series with custom percentile", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile", 90)),
-        mockEssenceWithSeries(quantileSeries("quantile", 90)));
-    });
-
-    it("infers quantile series from reference to measure that has quantile expression", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithSeries(fromReference("quantile")),
-        mockEssenceWithSeries(quantileSeries("quantile")));
+      it("omits measure series for existing measure", () => {
+        assertConversionToEssence(
+          mockViewDefinitionWithSeries(measureSeriesDefinition("sum"), measureSeriesDefinition("foobar")),
+          mockEssenceWithSeries(measureSeries("sum")));
+      });
     });
   });
 });
