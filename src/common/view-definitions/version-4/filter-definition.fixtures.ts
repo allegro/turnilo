@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Booleanish } from "../../../client/components/filter-menu/boolean-filter-menu/boolean-filter-menu";
 import { StringFilterAction } from "../../models/filter-clause/filter-clause";
 import {
   BooleanFilterClauseDefinition,
@@ -23,7 +24,7 @@ import {
   TimeFilterClauseDefinition
 } from "./filter-definition";
 
-export function booleanFilterDefinition(ref: string, values: boolean[], not = false): BooleanFilterClauseDefinition {
+export function booleanFilterDefinition(ref: string, values: Booleanish[], not = false): BooleanFilterClauseDefinition {
   return {
     ref,
     type: FilterType.boolean,
@@ -73,4 +74,12 @@ export function flooredTimeFilterDefinition(ref: string, step: number, duration:
     type: FilterType.time,
     timePeriods: [{ type: "floored", duration, step }]
   };
+}
+
+export function currentTimeFilterDefinition(ref: string, duration: string): TimeFilterClauseDefinition {
+  return flooredTimeFilterDefinition(ref, 1, duration);
+}
+
+export function previousTimeFilterDefinition(ref: string, duration: string): TimeFilterClauseDefinition {
+  return flooredTimeFilterDefinition(ref, -1, duration);
 }

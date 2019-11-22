@@ -16,6 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
+import { Booleanish } from "../../../client/components/filter-menu/boolean-filter-menu/boolean-filter-menu";
 import { DateRange } from "../date-range/date-range";
 import {
   BooleanFilterClause,
@@ -48,7 +49,7 @@ export function stringMatch(reference: string, value: string, not = false): Filt
   return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
 }
 
-export function boolean(reference: string, values: boolean[], not = false): FilterClause {
+export function boolean(reference: string, values: Booleanish[], not = false): FilterClause {
   return new BooleanFilterClause({ reference, not, values: Set(values) });
 }
 
