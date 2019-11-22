@@ -16,6 +16,17 @@
 
 const path = require("path");
 
+const babelLoader = {
+  loader: "babel-loader",
+  options: {
+    presets: [
+      ["@babel/preset-env", {
+        modules: false
+      }]
+    ]
+  }
+};
+
 module.exports = {
   output: {
     path: path.resolve(__dirname, '../build/public'),
@@ -33,18 +44,15 @@ module.exports = {
         use: ["source-map-loader"]
       },
       {
+        test: /\.js?$/,
+        use: [
+          babelLoader
+        ]
+      },
+      {
         test: /\.tsx?$/,
         use: [
-          {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                ["@babel/preset-env", {
-                  modules: false
-                }]
-              ]
-            }
-          },
+          babelLoader,
           {
             loader: "awesome-typescript-loader",
             options: {
