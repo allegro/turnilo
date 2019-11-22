@@ -22,15 +22,15 @@ require('ts-node').register({
 });
 require('ignore-styles');
 
-const jsdom = require("jsdom").jsdom;
+const jsdom = require('jsdom').jsdom;
 
-var document = (new jsdom('<!doctype html><html><body></body></html>'));
+const document = (new jsdom('<!doctype html><html><body></body></html>'));
 global.document = document;
 global.window = document.defaultView;
 // setup for type-detect, should be solved in https://github.com/chaijs/type-detect/pull/129
 global.HTMLElement = global.window.HTMLElement;
 // setup for React
-global.navigator = {userAgent: "testing"};
+global.navigator = {userAgent: 'testing'};
 
 
 var enzyme = require('enzyme');
