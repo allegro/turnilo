@@ -33,6 +33,5 @@ module.exports = merge.smart(common, {
       'process.env.NODE_ENV': JSON.stringify('dev-hmr')
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
   ]
 });
