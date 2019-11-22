@@ -17,7 +17,7 @@
 
 import * as http from "http";
 
-import * as app from "./app";
+import app from "./app";
 import { SERVER_SETTINGS, START_SERVER } from "./config";
 
 if (START_SERVER) {

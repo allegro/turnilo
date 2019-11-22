@@ -93,6 +93,8 @@
     "request-promise-native": "1.0.5"
   },
   "devDependencies": {
+    "@babel/core": "7.7.2",
+    "@babel/preset-env": "7.7.1",
     "@types/body-parser": "1.16.8",
     "@types/chai": "4.0.10",
     "@types/compression": "0.0.35",
@@ -128,6 +130,7 @@
     "@types/webpack": "3.8.10",
     "@types/webpack-env": "1.13.3",
     "awesome-typescript-loader": "3.4.1",
+    "babel-loader": "8.0.6",
     "chai": "4.1.2",
     "create-react-class": "15.6.2",
     "css-loader": "2.1.1",

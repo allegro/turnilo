@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-require('ts-node').register({ typeCheck: true });
+require('ts-node').register({
+  typeCheck: true,
+  compilerOptions: {
+    module: 'commonjs',
+    target: 'es5'
+  }
+});
 require('ignore-styles');
 
 const jsdom = require("jsdom").jsdom;
@@ -32,4 +37,3 @@ var enzyme = require('enzyme');
 var Adapter = require('enzyme-adapter-react-16');
 
 enzyme.configure({ adapter: new Adapter() });
-

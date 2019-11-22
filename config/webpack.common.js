@@ -36,6 +36,16 @@ module.exports = {
         test: /\.tsx?$/,
         use: [
           {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                ["@babel/preset-env", {
+                  modules: false
+                }]
+              ]
+            }
+          },
+          {
             loader: "awesome-typescript-loader",
             options: {
               configFileName: "./src/client/tsconfig.json"
