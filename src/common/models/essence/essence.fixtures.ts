@@ -96,10 +96,10 @@ export class EssenceFixtures {
       numberRange("commentLength", 3, null, "[)", false)
     ];
     const splitCombines = [
-      stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
-      numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
-      timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
+      stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
+      stringSplitCombine("isRobot", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
+      numberSplitCombine("commentLength", 10, { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
+      timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -123,8 +123,8 @@ export class EssenceFixtures {
       stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
     ];
     const splitCombines = [
-      stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
+      stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
+      timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
     ];
     const highlightClauses = [
       timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"))
