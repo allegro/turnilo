@@ -10,10 +10,27 @@
 Turnilo does not currently have a concept of a user. Everyone who has access to a given Turnilo server has equal access to that server.
 Turnilo can act as a 'gatekeeper' for Druid or any supported datasource via the config.
 
-### Data source level access
+### Data cubes level access
 
 It is possible to restrict which data cubes users have access to by explicitly defining in the config all the data cubes that you want the users to see and disabling source discovery.
 This will prevent any data cube not explicitly defined from being queried through Turnilo.
+
+Alternatively you can set up auth proxy (eg. nginx) which will be adding header `x-turnilo-allow-datacubes`.
+It have to contains names of datacubes which have to be accessible for user, delimited by comma. Wildcard(\*) means all datacubes.
+Examples of `x-turnilo-allow-datacubes`:
+- `"*"`
+- `"some-name"`
+- `"name1,name2"`
+- `"name1,name2,*"`
+
+Additionally, enable guard by adding in config in cluster section:
+```yaml
+clusters:
+  - name: druid
+[...]	
+    guardDataCubes: true
+[...]
+```
 
 ### Column level access
 

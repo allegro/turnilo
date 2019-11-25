@@ -41,7 +41,7 @@ import {
 } from "plywood";
 import { shallowEqualArrays } from "../../utils/array/array";
 import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
-import { Cluster } from "../cluster/cluster";
+import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
@@ -71,7 +71,6 @@ function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measu
     }
   }
 }
-
 export type Introspection = "none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all";
 
 export type Source = string | string[];
@@ -139,6 +138,8 @@ export interface DataCubeJS {
   refreshRule?: RefreshRuleJS;
   maxSplits?: number;
   maxQueries?: number;
+
+  cluster?: ClusterJS;
 }
 
 export interface DataCubeOptions {
@@ -241,7 +242,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const ex = ply().apply("maxTime", $("main").max(dataCube.timeAttribute));
 
     return dataCube.executor(ex).then((dataset: Dataset) => {
-      const maxTimeDate = dataset.data[0]["maxTime"] as Date;
+      const maxTimeDate = <Date> dataset.data[0]["maxTime"];
       if (isNaN(maxTimeDate as any)) return null;
       return maxTimeDate;
     });
@@ -620,7 +621,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     for (let name in derivedAttributes) {
       datasetType[name] = {
-        type: derivedAttributes[name].type as PlyTypeSimple
+        type: <PlyTypeSimple> derivedAttributes[name].type
       };
     }
 
@@ -802,11 +803,14 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     measures.forEachMeasure(measure => {
       const references = Measure.getReferences(measure.expression);
+      const countDistinctReferences = Measure.getCountDistinctReferences(measure.expression);
       for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
-        if (Measure.hasCountDistinctReferences(measure.expression)) continue;
-        if (Measure.hasQuantileReferences(measure.expression)) continue;
-        attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
+        if (countDistinctReferences.indexOf(reference) !== -1) {
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: "STRING", nativeType: "hyperUnique" }));
+        } else {
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
+        }
       }
     });
 
@@ -852,13 +856,23 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "STRING":
-          if (!autofillDimensions) continue;
-          expression = $(name);
-          if (this.getDimensionByExpression(expression)) continue;
-          dimensions = dimensions.append(new Dimension({
-            name: urlSafeName,
-            formula: expression.toString()
-          }));
+          if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
+            if (!autofillMeasures) continue;
+
+            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+            newMeasures.forEach(newMeasure => {
+              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
+              measures = measures.append(newMeasure);
+            });
+          } else {
+            if (!autofillDimensions) continue;
+            expression = $(name);
+            if (this.getDimensionByExpression(expression)) continue;
+            dimensions = dimensions.append(new Dimension({
+              name: urlSafeName,
+              formula: expression.toString()
+            }));
+          }
           break;
 
         case "SET/STRING":
@@ -866,8 +880,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.append(new Dimension({
-            kind: "string",
-            multiValue: true,
             name: urlSafeName,
             formula: expression.toString()
           }));
@@ -885,7 +897,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "NUMBER":
-        case "NULL":
           if (!autofillMeasures) continue;
 
           const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
@@ -895,8 +906,22 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           });
           break;
 
+        // TODO: quick fix after upgrade of Plywood to 0.17.26
+        case "NULL":
+          if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "approximateHistogram") {
+            if (!autofillMeasures) continue;
+
+            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+            newMeasures.forEach(newMeasure => {
+              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
+              measures = measures.append(newMeasure);
+            });
+          } else {
+            throw new Error(`unsupported type ${type} with nativeType ${nativeType}`);
+          }
+          break;
         default:
-          throw new Error(`unsupported attribute ${name}; type ${type}, native type ${nativeType}`);
+          throw new Error(`unsupported type ${type}`);
       }
     }
 
@@ -917,7 +942,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     }
 
     if (!value.timeAttribute && dimensions.size && dimensions.first().kind === "time") {
-      value.timeAttribute = dimensions.first().expression as RefExpression;
+      value.timeAttribute = <RefExpression> dimensions.first().expression;
     }
 
     return new DataCube(value);
