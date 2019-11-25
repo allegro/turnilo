@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Measures } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 
 export interface MeasuresDefinitionJS {
@@ -23,14 +24,12 @@ export interface MeasuresDefinitionJS {
 }
 
 export interface SeriesDefinitionConverter {
-  // fromEssenceSeries(series: SeriesList): MeasuresDefinitionJS;
-
-  toEssenceSeries(measures: MeasuresDefinitionJS): SeriesList;
+  toEssenceSeries(measuresDefs: MeasuresDefinitionJS, measures: Measures): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
-  // fromEssenceSeries: ({ multi, isMulti, single }) =>
-  //   ({ isMulti, single, multi: multi.toArray() }),
-  toEssenceSeries: ({ isMulti, multi, single }) =>
-    SeriesList.fromMeasureNames(isMulti ? multi : [single])
+  toEssenceSeries: ({ isMulti, multi, single }, measures: Measures) => {
+    const names = isMulti ? multi : [single];
+    return SeriesList.fromMeasures(measures.getMeasuresByNames(names));
+  }
 };

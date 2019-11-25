@@ -70,7 +70,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const visualization = NamedArray.findByName(visualizations, definition.visualization);
 
     const measureNames = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
-    const series = SeriesList.fromMeasureNames(measureNames);
+    const series = SeriesList.fromMeasures(dataCube.measures.getMeasuresByNames(measureNames));
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);

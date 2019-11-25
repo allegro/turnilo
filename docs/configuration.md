@@ -725,11 +725,9 @@ Function will receive two arguments, `request` - [node request module](https://g
 For example:
 
 ```yaml
-
 customization:
   urlShortener: |
-    return fetch('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
-      .then(function(response){ return response.text();})
+    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
 ```
 
 ### External links

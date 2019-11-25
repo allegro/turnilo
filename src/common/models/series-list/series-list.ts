@@ -22,7 +22,7 @@ import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
 import { ExpressionSeries } from "../series/expression-series";
 import { MeasureSeries } from "../series/measure-series";
-import { fromJS, Series } from "../series/series";
+import { fromJS, fromMeasure, Series } from "../series/series";
 
 interface SeriesListValue {
   series: List<Series>;
@@ -36,8 +36,16 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return new SeriesList({ series: List(names.map(reference => new MeasureSeries({ reference }))) });
   }
 
-  static fromJS(seriesDefs: any[]): SeriesList {
-    const series = List(seriesDefs.map(def => fromJS(def)));
+  static fromMeasures(measures: Measure[]): SeriesList {
+    const series = List(measures.map(fromMeasure));
+    return new SeriesList({ series });
+  }
+
+  static fromJS(seriesDefs: any[], measures: Measures): SeriesList {
+    const series = List(seriesDefs.map(def => {
+      const measure = measures.getMeasureByName(def.reference);
+      return fromJS(def, measure);
+    }));
     return new SeriesList({ series });
   }
 
@@ -110,6 +118,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   private updateSeries(updater: Unary<List<Series>, List<Series>>) {
     return this.update("series", updater);
+  }
+
+  public hasSeries(series: Series): boolean {
+    return this.series.find(s => s.equals(series)) !== undefined;
   }
 
   public hasSeriesWithKey(key: string): boolean {

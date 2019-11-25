@@ -95,7 +95,7 @@ function linkItems({ essence, customization, timekeeper, onClose, getCubeViewHas
       </li>
       {isRelative && <li
         key="short-url-specific"
-        onClick={() => openShortenerModal(hash, STRINGS.copyFixedTimeUrl)}>
+        onClick={() => openShortenerModal(specificHash, STRINGS.copyFixedTimeUrl)}>
         {STRINGS.createShortFixedUrl}
       </li>}
     </React.Fragment>}

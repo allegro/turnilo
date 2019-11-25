@@ -21,16 +21,21 @@ import { ExpressionConcreteSeries } from "./expression-concrete-series";
 import { ExpressionSeries } from "./expression-series";
 import { MeasureConcreteSeries } from "./measure-concrete-series";
 import { MeasureSeries } from "./measure-series";
+import { QuantileConcreteSeries } from "./quantile-concrete-series";
+import { QuantileSeries } from "./quantile-series";
 import { Series } from "./series";
 import { SeriesType } from "./series-type";
 
 export default function createConcreteSeries(series: Series, measure: Measure, measures: Measures): ConcreteSeries {
   switch (series.type) {
-      case SeriesType.MEASURE: {
-        return new MeasureConcreteSeries(series as MeasureSeries, measure);
-      }
-      case SeriesType.EXPRESSION: {
-        return new ExpressionConcreteSeries(series as ExpressionSeries, measure, measures);
-      }
+    case SeriesType.MEASURE: {
+      return new MeasureConcreteSeries(series as MeasureSeries, measure);
     }
+    case SeriesType.EXPRESSION: {
+      return new ExpressionConcreteSeries(series as ExpressionSeries, measure, measures);
+    }
+    case SeriesType.QUANTILE: {
+      return new QuantileConcreteSeries(series as QuantileSeries, measure);
+    }
+  }
 }

@@ -20,7 +20,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import "./button-group.scss";
 
-export interface GroupMember {
+export interface GroupMember<T> {
   title: string;
   onClick: Fn;
   key: string | number;
@@ -28,8 +28,8 @@ export interface GroupMember {
   isSelected?: boolean;
 }
 
-export interface ButtonGroupProps {
-  groupMembers: GroupMember[];
+export interface ButtonGroupProps<T> {
+  groupMembers: Array<GroupMember<T>>;
   title?: string;
   className?: string;
 }
@@ -37,7 +37,7 @@ export interface ButtonGroupProps {
 export interface ButtonGroupState {
 }
 
-export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupState> {
+export class ButtonGroup<T> extends React.Component<ButtonGroupProps<T>, ButtonGroupState> {
 
   renderMembers() {
     const { groupMembers } = this.props;

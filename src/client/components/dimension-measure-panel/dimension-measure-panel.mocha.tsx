@@ -32,7 +32,7 @@ describe("DimensionMeasurePanel", () => {
     };
     return shallow(
       <DimensionMeasurePanel
-        newSeriesExpression={null}
+        appendDirtySeries={null}
         clicker={clickyMcClickFace}
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}

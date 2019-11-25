@@ -37,7 +37,7 @@ export interface DimensionMeasurePanelProps {
   essence: Essence;
   menuStage: Stage;
   triggerFilterMenu: (dimension: Dimension) => void;
-  newSeriesExpression: Unary<Series, void>;
+  appendDirtySeries: Unary<Series, void>;
   style?: React.CSSProperties;
 }
 
@@ -93,7 +93,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
   }
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, newSeriesExpression, style } = this.props;
+    const { clicker, essence, menuStage, triggerFilterMenu, appendDirtySeries, style } = this.props;
     const { dividerPosition, containerHeight } = this.state;
     const { maxDividerPosition, minDividerPosition } = dividerConstraints(containerHeight);
 
@@ -130,7 +130,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           style={measureListStyle}
           clicker={clicker}
           essence={essence}
-          newExpression={newSeriesExpression}
+          appendDirtySeries={appendDirtySeries}
         />
       </div>
     </div>;
