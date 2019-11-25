@@ -20,6 +20,7 @@ const webpack = require('webpack');
 const hotMiddlewareScript = 'webpack-hot-middleware/client';
 
 module.exports = merge.smart(common, {
+  mode: 'development',
   entry: {
     main: [hotMiddlewareScript, "./src/client/main.tsx"]
   },
