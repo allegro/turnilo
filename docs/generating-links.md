@@ -4,6 +4,8 @@ If you want to generate links pointing to Turnilo's view from external systems y
 view definition to `/mkurl` or `<serverRoot>/mkurl` endpoint and appending returned `hash` property
 to the base URI of Turnilo instance.
 
+The view definition can be acquired by clicking "Display view definition" in the settings menu at the top-right corner.
+
 The post body must include 3 keys:
 
 **dataCubeName** (string)
