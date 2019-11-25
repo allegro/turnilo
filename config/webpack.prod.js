@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-const common = require("./webpack.common");
-const merge = require("webpack-merge");
+const common = require('./webpack.common');
+const merge = require('webpack-merge');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = merge.smart(common, {
   entry: {
@@ -38,10 +39,13 @@ module.exports = merge.smart(common, {
       },
    ]
   },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
   ]
 });

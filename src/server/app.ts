@@ -131,4 +131,4 @@ app.use((err: any, req: Request, res: Response) => {
   res.send(errorLayout({ version: VERSION, title: "Error" }, err.message, error));
 });
 
-export = app;
+export default app;
