@@ -20,10 +20,10 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = merge.smart(common, {
+  mode: "production",
   entry: {
     main: ["./src/client/main.tsx"]
   },
-  devtool: "source-map",
   module: {
     rules: [
       {

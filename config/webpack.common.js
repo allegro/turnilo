@@ -28,6 +28,7 @@ const babelLoader = {
 };
 
 module.exports = {
+  devtool: "source-map",
   output: {
     path: path.resolve(__dirname, '../build/public'),
     filename: "main.js",
