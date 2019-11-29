@@ -54,7 +54,10 @@
     "tsc": "tsc",
     "lint": "npm-run-all -p lint:*",
     "lint:ts": "tslint -p . --format verbose",
-    "lint:sass": "sass-lint -v"
+    "lint:sass": "sass-lint -v",
+    "start:examples": "npm run start -- --examples",
+    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
+    "e2e:dev": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress open'"
   },
   "dependencies": {
     "@sentry/browser": "5.0.6",
@@ -132,6 +135,7 @@
     "create-react-class": "15.6.2",
     "css-loader": "2.1.1",
     "css-modules-require-hook": "4.2.3",
+    "cypress": "3.4.1",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",
     "ignore-styles": "5.0.1",
@@ -151,6 +155,7 @@
     "sass-loader": "6.0.6",
     "sinon": "4.1.4",
     "source-map-loader": "0.2.3",
+    "start-server-and-test": "1.10.0",
     "style-loader": "0.19.1",
     "supertest": "3.0.0",
     "svg-inline-loader": "0.8.0",
