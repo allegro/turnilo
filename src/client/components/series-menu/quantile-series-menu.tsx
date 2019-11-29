@@ -46,7 +46,7 @@ export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesL
 
   function validateSeries(series: QuantileSeries): string | null {
     if (series.percentile <= 0 || series.percentile >= 100) {
-      return "Percentile must be a number between 0 and 100";
+      return "Percentile must be a number greater than 0 and lower than 100";
     }
     if (!series.equals(initialSeries) && seriesList.hasSeries(series)) {
       return "This percentile is already define for this measure";
