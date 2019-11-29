@@ -40,7 +40,7 @@ describe("Highlighter", () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("highlighter");
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("highlighter");
   });
 
 });

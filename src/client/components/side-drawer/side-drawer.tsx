@@ -57,7 +57,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   globalMouseDownListener = (e: MouseEvent) => {
-    const myElement = ReactDOM.findDOMNode(this);
+    const myElement = ReactDOM.findDOMNode(this) as Element;
     const target = e.target as Element;
 
     if (isInside(target, myElement)) return;

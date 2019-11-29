@@ -65,6 +65,6 @@ describe("ChartLine", () => {
       <Wrap dataset={dataset}/>
     );
 
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("chart-line");
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("chart-line");
   });
 });

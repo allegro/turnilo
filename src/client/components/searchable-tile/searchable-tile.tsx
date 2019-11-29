@@ -59,7 +59,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
   componentDidMount() {
     this.mounted = true;
-    this.setState({ actionsMenuAlignOn: ReactDOM.findDOMNode(this.refs["header"]) });
+    this.setState({ actionsMenuAlignOn: ReactDOM.findDOMNode(this.refs["header"]) as Element });
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
   }

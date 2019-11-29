@@ -20,8 +20,8 @@ import "../../utils/test-utils";
 import normalizeStyles from "./normalize-styles";
 
 const defaultRest = {
-  "pointer-events": "auto",
-  "z-index": 200
+  pointerEvents: "auto",
+  zIndex: 200
 };
 
 describe("BodyPortal", () => {
@@ -41,10 +41,10 @@ describe("BodyPortal", () => {
   });
 
   it("should set pointer events to 'none' when passed 'dissablePointerEvents", () => {
-    expect(normalizeStyles({ disablePointerEvents: true })).to.be.deep.equal({ ...defaultRest, "pointer-events": "none" });
+    expect(normalizeStyles({ disablePointerEvents: true })).to.be.deep.equal({ ...defaultRest, pointerEvents: "none" });
   });
 
   it("should set bigger z-index when aboveAll", () => {
-    expect(normalizeStyles({ isAboveAll: true })).to.be.deep.equal({ ...defaultRest, "z-index": 201 });
+    expect(normalizeStyles({ isAboveAll: true })).to.be.deep.equal({ ...defaultRest, zIndex: 201 });
   });
 });

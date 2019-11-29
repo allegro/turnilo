@@ -43,7 +43,7 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
   const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
-    const target = e.target as Element;
+    const target = e.currentTarget;
     if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     dimensionClick(name, e);
   };
