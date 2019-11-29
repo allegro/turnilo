@@ -18,7 +18,7 @@
     ],
     "file-header": [
       true,
-      "Copyright 2017-2018 Allegro.pl"
+      "Copyright \\d{4}-\\d{4} Allegro.pl"
     ],
     "indent": [true, "spaces", 2],
     "interface-name": [true, "never-prefix"], // don't allow prefixing interface names with "I"
