@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,19 @@
 
 const path = require("path");
 
+const babelLoader = {
+  loader: "babel-loader",
+  options: {
+    presets: [
+      ["@babel/preset-env", {
+        modules: false
+      }]
+    ]
+  }
+};
+
 module.exports = {
+  devtool: "source-map",
   output: {
     path: path.resolve(__dirname, '../build/public'),
     filename: "main.js",
@@ -33,8 +45,15 @@ module.exports = {
         use: ["source-map-loader"]
       },
       {
+        test: /\.js?$/,
+        use: [
+          babelLoader
+        ]
+      },
+      {
         test: /\.tsx?$/,
         use: [
+          babelLoader,
           {
             loader: "awesome-typescript-loader",
             options: {

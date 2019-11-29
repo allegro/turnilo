@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +14,21 @@
  * limitations under the License.
  */
 
-@mixin bounce($properties...) {
-  $result: ();
-  @each $property in $properties {
-    $result: append($result, $property 0.2s cubic-bezier(.87, -.41, .19, 1.44), comma);
-  }
+export default function dragAndDropPolyfill() {
+  const div = document.createElement("div");
+  const dragDiv = "draggable" in div;
+  const evts = "ondragstart" in div && "ondrop" in div;
 
-  transition: $result;
+  const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+
+  if (needsPatch) {
+    Promise.all([
+      // @ts-ignore
+      import("../../lib/polyfill/drag-drop-polyfill.min.js"),
+      // @ts-ignore
+      import("../../lib/polyfill/drag-drop-polyfill.css")
+    ]).then(([DragDropPolyfill, _]) => {
+      DragDropPolyfill.Initialize({});
+    });
+  }
 }
