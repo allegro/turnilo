@@ -50,7 +50,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   globalMouseDownListener = (e: MouseEvent) => {
     var { onClose, openOn } = this.props;
-    var myElement = ReactDOM.findDOMNode(this);
+    var myElement = ReactDOM.findDOMNode(this) as Element;
     if (!myElement) return;
     var target = e.target as Element;
 

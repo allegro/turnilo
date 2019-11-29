@@ -57,6 +57,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   private readonly overflowMenuId = uniqueId("overflow-menu-");
   private overflowMenuDeferred: Deferred<Element>;
+  private items = React.createRef<HTMLDivElement>();
+  private overflow = React.createRef<HTMLDivElement>();
 
   state: SplitTileState = {
     menuOpenOn: null,
@@ -195,7 +197,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
     const numItems = essence.splits.length();
-    const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
+    const rect = this.items.current.getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
@@ -257,7 +259,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   overflowButtonTarget(): Element {
-    return ReactDOM.findDOMNode(this.refs["overflow"]);
+    return this.overflow.current;
   }
 
   overflowButtonClick = () => {
@@ -309,7 +311,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     const style = transformStyle(itemX, 0);
     return <div
       className="overflow dimension"
-      ref="overflow"
+      ref={this.overflow}
       key="overflow"
       style={style}
       onClick={this.overflowButtonClick}
@@ -382,7 +384,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       onDragEnter={this.dragEnter}
     >
       <div className="title">{STRINGS.split}</div>
-      <div className="items" ref="items">
+      <div className="items" ref={this.items}>
         {splitItems}
       </div>
       {this.renderAddTileButton()}

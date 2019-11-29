@@ -40,7 +40,7 @@ function convertDOMStringListToArray(list: any): any[] {
   return array;
 }
 
-export function isInside(child: Element, parent: Element): boolean {
+export function isInside(child: Element, parent: Element | Text): boolean {
   var altParent: Element;
   while (child) {
     if (child === parent) return true;

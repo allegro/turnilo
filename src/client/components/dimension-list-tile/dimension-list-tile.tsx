@@ -86,7 +86,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
   clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
-    const target = findParentWithClass(e.target as Element, DIMENSION_CLASS_NAME);
+    const target = findParentWithClass(e.currentTarget, DIMENSION_CLASS_NAME);
     if (menuOpenOn === target) {
       this.closeMenu();
       return;

@@ -96,11 +96,6 @@ const defaultEssence: EssenceValue = {
   visResolve: null
 };
 
-export interface EssenceContext {
-  dataCube: DataCube;
-  visualizations: Manifest[];
-}
-
 export interface EffectiveFilterOptions {
   unfilterDimension?: Dimension;
   combineWithPrevious?: boolean;
@@ -160,10 +155,10 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
   }
 
-  static fromDataCube(dataCube: DataCube, context: EssenceContext): Essence {
+  static fromDataCube(dataCube: DataCube, visualizations: Manifest[]): Essence {
     const essence = new Essence({
-      dataCube: context.dataCube,
-      visualizations: context.visualizations,
+      dataCube,
+      visualizations,
       visualization: null,
       timezone: dataCube.getDefaultTimezone(),
       filter: dataCube.getDefaultFilter(),

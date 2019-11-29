@@ -38,8 +38,8 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
   };
 
   openMenu = (e: React.MouseEvent<HTMLElement>) => {
-    var { menuOpenOn } = this.state;
-    var target = findParentWithClass(e.target as Element, "vis-selector");
+    const { menuOpenOn } = this.state;
+    const target = e.currentTarget;
     if (menuOpenOn === target) {
       this.closeMenu();
       return;
@@ -55,27 +55,28 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     });
   }
 
-  render() {
-    var { clicker, essence } = this.props;
-    var { menuOpenOn } = this.state;
-    var { visualization } = essence;
+  renderMenu() {
+    const { menuOpenOn } = this.state;
 
-    var menu: JSX.Element = null;
-    if (menuOpenOn) {
-      menu = React.createElement(VisSelectorMenu, {
-        clicker,
-        essence,
-        openOn: menuOpenOn,
-        onClose: this.closeMenu
-      });
-    }
+    if (!menuOpenOn) return null;
+    const { clicker, essence } = this.props;
+    return <VisSelectorMenu
+      clicker={clicker}
+      essence={essence}
+      onClose={this.closeMenu}
+      openOn={menuOpenOn} />;
+  }
+
+  render() {
+    const { essence: { visualization } } = this.props;
+    const { menuOpenOn } = this.state;
 
     return <div className={classNames("vis-selector", { active: menuOpenOn })} onClick={this.openMenu}>
       <div className="vis-item selected">
         <SvgIcon svg={require("../../icons/vis-" + visualization.name + ".svg")} />
         <div className="vis-title">{visualization.title}</div>
       </div>
-      {menu}
+      {this.renderMenu()}
     </div>;
   }
 }

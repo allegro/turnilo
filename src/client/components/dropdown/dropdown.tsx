@@ -67,7 +67,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     const { open } = this.state;
     if (!open) return;
 
-    const myElement = ReactDOM.findDOMNode(this);
+    const myElement = ReactDOM.findDOMNode(this) as Element;
     if (!myElement) return;
     const target = e.target as Element;
 

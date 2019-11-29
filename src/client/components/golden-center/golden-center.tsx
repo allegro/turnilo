@@ -48,7 +48,7 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
   }
 
   globalResizeListener = () => {
-    var myNode = ReactDOM.findDOMNode(this);
+    var myNode = ReactDOM.findDOMNode(this) as Element;
     if (!myNode) return;
 
     var childNode = myNode.firstChild as Element;

@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { ImmutableUtils } from "../../../common/utils/immutable-utils/immutable-utils";
 import { classNames } from "../../utils/dom/dom";
 import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
@@ -65,6 +64,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   }
 
   private focusAlreadyGiven = false;
+  private input = React.createRef<HTMLInputElement>();
 
   constructor(props: ImmutableInputProps) {
     super(props);
@@ -74,13 +74,13 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   initFromProps(props: ImmutableInputProps) {
     if (!props.instance || !props.path) return;
 
-    var validString: string;
+    let validString: string;
 
     if (this.state.validString === undefined) {
       validString = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
     } else {
-      var currentCanonical = props.valueToString(props.stringToValue(this.state.validString));
-      var possibleCanonical = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
+      const currentCanonical = props.valueToString(props.stringToValue(this.state.validString));
+      const possibleCanonical = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
 
       validString = currentCanonical === possibleCanonical ? this.state.validString : possibleCanonical;
     }
@@ -123,14 +123,14 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   }
 
   maybeFocus() {
-    if (!this.focusAlreadyGiven && this.props.focusOnStartUp && this.refs["me"]) {
-      (ReactDOM.findDOMNode(this.refs["me"]) as any).select();
+    if (!this.focusAlreadyGiven && this.props.focusOnStartUp && this.input.current) {
+      this.input.current.select();
       this.focusAlreadyGiven = true;
     }
   }
 
   isValueValid(value: string): boolean {
-    var { validator } = this.props;
+    const { validator } = this.props;
 
     if (!validator) return true;
 
@@ -148,14 +148,14 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   update(newString: string) {
     const { path, onChange, instance, validator, onInvalid, stringToValue } = this.props;
 
-    var myInstance: any;
-    var invalidString: string;
-    var validString: string;
-
-    var error = "";
+    let myInstance: any;
+    let invalidString: string;
+    let validString: string;
+    let error = "";
+    let newValue;
 
     try {
-      var newValue: any = stringToValue ? stringToValue(newString) : newString;
+      newValue = stringToValue ? stringToValue(newString) : newString;
 
       if (validator && !this.isValueValid(newString)) {
         myInstance = instance;
@@ -181,7 +181,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => this.update(event.target.value);
 
   render() {
-    const { path, valueToString, type, className } = this.props;
+    const { path, type, className } = this.props;
     const { myInstance, invalidString, validString } = this.state;
     const isInvalid = invalidString !== undefined;
 
@@ -198,7 +198,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
 
     return <input
       className={classNames("immutable-input", className, { error: isInvalid })}
-      ref="me"
+      ref={this.input}
       type="text"
       value={(isInvalid ? invalidString : validString) || ""}
       onChange={this.onChange}

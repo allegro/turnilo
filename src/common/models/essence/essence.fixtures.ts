@@ -32,7 +32,7 @@ import { SortDirection } from "../sort/sort";
 import { SplitFixtures } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { Essence, EssenceContext, EssenceValue } from "./essence";
+import { Essence, EssenceValue } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
@@ -73,14 +73,14 @@ export class EssenceFixtures {
     };
   }
 
-  static getWikiContext(): EssenceContext {
+  static getWikiContext() {
     return {
       dataCube: DataCubeFixtures.wiki(),
       visualizations: MANIFESTS
     };
   }
 
-  static getTwitterContext(): EssenceContext {
+  static getTwitterContext() {
     return {
       dataCube: DataCubeFixtures.twitter(),
       visualizations: MANIFESTS

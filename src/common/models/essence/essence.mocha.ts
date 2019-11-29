@@ -77,8 +77,6 @@ describe("EssenceProps", () => {
 
   const dataCube = DataCube.fromJS(dataCubeJS);
 
-  const context = { dataCube, visualizations: MANIFESTS };
-
   describe("removes highlight when necessary", () => {
     const { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } = HighlightFixtures;
 
@@ -101,7 +99,7 @@ describe("EssenceProps", () => {
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {
-      const essence = Essence.fromDataCube(dataCube, context);
+      const essence = Essence.fromDataCube(dataCube, MANIFESTS);
 
       // TODO: don't test toJS
       expect(essence.toJS()).to.deep.equal({
