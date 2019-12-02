@@ -50,7 +50,7 @@ context('Split Tile', () => {
         .should('contain', 'Channel');
     });
 
-    it.only('should add Channel split with dimension action using search field', () => {
+    it('should add Channel split with dimension action using search field', () => {
       cy.get('.dimension-list-tile').within(() => {
         // Focus Dimension search box
         cy.get('.icon.search').click();
@@ -74,7 +74,7 @@ context('Split Tile', () => {
       cy.visit('http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAZYkH7Mwatm7SlC6d12zu7qYXradCbCIIntOBhxITBEGDVVq80gR6HBYFpIlFqMostUzG4CkVHMkQOVKtVatRsHB6PE4FdqNAAEqYYiYRpQkAwqpdADK9S2IBuXSE5GyM3w2C+CGoZQg2TKSAFWy5CAQESAA==');
     });
 
-    it('should load with time split', () => {
+    it('should load with channel split', () => {
       cy.get('.split-tile .items .split.dimension')
         .should('have.length', 1)
         .should('contain', 'Channel');
@@ -151,6 +151,32 @@ context('Split Tile', () => {
       cy.get('.split-tile .items .split.dimension')
         .should('have.length', 1)
         .should('contain', 'Page');
+    });
+  });
+
+  describe("Three splits already in View Definition", () => {
+    beforeEach(() => {
+      // Force viewport that shows overflows for three tiles
+      cy.viewport(1200, 800);
+      cy.visit('http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg9LRMuep8+iKSgmU4bP0QKHqt5u1dds7uwLSCfszBhdhmRRjcbGFpthZrlqAtzLpViB1pt8NsDkdfk9TlkYTYCtdxgR2JtFAA5OAaOIvJogFofDpdHrHP4DGRAkZjJzgqYzHHzUxLBEHJF0FE7WJPVlyN7CKSFab0r5CYT1WjoGm9CbaOAwcRCMCIGBqRGagj0OCwLSRKKwrLVMxufHFHDJEDlSrVWrUbAUsJ3BXUaAAJUwxEwjRtIGUdq6AGVqW0Gd8kWQHlD8NhdQhqGUINkykh81tMwgEBEgA');
+    });
+
+    it('should load with two split tiles', () => {
+      cy.get('.split-tile .items .split.dimension')
+        .should('have.length', 2);
+    });
+
+    it('should show overflow tile for third split', () => {
+      cy.get('.split-tile .items .dimension.overflow')
+        .should('contain', '+1');
+    });
+
+    it('should show overflowed split after clicking tile', () => {
+      cy.get('.split-tile .items .dimension.overflow')
+        .click();
+
+      cy.get('.overflow-menu .split.dimension')
+          .should('contain', 'City Name');
     });
   });
 });
