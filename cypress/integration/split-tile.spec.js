@@ -211,11 +211,71 @@ context('Split Tile', () => {
     });
   });
 
+  describe('Drag and drop', () => {
+    const dataTransfer = new DataTransfer;
+    beforeEach(() => {
+      cy.visit('http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAZYkH7Mwatm7SlC6d12zu7qYXradCbCIIntOBhxITBEGDVVq80gR6HBYFpIlFqMostUzG4CkVHMkQOVKtVatRsHB6PE4FdqNAAEqYYiYRpQkAwqpdADK9S2IBuXSE5GyM3w2C+CGoZQg2TKSAFWy5CAQESAA==');
+    });
+
+    it('adds split by dropping dimension', () => {
+      cy.get('.dimension-list-tile .dimension:contains("Page")')
+        .trigger('dragstart', { dataTransfer });
+
+      cy.get('.split-tile').trigger('dragenter');
+
+      cy.get('.drag-mask').trigger('drop');
+
+      cy.get('.split-tile .items').within(() => {
+        cy.get('.split').should('have.length', 2);
+        cy.get('.split:first').should('contain', 'Channel');
+        cy.get('.split:nth-child(2)').should('contain', 'Page');
+      });
+    });
+
+    it('replaces split by dropping dimension on existing split', () => {
+      cy.get('.dimension-list-tile .dimension:contains("Page")')
+        .trigger('dragstart', { dataTransfer });
+
+      cy.get('.split-tile').trigger('dragenter');
+
+      cy.get('.split-tile .split:contains("Channel")').then(([channelSplit]) => {
+        const { x, width } = channelSplit.getBoundingClientRect();
+
+        cy.get('.drag-mask').trigger('drop', { clientX: x + width / 2 });
+
+        cy.get('.split-tile .items').within(() => {
+          cy.get('.split').should('have.length', 1);
+          cy.get('.split:first').should('contain', 'Page');
+        });
+      });
+    });
+
+    it('rearranges splits', () => {
+      cy.visit('http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg3UN9GwKikoJToWz7bBgQzKVdI14XAAk6hqaQFpOCj1jgR8vRLuNqPkRmMnCA4FMZllcgcQOtNvgHggEAcjmkCA9aMQpEMwcVxgR2JhaGC0AAZQrZNBlW73R5wZ6KfAuXZxepbZraXTtTrdQJ4kD9TKDSHDMijK42MLTbCzXLUBbmXSrVF0dE7WISgbJAXCKSFaZCjpdITCeq0dC/XoTbRwR6NahgRAwNTap0EejwuwUA3KLLVMxuC5kopyEDlSrVWrUbBwejxOAW6jQABKmGImEaUXVYa6AGU+ZaRUJyNkZhjHghqGUINkykhW1tMdigA==');
+
+      cy.get('.split-tile .split.dimension:contains("Channel")').trigger('dragstart', { dataTransfer });
+
+      cy.get('.split-tile').trigger('dragenter');
+
+      cy.get('.split-tile .split.dimension:contains("Time")').then(([timeSplit]) => {
+        const { x, width } = timeSplit.getBoundingClientRect();
+
+        cy.get('.drag-mask').trigger('drop', { clientX: x + width });
+
+        cy.get('.split-tile .items').within(() => {
+          cy.get('.split').should('have.length', 3);
+          cy.get('.split:first').should('contain', 'Time');
+          cy.get('.split:nth-child(2)').should('contain', 'Channel');
+          cy.get('.split:nth-child(3)').should('contain', 'Comment');
+        });
+      });
+    });
+  });
+
   describe('Split menu', () => {
     beforeEach(() => {
       cy.visit('http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg3UN9GwKikoJToWz7bBgQzKVdI14XAAk6hqaQFpOCj1jgR8vRLuNqPkRmMnCA4FMZllcgcQOtNvgHggEAcjmkCA9aMQpEMwcVxgR2JhaGC0AAZQrZNBlW73R5wZ6KfAuXZxepbZraXTtTrdQJ4kD9TKDSHDMijK42MLTbCzXLUBbmXSrVF0dE7WISgbJAXCKSFaZCjpdITCeq0dC/XoTbRwR6NahgRAwNTap0EejwuwUA3KLLVMxuC5kopyEDlSrVWrUbBwejxOAW6jQABKmGImEaUXVYa6AGU+ZaRUJyNkZhjHghqGUINkykhW1tMdigA==');
     });
-
 
     it('split menu has action buttons', () => {
       cy.get('.split.dimension:contains("Channel")').click();
