@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
   }
 
   globalResizeListener = () => {
-    var myNode = ReactDOM.findDOMNode(this);
+    var myNode = ReactDOM.findDOMNode(this) as Element;
     if (!myNode) return;
 
     var childNode = myNode.firstChild as Element;

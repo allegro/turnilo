@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -385,12 +385,14 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    return <main className="turnilo-application">
-      {this.renderView()}
-      {this.renderSideDrawerTransition()}
-      {this.renderAboutModal()}
-      {this.renderNotifications()}
-      {this.renderQuestions()}
-    </main>;
+    return <React.StrictMode>
+      <main className="turnilo-application">
+        {this.renderView()}
+        {this.renderSideDrawerTransition()}
+        {this.renderAboutModal()}
+        {this.renderNotifications()}
+        {this.renderQuestions()}
+      </main>
+    </React.StrictMode>;
   }
 }

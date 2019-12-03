@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import { SortDirection } from "../sort/sort";
 import { SplitFixtures } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { Essence, EssenceContext, EssenceValue } from "./essence";
+import { Essence, EssenceValue } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
@@ -73,14 +73,14 @@ export class EssenceFixtures {
     };
   }
 
-  static getWikiContext(): EssenceContext {
+  static getWikiContext() {
     return {
       dataCube: DataCubeFixtures.wiki(),
       visualizations: MANIFESTS
     };
   }
 
-  static getTwitterContext(): EssenceContext {
+  static getTwitterContext() {
     return {
       dataCube: DataCubeFixtures.twitter(),
       visualizations: MANIFESTS

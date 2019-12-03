@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,4 +131,4 @@ app.use((err: any, req: Request, res: Response) => {
   res.send(errorLayout({ version: VERSION, title: "Error" }, err.message, error));
 });
 
-export = app;
+export default app;

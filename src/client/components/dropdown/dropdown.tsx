@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     const { open } = this.state;
     if (!open) return;
 
-    const myElement = ReactDOM.findDOMNode(this);
+    const myElement = ReactDOM.findDOMNode(this) as Element;
     if (!myElement) return;
     const target = e.target as Element;
 

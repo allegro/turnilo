@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import { GlobalEventListener } from "../../components/global-event-listener/glob
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
+import { SeriesTile } from "../../components/series-tile/series-tile";
 import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
@@ -134,8 +135,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   public mounted: boolean;
   private readonly clicker: Clicker;
   private downloadableDataset: DataSetWithTabOptions;
+  private visualization = React.createRef<HTMLDivElement>();
+  private container = React.createRef<HTMLDivElement>();
+  private filterTile = React.createRef<FilterTile>();
+  private seriesTile = React.createRef<SeriesTilesRow>();
+  private splitTile = React.createRef<SplitTile>();
 
-  constructor(props: CubeViewProps) {
+    constructor(props: CubeViewProps) {
     super(props);
 
     this.state = {
@@ -324,7 +330,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromDataCube(dataCube: DataCube): Essence {
-    return Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
+    return Essence.fromDataCube(dataCube, MANIFESTS);
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
@@ -341,9 +347,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   globalResizeListener = () => {
-    const { container, visualization } = this.refs;
-    const containerDOM = ReactDOM.findDOMNode(container);
-    const visualizationDOM = ReactDOM.findDOMNode(visualization);
+    const containerDOM = this.container.current;
+    const visualizationDOM = this.visualization.current;
     if (!containerDOM || !visualizationDOM) return;
 
     this.setState({
@@ -471,12 +476,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
-    (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
+    this.filterTile.current.filterMenuRequest(dimension);
   }
 
   appendDirtySeries = (series: Series) => {
     if (!series) return;
-    (this.refs.seriesTile as SeriesTilesRow).appendDirtySeries(series);
+    this.seriesTile.current.appendDirtySeries(series);
   }
 
   changeTimezone = (newTimezone: Timezone) => {
@@ -576,7 +581,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <div className="cube-view">
       <GlobalEventListener resize={this.globalResizeListener} />
       {headerBar}
-      <div className="container" ref="container">
+      <div className="container" ref={this.container}>
         {!layout.factPanel.hidden && <DimensionMeasurePanel
           style={styles.dimensionMeasurePanel}
           clicker={clicker}
@@ -604,20 +609,20 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             </div>
             <div className="filter-split-section">
               <FilterTile
-                ref="filterTile"
+                ref={this.filterTile}
                 clicker={clicker}
                 essence={essence}
                 timekeeper={timekeeper}
                 menuStage={visualizationStage}
               />
               <SplitTile
-                ref="splitTile"
+                ref={this.splitTile}
                 clicker={clicker}
                 essence={essence}
                 menuStage={visualizationStage}
               />
               <SeriesTilesRow
-                ref="seriesTile"
+                ref={this.seriesTile}
                 clicker={clicker}
                 essence={essence}
                 menuStage={visualizationStage}
@@ -633,7 +638,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             className="center-main"
             onDragEnter={this.dragEnter}
           >
-            <div className="visualization" ref="visualization">{this.visElement()}</div>
+            <div className="visualization" ref={this.visualization}>{this.visElement()}</div>
             {this.manualFallback()}
             {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div

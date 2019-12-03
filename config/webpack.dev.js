@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ const webpack = require('webpack');
 const hotMiddlewareScript = 'webpack-hot-middleware/client';
 
 module.exports = merge.smart(common, {
+  mode: 'development',
   entry: {
     main: [hotMiddlewareScript, "./src/client/main.tsx"]
   },
@@ -27,12 +28,10 @@ module.exports = merge.smart(common, {
     publicPath: '/',
     pathinfo: false
   },
-  devtool: "source-map",
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('dev-hmr')
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
   ]
 });

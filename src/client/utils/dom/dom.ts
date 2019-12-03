@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ function convertDOMStringListToArray(list: any): any[] {
   return array;
 }
 
-export function isInside(child: Element, parent: Element): boolean {
+export function isInside(child: Element, parent: Element | Text): boolean {
   var altParent: Element;
   while (child) {
     if (child === parent) return true;

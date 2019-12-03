@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-require('ts-node').register({ typeCheck: true });
+require('ts-node').register({
+  typeCheck: true,
+  compilerOptions: {
+    module: 'commonjs',
+    target: 'es5'
+  }
+});
 require('ignore-styles');
 
-const jsdom = require("jsdom").jsdom;
+const jsdom = require('jsdom').jsdom;
 
-var document = (new jsdom('<!doctype html><html><body></body></html>'));
+const document = (new jsdom('<!doctype html><html><body></body></html>'));
 global.document = document;
 global.window = document.defaultView;
 // setup for type-detect, should be solved in https://github.com/chaijs/type-detect/pull/129
 global.HTMLElement = global.window.HTMLElement;
 // setup for React
-global.navigator = {userAgent: "testing"};
+global.navigator = {userAgent: 'testing'};
 
 
 var enzyme = require('enzyme');
 var Adapter = require('enzyme-adapter-react-16');
 
 enzyme.configure({ adapter: new Adapter() });
-
