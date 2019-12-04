@@ -27,7 +27,7 @@ context("Split Tile", () => {
     threeStringSplits: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg9LRMuep8+iKSgmU4bP0QKHqt5u1dds7uwLSCfszBhdhmRRjcbGFpthZrlqAtzLpViB1pt8NsDkdfk9TlkYTYCtdxgR2JtFAA5OAaOIvJogFofDpdHrHP4DGRAkZjJzgqYzHHzUxLBEHJF0FE7WJPVlyN7CKSFab0r5CYT1WjoGm9CbaOAwcRCMCIGBqRGagj0OCwLSRKKwrLVMxufHFHDJEDlSrVWrUbAUsJ3BXUaAAJUwxEwjRtIGUdq6AGVqW0Gd8kWQHlD8NhdQhqGUINkykh81tMwgEBEgA"
   };
 
-  const hasSplits = (...splits) => {
+  const shouldHaveSplits = (...splits) => {
     splitItems().should("have.length", splits.length);
     splitItemsRow().within(() => {
       splits.forEach((split, idx) => {
@@ -51,7 +51,7 @@ context("Split Tile", () => {
 
       addSplitMenu().find(".label:contains('Channel')").click();
 
-      hasSplits("Channel");
+      shouldHaveSplits("Channel");
     });
 
     it("should add Channel split with plus button using search field", () => {
@@ -66,7 +66,7 @@ context("Split Tile", () => {
           .click();
       });
 
-      hasSplits("Channel");
+      shouldHaveSplits("Channel");
     });
 
     it("should add Channel split with dimension action", () => {
@@ -74,7 +74,7 @@ context("Split Tile", () => {
 
       dimensionAddSplitAction().click();
 
-      hasSplits("Channel");
+      shouldHaveSplits("Channel");
     });
 
     it("should add Channel split with dimension action using search field", () => {
@@ -89,7 +89,7 @@ context("Split Tile", () => {
 
       dimensionAddSplitAction().click();
 
-      hasSplits("Channel");
+      shouldHaveSplits("Channel");
     });
   });
 
@@ -99,7 +99,7 @@ context("Split Tile", () => {
     });
 
     it("should load with channel split", () => {
-      hasSplits("Channel");
+      shouldHaveSplits("Channel");
     });
 
     it("Channel should not be available in add split list", () => {
@@ -114,7 +114,7 @@ context("Split Tile", () => {
 
       addSplitMenu().find(".label:contains('Page')").click();
 
-      hasSplits("Channel", "Page");
+      shouldHaveSplits("Channel", "Page");
     });
 
     it("Channel dimension should not have Add split action", () => {
@@ -124,7 +124,7 @@ context("Split Tile", () => {
         .should("have.class", "disabled")
         .click();
 
-      hasSplits("Channel");
+      shouldHaveSplits("Channel");
     });
 
     it("should add split with dimension action", () => {
@@ -132,7 +132,7 @@ context("Split Tile", () => {
 
       dimensionAddSplitAction().click();
 
-      hasSplits("Channel", "Page");
+      shouldHaveSplits("Channel", "Page");
     });
 
     it("should replace split with dimension action", () => {
@@ -140,7 +140,7 @@ context("Split Tile", () => {
 
       dimensionReplaceSplitAction().click();
 
-      hasSplits("Page");
+      shouldHaveSplits("Page");
     });
   });
 
@@ -152,7 +152,7 @@ context("Split Tile", () => {
     });
 
     it("should load with two split tiles", () => {
-      hasSplits("Channel", "Page");
+      shouldHaveSplits("Channel", "Page");
     });
 
     it("should show overflow tile for third split", () => {
@@ -185,7 +185,7 @@ context("Split Tile", () => {
       splitTile("Page").find(".remove")
         .click();
 
-      hasSplits("Channel", "City Name");
+      shouldHaveSplits("Channel", "City Name");
     });
   });
 
@@ -203,7 +203,7 @@ context("Split Tile", () => {
 
       dragMask().trigger("drop");
 
-      hasSplits("Channel", "Page");
+      shouldHaveSplits("Channel", "Page");
     });
 
     it("replaces split by dropping dimension on existing split", () => {
@@ -217,7 +217,7 @@ context("Split Tile", () => {
 
         dragMask().trigger("drop", {clientX: x + width / 2});
 
-        hasSplits("Page");
+        shouldHaveSplits("Page");
       });
     });
 
@@ -244,7 +244,7 @@ context("Split Tile", () => {
 
           dragMask().trigger("drop", {clientX: x + width});
 
-          hasSplits("Page", "Channel", "City Name");
+          shouldHaveSplits("Page", "Channel", "City Name");
         });
     });
   });
