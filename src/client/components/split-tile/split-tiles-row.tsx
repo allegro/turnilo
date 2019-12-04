@@ -50,8 +50,8 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   state: SplitTilesRowState = {};
 
   private maxItems(): number {
-    const { menuStage, essence: { series } } = this.props;
-    return menuStage && getMaxItems(menuStage.width, series.count());
+    const { menuStage, essence: { splits: { splits } } } = this.props;
+    return menuStage && getMaxItems(menuStage.width, splits.count());
   }
 
   openMenu = (split: Split) => this.setState({ openedSplit: split });
