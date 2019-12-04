@@ -19,7 +19,7 @@ import { Colors } from "../../../common/models/colors/colors";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";

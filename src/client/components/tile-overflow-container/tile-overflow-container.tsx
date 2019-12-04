@@ -35,9 +35,9 @@ const TileOverflowContainerMenu: React.SFC<TileOverflowContainerMenuProps> = pro
 
   const positionedItems = items.map((item, idx) =>
     React.cloneElement(item, { style: transformStyle(0, CORE_ITEM_GAP + idx * SEGMENT_HEIGHT) }));
+
   return <BubbleMenu
     className="overflow-menu"
-    id={this.overflowMenuId}
     direction="down"
     stage={Stage.fromSize(208, CORE_ITEM_GAP + (items.length * SEGMENT_HEIGHT))}
     fixedSize={true}
