@@ -1,58 +1,84 @@
 /// <reference types="Cypress" />
 
 context("Split Tile", () => {
+
+  const splitsContainer = () => cy.get(".split-tile");
+  const dragMask = () => cy.get(".drag-mask");
+  const splitTile = (dimension) => cy.get(`.split-tile .split.dimension:contains(${dimension})`);
+  const addSplitButton = () => cy.get(".split-tile .add-tile");
+  const splitItemsRow = () => cy.get(".split-tile .items");
+  const splitItems = () => cy.get(".split-tile .items .split.dimension");
+  const splitOverflow = () => cy.get(".split-tile .items .overflow.dimension");
+  const splitOverflowMenu = () => cy.get(".overflow-menu");
+  const addSplitMenu = () => cy.get(".add-tile-menu");
+  const splitMenu = () => cy.get(".split-menu");
+  const dimensionsList = () => cy.get(".dimension-list-tile");
+  const dimensionTile = (dimension) => cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
+  const dimensionAddSplitAction = () => cy.get(".dimension-actions-menu .subsplit.action");
+  const dimensionReplaceSplitAction = () => cy.get(".dimension-actions-menu .split.action");
+
+  const urls = {
+    // tslint:disable-next-line:max-line-length
+    allSplitTypes: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXWU4bP0QKExJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdNqh2QvycoVVMzA6CSOokWgg6vABWCMoFIN1DSvz6IpKCA6Fs+2wYEMylXSNeFwAJTxr1hu19gs69giPCsURtR8oNhk4QHBxpMsrltiAVmt8NcEAhtrs0gRrrRiFJ+scgRD2JhaMc0AAZQrZNAACwuVxucDuinwLgADHF3vUQI1dC02h1Apiqr0ZCCBmQhqcbGEJtgprlqLNzLolgi6EjNrERZk+lZPsIpIUJnzWu0hMIarR0NyuqNtHAbnVqGBEDA1Gq7QR6FC7BRtcosth2m4CiccMkQOwaXBsMGEEJsHB6PE4CbqNAAEqYYiYOpRJVB9oAZS5zTNgoRZAq8uRNwQ1BpEGyNKQLfWKLRQA",
+    // tslint:disable-next-line:max-line-length
+    channelSplit: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAZYkH7Mwatm7SlC6d12zu7qYXradCbCIIntOBhxITBEGDVVq80gR6HBYFpIlFqMostUzG4CkVHMkQOVKtVatRsHB6PE4FdqNAAEqYYiYRpQkAwqpdADK9S2IBuXSE5GyM3w2C+CGoZQg2TKSAFWy5CAQESAA==",
+    noSplits: "http://localhost:9090",
+    // tslint:disable-next-line:max-line-length
+    threeStringSplits: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg9LRMuep8+iKSgmU4bP0QKHqt5u1dds7uwLSCfszBhdhmRRjcbGFpthZrlqAtzLpViB1pt8NsDkdfk9TlkYTYCtdxgR2JtFAA5OAaOIvJogFofDpdHrHP4DGRAkZjJzgqYzHHzUxLBEHJF0FE7WJPVlyN7CKSFab0r5CYT1WjoGm9CbaOAwcRCMCIGBqRGagj0OCwLSRKKwrLVMxufHFHDJEDlSrVWrUbAUsJ3BXUaAAJUwxEwjRtIGUdq6AGVqW0Gd8kWQHlD8NhdQhqGUINkykh81tMwgEBEgA"
+  };
+
+  const hasSplits = (...splits) => {
+    splitItems().should("have.length", splits.length);
+    splitItemsRow().within(() => {
+      splits.forEach((split, idx) => {
+        cy.get(`.split.dimension:nth-child(${idx + 1})`)
+          .should("contain", split);
+      });
+    });
+  };
+
   describe("No splits in View Definition", () => {
     beforeEach(() => {
-      cy.visit("http://localhost:9090");
+      cy.visit(urls.noSplits);
     });
 
     it("should load with no splits", () => {
-      cy.get(".split-tile .items")
-        .should("be.empty");
+      splitItemsRow().should("be.empty");
     });
 
     it("should add Channel split with plus button", () => {
-      // Open Add Tile modal
-      cy.get(".split-tile .add-tile").click();
-      // Select first option
-      cy.get('.add-tile-menu .tile-row .label:contains("Channel")').click();
+      addSplitButton().click();
 
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Channel");
+      addSplitMenu().find(".label:contains('Channel')").click();
+
+      hasSplits("Channel");
     });
 
     it("should add Channel split with plus button using search field", () => {
-      // Open Add Tile modal
-      cy.get(".split-tile .add-tile").click();
-      // Type into search box
-      cy.get(".add-tile-menu").within(() => {
+      addSplitButton().click();
+
+      addSplitMenu().within(() => {
         cy.get(".search-box input").type("Channel");
-        cy.get(".tile-row .label")
+
+        cy.get(".label")
           .should("have.length", 1)
           .should("contain", "Channel")
           .click();
       });
 
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Channel");
+      hasSplits("Channel");
     });
 
     it("should add Channel split with dimension action", () => {
-      // Open Dimension Actions menu
-      cy.get('.dimension-list-tile .dimension .label:contains("Channel")').click();
-      // Select Add Split action
-      cy.get(".dimension-actions-menu .subsplit.action").click();
+      dimensionTile("Channel").click();
 
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Channel");
+      dimensionAddSplitAction().click();
+
+      hasSplits("Channel");
     });
 
     it("should add Channel split with dimension action using search field", () => {
-      cy.get(".dimension-list-tile").within(() => {
-        // Focus Dimension search box
+      dimensionsList().within(() => {
         cy.get(".icon.search").click();
         cy.get(".search-box input").type("Channel");
         cy.get(".rows .dimension")
@@ -60,98 +86,61 @@ context("Split Tile", () => {
           .should("contain", "Channel")
           .click();
       });
-      // Select Add Split action
-      cy.get(".dimension-actions-menu .subsplit.action").click();
 
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Channel");
+      dimensionAddSplitAction().click();
+
+      hasSplits("Channel");
     });
   });
 
   describe("Channel split already in View Definition", () => {
     beforeEach(() => {
-      // tslint:disable-next-line:max-line-length
-      cy.visit("http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAZYkH7Mwatm7SlC6d12zu7qYXradCbCIIntOBhxITBEGDVVq80gR6HBYFpIlFqMostUzG4CkVHMkQOVKtVatRsHB6PE4FdqNAAEqYYiYRpQkAwqpdADK9S2IBuXSE5GyM3w2C+CGoZQg2TKSAFWy5CAQESAA==");
+      cy.visit(urls.channelSplit);
     });
 
     it("should load with channel split", () => {
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Channel");
+      hasSplits("Channel");
     });
 
     it("Channel should not be available in add split list", () => {
-      // Open Add Tile modal
-      cy.get(".split-tile .add-tile").click();
+      addSplitButton().click();
 
-      cy.get('.add-tile-menu .tile-row:contains("Channel")')
+      addSplitMenu().find(".label:contains('Channel')")
         .should("not.exist");
     });
 
     it("should add split with plus button", () => {
-      // Open Add Tile modal
-      cy.get(".split-tile .add-tile").click();
+      addSplitButton().click();
 
-      // Select Page dimension
-      cy.get('.add-tile-menu .tile-row:contains("Page")').click();
+      addSplitMenu().find(".label:contains('Page')").click();
 
-      cy.get(".split-tile .items").within(() => {
-        cy.get(".split.dimension")
-          .should("have.length", 2);
-
-        cy.get(".split.dimension:first")
-          .should("contain", "Channel");
-
-        cy.get(".split.dimension:nth-child(2)")
-          .should("contain", "Page");
-      });
+      hasSplits("Channel", "Page");
     });
 
     it("Channel dimension should not have Add split action", () => {
-      // Open Dimension Actions menu
-      cy.get('.dimension-list-tile .dimension .label:contains("Channel")').click();
+      dimensionTile("Channel").click();
 
-      cy.get(".dimension-actions-menu .subsplit.action").as("add-split");
+      dimensionAddSplitAction()
+        .should("have.class", "disabled")
+        .click();
 
-      cy.get("@add-split")
-        .should("have.class", "disabled");
-
-      // Nothing happens
-      cy.get("@add-split").click();
-
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Channel");
+      hasSplits("Channel");
     });
 
     it("should add split with dimension action", () => {
-      // Open Dimension Actions menu
-      cy.get('.dimension-list-tile .dimension .label:contains("Page")').click();
-      // Select Add Split action
-      cy.get(".dimension-actions-menu .subsplit.action").click();
+      dimensionTile("Page").click();
 
-      cy.get(".split-tile .items").within(() => {
-        cy.get(".split.dimension")
-          .should("have.length", 2);
+      dimensionAddSplitAction().click();
 
-        cy.get(".split.dimension:first")
-          .should("contain", "Channel");
-
-        cy.get(".split.dimension:nth-child(2)")
-          .should("contain", "Page");
-      });
+      hasSplits("Channel", "Page");
     });
 
     it("should replace split with dimension action", () => {
-      // Open Dimension Actions menu
-      cy.get('.dimension-list-tile .dimension .label:contains("Page")').click();
-      // Select Replace Split action
-      cy.get(".dimension-actions-menu .split.action").click();
+      dimensionTile("Page").click();
 
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 1)
-        .should("contain", "Page");
+      dimensionReplaceSplitAction().click();
+
+      hasSplits("Page");
     });
   });
 
@@ -159,162 +148,144 @@ context("Split Tile", () => {
     beforeEach(() => {
       // Force viewport that shows overflows for three tiles
       cy.viewport(1200, 800);
-      // tslint:disable-next-line:max-line-length
-      cy.visit("http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg9LRMuep8+iKSgmU4bP0QKHqt5u1dds7uwLSCfszBhdhmRRjcbGFpthZrlqAtzLpViB1pt8NsDkdfk9TlkYTYCtdxgR2JtFAA5OAaOIvJogFofDpdHrHP4DGRAkZjJzgqYzHHzUxLBEHJF0FE7WJPVlyN7CKSFab0r5CYT1WjoGm9CbaOAwcRCMCIGBqRGagj0OCwLSRKKwrLVMxufHFHDJEDlSrVWrUbAUsJ3BXUaAAJUwxEwjRtIGUdq6AGVqW0Gd8kWQHlD8NhdQhqGUINkykh81tMwgEBEgA");
+      cy.visit(urls.threeStringSplits);
     });
 
     it("should load with two split tiles", () => {
-      cy.get(".split-tile .items .split.dimension")
-        .should("have.length", 2);
+      hasSplits("Channel", "Page");
     });
 
     it("should show overflow tile for third split", () => {
-      cy.get(".split-tile .items .dimension.overflow")
-        .should("contain", "+1");
+      splitOverflow().should("contain", "+1");
     });
 
     it("should show overflowed split after clicking tile", () => {
-      cy.get(".split-tile .items .dimension.overflow")
-        .click();
+      splitOverflow().click();
 
-      cy.get(".overflow-menu .split.dimension")
+      splitOverflowMenu().find(".split.dimension")
         .should("contain", "City Name");
     });
 
     it("should open split menu inside overflow tile", () => {
-      cy.get(".split-tile .items .dimension.overflow")
+      splitOverflow().click();
+
+      splitOverflowMenu().find(".split.dimension")
         .click();
 
-      cy.get(".overflow-menu .split.dimension")
-        .click();
-
-      cy.get(".split-menu").should("exist");
+      splitMenu().should("exist");
     });
   });
 
   describe("Remove action", () => {
     beforeEach(() => {
-      // tslint:disable-next-line:max-line-length
-      cy.visit("http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg9LRMuep8+iKSgmU4bP0QKHqt5u1dds7uwLSCfszBhdhmRRjcbGFpthZrlqAtzLpViB1pt8NsDkdfk9TlkYTYCtdxgR2JtFAA5OAaOIvJogFofDpdHrHP4DGRAkZjJzgqYzHHzUxLBEHJF0FE7WJPVlyN7CKSFab0r5CYT1WjoGm9CbaOAwcRCMCIGBqRGagj0OCwLSRKKwrLVMxufHFHDJEDlSrVWrUbAUsJ3BXUaAAJUwxEwjRtIGUdq6AGVqW0Gd8kWQHlD8NhdQhqGUINkykh81tMwgEBEgA");
+      cy.visit(urls.threeStringSplits);
     });
 
     it('should remove split after clicking "x" icon', () => {
-      cy.get(".split-tile .items").within(() => {
-        cy.get('.split.dimension:contains("Page") .remove').click();
+      splitTile("Page").find(".remove")
+        .click();
 
-        cy.get(".split.dimension")
-          .should("have.length", 2);
-
-        cy.get(".split.dimension:first")
-          .should("contain", "Channel");
-
-        cy.get(".split.dimension:nth-child(2)")
-          .should("contain", "City Name");
-      });
+      hasSplits("Channel", "City Name");
     });
   });
 
   describe("Drag and drop", () => {
     const dataTransfer = new DataTransfer();
     beforeEach(() => {
-      // tslint:disable-next-line:max-line-length
-      cy.visit("http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAZYkH7Mwatm7SlC6d12zu7qYXradCbCIIntOBhxITBEGDVVq80gR6HBYFpIlFqMostUzG4CkVHMkQOVKtVatRsHB6PE4FdqNAAEqYYiYRpQkAwqpdADK9S2IBuXSE5GyM3w2C+CGoZQg2TKSAFWy5CAQESAA==");
+      cy.visit(urls.channelSplit);
     });
 
     it("adds split by dropping dimension", () => {
-      cy.get('.dimension-list-tile .dimension:contains("Page")')
-        .trigger("dragstart", { dataTransfer });
+      dimensionTile("Page")
+        .trigger("dragstart", {dataTransfer});
 
-      cy.get(".split-tile").trigger("dragenter");
+      splitsContainer().trigger("dragenter");
 
-      cy.get(".drag-mask").trigger("drop");
+      dragMask().trigger("drop");
 
-      cy.get(".split-tile .items").within(() => {
-        cy.get(".split").should("have.length", 2);
-        cy.get(".split:first").should("contain", "Channel");
-        cy.get(".split:nth-child(2)").should("contain", "Page");
-      });
+      hasSplits("Channel", "Page");
     });
 
     it("replaces split by dropping dimension on existing split", () => {
-      cy.get('.dimension-list-tile .dimension:contains("Page")')
-        .trigger("dragstart", { dataTransfer });
+      dimensionTile("Page")
+        .trigger("dragstart", {dataTransfer});
 
-      cy.get(".split-tile").trigger("dragenter");
+      splitsContainer().trigger("dragenter");
 
-      cy.get('.split-tile .split:contains("Channel")').then(([channelSplit]) => {
-        const { x, width } = channelSplit.getBoundingClientRect();
+      splitTile("Channel").then(([channelSplit]) => {
+        const {x, width} = channelSplit.getBoundingClientRect();
 
-        cy.get(".drag-mask").trigger("drop", { clientX: x + width / 2 });
+        dragMask().trigger("drop", {clientX: x + width / 2});
 
-        cy.get(".split-tile .items").within(() => {
-          cy.get(".split").should("have.length", 1);
-          cy.get(".split:first").should("contain", "Page");
-        });
+        hasSplits("Page");
       });
     });
 
+    it("can not drop dimension for which split already exists", () => {
+      dimensionTile("Channel")
+        .trigger("dragstart", {dataTransfer});
+
+      splitsContainer().trigger("dragenter");
+
+      dragMask().should("not.exist");
+    });
+
     it("rearranges splits", () => {
-      // tslint:disable-next-line:max-line-length
-      cy.visit("http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg3UN9GwKikoJToWz7bBgQzKVdI14XAAk6hqaQFpOCj1jgR8vRLuNqPkRmMnCA4FMZllcgcQOtNvgHggEAcjmkCA9aMQpEMwcVxgR2JhaGC0AAZQrZNBlW73R5wZ6KfAuXZxepbZraXTtTrdQJ4kD9TKDSHDMijK42MLTbCzXLUBbmXSrVF0dE7WISgbJAXCKSFaZCjpdITCeq0dC/XoTbRwR6NahgRAwNTap0EejwuwUA3KLLVMxuC5kopyEDlSrVWrUbBwejxOAW6jQABKmGImEaUXVYa6AGU+ZaRUJyNkZhjHghqGUINkykhW1tMdigA==");
+      cy.visit(urls.threeStringSplits);
 
-      cy.get('.split-tile .split.dimension:contains("Channel")').trigger("dragstart", { dataTransfer });
+      splitTile("Channel")
+        .trigger("dragstart", {dataTransfer});
 
-      cy.get(".split-tile").trigger("dragenter");
+      splitsContainer().trigger("dragenter");
 
-      cy.get('.split-tile .split.dimension:contains("Time")').then(([timeSplit]) => {
-        const { x, width } = timeSplit.getBoundingClientRect();
+      splitTile("Page")
+        .then(([timeSplit]) => {
+          const {x, width} = timeSplit.getBoundingClientRect();
 
-        cy.get(".drag-mask").trigger("drop", { clientX: x + width });
+          dragMask().trigger("drop", {clientX: x + width});
 
-        cy.get(".split-tile .items").within(() => {
-          cy.get(".split").should("have.length", 3);
-          cy.get(".split:first").should("contain", "Time");
-          cy.get(".split:nth-child(2)").should("contain", "Channel");
-          cy.get(".split:nth-child(3)").should("contain", "Comment");
+          hasSplits("Page", "Channel", "City Name");
         });
-      });
     });
   });
 
   describe("Split menu", () => {
     beforeEach(() => {
-      // tslint:disable-next-line:max-line-length
-      cy.visit("http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegAUpWACYy88kGZiT0WXASMBGACJCoE5fgC0LgxU1BHQyLxAAXwBdaOooZSQ0S2slVV0vSQhsAHMhMzoybChHXXYACzhsbDIET0xJNHxQLR0CODMzMjMhVLUoUzC8iC12DBxdTqh2QvycoVVMzG6CSOokWghGvABWAAYIygUg3UN9GwKikoJToWz7bBgQzKVdI14XAAk6hqaQFpOCj1jgR8vRLuNqPkRmMnCA4FMZllcgcQOtNvgHggEAcjmkCA9aMQpEMwcVxgR2JhaGC0AAZQrZNBlW73R5wZ6KfAuXZxepbZraXTtTrdQJ4kD9TKDSHDMijK42MLTbCzXLUBbmXSrVF0dE7WISgbJAXCKSFaZCjpdITCeq0dC/XoTbRwR6NahgRAwNTap0EejwuwUA3KLLVMxuC5kopyEDlSrVWrUbBwejxOAW6jQABKmGImEaUXVYa6AGU+ZaRUJyNkZhjHghqGUINkykhW1tMdigA==");
+      cy.visit(urls.allSplitTypes);
     });
 
     it("split menu has action buttons", () => {
-      cy.get('.split.dimension:contains("Channel")').click();
+      splitTile("Page").click();
 
-      cy.get(".button-bar .primary").should("contain", "OK");
-      cy.get(".button-bar .secondary").should("contain", "Cancel");
+      splitMenu().find(".button-bar .primary").should("contain", "OK");
+      splitMenu().find(".button-bar .secondary").should("contain", "Cancel");
     });
 
     it("split menu OK action should be disabled upon menu opening", () => {
-      cy.get('.split.dimension:contains("Channel")').click();
+      splitTile("Page").click();
 
-      cy.get(".button-bar .primary").should("have.attr", "disabled");
+      splitMenu().find(".button-bar .primary").should("have.attr", "disabled");
     });
 
     it("split menu OK action should be enabled after changing split options", () => {
-      cy.get('.split.dimension:contains("Channel")').click();
+      splitTile("Page").click();
 
-      cy.get(".sort-direction .direction").click();
+      splitMenu().find(".sort-direction .direction").click();
 
-      cy.get(".button-bar .primary").should("not.have.attr", "disabled");
+      splitMenu().find(".button-bar .primary").should("not.have.attr", "disabled");
     });
 
     describe("String Split menu", () => {
       it("should show split menu for string dimension", () => {
-        cy.get('.split.dimension:contains("Channel")').click();
+        splitTile("Page").click();
 
-        cy.get(".split-menu").should("exist");
+        splitMenu().should("exist");
       });
 
       it("string split menu has sort controls", () => {
-        cy.get('.split.dimension:contains("Channel")').click();
+        splitTile("Page").click();
 
-        cy.get(".split-menu .sort-direction").within(() => {
+        splitMenu().find(".sort-direction").within(() => {
           cy.get(".direction").should("have.class", "descending");
           cy.get(".dropdown-label").should("contain", "Sort by");
           cy.get(".dropdown .selected-item").should("contain", "Added");
@@ -322,26 +293,27 @@ context("Split Tile", () => {
       });
 
       it("string split menu has limit controls", () => {
-        cy.get('.split.dimension:contains("Channel")').click();
+        splitTile("Page").click();
 
+        // TODO: add meaningful classnames for limit dropdown!
         cy.get(".split-menu > .dropdown.down").within(() => {
           cy.get(".dropdown-label").should("contain", "Limit");
-          cy.get(".selected-item").should("contain", "50");
+          cy.get(".selected-item").should("contain", "5");
         });
       });
     });
 
     describe("Time Split menu", () => {
       it("should show split menu for time dimension", () => {
-        cy.get('.split.dimension:contains("Time")').click();
+        splitTile("Time").click();
 
-        cy.get(".split-menu").should("exist");
+        splitMenu().should("exist");
       });
 
-      it('time split menu has granularity controls', () => {
-        cy.get('.split.dimension:contains("Time")').click();
+      it("time split menu has granularity controls", () => {
+        splitTile("Time").click();
 
-        cy.get(".split-menu .button-group").within(() => {
+        splitMenu().find(".button-group").within(() => {
           cy.get(".button-group-title").should("contain", "Granularity");
           cy.get(".group-container .group-member").should("have.length", 6);
           cy.get(".group-container .group-member.selected").should("exist");
@@ -350,20 +322,20 @@ context("Split Tile", () => {
       });
 
       it('granularity "…" option show input box', () => {
-        cy.get('.split.dimension:contains("Time")').click();
+        splitTile("Time").click();
 
-        cy.get(".split-menu .button-group .group-member:last").click();
+        splitMenu().find(".button-group .group-member:last").click();
 
-        cy.get(".split-menu .custom-input")
+        splitMenu().find(".custom-input")
           .should("have.class", "invalid")
           .should("have.value", "")
           .should("have.attr", "placeholder", "e.g. PT2H or P3M");
       });
 
       it("time split menu has sort controls", () => {
-        cy.get('.split.dimension:contains("Time")').click();
+        splitTile("Time").click();
 
-        cy.get(".split-menu .sort-direction").within(() => {
+        splitMenu().find(".sort-direction").within(() => {
           cy.get(".direction").should("have.class", "ascending");
           cy.get(".dropdown-label").should("contain", "Sort by");
           cy.get(".dropdown .selected-item").should("contain", "Time");
@@ -371,8 +343,9 @@ context("Split Tile", () => {
       });
 
       it("time split menu has limit controls", () => {
-        cy.get('.split.dimension:contains("Time")').click();
+        splitTile("Time").click();
 
+        // TODO: add meaningful classnames for limit dropdown!
         cy.get(".split-menu > .dropdown.down").within(() => {
           cy.get(".dropdown-label").should("contain", "Limit");
           cy.get(".selected-item").should("contain", "None");
@@ -382,15 +355,15 @@ context("Split Tile", () => {
 
     describe("Number Split menu", () => {
       it("should show split menu for number dimension", () => {
-        cy.get('.split.dimension:contains("Comment")').click();
+        splitTile("Comment").click();
 
-        cy.get(".split-menu").should("exist");
+        splitMenu().should("exist");
       });
 
       it("number split menu has granularity controls", () => {
-        cy.get('.split.dimension:contains("Comment")').click();
+        splitTile("Comment").click();
 
-        cy.get(".split-menu .button-group").within(() => {
+        splitMenu().find(".button-group").within(() => {
           cy.get(".button-group-title").should("contain", "Granularity");
           cy.get(".group-container .group-member").should("have.length", 6);
           cy.get(".group-container .group-member.selected").should("exist");
@@ -399,20 +372,20 @@ context("Split Tile", () => {
       });
 
       it('granularity "…" option show input box', () => {
-        cy.get('.split.dimension:contains("Comment")').click();
+        splitTile("Comment").click();
 
-        cy.get(".split-menu .button-group .group-member:last").click();
+        splitMenu().find(".button-group .group-member:last").click();
 
-        cy.get(".split-menu .custom-input")
+        splitMenu().find(".custom-input")
           .should("have.class", "invalid")
           .should("have.value", "")
           .should("have.attr", "placeholder", "Bucket size");
       });
 
       it("number split menu has sort controls", () => {
-        cy.get('.split.dimension:contains("Comment")').click();
+        splitTile("Comment").click();
 
-        cy.get(".split-menu .sort-direction").within(() => {
+        splitMenu().find(".sort-direction").within(() => {
           cy.get(".direction").should("have.class", "descending");
           cy.get(".dropdown-label").should("contain", "Sort by");
           cy.get(".dropdown .selected-item").should("contain", "Added");
@@ -420,8 +393,9 @@ context("Split Tile", () => {
       });
 
       it("number split menu has limit controls", () => {
-        cy.get('.split.dimension:contains("Comment")').click();
+        splitTile("Comment").click();
 
+        // TODO: add meaningful classnames for limit dropdown!
         cy.get(".split-menu > .dropdown.down").within(() => {
           cy.get(".dropdown-label").should("contain", "Limit");
           cy.get(".selected-item").should("contain", 5);
