@@ -15,7 +15,6 @@
  */
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
@@ -149,20 +148,30 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const split = this.draggingSplit();
     if (!split) return;
 
-    const { clicker, essence: { splits } } = this.props;
-    let dragPosition = this.calculateDragPosition(e);
-    if (dragPosition.replace === this.maxItems()) {
-      dragPosition = new DragPosition({ insert: dragPosition.replace });
-    }
+    const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.isReplace()) {
-      clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, split), VisStrategy.FairGame);
+      if (dragPosition.replace === this.maxItems()) {
+        this.insertSplit(split, dragPosition.replace);
+      } else {
+        this.replaceSplit(split, dragPosition.replace);
+      }
     } else {
-      clicker.changeSplits(splits.insertByIndex(dragPosition.insert, split), VisStrategy.FairGame);
+      this.insertSplit(split, dragPosition.insert);
     }
   }
 
   appendSplit = (dimension: Dimension) => {
     this.props.clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+  }
+
+  insertSplit = (split: Split, index: number) => {
+    const { clicker, essence: { splits } } = this.props;
+    clicker.changeSplits(splits.insertByIndex(index, split), VisStrategy.FairGame);
+  }
+
+  replaceSplit = (split: Split, index: number) => {
+    const { clicker, essence: { splits } } = this.props;
+    clicker.changeSplits(splits.replaceByIndex(index, split), VisStrategy.FairGame);
   }
 
   render() {

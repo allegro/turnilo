@@ -43,5 +43,4 @@ export const AddSplit: React.SFC<AddSplitProps> = props => {
     containerStage={menuStage}
     onSelect={appendSplit}
     tiles={tiles} />;
-
 };
