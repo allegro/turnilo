@@ -80,6 +80,10 @@ export class Measures {
     return new Measures(parameters.map(measureOrGroupFromJS));
   }
 
+  static fromMeasures(measures: Measure[]): Measures {
+    return new Measures(measures);
+  }
+
   private readonly measures: MeasureOrGroup[];
   private readonly flattenedMeasures: List<Measure>;
 
