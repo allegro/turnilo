@@ -2,15 +2,13 @@ language: node_js
 
 node_js:
   - "10"
+  - "12"
 
 addons:
   apt:
     packages:
       # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
       - libgconf-2-4
-
-before_install:
-  - npm i -g npm@6.5.0
 
 cache:
   # Caches $HOME/.npm when npm ci is default script command
