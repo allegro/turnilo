@@ -59,7 +59,7 @@ describe("Colors", () => {
   describe("methods", () => {
     describe("#fromLimit", () => {
       it("works in basic case", () => {
-        var colors = Colors.fromLimit("country", 5);
+        const colors = Colors.fromLimit("country", 5);
         expect(colors.toJS()).to.deep.equal({
           dimension: "country",
           limit: 5
@@ -70,7 +70,7 @@ describe("Colors", () => {
 
     describe("#fromValues", () => {
       it("works in basic case", () => {
-        var colors = Colors.fromValues("country", [null, "Madagascar", "UK", "India", "Russia"]);
+        let colors = Colors.fromValues("country", [null, "Madagascar", "UK", "India", "Russia"]);
         expect(colors.toJS()).to.deep.equal({
           dimension: "country",
           values: {
@@ -129,7 +129,7 @@ describe("Colors", () => {
           hasNull: true
         });
 
-        var colorsWithGap = colors.removeColor("Australia");
+        const colorsWithGap = colors.removeColor("Australia");
         expect(colors.equals(colorsWithGap)).to.equal(false);
         expect(colorsWithGap.equals(colors)).to.equal(false);
       });
@@ -139,12 +139,12 @@ describe("Colors", () => {
 
   describe("#getColors", () => {
     it("works in basic case (with null)", () => {
-      var colors = Colors.fromValues("country", [null, "UK", "India", "Russia", "Madagascar"]);
+      const colors = Colors.fromValues("country", [null, "UK", "India", "Russia", "Madagascar"]);
       expect(colors.getColors(["UK", null, "lol"])).to.deep.equal(["#2D95CA", "#666666", null]);
     });
 
     it("works in basic case (no null)", () => {
-      var colors = Colors.fromValues("country", ["Null Island", "UK", "India", "Russia", "Madagascar"]);
+      const colors = Colors.fromValues("country", ["Null Island", "UK", "India", "Russia", "Madagascar"]);
       expect(colors.getColors(["UK", null, "lol"])).to.deep.equal(["#EFB925", null, null]);
     });
 

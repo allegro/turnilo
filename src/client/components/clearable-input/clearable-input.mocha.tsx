@@ -29,7 +29,7 @@ describe("ClearableInput", () => {
       />
     );
 
-    expect(renderedComponent.hasClass("empty")).to.be.true;
+    expect(renderedComponent.hasClass("empty")).to.equal(true);
   });
 
   it("should add custom class name", () => {
@@ -41,6 +41,6 @@ describe("ClearableInput", () => {
       />
     );
 
-    expect(renderedComponent.hasClass("foobar")).to.be.true;
+    expect(renderedComponent.hasClass("foobar")).to.equal(true);
   });
 });

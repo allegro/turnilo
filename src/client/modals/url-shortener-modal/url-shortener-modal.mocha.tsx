@@ -20,6 +20,7 @@ import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import * as sinon from "sinon";
 import { SinonStub } from "sinon";
+import { noop } from "../../../common/utils/functional/functional";
 import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
 import { LongUrl, ShortUrl, UrlShortenerModal, UrlShortenerPrompt } from "./url-shortener-modal";
@@ -28,8 +29,7 @@ const tick = () => Promise.resolve();
 
 describe("<UrlShortenerModal>", () => {
   it("should pass props correctly", () => {
-    const onClose = () => {
-    };
+    const onClose = noop;
     const url = "foobar.com";
     const title = "TITLE";
 

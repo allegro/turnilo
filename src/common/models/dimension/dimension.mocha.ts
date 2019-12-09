@@ -111,7 +111,7 @@ describe("Dimension", () => {
 
   describe("errors", () => {
     it("throws on invalid type", () => {
-      var dimJS = {
+      const dimJS = {
         name: "mixed_granularities",
         title: "Mixed Granularities",
         kind: "string" as DimensionKind,
@@ -120,7 +120,7 @@ describe("Dimension", () => {
 
       expect(() => { Dimension.fromJS(dimJS); }).to.throw("granularities must have the same type of actions");
 
-      var dimJS2 = {
+      const dimJS2 = {
         name: "bad type",
         title: "Bad Type",
         kind: "string",

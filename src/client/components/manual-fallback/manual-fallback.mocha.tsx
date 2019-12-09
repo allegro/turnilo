@@ -25,7 +25,7 @@ import { ManualFallback } from "./manual-fallback";
 
 describe("ManualFallback", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <ManualFallback
         clicker={null}
         essence={EssenceFixtures.wikiLineChartNoSplit()}

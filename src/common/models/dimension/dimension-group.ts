@@ -100,7 +100,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
   }
 
   toJS(): DimensionGroupJS {
-    let dimensionGroup: DimensionGroupJS = {
+    const dimensionGroup: DimensionGroupJS = {
       name: this.name,
       title: this.title,
       dimensions: this.dimensions.map(dimension => dimension.toJS())
@@ -114,7 +114,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
   }
 
   valueOf(): DimensionGroupValue {
-    let dimensionGroup: DimensionGroupValue = {
+    const dimensionGroup: DimensionGroupValue = {
       name: this.name,
       title: this.title,
       dimensions: this.dimensions

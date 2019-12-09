@@ -70,9 +70,9 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   }
 
   onReorder = (oldIndex: number, newIndex: number) => {
-    var tempItems: List<any> = this.state.tempItems;
+    const tempItems: List<any> = this.state.tempItems;
 
-    var item = tempItems.get(oldIndex);
+    const item = tempItems.get(oldIndex);
 
     this.setState({
       tempItems: tempItems
@@ -88,20 +88,20 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   renderEditModal(itemIndex: number): JSX.Element {
     const { tempItems } = this.state;
 
-    var item = tempItems.get(itemIndex);
+    const item = tempItems.get(itemIndex);
 
-    var onSave = (newItem: T) => {
+    const onSave = (newItem: T) => {
       const newItems = tempItems.update(itemIndex, () => newItem);
       this.setState({ tempItems: newItems, editedIndex: undefined }, this.onChange);
     };
 
-    var onClose = () => this.setState({ editedIndex: undefined });
+    const onClose = () => this.setState({ editedIndex: undefined });
 
     return React.cloneElement(this.props.getModal(item), { onSave, onClose });
   }
 
   renderAddModal(item: T): JSX.Element {
-    var onSave = (newItem: T) => {
+    const onSave = (newItem: T) => {
       const { tempItems } = this.state;
       const newItems = tempItems.push(newItem);
 
@@ -111,7 +111,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       );
     };
 
-    var onClose = () => this.setState({ pendingAddItem: null });
+    const onClose = () => this.setState({ pendingAddItem: null });
 
     return React.cloneElement(this.props.getModal(item), { onSave, onClose });
   }

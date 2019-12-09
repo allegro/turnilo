@@ -41,7 +41,7 @@ import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
-  return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName)));
+  return dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName)));
 }
 
 export interface VisualizationAndResolve {
@@ -569,6 +569,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return Essence.defaultSortReference(this.series, this.dataCube);
   }
 
+  // TODO: tslint has problem with this method. dunno why
+  // tslint:disable-next-line:no-unused-variable
   private updateSorts(): Essence {
     const seriesRefs = Set(this.series.series.map(series => series.reference));
     return this

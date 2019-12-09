@@ -34,16 +34,13 @@ export interface TileHeaderProps {
   icons?: TileHeaderIcon[];
 }
 
-export interface TileHeaderState {
-}
-
-export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {
+export class TileHeader extends React.Component<TileHeaderProps, {}> {
 
   renderIcons() {
     const { icons } = this.props;
     if (!icons || !icons.length) return null;
 
-    var iconElements = icons.map(icon => {
+    const iconElements = icons.map(icon => {
       return <div
         className={classNames("icon", icon.name, { active: icon.active })}
         key={icon.name}

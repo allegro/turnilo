@@ -21,7 +21,7 @@ import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Essence } from "../../../common/models/essence/essence";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 export function mkurlRouter(settingsGetter: SettingsGetter) {
 
@@ -55,7 +55,7 @@ export function mkurlRouter(settingsGetter: SettingsGetter) {
 
     let settings: AppSettings;
     try {
-      settings = await settingsGetter(<GetSettingsOptions> { dataCubeOfInterest: dataCubeName });
+      settings = await settingsGetter();
     } catch (e) {
       res.status(400).send({ error: "Couldn't load settings" });
       return;

@@ -32,23 +32,20 @@ export interface GlobalEventListenerProps {
   left?: (e: KeyboardEvent) => void;
 }
 
-export interface GlobalEventListenerState {
-}
-
-export class GlobalEventListener extends React.Component<GlobalEventListenerProps, GlobalEventListenerState> {
+export class GlobalEventListener extends React.Component<GlobalEventListenerProps, {}> {
   public mounted: boolean;
-  private propsToEvents: any = {
-    resize: "resize",
-    scroll: "scroll",
-    mouseDown: "mousedown",
-    mouseMove: "mousemove",
-    mouseUp: "mouseup",
-    keyDown: "keydown",
-    enter: "keydown",
-    escape: "keydown",
-    right: "keydown",
-    left: "keydown"
-  };
+  private propsToEvents = new Map<string, string>([
+    ["resize", "resize"],
+    ["scroll", "scroll"],
+    ["mouseDown", "mousedown"],
+    ["mouseMove", "mousemove"],
+    ["mouseUp", "mouseup"],
+    ["keyDown", "keydown"],
+    ["enter", "keydown"],
+    ["escape", "keydown"],
+    ["right", "keydown"],
+    ["left", "keydown"]
+  ]);
 
   componentWillReceiveProps(nextProps: GlobalEventListenerProps) {
     this.refreshListeners(nextProps, this.props);
@@ -59,18 +56,16 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
   }
 
   componentWillUnmount() {
-    for (let prop in this.propsToEvents) {
-      this.removeListener(this.propsToEvents[prop]);
+    for (const  event of this.propsToEvents.values()) {
+      this.removeListener(event);
     }
   }
 
   refreshListeners(nextProps: any, currentProps: any = {}) {
-    var toAdd: string[] = [];
-    var toRemove: string[] = [];
+    const toAdd: string[] = [];
+    const toRemove: string[] = [];
 
-    for (let prop in this.propsToEvents) {
-      let event = this.propsToEvents[prop];
-
+    for (const [prop, event] of this.propsToEvents.entries()) {
       if (currentProps[prop] && nextProps[prop]) continue;
 
       if (nextProps[prop] && toAdd.indexOf(event) === -1) {
@@ -85,7 +80,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
   }
 
   addListener(event: string) {
-    var useCapture = event === "scroll";
+    const useCapture = event === "scroll";
     window.addEventListener(event, (this as any)[`on${firstUp(event)}`], useCapture);
   }
 

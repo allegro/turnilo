@@ -126,7 +126,7 @@ describe("Functional utilities", () => {
       debounced(2);
       debounced(3);
       await sleep(10);
-      expect(callSpy.calledWith(3)).to.be.true;
+      expect(callSpy.calledWith(3)).to.equal(true);
     });
 
     it("should call function again after if time passes", async () => {

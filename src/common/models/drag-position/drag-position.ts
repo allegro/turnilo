@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
+import { Instance } from "immutable-class";
 import { hasOwnProperty } from "../../utils/general/general";
 
 export interface DragPositionValue {
@@ -27,8 +27,6 @@ export interface DragPositionJS {
   insert?: number;
   replace?: number;
 }
-
-var check: Class<DragPositionValue, DragPositionJS>;
 
 export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
 
@@ -49,15 +47,15 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
       });
     }
 
-    var sectionWidth = itemWidth + itemGap;
-    var sectionNumber = Math.floor(offset / sectionWidth);
+    const sectionWidth = itemWidth + itemGap;
+    const sectionNumber = Math.floor(offset / sectionWidth);
     if (numItems <= sectionNumber) {
       return new DragPosition({
         replace: numItems
       });
     }
 
-    var offsetWithinSection = offset - sectionWidth * sectionNumber;
+    const offsetWithinSection = offset - sectionWidth * sectionNumber;
     if (offsetWithinSection < itemWidth) {
       return new DragPosition({
         replace: sectionNumber
@@ -90,7 +88,7 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
   public toJS(): DragPositionJS {
-    var js: DragPositionJS = {};
+    const js: DragPositionJS = {};
     if (this.insert != null) js.insert = this.insert;
     if (this.replace != null) js.replace = this.replace;
     return js;
@@ -121,7 +119,4 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   public isReplace(): boolean {
     return this.replace !== null;
   }
-
 }
-
-check = DragPosition;

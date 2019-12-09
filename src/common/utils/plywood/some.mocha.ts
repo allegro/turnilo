@@ -21,15 +21,15 @@ const isRefExp = (e: Expression) => e instanceof RefExpression;
 
 describe("Plywood Expression.some", () => {
   it("should return true for top-level value satisfies predicate", () => {
-    expect(some($("main"), isRefExp)).to.be.true;
+    expect(some($("main"), isRefExp)).to.equal(true);
   });
 
   it("should return true for nested value satisfies predicate", () => {
-    expect(some($("main").multiply(2), isRefExp)).to.be.true;
+    expect(some($("main").multiply(2), isRefExp)).to.equal(true);
   });
 
   it("should return false when nothing satisfies predicate", () => {
     const isCountDistinct = (e: Expression) => e instanceof CountDistinctExpression;
-    expect(some($("main").multiply(2), isCountDistinct)).to.be.false;
+    expect(some($("main").multiply(2), isCountDistinct)).to.equal(false);
   });
 });

@@ -24,7 +24,7 @@ import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filt
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { SeriesList } from "../series-list/series-list";
-import { DimensionSort, isSortEmpty, Sort, SortType } from "../sort/sort";
+import { DimensionSort, isSortEmpty, Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Timekeeper } from "../timekeeper/timekeeper";
 

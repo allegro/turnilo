@@ -34,10 +34,7 @@ export interface ImmutableDropdownProps<T> {
   onChange: ChangeFn;
 }
 
-export interface ImmutableDropdownState {
-}
-
-export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps<T>, ImmutableDropdownState> {
+export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps<T>, {}> {
 
   static simpleGenerator(instance: any, changeFn: ChangeFn) {
     return (name: string, items: ListItem[]) => {

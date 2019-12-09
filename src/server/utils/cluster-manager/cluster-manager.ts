@@ -151,7 +151,7 @@ export class ClusterManager {
     const { cluster, logger, anchorPath } = this;
     if (!cluster.requestDecorator) return;
 
-    var requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator);
+    const requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator);
     logger.log(`Loading requestDecorator from '${requestDecoratorPath}'`);
     try {
       this.requestDecoratorModule = require(requestDecoratorPath);
@@ -167,7 +167,7 @@ export class ClusterManager {
   private updateRequester() {
     const { cluster, logger, requestDecoratorModule } = this;
 
-    var druidRequestDecorator: DruidRequestDecorator = null;
+    let druidRequestDecorator: DruidRequestDecorator = null;
     if (cluster.type === "druid" && requestDecoratorModule) {
       logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
       druidRequestDecorator = requestDecoratorModule.druidRequestDecoratorFactory(logger, {
@@ -326,7 +326,7 @@ export class ClusterManager {
         (sources: string[]) => {
           if (verbose) logger.log(`For cluster '${cluster.name}' got sources: [${sources.join(", ")}]`);
           // For every un-accounted source: make an external and add it to the managed list.
-          let introspectionTasks: Array<Promise<void>> = [];
+          const introspectionTasks: Array<Promise<void>> = [];
           sources.forEach(source => {
             const existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
 

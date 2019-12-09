@@ -16,12 +16,11 @@
  */
 
 import { Collection, List } from "immutable";
-import { Equalable, immutableArraysEqual } from "immutable-class";
 
 // The most generic function
 export type Fn = () => void;
 
-var objectHasOwnProperty = Object.prototype.hasOwnProperty;
+const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
@@ -45,10 +44,10 @@ export function isFiniteNumber(n: number): boolean {
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
-  var n = list.size;
+  const n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");
   if (insertPoint < 0 || insertPoint > n) throw new Error("insertPoint out of range");
-  var newArray: T[] = [];
+  const newArray: T[] = [];
   list.forEach((value, i) => {
     if (i === insertPoint) newArray.push(list.get(itemIndex));
     if (i !== itemIndex) newArray.push(value);
@@ -69,8 +68,8 @@ export function makeTitle(name: string): string {
 }
 
 export function collect(wait: number, fn: Fn): Fn {
-  var timeout: any;
-  var later = function() {
+  let timeout: any;
+  const later = function() {
     timeout = null;
     fn();
   };
@@ -90,7 +89,7 @@ export function makeUrlSafeName(name: string): string {
 export function verifyUrlSafeName(name: string): void {
   if (typeof name !== "string") throw new TypeError("name must be a string");
   if (!name.length) throw new Error("can not have empty name");
-  var urlSafeName = makeUrlSafeName(name);
+  const urlSafeName = makeUrlSafeName(name);
   if (name !== urlSafeName) {
     throw new Error(`'${name}' is not a URL safe name. Try '${urlSafeName}' instead?`);
   }
@@ -106,8 +105,8 @@ export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (
 }
 
 export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
-  var biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
-  var biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
+  const biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
+  const biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
   return biggerArrayOrEqual.reduce((pV, cV, i, arr) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
 }
 
@@ -132,7 +131,7 @@ export function integerDivision(x: number, y: number): number {
 }
 
 export function toSignificantDigits(n: number, digits: number) {
-  var multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
+  const multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
   return Math.round(n * multiplier) / multiplier;
 }
 
@@ -144,16 +143,16 @@ export function getNumberOfWholeDigits(n: number) {
 export function inlineVars(obj: any, vs: Record<string, string>): any {
   return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, varName => {
     varName = varName.substr(2, varName.length - 4);
-    var v = vs[varName];
-    if (typeof v !== "string") throw new Error(`could not find variable '${varName}'`);
-    var v = JSON.stringify(v);
-    return v.substr(1, v.length - 2);
+    const variable = vs[varName];
+    if (typeof variable !== "string") throw new Error(`could not find variable '${varName}'`);
+    const strVariable = JSON.stringify(variable);
+    return strVariable.substr(1, strVariable.length - 2);
   }));
 }
 
 export function ensureOneOf(value: string, values: string[], messagePrefix: string): void {
   if (values.indexOf(value) !== -1) return;
-  var isMessage = typeof value === "undefined" ? "not defined" : `'${value}'`;
+  const isMessage = typeof value === "undefined" ? "not defined" : `'${value}'`;
   throw new Error(`${messagePrefix} must be on of '${values.join("', '")}' (is ${isMessage})`);
 }
 

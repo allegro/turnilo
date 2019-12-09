@@ -25,7 +25,7 @@ import { FormLabel } from "./form-label";
 
 describe("FormLabel", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <FormLabel
 
       />

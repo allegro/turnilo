@@ -29,10 +29,7 @@ export interface RouteProps {
   inflate?: Inflater;
 }
 
-export interface RouteState {
-}
-
-export class Route extends React.Component<RouteProps, RouteState> {
+export class Route extends React.Component<RouteProps, {}> {
 }
 
 export interface QualifiedPath {
@@ -77,7 +74,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   globalHashChangeListener = () => {
-    var newHash = window.location.hash;
+    const newHash = window.location.hash;
 
     // Means we're going somewhere unknown and this specific router shouldn't
     // interfer
@@ -101,7 +98,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   parseHash(hash: string): string[] {
     if (!hash) return [];
 
-    var fragments = this.removeRootFragmentFromHash(hash).split(HASH_SEPARATOR);
+    const fragments = this.removeRootFragmentFromHash(hash).split(HASH_SEPARATOR);
 
     return fragments.filter(Boolean);
   }
@@ -126,7 +123,6 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
   stripUnnecessaryFragments(path: QualifiedPath, crumbs: string[]) {
     const { rootFragment } = this.props;
-    const fragments = path.fragment.split(HASH_SEPARATOR);
 
     const parentFragment = crumbs.join("/").replace(path.crumbs.join("/"), "").replace(/\/$/, "");
     const strippedRouteCrumbs = path.crumbs.slice(0, path.fragment.split(HASH_SEPARATOR).length);
@@ -143,19 +139,19 @@ export class Router extends React.Component<RouterProps, RouterState> {
   onHashChange(hash: string) {
     const { rootFragment } = this.props;
 
-    var safeHash = this.sanitizeHash(hash);
+    const safeHash = this.sanitizeHash(hash);
     if (hash !== safeHash) {
       this.replaceHash(safeHash);
       return;
     }
 
-    var crumbs = this.parseHash(hash);
+    let crumbs = this.parseHash(hash);
 
-    var children = this.props.children as JSX.Element[];
+    const children = this.props.children as JSX.Element[];
 
     // Default path
     if (crumbs.length === 0) {
-      let defaultFragment = this.getDefaultFragment(children);
+      const defaultFragment = this.getDefaultFragment(children);
 
       if (defaultFragment) {
         this.replaceHash(hash + "/" + defaultFragment);
@@ -163,7 +159,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       }
     }
 
-    var path = this.getQualifiedPath(children, crumbs);
+    const path = this.getQualifiedPath(children, crumbs);
 
     if (path.wasDefaultChoice) {
       crumbs.pop();
@@ -192,7 +188,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   getDefaultDeeperCrumbs(fragment: string, crumbs: string[]): string[] {
-    var bits = fragment.split(HASH_SEPARATOR);
+    const bits = fragment.split(HASH_SEPARATOR);
 
     bits.splice(0, crumbs.length);
 
@@ -200,7 +196,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   canDefaultDeeper(fragment: string, crumbs: string[]): boolean {
-    var bits = fragment.split(HASH_SEPARATOR);
+    const bits = fragment.split(HASH_SEPARATOR);
 
     if (bits.length === crumbs.length) return false;
 
@@ -228,15 +224,15 @@ export class Router extends React.Component<RouterProps, RouterState> {
     for (const candidate of candidates) {
       if (this.isAComment(candidate)) continue;
 
-      let fragment = candidate.props.fragment;
+      const fragment = candidate.props.fragment;
 
       if (!fragment) continue;
 
       properties = extend(this.getPropertiesFromCrumbs(crumbs, fragment), properties);
 
       if (crumbs[0] === fragment || fragment.charAt(0) === ":") {
-        let children = candidate.props.children;
-        let parents = parentRoutes.concat([candidate]);
+        const children = candidate.props.children;
+        const parents = parentRoutes.concat([candidate]);
 
         if (!(Array.isArray(children)) || crumbs.length === 1) {
           return { fragment, route: candidate, crumbs, properties, orphans, parentRoutes: parents };
@@ -252,8 +248,8 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     // If we are here, it means no route has been found and we should
     // return a default one.
-    var route = candidates.filter(this.isRoute)[0];
-    var fragment = route.props.fragment;
+    const route = candidates.filter(this.isRoute)[0];
+    const fragment = route.props.fragment;
     properties = extend(this.getPropertiesFromCrumbs(crumbs, fragment), properties);
     return { fragment, route, crumbs, wasDefaultChoice: true, properties, orphans, parentRoutes };
   }
@@ -286,9 +282,9 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   getPropertiesFromCrumbs(crumbs: string[], fragment: string, props: any = {}): any {
-    let fragmentToKey = (f: string) => f.slice(1).replace(/=.*$/, "");
+    const fragmentToKey = (f: string) => f.slice(1).replace(/=.*$/, "");
 
-    let myCrumbs = crumbs.concat();
+    const myCrumbs = crumbs.concat();
     fragment.split(HASH_SEPARATOR).forEach((bit, i) => {
       if (bit.charAt(0) !== ":") return;
       props[fragmentToKey(bit)] = myCrumbs.shift();
@@ -300,11 +296,13 @@ export class Router extends React.Component<RouterProps, RouterState> {
   inflate(pump: Inflater, properties: any): any {
     if (!pump) return properties;
 
-    let newProperties: any = {};
+    const newProperties: any = {};
 
-    for (let originalKey in properties) {
-      let { key, value } = pump(originalKey, properties[originalKey]);
-      newProperties[key] = value;
+    for (const originalKey in properties) {
+      if (properties.hasOwnProperty(originalKey)) {
+        const { key, value } = pump(originalKey, properties[originalKey]);
+        newProperties[key] = value;
+      }
     }
 
     return newProperties;
@@ -313,7 +311,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   fillProperties(child: JSX.Element, path: QualifiedPath, i = 0): JSX.Element {
     if (!(child.type instanceof Function)) return child;
 
-    var propsToTransmit = this.getPropertiesFromCrumbs(path.crumbs, path.route.props.fragment);
+    let propsToTransmit = this.getPropertiesFromCrumbs(path.crumbs, path.route.props.fragment);
 
     path.parentRoutes.forEach(route => {
       if (route.props.transmit) {
@@ -327,9 +325,9 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   getQualifiedChild(candidates: JSX.Element[], crumbs: string[]): JSX.Element | JSX.Element[] {
-    var elements: JSX.Element[];
+    let elements: JSX.Element[];
 
-    var path = this.getQualifiedPath(candidates, crumbs);
+    const path = this.getQualifiedPath(candidates, crumbs);
 
     if (this.hasSingleChild(path.route)) {
       elements = path.orphans.map((orphan, i) => this.fillProperties(orphan, path, i))
@@ -337,7 +335,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       ;
 
     } else {
-      var children = this.getSimpleChildren(path.route);
+      const children = this.getSimpleChildren(path.route);
 
       if (children.length === 0) return null;
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";

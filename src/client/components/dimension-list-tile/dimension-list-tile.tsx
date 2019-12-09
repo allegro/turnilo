@@ -141,8 +141,8 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   }
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage, triggerFilterMenu } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
+    const { essence, clicker, menuStage, triggerFilterMenu } = this.props;
+    const { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
 
     return <DimensionActionsMenu
@@ -184,7 +184,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     const items = dimensionsRenderer.render(dimensionsForView);
     const message = this.renderMessageIfNoDimensionsFound(dimensionsForView);
 
-    var icons: TileHeaderIcon[] = [
+    const icons: TileHeaderIcon[] = [
       {
         name: "search",
         ref: "search",
@@ -204,7 +204,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       icons={icons}
       className="dimension-list-tile"
     >
-      <div className="rows" ref="items">
+      <div className="rows">
         {items}
         {message}
       </div>

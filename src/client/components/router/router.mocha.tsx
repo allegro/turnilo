@@ -31,32 +31,26 @@ interface FakeProps {
   object?: { label: string };
 }
 
-interface FakeState {
-}
+function Fake(props: FakeProps) {
+  const { itemId, action, object } = props;
 
-class Fake extends React.Component<FakeProps, FakeState> {
+  const str = `${action || ""}${itemId || ""}${object && object.label || ""}`;
 
-  render() {
-    const { itemId, action, object } = this.props;
-
-    let str = `${action || ""}${itemId || ""}${object && object.label || ""}`;
-
-    return <div className="fakey-fakey">{str}</div>;
-  }
+  return <div className="fakey-fakey">{str}</div>;
 }
 
 // -- end of Fake class
 
 describe("Router", () => {
-  var children: JSX.Element[];
-  var component: React.Component<any, any>;
-  var node: any;
+  let children: JSX.Element[];
+  let component: React.Component<any, any>;
+  let node: any;
 
-  var updateHash: (newHash: string) => void;
-  var isActiveRoute: (route: string) => void;
+  let updateHash: (newHash: string) => void;
+  let isActiveRoute: (route: string) => void;
 
-  var findNodes = (element: React.Component<any, any>): NodeList => {
-    let wrapper = findDOMNode(element);
+  const findNodes = (element: React.Component<any, any>): NodeList => {
+    const wrapper = findDOMNode(element);
 
     if (wrapper.className !== "route-wrapper") {
       throw new Error("Wrapper should have the proper class name, found " + wrapper.className + " instead");
@@ -65,8 +59,8 @@ describe("Router", () => {
     return wrapper.childNodes;
   };
 
-  var findNode = (element: React.Component<any, any>): Node => {
-    var children = findNodes(element);
+  const findNode = (element: React.Component<any, any>): Node => {
+    const children = findNodes(element);
 
     if (children.length !== 1) {
       throw new Error("Looking for exactly one node, found " + children.length + " instead.");
@@ -79,7 +73,7 @@ describe("Router", () => {
     updateHash = (newHash: string) => {
 
       window.location.hash = newHash;
-      let spy = sinon.spy();
+      const spy = sinon.spy();
 
       // Cloning components so that react doesn't complain about the lack of keys...
       component = ReactDOM.render(
@@ -100,7 +94,7 @@ describe("Router", () => {
       node = window.document.createElement("div");
 
       children = [
-        <Route fragment=":itemId" alwaysShowOrphans={true}>
+        <Route key="baz" fragment=":itemId" alwaysShowOrphans={true}>
           <div className="pouet-class">baz</div>
           // Should alway be visible
           <Route transmit={["itemId"]} fragment=":action"><Fake /></Route>
@@ -113,9 +107,9 @@ describe("Router", () => {
     it("works with variables in the hash", () => {
       updateHash("#root/flu/bli");
 
-      var domNodes: NodeList = findNodes(component) as any;
+      const domNodes: NodeList = findNodes(component) as any;
 
-      var getChild = (i: number) => domNodes[i] as Element;
+      const getChild = (i: number) => domNodes[i] as Element;
 
       // Orphan that's always visible
       expect(getChild(0).className, "should contain class").to.equal("pouet-class");
@@ -132,13 +126,13 @@ describe("Router", () => {
     beforeEach(() => {
       node = window.document.createElement("div");
 
-      var pump = (key: string, value: string): { key: string, value: any } => {
+      const pump = (key: string, value: string): { key: string, value: any } => {
         if (key === "action") return { key, value };
         return { key: "object", value: { label: value.toUpperCase() } };
       };
 
       children = [
-        <Route fragment=":itemId" alwaysShowOrphans={true}>
+        <Route key="baz" fragment=":itemId" alwaysShowOrphans={true}>
           <div className="pouet-class">baz</div>
           // Should alway be visible
           <Route transmit={["itemId"]} fragment=":action" inflate={pump}><Fake /></Route>
@@ -151,9 +145,9 @@ describe("Router", () => {
     it("inflates stuff on the fly", () => {
       updateHash("#root/flu/bli");
 
-      var domNodes: NodeList = findNodes(component) as any;
+      const domNodes: NodeList = findNodes(component) as any;
 
-      var getChild = (i: number) => domNodes[i] as Element;
+      const getChild = (i: number) => domNodes[i] as Element;
 
       // Orphan that's always visible
       expect(getChild(0).className, "should contain class").to.equal("pouet-class");
@@ -171,7 +165,7 @@ describe("Router", () => {
       node = window.document.createElement("div");
 
       children = [
-        <Route fragment="foo">
+        <Route key="foo" fragment="foo">
           <div className="foo-class">foo</div>
           <Route fragment="foo-0">
             <div className="foo-0-class">foo-0</div>
@@ -181,16 +175,16 @@ describe("Router", () => {
           </Route>
         </Route>,
 
-        <Route fragment="bar">
+        <Route key="bar" fragment="bar">
           <div className="bar-class">bar</div>
         </Route>,
 
-        <Route fragment="baz">
+        <Route key="baz" fragment="baz">
           <div className="baz-class">baz</div>
           <Route fragment=":itemId"><Fake /></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
         </Route>,
 
-        <Route fragment="qux">
+        <Route key="qux" fragment="qux">
           <div className="qux-class">qux</div>
           <Route fragment=":itemId/:action=edit"><Fake /></Route> // default value for variable
         </Route>
@@ -215,7 +209,7 @@ describe("Router", () => {
       updateHash("#root//foo/foo-1///");
       isActiveRoute("#root/foo/foo-1");
 
-      var domNode: any = findNode(component) as any;
+      const domNode: any = findNode(component) as any;
       expect(domNode.className, "should contain class").to.equal("foo-1-class");
       expect(domNode.innerHTML).to.equal("foo-1");
     });
@@ -224,7 +218,7 @@ describe("Router", () => {
       updateHash("#root/ABLAB");
       isActiveRoute("#root/foo");
 
-      var domNode: any = findNode(component) as any;
+      const domNode: any = findNode(component) as any;
       expect(domNode.className, "should contain class").to.equal("foo-class");
       expect(domNode.innerHTML).to.equal("foo");
     });
@@ -234,7 +228,7 @@ describe("Router", () => {
       isActiveRoute("#root/bar");
 
       updateHash("#root/baz/pouet/UNNECESSARY");
-      var domNode: any = findNode(component) as any;
+      const domNode: any = findNode(component) as any;
       isActiveRoute("#root/baz/pouet");
       expect(domNode.className, "should contain class").to.equal("fakey-fakey");
       expect(domNode.innerHTML).to.equal("pouet");
@@ -250,7 +244,7 @@ describe("Router", () => {
     it("works with variables in the hash", () => {
       updateHash("#root/baz/pouet");
 
-      var domNode: any = findNode(component) as any;
+      const domNode: any = findNode(component) as any;
       expect(domNode.className, "should contain class").to.equal("fakey-fakey");
       expect(domNode.innerHTML).to.equal("pouet");
       isActiveRoute("#root/baz/pouet");
@@ -259,7 +253,7 @@ describe("Router", () => {
     it("recognizes default for a variable", () => {
       updateHash("#root/qux/myItem");
 
-      var domNode: any = findNode(component) as any;
+      const domNode: any = findNode(component) as any;
       expect(domNode.className, "should contain class").to.equal("fakey-fakey");
       expect(domNode.innerHTML).to.equal("editmyItem");
       isActiveRoute("#root/qux/myItem/edit");
@@ -272,15 +266,15 @@ describe("Router", () => {
       node = window.document.createElement("div");
 
       children = [
-        <Route fragment="foo">
+        <Route key="foo" fragment="foo">
           <div className="foo-class">foo</div>
         </Route>,
 
-        <Route fragment="bar">
+        <Route key="bar" fragment="bar">
           <div className="bar-class">bar</div>
         </Route>,
 
-        <Route fragment="baz">
+        <Route key="baz" fragment="baz">
           <div className="baz-class">baz</div>
         </Route>
       ];

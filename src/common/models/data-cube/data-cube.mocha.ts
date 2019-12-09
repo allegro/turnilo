@@ -24,11 +24,11 @@ import { DataCube, DataCubeJS } from "./data-cube";
 import { DataCubeFixtures } from "./data-cube.fixtures";
 
 describe("DataCube", () => {
-  var druidCluster = Cluster.fromJS({
+  const druidCluster = Cluster.fromJS({
     name: "druid"
   });
 
-  var context = {
+  const context = {
     cluster: druidCluster
   };
 
@@ -188,7 +188,7 @@ describe("DataCube", () => {
 
   describe("#getIssues", () => {
     it("raises issues", () => {
-      var dataCube = DataCube.fromJS({
+      const dataCube = DataCube.fromJS({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -244,7 +244,7 @@ describe("DataCube", () => {
 
   describe.skip("back compat", () => {
     it("works in a generic case", () => {
-      var legacyDataCubeJS: any = {
+      const legacyDataCubeJS: any = {
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -281,7 +281,7 @@ describe("DataCube", () => {
         }
       };
 
-      var dataCube = DataCube.fromJS(legacyDataCubeJS, context);
+      const dataCube = DataCube.fromJS(legacyDataCubeJS, context);
 
       expect(dataCube.toJS()).to.deep.equal({
         attributeOverrides: [
@@ -344,7 +344,7 @@ describe("DataCube", () => {
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      var dataCube = DataCube.fromJS({
+      const dataCube = DataCube.fromJS({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -414,7 +414,7 @@ describe("DataCube", () => {
     });
 
     it("omits unsupported expressions", () => {
-      var dataCube = DataCube.fromJS({
+      const dataCube = DataCube.fromJS({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -461,17 +461,17 @@ describe("DataCube", () => {
   });
 
   describe("#addAttributes", () => {
-    var dataCubeStub = DataCube.fromJS({
-      name: "wiki",
-      title: "Wiki",
-      clusterName: "druid",
-      source: "wiki",
-      introspection: "autofill-all",
-      defaultTimezone: "Etc/UTC",
-      refreshRule: {
-        rule: "realtime"
-      }
-    });
+    // var dataCubeStub = DataCube.fromJS({
+    //   name: "wiki",
+    //   title: "Wiki",
+    //   clusterName: "druid",
+    //   source: "wiki",
+    //   introspection: "autofill-all",
+    //   defaultTimezone: "Etc/UTC",
+    //   refreshRule: {
+    //     rule: "realtime"
+    //   }
+    // });
     /* TODO: check the correctness of the test */
     /*
         it("works in basic case (no count) + re-add", () => {
@@ -694,14 +694,14 @@ describe("DataCube", () => {
         });*/
 
     it("works with existing dimension", () => {
-      var attributes1 = AttributeInfo.fromJSs([
+      const attributes1 = AttributeInfo.fromJSs([
         { name: "__time", type: "TIME" },
         { name: "added", type: "NUMBER" },
         { name: "added!!!", type: "NUMBER" },
         { name: "deleted", type: "NUMBER" }
       ]);
 
-      var dataCubeWithDim = DataCube.fromJS({
+      const dataCubeWithDim = DataCube.fromJS({
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -724,14 +724,14 @@ describe("DataCube", () => {
         ]
       });
 
-      var dataCube = dataCubeWithDim.addAttributes(attributes1);
+      const dataCube = dataCubeWithDim.addAttributes(attributes1);
       expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(["deleted"]);
     });
 
   });
 
   describe("#addAttributes (new dim)", () => {
-    var dataCube = DataCube.fromJS({
+    const dataCube = DataCube.fromJS({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -745,7 +745,7 @@ describe("DataCube", () => {
     });
 
     it("adds new dimensions", () => {
-      var columns: any = [
+      const columns: any = [
         { name: "__time", type: "TIME" },
         { name: "added", makerAction: { action: "sum", expression: { name: "added", op: "ref" } }, type: "NUMBER", unsplitable: true },
         { name: "count", makerAction: { action: "count" }, type: "NUMBER", unsplitable: true },
@@ -754,7 +754,7 @@ describe("DataCube", () => {
         { name: "page_unique", special: "unique", type: "STRING" }
       ];
 
-      var dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
 
       expect(dataCube1.toJS().dimensions).to.deep.equal([
         {
@@ -772,7 +772,7 @@ describe("DataCube", () => {
       ]);
 
       columns.push({ name: "channel", type: "STRING" });
-      var dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
 
       expect(dataCube2.toJS().dimensions).to.deep.equal([
         {

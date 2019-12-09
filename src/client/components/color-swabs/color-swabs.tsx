@@ -34,7 +34,7 @@ export const ColorSwabs: React.SFC<ColorSwabsProps> = ({ colorEntries }) => {
     const swabStyle = { background: color };
     return <tr key={name}>
       <td>
-        <div className="color-swab" style={swabStyle}/>
+        <div className="color-swab" style={swabStyle} />
       </td>
       <td className="color-name">{name}</td>
       <td className="color-value">{value}</td>
@@ -43,5 +43,7 @@ export const ColorSwabs: React.SFC<ColorSwabsProps> = ({ colorEntries }) => {
     </tr>;
   });
 
-  return <table className="color-swabs"><tbody>{colorSwabs}</tbody></table>;
+  return <table className="color-swabs">
+    <tbody>{colorSwabs}</tbody>
+  </table>;
 };

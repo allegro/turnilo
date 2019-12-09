@@ -49,11 +49,11 @@ describe("Plywood Range", () => {
     });
 
     it("should return null when no ranges", () => {
-      expect(union(undefined, null)).to.be.null;
-      expect(union(undefined, undefined)).to.be.null;
-      expect(union(null, {} as PlywoodRange)).to.be.null;
-      expect(union({} as PlywoodRange, null)).to.be.null;
-      expect(union({} as PlywoodRange, undefined)).to.be.null;
+      expect(union(undefined, null)).to.equal(null);
+      expect(union(undefined, undefined)).to.equal(null);
+      expect(union(null, {} as PlywoodRange)).to.equal(null);
+      expect(union({} as PlywoodRange, null)).to.equal(null);
+      expect(union({} as PlywoodRange, undefined)).to.equal(null);
     });
   });
 });

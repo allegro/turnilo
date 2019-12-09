@@ -42,7 +42,7 @@ export class HighlightModal extends React.Component<HighlightModalProps, {}> {
   render() {
     const { title, children, left, top } = this.props;
     return <ModalBubble className="highlight-modal" left={left} top={top} onClose={this.dropHighlight}>
-      <BubbleTitle title={title}/>
+      <BubbleTitle title={title} />
       <div className="value">{children}</div>
       <div className="actions">
         <Button type="primary" className="accept mini" onClick={this.acceptHighlight} title={STRINGS.select} />

@@ -95,7 +95,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       onClose={onClose}
       inside={inside}
     >
-      <ButtonGroup groupMembers={tabs}/>
+      <ButtonGroup groupMembers={tabs} />
       {tab === TimeFilterMenu.RELATIVE_TAB ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
     </BubbleMenu>;
   }

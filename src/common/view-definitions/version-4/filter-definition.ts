@@ -105,7 +105,9 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
     if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
     }
-    if (!(<any> Object).values(StringFilterAction).includes(action)) {
+    // TODO: make TS aware that we have polyfill for this!
+    // @ts-ignore
+    if (!Object.values(StringFilterAction).includes(action)) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
     }
     if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {

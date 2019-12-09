@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import { FilterMode } from "../../../common/models/filter/filter";
 import { STRINGS } from "../../config/constants";
 import { CheckboxType } from "../checkbox/checkbox";
 import { Dropdown } from "../dropdown/dropdown";
@@ -72,7 +72,7 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
 
   renderFilterOption = (option: FilterOption) => {
     return <span className="filter-option">
-      <SvgIcon className="icon" svg={option.svg}/>
+      <SvgIcon className="icon" svg={option.svg} />
       <span className="option-label">{option.label}</span>
     </span>;
   }
@@ -89,7 +89,7 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
         equal={(a, b) => a.value === b.value}
         keyItem={d => d.value}
         renderItem={this.renderFilterOption}
-        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg}/>}
+        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg} />}
         onSelect={this.onSelectOption}
       />
     </div>;

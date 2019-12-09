@@ -50,7 +50,7 @@ export interface NavListProps {
 }
 
 function renderIcon(iconSvg: string): JSX.Element {
-  return iconSvg ? <span className="icon"><SvgIcon svg={iconSvg}/></span> : null;
+  return iconSvg ? <span className="icon"><SvgIcon svg={iconSvg} /></span> : null;
 }
 
 function renderLink({ name, title, href, newTab, tooltip }: NavLink, icon: string, selected: boolean): JSX.Element {

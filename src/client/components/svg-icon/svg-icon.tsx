@@ -26,36 +26,30 @@ export interface SvgIconProps {
   style?: any;
 }
 
-export interface SvgIconState {
-}
+export function SvgIcon(props: SvgIconProps) {
+  const { className, style, svg } = props;
 
-export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
-
-  render() {
-    var { className, style, svg } = this.props;
-
-    var viewBox: string = null;
-    var svgInsides: string = null;
-    if (typeof svg === "string") {
-      svgInsides = svg
-        .substr(0, svg.length - 6) // remove trailing "</svg>"
-        .replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
-          var vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
-          if (vbMatch) viewBox = vbMatch[1];
-          return "";
-        });
-    } else {
-      console.warn("svg-icon.tsx: missing icon");
-      viewBox = "0 0 16 16";
-      svgInsides = "<rect width=16 height=16 fill='red'></rect>";
-    }
-
-    return React.createElement("svg", {
-      className: "svg-icon " + (className || ""),
-      viewBox,
-      preserveAspectRatio: "xMidYMid meet",
-      style,
-      dangerouslySetInnerHTML: { __html: svgInsides }
-    });
+  let viewBox: string = null;
+  let svgInsides: string = null;
+  if (typeof svg === "string") {
+    svgInsides = svg
+      .substr(0, svg.length - 6) // remove trailing "</svg>"
+      .replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
+        const vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
+        if (vbMatch) viewBox = vbMatch[1];
+        return "";
+      });
+  } else {
+    console.warn("svg-icon.tsx: missing icon");
+    viewBox = "0 0 16 16";
+    svgInsides = "<rect width=16 height=16 fill='red'></rect>";
   }
+
+  return React.createElement("svg", {
+    className: "svg-icon " + (className || ""),
+    viewBox,
+    preserveAspectRatio: "xMidYMid meet",
+    style,
+    dangerouslySetInnerHTML: { __html: svgInsides }
+  });
 }

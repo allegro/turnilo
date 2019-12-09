@@ -108,7 +108,7 @@ export class SettingsManager {
     if (Array.isArray(dataCube.source)) throw new Error(`native data cube can't have multiple sources: ${dataCube.source.join(", ")}`);
     const { verbose, logger, anchorPath } = this;
 
-    var fileManager = new FileManager({
+    const fileManager = new FileManager({
       logger,
       verbose,
       anchorPath,

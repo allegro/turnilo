@@ -38,16 +38,16 @@ export function updater<T extends Equalable>(oldThings: T[], newThings: T[], upd
   const onUpdate = updatedOptions.onUpdate || noop;
   const onExit = updatedOptions.onExit || noop;
 
-  var initialByKey: Record<string, T> = {};
+  const initialByKey: Record<string, T> = {};
   for (const initialThing of oldThings) {
-    var initialThingKey = key(initialThing);
+    const initialThingKey = key(initialThing);
     if (initialByKey[initialThingKey]) throw new Error(`duplicate key '${initialThingKey}'`);
     initialByKey[initialThingKey] = initialThing;
   }
 
   for (const newThing of newThings) {
-    var newThingKey = key(newThing);
-    var oldThing = initialByKey[newThingKey];
+    const newThingKey = key(newThing);
+    const oldThing = initialByKey[newThingKey];
     if (oldThing) {
       if (!equals(newThing, oldThing)) {
         onUpdate(newThing, oldThing);
@@ -58,7 +58,7 @@ export function updater<T extends Equalable>(oldThings: T[], newThings: T[], upd
     }
   }
 
-  for (var k in initialByKey) {
+  for (const k in initialByKey) {
     if (!hasOwnProperty(initialByKey, k)) continue;
     onExit(initialByKey[k]);
   }

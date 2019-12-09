@@ -19,6 +19,7 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
 import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
+import { noop } from "../../../common/utils/functional/functional";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
 import { Align, BubbleMenu, Direction, OFFSET_H } from "./bubble-menu";
@@ -45,8 +46,7 @@ const defaultProps = {
   openOn,
   stage,
   containerStage,
-  onClose: () => {
-  }
+  onClose: noop
 };
 
 let oldInnerHeight: number;
@@ -301,7 +301,7 @@ describe("<BubbleMenu>", () => {
     const div = bubble.find(contentSelector);
 
     expect(div.prop("id")).to.be.equal("custom-id");
-    expect(div.hasClass(contentClassName)).to.be.true;
+    expect(div.hasClass(contentClassName)).to.equal(true);
     expect(div.prop("data-parent")).to.be.equal("parent");
   });
 

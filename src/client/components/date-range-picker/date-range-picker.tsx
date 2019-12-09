@@ -126,7 +126,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   getIsSelectable(date: Date): boolean {
     const { hoverTimeRange, selectionSet } = this.state;
-    let inHoverTimeRange = hoverTimeRange && hoverTimeRange.contains(date);
+    const inHoverTimeRange = hoverTimeRange && hoverTimeRange.contains(date);
     return inHoverTimeRange && !selectionSet;
   }
 

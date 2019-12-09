@@ -21,7 +21,7 @@ import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 
 function getSplitsDescription(ex: Expression): string {
-  var splits: string[] = [];
+  const splits: string[] = [];
   ex.forEach(ex => {
     if (ex instanceof ChainableExpression) {
       ex.getArgumentExpressions().forEach(action => {
@@ -41,7 +41,7 @@ function clientTimeout(cluster: Cluster): number {
   return clusterTimeout + CLIENT_TIMEOUT_DELTA;
 }
 
-var reloadRequested = false;
+let reloadRequested = false;
 
 function reload() {
   if (reloadRequested) return;

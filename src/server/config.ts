@@ -38,6 +38,7 @@ function exitWithMessage(message: string): void {
   try {
     loadFileSync(PACKAGE_FILE, "json");
   } catch (e) {
+    console.error(e.message);
   }
 
   process.exit();
@@ -52,7 +53,7 @@ function zeroOne(thing: any): number {
   return Number(Boolean(thing));
 }
 
-var packageObj: any = null;
+let packageObj: any = null;
 try {
   packageObj = loadFileSync(PACKAGE_FILE, "json");
 } catch (e) {
@@ -128,7 +129,7 @@ function parseArgs() {
   );
 }
 
-var parsedArgs = parseArgs();
+const parsedArgs = parseArgs();
 
 if (parsedArgs["help"]) {
   exitWithMessage(USAGE);
@@ -145,7 +146,7 @@ if (parsedArgs["example"]) {
 
 const SETTINGS_INPUTS = ["config", "examples", "file", "druid", "postgres", "mysql"];
 
-var numSettingsInputs = arraySum(SETTINGS_INPUTS.map(input => zeroOne(parsedArgs[input])));
+const numSettingsInputs = arraySum(SETTINGS_INPUTS.map(input => zeroOne(parsedArgs[input])));
 
 if (numSettingsInputs === 0) {
   exitWithMessage(USAGE);
@@ -166,14 +167,14 @@ export const START_SERVER = !PRINT_CONFIG;
 const logger = START_SERVER ? LOGGER : NULL_LOGGER;
 
 // Load server settings
-var serverSettingsFilePath = parsedArgs["config"];
+let serverSettingsFilePath = parsedArgs["config"];
 
 if (parsedArgs["examples"]) {
   serverSettingsFilePath = path.join(__dirname, "../../config-examples.yaml");
 }
 
-var anchorPath: string;
-var serverSettingsJS: any;
+let anchorPath: string;
+let serverSettingsJS: any;
 if (serverSettingsFilePath) {
   anchorPath = path.dirname(serverSettingsFilePath);
   try {
@@ -205,13 +206,14 @@ export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 
 // --- Auth -------------------------------
 
-var auth = SERVER_SETTINGS.auth;
-var authMiddleware: any = null;
+let auth = SERVER_SETTINGS.auth;
+let authMiddleware: any = null;
 if (auth && auth !== "none") {
   auth = path.resolve(anchorPath, auth);
   logger.log(`Using auth ${auth}`);
+  let authModule;
   try {
-    var authModule = require(auth);
+    authModule = require(auth);
   } catch (e) {
     exitWithError(`error loading auth module: ${e.message}`);
   }
@@ -236,14 +238,14 @@ if (START_SERVER) {
 
 // --- Location -------------------------------
 
-var settingsStore: SettingsStore = null;
+let settingsStore: SettingsStore = null;
 
 if (serverSettingsFilePath) {
-  var settingsLocation = SERVER_SETTINGS.getSettingsLocation();
+  const settingsLocation = SERVER_SETTINGS.getSettingsLocation();
   if (settingsLocation) {
     switch (settingsLocation.getLocation()) {
       case "file":
-        var settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
+        const settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
         settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
         break;
       default:
@@ -254,10 +256,10 @@ if (serverSettingsFilePath) {
     settingsStore = SettingsStore.fromReadOnlyFile(serverSettingsFilePath, "yaml");
   }
 } else {
-  var initAppSettings = AppSettings.BLANK;
+  let initAppSettings = AppSettings.BLANK;
 
   // If a file is specified add it as a dataCube
-  var fileToLoad = parsedArgs["file"];
+  const fileToLoad = parsedArgs["file"];
   if (fileToLoad) {
     initAppSettings = initAppSettings.addDataCube(new DataCube({
       name: path.basename(fileToLoad, path.extname(fileToLoad)),
@@ -292,7 +294,7 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
 // --- Printing -------------------------------
 
 if (PRINT_CONFIG) {
-  var withComments = Boolean(parsedArgs["with-comments"]);
+  const withComments = Boolean(parsedArgs["with-comments"]);
 
   SETTINGS_MANAGER.getSettings({
     timeout: 10000

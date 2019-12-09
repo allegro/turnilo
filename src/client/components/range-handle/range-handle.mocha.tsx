@@ -19,6 +19,7 @@ import { expect } from "chai";
 
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
+import { noop } from "../../../common/utils/functional/functional";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
 import { RangeHandle } from "./range-handle";
@@ -26,10 +27,10 @@ import { RangeHandle } from "./range-handle";
 describe("RangeHandle", () => {
   it("adds the correct class", () => {
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <RangeHandle
         positionLeft={20}
-        onChange={() => {}}
+        onChange={noop}
         isAny={false}
         offset={600}
 

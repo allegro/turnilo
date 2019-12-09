@@ -51,7 +51,7 @@ describe("Series", () => {
         type: SeriesType.EXPRESSION,
         reference: "count"
       });
-      expect(fromJS(params, measure).equals(expected)).to.be.true;
+      expect(fromJS(params, measure).equals(expected)).to.equal(true);
     });
 
     it("should construct Quantile Series", () => {
@@ -66,7 +66,7 @@ describe("Series", () => {
         type: SeriesType.QUANTILE,
         reference: "quantile"
       });
-      expect(fromJS(params, measure).equals(expected)).to.be.true;
+      expect(fromJS(params, measure).equals(expected)).to.equal(true);
     });
 
     it("should construct Measure Series", () => {
@@ -80,7 +80,7 @@ describe("Series", () => {
         type: SeriesType.MEASURE,
         reference: "count"
       });
-      expect(fromJS(params, measure).equals(expected)).to.be.true;
+      expect(fromJS(params, measure).equals(expected)).to.equal(true);
     });
 
     it("should construct Quantile Series for Measure definition when passed Measure with quantile expression", () => {
@@ -96,7 +96,7 @@ describe("Series", () => {
         reference: "quantile"
       });
       expect(fromJS(params, measure).toJS()).to.be.deep.equal(expected.toJS());
-      expect(fromJS(params, measure).equals(expected)).to.be.true;
+      expect(fromJS(params, measure).equals(expected)).to.equal(true);
     });
 
     it("should construct Measure Series when no type provided", () => {
@@ -109,7 +109,7 @@ describe("Series", () => {
         type: SeriesType.MEASURE,
         reference: "count"
       });
-      expect(fromJS(params, measure).equals(expected)).to.be.true;
+      expect(fromJS(params, measure).equals(expected)).to.equal(true);
     });
 
     it("should construct Quantile Series when no type provided but Measure has quantile expression", () => {
@@ -123,7 +123,7 @@ describe("Series", () => {
         percentile: 95,
         reference: "quantile"
       });
-      expect(fromJS(params, measure).equals(expected)).to.be.true;
+      expect(fromJS(params, measure).equals(expected)).to.equal(true);
     });
   });
 

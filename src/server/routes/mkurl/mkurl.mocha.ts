@@ -25,7 +25,7 @@ import { mkurlRouter } from "./mkurl";
 
 const mkurlPath = "/mkurl";
 
-let app = express();
+const app = express();
 
 app.use(bodyParser.json());
 

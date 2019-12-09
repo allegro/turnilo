@@ -31,31 +31,31 @@ const dummy = (dummy: number) => new DummyRecord({ dummy });
 describe("nullable equals", () => {
   describe("should return true", () => {
     it("for both nulls", () => {
-      expect(nullableEquals(null, null)).to.be.true;
+      expect(nullableEquals(null, null)).to.equal(true);
     });
 
     it("for same value", () => {
       const val = dummy(1);
-      expect(nullableEquals(val, val)).to.be.true;
+      expect(nullableEquals(val, val)).to.equal(true);
     });
 
     it("for identical values", () => {
-      expect(nullableEquals(dummy(1), dummy(1))).to.be.true;
+      expect(nullableEquals(dummy(1), dummy(1))).to.equal(true);
     });
   });
 
   describe("should return false", () => {
     it("if only first is null", () => {
-      expect(nullableEquals(null, dummy(1))).to.be.false;
+      expect(nullableEquals(null, dummy(1))).to.equal(false);
     });
 
     it("if only second is null", () => {
-      expect(nullableEquals(dummy(1), null)).to.be.false;
+      expect(nullableEquals(dummy(1), null)).to.equal(false);
     });
 
     it("for different values", () => {
-      expect(nullableEquals(dummy(1), dummy(2))).to.be.false;
-      expect(nullableEquals(dummy(25), dummy(80))).to.be.false;
+      expect(nullableEquals(dummy(1), dummy(2))).to.equal(false);
+      expect(nullableEquals(dummy(25), dummy(80))).to.equal(false);
     });
   });
 });

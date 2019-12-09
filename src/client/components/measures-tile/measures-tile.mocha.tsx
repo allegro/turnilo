@@ -21,13 +21,14 @@ import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { noop } from "../../../common/utils/functional/functional";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { MeasuresTile } from "./measures-tile";
 
 describe("MeasuresTile", () => {
   it("adds the correct class", () => {
     const fakeClicker: Clicker = {
-      addSeries: () => {}
+      addSeries: noop
     };
 
     const renderedComponent = renderIntoDocument(

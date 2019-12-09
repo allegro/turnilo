@@ -32,10 +32,7 @@ export interface VisSelectorMenuProps {
   onClose: Fn;
 }
 
-export interface VisSelectorMenuState {
-}
-
-export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {
+export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, {}> {
   public mounted: boolean;
 
   componentDidMount() {
@@ -49,10 +46,10 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   }
 
   globalMouseDownListener = (e: MouseEvent) => {
-    var { onClose, openOn } = this.props;
-    var myElement = ReactDOM.findDOMNode(this) as Element;
+    const { onClose, openOn } = this.props;
+    const myElement = ReactDOM.findDOMNode(this) as Element;
     if (!myElement) return;
-    var target = e.target as Element;
+    const target = e.target as Element;
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
@@ -65,7 +62,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   }
 
   onVisSelect(v: Manifest) {
-    var { clicker } = this.props;
+    const { clicker } = this.props;
     clicker.changeVisualization(v);
     this.setState({
       menuOpen: false
@@ -73,8 +70,8 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   }
 
   renderVisItem(v: Manifest): JSX.Element {
-    var { essence } = this.props;
-    var { visualization } = essence;
+    const { essence } = this.props;
+    const { visualization } = essence;
 
     return <div
       className={classNames("vis-item", (v.name === visualization.name ? "selected" : "not-selected"))}
@@ -87,10 +84,10 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   }
 
   render() {
-    var { essence } = this.props;
-    var { visualizations } = essence;
+    const { essence } = this.props;
+    const { visualizations } = essence;
 
-    var visItems: JSX.Element[] = null;
+    let visItems: JSX.Element[] = null;
     if (visualizations) {
       visItems = visualizations.map(v => {
         return this.renderVisItem(v);

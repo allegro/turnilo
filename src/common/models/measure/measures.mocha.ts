@@ -65,14 +65,14 @@ describe("Measures", () => {
   it("should treat measures with the same structure as equal", () => {
     const otherMeasures = Measures.fromJS(MeasuresFixtures.wikiJS());
 
-    expect(measures.equals(otherMeasures)).to.be.true;
+    expect(measures.equals(otherMeasures)).to.equal(true);
   });
 
   it("should treat measures with different structure as different", () => {
     const [, ...measuresWithoutFirstJS] = MeasuresFixtures.wikiJS();
     const measuresWithoutCount = Measures.fromJS(measuresWithoutFirstJS);
 
-    expect(measures.equals(measuresWithoutCount)).to.be.false;
+    expect(measures.equals(measuresWithoutCount)).to.equal(false);
   });
 
   it("should map measures", () => {
@@ -90,7 +90,7 @@ describe("Measures", () => {
   });
 
   it("should traverse measures", () => {
-    let measureTitles: string[] = [];
+    const measureTitles: string[] = [];
     measures.forEachMeasure(measure => measureTitles.push(measure.title));
 
     expect(measureTitles).to.deep.equal(MeasuresFixtures.wikiTitles());
@@ -109,7 +109,7 @@ describe("Measures", () => {
   });
 
   it("should know it contains measure with name", () => {
-    expect(measures.containsMeasureWithName("count")).to.be.true;
+    expect(measures.containsMeasureWithName("count")).to.equal(true);
   });
 
   it("should provide measure names", () => {
@@ -129,7 +129,7 @@ describe("Measures", () => {
 
     expect(measures.size()).to.equal(5);
     expect(newMeasures).to.not.equal(measures);
-    expect(newMeasures.equals(measures)).to.be.false;
+    expect(newMeasures.equals(measures)).to.equal(false);
     expect(newMeasures.size()).to.equal(6);
   });
 
@@ -138,7 +138,7 @@ describe("Measures", () => {
 
     expect(measures.size()).to.equal(5);
     expect(newMeasures).to.not.equal(measures);
-    expect(newMeasures.equals(measures)).to.be.false;
+    expect(newMeasures.equals(measures)).to.equal(false);
     expect(newMeasures.size()).to.equal(6);
   });
 });

@@ -24,7 +24,7 @@ import { DateRangeInput } from "./date-range-input";
 
 describe("DateRangeInput", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DateRangeInput
         label="Test"
         hide={true}

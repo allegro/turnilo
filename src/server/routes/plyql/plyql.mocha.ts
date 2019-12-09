@@ -22,7 +22,7 @@ import * as supertest from "supertest";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { plyqlRouter } from "./plyql";
 
-let app = express();
+const app = express();
 
 app.use(bodyParser.json());
 

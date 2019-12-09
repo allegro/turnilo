@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Class, immutableArraysEqual, immutableEqual, Instance, NamedArray } from "immutable-class";
+import { immutableArraysEqual, immutableEqual, Instance, NamedArray } from "immutable-class";
 import { Executor } from "plywood";
 import { hasOwnProperty } from "../../utils/general/general";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
@@ -43,8 +43,6 @@ export interface AppSettingsContext {
   executorFactory?: (dataCube: DataCube) => Executor;
 }
 
-var check: Class<AppSettingsValue, AppSettingsJS>;
-
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, { visualizations: [] });
 
@@ -54,12 +52,12 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   static fromJS(parameters: AppSettingsJS, context?: AppSettingsContext): AppSettings {
     if (!context) throw new Error("AppSettings must have context");
-    var clusters: Cluster[];
+    let clusters: Cluster[];
     if (parameters.clusters) {
       clusters = parameters.clusters.map(cluster => Cluster.fromJS(cluster));
 
     } else if (hasOwnProperty(parameters, "druidHost") || hasOwnProperty(parameters, "brokerHost")) {
-      var clusterJS: any = JSON.parse(JSON.stringify(parameters));
+      const clusterJS: any = JSON.parse(JSON.stringify(parameters));
       clusterJS.name = "druid";
       clusterJS.type = "druid";
       clusterJS.host = clusterJS.druidHost || clusterJS.brokerHost;
@@ -69,23 +67,24 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clusters = [];
     }
 
-    var executorFactory = context.executorFactory;
-    var dataCubes = (parameters.dataCubes || (parameters as any).dataSources || []).map((dataCubeJS: DataCubeJS) => {
-      var dataCubeClusterName = dataCubeJS.clusterName || (dataCubeJS as any).engine;
+    const executorFactory = context.executorFactory;
+    const dataCubes = (parameters.dataCubes || (parameters as any).dataSources || []).map((dataCubeJS: DataCubeJS) => {
+      const dataCubeClusterName = dataCubeJS.clusterName || (dataCubeJS as any).engine;
+      let cluster;
       if (dataCubeClusterName !== "native") {
-        var cluster = NamedArray.findByName(clusters, dataCubeClusterName);
+        cluster = NamedArray.findByName(clusters, dataCubeClusterName);
         if (!cluster) throw new Error(`Can not find cluster '${dataCubeClusterName}' for data cube '${dataCubeJS.name}'`);
       }
 
-      var dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
+      let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        var executor = executorFactory(dataCubeObject);
+        const executor = executorFactory(dataCubeObject);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
     });
 
-    var value: AppSettingsValue = {
+    const value: AppSettingsValue = {
       version: parameters.version,
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
@@ -108,7 +107,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       dataCubes
     } = parameters;
 
-    for (var dataCube of dataCubes) {
+    for (const dataCube of dataCubes) {
       if (dataCube.clusterName === "native") continue;
       if (!NamedArray.findByName(clusters, dataCube.clusterName)) {
         throw new Error(`data cube ${dataCube.name} refers to an unknown cluster ${dataCube.clusterName}`);
@@ -131,7 +130,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public toJS(): AppSettingsJS {
-    var js: AppSettingsJS = {};
+    const js: AppSettingsJS = {};
     if (this.version) js.version = this.version;
     js.clusters = this.clusters.map(cluster => cluster.toJS());
     js.customization = this.customization.toJS();
@@ -156,7 +155,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public toClientSettings(): AppSettings {
-    var value = this.valueOf();
+    const value = this.valueOf();
 
     value.clusters = value.clusters.map(c => c.toClientCluster());
 
@@ -180,20 +179,20 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public addOrUpdateDataCube(dataCube: DataCube): AppSettings {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.dataCubes = NamedArray.overrideByName(value.dataCubes, dataCube);
     return new AppSettings(value);
   }
 
   public deleteDataCube(dataCube: DataCube): AppSettings {
-    var value = this.valueOf();
-    var index = value.dataCubes.indexOf(dataCube);
+    const value = this.valueOf();
+    const index = value.dataCubes.indexOf(dataCube);
 
     if (index === -1) {
       throw new Error(`Unknown dataCube : ${dataCube.toString()}`);
     }
 
-    var newDataCubes = value.dataCubes.concat();
+    const newDataCubes = value.dataCubes.concat();
     newDataCubes.splice(index, 1);
 
     value.dataCubes = newDataCubes;
@@ -201,9 +200,9 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public attachExecutors(executorFactory: (dataCube: DataCube) => Executor): AppSettings {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.dataCubes = value.dataCubes.map(ds => {
-      var executor = executorFactory(ds);
+      const executor = executorFactory(ds);
       if (executor) ds = ds.attachExecutor(executor);
       return ds;
     });
@@ -239,11 +238,9 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   filterDataCubes(fn: (dataCube: DataCube, index?: number, dataCubes?: DataCube[]) => boolean): AppSettings {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.dataCubes = value.dataCubes.filter(fn);
     return new AppSettings(value);
   }
 
 }
-
-check = AppSettings;

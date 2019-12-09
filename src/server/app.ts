@@ -33,7 +33,7 @@ import { turniloRouter } from "./routes/turnilo/turnilo";
 import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
 
-let app = express();
+const app = express();
 app.disable("x-powered-by");
 
 const isDev = app.get("env") === "development";

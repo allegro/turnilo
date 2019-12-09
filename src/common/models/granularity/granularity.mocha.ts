@@ -25,16 +25,16 @@ describe("Granularity", () => {
 
     const timeBucketAction1 = granularityFromJS("P1W");
 
-    expect(timeBucketAction1 instanceof Duration).to.be.true;
+    expect(timeBucketAction1 instanceof Duration).to.equal(true);
     expect(timeBucketAction1).to.deep.equal(Duration.fromJS("P1W"));
 
     const timeBucketAction2 = granularityFromJS("PT1H");
-    expect(timeBucketAction2 instanceof Duration).to.be.true;
+    expect(timeBucketAction2 instanceof Duration).to.equal(true);
     expect(timeBucketAction2).to.deep.equal(Duration.fromJS("PT1H"));
 
     const numberBucketAction1 = granularityFromJS(5);
 
-    expect(typeof numberBucketAction1 === "number").to.be.true;
+    expect(typeof numberBucketAction1 === "number").to.equal(true);
     expect(numberBucketAction1).to.equal(5);
   });
 
@@ -60,8 +60,8 @@ describe("Granularity", () => {
 
     const timeBucketAction3 = granularityFromJS("P1D");
 
-    expect(granularityEquals(timeBucketAction1, timeBucketAction2)).to.be.true;
-    expect(granularityEquals(timeBucketAction2, timeBucketAction3)).to.be.false;
+    expect(granularityEquals(timeBucketAction1, timeBucketAction2)).to.equal(true);
+    expect(granularityEquals(timeBucketAction2, timeBucketAction3)).to.equal(false);
 
     const numberBucketAction1 = granularityFromJS(5);
 
@@ -69,37 +69,37 @@ describe("Granularity", () => {
 
     const numberBucketAction3 = granularityFromJS(3);
 
-    expect(granularityEquals(numberBucketAction1, numberBucketAction2)).to.be.true;
-    expect(granularityEquals(numberBucketAction2, numberBucketAction3)).to.be.false;
+    expect(granularityEquals(numberBucketAction1, numberBucketAction2)).to.equal(true);
+    expect(granularityEquals(numberBucketAction2, numberBucketAction3)).to.equal(false);
   });
 
   it("getGranularities appropriately for time", () => {
     const defaults = getGranularities("time");
     let expectedDefaults = ["PT1M", "PT5M", "PT1H", "P1D", "P1W"].map(granularityFromJS);
 
-    expect(defaults.every((g, i) => granularityEquals(g, expectedDefaults[i]), "time defaults are returned")).to.be.true;
+    expect(defaults.every((g, i) => granularityEquals(g, expectedDefaults[i]), "time defaults are returned")).to.equal(true);
 
     const coarse = getGranularities("time", null, true);
     const expectedCoarseDefaults = ["PT1M", "PT5M", "PT1H", "PT6H", "PT12H", "P1D", "P1W", "P1M"].map(granularityFromJS);
 
-    expect(coarse.every((g, i) => granularityEquals(g, expectedCoarseDefaults[i]), "coarse time defaults are returned")).to.be.true;
+    expect(coarse.every((g, i) => granularityEquals(g, expectedCoarseDefaults[i]), "coarse time defaults are returned")).to.equal(true);
 
     const bucketedBy = getGranularities("time", granularityFromJS("PT12H"), false);
     expectedDefaults = ["PT12H", "P1D", "P1W", "P1M", "P3M"].map(granularityFromJS);
 
-    expect(bucketedBy.every((g, i) => granularityEquals(g, expectedDefaults[i]), "bucketed by time defaults are returned")).to.be.true;
+    expect(bucketedBy.every((g, i) => granularityEquals(g, expectedDefaults[i]), "bucketed by time defaults are returned")).to.equal(true);
   });
 
   it("getGranularities appropriately for number", () => {
     const defaults = getGranularities("number");
     const expectedDefaults = [0.1, 1, 10, 100, 1000].map(granularityFromJS);
 
-    expect(defaults.every((g, i) => granularityEquals(g, expectedDefaults[i]), "number defaults are returned")).to.be.true;
+    expect(defaults.every((g, i) => granularityEquals(g, expectedDefaults[i]), "number defaults are returned")).to.equal(true);
 
     const bucketedBy = getGranularities("number", granularityFromJS(100), false);
     const expectedGrans = [100, 500, 1000, 5000, 10000].map(granularityFromJS);
 
-    expect(bucketedBy.every((g, i) => granularityEquals(g, expectedGrans[i]), "bucketed by returns larger granularities")).to.be.true;
+    expect(bucketedBy.every((g, i) => granularityEquals(g, expectedGrans[i]), "bucketed by returns larger granularities")).to.equal(true);
 
   });
 

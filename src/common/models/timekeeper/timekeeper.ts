@@ -62,27 +62,27 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   getTime(name: string): Date {
-    var timeTag = NamedArray.findByName(this.timeTags, name);
+    const timeTag = NamedArray.findByName(this.timeTags, name);
     if (!timeTag || timeTag.special === "realtime") return this.now();
     return timeTag.time || this.now();
   }
 
   updateTime(name: string, time: Date): Timekeeper {
-    var value = this.valueOf();
-    var tag = NamedArray.findByName(value.timeTags, name);
+    const value = this.valueOf();
+    const tag = NamedArray.findByName(value.timeTags, name);
     if (!tag) return this;
     value.timeTags = NamedArray.overrideByName(value.timeTags, tag.changeTime(time, this.now()));
     return new Timekeeper(value);
   }
 
   addTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.timeTags = value.timeTags.concat(new TimeTag({ name }));
     return new Timekeeper(value);
   }
 
   removeTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.timeTags = value.timeTags.filter(tag => tag.name !== name);
     return new Timekeeper(value);
   }

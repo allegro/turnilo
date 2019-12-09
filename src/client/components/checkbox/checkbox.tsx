@@ -31,10 +31,7 @@ export interface CheckboxProps {
   className?: string;
 }
 
-export interface CheckboxState {
-}
-
-export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
+export class Checkbox extends React.Component<CheckboxProps, {}> {
 
   static defaultProps: Partial<CheckboxProps> = {
     type: "check"
@@ -54,13 +51,13 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   render() {
     const { onClick, type, color, selected, label, className } = this.props;
 
-    var style: React.CSSProperties = null;
+    let style: React.CSSProperties = null;
     if (color) {
       style = { background: color };
     }
 
     return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
-      <div className="checkbox-body" style={style}></div>
+      <div className="checkbox-body" style={style} />
       {this.renderIcon()}
       {label ? <div className="label">{label}</div> : null}
     </div>;

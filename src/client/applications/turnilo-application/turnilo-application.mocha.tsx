@@ -24,7 +24,7 @@ import { TurniloApplication } from "./turnilo-application";
 
 describe.skip("TurniloApplication", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <TurniloApplication
         version={null}
         appSettings={null}

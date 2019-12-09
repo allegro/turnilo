@@ -55,14 +55,14 @@ describe("Dimensions", () => {
   it("should treat dimensions with the same structure as equal", () => {
     const otherDimensions = Dimensions.fromJS(DimensionsFixtures.wikiJS());
 
-    expect(dimensions.equals(otherDimensions)).to.be.true;
+    expect(dimensions.equals(otherDimensions)).to.equal(true);
   });
 
   it("should treat dimensions with different structure as different", () => {
     const [, ...dimensionsWithoutFirstJS] = DimensionsFixtures.wikiJS();
     const dimensionsWithoutCount = Dimensions.fromJS(dimensionsWithoutFirstJS);
 
-    expect(dimensions.equals(dimensionsWithoutCount)).to.be.false;
+    expect(dimensions.equals(dimensionsWithoutCount)).to.equal(false);
   });
 
   it("should map dimensions", () => {
@@ -80,7 +80,7 @@ describe("Dimensions", () => {
   });
 
   it("should traverse dimensions", () => {
-    let dimensionTitles: string[] = [];
+    const dimensionTitles: string[] = [];
     dimensions.forEachDimension(dimension => dimensionTitles.push(dimension.title));
 
     expect(dimensionTitles).to.deep.equal(DimensionsFixtures.wikiTitles());
@@ -99,7 +99,7 @@ describe("Dimensions", () => {
   });
 
   it("should know it contains dimension with name", () => {
-    expect(dimensions.containsDimensionWithName("time")).to.be.true;
+    expect(dimensions.containsDimensionWithName("time")).to.equal(true);
   });
 
   it("should provide dimension names", () => {
@@ -113,7 +113,7 @@ describe("Dimensions", () => {
 
     expect(dimensions.size()).to.equal(12);
     expect(newDimensions).to.not.equal(dimensions);
-    expect(newDimensions.equals(dimensions)).to.be.false;
+    expect(newDimensions.equals(dimensions)).to.equal(false);
     expect(newDimensions.size()).to.equal(13);
   });
 
@@ -122,7 +122,7 @@ describe("Dimensions", () => {
 
     expect(dimensions.size()).to.equal(12);
     expect(newDimensions).to.not.equal(dimensions);
-    expect(newDimensions.equals(dimensions)).to.be.false;
+    expect(newDimensions.equals(dimensions)).to.equal(false);
     expect(newDimensions.size()).to.equal(13);
   });
 });

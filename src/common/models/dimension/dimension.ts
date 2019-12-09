@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
+import { Instance } from "immutable-class";
 import { $, Expression } from "plywood";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
 import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
@@ -71,8 +71,6 @@ export interface DimensionJS {
   bucketingStrategy?: BucketingStrategy;
   sortStrategy?: string;
 }
-
-var check: Class<DimensionValue, DimensionJS>;
 
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): candidate is Dimension {
@@ -181,7 +179,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   public toJS(): DimensionJS {
-    var js: DimensionJS = {
+    const js: DimensionJS = {
       name: this.name,
       title: this.title,
       formula: this.formula,
@@ -236,7 +234,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   change(propertyName: string, newValue: any): Dimension {
-    var v = this.valueOf();
+    const v = this.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
@@ -261,7 +259,4 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public changeFormula(newFormula: string): Dimension {
     return this.change("formula", newFormula);
   }
-
 }
-
-check = Dimension;

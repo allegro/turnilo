@@ -23,17 +23,10 @@ import { Customization } from "../../models/customization/customization";
 import { DataCube, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Measure } from "../../models/measure/measure";
+import { extend } from "../object/object";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");
-}
-
-function extend(a: any, b: any): any {
-  for (let key in a) {
-    b[key] = a[key];
-  }
-
-  return b;
 }
 
 function yamlObject(lines: string[], indent = 2): string[] {
@@ -80,7 +73,7 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
 
 function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
   const adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
-    let propVerbiage = labels[propName];
+    const propVerbiage = labels[propName];
     let comment: string;
 
     if (!propVerbiage) {
@@ -104,7 +97,7 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
 
 function customizationToYAML(customization: Customization, withComments: boolean): string[] {
   const { timezones, externalViews } = customization;
-  let lines: string[] = [];
+  const lines: string[] = [];
 
   getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
     .add("customLogoSvg")
@@ -131,11 +124,11 @@ function customizationToYAML(customization: Customization, withComments: boolean
 }
 
 function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${cluster.name}`
   ];
 
-  let props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
+  const props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
 
   props
     .add("url")
@@ -168,7 +161,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
 }
 
 function attributeToYAML(attribute: AttributeInfo): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${attribute.name}`,
     `type: ${attribute.type}`
   ];
@@ -182,7 +175,7 @@ function attributeToYAML(attribute: AttributeInfo): string[] {
 }
 
 function dimensionToYAML(dimension: Dimension): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${dimension.name}`,
     `title: ${dimension.title}`
   ];
@@ -202,7 +195,7 @@ function dimensionToYAML(dimension: Dimension): string[] {
 }
 
 function measureToYAML(measure: Measure): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${measure.name}`,
     `title: ${measure.title}`
   ];
@@ -259,7 +252,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   }
   lines.push("");
 
-  let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
+  const addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
   addProps
     .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })

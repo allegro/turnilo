@@ -136,11 +136,11 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const options = [new DimensionSortOn(dimension), ...seriesSortOns];
     const selected = SortOn.fromSort(sort, essence);
     return <SortDropdown
-        direction={sort.direction}
-        selected={selected}
-        options={options}
-        onChange={this.saveSort}
-      />;
+      direction={sort.direction}
+      selected={selected}
+      options={options}
+      onChange={this.saveSort}
+    />;
   }
 
   render() {
@@ -166,7 +166,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
         colors={colors}
         onLimitSelect={this.saveLimit}
         limit={limit}
-        includeNone={dimension.isContinuous()}/>
+        includeNone={dimension.isContinuous()} />
       <div className="button-bar">
         <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />

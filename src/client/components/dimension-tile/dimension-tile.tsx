@@ -660,7 +660,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       </div>
       {foldControl}
       {error && <QueryError error={error} />}
-      {!sortOn && <Message content="No measure selected"/>}
+      {!sortOn && <Message content="No measure selected" />}
       {loading && <Loader />}
     </SearchableTile>;
   }

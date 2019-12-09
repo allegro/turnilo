@@ -42,7 +42,7 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
   static simpleGenerator(labels: any, errors: any, isBubble = false) {
     return (name: string) => {
-      let myLabels = labels[name] || { label: "", description: "" };
+      const myLabels = labels[name] || { label: "", description: "" };
 
       return <FormLabel
         isBubble={isBubble}
@@ -105,7 +105,7 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
     return <div className="additional-text">
       {errorText ? <div className="error-text">{firstUp(errorText)}</div> : null}
-      {helpVisible ? <div className="help-text" dangerouslySetInnerHTML={{ __html: helpText }}></div> : null}
+      {helpVisible ? <div className="help-text" dangerouslySetInnerHTML={{ __html: helpText }} /> : null}
     </div>;
   }
 

@@ -39,7 +39,6 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 import "./filter-tile.scss";
 
 const FILTER_CLASS_NAME = "filter";
-const ANIMATION_DURATION = 400;
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -321,7 +320,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const newFilter = dragPosition.isReplace()
       ? filter.replaceByIndex(dragPosition.replace, clause)
       : filter.insertByIndex(dragPosition.insert, clause);
-    !filter.equals(newFilter) && clicker.changeFilter(newFilter);
+    if (!filter.equals(newFilter)) {
+      clicker.changeFilter(newFilter);
+    }
   }
 
   appendFilter = (dimension: Dimension) => {

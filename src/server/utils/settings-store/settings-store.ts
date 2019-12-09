@@ -42,19 +42,16 @@ function readSettingsFactory(filepath: string, format: Format, inline = false): 
 
 export class SettingsStore {
   static fromTransient(initAppSettings: AppSettings): SettingsStore {
-    let settingsStore = new SettingsStore();
+    const settingsStore = new SettingsStore();
     settingsStore.readSettings = () => Promise.resolve(initAppSettings);
     return settingsStore;
   }
 
   static fromReadOnlyFile(filepath: string, format: Format): SettingsStore {
-    let settingsStore = new SettingsStore();
+    const settingsStore = new SettingsStore();
     settingsStore.readSettings = readSettingsFactory(filepath, format, true);
     return settingsStore;
   }
 
   public readSettings: () => Promise<AppSettings>;
-
-  constructor() {
-  }
 }

@@ -24,7 +24,7 @@ import { HomeHeaderBar } from "./home-header-bar";
 
 describe("HomeHeaderBar", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <HomeHeaderBar
         onNavClick={null}
       />

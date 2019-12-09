@@ -57,20 +57,20 @@ describe("Add Percent Series Button", () => {
   it("button is enabled when no percents already selected", () => {
     const btn = renderButton(series);
 
-    expect(btn.hasClass("disabled")).to.be.false;
+    expect(btn.hasClass("disabled")).to.equal(false);
   });
 
   it("button is enabled when only one percent already selected", () => {
     const btn = renderButton(seriesWithPercents(ExpressionSeriesOperation.PERCENT_OF_PARENT));
 
-    expect(btn.hasClass("disabled")).to.be.false;
+    expect(btn.hasClass("disabled")).to.equal(false);
   });
 
   it("button is disabled when both percents already selected", () => {
     const series = seriesWithPercents(ExpressionSeriesOperation.PERCENT_OF_PARENT, ExpressionSeriesOperation.PERCENT_OF_TOTAL);
     const btn = renderButton(series);
 
-    expect(btn.hasClass("disabled")).to.be.true;
+    expect(btn.hasClass("disabled")).to.equal(true);
   });
 
   describe("click action", () => {
@@ -87,13 +87,13 @@ describe("Add Percent Series Button", () => {
       });
 
       it("calls addSeries with '% of Parent'", () => {
-        expect(addSeriesSpy.calledOnce).to.be.true;
+        expect(addSeriesSpy.calledOnce).to.equal(true);
         const argument = addSeriesSpy.args[0][0];
-        expect(argument.equals(constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_PARENT))).to.be.true;
+        expect(argument.equals(constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_PARENT))).to.equal(true);
       });
 
       it("should call onClose", () => {
-        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
       });
     });
 
@@ -109,13 +109,13 @@ describe("Add Percent Series Button", () => {
       });
 
       it("calls addSeries with '% of Total'", () => {
-        expect(addSeriesSpy.calledOnce).to.be.true;
+        expect(addSeriesSpy.calledOnce).to.equal(true);
         const argument = addSeriesSpy.args[0][0];
-        expect(argument.equals(constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_TOTAL))).to.be.true;
+        expect(argument.equals(constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_TOTAL))).to.equal(true);
       });
 
       it("should call onClose", () => {
-        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
       });
     });
 
@@ -131,11 +131,11 @@ describe("Add Percent Series Button", () => {
       });
 
       it("should not call addSeries", () => {
-        expect(addSeriesSpy.called).to.be.false;
+        expect(addSeriesSpy.called).to.equal(false);
       });
 
       it("should call onClose", () => {
-        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
       });
     });
   });

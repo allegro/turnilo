@@ -21,7 +21,7 @@ import app from "./app";
 import { SERVER_SETTINGS, START_SERVER } from "./config";
 
 if (START_SERVER) {
-  var server = http.createServer(app);
+  const server = http.createServer(app);
 
   server.on("error", (error: any) => {
     if (error.syscall !== "listen") {
@@ -46,7 +46,7 @@ if (START_SERVER) {
   });
 
   server.on("listening", () => {
-    var address = server.address();
+    const address = server.address();
     console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 

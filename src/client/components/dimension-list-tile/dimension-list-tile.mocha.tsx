@@ -25,7 +25,7 @@ import { DimensionListTile } from "./dimension-list-tile";
 
 describe("DimensionListTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DimensionListTile
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}

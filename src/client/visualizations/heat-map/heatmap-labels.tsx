@@ -16,6 +16,7 @@
  */
 
 import * as React from "react";
+import { noop } from "../../../common/utils/functional/functional";
 
 interface HeatmapLabelsProps {
   labels: string[];
@@ -34,7 +35,7 @@ export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
     }
 
     const {
-      onMaxLabelSize = () => {}
+      onMaxLabelSize = noop
     } = this.props;
 
     const maxWidth = Array.from(this.container.querySelectorAll(".heatmap-label"))

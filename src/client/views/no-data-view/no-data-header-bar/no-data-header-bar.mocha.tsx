@@ -24,7 +24,7 @@ import { NoDataHeaderBar } from "./no-data-header-bar";
 
 describe("NoDataHeaderBar", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <NoDataHeaderBar
         onNavClick={null}
       />

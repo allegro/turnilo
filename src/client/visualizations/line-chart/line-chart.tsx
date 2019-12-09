@@ -598,7 +598,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     if (range instanceof NumberRange) {
       const { start, end } = range;
       const unit = getBestBucketUnitForRange(range, true) as number;
-      let values: number[] = [];
+      const values: number[] = [];
       let iter = Math.round((start as number) * unit) / unit;
 
       while (iter <= end) {

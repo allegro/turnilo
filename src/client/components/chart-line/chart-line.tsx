@@ -42,7 +42,7 @@ type DataPoint = [number, number];
 export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, getX, scaleX, scaleY, color, showArea, hoverRange, dashed }) => {
   if (!dataset || !color) return null;
 
-  let dataPoints: DataPoint[] = [];
+  const dataPoints: DataPoint[] = [];
   let hoverDataPoint: DataPoint = null;
 
   const ds = dataset.data;

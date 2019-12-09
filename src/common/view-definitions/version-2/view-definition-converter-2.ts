@@ -54,7 +54,7 @@ import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
-import { DimensionSort, SeriesSort, Sort, SortType } from "../../models/sort/sort";
+import { DimensionSort, SeriesSort, Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";

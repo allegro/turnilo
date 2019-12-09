@@ -18,8 +18,10 @@
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
-  for (let key in source) {
-    target[key] = source[key];
+  for (const key in source) {
+    if (source.hasOwnProperty(key)) {
+      target[key] = source[key];
+    }
   }
 
   return target;

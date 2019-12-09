@@ -190,7 +190,6 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     if (type === "textarea") {
       return <textarea
         className={classNames("immutable-input", className, { error: isInvalid })}
-        ref="me"
         value={(isInvalid ? invalidString : validString) || ""}
         onChange={this.onChange}
       />;

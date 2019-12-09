@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Duration, Timezone } from "chronoshift";
 import { List } from "immutable";
 import { DateRange } from "../date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
+import { FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
 
 describe("FilterClause", () => {
   describe("evaluate", () => {
@@ -37,7 +37,7 @@ describe("FilterClause", () => {
         }))
       });
 
-      expect(previousRelative.evaluate(now, maxTime, Timezone.UTC).equals(previousFixed)).to.be.true;
+      expect(previousRelative.evaluate(now, maxTime, Timezone.UTC).equals(previousFixed)).to.equal(true);
     });
 
     it("works with now for current", () => {
@@ -54,7 +54,7 @@ describe("FilterClause", () => {
         }))
       });
 
-      expect(currentRelative.evaluate(now, maxTime, Timezone.UTC).equals(currentFixed)).to.be.true;
+      expect(currentRelative.evaluate(now, maxTime, Timezone.UTC).equals(currentFixed)).to.equal(true);
     });
 
     it("works with maxTime for latest", () => {
@@ -71,7 +71,7 @@ describe("FilterClause", () => {
         }))
       });
 
-      expect(relativeClause.evaluate(now, maxTime, Timezone.UTC).equals(fixedClause)).to.be.true;
+      expect(relativeClause.evaluate(now, maxTime, Timezone.UTC).equals(fixedClause)).to.equal(true);
     });
   });
 });

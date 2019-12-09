@@ -46,13 +46,13 @@ describe("Add Measure Series Button", () => {
   it("renders enabled add action when measure is not selected", () => {
     const actions = renderButton(MeasureFixtures.wikiUniqueUsers());
 
-    expect(actions.find(".add-series").hasClass("disabled")).to.be.false;
+    expect(actions.find(".add-series").hasClass("disabled")).to.equal(false);
   });
 
   it("renders disabled add action when measure is selected", () => {
     const actions = renderButton(MeasureFixtures.wikiCount());
 
-    expect(actions.find(".add-series").hasClass("disabled")).to.be.true;
+    expect(actions.find(".add-series").hasClass("disabled")).to.equal(true);
   });
 
   describe("click action", () => {
@@ -71,13 +71,13 @@ describe("Add Measure Series Button", () => {
       });
 
       it("calls addSeries", () => {
-        expect(addSeriesSpy.calledOnce).to.be.true;
+        expect(addSeriesSpy.calledOnce).to.equal(true);
         const argument = addSeriesSpy.args[0][0];
-        expect(argument.equals(MeasureSeries.fromMeasure(measure))).to.be.true;
+        expect(argument.equals(MeasureSeries.fromMeasure(measure))).to.equal(true);
       });
 
       it("calls onClose", () => {
-        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
       });
     });
 
@@ -94,11 +94,11 @@ describe("Add Measure Series Button", () => {
       });
 
       it("should not call addSeries", () => {
-        expect(addSeriesSpy.called).to.be.false;
+        expect(addSeriesSpy.called).to.equal(false);
       });
 
       it("calls onClose", () => {
-        expect(onCloseSpy.calledOnce).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
       });
     });
   });

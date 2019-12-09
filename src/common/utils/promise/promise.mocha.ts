@@ -25,11 +25,11 @@ describe("Promise utils", () => {
       const successSpy = spy();
       const failureSpy = spy();
       timeout(10).then(successSpy).catch(failureSpy);
-      expect(successSpy.called).to.be.false;
-      expect(failureSpy.called).to.be.false;
+      expect(successSpy.called).to.equal(false);
+      expect(failureSpy.called).to.equal(false);
       await sleep(10);
-      expect(successSpy.called).to.be.false;
-      expect(failureSpy.called).to.be.true;
+      expect(successSpy.called).to.equal(false);
+      expect(failureSpy.called).to.equal(true);
     });
   });
 
@@ -42,8 +42,8 @@ describe("Promise utils", () => {
 
       deferred.resolve("resolve");
       await promise;
-      expect(onResolve.calledOnce).to.be.true;
-      expect(onResolve.calledWith("resolve")).to.be.true;
+      expect(onResolve.calledOnce).to.equal(true);
+      expect(onResolve.calledWith("resolve")).to.equal(true);
     });
 
     it("should reject with method", async () => {
@@ -58,8 +58,8 @@ describe("Promise utils", () => {
       } catch {
         // empty catch for promise rejection
       }
-      expect(onReject.calledOnce).to.be.true;
-      expect(onReject.calledWith("reject")).to.be.true;
+      expect(onReject.calledOnce).to.equal(true);
+      expect(onReject.calledWith("reject")).to.equal(true);
     });
 
   });

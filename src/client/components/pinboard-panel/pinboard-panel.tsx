@@ -141,7 +141,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
     let legendMeasureSelector: JSX.Element = null;
     let legendDimensionTile: JSX.Element = null;
-    let colorDimension = colors ? colors.dimension : null;
+    const colorDimension = colors ? colors.dimension : null;
     if (colorDimension) {
       const dimension = dataCube.getDimension(colorDimension);
       const colorsSortOn = this.getColorsSortOn();
@@ -169,7 +169,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     const pinnedSortMeasure = essence.getPinnedSortMeasure();
     const pinnedSortSeries = pinnedSortMeasure && essence.findConcreteSeries(pinnedSortMeasure.name);
     const pinnedSortSortOn = pinnedSortSeries && new SeriesSortOn(pinnedSortSeries);
-    let dimensionTiles: JSX.Element[] = [];
+    const dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach(dimensionName => {
       const dimension = dataCube.getDimension(dimensionName);
       if (!dimension) return null;

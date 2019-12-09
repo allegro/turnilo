@@ -26,10 +26,10 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
+import { noop } from "../../../common/utils/functional/functional";
 import { DimensionActions } from "./dimension-actions-menu";
 
-const onClose = () => {
-};
+const onClose = noop;
 
 describe("<DimensionActions>", () => {
   describe("Split Action", () => {
@@ -45,13 +45,13 @@ describe("<DimensionActions>", () => {
     it("renders enabled action when dimension is not selected", () => {
       const actions = dimActions(DimensionFixtures.countryURL(), EssenceFixtures.wikiTable());
 
-      expect(actions.find(".split").hasClass("disabled")).to.be.false;
+      expect(actions.find(".split").hasClass("disabled")).to.equal(false);
     });
 
     it("renders enabled action when dimension is selected but is not only one split", () => {
       const actions = dimActions(DimensionFixtures.wikiCommentLength(), EssenceFixtures.wikiTable());
 
-      expect(actions.find(".split").hasClass("disabled")).to.be.false;
+      expect(actions.find(".split").hasClass("disabled")).to.equal(false);
     });
 
     it("renders disabled action when dimension is only selected split", () => {
@@ -60,7 +60,7 @@ describe("<DimensionActions>", () => {
 
       const actions = dimActions(dimension, essenceWithOneSplit);
 
-      expect(actions.find(".split").hasClass("disabled")).to.be.true;
+      expect(actions.find(".split").hasClass("disabled")).to.equal(true);
     });
 
     describe("click should call action", () => {
@@ -86,9 +86,9 @@ describe("<DimensionActions>", () => {
 
         actions.find(".split").simulate("click");
 
-        expect(onCloseSpy.calledOnce).to.be.true;
-        expect(changeSplitSpy.calledOnce).to.be.true;
-        expect(changeSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
+        expect(changeSplitSpy.calledOnce).to.equal(true);
+        expect(changeSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.equal(true);
       });
 
       it("calls onClose but not clicker.changeSplit when dimension is selected", () => {
@@ -98,8 +98,8 @@ describe("<DimensionActions>", () => {
 
         actions.find(".split").simulate("click");
 
-        expect(onCloseSpy.calledOnce).to.be.true;
-        expect(changeSplitSpy.notCalled).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
+        expect(changeSplitSpy.notCalled).to.equal(true);
       });
     });
   });
@@ -117,13 +117,13 @@ describe("<DimensionActions>", () => {
     it("renders enabled action when dimension is not selected", () => {
       const actions = dimActions(DimensionFixtures.countryURL());
 
-      expect(actions.find(".subsplit").hasClass("disabled")).to.be.false;
+      expect(actions.find(".subsplit").hasClass("disabled")).to.equal(false);
     });
 
     it("renders disabled action when dimension is only selected split", () => {
       const actions = dimActions(DimensionFixtures.wikiCommentLength());
 
-      expect(actions.find(".subsplit").hasClass("disabled")).to.be.true;
+      expect(actions.find(".subsplit").hasClass("disabled")).to.equal(true);
     });
 
     describe("click should call action", () => {
@@ -149,9 +149,9 @@ describe("<DimensionActions>", () => {
 
         actions.find(".subsplit").simulate("click");
 
-        expect(onCloseSpy.calledOnce).to.be.true;
-        expect(addSplitSpy.calledOnce).to.be.true;
-        expect(addSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
+        expect(addSplitSpy.calledOnce).to.equal(true);
+        expect(addSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.equal(true);
       });
 
       it("calls onClose but not clicker.changeSplit when dimension is selected", () => {
@@ -160,8 +160,8 @@ describe("<DimensionActions>", () => {
 
         actions.find(".subsplit").simulate("click");
 
-        expect(onCloseSpy.calledOnce).to.be.true;
-        expect(addSplitSpy.notCalled).to.be.true;
+        expect(onCloseSpy.calledOnce).to.equal(true);
+        expect(addSplitSpy.notCalled).to.equal(true);
       });
     });
   });
@@ -181,9 +181,9 @@ describe("<DimensionActions>", () => {
 
       actions.find(".filter").simulate("click");
 
-      expect(onCloseSpy.calledOnce).to.be.true;
-      expect(triggerSpy.calledOnce).to.be.true;
-      expect(triggerSpy.calledWith(dimension)).to.be.true;
+      expect(onCloseSpy.calledOnce).to.equal(true);
+      expect(triggerSpy.calledOnce).to.equal(true);
+      expect(triggerSpy.calledWith(dimension)).to.equal(true);
     });
   });
 
@@ -203,9 +203,9 @@ describe("<DimensionActions>", () => {
 
       actions.find(".pin").simulate("click");
 
-      expect(onCloseSpy.calledOnce).to.be.true;
-      expect(pinSpy.calledOnce).to.be.true;
-      expect(pinSpy.calledWith(dimension)).to.be.true;
+      expect(onCloseSpy.calledOnce).to.equal(true);
+      expect(pinSpy.calledOnce).to.equal(true);
+      expect(pinSpy.calledWith(dimension)).to.equal(true);
     });
   });
 });

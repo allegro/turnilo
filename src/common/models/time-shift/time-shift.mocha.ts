@@ -26,18 +26,18 @@ describe("TimeShift", () => {
 
 describe("isValidTimeShift", () => {
   it("should return false for invalid timeshifts", () => {
-    expect(isValidTimeShift(""), "empty string").to.be.false;
-    expect(isValidTimeShift("1234"), "number").to.be.false;
-    expect(isValidTimeShift("1D"), "duration without leading P").to.be.false;
-    expect(isValidTimeShift("P1H"), "hour duration without T").to.be.false;
+    expect(isValidTimeShift(""), "empty string").to.equal(false);
+    expect(isValidTimeShift("1234"), "number").to.equal(false);
+    expect(isValidTimeShift("1D"), "duration without leading P").to.equal(false);
+    expect(isValidTimeShift("P1H"), "hour duration without T").to.equal(false);
   });
 
   it("should return true for valid timeshifts", () => {
-    expect(isValidTimeShift(null), "<null>").to.be.true;
-    expect(isValidTimeShift("PT1H"), "one hour").to.be.true;
-    expect(isValidTimeShift("P2D"), "two days").to.be.true;
-    expect(isValidTimeShift("P3W"), "three weeks").to.be.true;
-    expect(isValidTimeShift("P2M"), "two months").to.be.true;
-    expect(isValidTimeShift("P5Y"), "five years").to.be.true;
+    expect(isValidTimeShift(null), "<null>").to.equal(true);
+    expect(isValidTimeShift("PT1H"), "one hour").to.equal(true);
+    expect(isValidTimeShift("P2D"), "two days").to.equal(true);
+    expect(isValidTimeShift("P3W"), "three weeks").to.equal(true);
+    expect(isValidTimeShift("P2M"), "two months").to.equal(true);
+    expect(isValidTimeShift("P5Y"), "five years").to.equal(true);
   });
 });

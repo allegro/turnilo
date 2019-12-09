@@ -126,7 +126,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static fromJS(parameters: MeasureJS): Measure {
     // Back compat
     if (!parameters.formula) {
-      let parameterExpression = (parameters as any).expression;
+      const parameterExpression = (parameters as any).expression;
       parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
     }
 

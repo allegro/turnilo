@@ -43,7 +43,7 @@ describe("ModalBubble", () => {
 
       mouseDownHandler.call(null, { target });
 
-      expect(onCloseSpy.called).to.be.true;
+      expect(onCloseSpy.called).to.equal(true);
     });
 
     it("should not call onClose when clicked inside modal", () => {
@@ -56,7 +56,7 @@ describe("ModalBubble", () => {
 
       mouseDownHandler.call(null, { target });
 
-      expect(onCloseSpy.called).to.be.false;
+      expect(onCloseSpy.called).to.equal(false);
     });
   });
 });

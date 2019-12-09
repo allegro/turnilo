@@ -26,7 +26,7 @@ import { FilterTile } from "./filter-tile";
 
 describe("FilterTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <FilterTile
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}

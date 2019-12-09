@@ -36,8 +36,8 @@ const NORMAL_COLORS = [
 ];
 
 function valuesToJS(values: Record<string, any>): Record<string, any> {
-  var valuesJS: Record<string, any> = {};
-  for (var i = 0; i < NORMAL_COLORS.length; i++) {
+  const valuesJS: Record<string, any> = {};
+  for (let i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(values, i)) continue;
     valuesJS[i] = valueToJS(values[i]);
   }
@@ -57,9 +57,9 @@ function valuesEqual(values1: Record<string, any>, values2: Record<string, any>)
   if (values1 === values2) return true;
   if (!values1 !== !values2) return false;
   if (typeof values1 !== typeof values2) return false;
-  for (var i = 0; i < NORMAL_COLORS.length; i++) {
-    var v1 = values1[i];
-    var v2 = values2[i];
+  for (let i = 0; i < NORMAL_COLORS.length; i++) {
+    const v1 = values1[i];
+    const v2 = values2[i];
     if (hasOwnProperty(values1, i) !== hasOwnProperty(values2, i)) return false;
     if (!valueEquals(v1, v2)) return false;
   }
@@ -67,8 +67,8 @@ function valuesEqual(values1: Record<string, any>, values2: Record<string, any>)
 }
 
 function cloneValues(values: Record<string, any>): Record<string, any> {
-  var newValues: Record<string, any> = {};
-  for (var i = 0; i < NORMAL_COLORS.length; i++) {
+  const newValues: Record<string, any> = {};
+  for (let i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(values, i)) continue;
     newValues[i] = values[i];
   }
@@ -107,13 +107,13 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   static fromValues(dimension: string, values: any[]): Colors {
-    var valueLookup: Record<string, any> = {};
-    var hasNull = false;
-    var n = Math.min(values.length, NORMAL_COLORS.length + 1);
-    var i = 0;
-    var j = 0;
+    const valueLookup: Record<string, any> = {};
+    let hasNull = false;
+    const n = Math.min(values.length, NORMAL_COLORS.length + 1);
+    let i = 0;
+    let j = 0;
     while (i < n) {
-      var v = values[i];
+      const v = values[i];
       if (v === null) {
         hasNull = true;
       } else {
@@ -130,18 +130,18 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   static fromJS(parameters: ColorsJS): Colors {
-    var value: ColorsValue = {
+    const value: ColorsValue = {
       dimension: parameters.dimension,
       limit: parameters.limit
     };
 
-    var valuesJS = parameters.values;
+    const valuesJS = parameters.values;
     if (valuesJS) {
-      var hasNull = Boolean(parameters.hasNull);
-      var values: Record<string, any> = {};
-      for (var i = 0; i < NORMAL_COLORS.length; i++) {
+      let hasNull = Boolean(parameters.hasNull);
+      const values: Record<string, any> = {};
+      for (let i = 0; i < NORMAL_COLORS.length; i++) {
         if (!hasOwnProperty(valuesJS, i)) continue;
-        var vJS = valuesJS[i];
+        const vJS = valuesJS[i];
         if (vJS === null) {
           hasNull = true; // Back compat (there might be a null in values)
         } else {
@@ -176,7 +176,7 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public toJS(): ColorsJS {
-    var js: ColorsJS = {
+    const js: ColorsJS = {
       dimension: this.dimension
     };
     if (this.values) js.values = valuesToJS(this.values);
@@ -201,7 +201,7 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public numColors(): number {
-    var { values, limit } = this;
+    const { values, limit } = this;
     if (values) {
       return Object.keys(values).length + Number(this.hasNull);
     }
@@ -209,12 +209,12 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public toArray(): any[] {
-    var { values, hasNull } = this;
+    const { values, hasNull } = this;
     if (!values) return null;
 
-    var vs: any[] = [];
+    const vs: any[] = [];
     if (hasNull) vs.push(null);
-    for (var i = 0; i < NORMAL_COLORS.length; i++) {
+    for (let i = 0; i < NORMAL_COLORS.length; i++) {
       if (!hasOwnProperty(values, i)) continue;
       vs.push(values[i]);
     }
@@ -228,7 +228,7 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public toHavingFilter(segmentName?: string): FilterExpression {
-    var { dimension, values } = this;
+    const { dimension, values } = this;
     if (!segmentName) segmentName = dimension;
 
     if (!values) return null;
@@ -248,9 +248,9 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public valueIndex(v: any): number {
-    var { values } = this;
+    const { values } = this;
     if (!values) return -1;
-    for (var i = 0; i < NORMAL_COLORS.length; i++) {
+    for (let i = 0; i < NORMAL_COLORS.length; i++) {
       if (!hasOwnProperty(values, i)) continue;
       if (valueEquals(values[i], v)) return i;
     }
@@ -258,9 +258,9 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public nextIndex(): number {
-    var { values } = this;
+    const { values } = this;
     if (!values) return 0;
-    for (var i = 0; i < NORMAL_COLORS.length; i++) {
+    for (let i = 0; i < NORMAL_COLORS.length; i++) {
       if (hasOwnProperty(values, i)) continue;
       return i;
     }
@@ -274,12 +274,12 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
 
   public add(v: any): Colors {
     if (this.hasColor(v)) return this;
-    var value = this.valueOf();
+    const value = this.valueOf();
 
     if (v === null) {
       value.hasNull = true;
     } else {
-      var idx = this.nextIndex();
+      const idx = this.nextIndex();
       if (idx === -1) return this;
       value.values = value.values ? cloneValues(value.values) : {};
       value.values[idx] = v;
@@ -291,12 +291,12 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
 
   public removeColor(v: any): Colors {
     if (!this.hasColor(v)) return this;
-    var value = this.valueOf();
+    const value = this.valueOf();
 
     if (v == null) {
       value.hasNull = false;
     } else {
-      var idx = this.valueIndex(v);
+      const idx = this.valueIndex(v);
       if (idx === -1) return this;
       value.values = cloneValues(value.values);
       delete value.values[idx];
@@ -307,19 +307,19 @@ export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
   }
 
   public getColors(valuesToColor: any[]): string[] {
-    var { values, limit, hasNull } = this;
+    const { values, limit, hasNull } = this;
     if (values) {
       return valuesToColor.map(value => {
         if (value === null && hasNull) return NULL_COLOR;
-        var colorIdx = this.valueIndex(value);
+        const colorIdx = this.valueIndex(value);
         return colorIdx === -1 ? null : NORMAL_COLORS[colorIdx];
       });
     } else {
-      var colors: string[] = [];
-      var colorIdx = 0;
-      for (var i = 0; i < valuesToColor.length; i++) {
+      const colors: string[] = [];
+      let colorIdx = 0;
+      for (let i = 0; i < valuesToColor.length; i++) {
         if (i < limit) {
-          var v = valuesToColor[i];
+          const v = valuesToColor[i];
           if (v === null) {
             colors.push(NULL_COLOR);
           } else {

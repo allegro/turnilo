@@ -61,10 +61,10 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   renderHeaders(columns: SimpleTableColumn[], sortColumn: SimpleTableColumn, sortAscending: boolean): JSX.Element {
-    var items: JSX.Element[] = [];
+    const items: JSX.Element[] = [];
 
     for (let i = 0; i < columns.length; i++) {
-      let column = columns[i];
+      const column = columns[i];
 
       let icon: JSX.Element = null;
       if (sortColumn && sortColumn === column) {
@@ -89,10 +89,10 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   getIcons(row: any, actions: SimpleTableAction[]): JSX.Element[] {
     if (!actions || !actions.length) return null;
 
-    var items: JSX.Element[] = [];
+    const items: JSX.Element[] = [];
 
     for (let i = 0; i < actions.length; i++) {
-      let action = actions[i];
+      const action = actions[i];
 
       items.push(<div
         className="cell action"
@@ -114,12 +114,12 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
 
   renderRow(row: any, columns: SimpleTableColumn[], index: number): JSX.Element {
     const { hoveredRowIndex } = this.state;
-    var items: JSX.Element[] = [];
+    const items: JSX.Element[] = [];
 
     for (let i = 0; i < columns.length; i++) {
-      let col = columns[i];
+      const col = columns[i];
 
-      let icon = col.cellIcon ? <SvgIcon svg={require(`../../icons/${col.cellIcon}.svg`)} /> : null;
+      const icon = col.cellIcon ? <SvgIcon svg={require(`../../icons/${col.cellIcon}.svg`)} /> : null;
 
       items.push(<div
         className={classNames("cell", { "has-icon": !!col.cellIcon })}
@@ -140,7 +140,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   sortRows(rows: any[], sortColumn: SimpleTableColumn, sortAscending: boolean): any[] {
     if (!sortColumn) return rows;
 
-    var labelize = this.labelizer(sortColumn);
+    const labelize = this.labelizer(sortColumn);
 
     if (sortAscending) {
       return rows.sort((a: any, b: any) => {
@@ -170,7 +170,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
 
     rows = this.sortRows(rows, sortColumn, sortAscending);
 
-    var items: JSX.Element[] = [];
+    const items: JSX.Element[] = [];
 
     for (let i = 0; i < rows.length; i++) {
       items.push(this.renderRow(rows[i], columns, i));
@@ -208,9 +208,9 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     const directActions = this.getDirectActions(actions);
 
     const generator = (row: any, i: number) => {
-      let isRowHovered = i === hoveredRowIndex;
+      const isRowHovered = i === hoveredRowIndex;
 
-      let icons = directActions.map((action, j) => {
+      const icons = directActions.map((action, j) => {
         return <div
           className={classNames("icon", { hover: isRowHovered && j === hoveredActionIndex })}
           key={`icon-${j}`}
@@ -233,7 +233,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   getRowIndex(y: number): number {
-    var rowIndex = -1; // -1 means header
+    let rowIndex = -1; // -1 means header
 
     // Not in the header
     if (y > HEADER_HEIGHT) {
@@ -244,8 +244,6 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   getActionIndex(x: number, headerWidth: number): number {
-    const { actions } = this.props;
-
     return Math.floor((x - headerWidth) / ACTION_WIDTH);
   }
 
@@ -254,7 +252,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
 
     const { columns } = this.props;
 
-    var columnIndex = 0;
+    let columnIndex = 0;
     while ((x -= columns[columnIndex].width) > 0) columnIndex++;
 
     return columnIndex;
@@ -275,7 +273,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     const rowIndex = this.getRowIndex(y); // -1 means header
 
     if (part === Scroller.RIGHT_GUTTER) {
-      let action = actions[this.getActionIndex(x, headerWidth)];
+      const action = actions[this.getActionIndex(x, headerWidth)];
       if (action) {
         this.onActionClick(action, rows[rowIndex]);
         return;
@@ -337,7 +335,6 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
 
     return <div className={classNames("simple-table", { clickable: hoveredRowIndex !== undefined })}>
       <Scroller
-        ref="scroller"
         layout={this.getLayout(columns, rows, actions)}
 
         topRightCorner={<div />} // for styling purposes...

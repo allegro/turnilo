@@ -20,19 +20,20 @@ import { Timezone } from "chronoshift";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
+import { noop } from "../../../common/utils/functional/functional";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { DateRangePicker } from "./date-range-picker";
 
 describe("DateRangePicker", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DateRangePicker
         startTime={new Date(Date.UTC(2003, 11, 2))}
         endTime={new Date(Date.UTC(2004, 11, 2))}
         maxTime={new Date(Date.UTC(2004, 11, 2))}
         timezone={Timezone.UTC}
-        onStartChange={() => {}}
-        onEndChange={() => {}}
+        onStartChange={noop}
+        onEndChange={noop}
       />
     );
 
@@ -78,8 +79,8 @@ describe("DateRangePicker", () => {
           endTime={null}
           maxTime={new Date(Date.UTC(2004, 11, 2))}
           timezone={Timezone.UTC}
-          onStartChange={() => {}}
-          onEndChange={() => {}}
+          onStartChange={noop}
+          onEndChange={noop}
         />);
     }).to.not.throw();
   });

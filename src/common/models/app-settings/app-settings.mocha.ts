@@ -23,7 +23,7 @@ import { AppSettings } from "./app-settings";
 import { AppSettingsFixtures } from "./app-settings.fixtures";
 
 describe("AppSettings", () => {
-  var context = AppSettingsFixtures.getContext();
+  const context = AppSettingsFixtures.getContext();
 
   it("is an immutable class", () => {
     testImmutableClass(
@@ -37,7 +37,7 @@ describe("AppSettings", () => {
 
   describe("errors", () => {
     it("errors if there is no matching cluster", () => {
-      var js = AppSettingsFixtures.wikiOnlyJS();
+      const js = AppSettingsFixtures.wikiOnlyJS();
       js.clusters = [];
       expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid-wiki' for data cube 'wiki'");
     });
@@ -46,18 +46,18 @@ describe("AppSettings", () => {
 
   describe.skip("back compat", () => {
     it("works with dataSources", () => {
-      var oldJS: any = AppSettingsFixtures.wikiOnlyJS();
+      const oldJS: any = AppSettingsFixtures.wikiOnlyJS();
       oldJS.dataSources = oldJS.dataCubes;
       delete oldJS.dataCubes;
       expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(AppSettingsFixtures.wikiOnlyJS());
     });
 
     it("deals with old config style", () => {
-      var wikiDataCubeJS = DataCubeFixtures.WIKI_JS;
+      const wikiDataCubeJS = DataCubeFixtures.WIKI_JS;
       delete wikiDataCubeJS.clusterName;
       (wikiDataCubeJS as any).engine = "druid";
 
-      var oldJS: any = {
+      const oldJS: any = {
         customization: {},
         druidHost: "192.168.99.100",
         timeout: 30003,
@@ -85,7 +85,7 @@ describe("AppSettings", () => {
     });
 
     it("deals with old config style no sourceListScan=disabled", () => {
-      var oldJS: any = {
+      const oldJS: any = {
         druidHost: "192.168.99.100",
         sourceListScan: "disable",
         dataSources: [

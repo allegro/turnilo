@@ -73,6 +73,7 @@ function ensureNotTiny(v: number): void {
 
 function validateUrl(url: string): void {
   try {
+    // tslint:disable-next-line:no-unused-expression
     new URL(url);
   } catch (e) {
     throw new Error(`Cluster url: ${url} has invalid format. It should be http[s]://hostname[:port]`);

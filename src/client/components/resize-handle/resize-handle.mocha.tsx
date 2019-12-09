@@ -25,7 +25,7 @@ import { Direction, ResizeHandle } from "./resize-handle";
 
 describe("ResizeHandle", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <ResizeHandle
         direction={Direction.LEFT}
         min={240}

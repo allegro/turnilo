@@ -55,22 +55,24 @@ describe("Highlight Modal", () => {
     });
 
     afterEach(() => {
-      modal && modal.unmount();
+      if (modal) {
+        modal.unmount();
+      }
     });
 
     it("should call acceptHighlight when clicking Accept", () => {
       const accept = actions.find(".accept").first();
       accept.simulate("click");
 
-      expect(clicker.acceptHighlight.called).to.be.true;
-      expect(clicker.dropHighlight.called).to.be.false;
+      expect(clicker.acceptHighlight.called).to.equal(true);
+      expect(clicker.dropHighlight.called).to.equal(false);
     });
     it("should call acceptHighlight when clicking Drop", () => {
       const cancel = actions.find(".drop").first();
       cancel.simulate("click");
 
-      expect(clicker.acceptHighlight.called).to.be.false;
-      expect(clicker.dropHighlight.called).to.be.true;
+      expect(clicker.acceptHighlight.called).to.equal(false);
+      expect(clicker.dropHighlight.called).to.equal(true);
     });
   });
 });

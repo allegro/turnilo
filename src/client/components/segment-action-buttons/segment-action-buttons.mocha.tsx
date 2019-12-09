@@ -24,7 +24,7 @@ import { SegmentActionButtons } from "./segment-action-buttons";
 
 describe("SegmentActionButtons", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <SegmentActionButtons
         clicker={null}
       />

@@ -18,32 +18,32 @@ import { insert, shallowEqualArrays } from "./array";
 
 describe("shallowArrayEquals", () => {
   it("should return false when A is falsy", () => {
-    expect(shallowEqualArrays(null, [])).to.be.false;
+    expect(shallowEqualArrays(null, [])).to.equal(false);
   });
 
   it("should return false when B is falsy", () => {
-    expect(shallowEqualArrays([], undefined)).to.be.false;
+    expect(shallowEqualArrays([], undefined)).to.equal(false);
   });
 
   it("should return true when arrays are the same reference", () => {
     const a = ["foobar"];
-    expect(shallowEqualArrays(a, a)).to.be.true;
+    expect(shallowEqualArrays(a, a)).to.equal(true);
   });
 
   it("should return true when both empty", () => {
-    expect(shallowEqualArrays([], [])).to.be.true;
+    expect(shallowEqualArrays([], [])).to.equal(true);
   });
 
   it("should return false when have different length", () => {
-    expect(shallowEqualArrays([1, 1], [1, 1, 1])).to.be.false;
+    expect(shallowEqualArrays([1, 1], [1, 1, 1])).to.equal(false);
   });
 
   it("should return false when have different elements", () => {
-    expect(shallowEqualArrays([1, 2, 3], [1, 2, 4])).to.be.false;
+    expect(shallowEqualArrays([1, 2, 3], [1, 2, 4])).to.equal(false);
   });
 
   it("should return true when all elements are the same", () => {
-    expect(shallowEqualArrays([1, "foobar", true], [1, "foobar", true])).to.be.true;
+    expect(shallowEqualArrays([1, "foobar", true], [1, "foobar", true])).to.equal(true);
   });
 });
 

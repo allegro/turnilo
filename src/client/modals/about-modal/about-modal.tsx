@@ -27,32 +27,26 @@ export interface AboutModalProps {
   onClose: Fn;
 }
 
-export interface AboutModalState {
-}
+export function AboutModal(props: AboutModalProps) {
+  const { version, onClose } = props;
 
-export class AboutModal extends React.Component<AboutModalProps, AboutModalState> {
-
-  render() {
-    const { version, onClose } = this.props;
-
-    return <Modal
-      className="about-modal"
-      title="About Turnilo"
-      onClose={onClose}
-    >
-      <div className="p-group">
-        <p>
-          <a href="https://github.com/allegro/turnilo" target="_blank">Turnilo</a> (version {version}) is open source under
-          the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target="_blank">Apache 2.0</a> license.
-        </p>
-        <p>
-          For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues"
-                                                                            target="_blank">GitHub</a>.
-        </p>
-      </div>
-      <div className="button-bar">
-        <Button type="primary" onClick={onClose} title={STRINGS.close} />
-      </div>
-    </Modal>;
-  }
+  return <Modal
+    className="about-modal"
+    title="About Turnilo"
+    onClose={onClose}
+  >
+    <div className="p-group">
+      <p>
+        <a href="https://github.com/allegro/turnilo" target="_blank">Turnilo</a> (version {version}) is open source under
+        the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target="_blank">Apache 2.0</a> license.
+      </p>
+      <p>
+        For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues"
+                                                                          target="_blank">GitHub</a>.
+      </p>
+    </div>
+    <div className="button-bar">
+      <Button type="primary" onClick={onClose} title={STRINGS.close} />
+    </div>
+  </Modal>;
 }

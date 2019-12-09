@@ -162,7 +162,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.haveAtLeastSplitKinds("time"))
   .then(({ splits, dataCube }) => {
-    let timeSplit = splits.splits.find(split => dataCube.getDimension(split.reference).kind === "time");
+    const timeSplit = splits.splits.find(split => dataCube.getDimension(split.reference).kind === "time");
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "Too many splits on the line chart", [
       {
         description: "Remove all but the time split",
@@ -174,7 +174,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .otherwise(({ dataCube }) => {
-    let continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
+    const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "The Line Chart needs one continuous dimension split",
       continuousDimensions.map(continuousDimension => {
         return {

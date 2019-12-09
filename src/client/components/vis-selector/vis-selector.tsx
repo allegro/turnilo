@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
-import { classNames, findParentWithClass } from "../../utils/dom/dom";
+import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { VisSelectorMenu } from "../vis-selector-menu/vis-selector-menu";
 import "./vis-selector.scss";

@@ -62,7 +62,7 @@ describe("Add Arithmetic Operation Button", () => {
     });
 
     it("calls addExpressionPlaceholder", () => {
-      expect(addExpressionPlaceholderSpy.calledOnce).to.be.true;
+      expect(addExpressionPlaceholderSpy.calledOnce).to.equal(true);
       const argument = addExpressionPlaceholderSpy.args[0][0];
       const expectedExpression = new ExpressionSeries({
         reference: measure.name,
@@ -71,11 +71,11 @@ describe("Add Arithmetic Operation Button", () => {
           reference: null
         })
       });
-      expect(argument.equals(expectedExpression)).to.be.true;
+      expect(argument.equals(expectedExpression)).to.equal(true);
     });
 
     it("calls onClose", () => {
-      expect(onCloseSpy.calledOnce).to.be.true;
+      expect(onCloseSpy.calledOnce).to.equal(true);
     });
   });
 });

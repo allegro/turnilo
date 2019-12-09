@@ -26,7 +26,7 @@ import { ButtonGroup } from "./button-group";
 
 describe("ButtonGroup", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <ButtonGroup
         title="my-buttons"
         groupMembers={[]}

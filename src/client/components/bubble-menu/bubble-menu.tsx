@@ -271,7 +271,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     return <BodyPortal left={left} top={top} bottom={bottom}>
       <div className={myClass} id={id} data-parent={insideId} style={menuSize}>
         {children}
-        {hasShpitz && <Shpitz style={shpitzCoordinates} direction={direction}/>}
+        {hasShpitz && <Shpitz style={shpitzCoordinates} direction={direction} />}
       </div>
     </BodyPortal>;
   }

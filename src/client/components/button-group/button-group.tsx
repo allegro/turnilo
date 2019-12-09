@@ -34,10 +34,7 @@ export interface ButtonGroupProps<T> {
   className?: string;
 }
 
-export interface ButtonGroupState {
-}
-
-export class ButtonGroup<T> extends React.Component<ButtonGroupProps<T>, ButtonGroupState> {
+export class ButtonGroup<T> extends React.Component<ButtonGroupProps<T>, {}> {
 
   renderMembers() {
     const { groupMembers } = this.props;

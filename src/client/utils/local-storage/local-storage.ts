@@ -26,6 +26,7 @@ export function get(key: string): any {
 export function set(key: string, value: any) {
   try {
     localStorage[key] = JSON.stringify(value);
+    // tslint:disable-next-line:no-empty
   } catch (e) {
   }
 }

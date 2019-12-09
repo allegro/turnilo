@@ -20,7 +20,7 @@ import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
 import { DataCube, DataCubeJS } from "./data-cube";
 
-var executor = basicExecutorFactory({
+const executor = basicExecutorFactory({
   datasets: {
     wiki: Dataset.fromJS([]),
     twitter: Dataset.fromJS([])

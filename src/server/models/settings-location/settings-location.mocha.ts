@@ -40,7 +40,7 @@ describe("SettingsLocation", () => {
 
   describe("gets the right format", () => {
     it("gets yaml", () => {
-      var settingsLocation = SettingsLocation.fromJS({
+      const settingsLocation = SettingsLocation.fromJS({
         location: "file",
         uri: "../private/lol.yaml"
       });

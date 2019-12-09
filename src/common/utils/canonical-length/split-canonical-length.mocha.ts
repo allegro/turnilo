@@ -26,7 +26,7 @@ const timeSplitName = dataCube.timeAttribute.name;
 describe("Split canonical length", () => {
   it("returns null for non-time split", () => {
     const stringSplit = SplitFixtures.stringSplitCombine("foobar");
-    expect(splitCanonicalLength(stringSplit, dataCube)).to.be.null;
+    expect(splitCanonicalLength(stringSplit, dataCube)).to.equal(null);
   });
 
   it("returns bucket canonical length for time split with hour granularity", () => {

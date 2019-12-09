@@ -17,7 +17,7 @@
 
 import { Request, Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
-import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;
@@ -79,7 +79,7 @@ export function plyqlRouter(settingsGetter: SettingsGetter) {
     });
 
     try {
-      const settings = await settingsGetter(<GetSettingsOptions> { dataCubeOfInterest: dataCube });
+      const settings = await settingsGetter();
       const myDataCube = settings.getDataCube(dataCube);
 
       if (!myDataCube) {

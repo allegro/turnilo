@@ -20,7 +20,6 @@ import { testImmutableClass } from "immutable-class-tester";
 
 import { AttributeInfo } from "plywood";
 import { Measure, MeasureJS } from "./measure";
-import { MeasureFixtures } from "./measure.fixtures";
 
 describe("Measure", () => {
   it("is an immutable class", () => {

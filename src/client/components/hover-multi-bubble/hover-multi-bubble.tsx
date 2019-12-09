@@ -38,12 +38,12 @@ export const HoverMultiBubble: React.SFC<HoverMultiBubbleProps> = ({ colorEntrie
   return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={!clicker}>
     <div className="hover-multi-bubble">
       <div className="bucket">{title}</div>
-      <ColorSwabs colorEntries={colorEntries}/>
+      <ColorSwabs colorEntries={colorEntries} />
       {clicker && <SegmentActionButtons
         clicker={clicker}
         segmentLabel={title}
         disableMoreMenu={true}
-        onClose={onClose}/>}
+        onClose={onClose} />}
     </div>
   </BodyPortal>;
 };

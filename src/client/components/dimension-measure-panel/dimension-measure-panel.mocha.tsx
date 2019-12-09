@@ -21,14 +21,14 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { noop } from "../../../common/utils/functional/functional";
 import { ResizeHandle } from "../resize-handle/resize-handle";
 import { DimensionMeasurePanel, initialPosition, MIN_PANEL_SIZE } from "./dimension-measure-panel";
 
 describe("DimensionMeasurePanel", () => {
   function renderPanel() {
     const clickyMcClickFace: Clicker = {
-      addSeries: () => {
-      }
+      addSeries: noop
     };
     return shallow(
       <DimensionMeasurePanel
@@ -44,7 +44,7 @@ describe("DimensionMeasurePanel", () => {
   describe("<DimensionMeasurePanel>", () => {
     it("adds the correct class", () => {
       const panel = renderPanel();
-      expect(panel.hasClass("dimension-measure-panel"), "should contain class").to.be.true;
+      expect(panel.hasClass("dimension-measure-panel"), "should contain class").to.equal(true);
     });
 
     it("should hide resize panel at start", () => {

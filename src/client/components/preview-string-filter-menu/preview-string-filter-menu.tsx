@@ -41,6 +41,7 @@ import "./preview-string-filter-menu.scss";
 
 function checkRegex(text: string): string {
   try {
+    // tslint:disable-next-line:no-unused-expression
     new RegExp(text);
   } catch (e) {
     return e.message;

@@ -195,7 +195,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
           openOverflowMenu={this.openOverflowMenu} />
       </div>
       <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-      <AddSplit appendSplit={this.appendSplit} menuStage={menuStage} essence={essence}/>
+      <AddSplit appendSplit={this.appendSplit} menuStage={menuStage} essence={essence} />
     </div>;
   }
 }

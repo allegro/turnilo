@@ -28,7 +28,7 @@ const PRESETS: Array<Preset<string>> = [{
 }];
 
 function renderInputWithPresets(selected: string, errorMessage?: string) {
-  return shallow(<InputWithPresets<string> presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected} formatCustomValue={identity} parseCustomValue={identity}/>);
+  return shallow(<InputWithPresets<string> presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected} formatCustomValue={identity} parseCustomValue={identity} />);
 }
 
 describe("<InputWithPresets>", () => {
@@ -39,6 +39,7 @@ describe("<InputWithPresets>", () => {
     const groupMembers = buttonGroup.prop("groupMembers") as Array<GroupMember<string>>;
     const selectedMember = groupMembers.find(({ isSelected }) => isSelected);
 
+    // tslint:disable-next-line:no-unused-expression
     expect(selectedMember, "one member is selected").to.exist;
     expect(selectedMember.title, "member has correct title").to.equal("A");
     expect(selectedMember.key, "members key is equal to selected prop").to.equal("a");

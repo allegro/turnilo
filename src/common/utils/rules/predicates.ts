@@ -51,10 +51,10 @@ export class Predicates {
       return true;
     }
 
-    var bareSelector = selector.replace(/^!/, "");
+    const bareSelector = selector.replace(/^!/, "");
 
     // This can be enriched later, right now it's just a 1-1 match
-    var result = kind === bareSelector;
+    const result = kind === bareSelector;
 
     if (selector.charAt(0) === "!") {
       return !result;
@@ -65,7 +65,7 @@ export class Predicates {
 
   public static haveAtLeastSplitKinds(...kinds: DimensionKind[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
-      let getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
+      const getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
 
       const actualKinds = splits.splits.map(getKind);
 

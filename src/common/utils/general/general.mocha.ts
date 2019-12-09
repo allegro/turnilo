@@ -22,27 +22,27 @@ import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readN
 describe("General", () => {
   describe("moveInList", () => {
     it("works in simple case 0", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 0).join("")).to.equal("ABCD");
     });
 
     it("works in simple case 1", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 1).join("")).to.equal("ABCD");
     });
 
     it("works in simple case 2", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 2).join("")).to.equal("BACD");
     });
 
     it("works in simple case 3", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 3).join("")).to.equal("BCAD");
     });
 
     it("works in simple case 4", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 4).join("")).to.equal("BCDA");
     });
 
@@ -86,13 +86,13 @@ describe("General", () => {
 
   describe("inlineVars", () => {
     it("works in simple case", () => {
-      var json: any = {
+      const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Record<string, string> = {
+      const vars: Record<string, string> = {
         PORT: "1234",
         FOX_SAYS: "Meow"
       };
@@ -105,13 +105,13 @@ describe("General", () => {
     });
 
     it("throw error if can not find var", () => {
-      var json: any = {
+      const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Record<string, string> = {
+      const vars: Record<string, string> = {
         PORT: "1234"
       };
 
@@ -141,24 +141,24 @@ describe("General", () => {
 
   describe("isDecimalInteger", () => {
     it("should return false for invalid numbers", () => {
-      expect(isDecimalInteger(null), "<null>").to.be.false;
-      expect(isDecimalInteger(""), "empty string").to.be.false;
-      expect(isDecimalInteger("foobar"), "foobar").to.be.false;
+      expect(isDecimalInteger(null), "<null>").to.equal(false);
+      expect(isDecimalInteger(""), "empty string").to.equal(false);
+      expect(isDecimalInteger("foobar"), "foobar").to.equal(false);
     });
 
     it("should return false for floats", () => {
-      expect(isDecimalInteger("1.23"), "float").to.be.false;
-      expect(isDecimalInteger("1e4"), "scientific notation").to.be.false;
+      expect(isDecimalInteger("1.23"), "float").to.equal(false);
+      expect(isDecimalInteger("1e4"), "scientific notation").to.equal(false);
     });
 
     it("should return false for non decimal numbers", () => {
-      expect(isDecimalInteger("0xdeadbeef"), "hex").to.be.false;
-      expect(isDecimalInteger("0o1234"), "octal").to.be.false;
-      expect(isDecimalInteger("0b010101"), "binary").to.be.false;
+      expect(isDecimalInteger("0xdeadbeef"), "hex").to.equal(false);
+      expect(isDecimalInteger("0o1234"), "octal").to.equal(false);
+      expect(isDecimalInteger("0b010101"), "binary").to.equal(false);
     });
 
     it("should return false for numbers with additional characters", () => {
-      expect(isDecimalInteger("1234foobar"), "1234foobar").to.be.false;
+      expect(isDecimalInteger("1234foobar"), "1234foobar").to.equal(false);
     });
   });
 
@@ -173,9 +173,13 @@ describe("General", () => {
     });
 
     it("should return NaN if not a number", () => {
+      // tslint:disable-next-line:no-unused-expression
       expect(readNumber("foobar"), "foobar").to.be.NaN;
+      // tslint:disable-next-line:no-unused-expression
       expect(readNumber("NaN"), "NaN").to.be.NaN;
+      // tslint:disable-next-line:no-unused-expression
       expect(readNumber(null), "<null>").to.be.NaN;
+      // tslint:disable-next-line:no-unused-expression
       expect(readNumber(undefined), "<undefined>").to.be.NaN;
     });
   });

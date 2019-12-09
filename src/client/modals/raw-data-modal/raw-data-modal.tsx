@@ -245,7 +245,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           width: getColumnWidth(attribute)
         };
 
-        var displayValue = value;
+        let displayValue = value;
 
         if (isDate(datum[name])) {
           displayValue = (datum[name] as Date).toISOString();
@@ -325,7 +325,6 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       <div className="content">
         <ul className="filters">{this.renderFilters()}</ul>
         <Scroller
-          ref="table"
           layout={scrollerLayout}
           topGutter={this.renderHeader()}
           body={stage && this.renderRows()}

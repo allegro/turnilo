@@ -100,7 +100,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   toJS(): MeasureGroupJS {
-    let measureGroup: MeasureGroupJS = {
+    const measureGroup: MeasureGroupJS = {
       name: this.name,
       measures: this.measures.map(measure => measure.toJS()),
       title: this.title
@@ -114,7 +114,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   valueOf(): MeasureGroupValue {
-    let measureGroup: MeasureGroupValue = {
+    const measureGroup: MeasureGroupValue = {
       name: this.name,
       title: this.title,
       measures: this.measures

@@ -61,7 +61,7 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
   }
 
   public changeTime(time: Date, now: Date): TimeTag {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.time = time;
     value.updated = now;
     return new TimeTag(value);

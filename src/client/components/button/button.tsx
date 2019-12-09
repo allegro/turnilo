@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./button.scss";
@@ -33,26 +32,20 @@ export interface ButtonProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-export interface ButtonState {
-}
+export function Button(props: ButtonProps) {
+  const { title, type, className, svg, active, disabled, onClick } = props;
 
-export class Button extends React.Component<ButtonProps, ButtonState> {
-
-  render() {
-    const { title, type, className, svg, active, disabled, onClick } = this.props;
-
-    var icon: JSX.Element = null;
-    if (svg) {
-      icon = <SvgIcon svg={svg} />;
-    }
-
-    return <button
-      className={classNames("button", type, className, { icon, active })}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {icon}
-      {title}
-    </button>;
+  let icon: JSX.Element = null;
+  if (svg) {
+    icon = <SvgIcon svg={svg} />;
   }
+
+  return <button
+    className={classNames("button", type, className, { icon, active })}
+    onClick={onClick}
+    disabled={disabled}
+  >
+    {icon}
+    {title}
+  </button>;
 }

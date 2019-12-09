@@ -36,7 +36,7 @@ import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
 describe("EssenceProps", () => {
-  var dataCubeJS = {
+  const dataCubeJS = {
     name: "twitter",
     title: "Twitter",
     clusterName: "druid",
@@ -192,7 +192,7 @@ describe("EssenceProps", () => {
         const essence = EssenceFixtures.twitterNoVisualisation().addSplit(tweetLengthSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
         expect(essence.splits.splits.get(0).sort.reference).to.equal("tweetLength");
-        expect(essence.visResolve.isReady()).to.be.true;
+        expect(essence.visResolve.isReady()).to.equal(true);
       });
 
       it("defaults to table with non continuous dimension", () => {
@@ -200,7 +200,7 @@ describe("EssenceProps", () => {
           .changeVisualization(TOTALS_MANIFEST)
           .addSplit(twitterHandleSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(TABLE_MANIFEST);
-        expect(essence.visResolve.isReady()).to.be.true;
+        expect(essence.visResolve.isReady()).to.equal(true);
       });
 
       it("defaults to line chart with a continuous dimension", () => {
@@ -208,7 +208,7 @@ describe("EssenceProps", () => {
           .changeVisualization(TOTALS_MANIFEST)
           .addSplit(timeSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
-        expect(essence.visResolve.isReady()).to.be.true;
+        expect(essence.visResolve.isReady()).to.equal(true);
       });
 
       it("in fair game, adding a string split to time split results in line chart", () => {
@@ -216,7 +216,7 @@ describe("EssenceProps", () => {
           .addSplit(timeSplit, VisStrategy.FairGame)
           .addSplit(twitterHandleSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
-        expect(essence.visResolve.isReady()).to.be.true;
+        expect(essence.visResolve.isReady()).to.equal(true);
       });
 
       it("in unfair game, gives existing vis a bonus", () => {
@@ -224,10 +224,10 @@ describe("EssenceProps", () => {
           .addSplit(timeSplit, VisStrategy.FairGame)
           .changeVisualization(BAR_CHART_MANIFEST);
         expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
-        expect(essence.visResolve.isReady()).to.be.true;
+        expect(essence.visResolve.isReady()).to.equal(true);
         const newSplit = essence.addSplit(twitterHandleSplit, VisStrategy.UnfairGame);
         expect(newSplit.visualization).to.deep.equal(BAR_CHART_MANIFEST);
-        expect(newSplit.visResolve.isReady()).to.be.true;
+        expect(newSplit.visResolve.isReady()).to.equal(true);
       });
 
       it("defaults back to totals with no split", () => {
@@ -235,11 +235,11 @@ describe("EssenceProps", () => {
           .changeVisualization(TOTALS_MANIFEST)
           .addSplit(timeSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
-        expect(essence.visResolve.isReady()).to.be.true;
+        expect(essence.visResolve.isReady()).to.equal(true);
 
         const withoutSplit = essence.removeSplit(essence.splits.splits.first(), VisStrategy.FairGame);
         expect(withoutSplit.visualization).to.deep.equal(TOTALS_MANIFEST);
-        expect(withoutSplit.visResolve.isReady()).to.be.true;
+        expect(withoutSplit.visResolve.isReady()).to.equal(true);
       });
 
       const noMeasuresTests = [
@@ -254,19 +254,19 @@ describe("EssenceProps", () => {
             .changeVisualization(TOTALS_MANIFEST)
             .addSplit(splits[0], VisStrategy.FairGame);
           expect(essence.visualization).to.deep.equal(visualization);
-          expect(essence.visResolve.isReady(), "is ready after adding split").to.be.true;
+          expect(essence.visResolve.isReady(), "is ready after adding split").to.equal(true);
 
           const toggledMeasure = essence.removeSeries(essence.series.series.first());
           expect(toggledMeasure.visualization).to.deep.equal(visualization);
-          expect(toggledMeasure.visResolve.isManual(), "is manual after removing selected measure").to.be.true;
+          expect(toggledMeasure.visResolve.isManual(), "is manual after removing selected measure").to.equal(true);
 
           const withoutSplit = toggledMeasure.removeSplit(toggledMeasure.splits.splits.first(), VisStrategy.FairGame);
           expect(withoutSplit.visualization).to.deep.equal(visualization);
-          expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.be.true;
+          expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.equal(true);
 
           const toggledAgain = withoutSplit.addSeries(MeasureSeries.fromMeasure(MeasureFixtures.twitterCount()));
           expect(toggledAgain.visualization).to.deep.equal(visualization);
-          expect(toggledAgain.visResolve.isManual(), "is manual after second toggle").to.be.true;
+          expect(toggledAgain.visResolve.isManual(), "is manual after second toggle").to.equal(true);
         });
       });
 
@@ -279,7 +279,7 @@ describe("EssenceProps", () => {
         const addedSplit = essence.addSplit(timeSplit, VisStrategy.KeepAlways);
 
         expect(addedSplit.splits.length()).to.be.eq(5);
-        expect(addedSplit.visResolve.isManual()).to.be.true;
+        expect(addedSplit.visResolve.isManual()).to.equal(true);
         expect(addedSplit.visResolve.resolutions[0].adjustment.splits.length()).to.be.eq(4);
       });
     });
@@ -289,7 +289,7 @@ describe("EssenceProps", () => {
         it("it sets visResolve to manual", () => {
           const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest);
           expect(essence.visualization.name).to.deep.equal(manifest.name);
-          expect(essence.visResolve.isManual()).to.be.true;
+          expect(essence.visResolve.isManual()).to.equal(true);
         });
       });
     });

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
+import { Instance } from "immutable-class";
 
 export interface RefreshRuleValue {
   rule: string;
@@ -26,8 +26,6 @@ export interface RefreshRuleJS {
   rule: string;
   time?: Date | string;
 }
-
-var check: Class<RefreshRuleValue, RefreshRuleJS>;
 
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
@@ -46,11 +44,11 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   static fromJS(parameters: RefreshRuleJS): RefreshRule {
-    var value: RefreshRuleValue = {
+    const value: RefreshRuleValue = {
       rule: parameters.rule
     };
     if (parameters.time) {
-      value.time = new Date(<any> parameters.time);
+      value.time = new Date(parameters.time);
     }
     return new RefreshRule(value);
   }
@@ -59,7 +57,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   public time: Date;
 
   constructor(parameters: RefreshRuleValue) {
-    var rule = parameters.rule;
+    const rule = parameters.rule;
     if (rule !== RefreshRule.FIXED && rule !== RefreshRule.QUERY && rule !== RefreshRule.REALTIME) {
       throw new Error(`rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`);
     }
@@ -68,7 +66,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public valueOf(): RefreshRuleValue {
-    var value: RefreshRuleValue = {
+    const value: RefreshRuleValue = {
       rule: this.rule
     };
     if (this.time) {
@@ -78,7 +76,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public toJS(): RefreshRuleJS {
-    var js: RefreshRuleJS = {
+    const js: RefreshRuleJS = {
       rule: this.rule
     };
     if (this.time) {
@@ -112,7 +110,4 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   public isRealtime(): boolean {
     return this.rule === RefreshRule.REALTIME;
   }
-
 }
-
-check = RefreshRule;

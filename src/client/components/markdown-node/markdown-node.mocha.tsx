@@ -22,7 +22,7 @@ import { MarkdownNode } from "./markdown-node";
 describe("<MarkdownNode>", () => {
 
   it("should render html for markdown", () => {
-    const wrapper = shallow(<MarkdownNode markdown={"*strong* **em** [link](example.com)"}/>);
+    const wrapper = shallow(<MarkdownNode markdown={"*strong* **em** [link](example.com)"} />);
     const content = wrapper.find(".markdown-content");
 
     expect(content.html()).to.be.equal("<div class=\"markdown-content\"><p><em>strong</em> <strong>em</strong> <a href=\"example.com\">link</a></p>\n</div>");

@@ -52,7 +52,7 @@ export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options,
       onSelect={selectSort}
     />
     <div className={"direction " + direction} onClick={toggleDirection}>
-      <SvgIcon svg={require("../../icons/sort-arrow.svg")}/>
+      <SvgIcon svg={require("../../icons/sort-arrow.svg")} />
     </div>
   </div>;
 };

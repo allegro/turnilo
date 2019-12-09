@@ -25,7 +25,7 @@ import { Notifications } from "./notifications";
 
 describe("Notifications", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Notifications
 
       />

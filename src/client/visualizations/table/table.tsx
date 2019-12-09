@@ -17,7 +17,6 @@
 
 import * as d3 from "d3";
 import { List, Set } from "immutable";
-import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
@@ -243,7 +242,7 @@ export class Table extends BaseVisualization<TableState> {
     const splitLength = essence.splits.length();
 
     return concreteSeries.map(series => {
-      let measureValues = flatData
+      const measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => series.selectValue(d));
 
@@ -397,8 +396,8 @@ export class Table extends BaseVisualization<TableState> {
 
     const rowWidth = idealWidth * headerColumns.length;
 
-    let segments: JSX.Element[] = [];
-    let rows: JSX.Element[] = [];
+    const segments: JSX.Element[] = [];
+    const rows: JSX.Element[] = [];
     let highlighter: JSX.Element = null;
     let highlighterStyle: any = null;
     let highlightModal: JSX.Element = null;
@@ -443,9 +442,9 @@ export class Table extends BaseVisualization<TableState> {
           style={segmentStyle}
         >{segmentName}</div>);
 
-        let rowMeasures = measuresRenderer(d);
-        let rowClass = classNames(nestClass, selectedClass, hoverClass);
-        let rowStyle: React.CSSProperties = { top: rowY, width: rowWidth };
+        const rowMeasures = measuresRenderer(d);
+        const rowClass = classNames(nestClass, selectedClass, hoverClass);
+        const rowStyle: React.CSSProperties = { top: rowY, width: rowWidth };
 
         rows.push(this.renderRow(i, rowMeasures, rowStyle, rowClass));
 
@@ -504,7 +503,6 @@ export class Table extends BaseVisualization<TableState> {
         value={segmentWidth}
       />
       <Scroller
-        ref="scroller"
         layout={scrollerLayout}
 
         topGutter={headerColumns}
