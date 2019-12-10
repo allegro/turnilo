@@ -187,7 +187,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       immutableArraysEqual(this.externalViews, other.externalViews) &&
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.sentryDSN === other.sentryDSN &&
-      this.logoutHref === other.logoutHref && this.shareOptions === other.shareOptions;
+      this.logoutHref === other.logoutHref;
   }
 
   public getTitle(version: string): string {
