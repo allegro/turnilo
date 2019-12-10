@@ -54,7 +54,7 @@ import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
-import { DimensionSort, SeriesSort, Sort, SortType } from "../../models/sort/sort";
+import { DimensionSort, SeriesSort, Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
@@ -79,8 +79,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const colors = definition.colors && Colors.fromJS(definition.colors);
     const pinnedSort = definition.pinnedSort;
     const highlight = readHighlight(definition.highlight, dataCube);
-    const compare: any = null;
-    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort, compare, highlight });
+    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort, highlight });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition2 {

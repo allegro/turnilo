@@ -16,6 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
+import { Booleanish } from "../../../client/components/filter-menu/boolean-filter-menu/boolean-filter-menu";
 import { DateRange } from "../date-range/date-range";
 import {
   BooleanFilterClause,
@@ -28,41 +29,38 @@ import {
   TimeFilterPeriod
 } from "./filter-clause";
 
-export class FilterClauseFixtures {
-
-  static stringWithAction(reference: string, action: StringFilterAction, values: string[], not = false): FilterClause {
-    if (action !== StringFilterAction.IN && values instanceof Array && values.length !== 1) {
-      throw new Error(`Unsupported values: ${values} for action: ${action}.`);
-    }
-
-    return new StringFilterClause({ reference, action, values: Set(values), not });
+export function stringWithAction(reference: string, action: StringFilterAction, values: string[], not = false): FilterClause {
+  if (action !== StringFilterAction.IN && values instanceof Array && values.length !== 1) {
+    throw new Error(`Unsupported values: ${values} for action: ${action}.`);
   }
 
-  static stringIn(reference: string, values: string[], not = false): FilterClause {
-    return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set(values), not });
-  }
+  return new StringFilterClause({ reference, action, values: Set(values), not });
+}
 
-  static stringContains(reference: string, value: string, not = false): FilterClause {
-    return new StringFilterClause({ reference, action: StringFilterAction.CONTAINS, values: Set.of(value), not });
-  }
+export function stringIn(reference: string, values: string[], not = false): FilterClause {
+  return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set(values), not });
+}
 
-  static stringMatch(reference: string, value: string, not = false): FilterClause {
-    return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
-  }
+export function stringContains(reference: string, value: string, not = false): FilterClause {
+  return new StringFilterClause({ reference, action: StringFilterAction.CONTAINS, values: Set.of(value), not });
+}
 
-  static boolean(reference: string, values: boolean[], not = false): FilterClause {
-    return new BooleanFilterClause({ reference, not, values: Set(values) });
-  }
+export function stringMatch(reference: string, value: string, not = false): FilterClause {
+  return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
+}
 
-  static numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): FilterClause {
-    return new NumberFilterClause({ reference, not, values: List.of(new NumberRange({ bounds, start, end })) });
-  }
+export function boolean(reference: string, values: Booleanish[], not = false): FilterClause {
+  return new BooleanFilterClause({ reference, not, values: Set(values) });
+}
 
-  static timeRange(reference: string, start: Date, end: Date): FilterClause {
-    return new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start, end })) });
-  }
+export function numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): FilterClause {
+  return new NumberFilterClause({ reference, not, values: List.of(new NumberRange({ bounds, start, end })) });
+}
 
-  static timePeriod(reference: string, duration: string, period: TimeFilterPeriod): FilterClause {
-    return new RelativeTimeFilterClause({ reference, duration: Duration.fromJS(duration), period });
-  }
+export function timeRange(reference: string, start: Date, end: Date): FilterClause {
+  return new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start, end })) });
+}
+
+export function timePeriod(reference: string, duration: string, period: TimeFilterPeriod): FilterClause {
+  return new RelativeTimeFilterClause({ reference, duration: Duration.fromJS(duration), period });
 }

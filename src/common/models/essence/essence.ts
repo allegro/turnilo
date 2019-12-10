@@ -74,7 +74,6 @@ export interface EssenceValue {
   pinnedDimensions: OrderedSet<DimensionId>;
   colors: Colors;
   pinnedSort: string;
-  compare: Filter;
   highlight: Highlight;
   visResolve?: Resolve;
 }
@@ -91,7 +90,6 @@ const defaultEssence: EssenceValue = {
   pinnedSort: null,
   colors: null,
   highlight: null,
-  compare: null,
   timeShift: TimeShift.empty(),
   visResolve: null
 };
@@ -105,6 +103,7 @@ type VisualizationResolverResult = Pick<EssenceValue, "splits" | "visualization"
 type VisualizationResolverParameters = Pick<EssenceValue, "visualization" | "visualizations" | "dataCube" | "splits" | "colors" | "series">;
 
 function resolveVisualization({ visualization, visualizations, dataCube, splits, colors, series }: VisualizationResolverParameters): VisualizationResolverResult {
+
   let visResolve: Resolve;
   if (visualizations) {
     // Place vis here because it needs to know about splits and colors (and maybe later other things)
@@ -168,7 +167,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       pinnedDimensions: dataCube.getDefaultPinnedDimensions(),
       colors: null,
       pinnedSort: dataCube.getDefaultSortMeasure(),
-      compare: null,
       highlight: null
     });
 
@@ -199,7 +197,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       series,
       pinnedDimensions,
       pinnedSort,
-      compare,
       highlight
     } = parameters;
 
@@ -228,7 +225,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       pinnedSort: constrainedPinnedSort,
       colors,
       highlight: newHighlight && newHighlight.constrainToDimensions(dataCube.dimensions),
-      compare,
       visResolve
     });
   }
@@ -249,7 +245,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       colors: this.colors && this.colors.toJS(),
       pinnedSort: this.pinnedSort,
       pinnedDimensions: this.pinnedDimensions.toJS(),
-      compare: this.compare && this.compare.toJS(),
       highlight: this.highlight && this.highlight.toJS(),
       visResolve: this.visResolve,
       visualizations: this.visualizations
@@ -449,7 +444,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
       .update("colors", colors => colors && !newDataCube.getDimension(colors.dimension) ? null : colors)
       .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort)
-      .update("compare", compare => compare && compare.constrainToDimensions(newDataCube.dimensions))
       .update("highlight", highlight => highlight && highlight.constrainToDimensions(newDataCube.dimensions))
       .resolveVisualizationAndUpdate();
   }
