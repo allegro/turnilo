@@ -49,6 +49,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return new SeriesList({ series });
   }
 
+  static fromSeries(series: Series[]): SeriesList {
+    return new SeriesList({ series: List(series) });
+  }
+
   static validSeries(series: Series, measures: Measures): boolean {
     if (series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression) {
       return measures.hasMeasureByName(series.reference) && measures.hasMeasureByName(series.expression.reference);

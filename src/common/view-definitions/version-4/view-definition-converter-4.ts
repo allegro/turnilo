@@ -65,7 +65,6 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       series,
       colors,
       pinnedSort,
-      compare: null,
       highlight
     });
   }

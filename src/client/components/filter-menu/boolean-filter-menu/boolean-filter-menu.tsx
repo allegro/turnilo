@@ -46,7 +46,7 @@ interface BooleanFilterMenuProps {
   inside?: Element;
 }
 
-type Booleanish = string | boolean;
+export type Booleanish = string | boolean;
 
 interface BooleanFilterMenuState {
   loading?: boolean;
