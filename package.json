@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -16,7 +16,8 @@
     "Tomasz Rzeznik <rzeznik.tom@gmail.com>",
     "Rafał Nowak <rafal.nowak@allegro.pl>",
     "Marcin Kuthan <marcin.kuthan@gmail.com>",
-    "Michał Misiewicz <michal.misiewicz@datumo.pl>"
+    "Michał Misiewicz <michal.misiewicz@datumo.pl>",
+    "Jakub Karolak <karolakjakub90@gmai.com>"
   ],
   "repository": {
     "type": "git",
