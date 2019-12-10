@@ -39,7 +39,7 @@ export function getMIMEType(fileType: string) {
 
 export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string, custom?: boolean): void {
   const type = `${getMIMEType(fileFormat)};charset=utf-8`;
-  const blob = new Blob([datasetToFileString(dataset, "csv", options)], { type });
+  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], { type });
   if (!fileName) fileName = `${new Date()}-data`;
   fileName += `.${fileFormat}`;
   filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
