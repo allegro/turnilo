@@ -25,40 +25,40 @@ describe("Guard test", () => {
     let dataCubeB = DataCubeFixtures.customCubeWithGuard();
     dataCubeB.name = "cubeB";
     dataCubeB.cluster.guardDataCubes = false;
-    let req = <Request>{};
-    req.headers = {"x-turnilo-allow-datacubes": "cubeA"};
+    let req = <Request> {};
+    req.headers = { "x-turnilo-allow-datacubes": "cubeA" };
     expect(checkAccess(dataCubeB, req)).to.equal(true);
   });
 
   it("Guard off -> access to all dataCubes", () => {
     let dataCube = DataCubeFixtures.customCubeWithGuard();
     dataCube.cluster.guardDataCubes = false;
-    let req = <Request>{};
+    let req = <Request> {};
     expect(checkAccess(dataCube, req)).to.equal(true);
   });
 
   it("Guard on -> access denied", () => {
-    let req = <Request>{};
-    expect(checkAccess(DataCubeFixtures.customCubeWithGuard(), req)).to.equal(false)
+    let req = <Request> {};
+    expect(checkAccess(DataCubeFixtures.customCubeWithGuard(), req)).to.equal(false);
   });
 
   it("Guard on -> access denied", () => {
-    let req = <Request>{};
-    req.headers = {"x-turnilo-allow-datacubes": "some,name"};
+    let req = <Request> {};
+    req.headers = { "x-turnilo-allow-datacubes": "some,name" };
     let dataCube = DataCubeFixtures.customCubeWithGuard();
     expect(checkAccess(dataCube, req)).to.equal(false);
   });
 
   it("Guard on -> access allowed: wildchar", () => {
-    let req = <Request>{};
-    req.headers = {"x-turnilo-allow-datacubes": "*,some-other-name"};
+    let req = <Request> {};
+    req.headers = { "x-turnilo-allow-datacubes": "*,some-other-name" };
     let dataCube = DataCubeFixtures.customCubeWithGuard();
     expect(checkAccess(dataCube, req)).to.equal(true);
   });
 
   it("Guard on -> access allowed: datacube allowed", () => {
-    let req = <Request>{};
-    req.headers = {"x-turnilo-allow-datacubes": "some-name,some-other-name"};
+    let req = <Request> {};
+    req.headers = { "x-turnilo-allow-datacubes": "some-name,some-other-name" };
     let dataCube = DataCubeFixtures.customCubeWithGuard();
     expect(checkAccess(dataCube, req)).to.equal(true);
   });
