@@ -262,6 +262,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       </div>
       <div className="title" onClick={onNavClick}>{dataCube.title}</div>
       {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description}/>}
+      {(dataCube.warningTitle || dataCube.warningDescription) && <InfoBubble  className="cube-description" icon="warning" description={dataCube.warningDescription} title={dataCube.warningTitle}/> }
     </div>;
   }
 }

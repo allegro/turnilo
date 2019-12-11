@@ -108,6 +108,8 @@ export interface DataCubeValue {
 
   cluster?: Cluster;
   executor?: Executor;
+  warningTitle?: string;
+  warningDescription?: string;
 }
 
 export interface DataCubeJS {
@@ -139,6 +141,8 @@ export interface DataCubeJS {
   refreshRule?: RefreshRuleJS;
   maxSplits?: number;
   maxQueries?: number;
+  warningTitle?: string;
+  warningDescription?: string;
 }
 
 export interface DataCubeOptions {
@@ -339,7 +343,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       maxSplits: parameters.maxSplits,
       maxQueries: parameters.maxQueries,
-      refreshRule
+      refreshRule,
+      warningTitle: parameters.warningTitle,
+      warningDescription: parameters.warningDescription,
     };
     if (cluster) {
       if (parameters.clusterName !== cluster.name) throw new Error(`Cluster name '${parameters.clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
@@ -380,6 +386,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   public cluster: Cluster;
   public executor: Executor;
+  public warningTitle: string;
+  public warningDescription: string;
 
   constructor(parameters: DataCubeValue) {
     const name = parameters.name;
@@ -419,6 +427,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.cluster = parameters.cluster;
     this.executor = parameters.executor;
 
+    const { warningTitle, warningDescription } = this.parseWarningTitle(parameters);
+    this.warningTitle = warningTitle;
+    this.warningDescription = warningDescription;
+
     const dimensions = parameters.dimensions;
     const measures = parameters.measures;
     checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
@@ -457,7 +469,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: this.defaultPinnedDimensions,
       refreshRule: this.refreshRule,
       maxSplits: this.maxSplits,
-      maxQueries: this.maxQueries
+      maxQueries: this.maxQueries,
+      warningTitle: this.warningTitle,
+      warningDescription: this.warningDescription,
     };
     if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
@@ -473,9 +487,11 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       source: this.source,
       dimensions: this.dimensions.toJS(),
       measures: this.measures.toJS(),
-      refreshRule: this.refreshRule.toJS()
+      refreshRule: this.refreshRule.toJS(),
+      warningTitle: this.warningTitle,
     };
     if (this.extendedDescription) js.extendedDescription = this.extendedDescription;
+    if (this.warningDescription) js.warningDescription = this.warningDescription;
     if (this.group) js.group = this.group;
     if (this.introspection) js.introspection = this.introspection;
     if (this.subsetFormula) js.subsetFormula = this.subsetFormula;
@@ -541,7 +557,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       (!this.defaultPinnedDimensions || this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions)) &&
       this.maxSplits === other.maxSplits &&
       this.maxQueries === other.maxQueries &&
-      this.refreshRule.equals(other.refreshRule);
+      this.refreshRule.equals(other.refreshRule) &&
+      this.warningTitle === other.warningTitle &&
+      this.warningDescription === other.warningDescription;
   }
 
   private parseDescription({ description, extendedDescription }: DataCubeValue): { description: string, extendedDescription?: string } {
@@ -558,6 +576,23 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return {
       description: segments[0],
       extendedDescription: segments.splice(1).join("\n---\n ")
+    };
+  }
+
+  private parseWarningTitle({ warningTitle, warningDescription }: DataCubeValue): { warningTitle: string, warningDescription?: string } {
+    if (!warningTitle) {
+      return { warningTitle: "" };
+    }
+    if (warningDescription) {
+      return { warningTitle, warningDescription };
+    }
+    const segments = warningTitle.split(/\n---\n/);
+    if (segments.length === 0) {
+      return { warningTitle };
+    }
+    return {
+      warningTitle: segments[0],
+      warningDescription: segments.splice(1).join("\n---\n")
     };
   }
 
@@ -806,8 +841,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
         if (NamedArray.findByName(attributes, reference)) continue;
         if (Measure.hasCountDistinctReferences(measure.expression)) continue;
         if (Measure.hasQuantileReferences(measure.expression)) continue;
-        attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
-      }
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
+        }
     });
 
     if (attributeOverrides.length) {
@@ -852,13 +887,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "STRING":
-          if (!autofillDimensions) continue;
-          expression = $(name);
-          if (this.getDimensionByExpression(expression)) continue;
-          dimensions = dimensions.append(new Dimension({
-            name: urlSafeName,
-            formula: expression.toString()
-          }));
+            if (!autofillDimensions) continue;
+            expression = $(name);
+            if (this.getDimensionByExpression(expression)) continue;
+            dimensions = dimensions.append(new Dimension({
+              name: urlSafeName,
+              formula: expression.toString()
+            }));
           break;
 
         case "SET/STRING":
@@ -885,7 +920,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case "NUMBER":
-        case "NULL":
+        case "NULL":  
           if (!autofillMeasures) continue;
 
           const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);

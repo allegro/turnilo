@@ -23,7 +23,8 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
 
 const defaultIcon = require("../../icons/info.svg");
-const defaultTitle = "More info";
+const defaultWarningIcon = require("../../icons/warning.svg");
+const defaultTooltip = "More info";
 
 const BUBBLE_MAX_VERTICAL_SPACE = 120;
 
@@ -34,8 +35,9 @@ export interface InfoBubbleState {
 export interface InfoBubbleProps {
   description: string;
   icon?: string;
-  title?: string;
+  tooltip?: string;
   className?: string;
+  title?: string;
 }
 
 export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
@@ -57,19 +59,21 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
   render() {
     const { showInfo } = this.state;
-    const { description, icon, className, title } = this.props;
-
+    const { description, icon, className, title, tooltip } = this.props;
+    const iconPath = (icon == "warning") ? defaultWarningIcon  : defaultIcon;
+    
     return <React.Fragment>
-      <div className={classNames("info-button", className)} title={title || defaultTitle} onClick={this.showDescription}>
-        <SvgIcon svg={icon || defaultIcon}/>
-      </div>
-      {showInfo && <BubbleMenu
+      <div className={classNames("info-button", className)} title={tooltip || defaultTooltip} onClick={this.showDescription}>
+        <SvgIcon svg={iconPath}/>
+       {title ? ' ' + title + ' \u00BB' : null}
+        </div> 
+        {showInfo && <BubbleMenu
         className="description-menu"
         direction={showInfo.direction}
         onClose={this.closeDescription}
         stage={Stage.fromSize(300, 200)}
         openOn={showInfo.target}>
-        <MarkdownNode markdown={description}/>
+        <MarkdownNode markdown={description}/> 
       </BubbleMenu>}
     </React.Fragment>;
   }
