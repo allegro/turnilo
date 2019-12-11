@@ -16,17 +16,17 @@
 
 import { Request } from "express";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 
 export function checkAccess(dataCube: DataCube, req: Request) {
   var guard = dataCube && dataCube.cluster && dataCube.cluster.guardDataCubes || false;
+  const headers = req && req.headers || {};
   const headerName = "x-turnilo-allow-datacubes";
 
   if (!guard) {
     return true;
   }
 
-  if (!(headerName in req.headers)) {
+  if (!(headerName in headers)) {
     return false;
   }
 

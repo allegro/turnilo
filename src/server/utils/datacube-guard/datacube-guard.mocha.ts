@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { expect } from "chai";
+import { Request } from "express";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
-import { mockReq } from "../request/request.fixtures";
 import { checkAccess } from "./datacube-guard";
-
-const assert = require("assert");
 
 describe("Guard test", () => {
 
@@ -27,39 +25,41 @@ describe("Guard test", () => {
     let dataCubeB = DataCubeFixtures.customCubeWithGuard();
     dataCubeB.name = "cubeB";
     dataCubeB.cluster.guardDataCubes = false;
-    let req = mockReq();
-    req.headers["x-turnilo-allow-datacubes"] = "cubeA";
-    assert.equal(checkAccess(dataCubeB, req), true);
+    let req = <Request>{};
+    req.headers = {"x-turnilo-allow-datacubes": "cubeA"};
+    expect(checkAccess(dataCubeB, req)).to.equal(true);
   });
 
   it("Guard off -> access to all dataCubes", () => {
     let dataCube = DataCubeFixtures.customCubeWithGuard();
     dataCube.cluster.guardDataCubes = false;
-    assert.equal(checkAccess(dataCube, mockReq()), true);
+    let req = <Request>{};
+    expect(checkAccess(dataCube, req)).to.equal(true);
   });
 
   it("Guard on -> access denied", () => {
-    assert.equal(checkAccess(DataCubeFixtures.customCubeWithGuard(), mockReq()), false);
+    let req = <Request>{};
+    expect(checkAccess(DataCubeFixtures.customCubeWithGuard(), req)).to.equal(false)
   });
 
   it("Guard on -> access denied", () => {
-    let req = mockReq();
+    let req = <Request>{};
+    req.headers = {"x-turnilo-allow-datacubes": "some,name"};
     let dataCube = DataCubeFixtures.customCubeWithGuard();
-    req.headers["x-turnilo-allow-datacubes"] = "some,name";
-    assert.equal(checkAccess(dataCube, req), false);
+    expect(checkAccess(dataCube, req)).to.equal(false);
   });
 
   it("Guard on -> access allowed: wildchar", () => {
-    let req = mockReq();
+    let req = <Request>{};
+    req.headers = {"x-turnilo-allow-datacubes": "*,some-other-name"};
     let dataCube = DataCubeFixtures.customCubeWithGuard();
-    req.headers["x-turnilo-allow-datacubes"] = "*,some-other-name";
-    assert.equal(checkAccess(dataCube, req), true);
+    expect(checkAccess(dataCube, req)).to.equal(true);
   });
 
   it("Guard on -> access allowed: datacube allowed", () => {
-    let req = mockReq();
+    let req = <Request>{};
+    req.headers = {"x-turnilo-allow-datacubes": "some-name,some-other-name"};
     let dataCube = DataCubeFixtures.customCubeWithGuard();
-    req.headers["x-turnilo-allow-datacubes"] = "some-name,some-other-name";
-    assert.equal(checkAccess(dataCube, req), true);
+    expect(checkAccess(dataCube, req)).to.equal(true);
   });
 });
