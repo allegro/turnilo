@@ -24,7 +24,7 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { exportOptions, STRINGS } from "../../config/constants";
+import { copyToClipboardOptions, exportOptions, STRINGS } from "../../config/constants";
 import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
@@ -76,12 +76,12 @@ function linkItems({ essence, customization, timekeeper, onClose, getCubeViewHas
   }
 
   return <React.Fragment>
-    <CopyToClipboard key="copy-url" text={hash}>
+    <CopyToClipboard key="copy-url" text={hash} options={copyToClipboardOptions}>
       <li onClick={onClose}>
         {isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
       </li>
     </CopyToClipboard>
-    {isRelative && <CopyToClipboard key="copy-specific-url" text={specificHash}>
+    {isRelative && <CopyToClipboard key="copy-specific-url" text={specificHash} options={copyToClipboardOptions}>
       <li onClick={onClose}>
         {STRINGS.copyFixedTimeUrl}
       </li>

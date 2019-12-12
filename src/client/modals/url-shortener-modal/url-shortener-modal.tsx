@@ -18,7 +18,7 @@ import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Fn } from "../../../common/utils/general/general";
 import { Modal } from "../../components/modal/modal";
-import { STRINGS } from "../../config/constants";
+import { copyToClipboardOptions, STRINGS } from "../../config/constants";
 import "./url-shortener-modal.scss";
 
 interface UrlShortenerModalProps {
@@ -93,7 +93,7 @@ export class ShortUrl extends React.Component<UrlProp, UrlState> {
     return <div>
       <div className="url-group">
         <input className="short-url" readOnly={true} value={url} />
-        <CopyToClipboard text={url} onCopy={this.copiedUrl}>
+        <CopyToClipboard text={url} onCopy={this.copiedUrl} options={copyToClipboardOptions}>
           <button className="copy-button">Copy</button>
         </CopyToClipboard>
       </div>
@@ -111,7 +111,7 @@ export class LongUrl extends React.Component<UrlProp, UrlState> {
   render() {
     return <div className="url-notice">
       Please note that, this url may expire in the future. You still can&nbsp;
-      <CopyToClipboard text={this.props.url} onCopy={this.copiedUrl}>
+      <CopyToClipboard text={this.props.url} onCopy={this.copiedUrl} options={copyToClipboardOptions}>
         <span className="copy-action">copy full url</span>
       </CopyToClipboard>
       &nbsp;instead.&nbsp;

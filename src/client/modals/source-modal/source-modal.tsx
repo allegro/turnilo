@@ -21,7 +21,7 @@ import { githubGist } from "react-syntax-highlighter/styles/hljs";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Modal } from "../../components/modal/modal";
-import { STRINGS } from "../../config/constants";
+import { copyToClipboardOptions, STRINGS } from "../../config/constants";
 import { classNames, JSXNode } from "../../utils/dom/dom";
 import "./source-modal.scss";
 
@@ -59,7 +59,7 @@ export class SourceModal extends React.Component<SourceModalProps, SourceModalSt
         </SyntaxHighlighter>
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
-          <CopyToClipboard text={source} onCopy={this.onCopy}>
+          <CopyToClipboard text={source} onCopy={this.onCopy} options={copyToClipboardOptions}>
             <Button type="secondary" title={copyLabel} />
           </CopyToClipboard>
           {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
