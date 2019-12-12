@@ -57,7 +57,7 @@ export function formatSegment(value: any, timezone: Timezone): string {
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
-  const { title, values } = this.getFormattedClause(dimension, clause, timezone);
+  const { title, values } = getFormattedClause(dimension, clause, timezone);
   return title ? `${title} ${values}` : values;
 }
 
