@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,19 @@
 import { Request } from "express";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 
-export function checkAccess(dataCube: DataCube, req: Request) {
+export const allowDataCubesHeaderName = "x-turnilo-allow-datacubes";
+
+export function checkAccess(dataCube: DataCube, headers: Request["headers"]) {
   var guard = dataCube && dataCube.cluster && dataCube.cluster.guardDataCubes || false;
-  const headers = req && req.headers || {};
-  const headerName = "x-turnilo-allow-datacubes";
 
   if (!guard) {
     return true;
   }
 
-  if (!(headerName in headers)) {
+  if (!(allowDataCubesHeaderName in headers)) {
     return false;
   }
 
-  const allowed_datasources = (req.headers[headerName] as string).split(",");
+  const allowed_datasources = (headers[allowDataCubesHeaderName] as string).split(",");
   return  allowed_datasources.indexOf("*") > -1 || allowed_datasources.indexOf(dataCube.name) > -1;
 }

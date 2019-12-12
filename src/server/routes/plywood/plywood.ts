@@ -79,7 +79,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       return;
     }
 
-    if (!(checkAccess(myDataCube, req))) {
+    if (!(checkAccess(myDataCube, req.headers))) {
       res.status(403).send({ error: "access denied" });
       return null;
     }

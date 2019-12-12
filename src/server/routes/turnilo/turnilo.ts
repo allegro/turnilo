@@ -29,7 +29,7 @@ export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
     try {
       const settings = await settingsGetter();
       const clientSettings = settings.toClientSettings();
-      clientSettings.dataCubes = clientSettings.dataCubes.filter( dataCube => checkAccess(dataCube, req) );
+      clientSettings.dataCubes = clientSettings.dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) );
       res.send(mainLayout({
         version,
         title: settings.customization.getTitle(version),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@
 import { expect } from "chai";
 import { Request } from "express";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
-import { checkAccess } from "./datacube-guard";
+import { allowDataCubesHeaderName, checkAccess } from "./datacube-guard";
+
+function mockHeaders(allowedDataCubes: string): Request["headers"] {
+  return { [allowDataCubesHeaderName]: allowedDataCubes } as Request["headers"];
+}
 
 describe("Guard test", () => {
 
@@ -25,41 +29,30 @@ describe("Guard test", () => {
     let dataCubeB = DataCubeFixtures.customCubeWithGuard();
     dataCubeB.name = "cubeB";
     dataCubeB.cluster.guardDataCubes = false;
-    let req = <Request> {};
-    req.headers = { "x-turnilo-allow-datacubes": "cubeA" };
-    expect(checkAccess(dataCubeB, req)).to.equal(true);
+    expect(checkAccess(dataCubeB, mockHeaders("cubeA"))).to.equal(true);
   });
 
   it("Guard off -> access to all dataCubes", () => {
     let dataCube = DataCubeFixtures.customCubeWithGuard();
     dataCube.cluster.guardDataCubes = false;
-    let req = <Request> {};
-    expect(checkAccess(dataCube, req)).to.equal(true);
+    expect(checkAccess(dataCube, mockHeaders(""))).to.equal(true);
   });
 
   it("Guard on -> access denied", () => {
-    let req = <Request> {};
-    expect(checkAccess(DataCubeFixtures.customCubeWithGuard(), req)).to.equal(false);
+    expect(checkAccess(DataCubeFixtures.customCubeWithGuard(), mockHeaders(""))).to.equal(false);
   });
 
   it("Guard on -> access denied", () => {
-    let req = <Request> {};
-    req.headers = { "x-turnilo-allow-datacubes": "some,name" };
-    let dataCube = DataCubeFixtures.customCubeWithGuard();
-    expect(checkAccess(dataCube, req)).to.equal(false);
+    expect(checkAccess(DataCubeFixtures.customCubeWithGuard(), mockHeaders("some,name"))).to.equal(false);
   });
 
   it("Guard on -> access allowed: wildchar", () => {
-    let req = <Request> {};
-    req.headers = { "x-turnilo-allow-datacubes": "*,some-other-name" };
     let dataCube = DataCubeFixtures.customCubeWithGuard();
-    expect(checkAccess(dataCube, req)).to.equal(true);
+    expect(checkAccess(dataCube, mockHeaders("*,some-other-name"))).to.equal(true);
   });
 
   it("Guard on -> access allowed: datacube allowed", () => {
-    let req = <Request> {};
-    req.headers = { "x-turnilo-allow-datacubes": "some-name,some-other-name" };
     let dataCube = DataCubeFixtures.customCubeWithGuard();
-    expect(checkAccess(dataCube, req)).to.equal(true);
+    expect(checkAccess(dataCube, mockHeaders("some-name,some-other-name"))).to.equal(true);
   });
 });
