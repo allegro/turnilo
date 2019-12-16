@@ -190,5 +190,3 @@ export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
   { label: STRINGS.exportToTSV, fileFormat: "tsv" }
 ];
-
-export const copyToClipboardOptions = { debug: false, message: "Copy to clipboard: #{key}, Enter", format: "text/plain" };

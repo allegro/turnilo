@@ -16,14 +16,14 @@
  */
 
 import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
-import { copyToClipboardOptions, STRINGS } from "../../config/constants";
+import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
+import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
 import "./segment-action-buttons.scss";
 
 export interface SegmentActionButtonsProps {
@@ -102,9 +102,9 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
       onClose={this.closeMoreMenu}
     >
       <ul className="bubble-list">
-        {segmentValue && <CopyToClipboard key="copyValue" text={segmentValue} options={copyToClipboardOptions}>
+        {segmentValue && <SafeCopyToClipboard key="copyValue" text={segmentValue}>
           <li className="clipboard" onClick={this.closeMoreMenu}>{STRINGS.copyValue}</li>
-        </CopyToClipboard>}
+        </SafeCopyToClipboard>}
         <li
           className="view-raw-data"
           key="view-raw-data"
