@@ -93,7 +93,7 @@ export class ShortUrl extends React.Component<UrlProp, UrlState> {
     return <div>
       <div className="url-group">
         <input className="short-url" readOnly={true} value={url} />
-        <SafeCopyToClipboard text={url} onCopy={this.copiedUrl} >
+        <SafeCopyToClipboard text={url} onCopy={this.copiedUrl}>
           <button className="copy-button">Copy</button>
         </SafeCopyToClipboard>
       </div>
@@ -111,7 +111,7 @@ export class LongUrl extends React.Component<UrlProp, UrlState> {
   render() {
     return <div className="url-notice">
       Please note that, this url may expire in the future. You still can&nbsp;
-      <SafeCopyToClipboard text={this.props.url} onCopy={this.copiedUrl} >
+      <SafeCopyToClipboard text={this.props.url} onCopy={this.copiedUrl}>
         <span className="copy-action">copy full url</span>
       </SafeCopyToClipboard>
       &nbsp;instead.&nbsp;

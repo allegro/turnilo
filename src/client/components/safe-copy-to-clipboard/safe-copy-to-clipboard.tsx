@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +29,7 @@ interface Options {
     debug: boolean;
     message: string;
     format?: string;
-  }
+}
 
 export function SafeCopyToClipboard(props: SafeProps) {
   return <CopyToClipboard {...props} options={copyOptions}>
