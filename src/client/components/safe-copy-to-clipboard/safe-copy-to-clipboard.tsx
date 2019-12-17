@@ -17,21 +17,8 @@
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 
-const copyOptions = { debug: false, message: "Copy to clipboard: #{key}, Enter", format: "text/plain" };
+type SafeCopyToClipboardProps = Pick<CopyToClipboard.Props, "text" | "onCopy" | "children">;
 
-interface SafeProps extends CopyToClipboard.Props {
-    key?: string;
-    children?: JSX.Element;
-    options?: Options;
-}
-
-interface Options {
-    debug: boolean;
-    message: string;
-    format?: string;
-}
-
-export function SafeCopyToClipboard(props: SafeProps) {
-  return <CopyToClipboard {...props} options={copyOptions}>
-      </CopyToClipboard>;
+export function SafeCopyToClipboard(props: SafeCopyToClipboardProps) {
+  return <CopyToClipboard {...props} options={{ format: "text/plain" }} />;
 }
