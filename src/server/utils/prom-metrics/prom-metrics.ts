@@ -7,9 +7,10 @@ export const plywoodRequests = new Counter({
 });
 
 export const plywoodRequestDuration = new Histogram({
-  name: "turnilo_plywood_request_duration",
+  name: "turnilo_plywood_request_duration_seconds",
   help: "Request duration for plywood queries",
-  labelNames: ["dataCube", "status"]
+  labelNames: ["dataCube", "status"],
+  buckets: [1, 5, 10, 30, 60, 120, 300]
 });
 
 export const plywoodTimeouts = new Counter({
