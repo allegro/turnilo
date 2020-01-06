@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,15 @@
  */
 
 import { ApplyExpression, Expression as PlywoodExpression, QuantileExpression } from "plywood";
+import { Measure } from "../measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
 export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
+
+  constructor(series: QuantileSeries, measure: Measure) {
+    super(series, measure);
+  }
 
   title(derivation?: SeriesDerivation): string {
     return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;

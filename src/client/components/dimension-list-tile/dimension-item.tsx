@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
   const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
-    const target = e.target as Element;
+    const target = e.currentTarget;
     if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     dimensionClick(name, e);
   };

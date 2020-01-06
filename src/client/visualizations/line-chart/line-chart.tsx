@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@ export interface LineChartState extends BaseVisualizationState {
 
 export class LineChart extends BaseVisualization<LineChartState> {
   protected className = LINE_CHART_MANIFEST.name;
+  private container = React.createRef<HTMLDivElement>();
 
   getDefaultState(): LineChartState {
     return { dragStartValue: null, dragRange: null, hoverRange: null, ...super.getDefaultState() };
@@ -107,7 +108,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   componentDidUpdate() {
     const { containerYPosition, containerXPosition } = this.state;
 
-    const node = ReactDOM.findDOMNode(this.refs["container"]);
+    const node = this.container.current;
     if (!node) return;
 
     const rect = node.getBoundingClientRect();
@@ -135,7 +136,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   getMyEventX(e: React.MouseEvent<HTMLElement> | MouseEvent): number {
-    const myDOM = ReactDOM.findDOMNode(this);
+    const myDOM = ReactDOM.findDOMNode(this) as Element;
     const rect = myDOM.getBoundingClientRect();
     return getXFromEvent(e) - (rect.left + VIS_H_PADDING);
   }
@@ -161,7 +162,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const splitLength = essence.splits.length();
     const continuousDimension = this.getContinuousDimension();
 
-    const myDOM = ReactDOM.findDOMNode(this);
+    const myDOM = ReactDOM.findDOMNode(this) as Element;
     const rect = myDOM.getBoundingClientRect();
     const dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + VIS_H_PADDING));
 
@@ -719,7 +720,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       <div
         className="measure-line-charts"
         style={measureChartsStyle}
-        ref="container"
+        ref={this.container}
       >
         {measureCharts}
       </div>

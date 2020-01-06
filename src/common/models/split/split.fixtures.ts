@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,41 +16,71 @@
  */
 
 import { Duration } from "chronoshift";
+import { SeriesDerivation } from "../series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection } from "../sort/sort";
 import { Split, SplitType } from "./split";
 
-const createSort = (isDimension: boolean, reference: string, direction: SortDirection): Sort => {
+const createSort = (isDimension: boolean, { reference, direction, period }: SortOpts = { direction: SortDirection.ascending, period: SeriesDerivation.CURRENT }): Sort => {
   if (isDimension) return new DimensionSort({ reference, direction });
-  return new SeriesSort({ reference, direction });
+  return new SeriesSort({ reference, direction, period });
 };
 
-export class SplitFixtures {
+interface SortOpts {
+  reference?: string;
+  period?: SeriesDerivation;
+  direction?: SortDirection;
+}
 
-  static stringSplitCombine(dimension: string, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
-    return new Split({
-      reference: dimension,
-      sort: createSort(dimension === sortOn, sortOn, direction),
-      limit
-    });
-  }
+interface SplitOpts {
+  limit?: number;
+  sort?: SortOpts;
+}
 
-  static numberSplitCombine(dimension: string, granularity = 100, sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
-    return new Split({
-      type: SplitType.number,
-      reference: dimension,
-      bucket: granularity,
-      sort: createSort(dimension === sortOn, sortOn, direction),
-      limit
-    });
-  }
+export function stringSplitCombine(dimension: string, {
+  limit = 50,
+  sort: {
+    direction = SortDirection.ascending,
+    period = SeriesDerivation.CURRENT,
+    reference = dimension
+  } = {}
+}: SplitOpts = {}): Split {
+  return new Split({
+    reference: dimension,
+    sort: createSort(dimension === reference, { reference, period, direction }),
+    limit
+  });
+}
 
-  static timeSplitCombine(dimension: string, granularity = "PT1H", sortOn = dimension, direction = SortDirection.ascending, limit = 50): Split {
-    return new Split({
-      type: SplitType.time,
-      reference: dimension,
-      bucket: Duration.fromJS(granularity),
-      sort: createSort(dimension === sortOn, sortOn, direction),
-      limit
-    });
-  }
+export function numberSplitCombine(dimension: string, granularity = 100, {
+  limit = 50,
+  sort: {
+    direction = SortDirection.ascending,
+    period = SeriesDerivation.CURRENT,
+    reference = dimension
+  } = {}
+}: SplitOpts = {}): Split {
+  return new Split({
+    type: SplitType.number,
+    reference: dimension,
+    bucket: granularity,
+    sort: createSort(dimension === reference, { direction, period, reference }),
+    limit
+  });
+}
+
+export function timeSplitCombine(dimension: string, granularity = "PT1H", {
+  limit = 50,
+  sort: {
+    direction = SortDirection.ascending,
+    period = SeriesDerivation.CURRENT,
+    reference = dimension
+  } = {}
+}: SplitOpts = {}): Split {
+  return new Split({
+    type: SplitType.time,
+    reference: dimension,
+    bucket: Duration.fromJS(granularity),
+    sort: createSort(dimension === reference, { direction, period, reference }),
+    limit
+  });
 }

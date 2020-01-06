@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ export default function normalizeStyles(source: StyleDefinition): React.CSSPrope
   };
   return {
     ...omitFalsyValues(dimensions),
-    "z-index": 200 + (isAboveAll ? 1 : 0),
-    "pointer-events": disablePointerEvents ? "none" : "auto"
+    zIndex: 200 + (isAboveAll ? 1 : 0),
+    pointerEvents: disablePointerEvents ? "none" : "auto"
   };
 }

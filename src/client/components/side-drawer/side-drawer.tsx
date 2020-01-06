@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   globalMouseDownListener = (e: MouseEvent) => {
-    const myElement = ReactDOM.findDOMNode(this);
+    const myElement = ReactDOM.findDOMNode(this) as Element;
     const target = e.target as Element;
 
     if (isInside(target, myElement)) return;

@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ export function formatSegment(value: any, timezone: Timezone): string {
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
-  const { title, values } = this.getFormattedClause(dimension, clause, timezone);
+  const { title, values } = getFormattedClause(dimension, clause, timezone);
   return title ? `${title} ${values}` : values;
 }
 

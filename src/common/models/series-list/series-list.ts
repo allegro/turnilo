@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
       return fromJS(def, measure);
     }));
     return new SeriesList({ series });
+  }
+
+  static fromSeries(series: Series[]): SeriesList {
+    return new SeriesList({ series: List(series) });
   }
 
   static validSeries(series: Series, measures: Measures): boolean {

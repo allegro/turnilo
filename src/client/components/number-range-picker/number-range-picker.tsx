@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 import { $, Dataset, ply } from "plywood";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -42,7 +41,7 @@ function subtractNubSize(value: number) {
 }
 
 function getNumberOfDigitsToShow(n: number) {
-  var totalDigits = getNumberOfWholeDigits(n / GRANULARITY_IN_BAR);
+  const totalDigits = getNumberOfWholeDigits(n / GRANULARITY_IN_BAR);
   return totalDigits > 3 ? Math.min(totalDigits, 4) : 3;
 }
 
@@ -74,6 +73,7 @@ export interface NumberRangePickerState {
 
 export class NumberRangePicker extends React.Component<NumberRangePickerProps, NumberRangePickerState> {
   public mounted: boolean;
+  private picker = React.createRef<HTMLDivElement>();
 
   constructor(props: NumberRangePickerProps) {
     super(props);
@@ -103,10 +103,10 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
-          var min = (dataset.data[0]["Min"] as number);
-          var max = (dataset.data[0]["Max"] as number);
+          const min = (dataset.data[0]["Min"] as number);
+          const max = (dataset.data[0]["Max"] as number);
 
-          var step = max && min && isFinite(max) && isFinite(min) ? (max - min) / rightBound : 1;
+          const step = max && min && isFinite(max) && isFinite(min) ? (max - min) / rightBound : 1;
 
           this.setState({
             min,
@@ -127,11 +127,11 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
   componentDidMount() {
     this.mounted = true;
-    var node = ReactDOM.findDOMNode(this.refs["number-range-picker"]);
-    var rect = node.getBoundingClientRect();
-    var { essence, timekeeper, dimension } = this.props;
-    var leftOffset = rect.left;
-    var rightBound = rect.width;
+    const node = this.picker.current;
+    const rect = node.getBoundingClientRect();
+    const { essence, timekeeper, dimension } = this.props;
+    const leftOffset = rect.left;
+    const rightBound = rect.width;
 
     this.setState({ leftOffset, rightBound });
     this.fetchData(essence, timekeeper, dimension, rightBound);
@@ -147,7 +147,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     if (position <= addNubSize(0) && type === "start") return ANY_VALUE;
     if (position >= rightBound && type === "end") return ANY_VALUE;
 
-    var range = max - min !== 0 ? max - min : Math.abs(max);
+    const range = max - min !== 0 ? max - min : Math.abs(max);
     return toSignificantDigits(position * step, getNumberOfDigitsToShow(range));
   }
 
@@ -159,17 +159,17 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
   onBarClick(positionStart: number, positionEnd: number, e: MouseEvent) {
     const { leftOffset } = this.state;
 
-    var clickPadding = 5;
-    var absoluteX = getXFromEvent(e);
-    var relativeX = absoluteX - leftOffset;
+    const clickPadding = 5;
+    const absoluteX = getXFromEvent(e);
+    const relativeX = absoluteX - leftOffset;
     if (relativeX < NUB_SIZE / 2) return this.updateStart(leftOffset);
 
-    var startNubPosition = addNubSize(positionStart) + clickPadding;
-    var endNubPosition = subtractNubSize(positionEnd) + clickPadding;
+    const startNubPosition = addNubSize(positionStart) + clickPadding;
+    const endNubPosition = subtractNubSize(positionEnd) + clickPadding;
 
-    var isBeforeStart = relativeX < positionStart;
-    var isAfterEnd = relativeX > positionEnd + NUB_SIZE;
-    var inBetween = (relativeX < positionEnd) && relativeX > startNubPosition;
+    const isBeforeStart = relativeX < positionStart;
+    const isAfterEnd = relativeX > positionEnd + NUB_SIZE;
+    const inBetween = (relativeX < positionEnd) && relativeX > startNubPosition;
 
     if (isBeforeStart) {
       this.updateStart(absoluteX - NUB_SIZE);
@@ -177,8 +177,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       this.updateEnd(absoluteX);
     } else if (inBetween) {
 
-      var distanceFromEnd = endNubPosition - relativeX;
-      var distanceFromStart = relativeX - startNubPosition;
+      const distanceFromEnd = endNubPosition - relativeX;
+      const distanceFromStart = relativeX - startNubPosition;
 
       if (distanceFromEnd < distanceFromStart) {
         this.updateEnd(endNubPosition + leftOffset - distanceFromEnd);
@@ -212,19 +212,19 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const { start, end, exclude } = this.props;
     const { min, max, loading, error, step, rightBound, leftOffset } = this.state;
 
-    var content: JSX.Element = null;
+    let content: JSX.Element = null;
 
     if (rightBound && step && isFinite(max) && isFinite(min)) {
-      var relativeStart = start === ANY_VALUE ? 0 : subtractNubSize(this.valueToRelativePosition(start));
-      var relativeEnd = end === ANY_VALUE ? rightBound : this.valueToRelativePosition(end);
-      var adjustedRightBound = subtractNubSize(rightBound);
+      const relativeStart = start === ANY_VALUE ? 0 : subtractNubSize(this.valueToRelativePosition(start));
+      const relativeEnd = end === ANY_VALUE ? rightBound : this.valueToRelativePosition(end);
+      const adjustedRightBound = subtractNubSize(rightBound);
 
-      var positionEnd = clamp(relativeEnd, addNubSize(relativeStart), adjustedRightBound);
-      var positionStart = start ? clamp(relativeStart, 0, subtractNubSize(positionEnd)) : 0;
+      const positionEnd = clamp(relativeEnd, addNubSize(relativeStart), adjustedRightBound);
+      const positionStart = start ? clamp(relativeStart, 0, subtractNubSize(positionEnd)) : 0;
 
-      var rangeBarSelected = { left: getAdjustedStartHalf(positionStart), width: positionEnd - positionStart };
+      const rangeBarSelected = { left: getAdjustedStartHalf(positionStart), width: positionEnd - positionStart };
 
-      var absoluteRightBound = leftOffset + rightBound;
+      const absoluteRightBound = leftOffset + rightBound;
 
       content = <div className="range-slider" onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}>
         <div className="range-bar full"/>
@@ -250,7 +250,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       </div>;
     }
 
-    return <div className={classNames("number-range-picker", { inverted: exclude })} ref="number-range-picker">
+    return <div className={classNames("number-range-picker", { inverted: exclude })} ref={this.picker}>
       {content}
       {loading && <Loader/>}
       {error && <QueryError error={error}/>}

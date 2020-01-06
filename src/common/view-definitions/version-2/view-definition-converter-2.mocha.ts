@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
-import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
+import { stringIn, timePeriod } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 import { ViewDefinitionConverter2Fixtures } from "./view-definition-converter-2.fixtures";
 
@@ -68,7 +68,7 @@ describe("ViewDefinitionConverter2", () => {
       const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS);
       const convertedClause = essence.filter.clauses.first();
 
-      const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", period);
+      const expectedClause = timePeriod("time", "P1D", period);
       expect(convertedClause).to.deep.equal(expectedClause);
     });
   });
@@ -129,7 +129,7 @@ describe("ViewDefinitionConverter2", () => {
     const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki(), MANIFESTS).filter;
     const convertedClause = convertedFilter.clauses.get(1);
 
-    const expectedClause = FilterClauseFixtures.stringIn("page_last_author", ["TypeScript"]);
+    const expectedClause = stringIn("page_last_author", ["TypeScript"]);
     expect(convertedClause).to.deep.equal(expectedClause);
   });
 

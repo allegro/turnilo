@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   private readonly overflowMenuId: string;
   private dummyDeferred: Deferred<Element>;
   private overflowMenuDeferred: Deferred<Element>;
+  private items = React.createRef<HTMLDivElement>();
+  private overflow = React.createRef<HTMLDivElement>();
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -122,7 +124,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   overflowButtonTarget(): Element {
-    return ReactDOM.findDOMNode(this.refs["overflow"]);
+    return this.overflow.current;
   }
 
   getOverflowMenu(): Element {
@@ -138,14 +140,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   openMenuOnDimension(dimension: Dimension) {
     const targetRef = this.refs[dimension.name];
     if (targetRef) {
-      const target = ReactDOM.findDOMNode(targetRef);
+      const target = ReactDOM.findDOMNode(targetRef) as Element;
       if (!target) return;
       this.openMenu(dimension, target);
     } else {
       const overflowButtonTarget = this.overflowButtonTarget();
       if (overflowButtonTarget) {
         this.openOverflowMenu(overflowButtonTarget).then(() => {
-          const target = ReactDOM.findDOMNode(this.refs[dimension.name]);
+          const target = ReactDOM.findDOMNode(this.refs[dimension.name]) as Element;
           if (!target) return;
           this.openMenu(dimension, target);
         });
@@ -242,7 +244,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
     const numItems = essence.filter.length();
-    const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
+    const rect = this.items.current.getBoundingClientRect();
     const offset = getXFromEvent(e) - rect.left;
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
@@ -404,7 +406,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     return <div
       className="overflow dimension"
-      ref="overflow"
+      ref={this.overflow}
       key="overflow"
       style={style}
       onClick={this.overflowButtonClick}
@@ -591,7 +593,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     >
       <div className="title">{STRINGS.filter}</div>
-      <div className="items" ref="items">
+      <div className="items" ref={this.items}>
         {filterItems}
       </div>
       {this.renderAddButton()}

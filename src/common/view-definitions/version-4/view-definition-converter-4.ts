@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,6 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       series,
       colors,
       pinnedSort,
-      compare: null,
       highlight
     });
   }

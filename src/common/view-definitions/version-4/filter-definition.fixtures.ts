@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Booleanish } from "../../../client/components/filter-menu/boolean-filter-menu/boolean-filter-menu";
 import { StringFilterAction } from "../../models/filter-clause/filter-clause";
 import {
   BooleanFilterClauseDefinition,
@@ -23,56 +24,62 @@ import {
   TimeFilterClauseDefinition
 } from "./filter-definition";
 
-export class FilterDefinitionFixtures {
-  static booleanFilterDefinition(ref: string, values: boolean[], not = false): BooleanFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.boolean,
-      not,
-      values
-    };
-  }
+export function booleanFilterDefinition(ref: string, values: Booleanish[], not = false): BooleanFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.boolean,
+    not,
+    values
+  };
+}
 
-  static stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.string,
-      action,
-      not,
-      values
-    };
-  }
+export function stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.string,
+    action,
+    not,
+    values
+  };
+}
 
-  static numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", not = false): NumberFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.number,
-      not,
-      ranges: [{ start, end, bounds }]
-    };
-  }
+export function numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", not = false): NumberFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.number,
+    not,
+    ranges: [{ start, end, bounds }]
+  };
+}
 
-  static timeRangeFilterDefinition(ref: string, start: string, end: string): TimeFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.time,
-      timeRanges: [{ start, end }]
-    };
-  }
+export function timeRangeFilterDefinition(ref: string, start: string, end: string): TimeFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.time,
+    timeRanges: [{ start, end }]
+  };
+}
 
-  static latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.time,
-      timePeriods: [{ type: "latest", duration, step: multiple }]
-    };
-  }
+export function latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.time,
+    timePeriods: [{ type: "latest", duration, step: multiple }]
+  };
+}
 
-  static flooredTimeFilterDefinition(ref: string, step: number, duration: string): TimeFilterClauseDefinition {
-    return {
-      ref,
-      type: FilterType.time,
-      timePeriods: [{ type: "floored", duration, step }]
-    };
-  }
+export function flooredTimeFilterDefinition(ref: string, step: number, duration: string): TimeFilterClauseDefinition {
+  return {
+    ref,
+    type: FilterType.time,
+    timePeriods: [{ type: "floored", duration, step }]
+  };
+}
+
+export function currentTimeFilterDefinition(ref: string, duration: string): TimeFilterClauseDefinition {
+  return flooredTimeFilterDefinition(ref, 1, duration);
+}
+
+export function previousTimeFilterDefinition(ref: string, duration: string): TimeFilterClauseDefinition {
+  return flooredTimeFilterDefinition(ref, -1, duration);
 }

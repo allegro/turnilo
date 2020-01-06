@@ -1,6 +1,6 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { DimensionKind } from "../dimension/dimension";
 import { Highlight } from "../highlight/highlight";
-import { HighlightFixtures } from "../highlight/highlight.fixtures";
+import { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SeriesList } from "../series-list/series-list";
 import { MeasureSeries } from "../series/measure-series";
@@ -77,11 +77,7 @@ describe("EssenceProps", () => {
 
   const dataCube = DataCube.fromJS(dataCubeJS);
 
-  const context = { dataCube, visualizations: MANIFESTS };
-
   describe("removes highlight when necessary", () => {
-    const { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } = HighlightFixtures;
-
     const tests: Array<{ highlight: Highlight, expected: Highlight, description: string }> = [
       { highlight: lineChartWithAddedMeasure(), expected: lineChartWithAddedMeasure(), description: "is kept when measure is selected" },
       { highlight: tableNoMeasure(), expected: tableNoMeasure(), description: "is kept when contains no measure" },
@@ -101,7 +97,7 @@ describe("EssenceProps", () => {
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {
-      const essence = Essence.fromDataCube(dataCube, context);
+      const essence = Essence.fromDataCube(dataCube, MANIFESTS);
 
       // TODO: don't test toJS
       expect(essence.toJS()).to.deep.equal({
