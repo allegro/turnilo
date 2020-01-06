@@ -13,8 +13,8 @@ export const plywoodRequestDuration = new Histogram({
   buckets: [1, 5, 10, 30, 60, 120, 300]
 });
 
-export const plywoodTimeouts = new Counter({
-  name: "turnilo_plywood_timeouts",
-  help: "Total number of plywood timeouts",
-  labelNames: ["dataCube", "message"]
+export const plywoodErrors = new Counter({
+  name: "turnilo_plywood_errors",
+  help: "Total number of plywood errors",
+  labelNames: ["dataCube"]
 });
