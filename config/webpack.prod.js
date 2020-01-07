@@ -24,21 +24,6 @@ module.exports = merge.smart(common, {
   entry: {
     main: ["./src/client/main.tsx"]
   },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: "awesome-typescript-loader",
-            options: {
-              declaration: false,
-            }
-          }
-        ]
-      },
-   ]
-  },
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin()],

@@ -55,9 +55,9 @@ module.exports = {
         use: [
           babelLoader,
           {
-            loader: "awesome-typescript-loader",
+            loader: "ts-loader",
             options: {
-              configFileName: "./src/client/tsconfig.json"
+              configFile: "src/client/tsconfig.json"
             }
           }
         ]
