@@ -42,9 +42,14 @@ if (SERVER_SETTINGS.getTrustProxy() === "always") {
   app.set("trust proxy", 1); // trust first proxy
 }
 
-function addRoutes(attach: string, router: Router | Handler): void {
-  app.use(attach, router);
-  app.use(SERVER_SETTINGS.getServerRoot() + attach, router);
+function getRoutePath(route: string): string {
+  const serverRoot = SERVER_SETTINGS.getServerRoot();
+  const prefix = serverRoot.length > 0 ? `/${serverRoot}` : "";
+  return `${prefix}${route}`;
+}
+
+function attachRouter(route: string, router: Router | Handler): void {
+  app.use(getRoutePath(route), router);
 }
 
 // Add compression
@@ -84,8 +89,8 @@ if (app.get("env") === "dev-hmr") {
   }
 }
 
-addRoutes("/", express.static(path.join(__dirname, "../../build/public")));
-addRoutes("/", express.static(path.join(__dirname, "../../assets")));
+attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
+attachRouter("/", express.static(path.join(__dirname, "../../assets")));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -97,14 +102,14 @@ if (AUTH) {
   app.use(AUTH);
 }
 
-addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
-addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
+attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
+attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-addRoutes("/plywood", plywoodRouter(settingsGetter));
-addRoutes("/plyql", plyqlRouter(settingsGetter));
-addRoutes("/mkurl", mkurlRouter(settingsGetter));
-addRoutes("/shorten", shortenRouter(settingsGetter));
+attachRouter("/plywood", plywoodRouter(settingsGetter));
+attachRouter("/plyql", plyqlRouter(settingsGetter));
+attachRouter("/mkurl", mkurlRouter(settingsGetter));
+attachRouter("/shorten", shortenRouter(settingsGetter));
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {
@@ -115,11 +120,11 @@ if (SERVER_SETTINGS.getIframe() === "deny") {
   });
 }
 
-addRoutes("/", turniloRouter(settingsGetter, VERSION));
+attachRouter("/", turniloRouter(settingsGetter, VERSION));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {
-  res.redirect("/");
+  res.redirect(getRoutePath("/"));
 });
 
 app.use((err: any, req: Request, res: Response) => {
