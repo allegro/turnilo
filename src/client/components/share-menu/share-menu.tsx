@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Customization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
@@ -28,6 +27,7 @@ import { exportOptions, STRINGS } from "../../config/constants";
 import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
 
 export interface ShareMenuProps {
   essence: Essence;
@@ -76,16 +76,16 @@ function linkItems({ essence, customization, timekeeper, onClose, getCubeViewHas
   }
 
   return <React.Fragment>
-    <CopyToClipboard key="copy-url" text={hash}>
+    <SafeCopyToClipboard key="copy-url" text={hash}>
       <li onClick={onClose}>
         {isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
       </li>
-    </CopyToClipboard>
-    {isRelative && <CopyToClipboard key="copy-specific-url" text={specificHash}>
+    </SafeCopyToClipboard>
+    {isRelative && <SafeCopyToClipboard key="copy-specific-url" text={specificHash}>
       <li onClick={onClose}>
         {STRINGS.copyFixedTimeUrl}
       </li>
-    </CopyToClipboard>}
+    </SafeCopyToClipboard>}
 
     {customization.urlShortener && <React.Fragment>
       <li
