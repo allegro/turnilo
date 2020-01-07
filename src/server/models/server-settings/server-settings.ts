@@ -43,7 +43,7 @@ export interface ServerSettingsJS extends ServerSettingsValue {
 
 export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
-  static DEFAULT_SERVER_ROOT = "/turnilo";
+  static DEFAULT_SERVER_ROOT = "";
   static DEFAULT_READINESS_ENDPOINT = "/health/ready";
   static DEFAULT_LIVENESS_ENDPOINT = "/health/alive";
   static DEFAULT_REQUEST_LOG_FORMAT = "common";
@@ -57,8 +57,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
 
   static fromJS(parameters: ServerSettingsJS): ServerSettings {
     if (typeof parameters.port === "string") parameters.port = parseInt(parameters.port, 10);
-    if (parameters.serverRoot && parameters.serverRoot[0] !== "/") parameters.serverRoot = "/" + parameters.serverRoot;
-    if (parameters.serverRoot === "/") parameters.serverRoot = null;
     return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters, ServerSettings.BACK_COMPATS));
   }
 
