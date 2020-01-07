@@ -34,6 +34,7 @@ export interface ClusterValue {
   sourceListRefreshInterval?: number;
   sourceReintrospectOnLoad?: boolean;
   sourceReintrospectInterval?: number;
+  guardDataCubes?: boolean;
 
   introspectionStrategy?: string;
   requestDecorator?: string;
@@ -52,6 +53,7 @@ export interface ClusterJS {
   sourceListRefreshInterval?: number;
   sourceReintrospectOnLoad?: boolean;
   sourceReintrospectInterval?: number;
+  guardDataCubes?: boolean;
 
   introspectionStrategy?: string;
   requestDecorator?: string;
@@ -93,6 +95,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
   static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
   static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
+  static DEFAULT_GUARD_DATA_CUBES = false;
 
   static fromJS(parameters: ClusterJS): Cluster {
     if (typeof parameters.timeout === "string") {
@@ -129,7 +132,8 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     },
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
     { name: "requestDecorator", defaultValue: null },
-    { name: "decoratorOptions", defaultValue: null }
+    { name: "decoratorOptions", defaultValue: null },
+    { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
   ];
 
   static HTTP_PROTOCOL_TEST = /^http(s?):/;
@@ -155,6 +159,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public sourceListRefreshInterval: number;
   public sourceReintrospectOnLoad: boolean;
   public sourceReintrospectInterval: number;
+  public guardDataCubes: boolean;
 
   // Druid
   public introspectionStrategy: string;
