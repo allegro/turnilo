@@ -36,11 +36,11 @@ Indicates that Turnilo should run in verbose mode. This will log all the queries
 
 The host that Turnilo will bind to.
 
-**serverRoot** (string), default "turnilo"
+**serverRoot** (string), default: ""
 
 A custom path to act as the server string.
 
-The Turnilo UI will be served from `http://turnilo-host:$port/` and `http://turnilo-host:$port/$serverRoot`
+The Turnilo UI will be served from `http://turnilo-host:$port/$serverRoot`
 
 **readinessEndpoint** (string), default "/health/ready"
 

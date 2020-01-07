@@ -28,16 +28,16 @@ export interface ViewOptions {
 function favicon(options: ViewOptions): string {
   const { version, title } = options;
   return `
-<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png?v=${version}">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png?v=${version}">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png?v=${version}">
-<link rel="manifest" href="/favicon/site.webmanifest?v=${version}">
-<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg?v=4" color="#ff5a00">
-<link rel="shortcut icon" href="/favicon/favicon.ico?v=${version}">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png?v=${version}">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png?v=${version}">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png?v=${version}">
+<link rel="manifest" href="favicon/site.webmanifest?v=${version}">
+<link rel="mask-icon" href="favicon/safari-pinned-tab.svg?v=4" color="#ff5a00">
+<link rel="shortcut icon" href="favicon/favicon.ico?v=${version}">
 <meta name="apple-mobile-web-app-title" content="${title}">
 <meta name="application-name" content="${title}">
 <meta name="msapplication-TileColor" content="#da532c">
-<meta name="msapplication-config" content="/favicon/browserconfig.xml?v=${version}">
+<meta name="msapplication-config" content="favicon/browserconfig.xml?v=${version}">
 <meta name="theme-color" content="#ffffff">
 `;
 }
