@@ -96,6 +96,7 @@ export class SettingsManager {
       anchorPath,
       initialExternals,
       onExternalChange: (name, external) => this.onExternalChange(cluster, name, external),
+      onExternalRemoved: (name, external) => this.onExternalRemoved(cluster, name, external),
       generateExternalName: this.generateDataCubeName
     });
 
@@ -219,4 +220,17 @@ export class SettingsManager {
     return Promise.resolve(null);
   }
 
+  onExternalRemoved = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void>  => {
+    if (!changedExternal.attributes || !changedExternal.requester) return Promise.resolve(null);
+    const { logger } = this;
+
+    logger.log(`Got external dataset removal for ${dataCubeName} in cluster ${cluster.name}`);
+
+    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    if (dataCube) {
+      this.appSettings = this.appSettings.deleteDataCube(dataCube);
+      this.timeMonitor.removeCheck(dataCube.name);
+    }
+    return Promise.resolve(null);
+  }
 }

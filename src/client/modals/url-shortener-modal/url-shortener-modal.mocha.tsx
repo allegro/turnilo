@@ -17,10 +17,10 @@
 import { expect } from "chai";
 import { mount, shallow } from "enzyme";
 import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
 import * as sinon from "sinon";
 import { SinonStub } from "sinon";
 import { Modal } from "../../components/modal/modal";
+import { SafeCopyToClipboard } from "../../components/safe-copy-to-clipboard/safe-copy-to-clipboard";
 import { STRINGS } from "../../config/constants";
 import { LongUrl, ShortUrl, UrlShortenerModal, UrlShortenerPrompt } from "./url-shortener-modal";
 
@@ -91,7 +91,7 @@ describe("<ShortUrl>", () => {
   it("should show copied hint after copying short url", async () => {
     const shortUrl = mount(<ShortUrl url="foobar.com" />);
 
-    shortUrl.find(CopyToClipboard).prop("onCopy")("foo", true);
+    shortUrl.find(SafeCopyToClipboard).prop("onCopy")("foo", true);
     await tick();
     shortUrl.update();
 
@@ -104,7 +104,7 @@ describe("<LongUrl>", () => {
   it("should show copied hint after copying long url", async () => {
     const longUrl = mount(<LongUrl url="foobar.com" />);
 
-    longUrl.find(CopyToClipboard).prop("onCopy")("foo", true);
+    longUrl.find(SafeCopyToClipboard).prop("onCopy")("foo", true);
     await tick();
     longUrl.update();
 

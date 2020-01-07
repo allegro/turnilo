@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-const common = require('./webpack.common');
-const merge = require('webpack-merge');
-const webpack = require('webpack');
-const TerserPlugin = require('terser-webpack-plugin');
+import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
 
-module.exports = merge.smart(common, {
-  mode: "production",
-  entry: {
-    main: ["./src/client/main.tsx"]
-  },
-  optimization: {
-    minimize: true,
-    minimizer: [new TerserPlugin()],
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-  ]
-});
+type SafeCopyToClipboardProps = Pick<CopyToClipboard.Props, "text" | "onCopy" | "children">;
+
+export function SafeCopyToClipboard(props: SafeCopyToClipboardProps) {
+  return <CopyToClipboard {...props} options={{ format: "text/plain" }} />;
+}
