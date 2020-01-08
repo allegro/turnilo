@@ -23,7 +23,7 @@ import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, RelativeTimeFilterClause, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
@@ -211,15 +211,23 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const isPinnedSortValid = series && constrainedSeries.hasMeasureSeries(pinnedSort);
     const constrainedPinnedSort = isPinnedSortValid ? pinnedSort : Essence.defaultSortReference(constrainedSeries, dataCube);
 
+    const constrainedFilter = filter && filter.constrainToDimensions(dataCube.dimensions);
+
+    const validTimezone = timezone || Timezone.UTC;
+
+    const timeFilter = filter && filter.getClauseForDimension(dataCube.getTimeDimension());
+    if (!(timeFilter instanceof FixedTimeFilterClause || timeFilter instanceof RelativeTimeFilterClause)) throw new Error(`Unknown time filter: ${timeFilter}`);
+    const constrainedTimeShift = timeShift.constrainToFilter(timeFilter, validTimezone);
+
     super({
       ...parameters,
       visualizations,
       dataCube,
       visualization,
-      timezone: timezone || Timezone.UTC,
-      timeShift,
+      timezone: validTimezone,
+      timeShift: constrainedTimeShift,
       splits: splits && splits.constrainToDimensionsAndSeries(dataCube.dimensions, constrainedSeries),
-      filter: filter && filter.constrainToDimensions(dataCube.dimensions),
+      filter: constrainedFilter,
       series: constrainedSeries,
       pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
       pinnedSort: constrainedPinnedSort,
