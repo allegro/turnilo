@@ -23,7 +23,7 @@ import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
-import { isTimeShiftValid, TimeShift } from "../../../../common/models/time-shift/time-shift";
+import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { STRINGS } from "../../../config/constants";
@@ -103,7 +103,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   isTimeShiftValid(): boolean {
-    return isTimeShiftValid(this.state.shift);
+    return isValidTimeShift(this.state.shift);
   }
 
   areDatesValid(): boolean {

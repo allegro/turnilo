@@ -18,7 +18,7 @@
 import { Duration, Timezone } from "chronoshift";
 import * as React from "react";
 import { DateRange } from "../../../../common/models/date-range/date-range";
-import { isTimeShiftValid } from "../../../../common/models/time-shift/time-shift";
+import { isValidTimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
@@ -63,7 +63,7 @@ export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {
       presets={presets}
       selected={selectedTimeShift}
       onChange={onShiftChange}
-      errorMessage={isTimeShiftValid(selectedTimeShift) ? null : STRINGS.invalidDurationFormat}
+      errorMessage={isValidTimeShift(selectedTimeShift) ? null : STRINGS.invalidDurationFormat}
       placeholder={STRINGS.timeShiftExamples} />
     {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
   </React.Fragment>;

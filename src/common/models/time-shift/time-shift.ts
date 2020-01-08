@@ -18,7 +18,7 @@ import { Duration, Timezone } from "chronoshift";
 import { Instance } from "immutable-class";
 import { FilterTypes, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
 
-export function isTimeShiftValid(input: string): boolean {
+export function isValidTimeShift(input: string): boolean {
   try {
     TimeShift.fromJS(input);
     return true;

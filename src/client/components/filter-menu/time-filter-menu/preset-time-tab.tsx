@@ -21,7 +21,7 @@ import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
-import { isTimeShiftValid, TimeShift } from "../../../../common/models/time-shift/time-shift";
+import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { isValidDuration } from "../../../../common/utils/plywood/duration";
@@ -100,7 +100,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
   }
 
   isTimeShiftValid(): boolean {
-    return isTimeShiftValid(this.state.timeShift);
+    return isValidTimeShift(this.state.timeShift);
   }
 
   isDurationValid(): boolean {
