@@ -105,10 +105,11 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
 
   }
 
-  constructFilter(): Filter {
-    const { essence: { filter }, dimension } = this.props;
+  constructFilter(): Filter | null {
     const { selectedValues } = this.state;
+    if (selectedValues.isEmpty()) return null;
 
+    const { essence: { filter }, dimension } = this.props;
     return filter.setClause(new BooleanFilterClause({
       reference: dimension.name,
       values: selectedValues
