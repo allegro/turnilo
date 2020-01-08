@@ -43,31 +43,26 @@ export interface TimeFilterMenuProps {
   inside?: Element;
 }
 
+enum TimeFilterTab { RELATIVE = "relative", FIXED = "fixed"}
+
 export interface TimeFilterMenuState {
-  tab?: string;
+  tab: TimeFilterTab;
+}
+
+function initialTab({ essence: { filter }, dimension: { name } }: TimeFilterMenuProps): TimeFilterTab {
+  const clause = filter.clauseForReference(name);
+  if (clause && !isTimeFilter(clause)) {
+    throw new Error(`Expected TimeFilter. Got ${clause}`);
+  }
+  const isRelativeClause = !clause || clause instanceof RelativeTimeFilterClause;
+  return isRelativeClause ? TimeFilterTab.RELATIVE : TimeFilterTab.FIXED;
 }
 
 export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFilterMenuState> {
 
-  private static readonly RELATIVE_TAB = "relative";
-  private static readonly FIXED_TAB = "fixed";
+  state: TimeFilterMenuState = { tab: initialTab(this.props) };
 
-  public mounted: boolean;
-
-  state: TimeFilterMenuState = { tab: null };
-
-  componentWillMount() {
-    const { essence: { filter }, dimension } = this.props;
-    const clause = filter.clauseForReference(dimension.name);
-    if (clause && !isTimeFilter(clause)) {
-      throw new Error(`Expected TimeFilter. Got ${clause}`);
-    }
-    this.setState({
-      tab: (!clause || clause instanceof RelativeTimeFilterClause) ? TimeFilterMenu.RELATIVE_TAB : TimeFilterMenu.FIXED_TAB
-    });
-  }
-
-  selectTab(tab: string) {
+  selectTab(tab: TimeFilterTab) {
     this.setState({ tab });
   }
 
@@ -77,12 +72,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (!dimension) return null;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
-    const tabs = [TimeFilterMenu.RELATIVE_TAB, TimeFilterMenu.FIXED_TAB].map(name => {
+    const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map(name => {
       return {
         isSelected: tab === name,
-        title: (name === TimeFilterMenu.RELATIVE_TAB ? STRINGS.relative : STRINGS.fixed),
+        title: (name === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed),
         key: name,
-        onClick: this.selectTab.bind(this, name)
+        onClick: () => this.selectTab(name)
       };
     });
     const tabProps = { essence, dimension, timekeeper, onClose, clicker };
@@ -95,8 +90,8 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       onClose={onClose}
       inside={inside}
     >
-      <ButtonGroup groupMembers={tabs}/>
-      {tab === TimeFilterMenu.RELATIVE_TAB ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
+      <ButtonGroup groupMembers={tabs} />
+      {tab === TimeFilterTab.RELATIVE ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
     </BubbleMenu>;
   }
 }
