@@ -41,24 +41,12 @@ export interface DateRangePickerState {
 }
 
 export class DateRangePicker extends React.Component<DateRangePickerProps, DateRangePickerState> {
-  constructor(props: DateRangePickerProps) {
-    super(props);
-    this.state = {
-      activeMonthStartDate: null,
-      hoverTimeRange: null,
-      selectionSet: false
-    };
-  }
 
-  componentWillMount() {
-    const { startTime, timezone } = this.props;
-
-    const flooredStart = month.floor(startTime || new Date(), timezone);
-    this.setState({
-      activeMonthStartDate: flooredStart,
-      selectionSet: true
-    });
-  }
+  state: DateRangePickerState = {
+    activeMonthStartDate: month.floor(this.props.startTime || new Date(), this.props.timezone),
+    hoverTimeRange: null,
+    selectionSet: true
+  };
 
   navigateToMonth(offset: number): void {
     const { timezone } = this.props;
