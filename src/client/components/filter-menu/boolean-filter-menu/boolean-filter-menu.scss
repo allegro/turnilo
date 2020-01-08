@@ -25,6 +25,7 @@ $checkbox-width: 20px;
     @extend %white-shadow;
     background: $white;
     color: $text-standard;
+    height: 80px;
 
     &::after {
       @include unpin-full(0, -14px, 0, -14px);
