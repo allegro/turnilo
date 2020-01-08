@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { RefExpression } from "plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimensions } from "../../models/dimension/dimensions";
-import { dimensions } from "./dimension";
+import { dimensions, timeDimension } from "./dimension";
 import { measuresCollection } from "./measure";
 
 export const dataCube = new DataCube({
@@ -24,5 +25,6 @@ export const dataCube = new DataCube({
   dimensions: Dimensions.fromDimensions(dimensions),
   measures: measuresCollection,
   name: "fixture",
-  source: "custom"
+  source: "custom",
+  timeAttribute: timeDimension.expression as RefExpression
 });

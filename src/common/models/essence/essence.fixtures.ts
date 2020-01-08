@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
 import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
@@ -23,7 +23,7 @@ import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
-import { NumberFilterClause, NumberRange, TimeFilterPeriod } from "../filter-clause/filter-clause";
+import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
@@ -40,7 +40,12 @@ const defaultEssence: EssenceValue = {
   visualization: null,
   timezone: Timezone.UTC,
   pinnedDimensions: OrderedSet([]),
-  filter: new Filter({ clauses: List.of(new NumberFilterClause({ reference: "commentLength", values: List.of(new NumberRange({ start: 1, end: 100 })) })) }),
+  filter: new Filter({
+    clauses: List([
+      new NumberFilterClause({ reference: "commentLength", values: List.of(new NumberRange({ start: 1, end: 100 })) }),
+      new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.LATEST, duration: Duration.fromJS("P1D") })
+    ])
+  }),
   colors: null,
   pinnedSort: null,
   highlight: null,

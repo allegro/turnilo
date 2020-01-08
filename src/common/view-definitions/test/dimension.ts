@@ -19,8 +19,10 @@ import { Omit } from "../../utils/functional/functional";
 
 export type DimensionRefs = "string_a" | "string_b" | "time" | "numeric" | "boolean";
 
+export const timeDimension = dimension("time", "time");
+
 export const dimensions: Dimension[] = [
-  dimension("time", "time"),
+  timeDimension,
   dimension("numeric", "number"),
   dimension("string_a", "string"),
   dimension("string_b", "string"),
