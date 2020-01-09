@@ -95,7 +95,7 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
         const { duration } = timeFilter as RelativeTimeFilterClause;
         return this.value.getCanonicalLength() >= duration.getCanonicalLength();
       default:
-        throw new Error(`Incorrect time filter: ${timeFilter}`);
+        throw new Error(`Unknown time filter: ${timeFilter}`);
     }
   }
 

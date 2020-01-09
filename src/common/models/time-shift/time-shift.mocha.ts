@@ -47,23 +47,30 @@ describe("isValidTimeShift", () => {
 
   describe("constrainToFilter", () => {
 
-    const shift = TimeShift.fromJS("P3D");
+    const oneDay = TimeShift.fromJS("P1D");
+    const empty = TimeShift.empty();
 
     describe("Fixed time filter", () => {
       it("does not touch if shifted period do not overlap with original", () => {
         const filter = new FixedTimeFilterClause({
           reference: "time",
-          values: List.of(new DateRange({ start: new Date("2010-01-01"), end: new Date("2010-01-02") }))
+          values: List.of(new DateRange({
+            start: new Date("2010-01-01"),
+            end: new Date("2010-01-01T23:59")
+          }))
         });
-        expect(shift.constrainToFilter(filter, Timezone.UTC).equals(shift)).to.be.true;
+        expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(oneDay)).to.be.true;
       });
 
       it("returns empty time shift if shifted period overlap with original", () => {
         const filter = new FixedTimeFilterClause({
           reference: "time",
-          values: List.of(new DateRange({ start: new Date("2010-01-01"), end: new Date("2010-01-04") }))
+          values: List.of(new DateRange({
+            start: new Date("2010-01-01"),
+            end: new Date("2010-01-02")
+          }))
         });
-        expect(shift.constrainToFilter(filter, Timezone.UTC).equals(TimeShift.empty())).to.be.true;
+        expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(empty)).to.be.true;
       });
     });
 
@@ -73,18 +80,18 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.LATEST,
-            duration: Duration.fromJS("P3D")
+            duration: Duration.fromJS("P1D")
           });
-          expect(shift.constrainToFilter(filter, Timezone.UTC).equals(shift)).to.be.true;
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(oneDay)).to.be.true;
         });
 
         it("returns empty time shift if shifted period overlap with original", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.LATEST,
-            duration: Duration.fromJS("P4D")
+            duration: Duration.fromJS("P2D")
           });
-          expect(shift.constrainToFilter(filter, Timezone.UTC).equals(TimeShift.empty())).to.be.true;
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(empty)).to.be.true;
         });
       });
 
@@ -93,18 +100,18 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.PREVIOUS,
-            duration: Duration.fromJS("P3D")
+            duration: Duration.fromJS("P1D")
           });
-          expect(shift.constrainToFilter(filter, Timezone.UTC).equals(shift)).to.be.true;
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(oneDay)).to.be.true;
         });
 
         it("returns empty time shift if shifted period overlap with original", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.PREVIOUS,
-            duration: Duration.fromJS("P4D")
+            duration: Duration.fromJS("P2D")
           });
-          expect(shift.constrainToFilter(filter, Timezone.UTC).equals(TimeShift.empty())).to.be.true;
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(empty)).to.be.true;
         });
       });
 
@@ -113,18 +120,18 @@ describe("isValidTimeShift", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.CURRENT,
-            duration: Duration.fromJS("P3D")
+            duration: Duration.fromJS("P1D")
           });
-          expect(shift.constrainToFilter(filter, Timezone.UTC).equals(shift)).to.be.true;
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(oneDay)).to.be.true;
         });
 
         it("returns empty time shift if shifted period overlap with original", () => {
           const filter = new RelativeTimeFilterClause({
             reference: "time",
             period: TimeFilterPeriod.CURRENT,
-            duration: Duration.fromJS("P4D")
+            duration: Duration.fromJS("P2D")
           });
-          expect(shift.constrainToFilter(filter, Timezone.UTC).equals(TimeShift.empty())).to.be.true;
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC).equals(empty)).to.be.true;
         });
       });
     });
