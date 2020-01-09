@@ -28,7 +28,7 @@ export interface GroupMember {
   isSelected?: boolean;
 }
 
-export interface ButtonGroupProps<T> {
+export interface ButtonGroupProps {
   groupMembers: GroupMember[];
   title?: string;
   className?: string;
@@ -37,7 +37,7 @@ export interface ButtonGroupProps<T> {
 export interface ButtonGroupState {
 }
 
-export class ButtonGroup<T> extends React.Component<ButtonGroupProps<T>, ButtonGroupState> {
+export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupState> {
 
   renderMembers() {
     const { groupMembers } = this.props;
