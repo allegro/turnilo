@@ -337,7 +337,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
         ]));
   }
 
-  private timeFilter(): TimeFilterClause {
+  public timeFilter(): TimeFilterClause {
     const { filter, dataCube } = this;
     return Essence.timeFilter(filter, dataCube);
   }
