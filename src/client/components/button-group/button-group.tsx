@@ -20,7 +20,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import "./button-group.scss";
 
-export interface GroupMember<T> {
+export interface GroupMember {
   title: string;
   onClick: Fn;
   key: string | number;
@@ -29,7 +29,7 @@ export interface GroupMember<T> {
 }
 
 export interface ButtonGroupProps<T> {
-  groupMembers: Array<GroupMember<T>>;
+  groupMembers: GroupMember[];
   title?: string;
   className?: string;
 }

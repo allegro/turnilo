@@ -85,7 +85,7 @@ export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T
 
     const customSelected = customPicked && selected === parseCustomValue(customValue);
 
-    const customButton: GroupMember<T> = {
+    const customButton: GroupMember = {
       key: "custom",
       title: "…",
       onClick: this.pickCustom,

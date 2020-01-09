@@ -36,7 +36,7 @@ describe("<InputWithPresets>", () => {
   it("should select one of <ButtonGroup> members if one of presets selected", () => {
     const inputWithPresets = renderInputWithPresets("a");
     const buttonGroup = inputWithPresets.find(ButtonGroup);
-    const groupMembers = buttonGroup.prop("groupMembers") as Array<GroupMember<string>>;
+    const groupMembers = buttonGroup.prop("groupMembers") as GroupMember[];
     const selectedMember = groupMembers.find(({ isSelected }) => isSelected);
 
     expect(selectedMember, "one member is selected").to.exist;
