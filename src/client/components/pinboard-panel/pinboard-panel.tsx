@@ -18,6 +18,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { SeriesSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { SortDirection } from "../../../common/models/sort/sort";
@@ -51,7 +52,15 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   canDrop(): boolean {
     const dimension = DragManager.draggingDimension();
-    return dimension && dimension.kind === "string" && !this.props.essence.pinnedDimensions.has(dimension.name);
+    return dimension && this.isStringOrBoolean(dimension) && !this.alreadyPinned(dimension);
+  }
+
+  isStringOrBoolean({ kind }: Dimension): boolean {
+    return kind === "string" || kind === "boolean";
+  }
+
+  alreadyPinned({ name }: Dimension): boolean {
+    return this.props.essence.pinnedDimensions.has(name);
   }
 
   dragEnter = (e: React.DragEvent<HTMLElement>) => {
