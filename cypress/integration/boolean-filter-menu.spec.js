@@ -2,7 +2,7 @@
 
 context("Boolean Filter Menu", () => {
 
-  // TODO: FIX reference
+  // TODO: FIX references
   const booleanTile = () => cy.get(".filter-tile .items .filter:nth-child(2)");
   const booleanMenu = () => cy.get(".boolean-filter-menu");
   const booleanMenuTable = () => booleanMenu().find(".menu-table");
