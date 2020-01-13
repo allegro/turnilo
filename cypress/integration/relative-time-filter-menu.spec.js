@@ -64,14 +64,14 @@ context("Relative Time Filter Menu", () => {
     timeShiftPreview().should("contain", "5 Sep 2015 0:01 - 6 Sep 2015 0:01");
   });
 
-  it.only("Time shift smaller than base period shows overlappng error", () => {
+  it("Time shift smaller than base period shows overlappng error", () => {
     previousPreset("W").click();
     timeShiftPreset("D").click();
 
     overlappingError().should("contain", "Shifted period overlaps with main period");
   });
 
-  it.only("Time shift smaller than base period disables Ok button", () => {
+  it("Time shift smaller than base period disables Ok button", () => {
     previousPreset("W").click();
     timeShiftPreset("D").click();
 
