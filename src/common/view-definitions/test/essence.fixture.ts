@@ -47,6 +47,8 @@ export const defaultTimeClause = new RelativeTimeFilterClause({
   period: TimeFilterPeriod.PREVIOUS
 });
 
+// reuse this in fixtures (AnyObject - minimal case)
+// random values for fields that are note essential for test case
 const defaults: EssenceOptions = {
   filter: Filter.fromClause(defaultTimeClause),
   series: SeriesList.fromMeasures([count, sum]),

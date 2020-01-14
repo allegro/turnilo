@@ -22,6 +22,7 @@ import { assertConversionToEssence } from "./utils";
 describe("TimeShift", () => {
   it("defaults to empty time shift when no time shift given", () => {
     assertConversionToEssence(
+      // not really mocks
       mockViewDefinition({ timeShift: undefined }),
       mockEssence({ timeShift: TimeShift.empty() }));
   });

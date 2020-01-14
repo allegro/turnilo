@@ -55,14 +55,14 @@ describe("Dimensions", () => {
   it("should treat dimensions with the same structure as equal", () => {
     const otherDimensions = Dimensions.fromJS(DimensionsFixtures.wikiJS());
 
-    expect(dimensions.equals(otherDimensions)).to.be.true;
+    expect(dimensions).to.be.equivalent(otherDimensions);
   });
 
   it("should treat dimensions with different structure as different", () => {
     const [, ...dimensionsWithoutFirstJS] = DimensionsFixtures.wikiJS();
     const dimensionsWithoutCount = Dimensions.fromJS(dimensionsWithoutFirstJS);
 
-    expect(dimensions.equals(dimensionsWithoutCount)).to.be.false;
+    expect(dimensions).to.not.be.equivalent(dimensionsWithoutCount);
   });
 
   it("should map dimensions", () => {
@@ -113,7 +113,7 @@ describe("Dimensions", () => {
 
     expect(dimensions.size()).to.equal(12);
     expect(newDimensions).to.not.equal(dimensions);
-    expect(newDimensions.equals(dimensions)).to.be.false;
+    expect(newDimensions).to.not.be.equivalent(dimensions);
     expect(newDimensions.size()).to.equal(13);
   });
 
@@ -122,7 +122,7 @@ describe("Dimensions", () => {
 
     expect(dimensions.size()).to.equal(12);
     expect(newDimensions).to.not.equal(dimensions);
-    expect(newDimensions.equals(dimensions)).to.be.false;
+    expect(newDimensions).to.not.be.equivalent(dimensions);
     expect(newDimensions.size()).to.equal(13);
   });
 });

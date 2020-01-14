@@ -37,7 +37,7 @@ describe("FilterClause", () => {
         }))
       });
 
-      expect(previousRelative.evaluate(now, maxTime, Timezone.UTC).equals(previousFixed)).to.be.true;
+      expect(previousRelative.evaluate(now, maxTime, Timezone.UTC)).to.be.equivalent(previousFixed);
     });
 
     it("works with now for current", () => {
@@ -54,7 +54,7 @@ describe("FilterClause", () => {
         }))
       });
 
-      expect(currentRelative.evaluate(now, maxTime, Timezone.UTC).equals(currentFixed)).to.be.true;
+      expect(currentRelative.evaluate(now, maxTime, Timezone.UTC)).to.be.equivalent(currentFixed);
     });
 
     it("works with maxTime for latest", () => {
@@ -71,7 +71,7 @@ describe("FilterClause", () => {
         }))
       });
 
-      expect(relativeClause.evaluate(now, maxTime, Timezone.UTC).equals(fixedClause)).to.be.true;
+      expect(relativeClause.evaluate(now, maxTime, Timezone.UTC)).to.be.equivalent(fixedClause);
     });
   });
 });

@@ -65,14 +65,14 @@ describe("Measures", () => {
   it("should treat measures with the same structure as equal", () => {
     const otherMeasures = Measures.fromJS(MeasuresFixtures.wikiJS());
 
-    expect(measures.equals(otherMeasures)).to.be.true;
+    expect(measures).to.be.equivalent(otherMeasures);
   });
 
   it("should treat measures with different structure as different", () => {
     const [, ...measuresWithoutFirstJS] = MeasuresFixtures.wikiJS();
     const measuresWithoutCount = Measures.fromJS(measuresWithoutFirstJS);
 
-    expect(measures.equals(measuresWithoutCount)).to.be.false;
+    expect(measures).to.not.be.equivalent(measuresWithoutCount);
   });
 
   it("should map measures", () => {
@@ -129,7 +129,7 @@ describe("Measures", () => {
 
     expect(measures.size()).to.equal(5);
     expect(newMeasures).to.not.equal(measures);
-    expect(newMeasures.equals(measures)).to.be.false;
+    expect(newMeasures).to.not.be.equivalent(measures);
     expect(newMeasures.size()).to.equal(6);
   });
 
@@ -138,7 +138,7 @@ describe("Measures", () => {
 
     expect(measures.size()).to.equal(5);
     expect(newMeasures).to.not.equal(measures);
-    expect(newMeasures.equals(measures)).to.be.false;
+    expect(newMeasures).to.not.be.equivalent(measures);
     expect(newMeasures.size()).to.equal(6);
   });
 });
