@@ -37,87 +37,96 @@ context("Boolean Filter Menu", () => {
     booleanTile().click();
   });
 
-  it("Menu opens after clicking boolean filter tile", () => {
-    booleanMenu().should("exist");
+  describe("Opening menu", () => {
+    it("should show menu", () => {
+      booleanMenu().should("exist");
+    });
+
+    it("should load possible values", () => {
+      booleanMenuTable()
+        .find(".row")
+        .should("have.length", 2);
+    });
+
+    it("should mark selected values", () => {
+      assertSelection(true, false);
+    });
+
+    it("should have disabled Ok button", () => {
+      booleanMenuOkButton().should("be.disabled");
+    });
   });
 
-  it("Menu loads values", () => {
-    booleanMenuTable()
-      .find(".row")
-      .should("have.length", 2);
+  describe("Closing menu", () => {
+    it("should close menu after clicking cancel", () => {
+      booleanMenuCancelButton().click();
+
+      booleanMenu().should("not.exist");
+    });
+
+    it("should close menu after clicking outside menu", () => {
+      cy.get(".base-visualization").click();
+
+      booleanMenu().should("not.exist");
+    });
+
+    it("should not change url after closing menu without changes", () => {
+      booleanMenuCancelButton().click();
+
+      cy.location("href").should("equal", urls.isRobotOnlyTrueValues);
+    });
   });
 
-  it("Menu show selected values", () => {
-    assertSelection(true, false);
+  describe("Changing selection", () => {
+    it("should change selection after clicking option", () => {
+      falseOption().click();
+
+      assertSelection(true, true);
+    });
+
+    it("should enable Ok button after changing selection", () => {
+      falseOption().click();
+
+      booleanMenuOkButton().should("be.not.disabled");
+    });
+
+    it("should disable Ok button after reverting to previous selection", () => {
+      falseOption().click();
+      falseOption().click();
+
+      booleanMenuOkButton().should("be.disabled");
+    });
+
+    it("should disable Ok button after selecting empty set", () => {
+      trueOption().click();
+
+      booleanMenuOkButton().should("be.disabled");
+    });
   });
 
-  it("Ok button is disabled at the start", () => {
-    booleanMenuOkButton().should("be.disabled");
-  });
+  describe("Saving selection", () => {
+    it("should close menu after saving selection", () => {
+      falseOption().click();
 
-  it("Clicking Cancel should close menu", () => {
-    booleanMenuCancelButton().click();
+      booleanMenuOkButton().click();
 
-    booleanMenu().should("not.exist");
-  });
+      booleanMenu().should("not.exist");
+    });
 
-  it("Clicking Cancel should not change url", () => {
-    booleanMenuCancelButton().click();
+    it("should persist selection change to url", () => {
+      falseOption().click();
 
-    cy.location("href").should("equal", urls.isRobotOnlyTrueValues);
-  });
+      booleanMenuOkButton().click();
 
-  it("Clicking Cancel should not change url even after changes to selection", () => {
-    falseOption().click();
-    booleanMenuCancelButton().click();
+      cy.location("href").should("equal", urls.isRobotAllValues);
+    });
 
-    cy.location("href").should("equal", urls.isRobotOnlyTrueValues);
-  });
+    it("should not change url after canceling selection", () => {
+      falseOption().click();
 
-  it("Clicking outside menu should close menu", () => {
-    cy.get(".base-visualization").click();
+      booleanMenuCancelButton().click();
 
-    booleanMenu().should("not.exist");
-  });
-
-  it("Clicking row should change selection", () => {
-    falseOption().click();
-
-    assertSelection(true, true);
-  });
-
-  it("Changing selection should enable Ok button", () => {
-    falseOption().click();
-
-    booleanMenuOkButton().should("be.not.disabled");
-  });
-
-  it("Different selection after clicking Ok should close menu", () => {
-    falseOption().click();
-
-    booleanMenuOkButton().click();
-
-    booleanMenu().should("not.exist");
-  });
-
-  it("Different selection after clicking Ok should save changes in url", () => {
-    falseOption().click();
-
-    booleanMenuOkButton().click();
-
-    cy.location("href").should("equal", urls.isRobotAllValues);
-  });
-
-  it("Reverting selection should disable Ok button", () => {
-    falseOption().click();
-    falseOption().click();
-
-    booleanMenuOkButton().should("be.disabled");
-  });
-
-  it("Empty selection should disable Ok button", () => {
-    trueOption().click();
-
-    booleanMenuOkButton().should("be.disabled");
+      cy.location("href").should("equal", urls.isRobotOnlyTrueValues);
+    });
   });
 });

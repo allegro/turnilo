@@ -17,7 +17,6 @@ context("Fixed Time Filter Menu", () => {
   const calendarDay = (day) => calendar().find(`.day.value:contains(${day})`);
   const timeShiftSelector = () => timeFilter().find(".cont");
   const timeShiftPreset = (preset) => timeShiftSelector().find(`.button-group .group-member:contains(${preset})`);
-  const timeShiftCustom = () => timeShiftSelector().find(".custom-input");
   const timeShiftPreview = () => timeShiftSelector().find(".preview");
   const overlappingError = () => timeShiftSelector().find(".error-message");
 
@@ -38,113 +37,114 @@ context("Fixed Time Filter Menu", () => {
     calendarDay(endDay).should("have.class", "selected");
   }
 
-  function assertTimeShiftPreset(preset) {
-    timeShiftPreset(preset).should("have.class", "selected");
-  }
-
-  function assertTimeShiftCustomValue(value) {
-    timeShiftPreset("…").should("have.class", "selected");
-    timeShiftCustom().should("have.value", value);
-  }
-
   beforeEach(() => {
     cy.visit(urls.fixedTimeFilter);
     filterTile().click();
   });
 
-  it("Menu opens after clicking boolean filter tile", () => {
-    timeFilter().should("exist");
+  describe("Opening menu", () => {
+    it("should show menu", () => {
+      timeFilter().should("exist");
+    });
+
+    it("should select Fixed tab", () => {
+      tabSelector()
+        .find(".group-member:contains('Fixed')")
+        .should("have.class", "selected");
+    });
+
+    it("should have disabled Ok button", () => {
+      filterMenuOkButton().should("be.disabled");
+    });
+
+    it("should load selected dates into inputs", () => {
+      assertInputValues("2015-09-12", "00:01", "2015-09-13", "00:01");
+    });
+
+    it("should mark selected days on calendar", () => {
+      assertCalendarValues("September 2015", 12, 13);
+    });
+
+    it("should mark selected time shift", () => {
+      timeShiftPreset("Off").should("have.class", "selected");
+    });
   });
 
-  it("Menu opens at Fixed tab", () => {
-    tabSelector()
-      .find(".group-member:contains('Fixed')")
-      .should("have.class", "selected");
+  describe("Changing values", () => {
+    it("should enable Ok button after changing date", () => {
+      startDateInput().clear().type("2015-09-11");
+
+      filterMenuOkButton().should("not.be.disabled");
+    });
+
+    it("should disable Ok button after reverting date", () => {
+      startDateInput().clear().type("2015-09-12");
+
+      filterMenuOkButton().should("be.disabled");
+    });
+
+    it("should reflect calendar changes after changing range", () => {
+      calendarDay(10).click();
+      calendarDay(14).click();
+
+      assertCalendarValues("September 2015", 10, 14);
+    });
+
+    it("should populate date inputs after changing range on calendar", () => {
+      calendarDay(10).click();
+      calendarDay(14).click();
+
+      assertInputValues("2015-09-10", "00:00", "2015-09-15", "00:00");
+    });
+
+    it("should enable Ok button after changing range on calendar", () => {
+      calendarDay(10).click();
+      calendarDay(14).click();
+
+      filterMenuOkButton().should("not.be.disabled");
+    });
   });
 
-  it("Ok button is disabled at the start", () => {
-    filterMenuOkButton().should("be.disabled");
+  describe("Changing time shift", () => {
+    it("should show preview of previous period after selecting time shift", () => {
+      timeShiftPreset("W").click();
+
+      timeShiftPreview().should("contain", "5 Sep 2015 0:01 - 6 Sep 2015 0:01");
+    });
+
+    it("should enable Ok button after selecting time shift", () => {
+      timeShiftPreset("W").click();
+
+      filterMenuOkButton().should("not.be.disabled");
+    });
+
+    it("should disable Ok button after reverting time shift", () => {
+      timeShiftPreset("W").click();
+      timeShiftPreset("Off").click();
+
+      filterMenuOkButton().should("be.disabled");
+    });
   });
 
-  it("Menu shows selected values in inputs", () => {
-    assertInputValues("2015-09-12", "00:01", "2015-09-13", "00:01");
-  });
+  describe("Overlap validation", () => {
+    it("should show show error when periods overlap", () => {
+      timeShiftPreset("W").click();
 
-  it("Menu shows selected values on calendar", () => {
-    assertCalendarValues("September 2015", 12, 13);
-  });
+      calendarDay(10).click();
+      calendarDay(28).click();
 
-  it("Menu shows selected time shift", () => {
-    assertTimeShiftPreset("Off");
-  });
+      overlappingError()
+        .should("exist")
+        .should("contain", "Shifted period overlaps with main period");
+    });
 
-  it("Changing selection enables Ok button", () => {
-    startDateInput().clear().type("2015-09-11");
+    it("should disable Ok button when periods overlap", () => {
+      timeShiftPreset("W").click();
 
-    filterMenuOkButton().should("not.be.disabled");
-  });
+      calendarDay(10).click();
+      calendarDay(28).click();
 
-  it("Changing selection to same value keeps Ok button disabled", () => {
-    startDateInput().clear().type("2015-09-12");
-
-    filterMenuOkButton().should("be.disabled");
-  });
-
-  it("Clicking on calendar changes selection", () => {
-    calendarDay(10).click();
-    calendarDay(14).click();
-
-    assertCalendarValues("September 2015", 10, 14);
-  });
-
-  it("Clicking on calendar changes selection", () => {
-    calendarDay(10).click();
-    calendarDay(14).click();
-
-    assertInputValues("2015-09-10", "00:00", "2015-09-15", "00:00");
-  });
-
-  it("Changing selection with calendar enables Ok button", () => {
-    calendarDay(10).click();
-    calendarDay(14).click();
-
-    filterMenuOkButton().should("not.be.disabled");
-  });
-
-  it("Changing time shift shows preview", () => {
-    timeShiftPreset("W").click();
-
-    timeShiftPreview().should("contain", "5 Sep 2015 0:01 - 6 Sep 2015 0:01");
-  });
-
-  it("Changing time shift enables Ok button", () => {
-    timeShiftPreset("W").click();
-
-    filterMenuOkButton().should("not.be.disabled");
-  });
-
-  it("Changing to short time shift shows error about overlapping periods", () => {
-    timeShiftPreset("D").click();
-
-    overlappingError()
-      .should("exist")
-      .should("contain", "Shifted period overlaps with main period");
-  });
-
-  it("Overlapping error disables Ok button", () => {
-    timeShiftPreset("D").click();
-
-    filterMenuOkButton().should("be.disabled");
-  });
-
-  it("Selecting to big period shows error about overlapping periods", () => {
-    timeShiftPreset("W").click();
-
-    calendarDay(10).click();
-    calendarDay(28).click();
-
-    overlappingError()
-      .should("exist")
-      .should("contain", "Shifted period overlaps with main period");
+      filterMenuOkButton().should("be.disabled");
+    });
   });
 });

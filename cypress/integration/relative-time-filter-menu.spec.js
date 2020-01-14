@@ -27,54 +27,80 @@ context("Relative Time Filter Menu", () => {
     filterTile().click();
   });
 
-  it("Menu opens after clicking boolean filter tile", () => {
-    timeFilter().should("exist");
+  describe("Opening menu", () => {
+    it("should show menu", () => {
+      timeFilter().should("exist");
+    });
+
+    it("should select Relative tab", () => {
+      tabSelector()
+        .find(".group-member:contains('Relative')")
+        .should("have.class", "selected");
+    });
+
+    it("should have disabled Ok button", () => {
+      filterMenuOkButton().should("be.disabled");
+    });
+
+    it("should mark selected preset", () => {
+      latestPreset("1D").should("have.class", "selected");
+    });
+
+    it("should mark selected time shift", () => {
+      timeShiftPreset("Off").should("have.class", "selected");
+    });
   });
 
-  it("Menu opens at Fixed tab", () => {
-    tabSelector()
-      .find(".group-member:contains('Relative')")
-      .should("have.class", "selected");
+  describe("Changing preset", () => {
+    it("should enable Ok button after changing preset", () => {
+      currentPreset("D").click();
+
+      filterMenuOkButton().should("not.be.disabled");
+    });
+
+    it("should disable Ok button after reverting preset", () => {
+      currentPreset("D").click();
+      latestPreset("1D").click();
+
+      filterMenuOkButton().should("be.disabled");
+    });
   });
 
-  it("Ok button is disabled at the start", () => {
-    filterMenuOkButton().should("be.disabled");
+  describe("Changing time shift", () => {
+    it("should show preview of previous period after selecting time shift", () => {
+      timeShiftPreset("W").click();
+
+      timeShiftPreview().should("contain", "5 Sep 2015 0:01 - 6 Sep 2015 0:01");
+    });
+
+    it("should enable Ok button after selecting time shift", () => {
+      timeShiftPreset("W").click();
+
+      filterMenuOkButton().should("not.be.disabled");
+    });
+
+    it("should disable Ok button after reverting time shift", () => {
+      timeShiftPreset("W").click();
+      timeShiftPreset("Off").click();
+
+      filterMenuOkButton().should("be.disabled");
+    });
   });
 
-  it("Menu shows selected values", () => {
-    latestPreset("1D").should("have.class", "selected");
+  describe("Overlap validation", () => {
+    it("should show error when periods overlap", () => {
+      previousPreset("W").click();
+      timeShiftPreset("D").click();
+
+      overlappingError().should("contain", "Shifted period overlaps with main period");
+    });
+
+    it("should disable Ok button when periods overlap", () => {
+      previousPreset("W").click();
+      timeShiftPreset("D").click();
+
+      filterMenuOkButton().should("be.disabled");
+    });
   });
 
-  it("Selecting different preset should enable Ok button", () => {
-    currentPreset("D").click();
-
-    filterMenuOkButton().should("not.be.disabled");
-  });
-
-  it("Reselecting same preset should disable Ok button", () => {
-    currentPreset("D").click();
-    latestPreset("1D").click();
-
-    filterMenuOkButton().should("be.disabled");
-  });
-
-  it("Setting time shift shows preview", () => {
-    timeShiftPreset("W").click();
-
-    timeShiftPreview().should("contain", "5 Sep 2015 0:01 - 6 Sep 2015 0:01");
-  });
-
-  it("Time shift smaller than base period shows overlappng error", () => {
-    previousPreset("W").click();
-    timeShiftPreset("D").click();
-
-    overlappingError().should("contain", "Shifted period overlaps with main period");
-  });
-
-  it("Time shift smaller than base period disables Ok button", () => {
-    previousPreset("W").click();
-    timeShiftPreset("D").click();
-
-    filterMenuOkButton().should("be.disabled");
-  });
 });
