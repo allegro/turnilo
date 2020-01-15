@@ -55,5 +55,13 @@
         margin-bottom: 14px;
       }
     }
+
+    .overlap-error-message {
+      font-size: 10px;
+      color: $negative;
+      margin-top: 10px;
+      padding-left: 3px;
+      margin-bottom: 10px;
+    }
   }
 }

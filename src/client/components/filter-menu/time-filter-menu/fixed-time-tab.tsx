@@ -154,7 +154,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
           time={this.createDateRange()}
           onShiftChange={this.setTimeShift}
           timezone={timezone} />
-        {overlapError && <span className="error-message">{overlapError}</span>}
+        {overlapError && <div className="overlap-error-message">{overlapError}</div>}
       </div>
       <div className="ok-cancel-bar">
         <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />

@@ -192,12 +192,11 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
         time={previewFilter}
         timezone={essence.timezone}
         onShiftChange={this.setTimeShift} />
-      {overlapError && <span className="error-message">{overlapError}</span>}
+      {overlapError && <div className="overlap-error-message">{overlapError}</div>}
       <div className="ok-cancel-bar">
         <Button type="primary" onClick={this.saveTimeFilter} disabled={!this.validate()} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel} />
       </div>
     </div>;
   }
-
 }
