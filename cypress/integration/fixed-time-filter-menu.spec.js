@@ -18,7 +18,7 @@ context("Fixed Time Filter Menu", () => {
   const timeShiftSelector = () => timeFilter().find(".cont");
   const timeShiftPreset = (preset) => timeShiftSelector().find(`.button-group .group-member:contains(${preset})`);
   const timeShiftPreview = () => timeShiftSelector().find(".preview");
-  const overlappingError = () => timeShiftSelector().find(".error-message");
+  const overlappingError = () => timeShiftSelector().find(".overlap-error-message");
 
   const urls = {
     fixedTimeFilter: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbVBoAngAcmBDHSGTaw5hqaV9AJTjYA5rRnyQUEpLTMATAAYAjAFYAtM4Ccn1468zs54bqHOAHTBzgBaQrTYACZObl6+/gDMQSFhwVHBcQC+ALollFDKSGhWxeVSEJb41trCUgnsaiBwiYm0yZTCmJLU6PgKKp29wnAw4kJgiDCdIIWGE8x0cLDaK7UgyhDY2H0AIjQJUFjYViDsABamxwhC2HB0FXAdQtBGmABGxBAewORz6AGUhg4CN1ev0QAhaBYkvhsLMEJQ7hAzHckNioaiEAhCkA=="

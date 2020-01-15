@@ -16,7 +16,7 @@ context("Relative Time Filter Menu", () => {
   const timeShiftSelector = () => timeFilter().find(".button-group:contains('Time shift')");
   const timeShiftPreset = (preset) => timeShiftSelector().find(`.group-member:contains(${preset})`);
   const timeShiftPreview = () => timeFilter().find(".cont .preview:nth-of-type(6)");
-  const overlappingError = () => timeFilter().find(".error-message");
+  const overlappingError = () => timeFilter().find(".overlap-error-message");
 
   const urls = {
     relativeTimeFilter: "http://localhost:9090/#wiki/"
