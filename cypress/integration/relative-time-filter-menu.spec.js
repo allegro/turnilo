@@ -87,20 +87,35 @@ context("Relative Time Filter Menu", () => {
     });
   });
 
-  describe("Overlap validation", () => {
-    it("should show error when periods overlap", () => {
-      previousPreset("W").click();
-      timeShiftPreset("D").click();
+  describe.only("Overlap validation", () => {
+    describe("Non overlapping periods", () => {
+      beforeEach(() => {
+        previousPreset("W").click();
+        timeShiftPreset("W").click();
+      });
 
-      overlappingError().should("contain", "Shifted period overlaps with main period");
+      it("should not show error", () => {
+        overlappingError().should("not.exist");
+      });
+
+      it("should enable Ok button", () => {
+        filterMenuOkButton().should("not.be.disabled");
+      });
     });
 
-    it("should disable Ok button when periods overlap", () => {
-      previousPreset("W").click();
-      timeShiftPreset("D").click();
+    describe("Overlapping periods", () => {
+      beforeEach(() => {
+        previousPreset("W").click();
+        timeShiftPreset("D").click();
+      });
 
-      filterMenuOkButton().should("be.disabled");
+      it("should show error when periods overlap", () => {
+        overlappingError().should("contain", "Shifted period overlaps with main period");
+      });
+
+      it("should disable Ok button when periods overlap", () => {
+        filterMenuOkButton().should("be.disabled");
+      });
     });
   });
-
 });

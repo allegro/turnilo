@@ -60,7 +60,7 @@ describe("isValidTimeShift", () => {
           reference: "time",
           values: List.of(new DateRange({
             start: new Date("2010-01-01"),
-            end: new Date("2010-01-01T23:59")
+            end: new Date("2010-01-02")
           }))
         });
         expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
@@ -71,7 +71,7 @@ describe("isValidTimeShift", () => {
           reference: "time",
           values: List.of(new DateRange({
             start: new Date("2010-01-01"),
-            end: new Date("2010-01-02")
+            end: new Date("2010-01-03")
           }))
         });
         expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);

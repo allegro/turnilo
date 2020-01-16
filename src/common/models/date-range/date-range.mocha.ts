@@ -49,6 +49,11 @@ describe("DateRange", () => {
     it("range intersects with itself", () => {
       expect(range.intersects(range)).to.be.true;
     });
+
+    it("range does not intersect with adjacent range", () => {
+      const other = makeRange("2010-02-12", "2010-02-13");
+      expect(range.intersects(other)).to.be.false;
+    });
   });
 
   describe("shift", () => {

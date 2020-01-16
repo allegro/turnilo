@@ -127,24 +127,40 @@ context("Fixed Time Filter Menu", () => {
   });
 
   describe("Overlap validation", () => {
-    it("should show show error when periods overlap", () => {
-      timeShiftPreset("W").click();
+    describe("Non overlapping periods", () => {
+      beforeEach(() => {
+        timeShiftPreset("W").click();
 
-      calendarDay(10).click();
-      calendarDay(28).click();
+        calendarDay(10).click();
+        calendarDay(16).click();
+      });
 
-      overlappingError()
-        .should("exist")
-        .should("contain", "Shifted period overlaps with main period");
+      it("should not show error", () => {
+        overlappingError().should("not.exist");
+      });
+
+      it("should enable Ok button", () => {
+        filterMenuOkButton().should("not.be.disabled");
+      });
     });
 
-    it("should disable Ok button when periods overlap", () => {
-      timeShiftPreset("W").click();
+    describe("Overlapping periods", () => {
+      beforeEach(() => {
+        timeShiftPreset("W").click();
 
-      calendarDay(10).click();
-      calendarDay(28).click();
+        calendarDay(10).click();
+        calendarDay(17).click();
+      });
 
-      filterMenuOkButton().should("be.disabled");
+      it("should show error", () => {
+        overlappingError()
+          .should("exist")
+          .should("contain", "Shifted period overlaps with main period");
+      });
+
+      it("should disable Ok button", () => {
+        filterMenuOkButton().should("be.disabled");
+      });
     });
   });
 });
