@@ -23,7 +23,7 @@ import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, RelativeTimeFilterClause, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
@@ -185,6 +185,12 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return new SeriesSort({ reference });
   }
 
+  static timeFilter(filter: Filter, dataCube: DataCube): TimeFilterClause {
+    const timeFilter = filter.getClauseForDimension(dataCube.getTimeDimension());
+    if (!isTimeFilter(timeFilter)) throw new Error(`Unknown time filter: ${timeFilter}`);
+    return timeFilter;
+  }
+
   public visResolve: Resolve;
 
   constructor(parameters: EssenceValue) {
@@ -211,15 +217,22 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const isPinnedSortValid = series && constrainedSeries.hasMeasureSeries(pinnedSort);
     const constrainedPinnedSort = isPinnedSortValid ? pinnedSort : Essence.defaultSortReference(constrainedSeries, dataCube);
 
+    const constrainedFilter = filter.constrainToDimensions(dataCube.dimensions);
+
+    const validTimezone = timezone || Timezone.UTC;
+
+    const timeFilter = Essence.timeFilter(filter, dataCube);
+    const constrainedTimeShift = timeShift.constrainToFilter(timeFilter, validTimezone);
+
     super({
       ...parameters,
       visualizations,
       dataCube,
       visualization,
-      timezone: timezone || Timezone.UTC,
-      timeShift,
+      timezone: validTimezone,
+      timeShift: constrainedTimeShift,
       splits: splits && splits.constrainToDimensionsAndSeries(dataCube.dimensions, constrainedSeries),
-      filter: filter && filter.constrainToDimensions(dataCube.dimensions),
+      filter: constrainedFilter,
       series: constrainedSeries,
       pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
       pinnedSort: constrainedPinnedSort,
@@ -291,6 +304,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     };
   }
 
+  private constrainTimeShift(): Essence {
+    const { timeShift, timezone } = this;
+    return this.set("timeShift", timeShift.constrainToFilter(this.timeFilter(), timezone));
+  }
+
   public getEffectiveFilter(
     timekeeper: Timekeeper,
     { combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
@@ -319,17 +337,20 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
         ]));
   }
 
-  private timeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
+  public timeFilter(): TimeFilterClause {
+    const { filter, dataCube } = this;
+    return Essence.timeFilter(filter, dataCube);
+  }
+
+  private fixedTimeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
     const { dataCube, timezone } = this;
-    const timeDimension: Dimension = this.getTimeDimension();
-    const timeFilter = this.filter.getClauseForDimension(timeDimension);
-    if (!timeFilter || !isTimeFilter(timeFilter)) throw Error(`Incorrect time filter: ${timeFilter}`);
+    const timeFilter = this.timeFilter();
     if (timeFilter instanceof FixedTimeFilterClause) return timeFilter;
     return timeFilter.evaluate(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
   public currentTimeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
-    return this.timeFilter(timekeeper);
+    return this.fixedTimeFilter(timekeeper);
   }
 
   private shiftToPrevious(timeFilter: FixedTimeFilterClause): FixedTimeFilterClause {
@@ -343,7 +364,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public previousTimeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
-    const timeFilter = this.timeFilter(timekeeper);
+    const timeFilter = this.fixedTimeFilter(timekeeper);
     return this.shiftToPrevious(timeFilter);
   }
 
@@ -424,7 +445,10 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   // Setters
 
   public changeComparisonShift(timeShift: TimeShift): Essence {
-    return this.set("timeShift", timeShift).updateSorts();
+    return this
+      .set("timeShift", timeShift)
+      .constrainTimeShift()
+      .updateSorts();
   }
 
   public updateDataCube(newDataCube: DataCube): Essence {
@@ -453,6 +477,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     return this
       .set("filter", filter)
+      .constrainTimeShift()
       .update("highlight", highlight => removeHighlight ? null : highlight)
       .update("splits", splits => {
         const differentClauses = filter.clauses.filter(clause => {
@@ -522,6 +547,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     function resetHighlight(essence: Essence): Essence {
       return essence
         .update("filter", filter => highlight.applyToFilter(filter))
+        .constrainTimeShift()
         .set("highlight", null);
     }
 

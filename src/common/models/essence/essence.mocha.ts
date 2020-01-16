@@ -16,6 +16,7 @@
  */
 
 import { expect } from "chai";
+import { SinonSpy, spy, stub } from "sinon";
 import { MANIFESTS } from "../../manifests";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
@@ -24,6 +25,9 @@ import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { DimensionKind } from "../dimension/dimension";
+import { TimeFilterPeriod } from "../filter-clause/filter-clause";
+import { timePeriod } from "../filter-clause/filter-clause.fixtures";
+import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
@@ -32,6 +36,7 @@ import { MeasureSeries } from "../series/measure-series";
 import { DimensionSort, SortDirection } from "../sort/sort";
 import { Split, SplitType } from "../split/split";
 import { Splits } from "../splits/splits";
+import { TimeShift } from "../time-shift/time-shift";
 import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
@@ -292,5 +297,48 @@ describe("EssenceProps", () => {
       });
     });
 
+    describe("constrain timeshift", () => {
+      it("calls timeshift method with correct params", () => {
+        const essence = EssenceFixtures.wikiTable();
+        const timeFilterSpy = stub(essence, "timeFilter")
+          .returns("stubbed-time-filter");
+        const constrainToFilterSpy = stub(essence.timeShift, "constrainToFilter")
+          .returns("constrained-time-shift");
+
+        // @ts-ignore
+        const newEssence = essence.constrainTimeShift();
+
+        expect(timeFilterSpy.calledOnce).to.be.true;
+        expect(constrainToFilterSpy.calledWith("stubbed-time-filter", essence.timezone)).to.be.true;
+        expect(newEssence.timeShift).to.be.eq("constrained-time-shift");
+      });
+
+      describe("is called when", () => {
+        let constrainTimeShiftSpy: SinonSpy;
+
+        beforeEach(() => {
+          // @ts-ignore
+          constrainTimeShiftSpy = spy(Essence.prototype, "constrainTimeShift");
+        });
+
+        afterEach(() => {
+          constrainTimeShiftSpy.restore();
+        });
+
+        it("changing filter", () => {
+          const essence = EssenceFixtures.wikiTable();
+          essence.changeFilter(Filter.fromClause(timePeriod("time", "P1W", TimeFilterPeriod.LATEST)));
+
+          expect(constrainTimeShiftSpy.calledOnce).to.be.true;
+        });
+
+        it("changing time shift", () => {
+          const essence = EssenceFixtures.wikiTable();
+          essence.changeComparisonShift(TimeShift.fromJS("P1M"));
+
+          expect(constrainTimeShiftSpy.calledOnce).to.be.true;
+        });
+      });
+    });
   });
 });

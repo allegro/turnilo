@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
+import { Range } from "plywood";
 
 interface DateRangeDefinition {
   start: Date;
@@ -23,5 +25,16 @@ interface DateRangeDefinition {
 
 const defaultDateRange: DateRangeDefinition = { start: null, end: null };
 
+const plywoodRange = ({ start, end }: DateRange) => Range.fromJS({ start, end, bounds: "()" });
+
 export class DateRange extends Record<DateRangeDefinition>(defaultDateRange) {
+  intersects(other: DateRange | null): boolean {
+    return other instanceof DateRange && plywoodRange(this).intersects(plywoodRange(other));
+  }
+
+  shift(duration: Duration, timezone: Timezone): DateRange {
+    return this
+      .set("start", duration.shift(this.start, timezone, -1))
+      .set("end", duration.shift(this.end, timezone, -1));
+  }
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import { Instance } from "immutable-class";
+import { FilterTypes, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
 
 export function isValidTimeShift(input: string): boolean {
   try {
@@ -82,5 +83,23 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
 
   toString(): string {
     return this.toJS() || "";
+  }
+
+  private isValidForTimeFilter(timeFilter: TimeFilterClause, timezone: Timezone): boolean {
+    switch (timeFilter.type) {
+      case FilterTypes.FIXED_TIME:
+        const { values } = timeFilter as FixedTimeFilterClause;
+        const range = values.first();
+        return !range.intersects(range.shift(this.value, timezone));
+      case FilterTypes.RELATIVE_TIME:
+        const { duration } = timeFilter as RelativeTimeFilterClause;
+        return this.value.getCanonicalLength() >= duration.getCanonicalLength();
+      default:
+        throw new Error(`Unknown time filter: ${timeFilter}`);
+    }
+  }
+
+  constrainToFilter(timeFilter: TimeFilterClause, timezone: Timezone): TimeShift {
+    return this.value && this.isValidForTimeFilter(timeFilter, timezone) ? this : TimeShift.empty();
   }
 }

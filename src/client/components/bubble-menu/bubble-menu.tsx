@@ -108,7 +108,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     id: null
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const { alignOn, openOn, id } = this.props;
     const rect = (alignOn || openOn).getBoundingClientRect();
 
@@ -116,9 +116,6 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       id: id || uniqueId("bubble-menu-"),
       ...this.calcBubbleCoordinates(rect)
     });
-  }
-
-  componentDidMount() {
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
   }

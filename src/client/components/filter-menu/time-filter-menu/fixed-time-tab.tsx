@@ -76,10 +76,10 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     return new DateRange({ start, end });
   }
 
-  constructFixedFilter(dateRange: DateRange): Filter {
+  constructFixedFilter(): Filter {
     const { essence: { filter }, dimension: { name } } = this.props;
 
-    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(dateRange) });
+    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(this.createDateRange()) });
     return filter.setClause(clause);
   }
 
@@ -87,24 +87,48 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     return TimeShift.fromJS(this.state.shift);
   }
 
-  validateTimeShift(): boolean {
+  doesTimeShiftOverlap(): boolean {
+    const shift = this.constructTimeShift();
+    if (shift.isEmpty()) return false;
+    const { essence: { timezone } } = this.props;
+    const currentRange = this.createDateRange();
+    const duration = shift.valueOf();
+    const previousRange = currentRange.shift(duration, timezone);
+    return currentRange.intersects(previousRange);
+  }
+
+  validateOverlap(): string | null {
+    const periodsOverlap = this.isTimeShiftValid() && this.areDatesValid() && this.doesTimeShiftOverlap();
+    return periodsOverlap ? STRINGS.overlappingPeriods : null;
+  }
+
+  isTimeShiftValid(): boolean {
     return isValidTimeShift(this.state.shift);
   }
 
-  validate(): boolean {
-    const dateRange = this.createDateRange();
-    if (!dateRange) return false;
-    if (!this.validateTimeShift()) return false;
+  areDatesValid(): boolean {
+    return this.createDateRange() !== null;
+  }
+
+  isFormValid(): boolean {
+    return this.areDatesValid() && this.isTimeShiftValid() && !this.doesTimeShiftOverlap();
+  }
+
+  isFilterDifferent(): boolean {
     const { essence: { filter, timeShift } } = this.props;
     const newTimeShift = this.constructTimeShift();
-    const newFilter = this.constructFixedFilter(dateRange);
+    const newFilter = this.constructFixedFilter();
     return !filter.equals(newFilter) || !timeShift.equals(newTimeShift);
+  }
+
+  validate(): boolean {
+    return this.isFormValid() && this.isFilterDifferent();
   }
 
   onOkClick = () => {
     if (!this.validate()) return;
     const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFixedFilter(this.createDateRange()));
+    clicker.changeFilter(this.constructFixedFilter());
     clicker.changeComparisonShift(this.constructTimeShift());
     onClose();
   }
@@ -113,6 +137,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     const { essence: { timezone, dataCube }, timekeeper, dimension, onClose } = this.props;
     if (!dimension) return null;
     const { shift, start, end } = this.state;
+    const overlapError = this.validateOverlap();
 
     return <div>
       <DateRangePicker
@@ -128,10 +153,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
           shift={shift}
           time={this.createDateRange()}
           onShiftChange={this.setTimeShift}
-          timezone={timezone}
-          shiftValue={isValidTimeShift(shift) ? TimeShift.fromJS(shift) : null}
-          errorMessage={!isValidTimeShift(shift) && STRINGS.invalidDurationFormat}
-        />
+          timezone={timezone} />
+        {overlapError && <div className="overlap-error-message">{overlapError}</div>}
       </div>
       <div className="ok-cancel-bar">
         <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />

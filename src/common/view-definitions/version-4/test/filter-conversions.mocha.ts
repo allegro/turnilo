@@ -17,15 +17,16 @@
 import { FilterClause, StringFilterAction, TimeFilterPeriod } from "../../../models/filter-clause/filter-clause";
 import { boolean, numberRange, stringWithAction, timePeriod, timeRange } from "../../../models/filter-clause/filter-clause.fixtures";
 import { Filter } from "../../../models/filter/filter";
-import { mockEssence } from "../../test/essence.fixture";
-import { FilterClauseDefinition } from "../filter-definition";
+import { defaultTimeClause, mockEssence } from "../../test/essence.fixture";
+import { FilterClauseDefinition, filterDefinitionConverter } from "../filter-definition";
 import {
   booleanFilterDefinition,
   currentTimeFilterDefinition,
-  flooredTimeFilterDefinition,
   latestTimeFilterDefinition,
-  numberRangeFilterDefinition, previousTimeFilterDefinition,
-  stringFilterDefinition, timeRangeFilterDefinition
+  numberRangeFilterDefinition,
+  previousTimeFilterDefinition,
+  stringFilterDefinition,
+  timeRangeFilterDefinition
 } from "../filter-definition.fixtures";
 import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
@@ -36,46 +37,54 @@ const mockViewDefinitionWithFilters = (...filters: FilterClauseDefinition[]) =>
 const mockEssenceWithFilters = (...clauses: FilterClause[]) =>
   mockEssence({ filter: Filter.fromClauses(clauses) });
 
+const defaultTimeClauseDefinition = filterDefinitionConverter.fromFilterClause(defaultTimeClause);
+
+const mockViewDefinitionWithFiltersAndTime = (...filters: FilterClauseDefinition[]) =>
+  mockViewDefinition({ filters: [defaultTimeClauseDefinition, ...filters] });
+
+const mockEssenceWithFiltersAndTime = (...clauses: FilterClause[]) =>
+  mockEssence({ filter: Filter.fromClauses([defaultTimeClause, ...clauses]) });
+
 describe("Filter", () => {
   describe("Clause conversion", () => {
     describe("Boolean Clause", () => {
       describe("Include mode", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(booleanFilterDefinition("string_a", [true])),
-            mockEssenceWithFilters(boolean("string_a", [true])));
+            mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true])),
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true])));
         });
 
         it("multiple values", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(booleanFilterDefinition("string_a", [true, false])),
-            mockEssenceWithFilters(boolean("string_a", [true, false])));
+            mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, false])),
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, false])));
         });
 
         it("heterogeneous values", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(booleanFilterDefinition("string_a", [true, "Unknown"])),
-            mockEssenceWithFilters(boolean("string_a", [true, "Unknown"])));
+            mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, "Unknown"])),
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, "Unknown"])));
         });
       });
 
       describe("Exclude mode", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(booleanFilterDefinition("string_a", [true], true)),
-            mockEssenceWithFilters(boolean("string_a", [true], true)));
+            mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true], true)),
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true], true)));
         });
 
         it("multiple values", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(booleanFilterDefinition("string_a", [true, false], true)),
-            mockEssenceWithFilters(boolean("string_a", [true, false], true)));
+            mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, false], true)),
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, false], true)));
         });
 
         it("heterogeneous values", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(booleanFilterDefinition("string_a", [true, "Unknown"], true)),
-            mockEssenceWithFilters(boolean("string_a", [true, "Unknown"], true)));
+            mockViewDefinitionWithFiltersAndTime(booleanFilterDefinition("string_a", [true, "Unknown"], true)),
+            mockEssenceWithFiltersAndTime(boolean("string_a", [true, "Unknown"], true)));
         });
       });
     });
@@ -84,29 +93,29 @@ describe("Filter", () => {
       describe("IN action", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz"])),
-            mockEssenceWithFilters(stringWithAction("string_a", StringFilterAction.IN, ["bazz"]))
+            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz"])),
+            mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz"]))
           );
         });
 
         it("multiple values", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"])),
-            mockEssenceWithFilters(stringWithAction("string_a", StringFilterAction.IN, ["bazz", "qvux"]))
+            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"])),
+            mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz", "qvux"]))
           );
         });
 
         it("single value excluded", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz"], true)),
-            mockEssenceWithFilters(stringWithAction("string_a", StringFilterAction.IN, ["bazz"], true))
+            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz"], true)),
+            mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz"], true))
           );
         });
 
         it("multiple values excluded", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"], true)),
-            mockEssenceWithFilters(stringWithAction("string_a", StringFilterAction.IN, ["bazz", "qvux"], true))
+            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.IN, ["bazz", "qvux"], true)),
+            mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.IN, ["bazz", "qvux"], true))
           );
         });
       });
@@ -114,8 +123,8 @@ describe("Filter", () => {
       describe("CONTAINS action", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(stringFilterDefinition("string_a", StringFilterAction.CONTAINS, ["bazz"])),
-            mockEssenceWithFilters(stringWithAction("string_a", StringFilterAction.CONTAINS, ["bazz"]))
+            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.CONTAINS, ["bazz"])),
+            mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.CONTAINS, ["bazz"]))
           );
         });
       });
@@ -123,8 +132,8 @@ describe("Filter", () => {
       describe("MATCH action", () => {
         it("single value", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(stringFilterDefinition("string_a", StringFilterAction.MATCH, ["^foo$"])),
-            mockEssenceWithFilters(stringWithAction("string_a", StringFilterAction.MATCH, ["^foo$"]))
+            mockViewDefinitionWithFiltersAndTime(stringFilterDefinition("string_a", StringFilterAction.MATCH, ["^foo$"])),
+            mockEssenceWithFiltersAndTime(stringWithAction("string_a", StringFilterAction.MATCH, ["^foo$"]))
           );
         });
       });
@@ -134,62 +143,62 @@ describe("Filter", () => {
       describe("Include mode", () => {
         it("open bounds", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, 100, "()")),
-            mockEssenceWithFilters(numberRange("numeric", 1, 100, "()")));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "()")),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "()")));
         });
         it("closed bounds", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, 100, "[]")),
-            mockEssenceWithFilters(numberRange("numeric", 1, 100, "[]")));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[]")),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[]")));
         });
 
         it("mixed bounds", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, 100, "[)")),
-            mockEssenceWithFilters(numberRange("numeric", 1, 100, "[)")));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[)")),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[)")));
         });
 
         it("empty start", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", null, 100, "[)")),
-            mockEssenceWithFilters(numberRange("numeric", null, 100, "[)")));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", null, 100, "[)")),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", null, 100, "[)")));
         });
 
         it("empty end", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, null, "[)")),
-            mockEssenceWithFilters(numberRange("numeric", 1, null, "[)")));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, null, "[)")),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, null, "[)")));
         });
       });
 
       describe("Exclude mode", () => {
         it("open bounds", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, 100, "()", true)),
-            mockEssenceWithFilters(numberRange("numeric", 1, 100, "()", true)));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "()", true)),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "()", true)));
         });
         it("closed bounds", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, 100, "[]", true)),
-            mockEssenceWithFilters(numberRange("numeric", 1, 100, "[]", true)));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[]", true)),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[]", true)));
         });
 
         it("mixed bounds", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, 100, "[)", true)),
-            mockEssenceWithFilters(numberRange("numeric", 1, 100, "[)", true)));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, 100, "[)", true)),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, 100, "[)", true)));
         });
 
         it("empty start", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", null, 100, "[)", true)),
-            mockEssenceWithFilters(numberRange("numeric", null, 100, "[)", true)));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", null, 100, "[)", true)),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", null, 100, "[)", true)));
         });
 
         it("empty end", () => {
           assertConversionToEssence(
-            mockViewDefinitionWithFilters(numberRangeFilterDefinition("numeric", 1, null, "[)", true)),
-            mockEssenceWithFilters(numberRange("numeric", 1, null, "[)", true)));
+            mockViewDefinitionWithFiltersAndTime(numberRangeFilterDefinition("numeric", 1, null, "[)", true)),
+            mockEssenceWithFiltersAndTime(numberRange("numeric", 1, null, "[)", true)));
         });
       });
     });

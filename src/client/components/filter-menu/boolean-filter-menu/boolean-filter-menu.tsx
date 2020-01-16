@@ -57,9 +57,9 @@ interface BooleanFilterMenuState {
 
 export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, BooleanFilterMenuState> {
 
-  state = this.initState();
+  state = this.initialValues();
 
-  initState(): BooleanFilterMenuState {
+  initialValues(): BooleanFilterMenuState {
     const { essence: { filter }, dimension } = this.props;
     const clause = filter.getClauseForDimension(dimension);
     if (!clause) {
@@ -105,10 +105,11 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
 
   }
 
-  constructFilter(): Filter {
-    const { essence: { filter }, dimension } = this.props;
+  constructFilter(): Filter | null {
     const { selectedValues } = this.state;
+    if (selectedValues.isEmpty()) return null;
 
+    const { essence: { filter }, dimension } = this.props;
     return filter.setClause(new BooleanFilterClause({
       reference: dimension.name,
       values: selectedValues

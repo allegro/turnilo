@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-import { RefExpression } from "plywood";
-import { DataCube } from "../../models/data-cube/data-cube";
-import { Dimensions } from "../../models/dimension/dimensions";
-import { dimensions, timeDimension } from "./dimension";
-import { measuresCollection } from "./measure";
+import * as Chai from "chai";
 
-export const dataCube = new DataCube({
-  clusterName: "druid",
-  dimensions: Dimensions.fromDimensions(dimensions),
-  measures: measuresCollection,
-  name: "fixture",
-  source: "custom",
-  timeAttribute: timeDimension.expression as RefExpression
-});
+export default function(chai: typeof Chai) {
+  chai.Assertion.addMethod("equivalent", function(other: unknown) {
+    this.assert(
+      this._obj.equals(other),
+      "expected objects to be equivalent",
+      "expected objects to not be equivalent",
+      other,
+      this._obj,
+      true
+    );
+  });
+}
+
+declare global {
+  namespace Chai {
+    interface Assertion {
+      equivalent(other: unknown): Assertion;
+    }
+  }
+}

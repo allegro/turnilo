@@ -41,12 +41,16 @@ type EssenceKeys
 
 type EssenceOptions = Pick<EssenceValue, EssenceKeys>;
 
+export const defaultTimeClause = new RelativeTimeFilterClause({
+  reference: "time",
+  duration: Duration.fromCanonicalLength(day.canonicalLength),
+  period: TimeFilterPeriod.PREVIOUS
+});
+
+// reuse this in fixtures (AnyObject - minimal case)
+// random values for fields that are note essential for test case
 const defaults: EssenceOptions = {
-  filter: Filter.fromClause(new RelativeTimeFilterClause({
-    reference: "time",
-    duration: Duration.fromCanonicalLength(day.canonicalLength),
-    period: TimeFilterPeriod.PREVIOUS
-  })),
+  filter: Filter.fromClause(defaultTimeClause),
   series: SeriesList.fromMeasures([count, sum]),
   splits: Splits.fromSplits([]),
   colors: null,

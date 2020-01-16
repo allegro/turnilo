@@ -18,6 +18,7 @@
 @import '../../../imports';
 
 $checkbox-width: 20px;
+$table-height: 80px;
 
 .boolean-filter-menu {
   .menu-table {
@@ -25,6 +26,7 @@ $checkbox-width: 20px;
     @extend %white-shadow;
     background: $white;
     color: $text-standard;
+    height: $table-height;
 
     &::after {
       @include unpin-full(0, -14px, 0, -14px);

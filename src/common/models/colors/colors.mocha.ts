@@ -130,8 +130,8 @@ describe("Colors", () => {
         });
 
         var colorsWithGap = colors.removeColor("Australia");
-        expect(colors.equals(colorsWithGap)).to.equal(false);
-        expect(colorsWithGap.equals(colors)).to.equal(false);
+        expect(colors).to.not.be.equivalent(colorsWithGap);
+        expect(colorsWithGap).to.not.be.equivalent(colors);
       });
 
     });

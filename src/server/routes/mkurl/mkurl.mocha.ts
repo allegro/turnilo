@@ -42,10 +42,7 @@ describe("mkurl router", () => {
         viewDefinition: {
           visualization: "totals",
           timezone: "Etc/UTC",
-          filter: {
-            op: "literal",
-            value: true
-          },
+          filter: $("time").overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z")),
           pinnedDimensions: [],
           singleMeasure: "count",
           selectedMeasures: [],
@@ -56,8 +53,10 @@ describe("mkurl router", () => {
       .expect(200)
       .expect(
         {
-          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6lKAAckaGQqVSItDaEm1hU2tnZMC7TDGxohwzJ" +
-            "Orp8oNAE9l5kABNDcGOJCYIgwXiAAvpTunsx0cLAGEYogyhDY2LTeACI0JlBY2BrJqemZAMoOthZWNkIItADmJt742AEIlAAWEA2dSL1VbQgI4UA=="
+          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbVBoAngAcmBDHSGT" +
+            "aw5hqaV9AJTjYA5rRnyQUEpLTMATAAYAjAFYAtM4Ccn1468zs54waHOAHTBzgBaQrTYACZObl6+/gDMQSFhwVHBcQC+ALollFDKSGhWxeVSEJ" +
+            "b41trCUgnsaiDsmDDYDpTCmJLU6PgKKp2JOnAw4kJgiDCdIIWGE8x0cLDaK7UgyhDY2LSJACI0CVBY2DWUB0cnAMpDDgTdvf0gCLQWSfjYswQ" +
+            "lAAFhAzMCkODXgCEAhCkA"
         },
         testComplete
       );
