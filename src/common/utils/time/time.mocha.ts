@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { tz } from "moment-timezone";
-import { appendDays, datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, prependDays, scaleTicksFormat, scaleTicksFormatter } from "./time";
+import { datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, scaleTicksFormat, scaleTicksFormatter } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
@@ -27,48 +27,6 @@ describe("Time", () => {
     expect(datesEqual(null, null), "null and null").to.equal(true);
     expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:00:00.000Z")), "equal dates").to.equal(true);
     expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:02:00.000Z")), "not equal dates").to.equal(false);
-  });
-
-  const dayInMarch1995 = (day: number) => new Date(Date.UTC(1995, 2, day));
-
-  it("prepends days", () => {
-    const testFirstWeek: Date[] = [];
-    for (let i = 1; i < 5; i++) {
-      testFirstWeek.push(dayInMarch1995(i));
-    }
-
-    const prepended = prependDays(Timezone.UTC, testFirstWeek, 5);
-    expect(prepended).to.deep.equal([
-      new Date("1995-02-24T00:00:00.000Z"),
-      new Date("1995-02-25T00:00:00.000Z"),
-      new Date("1995-02-26T00:00:00.000Z"),
-      new Date("1995-02-27T00:00:00.000Z"),
-      new Date("1995-02-28T00:00:00.000Z"),
-      new Date("1995-03-01T00:00:00.000Z"),
-      new Date("1995-03-02T00:00:00.000Z"),
-      new Date("1995-03-03T00:00:00.000Z"),
-      new Date("1995-03-04T00:00:00.000Z")
-    ]);
-  });
-
-  it("appends days", () => {
-    const testWeek: Date[] = [];
-    for (let i = 1; i < 5; i++) {
-      testWeek.push(dayInMarch1995(i));
-    }
-
-    const append = appendDays(Timezone.UTC, testWeek, 5);
-    expect(append).to.deep.equal([
-      new Date("1995-03-01T00:00:00.000Z"),
-      new Date("1995-03-02T00:00:00.000Z"),
-      new Date("1995-03-03T00:00:00.000Z"),
-      new Date("1995-03-04T00:00:00.000Z"),
-      new Date("1995-03-05T00:00:00.000Z"),
-      new Date("1995-03-06T00:00:00.000Z"),
-      new Date("1995-03-07T00:00:00.000Z"),
-      new Date("1995-03-08T00:00:00.000Z"),
-      new Date("1995-03-09T00:00:00.000Z")
-    ]);
   });
 
   const TZ_KATHMANDU = new Timezone("Asia/Kathmandu"); // +5.8;

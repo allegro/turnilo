@@ -18,11 +18,12 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { appendDays, datesEqual, formatYearMonth, getDayInMonth, monthToWeeks, prependDays } from "../../../common/utils/time/time";
+import { datesEqual, formatYearMonth, getDayInMonth } from "../../../common/utils/time/time";
 import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import { calendarDays } from "./calendar";
 import "./date-range-picker.scss";
 
 export interface DateRangePickerProps {
@@ -154,13 +155,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   renderCalendar(startDate: Date): JSX.Element[] {
     const { timezone } = this.props;
-    const weeks: Date[][] = monthToWeeks(startDate, timezone, getLocale());
-    const firstWeek = weeks[0];
-    const lastWeek = weeks[weeks.length - 1];
-    const countPrepend = 7 - firstWeek.length;
-    const countAppend = 7 - lastWeek.length;
-    weeks[0] = prependDays(timezone, firstWeek, countPrepend);
-    weeks[weeks.length - 1] = appendDays(timezone, lastWeek, countAppend);
+    const weeks: Date[][] = calendarDays(startDate, timezone, getLocale());
     return this.renderDays(weeks, startDate);
   }
 
