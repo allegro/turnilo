@@ -31,10 +31,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
     const stopRequestTimer = metrics.plywoodRequestDuration.startTimer();
 
     onFinished(res, function(err, res) {
-      const lables = { dataCube: req.body.dataCube, status: res.statusCode };
-
-      metrics.plywoodRequests.inc(lables);
-      stopRequestTimer(lables);
+      stopRequestTimer({ dataCube: req.body.dataCube, status: res.statusCode });
     });
 
     if (done) {
@@ -109,7 +106,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       res.json(reply);
     } catch (error) {
       console.log("error:", error.message);
-      metrics.plywoodTimeouts.inc({ dataCube });
+      metrics.plywoodErrors.inc({ dataCube });
       if (error.hasOwnProperty("stack")) {
         console.log((<any> error).stack);
       }
