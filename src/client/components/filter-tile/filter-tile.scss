@@ -38,11 +38,6 @@ $overflow-width: 40px;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
 
-      &.from-highlight {
-        border: 1px dashed $highlight-border;
-        background: rgba($item-dimension, 0.5);
-      }
-
       .dimension-title {
         margin-right: 5px;
       }
