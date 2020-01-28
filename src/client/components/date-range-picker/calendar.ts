@@ -30,16 +30,6 @@ export function calendarDays(startDay: Date, timezone: Timezone, locale: Locale)
   ];
 }
 
-// handle DST case - same timezone mean two possible UTC offsets
-export function shiftOneDay(day: Moment) {
-  const nextDay = day.clone().add(1, "day");
-  const isCurrentDST = day.isDST();
-  const isNextDST = nextDay.isDST();
-  // If going into DST, adding one day result in same day, 23:00
-  if (!isCurrentDST && isNextDST) return nextDay.add(1, "hour");
-  return nextDay;
-}
-
 function padLastWeek(lastWeek: Date[], timezone: Timezone): Date[] {
   const lastDate = lastWeek[lastWeek.length - 1];
   const padCount = 7 - lastWeek.length;
@@ -66,7 +56,7 @@ export function monthToWeeks(startDay: Date, timezone: Timezone, locale: Locale)
     }
 
     week.push(currentPointer.toDate());
-    currentPointer = shiftOneDay(currentPointer);
+    currentPointer = currentPointer.add(1, "day");
   }
   // push last week
   if (week.length > 0) weeks.push(week);
