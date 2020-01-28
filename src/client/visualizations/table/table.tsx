@@ -17,14 +17,12 @@
 
 import * as d3 from "d3";
 import { List, Set } from "immutable";
-import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../common/models/filter/filter";
+import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
@@ -53,11 +51,11 @@ const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 const MIN_DIMENSION_WIDTH = 100;
 
-function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
+function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List<FilterClause> {
   const splitNesting = flatDatum["__nest"];
   const { splits: splitCombines } = splits;
 
-  if (splitNesting === 0 || splitNesting > splitCombines.size) return null;
+  if (splitNesting === 0 || splitNesting > splitCombines.size) return List.of();
 
   const filterClauses = splitCombines
     .take(splitNesting)
@@ -74,7 +72,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
       }
     });
 
-  return new Filter({ clauses: List(filterClauses) });
+  return List(filterClauses);
 }
 
 function indexToColumnType(index: number): ColumnType {
@@ -199,20 +197,19 @@ export class Table extends BaseVisualization<TableState> {
       return;
     }
     if (element === HoverElement.ROW) {
-      if (!clicker.dropHighlight || !clicker.changeHighlight) return;
-
       const rowHighlight = getFilterFromDatum(splits, row);
 
       if (!rowHighlight) return;
 
-      if (essence.hasHighlight()) {
-        if (rowHighlight.equals(essence.highlight.delta)) {
-          clicker.dropHighlight();
+      const highlight = this.getHighlight();
+      if (highlight) {
+        if (rowHighlight.equals(highlight.clauses)) {
+          this.dropHighlight();
           return;
         }
       }
 
-      clicker.changeHighlight(null, rowHighlight);
+      this.createHighlight(null, rowHighlight);
     }
   }
 
@@ -385,7 +382,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   protected renderInternals() {
-    const { clicker, essence, stage } = this.props;
+    const { essence, stage } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const { splits, dataCube } = essence;
 
@@ -405,10 +402,7 @@ export class Table extends BaseVisualization<TableState> {
     if (flatData) {
       const hScales = this.getScalesForColumns(essence, flatData);
 
-      let highlightDelta: Filter = null;
-      if (essence.hasHighlight()) {
-        highlightDelta = essence.highlight.delta;
-      }
+      const highlightClauses = this.getHighlightClauses();
 
       const [skipNumber, lastElementToShow] = this.getVisibleIndices(flatData.length, stage.height);
 
@@ -431,8 +425,8 @@ export class Table extends BaseVisualization<TableState> {
 
         let selected = false;
         let selectedClass = "";
-        if (highlightDelta) {
-          selected = highlightDelta.equals(getFilterFromDatum(splits, d));
+        if (highlightClauses) {
+          selected = highlightClauses.equals(getFilterFromDatum(splits, d));
           selectedClass = selected ? "selected" : "not-selected";
         }
 
@@ -458,7 +452,8 @@ export class Table extends BaseVisualization<TableState> {
           highlighter = <div className="highlighter" key="highlight" style={highlighterStyle} />;
 
           highlightModal = <HighlightModal
-            clicker={clicker}
+            acceptHighlight={this.acceptHighlight}
+            dropHighlight={this.dropHighlight}
             left={stage.x + stage.width / 2}
             top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
             title={segmentName} />;

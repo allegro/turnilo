@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
@@ -27,7 +26,8 @@ import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clip
 import "./segment-action-buttons.scss";
 
 export interface SegmentActionButtonsProps {
-  clicker: Clicker;
+  acceptHighlight: Fn;
+  dropHighlight: Fn;
   dimension?: Dimension;
   segmentLabel?: string;
   segmentValue?: string;
@@ -50,14 +50,14 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
   }
 
   onSelect = () => {
-    const { onClose, clicker } = this.props;
-    clicker.acceptHighlight();
+    const { onClose, acceptHighlight } = this.props;
+    acceptHighlight();
     if (onClose) onClose();
   }
 
   onCancel = () => {
-    const { onClose, clicker } = this.props;
-    clicker.dropHighlight();
+    const { onClose, dropHighlight } = this.props;
+    dropHighlight();
     if (onClose) onClose();
   }
 

@@ -19,14 +19,13 @@ import * as d3 from "d3";
 import { List, Set } from "immutable";
 import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../common/models/filter/filter";
+import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { Series } from "../../../common/models/series/series";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
@@ -80,9 +79,8 @@ export interface BarChartState extends BaseVisualizationState {
   maxNumberOfLeaves?: number[];
 }
 
-function getFilterFromDatum(splits: Splits, dataPath: Datum[]): Filter {
-  return new Filter({
-    clauses: List(dataPath.map((datum, i) => {
+function getFilterFromDatum(splits: Splits, dataPath: Datum[]): List<FilterClause> {
+  return List(dataPath.map((datum, i) => {
       const { type, reference } = splits.getSplit(i);
       const segment: any = datum[reference];
 
@@ -94,8 +92,7 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[]): Filter {
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
       }
-    }))
-  });
+    }));
 }
 
 function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Measure[]): Dataset {
@@ -242,16 +239,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   onClick = (x: number, y: number) => {
-    const { essence, clicker } = this.props;
-
-    if (!clicker.changeHighlight || !clicker.dropHighlight) return;
+    const { essence } = this.props;
 
     const selectionInfo = this.calculateMousePosition(x, y);
 
     if (!selectionInfo) return;
 
     if (!selectionInfo.coordinates) {
-      clicker.dropHighlight();
+      this.dropHighlight();
       this.setState({ selectionInfo: null });
       return;
     }
@@ -263,16 +258,17 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const rowHighlight = getFilterFromDatum(splits, path);
 
-    if (essence.highlightOn(series.get(chartIndex).measure.name)) {
-      if (rowHighlight.equals(essence.highlight.delta)) {
-        clicker.dropHighlight();
+    if (this.highlightOn(series.get(chartIndex).definition.key())) {
+      const delta = this.getHighlightClauses();
+      if (rowHighlight.equals(delta)) {
+        this.dropHighlight();
         this.setState({ selectionInfo: null });
         return;
       }
     }
 
     this.setState({ selectionInfo });
-    clicker.changeHighlight(series.get(chartIndex).measure.name, rowHighlight);
+    this.createHighlight(series.get(chartIndex).definition.key(), rowHighlight);
   }
 
   getYExtent(data: Datum[], series: ConcreteSeries): number[] {
@@ -390,13 +386,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const topOffset = this.getBubbleTopOffset(coordinates.y, chartIndex, chartStage);
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
-    const { clicker } = this.props;
     const segmentValue = series.formatValue(path[path.length - 1]);
     return <HighlightModal
       left={leftOffset}
       top={topOffset}
-      title={segmentLabel}
-      clicker={clicker}>
+      dropHighlight={this.dropHighlight}
+      acceptHighlight={this.acceptHighlight}
+      title={segmentLabel}>
       {segmentValue}
     </HighlightModal>;
   }
@@ -435,19 +431,18 @@ export class BarChart extends BaseVisualization<BarChartState> {
     />;
   }
 
-  isSelected(path: Datum[], measure: Measure): boolean {
+  isSelected(path: Datum[], series: Series): boolean {
     const { essence } = this.props;
-    const { highlight, splits } = essence;
-    return essence.highlightOn(measure.name) && highlight.delta.equals(getFilterFromDatum(splits, path));
+    const { splits } = essence;
+    return this.highlightOn(series.key()) && this.getHighlightClauses().equals(getFilterFromDatum(splits, path));
   }
 
   isFaded(): boolean {
-    const { essence } = this.props;
-    return essence.hasHighlight();
+    return this.hasHighlight();
   }
 
   hasAnySelectionGoingOn(): boolean {
-    return this.props.essence.hasHighlight();
+    return this.hasHighlight();
   }
 
   isHovered(path: Datum[], series: ConcreteSeries): boolean {
@@ -516,7 +511,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
           bubble = this.renderHoverBubble(bubbleInfo);
         }
 
-        let selected = this.isSelected(subPath, series.measure);
+        let selected = this.isSelected(subPath, series.definition);
         let faded = this.isFaded();
         if (selected) {
           bubble = this.renderSelectionBubble(bubbleInfo);

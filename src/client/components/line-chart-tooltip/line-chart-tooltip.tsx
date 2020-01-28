@@ -17,11 +17,11 @@
 import { TooltipWithBounds } from "@vx/tooltip";
 import { Dataset, Datum, PlywoodRange } from "plywood";
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { mapTruthy } from "../../../common/utils/functional/functional";
+import { Fn } from "../../../common/utils/general/general";
 import { SPLIT } from "../../config/constants";
 import { JSXNode } from "../../utils/dom/dom";
 import { ColorEntry, ColorSwabs } from "../color-swabs/color-swabs";
@@ -63,14 +63,15 @@ interface HighlightTooltipProps {
   dataset: Dataset;
   series: ConcreteSeries;
   essence: Essence;
-  clicker: Clicker;
+  acceptHighlight: Fn;
+  dropHighlight: Fn;
   highlightRange: PlywoodRange;
   topOffset: number;
   leftOffset: number;
 }
 
 export function HighlightTooltip(props: HighlightTooltipProps): JSX.Element {
-  const { series, leftOffset, topOffset, clicker, essence, highlightRange, dataset } = props;
+  const { series, leftOffset, topOffset, acceptHighlight, dropHighlight, essence, highlightRange, dataset } = props;
   const { colors, timezone } = essence;
   const segmentLabel = formatValue(highlightRange, timezone);
 
@@ -79,7 +80,8 @@ export function HighlightTooltip(props: HighlightTooltipProps): JSX.Element {
       left={leftOffset}
       top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
       title={segmentLabel}
-      clicker={clicker}>
+      acceptHighlight={acceptHighlight}
+      dropHighlight={dropHighlight}>
       <ColorSwabs
         colorEntries={colorEntries(dataset, highlightRange, series, essence)} />
     </HighlightModal>;
@@ -89,7 +91,8 @@ export function HighlightTooltip(props: HighlightTooltipProps): JSX.Element {
       left={leftOffset}
       top={topOffset + HOVER_BUBBLE_V_OFFSET}
       title={segmentLabel}
-      clicker={clicker}>
+      acceptHighlight={acceptHighlight}
+      dropHighlight={dropHighlight}>
       {measureLabel(dataset, highlightRange, series, essence)}
     </HighlightModal>;
   }
