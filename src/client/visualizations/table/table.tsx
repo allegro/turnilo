@@ -208,7 +208,7 @@ export class Table extends BaseVisualization<TableState> {
         }
       }
 
-      this.createHighlight(null, rowFilterClauses);
+      this.highlight(rowFilterClauses, null);
     }
   }
 

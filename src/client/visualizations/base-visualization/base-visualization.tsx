@@ -195,15 +195,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   protected dropHighlight = () => this.setState({ highlight: null });
 
   protected acceptHighlight = () => {
-    const { highlight } = this.state;
-    if (!highlight) return;
+    if (!this.hasHighlight()) return;
     const { essence, clicker } = this.props;
-    clicker.changeFilter(essence.filter.mergeClauses(highlight.clauses));
+    clicker.changeFilter(essence.filter.mergeClauses(this.getHighlightClauses()));
     this.setState({ highlight: null });
   }
 
-  protected createHighlight(key: string, clauses: List<FilterClause>) {
-    const highlight = new Highlight({ key, clauses });
+  protected highlight(clauses: List<FilterClause>, key: string) {
+    const highlight = new Highlight(clauses, key);
     this.setState({ highlight });
   }
 

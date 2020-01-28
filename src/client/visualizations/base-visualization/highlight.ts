@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-import { List, Record } from "immutable";
+import { List } from "immutable";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 
-export interface HighlightValue {
-  clauses: List<FilterClause>;
-  key: string | null;
-}
-
-const defaultHighlight: HighlightValue = {
-  clauses: List.of(),
-  key: null
-};
-
-export class Highlight extends Record<HighlightValue>(defaultHighlight) {
-
-  public toString(): string {
-    return `[Highlight ${this.clauses.toString()}]`;
+export class Highlight {
+  constructor(public readonly clauses: List<FilterClause>, public readonly key: string | null) {
   }
 }

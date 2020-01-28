@@ -256,7 +256,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const existingHighlightRange = this.highlightRange();
       if (!this.highlightOn(dragOnSeries.key()) && existingHighlightRange.contains(flooredDragRange.start)) {
         const { clauses } = this.getHighlight();
-        this.createHighlight(dragOnSeries.key(), clauses);
+        this.highlight(clauses, dragOnSeries.key());
         return;
       }
     }
@@ -268,10 +268,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       ? new NumberFilterClause({ reference, values: List.of(new FilterNumberRange({ start: start as number, end: end as number })) })
       : new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start: start as Date, end: end as Date })) });
 
-    this.createHighlight(
-      dragOnSeries.key(),
-      List.of(filterClause)
-    );
+    this.highlight(List.of(filterClause), dragOnSeries.key());
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
@@ -334,7 +331,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { containerYPosition, containerXPosition, scrollTop, dragRange } = this.state;
     const { dragOnSeries, scaleX, hoverRange } = this.state;
 
-    if (this.hasHighlight() && !this.highlightOn(series.definition.key())) return null;
+    const highlightOnDifferentSeries = this.hasHighlight() && !this.highlightOn(series.definition.key());
+    if (highlightOnDifferentSeries) return null;
 
     const topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;

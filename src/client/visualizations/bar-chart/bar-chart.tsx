@@ -268,7 +268,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
 
     this.setState({ selectionInfo });
-    this.createHighlight(series.get(chartIndex).definition.key(), rowHighlight);
+    this.highlight(rowHighlight, series.get(chartIndex).definition.key());
   }
 
   getYExtent(data: Datum[], series: ConcreteSeries): number[] {
