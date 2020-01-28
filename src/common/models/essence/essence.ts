@@ -17,15 +17,14 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { PlywoodRange, Range, RefExpression } from "plywood";
+import { RefExpression } from "plywood";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, RelativeTimeFilterClause, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause, isTimeFilter, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
-import { Highlight } from "../../../client/visualizations/base-visualization/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
@@ -625,9 +624,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public changePinnedSortMeasure({ name }: Measure): Essence {
     return this.set("pinnedSort", name);
   }
-
-
-
 
   public seriesSortOns(withTimeShift?: boolean): List<SortOn> {
     const series = this.getConcreteSeries();
