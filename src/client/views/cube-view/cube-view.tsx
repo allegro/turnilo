@@ -28,7 +28,6 @@ import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
-import { Highlight } from "../../../common/models/highlight/highlight";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
@@ -49,7 +48,6 @@ import { GlobalEventListener } from "../../components/global-event-listener/glob
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
-import { SeriesTile } from "../../components/series-tile/series-tile";
 import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
@@ -213,18 +211,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       changePinnedSortMeasure: (measure: Measure) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortMeasure(measure) });
-      },
-      changeHighlight: (measure: string, delta: Filter) => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(new Highlight({ measure, delta })) });
-      },
-      acceptHighlight: () => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.acceptHighlight() });
-      },
-      dropHighlight: () => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.dropHighlight() });
       }
     };
   }

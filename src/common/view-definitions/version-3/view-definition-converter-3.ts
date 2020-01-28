@@ -24,7 +24,6 @@ import { Manifest } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
 import { filterDefinitionConverter } from "../version-4/filter-definition";
-import { highlightConverter } from "../version-4/highlight-definition";
 import { legendConverter } from "../version-4/legend-definition";
 import { splitConverter } from "../version-4/split-definition";
 import { ViewDefinitionConverter } from "../view-definition-converter";
@@ -50,8 +49,6 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.measures, dataCube.measures);
-    const highlight = definition.highlight && highlightConverter(dataCube)
-      .toHighlight(definition.highlight);
 
     return new Essence({
       dataCube,
@@ -64,8 +61,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       pinnedDimensions,
       series,
       colors,
-      pinnedSort,
-      highlight
+      pinnedSort
     });
   }
 

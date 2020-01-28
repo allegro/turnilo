@@ -51,7 +51,6 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
-import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
 import { DimensionSort, SeriesSort, Sort } from "../../models/sort/sort";
@@ -78,21 +77,12 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const timeShift = TimeShift.empty();
     const colors = definition.colors && Colors.fromJS(definition.colors);
     const pinnedSort = definition.pinnedSort;
-    const highlight = readHighlight(definition.highlight, dataCube);
-    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort, highlight });
+    return new Essence({ dataCube, visualizations, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition2 {
     throw new Error("toViewDefinition is not supported in Version 2");
   }
-}
-
-function readHighlight(definition: any, dataCube: DataCube): Highlight {
-  if (!definition) return null;
-  const { measure } = definition;
-  const delta = Filter.fromClauses(filterJSConverter(definition.delta, dataCube));
-  return new Highlight({ measure, delta });
-
 }
 
 function isBooleanFilterSelection(selection: FilterSelection): selection is LiteralExpression {

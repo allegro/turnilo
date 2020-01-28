@@ -55,10 +55,4 @@ export interface Clicker {
   unpin?(dimension: Dimension): void;
 
   changePinnedSortMeasure?(measure: Measure): void;
-
-  changeHighlight?(measure: string, delta: Filter): void;
-
-  acceptHighlight?(): void;
-
-  dropHighlight?(): void;
 }
