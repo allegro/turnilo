@@ -197,19 +197,18 @@ export class Table extends BaseVisualization<TableState> {
       return;
     }
     if (element === HoverElement.ROW) {
-      const rowHighlight = getFilterFromDatum(splits, row);
+      const rowFilterClauses = getFilterFromDatum(splits, row);
 
-      if (!rowHighlight) return;
+      if (!rowFilterClauses) return;
 
-      const highlight = this.getHighlight();
-      if (highlight) {
-        if (rowHighlight.equals(highlight.clauses)) {
+      if (this.hasHighlight()) {
+        if (rowFilterClauses.equals(this.getHighlightClauses())) {
           this.dropHighlight();
           return;
         }
       }
 
-      this.createHighlight(null, rowHighlight);
+      this.createHighlight(null, rowFilterClauses);
     }
   }
 

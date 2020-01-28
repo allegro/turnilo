@@ -249,12 +249,12 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const newDragRange = this.getDragRange(e);
     this.resetDrag();
     if (!newDragRange) return;
-    const highlightRange = this.floorRange(newDragRange);
+    const flooredDragRange = this.floorRange(newDragRange);
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && this.hasHighlight()) {
       const existingHighlightRange = this.highlightRange();
-      if (!this.highlightOn(dragOnSeries.key()) && existingHighlightRange.contains(highlightRange.start)) {
+      if (!this.highlightOn(dragOnSeries.key()) && existingHighlightRange.contains(flooredDragRange.start)) {
         const { clauses } = this.getHighlight();
         this.createHighlight(dragOnSeries.key(), clauses);
         return;
@@ -263,7 +263,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const continuousDimension = this.getContinuousDimension();
     const reference = continuousDimension.name;
-    const { start, end } = highlightRange;
+    const { start, end } = flooredDragRange;
     const filterClause = continuousDimension.kind === "number"
       ? new NumberFilterClause({ reference, values: List.of(new FilterNumberRange({ start: start as number, end: end as number })) })
       : new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start: start as Date, end: end as Date })) });
