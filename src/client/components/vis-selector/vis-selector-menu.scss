@@ -17,43 +17,18 @@
 
 @import '../../imports';
 
-.vis-selector {
-  @extend %module;
+.vis-selector-menu {
 
-  &::before {
-    @include pin-full;
-    content: '';
-    z-index: 6;
-    background-color: rgba($white, 0.65);
-    pointer-events: none;
-    opacity: 0;
-    //transition: opacity $duration ease;
-  }
+  .vis-item {
+    margin: 1px;
+    border-radius: $corner;
 
-  &::after {
-    @include triangle(down, 7px, 9px, $text-medium);
-    content: '';
-    z-index: 7;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -6px;
-    margin-left: -7px;
-    pointer-events: none;
-    opacity: 0;
-    //transition: opacity $duration ease;
-  }
-
-  &:hover,
-  &.active {
-    &::after, &::before {
-      opacity: 1;
+    &:hover {
+      box-shadow: inset 0 0 0 1px $border-extra-light;
     }
-  }
 
-  .vis-selector-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
+    &.selected {
+      box-shadow: inset 0 0 0 1px $border-light;
+    }
   }
 }

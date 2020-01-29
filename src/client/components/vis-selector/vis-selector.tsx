@@ -18,9 +18,12 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
-import { classNames, findParentWithClass } from "../../utils/dom/dom";
-import { SvgIcon } from "../svg-icon/svg-icon";
-import { VisSelectorMenu } from "../vis-selector-menu/vis-selector-menu";
+import { Stage } from "../../../common/models/stage/stage";
+import { noop } from "../../../common/utils/functional/functional";
+import { classNames } from "../../utils/dom/dom";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { VisSelectorItem } from "./vis-selector-item";
+import { VisSelectorMenu } from "./vis-selector-menu";
 import "./vis-selector.scss";
 
 export interface VisSelectorProps {
@@ -29,53 +32,60 @@ export interface VisSelectorProps {
 }
 
 export interface VisSelectorState {
-  menuOpenOn?: Element;
+  openMenu: boolean;
 }
 
+const visSelectorMenuStage = Stage.fromSize(268, 176);
+
 export class VisSelector extends React.Component<VisSelectorProps, VisSelectorState> {
-  state: VisSelectorState = {
-    menuOpenOn: null
-  };
+
+  private selector = React.createRef<HTMLDivElement>();
+
+  state: VisSelectorState = { openMenu: false };
 
   openMenu = (e: React.MouseEvent<HTMLElement>) => {
-    const { menuOpenOn } = this.state;
+    const { openMenu } = this.state;
     const target = e.currentTarget;
-    if (menuOpenOn === target) {
+    if (openMenu && this.selector.current === target) {
       this.closeMenu();
       return;
     }
     this.setState({
-      menuOpenOn: target
+      openMenu: true
     });
   }
 
-  closeMenu = () => {
-    this.setState({
-      menuOpenOn: null
-    });
-  }
+  closeMenu = () => this.setState({ openMenu: false });
 
   renderMenu() {
-    const { menuOpenOn } = this.state;
+    const { openMenu } = this.state;
 
-    if (!menuOpenOn) return null;
+    if (!openMenu) return null;
     const { clicker, essence } = this.props;
-    return <VisSelectorMenu
-      clicker={clicker}
-      essence={essence}
+    return <BubbleMenu
+      className="vis-selector-menu-container"
+      direction="down"
+      stage={visSelectorMenuStage}
+      openOn={this.selector.current}
       onClose={this.closeMenu}
-      openOn={menuOpenOn} />;
+    >
+      <VisSelectorMenu
+        selectedVisualization={essence.visualization}
+        visualizations={essence.visualizations}
+        onClose={this.closeMenu}
+        onSelect={v => clicker.changeVisualization(v)} />
+    </BubbleMenu>;
   }
 
   render() {
     const { essence: { visualization } } = this.props;
-    const { menuOpenOn } = this.state;
+    const { openMenu } = this.state;
 
-    return <div className={classNames("vis-selector", { active: menuOpenOn })} onClick={this.openMenu}>
-      <div className="vis-item selected">
-        <SvgIcon svg={require("../../icons/vis-" + visualization.name + ".svg")} />
-        <div className="vis-title">{visualization.title}</div>
-      </div>
+    return <div
+      ref={this.selector}
+      className={classNames("vis-selector", { active: openMenu })}
+      onClick={this.openMenu}>
+      <VisSelectorItem visualization={visualization} selected={true} onClick={noop} />
       {this.renderMenu()}
     </div>;
   }

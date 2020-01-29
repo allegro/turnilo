@@ -17,26 +17,29 @@
 
 @import '../../imports';
 
-$vis-menu-padding: 16px;
-$vis-item-margin: 1px;
+.vis-item {
+  display: inline-block;
+  width: $vis-item-width;
+  height: $vis-item-height;
+  cursor: pointer;
 
-.vis-selector-menu {
-  @extend %menu-cont;
-  z-index: 8;
-  font-size: 0;
-  width: ($vis-item-width + $vis-item-margin * 2) * 3 + $vis-menu-padding * 2;
-  padding: $vis-menu-padding;
+  .vis-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 7px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 400;
+    color: $text-medium;
+  }
 
-  .vis-item {
-    margin: 1px;
-    border-radius: $corner;
-
-    &:hover {
-      box-shadow: inset 0 0 0 1px $border-extra-light;
-    }
-
-    &.selected {
-      box-shadow: inset 0 0 0 1px $border-light;
-    }
+  svg {
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    width: 53px;
+    height: 53px;
+    margin-left: -27px;
   }
 }
