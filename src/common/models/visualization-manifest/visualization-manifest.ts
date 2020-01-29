@@ -19,6 +19,7 @@ import { VisualizationDependentEvaluator } from "../../utils/rules/visualization
 import { Colors } from "../colors/colors";
 import { SeriesList } from "../series-list/series-list";
 import { Splits } from "../splits/splits";
+import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 export interface Adjustment {
   series?: SeriesList;
@@ -91,18 +92,11 @@ export class Resolve {
   }
 }
 
-export type MeasureModeNeeded = "any" | "single" | "multi";
-
-export class Manifest {
-  public name: string;
-  public title: string;
-  public evaluateRules: VisualizationDependentEvaluator;
-  public measureModeNeed: MeasureModeNeeded;
-
-  constructor(name: string, title: string, evaluateRules: VisualizationDependentEvaluator, measureModeNeed: MeasureModeNeeded = "any") {
-    this.name = name;
-    this.title = title;
-    this.evaluateRules = evaluateRules;
-    this.measureModeNeed = measureModeNeed;
+export class VisualizationManifest<T = unknown> {
+  constructor(
+    public readonly name: string,
+    public readonly title: string,
+    public readonly evaluateRules: VisualizationDependentEvaluator,
+    public readonly visualizationSettings?: VisualizationSettings<T>) {
   }
 }

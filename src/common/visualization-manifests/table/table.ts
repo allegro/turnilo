@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
+import { settings, TableSettings } from "./settings";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
@@ -49,8 +50,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
   .build();
 
-export const TABLE_MANIFEST = new Manifest(
+export const TABLE_MANIFEST = new VisualizationManifest<TableSettings>(
   "table",
   "Table",
-  rulesEvaluator
+  rulesEvaluator,
+  settings
 );
