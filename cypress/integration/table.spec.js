@@ -76,7 +76,7 @@ context("Table", () => {
     });
 
     describe("accept highlight", () => {
-      it("should hide highlight modal after accept", () => {
+      it("should hide highlight modal", () => {
         acceptHighlight().click();
 
         // we check for table existence first, so cypress won't give us false positive
@@ -85,13 +85,13 @@ context("Table", () => {
         highlightModal().should("not.exist");
       });
 
-      it("should hide row highlight after accept", () => {
+      it("should hide row highlight", () => {
         acceptHighlight().click();
 
         assertNoRowHighlightIsSelected();
       });
 
-      it("accepting highlight should change filters", () => {
+      it("should change filter", () => {
         acceptHighlight().click();
 
         assertFilterTileValues(["Latest day", "Channel:en"], ["Namespace:Main"]);
@@ -113,13 +113,13 @@ context("Table", () => {
     });
 
     describe("drop highlight", () => {
-      it("should hide highlight modal after cancel", () => {
+      it("should hide highlight modal after clicking cancel button", () => {
         dropHighlight().click();
 
         highlightModal().should("not.exist");
       });
 
-      it("should hide highlight modal after cancel", () => {
+      it("should hide highlight modal after clicking cancel button", () => {
         dropHighlight().click();
 
         assertNoRowHighlightIsSelected();

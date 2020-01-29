@@ -258,7 +258,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const rowHighlight = getFilterFromDatum(splits, path);
 
-    if (this.highlightOn(series.get(chartIndex).definition.key())) {
+    const currentSeries = series.get(chartIndex).definition;
+    if (this.highlightOn(currentSeries.key())) {
       const delta = this.getHighlightClauses();
       if (rowHighlight.equals(delta)) {
         this.dropHighlight();

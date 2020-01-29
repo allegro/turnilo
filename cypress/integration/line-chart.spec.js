@@ -52,7 +52,7 @@ context("Line Chart", () => {
       });
 
       describe("accept highlight", () => {
-        it("should hide highlight modal after accept", () => {
+        it("should hide highlight modal", () => {
           acceptHighlight().click();
 
           // we check for line chart existence first, so cypress won't give us false positive
@@ -61,7 +61,7 @@ context("Line Chart", () => {
           highlightModal().should("not.exist");
         });
 
-        it("should hide highlighter after accept", () => {
+        it("should hide highlighter", () => {
           acceptHighlight().click();
 
           // we check for line chart existence first, so cypress won't give us false positive
@@ -70,7 +70,7 @@ context("Line Chart", () => {
           highlighter().should("not.exist");
         });
 
-        it("accepting highlight should change time filter", () => {
+        it("should change time filter", () => {
           acceptHighlight().click();
 
           timeFilter().should("contain", "12 Sep 2015 3:00 - 12 Sep 2015 4:00");
@@ -92,13 +92,13 @@ context("Line Chart", () => {
       });
 
       describe("drop highlight", () => {
-        it("should hide highlight modal after cancel", () => {
+        it("should hide highlight modal after clicking cancel button", () => {
           dropHighlight().click();
 
           highlightModal().should("not.exist");
         });
 
-        it("should hide highlight modal after cancel", () => {
+        it("should hide highlight modal after clicking cancel button", () => {
           dropHighlight().click();
 
           highlighter().should("not.exist");
