@@ -16,13 +16,13 @@
 
 import * as React from "react";
 import { Checkbox } from "../../../client/components/checkbox/checkbox";
-import { VisualizationSettingComponentProps, VisualizationSettings } from "../../models/visualization-settings/visualization-settings";
+import { VisualizationSettings, VisualizationSettingsComponent } from "../../models/visualization-settings/visualization-settings";
 
 export interface TableSettings {
   collapseRows: boolean;
 }
 
-const TableSettingsComponent: React.SFC<VisualizationSettingComponentProps<TableSettings> & TableSettings> = ({ collapseRows, onChange }) =>
+const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ collapseRows, onChange }) =>
   <div>
     <Checkbox
       selected={collapseRows}

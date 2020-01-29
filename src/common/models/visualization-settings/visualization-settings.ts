@@ -17,9 +17,11 @@
 import * as React from "react";
 import { Unary } from "../../utils/functional/functional";
 
-export interface VisualizationSettingComponentProps<T> {
+interface VisualizationSettingsComponentProps<T> {
   onChange: Unary<T, void>;
 }
+
+export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsComponentProps<T> & T>;
 
 interface VisualizationSettingsConverter<T> {
   print: Unary<T, object>;
@@ -27,7 +29,7 @@ interface VisualizationSettingsConverter<T> {
 }
 
 export interface VisualizationSettings<T> {
-  component: React.SFC<VisualizationSettingComponentProps<T> & T>;
+  component: VisualizationSettingsComponent<T>;
   converter: VisualizationSettingsConverter<T>;
   defaults: T;
 }
