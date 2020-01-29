@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { TABLE_MANIFEST } from "../../../manifests/table/table";
+import { TABLE_MANIFEST } from "../../../visualization-manifests/table/table";
 import { SeriesDerivation } from "../../../models/series/concrete-series";
 import { SortDirection } from "../../../models/sort/sort";
 import { Split } from "../../../models/split/split";

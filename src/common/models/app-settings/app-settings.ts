@@ -22,7 +22,7 @@ import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
-import { Manifest } from "../manifest/manifest";
+import { VisualizationManifest } from "../visualization-manifest/visualization-manifest";
 
 export interface AppSettingsValue {
   version?: number;
@@ -39,7 +39,7 @@ export interface AppSettingsJS {
 }
 
 export interface AppSettingsContext {
-  visualizations: Manifest[];
+  visualizations: VisualizationManifest[];
   executorFactory?: (dataCube: DataCube) => Executor;
 }
 

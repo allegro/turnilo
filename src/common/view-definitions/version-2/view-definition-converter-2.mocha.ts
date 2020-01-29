@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { MANIFESTS } from "../../manifests";
+import { MANIFESTS } from "../../visualization-manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { stringIn, timePeriod } from "../../models/filter-clause/filter-clause.fixtures";

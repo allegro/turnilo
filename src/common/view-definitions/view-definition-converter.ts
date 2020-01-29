@@ -15,12 +15,12 @@
  */
 import { DataCube } from "../models/data-cube/data-cube";
 import { Essence } from "../models/essence/essence";
-import { Manifest } from "../models/manifest/manifest";
+import { VisualizationManifest } from "../models/visualization-manifest/visualization-manifest";
 
 export interface ViewDefinitionConverter<VD extends object, E extends Essence> {
   version: number;
 
-  fromViewDefinition(definition: VD, dataCube: DataCube, visualizations: Manifest[]): E;
+  fromViewDefinition(definition: VD, dataCube: DataCube, visualizations: VisualizationManifest[]): E;
 
   toViewDefinition(essence: E): VD;
 }

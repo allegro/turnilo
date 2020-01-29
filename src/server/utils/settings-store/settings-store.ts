@@ -17,7 +17,7 @@
 
 import * as fs from "fs-promise";
 import * as yaml from "js-yaml";
-import { MANIFESTS } from "../../../common/manifests";
+import { MANIFESTS } from "../../../common/visualization-manifests";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { inlineVars } from "../../../common/utils/general/general";
 import { Format } from "../../models/settings-location/settings-location";

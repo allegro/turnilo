@@ -17,10 +17,10 @@
 
 import { List } from "immutable";
 import { Colors } from "../../models/colors/colors";
-import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
+import { VisualizationManifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/visualization-manifest/visualization-manifest";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
@@ -188,7 +188,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
   .build();
 
-export const LINE_CHART_MANIFEST = new Manifest(
+export const LINE_CHART_MANIFEST = new VisualizationManifest(
   "line-chart",
   "Line Chart",
   rulesEvaluator

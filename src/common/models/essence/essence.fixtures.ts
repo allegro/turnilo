@@ -17,10 +17,10 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { MANIFESTS } from "../../manifests";
-import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../../manifests/table/table";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { MANIFESTS } from "../../visualization-manifests";
+import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";

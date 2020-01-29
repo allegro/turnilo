@@ -23,7 +23,7 @@
 import { TooltipProps, TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
-import { HEAT_MAP_MANIFEST } from "../../../common/manifests/heat-map/heat-map";
+import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";

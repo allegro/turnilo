@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Resolve } from "../../models/manifest/manifest";
+import { Resolve } from "../../models/visualization-manifest/visualization-manifest";
 import { RulesEvaluator } from "./rules-evaluator";
 
 export type Predicate<Variables> = (predicateVariables: Variables) => boolean;

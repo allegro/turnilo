@@ -16,8 +16,8 @@
 
 import { day, Duration, Timezone } from "chronoshift";
 import { OrderedSet } from "immutable";
-import { MANIFESTS } from "../../manifests";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { MANIFESTS } from "../../visualization-manifests";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { Essence, EssenceValue } from "../../models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";

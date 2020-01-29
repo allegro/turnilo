@@ -16,10 +16,10 @@
  */
 
 import { Dimension } from "../../models/dimension/dimension";
-import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { DimensionSort } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
+import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -89,7 +89,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
   .build();
 
-export const BAR_CHART_MANIFEST = new Manifest(
+export const BAR_CHART_MANIFEST = new VisualizationManifest(
   "bar-chart",
   "Bar Chart",
   rulesEvaluator

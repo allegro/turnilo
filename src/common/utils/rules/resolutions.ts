@@ -16,11 +16,11 @@
 
 import { List, OrderedSet } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
-import { Resolution } from "../../models/manifest/manifest";
 import { SeriesList } from "../../models/series-list/series-list";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
+import { Resolution } from "../../models/visualization-manifest/visualization-manifest";
 
 export class Resolutions {
   static someDimensions = (dataCube: DataCube): Resolution[] => {

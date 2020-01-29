@@ -16,7 +16,7 @@
  */
 
 import { Request, Response, Router } from "express";
-import { MANIFESTS } from "../../../common/manifests";
+import { MANIFESTS } from "../../../common/visualization-manifests";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Essence } from "../../../common/models/essence/essence";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";

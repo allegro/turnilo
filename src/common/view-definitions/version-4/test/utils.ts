@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MANIFESTS } from "../../../manifests";
+import { MANIFESTS } from "../../../visualization-manifests";
 import { Essence } from "../../../models/essence/essence";
 import { assertEqlEssence } from "../../test/assertions";
 import { dataCube } from "../../test/data-cube.fixture";

@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-import { Manifest } from "../models/manifest/manifest";
-
+import { VisualizationManifest } from "../models/visualization-manifest/visualization-manifest";
 import { BAR_CHART_MANIFEST } from "./bar-chart/bar-chart";
 import { HEAT_MAP_MANIFEST } from "./heat-map/heat-map";
 import { LINE_CHART_MANIFEST } from "./line-chart/line-chart";
 import { TABLE_MANIFEST } from "./table/table";
 import { TOTALS_MANIFEST } from "./totals/totals";
 
-export const MANIFESTS: Manifest[] = [
+export const MANIFESTS: VisualizationManifest[] = [
   TOTALS_MANIFEST,
   TABLE_MANIFEST,
   LINE_CHART_MANIFEST,

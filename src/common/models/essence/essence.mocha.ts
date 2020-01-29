@@ -17,11 +17,11 @@
 
 import { expect } from "chai";
 import { SinonSpy, spy, stub } from "sinon";
-import { MANIFESTS } from "../../manifests";
-import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
-import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../../manifests/table/table";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { MANIFESTS } from "../../visualization-manifests";
+import { BAR_CHART_MANIFEST } from "../../visualization-manifests/bar-chart/bar-chart";
+import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { DimensionKind } from "../dimension/dimension";

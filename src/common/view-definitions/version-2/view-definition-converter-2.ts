@@ -253,6 +253,6 @@ function convertSplit(split: any, dataCube: DataCube): Split {
   return new Split({ type, reference, sort, limit, bucket });
 }
 
-function splitJSConverter(splits: any[], dataCube: DataCube): Split[] {
+function plitJSConverter(splits: any[], dataCube: DataCube): Split[] {
   return splits.map(split => convertSplit(split, dataCube));
 }

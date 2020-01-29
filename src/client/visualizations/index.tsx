@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { BAR_CHART_MANIFEST } from "../../common/manifests/bar-chart/bar-chart";
-import { HEAT_MAP_MANIFEST } from "../../common/manifests/heat-map/heat-map";
-import { LINE_CHART_MANIFEST } from "../../common/manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../../common/manifests/table/table";
-import { TOTALS_MANIFEST } from "../../common/manifests/totals/totals";
-import { Manifest } from "../../common/models/manifest/manifest";
+import { BAR_CHART_MANIFEST } from "../../common/visualization-manifests/bar-chart/bar-chart";
+import { HEAT_MAP_MANIFEST } from "../../common/visualization-manifests/heat-map/heat-map";
+import { LINE_CHART_MANIFEST } from "../../common/visualization-manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../common/visualization-manifests/table/table";
+import { TOTALS_MANIFEST } from "../../common/visualization-manifests/totals/totals";
+import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
 import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
@@ -39,6 +39,6 @@ const VIS_COMPONENTS: Record<string, Visualisation> = {
   [HEAT_MAP_MANIFEST.name]: HeatMap
 };
 
-export function getVisualizationComponent({ name }: Manifest): Visualisation {
+export function getVisualizationComponent({ name }: VisualizationManifest): Visualisation {
   return VIS_COMPONENTS[name];
 }

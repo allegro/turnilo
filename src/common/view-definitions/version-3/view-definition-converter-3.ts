@@ -20,9 +20,9 @@ import { NamedArray } from "immutable-class";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
-import { Manifest } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
+import { VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { filterDefinitionConverter } from "../version-4/filter-definition";
 import { legendConverter } from "../version-4/legend-definition";
 import { splitConverter } from "../version-4/split-definition";
@@ -33,7 +33,7 @@ import { ViewDefinition3 } from "./view-definition-3";
 export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
   version = 3;
 
-  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube, visualizations: Manifest[]): Essence {
+  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube, visualizations: VisualizationManifest[]): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualizationName = definition.visualization;

@@ -19,7 +19,7 @@ import * as d3 from "d3";
 import { List, Set } from "immutable";
 import { Dataset, Datum, PseudoDatum } from "plywood";
 import * as React from "react";
-import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
+import { TABLE_MANIFEST } from "../../../common/visualization-manifests/table/table";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";

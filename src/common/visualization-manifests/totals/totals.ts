@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { EMPTY_SPLITS } from "../../models/splits/splits";
+import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
@@ -26,9 +26,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(() => Resolve.automatic(3, { splits: EMPTY_SPLITS }))
   .build();
 
-export const TOTALS_MANIFEST = new Manifest(
+export const TOTALS_MANIFEST = new VisualizationManifest(
   "totals",
   "Totals",
-  rulesEvaluator,
-  "multi"
+  rulesEvaluator
 );

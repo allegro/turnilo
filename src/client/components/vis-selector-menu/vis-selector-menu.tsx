@@ -19,7 +19,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
-import { Manifest } from "../../../common/models/manifest/manifest";
+import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -64,7 +64,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     }
   }
 
-  onVisSelect(v: Manifest) {
+  onVisSelect(v: VisualizationManifest) {
     var { clicker } = this.props;
     clicker.changeVisualization(v);
     this.setState({
@@ -72,7 +72,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     });
   }
 
-  renderVisItem(v: Manifest): JSX.Element {
+  renderVisItem(v: VisualizationManifest): JSX.Element {
     var { essence } = this.props;
     var { visualization } = essence;
 

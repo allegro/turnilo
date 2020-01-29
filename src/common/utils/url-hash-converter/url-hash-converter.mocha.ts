@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { MANIFESTS } from "../../manifests";
+import { MANIFESTS } from "../../visualization-manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { Essence } from "../../models/essence/essence";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
