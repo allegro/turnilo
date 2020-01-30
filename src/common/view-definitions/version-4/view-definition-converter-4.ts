@@ -28,6 +28,7 @@ import { legendConverter } from "./legend-definition";
 import { seriesDefinitionConverter } from "./series-definition";
 import { splitConverter } from "./split-definition";
 import { ViewDefinition4 } from "./view-definition-4";
+import { fromViewDefinition, toViewDefinition } from "./visualization-settings-converter";
 
 export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
   version = 4;
@@ -36,6 +37,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);
+    const visualizationSettings = fromViewDefinition(visualization, definition.visualizationSettings);
     const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
 
     const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
@@ -51,6 +53,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     return new Essence({
       dataCube,
       visualization,
+      visualizationSettings,
       timezone,
       filter,
       timeShift,
@@ -67,6 +70,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
 
     return {
       visualization: essence.visualization.name,
+      visualizationSettings: toViewDefinition(essence.visualization, essence.visualizationSettings),
       timezone: essence.timezone.toJS(),
       filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
       splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),

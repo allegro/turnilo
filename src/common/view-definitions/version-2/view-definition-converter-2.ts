@@ -55,7 +55,6 @@ import { DimensionSort, SeriesSort, Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
-import { VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { manifestByName } from "../../visualization-manifests";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { ViewDefinition2 } from "./view-definition-2";
@@ -67,6 +66,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
 
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube): Essence {
     const visualization = manifestByName(definition.visualization);
+    const visualizationSettings = visualization.visualizationSettings.defaults;
 
     const measureNames = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
     const series = SeriesList.fromMeasures(dataCube.measures.getMeasuresByNames(measureNames));
@@ -77,7 +77,20 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const timeShift = TimeShift.empty();
     const colors = definition.colors && Colors.fromJS(definition.colors);
     const pinnedSort = definition.pinnedSort;
-    return new Essence({ dataCube, visualization, timezone, filter, timeShift, splits, pinnedDimensions, series, colors, pinnedSort });
+
+    return new Essence({
+      dataCube,
+      visualization,
+      visualizationSettings,
+      timezone,
+      filter,
+      timeShift,
+      splits,
+      pinnedDimensions,
+      series,
+      colors,
+      pinnedSort
+    });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition2 {
