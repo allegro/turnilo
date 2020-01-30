@@ -28,7 +28,9 @@ interface VisualizationSettingsConverter<T> {
   read: Unary<unknown, T>;
 }
 
-export interface VisualizationSettings<T> {
+export type VisualizationSettings = object;
+
+export interface VisualizationSettingsConfig<T extends VisualizationSettings> {
   component: VisualizationSettingsComponent<T>;
   converter: VisualizationSettingsConverter<T>;
   defaults: T;

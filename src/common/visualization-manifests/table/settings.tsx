@@ -16,11 +16,11 @@
 
 import * as React from "react";
 import { Checkbox } from "../../../client/components/checkbox/checkbox";
-import { VisualizationSettings, VisualizationSettingsComponent } from "../../models/visualization-settings/visualization-settings";
+import { VisualizationSettingsComponent, VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
 
-export type TableVisualizationSettings = VisualizationSettings<TableSettings>;
+export type TableVisualizationSettings = VisualizationSettingsConfig<TableSettings>;
 
-interface TableSettings {
+export interface TableSettings {
   collapseRows: boolean;
 }
 

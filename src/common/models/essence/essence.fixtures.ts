@@ -35,6 +35,7 @@ import { Essence, EssenceValue } from "./essence";
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
   visualization: null,
+  visualizationSettings: null,
   timezone: Timezone.UTC,
   pinnedDimensions: OrderedSet([]),
   filter: new Filter({
@@ -103,6 +104,7 @@ export class EssenceFixtures {
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: TABLE_MANIFEST,
+      visualizationSettings: { collapsedRows: false },
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
@@ -126,6 +128,7 @@ export class EssenceFixtures {
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: LINE_CHART_MANIFEST,
+      visualizationSettings: null,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),

@@ -19,7 +19,7 @@ import { VisualizationDependentEvaluator } from "../../utils/rules/visualization
 import { Colors } from "../colors/colors";
 import { SeriesList } from "../series-list/series-list";
 import { Splits } from "../splits/splits";
-import { VisualizationSettings } from "../visualization-settings/visualization-settings";
+import { VisualizationSettingsConfig } from "../visualization-settings/visualization-settings";
 
 export interface Adjustment {
   series?: SeriesList;
@@ -92,11 +92,11 @@ export class Resolve {
   }
 }
 
-export class VisualizationManifest<T = unknown> {
+export class VisualizationManifest<T extends object = {}> {
   constructor(
     public readonly name: string,
     public readonly title: string,
     public readonly evaluateRules: VisualizationDependentEvaluator,
-    public readonly visualizationSettings?: VisualizationSettings<T>) {
+    public readonly visualizationSettings?: VisualizationSettingsConfig<T>) {
   }
 }

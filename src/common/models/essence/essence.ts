@@ -17,7 +17,8 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { RefExpression } from "plywood";
+import { PlywoodRange, Range, RefExpression } from "plywood";
+import { thread } from "../../utils/functional/functional";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { MANIFESTS } from "../../visualization-manifests";
 import { Colors } from "../colors/colors";
@@ -39,6 +40,7 @@ import { TimeShift } from "../time-shift/time-shift";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 import { Timekeeper } from "../timekeeper/timekeeper";
 import { Resolve, VisualizationManifest } from "../visualization-manifest/visualization-manifest";
+import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
   return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName)));
@@ -65,6 +67,7 @@ type DimensionId = string;
 export interface EssenceValue {
   dataCube: DataCube;
   visualization: VisualizationManifest;
+  visualizationSettings: VisualizationSettings;
   timezone: Timezone;
   filter: Filter;
   timeShift: TimeShift;
@@ -79,6 +82,7 @@ export interface EssenceValue {
 const defaultEssence: EssenceValue = {
   dataCube: null,
   visualization: null,
+  visualizationSettings: {},
   timezone: Timezone.UTC,
   filter: null,
   splits: null,
@@ -151,6 +155,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const essence = new Essence({
       dataCube,
       visualization: null,
+      visualizationSettings: {},
       timezone: dataCube.getDefaultTimezone(),
       filter: dataCube.getDefaultFilter(),
       timeShift: TimeShift.empty(),
@@ -234,6 +239,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public toJS() {
     return {
       visualization: this.visualization,
+      visualizationSettings: this.visualizationSettings,
       dataCube: this.dataCube.toJS(),
       timezone: this.timezone.toJS(),
       filter: this.filter && this.filter.toJS(),
@@ -487,26 +493,31 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
     const { dataCube, visualization, visResolve, filter, series, colors } = this;
 
-    const splitsWithSorts = this.setSortOnSplits(splits);
-    const splitsWithFilters = splitsWithSorts.updateWithFilter(filter, dataCube.dimensions);
+    const newSplits = this.setSortOnSplits(splits).updateWithFilter(filter, dataCube.dimensions);
 
-    // If in manual mode stay there, keep the vis regardless of suggested strategy
-    if (visResolve.isManual()) {
-      strategy = VisStrategy.KeepAlways;
-    }
-    if (this.splits.length() > 0 && splitsWithFilters.length() !== 0) {
-      strategy = VisStrategy.UnfairGame;
+    function setSplits(essence: Essence): Essence {
+      return essence.set("splits", newSplits);
     }
 
-    let newVisualization: VisualizationManifest = visualization;
-    if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
-      const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
-      const visAndResolve = Essence.getBestVisualization(dataCube, splitsWithFilters, series, colors, currentVisualization);
-      newVisualization = visAndResolve.visualization;
+    function adjustStrategy(strategy: VisStrategy): VisStrategy {
+      // If in manual mode stay there, keep the vis regardless of suggested strategy
+      if (visResolve.isManual()) {
+        return VisStrategy.KeepAlways;
+      }
+      if (this.splits.length() > 0 && newSplits.length() !== 0) {
+        return VisStrategy.UnfairGame;
+      }
+      return strategy;
     }
-    return this
-      .set("splits", splitsWithFilters)
-      .changeVisualization(newVisualization);
+
+    function adjustVisualization(essence: Essence): Essence {
+      if (adjustStrategy(strategy) !== VisStrategy.FairGame) return essence;
+      const { visualization: newVis } = Essence.getBestVisualization(dataCube, newSplits, series, colors, visualization);
+      if (newVis === visualization) return essence;
+      return essence.changeVisualization(newVis, newVis.visualizationSettings.defaults);
+    }
+
+    return thread(this, setSplits, adjustVisualization);
   }
 
   public changeSplit(splitCombine: Split, strategy: VisStrategy): Essence {
@@ -587,8 +598,12 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.set("colors", colors).resolveVisualizationAndUpdate();
   }
 
-  public changeVisualization(visualization: VisualizationManifest): Essence {
-    return this.set("visualization", visualization).resolveVisualizationAndUpdate();
+  public changeVisualization(visualization: VisualizationManifest, settings: VisualizationSettings): Essence {
+    const changedVis = this
+      .set("visualization", visualization)
+      .set("visualizationSettings", settings);
+    if (visualization === this.visualization) return changedVis;
+    return changedVis.resolveVisualizationAndUpdate();
   }
 
   public resolveVisualizationAndUpdate() {
