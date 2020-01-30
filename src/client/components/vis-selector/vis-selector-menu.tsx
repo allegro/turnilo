@@ -17,31 +17,65 @@
 
 import * as React from "react";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
-import { Unary } from "../../../common/utils/functional/functional";
+import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
+import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { MANIFESTS } from "../../../common/visualization-manifests";
+import { STRINGS } from "../../config/constants";
+import { Button } from "../button/button";
 import { VisSelectorItem } from "./vis-selector-item";
 import "./vis-selector-menu.scss";
 
 export interface VisSelectorMenuProps {
-  onSelect: Unary<VisualizationManifest, void>;
-  selectedVisualization: VisualizationManifest;
+  onSelect: Binary<VisualizationManifest, VisualizationSettings, void>;
+  initialVisualization: VisualizationManifest;
+  initialSettings: VisualizationSettings;
   onClose: Fn;
 }
 
-export const VisSelectorMenu: React.SFC<VisSelectorMenuProps> = props => {
-  const { onSelect, onClose, selectedVisualization } = props;
+interface VisSelectorMenuState {
+  visualization: VisualizationManifest;
+  visualizationSettings: VisualizationSettings;
+}
 
-  const onVisSelect = (v: VisualizationManifest) => {
-    onSelect(v);
+export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {
+
+  state: VisSelectorMenuState = {
+    visualization: this.props.initialVisualization,
+    visualizationSettings: this.props.initialSettings
+  }
+
+  save = () => {
+    const { onSelect, onClose } = this.props;
+    const { visualization, visualizationSettings } = this.state;
+    onSelect(visualization, visualizationSettings);
     onClose();
-  };
+  }
 
-  return <div className="vis-selector-menu">
-    {MANIFESTS.map(visualization => <VisSelectorItem
-      key={visualization.name}
-      visualization={visualization}
-      selected={visualization.name === selectedVisualization.name}
-      onClick={onVisSelect} />)}
-  </div>;
-};
+  close = () => this.props.onClose();
+
+  changeVisualization = (visualization: VisualizationManifest) => this.setState({ visualization, visualizationSettings: visualization.visualizationSettings.defaults });
+  changeSettings = (visualizationSettings: VisualizationSettings) => this.setState({ visualizationSettings });
+
+  render() {
+    const { visualization: selected, visualizationSettings } = this.state;
+    const Settings = selected.visualizationSettings.component;
+
+    return <div className="vis-selector-menu">
+      <div className="vis-items">
+        {MANIFESTS.map(visualization => <VisSelectorItem
+          key={visualization.name}
+          visualization={visualization}
+          selected={visualization.name === selected.name}
+          onClick={this.changeVisualization} />)}
+      </div>
+      <div className="vis-settings">
+        <Settings onChange={this.changeSettings} {...visualizationSettings} />
+      </div>
+      <div className="ok-cancel-bar">
+        <Button type="primary" title={STRINGS.ok} onClick={this.save} />
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.close} />
+      </div>
+    </div>;
+  }
+}

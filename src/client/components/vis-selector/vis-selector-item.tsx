@@ -31,7 +31,7 @@ export const VisSelectorItem: React.SFC<VisSelectorItemProps> = ({ visualization
   <div
     className={classNames("vis-item", (selected ? "selected" : "not-selected"))}
     key={visualization.name}
-    onClick={() => onClick(visualization)}
+    onClick={() => !selected && onClick(visualization)}
   >
     <SvgIcon svg={require("../../icons/vis-" + visualization.name + ".svg")} />
     <div className="vis-title">{visualization.title}</div>

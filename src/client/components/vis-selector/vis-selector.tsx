@@ -19,8 +19,9 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
+import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
+import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { noop } from "../../../common/utils/functional/functional";
-import { MANIFESTS } from "../../../common/visualization-manifests";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { VisSelectorItem } from "./vis-selector-item";
@@ -58,6 +59,8 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
 
   closeMenu = () => this.setState({ openMenu: false });
 
+  changeVisualization = (vis: VisualizationManifest, settings: VisualizationSettings) => this.props.clicker.changeVisualization(vis, settings);
+
   renderMenu() {
     const { openMenu } = this.state;
 
@@ -71,9 +74,10 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
       onClose={this.closeMenu}
     >
       <VisSelectorMenu
-        selectedVisualization={essence.visualization}
+        initialVisualization={essence.visualization}
+        initialSettings={essence.visualizationSettings}
         onClose={this.closeMenu}
-        onSelect={v => clicker.changeVisualization(v, {})} />
+        onSelect={this.changeVisualization} />
     </BubbleMenu>;
   }
 
