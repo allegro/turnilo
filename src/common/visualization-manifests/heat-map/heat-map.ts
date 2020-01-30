@@ -19,6 +19,7 @@ import { MeasureSeries } from "../../models/series/measure-series";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import { noSettings } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 import { ActionVariables } from "../../utils/rules/visualization-dependent-evaluator";
@@ -116,5 +117,6 @@ const suggestRemovingMeasures = ({ series }: ActionVariables) => [{
 export const HEAT_MAP_MANIFEST = new VisualizationManifest(
   "heatmap",
   "Heatmap",
-  rulesEvaluator
+  rulesEvaluator,
+  noSettings
 );

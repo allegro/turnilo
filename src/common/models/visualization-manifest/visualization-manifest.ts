@@ -97,6 +97,6 @@ export class VisualizationManifest<T extends object = {}> {
     public readonly name: string,
     public readonly title: string,
     public readonly evaluateRules: VisualizationDependentEvaluator,
-    public readonly visualizationSettings?: VisualizationSettingsConfig<T>) {
+    public readonly visualizationSettings: VisualizationSettingsConfig<T>) {
   }
 }

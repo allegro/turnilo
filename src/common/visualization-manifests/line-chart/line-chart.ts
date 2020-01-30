@@ -20,7 +20,8 @@ import { Colors } from "../../models/colors/colors";
 import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
-import { VisualizationManifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/visualization-manifest/visualization-manifest";
+import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import { noSettings } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
@@ -191,5 +192,6 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 export const LINE_CHART_MANIFEST = new VisualizationManifest(
   "line-chart",
   "Line Chart",
-  rulesEvaluator
+  rulesEvaluator,
+  noSettings
 );
