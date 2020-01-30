@@ -73,7 +73,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
       <VisSelectorMenu
         selectedVisualization={essence.visualization}
         onClose={this.closeMenu}
-        onSelect={v => clicker.changeVisualization(v)} />
+        onSelect={v => clicker.changeVisualization(v, {})} />
     </BubbleMenu>;
   }
 

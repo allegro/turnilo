@@ -37,6 +37,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Fn } from "../../../common/utils/general/general";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
@@ -194,9 +195,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.changeColors(colors) });
       },
-      changeVisualization: (visualization: VisualizationManifest) => {
+      changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeVisualization(visualization) });
+        this.setState({ essence: essence.changeVisualization(visualization, settings) });
       },
       pin: (dimension: Dimension) => {
         const { essence } = this.state;
