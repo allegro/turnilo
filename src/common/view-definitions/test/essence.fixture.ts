@@ -16,14 +16,13 @@
 
 import { day, Duration, Timezone } from "chronoshift";
 import { OrderedSet } from "immutable";
-import { MANIFESTS } from "../../visualization-manifests";
-import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { Essence, EssenceValue } from "../../models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
 import { SeriesList } from "../../models/series-list/series-list";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { dataCube } from "./data-cube.fixture";
 import { count, sum } from "./measure";
 
@@ -63,7 +62,6 @@ const defaults: EssenceOptions = {
 export function mockEssence(opts: Partial<EssenceOptions> = {}) {
   return new Essence({
     dataCube,
-    visualizations: MANIFESTS,
     ...defaults,
     ...opts
   });

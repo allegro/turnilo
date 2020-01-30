@@ -16,13 +16,13 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { NamedArray } from "immutable-class";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
 import { VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import { manifestByName } from "../../visualization-manifests";
 import { filterDefinitionConverter } from "../version-4/filter-definition";
 import { legendConverter } from "../version-4/legend-definition";
 import { splitConverter } from "../version-4/split-definition";
@@ -33,11 +33,10 @@ import { ViewDefinition3 } from "./view-definition-3";
 export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
   version = 3;
 
-  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube, visualizations: VisualizationManifest[]): Essence {
+  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
-    const visualizationName = definition.visualization;
-    const visualization = NamedArray.findByName(visualizations, visualizationName);
+    const visualization = manifestByName(definition.visualization);
     const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
 
     const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
@@ -52,7 +51,6 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
 
     return new Essence({
       dataCube,
-      visualizations,
       visualization,
       timezone,
       filter,

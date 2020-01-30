@@ -19,18 +19,18 @@ import * as React from "react";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { MANIFESTS } from "../../../common/visualization-manifests";
 import { VisSelectorItem } from "./vis-selector-item";
 import "./vis-selector-menu.scss";
 
 export interface VisSelectorMenuProps {
   onSelect: Unary<VisualizationManifest, void>;
-  visualizations?: VisualizationManifest[];
   selectedVisualization: VisualizationManifest;
   onClose: Fn;
 }
 
 export const VisSelectorMenu: React.SFC<VisSelectorMenuProps> = props => {
-  const { onSelect, onClose, visualizations = [], selectedVisualization } = props;
+  const { onSelect, onClose, selectedVisualization } = props;
 
   const onVisSelect = (v: VisualizationManifest) => {
     onSelect(v);
@@ -38,7 +38,7 @@ export const VisSelectorMenu: React.SFC<VisSelectorMenuProps> = props => {
   };
 
   return <div className="vis-selector-menu">
-    {visualizations.map(visualization => <VisSelectorItem
+    {MANIFESTS.map(visualization => <VisSelectorItem
       key={visualization.name}
       visualization={visualization}
       selected={visualization.name === selectedVisualization.name}

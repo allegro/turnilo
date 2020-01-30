@@ -17,7 +17,6 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { MANIFESTS } from "../../visualization-manifests";
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
@@ -35,7 +34,6 @@ import { Essence, EssenceValue } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
-  visualizations: MANIFESTS,
   visualization: null,
   timezone: Timezone.UTC,
   pinnedDimensions: OrderedSet([]),
@@ -77,15 +75,13 @@ export class EssenceFixtures {
 
   static getWikiContext() {
     return {
-      dataCube: DataCubeFixtures.wiki(),
-      visualizations: MANIFESTS
+      dataCube: DataCubeFixtures.wiki()
     };
   }
 
   static getTwitterContext() {
     return {
-      dataCube: DataCubeFixtures.twitter(),
-      visualizations: MANIFESTS
+      dataCube: DataCubeFixtures.twitter()
     };
   }
 
@@ -106,7 +102,6 @@ export class EssenceFixtures {
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
-      visualizations: MANIFESTS,
       visualization: TABLE_MANIFEST,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
@@ -130,7 +125,6 @@ export class EssenceFixtures {
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
-      visualizations: MANIFESTS,
       visualization: LINE_CHART_MANIFEST,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),

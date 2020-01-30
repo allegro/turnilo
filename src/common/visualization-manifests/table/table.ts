@@ -19,7 +19,7 @@ import { Resolve, VisualizationManifest } from "../../models/visualization-manif
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
-import { settings, TableSettings } from "./settings";
+import { settings } from "./settings";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())

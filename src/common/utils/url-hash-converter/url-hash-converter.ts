@@ -16,21 +16,13 @@
 
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
-import { VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
-import {
-  DEFAULT_VIEW_DEFINITION_VERSION,
-  definitionConverters,
-  definitionUrlEncoders,
-  LEGACY_VIEW_DEFINITION_VERSION,
-  version2Visualizations,
-  ViewDefinitionVersion
-} from "../../view-definitions";
+import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, LEGACY_VIEW_DEFINITION_VERSION, version2Visualizations, ViewDefinitionVersion } from "../../view-definitions";
 
 const SEGMENT_SEPARATOR = "/";
 const MINIMAL_HASH_SEGMENTS_COUNT = 2;
 
 export interface UrlHashConverter {
-  essenceFromHash(hash: string, dataCube: DataCube, visializations: VisualizationManifest[]): Essence;
+  essenceFromHash(hash: string, dataCube: DataCube): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
@@ -84,14 +76,14 @@ export function getHashSegments(hash: string): HashSegments {
 }
 
 export const urlHashConverter: UrlHashConverter = {
-  essenceFromHash(hash: string, dataCube: DataCube, visualizations: VisualizationManifest[]): Essence {
+  essenceFromHash(hash: string, dataCube: DataCube): Essence {
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
-    return definitionConverter.fromViewDefinition(definition, dataCube, visualizations);
+    return definitionConverter.fromViewDefinition(definition, dataCube);
   },
 
   toHash(essence: Essence, version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION): string {

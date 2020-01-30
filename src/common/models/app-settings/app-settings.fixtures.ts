@@ -318,9 +318,7 @@ export class AppSettingsFixtures {
   }
 
   static getContext(): AppSettingsContext {
-    return {
-      visualizations: MANIFESTS
-    };
+    return {};
   }
 
   static wikiOnly() {

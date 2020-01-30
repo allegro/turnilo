@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { NamedArray } from "immutable-class";
 import { VisualizationManifest } from "../models/visualization-manifest/visualization-manifest";
 import { BAR_CHART_MANIFEST } from "./bar-chart/bar-chart";
 import { HEAT_MAP_MANIFEST } from "./heat-map/heat-map";
@@ -29,3 +30,7 @@ export const MANIFESTS: VisualizationManifest[] = [
   BAR_CHART_MANIFEST,
   HEAT_MAP_MANIFEST
 ];
+
+export function manifestByName(visualizationName: string): VisualizationManifest {
+  return NamedArray.findByName(MANIFESTS, visualizationName);
+}

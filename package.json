@@ -49,6 +49,7 @@
     "start:dev": "NODE_ENV=dev-hmr ./bin/turnilo",
     "build": "npm run clean && npm run tsc -- -p src/server/tsconfig.json && webpack --config config/webpack.prod.js",
     "build:dev": "npm run clean && npm run tsc -- -p src/server/tsconfig.json",
+    "dev": "npm run clean && npm run tsc -- -p tsconfig.json -w --pretty",
     "clean": "rimraf build/*",
     "check": "npm-run-all -c -p lint test build",
     "tsc": "tsc",

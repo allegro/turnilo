@@ -82,7 +82,7 @@ describe("EssenceProps", () => {
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {
-      const essence = Essence.fromDataCube(dataCube, MANIFESTS);
+      const essence = Essence.fromDataCube(dataCube);
 
       // TODO: don't test toJS
       expect(essence.toJS()).to.deep.equal({
@@ -154,7 +154,6 @@ describe("EssenceProps", () => {
       tests.forEach(({ splits, current, expected }) => {
         it(`chooses ${expected.name} given splits: [${splits}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
-            MANIFESTS,
             DataCubeFixtures.twitter(),
             Splits.fromSplits(splits),
             SeriesList.fromMeasureNames([]),

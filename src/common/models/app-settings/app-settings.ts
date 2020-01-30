@@ -22,7 +22,6 @@ import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
-import { VisualizationManifest } from "../visualization-manifest/visualization-manifest";
 
 export interface AppSettingsValue {
   version?: number;
@@ -39,14 +38,13 @@ export interface AppSettingsJS {
 }
 
 export interface AppSettingsContext {
-  visualizations: VisualizationManifest[];
   executorFactory?: (dataCube: DataCube) => Executor;
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
 
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
-  static BLANK = AppSettings.fromJS({}, { visualizations: [] });
+  static BLANK = AppSettings.fromJS({}, {});
 
   static isAppSettings(candidate: any): candidate is AppSettings {
     return candidate instanceof AppSettings;
