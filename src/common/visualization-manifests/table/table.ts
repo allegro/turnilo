@@ -50,7 +50,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
   .build();
 
-export const TABLE_MANIFEST = new VisualizationManifest<TableSettings>(
+export const TABLE_MANIFEST = new VisualizationManifest(
   "table",
   "Table",
   rulesEvaluator,

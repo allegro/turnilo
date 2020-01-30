@@ -18,20 +18,21 @@ import * as React from "react";
 import { Checkbox } from "../../../client/components/checkbox/checkbox";
 import { VisualizationSettings, VisualizationSettingsComponent } from "../../models/visualization-settings/visualization-settings";
 
-export interface TableSettings {
+export type TableVisualizationSettings = VisualizationSettings<TableSettings>;
+
+interface TableSettings {
   collapseRows: boolean;
 }
 
 const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ collapseRows, onChange }) =>
   <div>
     <Checkbox
+      label="Collapse rows"
       selected={collapseRows}
-      onClick={() => onChange({ collapseRows: !!collapseRows })}>
-      Collapse rows
-    </Checkbox>
+      onClick={() => onChange({ collapseRows: !!collapseRows })} />
   </div>;
 
-export const settings: VisualizationSettings<TableSettings> = {
+export const settings: TableVisualizationSettings = {
   component: TableSettingsComponent,
   converter: {
     print: (settings: TableSettings) => settings,
