@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Record } from "immutable";
 import * as React from "react";
 import { Checkbox } from "../../../client/components/checkbox/checkbox";
 import { VisualizationSettingsComponent, VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
@@ -32,13 +33,19 @@ const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({
       onClick={() => onChange({ collapseRows: !!collapseRows })} />
   </div>;
 
+const defaults: TableSettings = {
+  collapseRows: false
+};
+
+const settingsFactory = Record<TableSettings>(defaults);
+
+const mkSettings = (settings: Partial<TableSettings>): Record<TableSettings> => new (settingsFactory)(settings);
+
 export const settings: TableVisualizationSettings = {
   component: TableSettingsComponent,
   converter: {
     print: (settings: TableSettings) => settings,
-    read: (input: TableSettings) => ({ collapseRows: !!input.collapseRows })
+    read: (input: TableSettings) => mkSettings({ collapseRows: !!input.collapseRows })
   },
-  defaults: {
-    collapseRows: false
-  }
+  defaults: mkSettings({})
 };

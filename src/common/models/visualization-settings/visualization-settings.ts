@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Record } from "immutable";
 import * as React from "react";
 import { Unary } from "../../utils/functional/functional";
 
@@ -25,13 +26,14 @@ export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsC
 
 interface VisualizationSettingsConverter<T> {
   print: Unary<T, object>;
-  read: Unary<unknown, T>;
+  read: Unary<unknown, Record<T>>;
 }
 
-export type VisualizationSettings = object;
+type VisSettingsInternal = object;
+export type VisualizationSettings<T extends VisSettingsInternal = object> = Record<VisSettingsInternal>;
 
-export interface VisualizationSettingsConfig<T extends VisualizationSettings> {
+export interface VisualizationSettingsConfig<T extends VisSettingsInternal> {
   component: VisualizationSettingsComponent<T>;
   converter: VisualizationSettingsConverter<T>;
-  defaults: T;
+  defaults: VisualizationSettings<T>;
 }

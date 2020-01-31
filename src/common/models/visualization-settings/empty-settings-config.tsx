@@ -20,11 +20,11 @@ import { VisualizationSettingsComponent, VisualizationSettingsConfig } from "./v
 
 const EmptySettingsComponent: VisualizationSettingsComponent<{}> = () => <div>No Settings</div>;
 
-export const noSettings: VisualizationSettingsConfig<{}> = {
+export const emptySettingsConfig: VisualizationSettingsConfig<{}> = {
   component: EmptySettingsComponent,
   converter: {
-    read: constant({}),
-    print: constant({})
+    read: constant(null),
+    print: constant(null)
   },
-  defaults: {}
+  defaults: null
 };
