@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-interface Equatable {
-  equals(other: any): boolean;
-}
+import { Equalable } from "immutable-class";
 
-export default function nullableEquals(a: Equatable, b: Equatable): boolean {
+export default function nullableEquals(a: Equalable, b: Equalable): boolean {
   if (a === null) {
     return a === b;
   }

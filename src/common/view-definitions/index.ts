@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Essence } from "../models/essence/essence";
 import { BAR_CHART_MANIFEST } from "../visualization-manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../visualization-manifests/totals/totals";
-import { Essence } from "../models/essence/essence";
 import { ViewDefinition2 } from "./version-2/view-definition-2";
 import { ViewDefinitionConverter2 } from "./version-2/view-definition-converter-2";
 import { ViewDefinitionHashEncoder2 } from "./version-2/view-definition-hash-encoder2";

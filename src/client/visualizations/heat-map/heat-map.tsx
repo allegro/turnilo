@@ -23,12 +23,12 @@
 import { TooltipProps, TooltipWithBounds, withTooltip } from "@vx/tooltip";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
-import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../common/models/split/split";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatSegment } from "../../../common/utils/formatter/formatter";
+import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SPLIT } from "../../config/constants";

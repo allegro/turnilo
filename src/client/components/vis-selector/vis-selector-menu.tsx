@@ -43,7 +43,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   state: VisSelectorMenuState = {
     visualization: this.props.initialVisualization,
     visualizationSettings: this.props.initialSettings
-  }
+  };
 
   save = () => {
     const { onSelect, onClose } = this.props;

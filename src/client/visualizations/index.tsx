@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
+import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
+import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BAR_CHART_MANIFEST } from "../../common/visualization-manifests/bar-chart/bar-chart";
 import { HEAT_MAP_MANIFEST } from "../../common/visualization-manifests/heat-map/heat-map";
 import { LINE_CHART_MANIFEST } from "../../common/visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../common/visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../common/visualization-manifests/totals/totals";
-import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
-import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
 import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
 import { HeatMap } from "./heat-map/heat-map";
