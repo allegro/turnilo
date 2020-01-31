@@ -17,7 +17,6 @@
 
 import { expect } from "chai";
 import { SinonSpy, spy, stub } from "sinon";
-import { MANIFESTS } from "../../visualization-manifests";
 import { BAR_CHART_MANIFEST } from "../../visualization-manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
@@ -179,7 +178,7 @@ describe("EssenceProps", () => {
 
       it("defaults to table with non continuous dimension", () => {
         const essence = EssenceFixtures.twitterNoVisualisation()
-          .changeVisualization(TOTALS_MANIFEST, {})
+          .changeVisualization(TOTALS_MANIFEST)
           .addSplit(twitterHandleSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(TABLE_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
@@ -187,7 +186,7 @@ describe("EssenceProps", () => {
 
       it("defaults to line chart with a continuous dimension", () => {
         const essence = EssenceFixtures.twitterNoVisualisation()
-          .changeVisualization(TOTALS_MANIFEST, {})
+          .changeVisualization(TOTALS_MANIFEST)
           .addSplit(timeSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
@@ -204,7 +203,7 @@ describe("EssenceProps", () => {
       it("in unfair game, gives existing vis a bonus", () => {
         const essence = EssenceFixtures.twitterNoVisualisation()
           .addSplit(timeSplit, VisStrategy.FairGame)
-          .changeVisualization(BAR_CHART_MANIFEST, {});
+          .changeVisualization(BAR_CHART_MANIFEST);
         expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
         const newSplit = essence.addSplit(twitterHandleSplit, VisStrategy.UnfairGame);
@@ -214,7 +213,7 @@ describe("EssenceProps", () => {
 
       it("defaults back to totals with no split", () => {
         const essence = EssenceFixtures.twitterNoVisualisation()
-          .changeVisualization(TOTALS_MANIFEST, {})
+          .changeVisualization(TOTALS_MANIFEST)
           .addSplit(timeSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
@@ -233,7 +232,7 @@ describe("EssenceProps", () => {
       noMeasuresTests.forEach(({ splits, visualization }) => {
         it(`does not change ${visualization.title} visualization when in manual resolve`, () => {
           const essence = EssenceFixtures.twitterNoVisualisation()
-            .changeVisualization(TOTALS_MANIFEST, {})
+            .changeVisualization(TOTALS_MANIFEST)
             .addSplit(splits[0], VisStrategy.FairGame);
           expect(essence.visualization).to.deep.equal(visualization);
           expect(essence.visResolve.isReady(), "is ready after adding split").to.be.true;
@@ -257,10 +256,14 @@ describe("EssenceProps", () => {
       });
 
       it("should handle adding too many splits for table", () => {
+        console.log("start it");
         const essence = EssenceFixtures.wikiTable();
+        console.log("splits before", essence.splits.length());
         const addedSplit = essence.addSplit(timeSplit, VisStrategy.KeepAlways);
+        console.log("splits after", addedSplit.splits.length());
 
         expect(addedSplit.splits.length()).to.be.eq(5);
+        console.log("visResolve", addedSplit.visResolve.state);
         expect(addedSplit.visResolve.isManual()).to.be.true;
         expect(addedSplit.visResolve.resolutions[0].adjustment.splits.length()).to.be.eq(4);
       });
@@ -269,7 +272,7 @@ describe("EssenceProps", () => {
     describe("#changeVisualisation", () => {
       [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach(manifest => {
         it("it sets visResolve to manual", () => {
-          const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest, {});
+          const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest);
           expect(essence.visualization.name).to.deep.equal(manifest.name);
           expect(essence.visResolve.isManual()).to.be.true;
         });

@@ -104,7 +104,7 @@ export class EssenceFixtures {
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: TABLE_MANIFEST,
-      visualizationSettings: { collapsedRows: false },
+      visualizationSettings: TABLE_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),

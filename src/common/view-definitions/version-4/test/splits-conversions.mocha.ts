@@ -30,10 +30,18 @@ import { assertConversionToEssence, toEssence } from "./utils";
 
 describe("Splits", () => {
   const mockViewDefinitionWithSplits = (...splits: SplitDefinition[]) =>
-    mockViewDefinition({ splits, visualization: TABLE_MANIFEST.name });
+    mockViewDefinition({
+      splits,
+      visualization: TABLE_MANIFEST.name,
+      visualizationSettings: null
+    });
 
   const mockEssenceWithSplits = (...splits: Split[]) =>
-    mockEssence({ splits: Splits.fromSplits(splits), visualization: TABLE_MANIFEST });
+    mockEssence({
+      splits: Splits.fromSplits(splits),
+      visualization: TABLE_MANIFEST,
+      visualizationSettings: TABLE_MANIFEST.visualizationSettings.defaults
+    });
 
   describe("String Dimensions", () => {
     it("reads basic split", () => {
