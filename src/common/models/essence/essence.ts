@@ -491,7 +491,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    const { dataCube, visualization, visResolve, filter, series, colors } = this;
+    const { splits: oldSplits, dataCube, visualization, visResolve, filter, series, colors } = this;
 
     const newSplits = this.setSortOnSplits(splits).updateWithFilter(filter, dataCube.dimensions);
 
@@ -504,7 +504,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       if (visResolve.isManual()) {
         return VisStrategy.KeepAlways;
       }
-      if (this.splits.length() > 0 && newSplits.length() !== 0) {
+      if (oldSplits.length() > 0 && newSplits.length() !== 0) {
         return VisStrategy.UnfairGame;
       }
       return strategy;
