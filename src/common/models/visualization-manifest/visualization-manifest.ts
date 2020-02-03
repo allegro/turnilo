@@ -92,9 +92,11 @@ export class Resolve {
   }
 }
 
+export type Visualization = "heatmap" | "table" | "totals" | "bar-chart" | "line-chart";
+
 export class VisualizationManifest<T extends object = {}> {
   constructor(
-    public readonly name: string,
+    public readonly name: Visualization,
     public readonly title: string,
     public readonly evaluateRules: VisualizationDependentEvaluator,
     public readonly visualizationSettings: VisualizationSettingsConfig<T>) {

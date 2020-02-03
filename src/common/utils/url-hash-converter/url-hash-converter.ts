@@ -16,6 +16,7 @@
 
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
+import { Visualization } from "../../models/visualization-manifest/visualization-manifest";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, LEGACY_VIEW_DEFINITION_VERSION, version2Visualizations, ViewDefinitionVersion } from "../../view-definitions";
 
 const SEGMENT_SEPARATOR = "/";
@@ -28,7 +29,8 @@ export interface UrlHashConverter {
 }
 
 function isLegacyWithVisualizationPrefix(hashParts: string[]) {
-  return version2Visualizations.indexOf(hashParts[0]) !== -1 && hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
+  const [visualization, version] = hashParts;
+  return version2Visualizations.has(visualization as Visualization) && version === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
 }
 
 function isVersion3VisualizationPrefix(hashParts: string[]) {
