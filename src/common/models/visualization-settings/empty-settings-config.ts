@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from "react";
 import { constant } from "../../utils/functional/functional";
-import { VisualizationSettingsComponent, VisualizationSettingsConfig } from "./visualization-settings";
-
-const EmptySettingsComponent: VisualizationSettingsComponent<{}> = () => <div>No Settings</div>;
+import { VisualizationSettingsConfig } from "./visualization-settings";
 
 export const emptySettingsConfig: VisualizationSettingsConfig<{}> = {
-  component: EmptySettingsComponent,
   converter: {
     read: constant(null),
     print: constant(null)

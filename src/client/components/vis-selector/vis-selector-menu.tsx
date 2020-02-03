@@ -22,6 +22,7 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { MANIFESTS } from "../../../common/visualization-manifests";
 import { STRINGS } from "../../config/constants";
+import { settingsComponent } from "../../visualization-settings/settings-component";
 import { Button } from "../button/button";
 import { VisSelectorItem } from "./vis-selector-item";
 import "./vis-selector-menu.scss";
@@ -59,7 +60,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   render() {
     const { visualization: selected, visualizationSettings } = this.state;
-    const Settings = selected.visualizationSettings.component;
+    const Settings = settingsComponent(selected.name);
 
     return <div className="vis-selector-menu">
       <div className="vis-items">

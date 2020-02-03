@@ -33,7 +33,6 @@ type VisSettingsInternal = object;
 export type VisualizationSettings<T extends VisSettingsInternal = object> = Record<VisSettingsInternal>;
 
 export interface VisualizationSettingsConfig<T extends VisSettingsInternal> {
-  component: VisualizationSettingsComponent<T>;
   converter: VisualizationSettingsConverter<T>;
   defaults: VisualizationSettings<T>;
 }

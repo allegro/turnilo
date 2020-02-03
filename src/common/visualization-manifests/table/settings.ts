@@ -16,22 +16,13 @@
 
 import { Record } from "immutable";
 import * as React from "react";
-import { Checkbox } from "../../../client/components/checkbox/checkbox";
-import { VisualizationSettingsComponent, VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
+import { VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
 
 export type TableVisualizationSettings = VisualizationSettingsConfig<TableSettings>;
 
 export interface TableSettings {
   collapseRows: boolean;
 }
-
-const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ collapseRows, onChange }) =>
-  <div>
-    <Checkbox
-      label="Collapse rows"
-      selected={collapseRows}
-      onClick={() => onChange({ collapseRows: !!collapseRows })} />
-  </div>;
 
 const defaults: TableSettings = {
   collapseRows: false
@@ -42,7 +33,6 @@ const settingsFactory = Record<TableSettings>(defaults);
 const mkSettings = (settings: Partial<TableSettings>): Record<TableSettings> => new (settingsFactory)(settings);
 
 export const settings: TableVisualizationSettings = {
-  component: TableSettingsComponent,
   converter: {
     print: (settings: TableSettings) => settings,
     read: (input: TableSettings) => mkSettings({ collapseRows: !!input.collapseRows })
