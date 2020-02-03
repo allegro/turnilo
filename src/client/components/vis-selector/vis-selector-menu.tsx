@@ -58,9 +58,19 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   changeVisualization = (visualization: VisualizationManifest) => this.setState({ visualization, visualizationSettings: visualization.visualizationSettings.defaults });
   changeSettings = (visualizationSettings: VisualizationSettings) => this.setState({ visualizationSettings });
 
+  renderSettings() {
+    const { visualization, visualizationSettings } = this.state;
+    const Settings = settingsComponent(visualization.name);
+
+    if (!Settings) return null;
+    return <div className="vis-settings">
+      <div className="vis-settings-title">Settings</div>
+      <Settings onChange={this.changeSettings} {...visualizationSettings} />
+    </div>;
+  }
+
   render() {
-    const { visualization: selected, visualizationSettings } = this.state;
-    const Settings = settingsComponent(selected.name);
+    const { visualization: selected } = this.state;
 
     return <div className="vis-selector-menu">
       <div className="vis-items">
@@ -70,9 +80,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
           selected={visualization.name === selected.name}
           onClick={this.changeVisualization} />)}
       </div>
-      <div className="vis-settings">
-        <Settings onChange={this.changeSettings} {...visualizationSettings} />
-      </div>
+      {this.renderSettings()}
       <div className="ok-cancel-bar">
         <Button type="primary" title={STRINGS.ok} onClick={this.save} />
         <Button type="secondary" title={STRINGS.cancel} onClick={this.close} />

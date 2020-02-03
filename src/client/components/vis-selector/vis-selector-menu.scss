@@ -14,21 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 .vis-selector-menu {
 
-  .vis-item {
-    margin: 1px;
-    border-radius: $corner;
+  .vis-items {
 
-    &:hover {
-      box-shadow: inset 0 0 0 1px $border-extra-light;
+    .vis-item {
+      margin: 1px;
+      border-radius: $corner;
+
+      &:hover {
+        box-shadow: inset 0 0 0 1px $border-extra-light;
+      }
+
+      &.selected {
+        box-shadow: inset 0 0 0 1px $border-light;
+      }
     }
+  }
 
-    &.selected {
-      box-shadow: inset 0 0 0 1px $border-light;
+  .vis-settings {
+    padding: 14px 12px;
+
+    .vis-settings-title {
+      @extend %input-top-label;
     }
   }
 }

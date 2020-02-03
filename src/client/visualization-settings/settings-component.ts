@@ -16,17 +16,16 @@
 
 import { Visualization } from "../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationSettingsComponent } from "../../common/models/visualization-settings/visualization-settings";
-import { EmptySettingsComponent } from "./empty-settings-component";
 import { TableSettingsComponent } from "./table/table-settings";
 
 const Components: Record<Visualization, VisualizationSettingsComponent<unknown>> = {
-  "bar-chart": EmptySettingsComponent,
-  "line-chart": EmptySettingsComponent,
-  "heatmap": EmptySettingsComponent,
-  "totals": EmptySettingsComponent,
+  "bar-chart": null,
+  "line-chart": null,
+  "heatmap": null,
+  "totals": null,
   "table": TableSettingsComponent
 };
 
-export function settingsComponent(visualization: Visualization): VisualizationSettingsComponent<unknown> {
+export function settingsComponent(visualization: Visualization): VisualizationSettingsComponent<unknown> | null {
   return Components[visualization];
 }

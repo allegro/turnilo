@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { VisualizationSettingsComponent } from "../../common/models/visualization-settings/visualization-settings";
+@import '../../imports';
 
-export const EmptySettingsComponent: VisualizationSettingsComponent<{}> = () => <div>No Settings</div>;
+.settings-row {
+  height: 24px;
+  cursor: pointer;
+
+  .settings-label {
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 4px;
+    color: $text-medium;
+    font-size: 11px;
+    font-weight: 400;
+  }
+}
