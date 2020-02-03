@@ -17,8 +17,8 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
-import { sleep } from "../../../client/utils/test-utils/sleep";
-import { complement, concatTruthy, cons, debounceWithPromise, flatMap, mapTruthy, thread, threadConditionally, threadNullable } from "./functional";
+import { sleep } from "../../../client/utils/test-utils";
+import { complement, concatTruthy, cons, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -34,6 +34,16 @@ describe("Functional utilities", () => {
 
     it("should keep nested arrays", () => {
       expect(cons([], [1])).to.deep.eq([[1]]);
+    });
+  });
+
+  describe("range", () => {
+    it("should return range from 0 to exclusive 3", () => {
+      expect(range(0, 3)).to.deep.eq([0, 1, 2]);
+    });
+
+    it("should return range from 5 to exclusive 10", () => {
+      expect(range(5, 10)).to.deep.eq([5, 6, 7, 8, 9]);
     });
   });
 

@@ -68,6 +68,16 @@ export function complement<T>(p: Predicate<T>): Predicate<T> {
   return (x: T) => !p(x);
 }
 
+export function range(from: number, to: number): number[] {
+  const result = [];
+  let n = from;
+  while (n < to) {
+    result.push(n);
+    n += 1;
+  }
+  return result;
+}
+
 // TODO: fix to use infer on arguments tuple https://stackoverflow.com/a/50014868/1089761
 export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms: number): ((...args: any[]) => Promise<any>) & { cancel: Fn } {
   let timeoutId: any;

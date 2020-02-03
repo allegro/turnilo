@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { day, month, Timezone } from "chronoshift";
+import { day, Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { Moment, tz } from "moment-timezone";
 import { Unary } from "../functional/functional";
@@ -142,47 +142,6 @@ export function formatStartOfTimeRange(range: { start: Date, end: Date }, timezo
 
 export function formatTimeRange(range: { start: Date, end: Date }, timezone: Timezone): string {
   return formatDatesInTimeRange(range, timezone).join(" - ");
-}
-
-// calendar utils
-
-export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone, locale: Locale): Date[][] {
-  const weeks: Date[][] = [];
-  const firstDayNextMonth = month.shift(firstDayOfMonth, timezone, 1);
-
-  let week: Date[] = [];
-  let currentPointer = day.floor(firstDayOfMonth, timezone);
-  while (currentPointer < firstDayNextMonth) {
-    const wallTime = getMoment(currentPointer, timezone);
-    if ((wallTime.day() === locale.weekStart || 0) && week.length > 0) {
-      weeks.push(week);
-      week = [];
-    }
-
-    week.push(currentPointer);
-    currentPointer = day.shift(currentPointer, timezone, 1);
-  }
-  // push last week
-  if (week.length > 0) weeks.push(week);
-  return weeks;
-}
-
-export function prependDays(timezone: Timezone, weekPrependTo: Date[], countPrepend: number): Date[] {
-  for (let i = 0; i < countPrepend; i++) {
-    const firstDate = weekPrependTo[0];
-    const shiftedDate = day.shift(firstDate, timezone, -1);
-    weekPrependTo.unshift(shiftedDate);
-  }
-  return weekPrependTo;
-}
-
-export function appendDays(timezone: Timezone, weekAppendTo: Date[], countAppend: number): Date[] {
-  for (let i = 0; i < countAppend; i++) {
-    const lastDate = weekAppendTo[weekAppendTo.length - 1];
-    const shiftedDate = day.shift(lastDate, timezone, 1);
-    weekAppendTo.push(shiftedDate);
-  }
-  return weekAppendTo;
 }
 
 export function datesEqual(d1: Date, d2: Date): boolean {
