@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
+import { Timezone } from "chronoshift";
 import * as filesaver from "file-saver";
-import * as moment from "moment";
+import { tz as getMomentWithTimezone } from "moment-timezone";
 import { Dataset, DatasetJSFull, TabulatorOptions } from "plywood";
 import { FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
@@ -57,7 +58,7 @@ export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, op
 }
 
 function dateToFileString(date: Date): string {
-  return moment(date).format("YYYY-MM-DD_HH_mm_ss");
+  return getMomentWithTimezone(date, Timezone.UTC.toString()).format("YYYY-MM-DD_HH_mm_ss");
 }
 
 export function dateFromFilter(filter: Filter): string {
