@@ -40,7 +40,7 @@ this is how Turnilo emerged.
 
 ## Join us!
 
-[Join the chat on Slack](https://bit.ly/2WgiCNr)
+[Join the chat on Slack](https://join.slack.com/t/turnilo/shared_invite/enQtOTI4ODcxMjcyNjU2LTFlOTk5YWZlOGMyZDZhZWU3MGNjNDRhZmI1Y2UzNDlkZmY3YzYxYTJhYzIzMzc0MTc3MzA3OTE1NmQ5NDI1M2I)
 
 ## Pre-requisites
 
