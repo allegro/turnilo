@@ -55,7 +55,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     this.setState({
       openMenu: true
     });
-  }
+  };
 
   closeMenu = () => this.setState({ openMenu: false });
 
@@ -65,7 +65,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     const { openMenu } = this.state;
 
     if (!openMenu) return null;
-    const { clicker, essence } = this.props;
+    const { essence } = this.props;
     return <BubbleMenu
       className="vis-selector-menu-container"
       direction="down"
@@ -85,12 +85,14 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     const { essence: { visualization } } = this.props;
     const { openMenu } = this.state;
 
-    return <div
-      ref={this.selector}
-      className={classNames("vis-selector", { active: openMenu })}
-      onClick={this.openMenu}>
-      <VisSelectorItem visualization={visualization} selected={true} onClick={noop} />
+    return <React.Fragment>
+      <div
+        ref={this.selector}
+        className={classNames("vis-selector", { active: openMenu })}
+        onClick={this.openMenu}>
+        <VisSelectorItem visualization={visualization} selected={true} onClick={noop} />
+      </div>
       {this.renderMenu()}
-    </div>;
+    </React.Fragment>;
   }
 }
