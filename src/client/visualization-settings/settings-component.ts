@@ -15,10 +15,17 @@
  */
 
 import { Visualization } from "../../common/models/visualization-manifest/visualization-manifest";
-import { VisualizationSettingsComponent } from "../../common/models/visualization-settings/visualization-settings";
 import { TableSettingsComponent } from "./table/table-settings";
 
-const Components: Record<Visualization, VisualizationSettingsComponent<unknown>> = {
+interface SettingsComponents {
+  "table": typeof TableSettingsComponent;
+  "bar-chart": null;
+  "line-chart": null;
+  "heatmap": null;
+  "totals": null;
+}
+
+const Components: SettingsComponents = {
   "bar-chart": null,
   "line-chart": null,
   "heatmap": null,
@@ -26,6 +33,6 @@ const Components: Record<Visualization, VisualizationSettingsComponent<unknown>>
   "table": TableSettingsComponent
 };
 
-export function settingsComponent(visualization: Visualization): VisualizationSettingsComponent<unknown> | null {
+export function settingsComponent<T extends Visualization>(visualization: T): SettingsComponents[T] {
   return Components[visualization];
 }

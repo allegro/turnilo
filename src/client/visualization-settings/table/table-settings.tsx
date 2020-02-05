@@ -20,11 +20,11 @@ import { TableSettings } from "../../../common/visualization-manifests/table/set
 import { Checkbox } from "../../components/checkbox/checkbox";
 import "./table-settings.scss";
 
-export const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ collapseRows, onChange }) => {
-  const toggleCollapseRows = () => onChange({ collapseRows: !collapseRows });
+export const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ settings, onChange }) => {
+  const toggleCollapseRows = () => onChange(settings.update("collapseRows", collapse => !collapse));
   return  <div className="settings-row">
     <Checkbox
-      selected={collapseRows}
+      selected={settings.collapseRows}
       onClick={toggleCollapseRows} />
     <span className="settings-label">Collapse rows</span>
   </div>;

@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { Record } from "immutable";
 import * as React from "react";
 import { Unary } from "../../utils/functional/functional";
+import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
 interface VisualizationSettingsComponentProps<T> {
-  onChange: Unary<T, void>;
+  onChange: Unary<ImmutableRecord<T>, void>;
+  settings: ImmutableRecord<T>;
 }
 
-export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsComponentProps<T> & T>;
+export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsComponentProps<T>>;
 
 interface VisualizationSettingsConverter<T> {
   print: Unary<T, object>;
-  read: Unary<unknown, Record<T>>;
+  read: Unary<unknown, ImmutableRecord<T>>;
 }
 
 type VisSettingsInternal = object;
-export type VisualizationSettings<T extends VisSettingsInternal = object> = Record<VisSettingsInternal>;
+export type VisualizationSettings<T extends VisSettingsInternal = object> = ImmutableRecord<VisSettingsInternal>;
 
 export interface VisualizationSettingsConfig<T extends VisSettingsInternal> {
   converter: VisualizationSettingsConverter<T>;

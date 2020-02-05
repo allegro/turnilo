@@ -20,6 +20,7 @@ import { VisualizationManifest } from "../../../common/models/visualization-mani
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import { MANIFESTS } from "../../../common/visualization-manifests";
 import { STRINGS } from "../../config/constants";
 import { settingsComponent } from "../../visualization-settings/settings-component";
@@ -60,12 +61,32 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   renderSettings() {
     const { visualization, visualizationSettings } = this.state;
+    /*
+     TODO:
+      Right now we can't encode in type relationship between visualization and settings
+      on Essence type. That's why we use "any" here. Downside is that we can pass somehow
+      settings that are not valid for selected vis. This invariant is handled in code in
+      Essence - after changing viz, we change settings using viz defaults or viz reader -
+      bot of which return correct type.
+      Invariants inside component are held - component and settings are declared using same
+      type parameter. But still - this declaration is enforced locally - someone could write
+      HeatmapComponent<LineChartSettings>.
+      Idea is to encode settings and visualization behind one type parameter on Essence.
+      Issues:
+        move manifest and mutbale settings into under one key
+        how to keep type parameter attached to essence (on Clicker.state) when:
+          mutating something else (should keep type parameter)
+          chanigng viz (should change type parameter)
+    */
+    const settings = visualizationSettings as ImmutableRecord<any>;
     const Settings = settingsComponent(visualization.name);
 
     if (!Settings) return null;
     return <div className="vis-settings">
       <div className="vis-settings-title">Settings</div>
-      <Settings onChange={this.changeSettings} {...visualizationSettings} />
+      <Settings
+        onChange={this.changeSettings}
+        settings={settings} />
     </div>;
   }
 
