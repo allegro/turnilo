@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-.row {
+@import './dimensions';
+@import './row-style';
+
+.measure-row {
   @include row-style;
   white-space: nowrap;
 
-  &.hover,
-  &.selected {
+  &.highlight {
     > .measure {
       > .background-container {
         > .background {

@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
+@import 'dimensions';
 @import '../../imports';
-@import './dimensions';
 
-.table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+.measure-name {
+  background-color: $white;
+  border-bottom: 1px solid $border-super-light;
+  padding-top: $header-padding-top;
 
-    &.has-top-shadow {
+  white-space: nowrap;
+  padding-left: $measure-column-padding-left;
 
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
+  display: inline-block;
+  width: $measure-width;
+  height: 100%;
 
-    .left-gutter, .top-left-corner {
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-      border-right: 1px solid $border-super-light;
+  > .title-wrap {
+    @include ellipsis;
+    display: inline-block;
+    height: 100%;
+    padding-left: 4px;
+    max-width: 100%;
+  }
+
+  &.sorted {
+    > .title-wrap {
+      max-width: calc(100% - 15px);
     }
   }
 }
-

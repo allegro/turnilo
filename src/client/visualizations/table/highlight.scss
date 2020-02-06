@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-.measure-name {
-  background-color: $white;
-  border-bottom: 1px solid $border-super-light;
-  padding-top: $header-padding-top;
+@import '../../imports';
+@import './dimensions';
 
-  white-space: nowrap;
-  padding-left: $measure-column-padding-left;
+.highlight-cont {
+  position: absolute;
+  left: $space-left;
+  right: 0;
+  top: $header-height;
+  bottom: 0;
+  overflow: hidden;
 
-  display: inline-block;
-  width: $measure-width;
-  height: 100%;
+  .highlighter {
+    right: 0;
+    height: $row-height + 1;
+    margin-top: -1px;
+    border: 1px solid $hover;
 
-  > .title-wrap {
-    @include ellipsis;
-    display: inline-block;
-    height: 100%;
-    padding-left: 4px;
-    max-width: 100%;
-  }
-
-  &.sorted {
-    > .title-wrap {
-      max-width: calc(100% - 15px);
+    &::after {
+      @include unpin-full(-1px);
+      content: '';
+      border: 1px dashed $highlight-border;
     }
-  }
-
-  > .sort-arrow {
-    @include sort-arrow;
   }
 }

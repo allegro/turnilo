@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from "react";
 
-.highlight-cont {
-  position: absolute;
-  left: $space-left;
-  right: 0;
-  top: $header-height;
-  bottom: 0;
-  overflow: hidden;
-
-  .highlighter {
-    right: 0;
-    height: $row-height + 1;
-    margin-top: -1px;
-    border: 1px solid $hover;
-
-    &::after {
-      @include unpin-full(-1px);
-      content: '';
-      border: 1px dashed $highlight-border;
-    }
-  }
+interface MeasureBackgroundProps {
+  width: number;
 }
+
+export const MeasureBackground: React.SFC<MeasureBackgroundProps> = ({ width }) =>
+  <div className="background-container">
+  <div className="background" style={{ width: width + "%" }} />
+</div>;
