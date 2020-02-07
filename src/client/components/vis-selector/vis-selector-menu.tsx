@@ -73,10 +73,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
       HeatmapComponent<LineChartSettings>.
       Idea is to encode settings and visualization behind one type parameter on Essence.
       Issues:
-        move manifest and mutbale settings into under one key
-        how to keep type parameter attached to essence (on Clicker.state) when:
-          mutating something else (should keep type parameter)
-          chanigng viz (should change type parameter)
+        Move manifest and mutbale settings into under one key
+        How to keep type parameter attached to essence (on Clicker.state) when:
+          Mutating something else (should keep type parameter)
+          Chanigng viz (should change type parameter)
+        Good solution would be to encode viz key and settings as union type with
+        key as discriminant. Unfortunately, Immutable.Record would break union
+        properties for typescript and will mash it into one super type.
     */
     const settings = visualizationSettings as ImmutableRecord<any>;
     const Settings = settingsComponent(visualization.name);
