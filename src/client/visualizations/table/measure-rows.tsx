@@ -19,7 +19,7 @@ import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { MeasureRow } from "./measure-row";
-import { ROW_HEIGHT } from "./table";
+import { VisibleRows } from "./visible-rows";
 
 interface MeasureRowsProps {
   visibleRows: [number, number];
@@ -35,29 +35,23 @@ interface MeasureRowsProps {
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
   const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRows, selectedIdx } = props;
 
-  const [start, end] = visibleRows;
-  const visibleData = data.slice(start, end);
-
-  return <React.Fragment>
-    {visibleData.map((data, i) => {
-      const idx = start + i;
-      const top = idx * ROW_HEIGHT;
-      const selected = idx === selectedIdx;
-      const otherSelected = !selected && selectedIdx !== null;
-      const hovered = data === hoverRow;
-
-      const highlight = selected || hovered;
+  return <VisibleRows
+    visibleRowsIndexes={visibleRows}
+    selectedRowIndex={selectedIdx}
+    hoveredRowDatum={hoverRow}
+    rowsData={data}
+    renderRow={props => {
+      const { index, top, datum, highlight, dimmed } = props;
       const rowStyle: React.CSSProperties = { top, width: rowWidth };
 
       return <MeasureRow
-        cellWidth={cellWidth}
-        key={`row_${idx}`}
+        key={`row_${index}`}
         essence={essence}
         highlight={highlight}
-        dimmed={otherSelected}
+        dimmed={dimmed}
         style={rowStyle}
-        datum={data}
+        datum={datum}
+        cellWidth={cellWidth}
         scales={scales} />;
-    })}
-  </React.Fragment>;
+    }} />;
 };

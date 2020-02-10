@@ -21,6 +21,7 @@ import { Segment } from "./segment";
 import { segmentName } from "./segment-name";
 import "./segments.scss";
 import { INDENT_WIDTH, ROW_HEIGHT } from "./table";
+import { VisibleRows } from "./visible-rows";
 
 interface SegmentsProps {
   visibleRows: [number, number];
@@ -34,31 +35,25 @@ interface SegmentsProps {
 export const Segments: React.SFC<SegmentsProps> = props => {
   const { essence, data, selectedIdx, hoverRow, visibleRows, segmentWidth } = props;
 
-  const [start, end] = visibleRows;
-  const visibleData = data.slice(start, end);
-
   return <div className="segment-labels">
-    {visibleData.map((data, i) => {
-      const idx = start + i;
-      const y = idx * ROW_HEIGHT;
-      const nest = data.__nest;
+    <VisibleRows
+      hoveredRowDatum={hoverRow}
+      visibleRowsIndexes={visibleRows}
+      selectedRowIndex={selectedIdx}
+      rowsData={data}
+      renderRow={props => {
+        const { index, top, datum, highlight, dimmed } = props;
+        const nest = datum.__nest;
+        const left = Math.max(0, nest - 1) * INDENT_WIDTH;
+        const segmentStyle = { left, width: segmentWidth - left, top };
 
-      const hovered = data === hoverRow;
-      const selected = idx === selectedIdx;
-      const otherSelected = !selected && selectedIdx !== null;
-
-      const left = Math.max(0, nest - 1) * INDENT_WIDTH;
-      const segmentStyle = { left, width: segmentWidth - left, top: y };
-
-      const highlight = selected || hovered;
-
-      return <Segment
-        key={`segment_${idx}`}
-        highlight={highlight}
-        dimmed={otherSelected}
-        style={segmentStyle}>
-        {segmentName(data, essence)}
-      </Segment>;
-    })}
+        return <Segment
+          key={`segment_${index}`}
+          highlight={highlight}
+          dimmed={dimmed}
+          style={segmentStyle}>
+          {segmentName(data, essence)}
+        </Segment>;
+      }} />
   </div>;
 };

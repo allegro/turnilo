@@ -19,7 +19,7 @@ import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { classNames } from "../../utils/dom/dom";
 import "./split-segments.scss";
-import { ROW_HEIGHT } from "./table";
+import { VisibleRows } from "./visible-rows";
 
 interface SplitSegmentsProps {
   visibleRows: [number, number];
@@ -34,30 +34,25 @@ export const SplitSegments: React.SFC<SplitSegmentsProps> = props => {
   const { essence, data, selectedIdx, hoverRow, visibleRows, segmentWidth } = props;
   const { splits: { splits } } = essence;
 
-  const [start, end] = visibleRows;
-  const visibleData = data.slice(start, end);
-
   return <div className="split-segment-labels">
-    {visibleData.map((data, i) => {
-      const idx = start + i;
-      const y = idx * ROW_HEIGHT;
+    <VisibleRows
+      visibleRowsIndexes={visibleRows}
+      selectedRowIndex={selectedIdx}
+      rowsData={data}
+      hoveredRowDatum={hoverRow}
+      renderRow={props => {
+        const { index, top, datum, highlight, dimmed } = props;
+        const segmentStyle = { width: segmentWidth, top };
 
-      const hovered = data === hoverRow;
-      const selected = idx === selectedIdx;
-      const dimmed = !selected && selectedIdx !== null;
-      const highlight = selected || hovered;
-
-      const segmentStyle = { width: segmentWidth, top: y };
-
-      return <div key={`segment_${idx}`}
-        className={classNames("segments-row", { highlight, dimmed })}
-        style={segmentStyle}>
-        {splits.map(split => {
-          const { reference } = split;
-          const value = data[reference];
-          return <div key={reference} className="segment-value">{String(value)}</div>;
-        })}
-      </div>;
-    })}
+        return <div key={`segment_${index}`}
+                    className={classNames("segments-row", { highlight, dimmed })}
+                    style={segmentStyle}>
+          {splits.map(split => {
+            const { reference } = split;
+            const value = datum[reference];
+            return <div key={reference} className="segment-value">{String(value)}</div>;
+          })}
+        </div>;
+      }} />
   </div>;
 };
