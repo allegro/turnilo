@@ -44,7 +44,7 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
     {lastLevel && <MeasureBackground width={scale(currentValue)} />}
   </MeasureCell>;
 
-  if (showPrevious) {
+  if (!showPrevious) {
     return currentCell;
   }
 

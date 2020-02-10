@@ -15,9 +15,17 @@
  */
 
 import * as React from "react";
-import "./corner.scss";
+import { Essence } from "../../../common/models/essence/essence";
+import { CombinedSplitColumn } from "./combined-split-column";
+import { SplitColumnsHeader } from "./split-columns";
 
-export const Corner: React.SFC<{}> = ({ children }) =>
-  <div className="corner">
-    {children}
-  </div>;
+interface TopLeftCornerProps {
+  essence: Essence;
+  collapseRows: boolean;
+}
+
+export const TopLeftCorner: React.SFC<TopLeftCornerProps> = ({ essence, collapseRows }) => {
+  return collapseRows ?
+    <SplitColumnsHeader essence={essence}/> :
+    <CombinedSplitColumn essence={essence} />;
+};

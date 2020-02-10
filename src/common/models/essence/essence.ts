@@ -401,6 +401,10 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return !this.series.equals(other.series);
   }
 
+  public differentSettings(other: Essence): boolean {
+    return !this.visualizationSettings.equals(other.visualizationSettings);
+  }
+
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, unfilterDimension: Dimension = null): boolean {
     const myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, { unfilterDimension });
     const otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, { unfilterDimension });

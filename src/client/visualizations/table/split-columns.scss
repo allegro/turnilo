@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import "./corner.scss";
+@import "../../imports";
 
-export const Corner: React.SFC<{}> = ({ children }) =>
-  <div className="corner">
-    {children}
-  </div>;
+.header-split-columns {
+  display: flex;
+}
+
+.header-split-column {
+  padding-left: 6px;
+  flex: 1;
+  @include ellipsis;
+}

@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import "./corner.scss";
+@import './dimensions';
+@import '../../imports';
+@import './row-style';
 
-export const Corner: React.SFC<{}> = ({ children }) =>
-  <div className="corner">
-    {children}
-  </div>;
+.split-segment-labels {
+  margin-left: $space-left;
+}
+
+.segments-row {
+  display: flex;
+  @include row-style;
+
+  background-color: $white;
+
+
+  overflow: hidden;
+  padding-top: 8px;
+}
+
+.segment-value {
+  padding-left: 6px;
+  flex: 1;
+  @include ellipsis;
+}

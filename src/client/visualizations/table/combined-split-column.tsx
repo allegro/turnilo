@@ -15,9 +15,15 @@
  */
 
 import * as React from "react";
-import "./corner.scss";
+import { Essence } from "../../../common/models/essence/essence";
+import { Corner } from "./corner";
 
-export const Corner: React.SFC<{}> = ({ children }) =>
-  <div className="corner">
-    {children}
-  </div>;
+interface CombinedSplitColumnProps {
+  essence: Essence;
+}
+
+export const CombinedSplitColumn: React.SFC<CombinedSplitColumnProps> = ({ essence }) => {
+  const { splits, dataCube } = essence;
+  const title = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
+  return <Corner>{title}</Corner>;
+};

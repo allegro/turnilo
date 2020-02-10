@@ -16,26 +16,33 @@
  */
 
 import * as d3 from "d3";
-import { Dataset, Datum, PseudoDatum } from "plywood";
+import { Dataset, Datum, FlattenOptions, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
 import { integerDivision } from "../../../common/utils/general/general";
+import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
+import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { TABLE_MANIFEST } from "../../../common/visualization-manifests/table/table";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { CombinedSplitColumn } from "./combined-split-column";
 import { Corner } from "./corner";
 import { getFilterFromDatum } from "./filter-for-datum";
 import { Highlighter } from "./highlight";
+import { LeftGutter } from "./left-gutter";
 import { MeasureRows } from "./measure-rows";
 import { MeasuresHeader } from "./measures-header";
 import { segmentName } from "./segment-name";
 import { Segments } from "./segments";
 import "./table.scss";
+import { SplitColumnsHeader } from "./split-columns";
+import { SplitSegments } from "./split-segments";
+import { TopLeftCorner } from "./TopLeftCorner";
 
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 const HEADER_HEIGHT = 38;
@@ -208,7 +215,10 @@ export class Table extends BaseVisualization<TableState> {
 
   deriveDatasetState(dataset: Dataset): Partial<TableState> {
     if (!this.props.essence.splits.length()) return {};
-    const flatDataset = dataset.flatten({ order: "preorder", nestingName: "__nest" });
+    const { essence: { visualizationSettings } } = this.props;
+    const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
+    const options = collapseRows ? { order: "inline", nestingName: "__nest" } : { order: "preorder", nestingName: "__nest" };
+    const flatDataset = dataset.flatten(options as FlattenOptions);
     const flatData = flatDataset.data;
     return { flatData };
   }
@@ -271,7 +281,7 @@ export class Table extends BaseVisualization<TableState> {
   protected renderInternals() {
     const { essence, stage } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
-    const { splits, dataCube } = essence;
+    const { collapseRows } = essence.visualizationSettings as ImmutableRecord<TableSettings>;
 
     const selectedIdx = this.selectedRowIdx();
     const columnWidth = this.getIdealColumnWidth();
@@ -290,8 +300,6 @@ export class Table extends BaseVisualization<TableState> {
       bottom: 0,
       left: this.getSegmentWidth()
     };
-
-    const segmentTitle = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
 
     const overlay = selectedIdx !== null && flatData && <Highlighter
       top={selectedIdx * ROW_HEIGHT - scrollTop}
@@ -318,17 +326,17 @@ export class Table extends BaseVisualization<TableState> {
           />
         }
 
-        leftGutter={flatData &&
-          <Segments
-            selectedIdx={selectedIdx}
-            visibleRows={visibleRows}
-            hoverRow={hoverRow}
-            essence={essence}
-            data={flatData}
-            segmentWidth={this.getSegmentWidth()} />
+        leftGutter={<LeftGutter
+          collapseRows={collapseRows}
+          selectedIdx={selectedIdx}
+          visibleRows={visibleRows}
+          hoverRow={hoverRow}
+          essence={essence}
+          data={flatData}
+          segmentWidth={this.getSegmentWidth()} />
         }
 
-        topLeftCorner={<Corner title={segmentTitle} />}
+        topLeftCorner={<TopLeftCorner essence={essence} collapseRows={collapseRows}/>}
 
         body={flatData &&
           <MeasureRows
