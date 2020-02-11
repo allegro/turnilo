@@ -169,8 +169,8 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.updateClauses(clauses => idx === -1 ? clauses.concat([newClause]) : clauses.set(idx, newClause));
   }
 
-  public applyDelta({ clauses: deltaClauses }: Filter): Filter {
-    return deltaClauses.reduce((filter, deltaClause) => filter.setClause(deltaClause), this);
+  public mergeClauses(clauses: List<FilterClause>): Filter {
+    return clauses.reduce((filter, deltaClause) => filter.setClause(deltaClause), this);
   }
 
   public constrainToDimensions(dimensions: Dimensions): Filter {

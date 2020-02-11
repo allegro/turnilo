@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
-import { Highlight } from "./highlight";
+import { List } from "immutable";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 
-describe("Highlight", () => {});
+export class Highlight {
+  constructor(public readonly clauses: List<FilterClause>, public readonly key: string | null) {
+  }
+}

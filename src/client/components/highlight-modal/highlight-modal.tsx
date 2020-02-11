@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
+import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleTitle } from "../bubble-title/bubble-title";
 import { Button } from "../button/button";
@@ -26,28 +26,16 @@ interface HighlightModalProps {
   title: string;
   left: number;
   top: number;
-  clicker: Clicker;
+  dropHighlight: Fn;
+  acceptHighlight: Fn;
 }
 
-export class HighlightModal extends React.Component<HighlightModalProps, {}> {
-
-  dropHighlight = () => {
-    this.props.clicker.dropHighlight();
-  }
-
-  acceptHighlight = () => {
-    this.props.clicker.acceptHighlight();
-  }
-
-  render() {
-    const { title, children, left, top } = this.props;
-    return <ModalBubble className="highlight-modal" left={left} top={top} onClose={this.dropHighlight}>
-      <BubbleTitle title={title}/>
-      <div className="value">{children}</div>
-      <div className="actions">
-        <Button type="primary" className="accept mini" onClick={this.acceptHighlight} title={STRINGS.select} />
-        <Button type="secondary" className="drop mini" onClick={this.dropHighlight} title={STRINGS.cancel} />
-      </div>
-    </ModalBubble>;
-  }
-}
+export const HighlightModal: React.SFC<HighlightModalProps> = ({ title, children, left, top, acceptHighlight, dropHighlight }) =>
+  <ModalBubble className="highlight-modal" left={left} top={top} onClose={dropHighlight}>
+    <BubbleTitle title={title} />
+    <div className="value">{children}</div>
+    <div className="actions">
+      <Button type="primary" className="accept mini" onClick={acceptHighlight} title={STRINGS.select} />
+      <Button type="secondary" className="drop mini" onClick={dropHighlight} title={STRINGS.cancel} />
+    </div>
+  </ModalBubble>;

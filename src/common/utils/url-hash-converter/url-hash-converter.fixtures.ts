@@ -47,8 +47,7 @@ export class UrlHashConverterFixtures {
       "Ek6IkoECmq1sO1Ol7MMa8KBibokh0iEJcdUpBBRtRQ1pAX0CGmoOxzcHqKpapgLSB3dQkLQIHMPC4cW98UHCSBQ/KI8WQAcjuj44nk40S+m4JnO7Yc3nexBC7TU5Zy8lK" +
       "yBq1g6w2QE2W/gPB3RVaJVL82HsAO6aC5YklSq1UIzJJTNajS2UXg3C4x3ME4kmm4gzgYc7krmkJLiukZTmWFY9juta6Puh6tqeaiGPoS79nBeivu+VoIF+Si6AACrwbg" +
       "ABJCFACaASAKZTqBs6ipBi4FmQRZ0qWG6hkhOYoQQaF0EelrWggnrzrUMI2MSiLYOWa6sdQwgJgyjFZmuCzWic4DQqh5QBro9BwLAWgNkBinKTKDr6epkiafgqxqGmuni" +
-      "My5xqPu2kEGZFkUC8ClaEpahwEkaYpGpGnoC5JlTh5+lnCMRngaKAUwJZ0nKHU7RJAAItet6si0bQdBqcD0N63Q4cOxy8rlMZkEkADKDEqRmjZkBYyT4MRtogM0EBmM0S" +
-      "CjXMA1FEAA=";
+      "My5xqPu2kEGZFkUC8ClaEpahwEkaYpGpGnoC5JlTh5+lnCMRngaKAUwJZ0nKHU7RJAAItet6si0bQdBqcD0N63Q4cOxy8rlMZkEkADKDEqRmjZkBYyT4MRUlAA==";
   }
 
   static lineChartVersion2() {
@@ -76,8 +75,7 @@ export class UrlHashConverterFixtures {
       "YOYWkZWblM1hBs2FBu3EUlxGVzmHT4oPncvXJwZqnc05lNWxCGlQcEvVDkrds5STaTKYazcOJMJAsCDjACsAAYkilwrodn1trt9tVUWxJNkXNgYJFMhpuOYRJ4ABJ+c7j" +
       "K5GExoh4oxxovYHN4fKruEBwX7/DYQwg7GH4QkIBCzdJWJr2elSBStP43E5oe5MKTnFjoS7MR7fIxwIn0Jj1BCNcFJPUsth85xcJEgfKK7DKwqYGDYE3SLU6vDItK9SbG" +
       "uoNNJC1bcW2wQwQ+Uut286y9MEa31062Bw0h01hy2hfUgaP2uIjECaLIkazeNlYvbNI6lSTYOBseYVPrQABKmAARmMQGWK8drABlWkqu6SBDEbL/XUY1p1w7UY6nYXQ8b" +
-      "ihC582y0Dw7gdSSeJ7dJgAZm4UgGTAALIclExYdxWkLqFAAHJEsoTKYzJhKAgbJKCQECMxkOQFGWANGVxAwGRxPo9C7Yo5xg9I1QuAgACZ4U8WFSHhABOYIcIpeE8HhSj" +
-      "qIAOmo+EAC1JHnXD8MIkiyIpTwqJo+F6Oo5iEilYtY3dT16FiWIgA";
+      "ihC582y0Dw7gdSSeJ7dJgAZm4UgGTAALIclExYdxWkLqFAAHJEsoTKYzWIgA==";
   }
 
   static noSlashInEncodedDefinition2() {

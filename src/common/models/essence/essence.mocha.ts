@@ -28,8 +28,6 @@ import { DimensionKind } from "../dimension/dimension";
 import { TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { timePeriod } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
-import { Highlight } from "../highlight/highlight";
-import { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SeriesList } from "../series-list/series-list";
 import { MeasureSeries } from "../series/measure-series";
@@ -81,24 +79,6 @@ describe("EssenceProps", () => {
   };
 
   const dataCube = DataCube.fromJS(dataCubeJS);
-
-  describe("removes highlight when necessary", () => {
-    const tests: Array<{ highlight: Highlight, expected: Highlight, description: string }> = [
-      { highlight: lineChartWithAddedMeasure(), expected: lineChartWithAddedMeasure(), description: "is kept when measure is selected" },
-      { highlight: tableNoMeasure(), expected: tableNoMeasure(), description: "is kept when contains no measure" },
-      { highlight: lineChartWithAvgAddedMeasure(), expected: null, description: "is removed when measure is not selected" }
-    ];
-
-    tests.forEach(({ highlight, expected, description }) => {
-      it(`highlight ${description}`, () => {
-        const wikiEssence = EssenceFixtures.wikiTable();
-        const essenceWithHighlight = wikiEssence.changeHighlight(highlight);
-
-        expect(essenceWithHighlight.highlight).to.deep.equal(expected);
-
-      });
-    });
-  });
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {

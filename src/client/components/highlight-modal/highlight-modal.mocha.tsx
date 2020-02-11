@@ -31,7 +31,8 @@ describe("Highlight Modal", () => {
       title={title}
       left={left}
       top={top}
-      clicker={null}>
+      acceptHighlight={null}
+      dropHighlight={null}>
       <div className="child">Child</div>
     </HighlightModal>);
 
@@ -42,15 +43,20 @@ describe("Highlight Modal", () => {
   });
 
   describe("should wire clicker methods to actions", () => {
-    let clicker: { acceptHighlight: SinonSpy, dropHighlight: SinonSpy };
+    let acceptHighlight: SinonSpy;
+    let dropHighlight: SinonSpy;
     let actions: ReactWrapper<any, any>;
     let modal: ReactWrapper<any, any>;
 
     beforeEach(() => {
-      const acceptHighlight = spy();
-      const dropHighlight = spy();
-      clicker = { acceptHighlight, dropHighlight };
-      modal = mount(<HighlightModal title="title" left={0} top={0} clicker={clicker} />);
+      acceptHighlight = spy();
+      dropHighlight = spy();
+      modal = mount(<HighlightModal
+        title="title"
+        left={0}
+        top={0}
+        dropHighlight={dropHighlight}
+        acceptHighlight={acceptHighlight} />);
       actions = modal.find(".actions");
     });
 
@@ -62,15 +68,15 @@ describe("Highlight Modal", () => {
       const accept = actions.find(".accept").first();
       accept.simulate("click");
 
-      expect(clicker.acceptHighlight.called).to.be.true;
-      expect(clicker.dropHighlight.called).to.be.false;
+      expect(acceptHighlight.called).to.be.true;
+      expect(dropHighlight.called).to.be.false;
     });
     it("should call acceptHighlight when clicking Drop", () => {
       const cancel = actions.find(".drop").first();
       cancel.simulate("click");
 
-      expect(clicker.acceptHighlight.called).to.be.false;
-      expect(clicker.dropHighlight.called).to.be.true;
+      expect(acceptHighlight.called).to.be.false;
+      expect(dropHighlight.called).to.be.true;
     });
   });
 });

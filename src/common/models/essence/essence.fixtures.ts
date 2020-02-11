@@ -26,7 +26,6 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
-import { Highlight } from "../highlight/highlight";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
 import { SortDirection } from "../sort/sort";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
@@ -48,7 +47,6 @@ const defaultEssence: EssenceValue = {
   }),
   colors: null,
   pinnedSort: null,
-  highlight: null,
   splits: EMPTY_SPLITS,
   timeShift: TimeShift.empty(),
   series: EMPTY_SERIES
@@ -117,8 +115,7 @@ export class EssenceFixtures {
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: null,
-      pinnedSort: "delta",
-      highlight: null
+      pinnedSort: "delta"
     });
   }
 
@@ -131,9 +128,6 @@ export class EssenceFixtures {
       stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
       timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
     ];
-    const highlightClauses = [
-      timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"))
-    ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualizations: MANIFESTS,
@@ -145,8 +139,7 @@ export class EssenceFixtures {
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
-      pinnedSort: "delta",
-      highlight: new Highlight({ measure: "count", delta: Filter.fromClauses(highlightClauses) })
+      pinnedSort: "delta"
     });
   }
 

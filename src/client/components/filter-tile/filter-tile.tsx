@@ -217,11 +217,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     const { essence, clicker } = this.props;
     if (itemBlank.clause) {
-      if (itemBlank.source === "from-highlight") {
-        clicker.dropHighlight();
-      } else {
         clicker.changeFilter(essence.filter.removeClause(itemBlank.clause.reference));
-      }
     }
     this.closeMenu();
     this.closeOverflowMenu();
@@ -453,19 +449,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const excluded = clause && !isTimeFilter(clause) && clause.not;
     const className = classNames(FILTER_CLASS_NAME, "dimension", source, { selected, excluded, included: !excluded });
 
-    if (source === "from-highlight") {
-      return <div
-        className={className}
-        key={`highlight-${dimensionName}`}
-        ref={dimensionName}
-        onClick={clicker.acceptHighlight.bind(clicker)}
-        style={style}
-      >
-        {this.renderItemLabel(dimension, clause, timezone)}
-        {this.renderRemoveButton(itemBlank)}
-      </div>;
-    }
-
     if (clause) {
       return <div
         className={className}
@@ -497,7 +480,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { possibleDimension, maxItems } = this.state;
     let { possiblePosition } = this.state;
 
-    const { dataCube, filter, highlight } = essence;
+    const { dataCube, filter } = essence;
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
@@ -510,34 +493,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         };
       })
       .filter(Boolean);
-
-    if (highlight) {
-      highlight.delta.clauses.forEach(clause => {
-        let added = false;
-        itemBlanks = itemBlanks.map(blank => {
-          if (clause.equals(blank.clause)) {
-            added = true;
-            return {
-              dimension: blank.dimension,
-              source: "from-highlight",
-              clause
-            };
-          } else {
-            return blank;
-          }
-        });
-        if (!added) {
-          const dimension = dataCube.getDimension(clause.reference);
-          if (dimension) {
-            itemBlanks.push({
-              dimension,
-              source: "from-highlight",
-              clause
-            });
-          }
-        }
-      });
-    }
 
     if (possibleDimension && possiblePosition) {
       const dummyBlank: ItemBlank = {

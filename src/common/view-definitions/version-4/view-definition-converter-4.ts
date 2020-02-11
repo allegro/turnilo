@@ -25,7 +25,6 @@ import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { filterDefinitionConverter } from "./filter-definition";
-import { highlightConverter } from "./highlight-definition";
 import { legendConverter } from "./legend-definition";
 import { seriesDefinitionConverter } from "./series-definition";
 import { splitConverter } from "./split-definition";
@@ -50,8 +49,6 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.series, dataCube.measures);
-    const highlight = definition.highlight && highlightConverter(dataCube)
-      .toHighlight(definition.highlight);
 
     return new Essence({
       dataCube,
@@ -64,8 +61,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       pinnedDimensions,
       series,
       colors,
-      pinnedSort,
-      highlight
+      pinnedSort
     });
   }
 
@@ -81,8 +77,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
       timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
-      legend: essence.colors && legendConverter.fromColors(essence.colors),
-      highlight: essence.highlight && highlightConverter(dataCube).fromHighlight(essence.highlight)
+      legend: essence.colors && legendConverter.fromColors(essence.colors)
     };
   }
 }
