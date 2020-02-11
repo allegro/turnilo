@@ -100,7 +100,7 @@ describe("urlHashConverter", () => {
           expect(encodedHash).to.equal(hash);
         } catch (e) {
           // rethrow assertion on decoded hashes for readability
-          expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
+          // expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
           // if test fails but expect on decoded succeeds (error in test definition) rethrow original assertion exception.
           throw e;
         }
