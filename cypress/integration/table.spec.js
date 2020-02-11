@@ -12,7 +12,7 @@ context("Table", () => {
   const acceptHighlight = () => highlightModal().find(".accept");
   const dropHighlight = () => highlightModal().find(".drop");
   const findSegment = label => table().find(`.segment:contains("${label}")`);
-  const nthRow = n => table().find(`.row:nth-child(${n})`);
+  const nthRow = n => table().find(`.measure-row:nth-child(${n})`);
 
   describe("Highlight", () => {
     const urls = {
@@ -31,17 +31,17 @@ context("Table", () => {
           const {left, top: segmentOffset} = $segment.offset();
           const height = $segment.height();
           // force because we have overlay upon overlay in table
-          clickTarget().click(left, segmentOffset - scrollerOffset + (height / 2), { force: true });
+          clickTarget().click(left, segmentOffset - scrollerOffset + (height / 2), {force: true});
         });
     }
 
     function assertSegmentRowHighlight(label) {
       const segment = findSegment(label);
       segment
-        .should("have.class", "selected")
+        .should("have.class", "highlight")
         .then($segment => {
           const index = $segment.index();
-          nthRow(index + 1).should("have.class", "selected");
+          nthRow(index + 1).should("have.class", "highlight");
         });
     }
 
