@@ -30,19 +30,14 @@ import { HighlightModal } from "../../components/highlight-modal/highlight-modal
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
-import { CombinedSplitColumn } from "./combined-split-column";
-import { Corner } from "./corner";
-import { getFilterFromDatum } from "./filter-for-datum";
-import { Highlighter } from "./highlight";
-import { LeftGutter } from "./left-gutter";
-import { MeasureRows } from "./measure-rows";
-import { MeasuresHeader } from "./measures-header";
-import { segmentName } from "./segment-name";
-import { Segments } from "./segments";
+import { MeasureRows } from "./body/measures/measure-rows";
+import { nestedSplitName } from "./body/splits/nested-split-name";
+import { SplitRows } from "./body/splits/split-rows";
+import { MeasuresHeader } from "./header/measures/measures-header";
+import { SplitsHeader } from "./header/splits/splits-header";
+import { Highlighter } from "./highlight/highlight";
 import "./table.scss";
-import { SplitColumnsHeader } from "./split-columns";
-import { SplitSegments } from "./split-segments";
-import { TopLeftCorner } from "./TopLeftCorner";
+import { getFilterFromDatum } from "./utils/filter-for-datum";
 
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 const HEADER_HEIGHT = 38;
@@ -51,7 +46,7 @@ const THUMBNAIL_SEGMENT_WIDTH = 150;
 export const INDENT_WIDTH = 25;
 const MEASURE_WIDTH = 130;
 export const ROW_HEIGHT = 30;
-const SPACE_LEFT = 10;
+export const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const MIN_DIMENSION_WIDTH = 100;
 
@@ -288,6 +283,7 @@ export class Table extends BaseVisualization<TableState> {
 
     const columnsCount = this.columnsCount();
     const visibleRows = this.getVisibleIndices(flatData.length, stage.height);
+    const showHighlight = selectedIdx !== null && flatData;
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
@@ -300,10 +296,6 @@ export class Table extends BaseVisualization<TableState> {
       bottom: 0,
       left: this.getSegmentWidth()
     };
-
-    const overlay = selectedIdx !== null && flatData && <Highlighter
-      top={selectedIdx * ROW_HEIGHT - scrollTop}
-      left={Math.max(0, flatData[selectedIdx].__nest - 1) * INDENT_WIDTH} />;
 
     return <div className="internals table-inner" ref={this.innerTableRef}>
       <ResizeHandle
@@ -326,7 +318,7 @@ export class Table extends BaseVisualization<TableState> {
           />
         }
 
-        leftGutter={<LeftGutter
+        leftGutter={<SplitRows
           collapseRows={collapseRows}
           selectedIdx={selectedIdx}
           visibleRows={visibleRows}
@@ -336,20 +328,24 @@ export class Table extends BaseVisualization<TableState> {
           segmentWidth={this.getSegmentWidth()} />
         }
 
-        topLeftCorner={<TopLeftCorner essence={essence} collapseRows={collapseRows}/>}
+        topLeftCorner={<SplitsHeader essence={essence} collapseRows={collapseRows} />}
 
         body={flatData &&
-          <MeasureRows
-            hoverRow={hoverRow}
-            visibleRows={visibleRows}
-            essence={essence}
-            selectedIdx={selectedIdx}
-            scales={this.getScalesForColumns(essence, flatData)}
-            data={flatData}
-            cellWidth={columnWidth}
-            rowWidth={columnWidth * columnsCount} />}
+        <MeasureRows
+          hoverRow={hoverRow}
+          visibleRows={visibleRows}
+          essence={essence}
+          selectedIdx={selectedIdx}
+          scales={this.getScalesForColumns(essence, flatData)}
+          data={flatData}
+          cellWidth={columnWidth}
+          rowWidth={columnWidth * columnsCount} />}
 
-        overlay={overlay}
+        overlay={showHighlight && <Highlighter
+          highlightedIndex={selectedIdx}
+          highlightedNesting={flatData[selectedIdx].__nest}
+          scrollTopOffset={scrollTop}
+          collapseRows={collapseRows} />}
 
         onClick={this.onClick}
         onMouseMove={this.onMouseMove}
@@ -359,12 +355,12 @@ export class Table extends BaseVisualization<TableState> {
       />
 
       {selectedIdx !== null &&
-        <HighlightModal
-          title={segmentName(flatData[selectedIdx], essence)}
-          left={stage.x + stage.width / 2}
-          top={stage.y + HEADER_HEIGHT + (selectedIdx * ROW_HEIGHT) - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-          acceptHighlight={this.acceptHighlight}
-          dropHighlight={this.dropHighlight} />}
+      <HighlightModal
+        title={nestedSplitName(flatData[selectedIdx], essence)}
+        left={stage.x + stage.width / 2}
+        top={stage.y + HEADER_HEIGHT + (selectedIdx * ROW_HEIGHT) - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
+        acceptHighlight={this.acceptHighlight}
+        dropHighlight={this.dropHighlight} />}
     </div>;
   }
 }

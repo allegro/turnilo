@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from "react";
+import { classNames } from "../../../../utils/dom/dom";
+import "./measure-background.scss";
 
-@import '../../imports';
-@import 'utils/dimensions';
-
-.table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &.has-top-shadow {
-
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
-
-    .left-gutter, .top-left-corner {
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-      border-right: 1px solid $border-super-light;
-    }
-  }
+interface MeasureBackgroundProps {
+  width: number;
+  highlight: boolean;
 }
 
+export const MeasureBackground: React.SFC<MeasureBackgroundProps> = ({ highlight, width }) =>
+  <div className="measure-background-container">
+  <div className={classNames("measure-background", { highlight })} style={{ width: width + "%" }} />
+</div>;
