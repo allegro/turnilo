@@ -28,6 +28,7 @@
 
   &.dimension {
     background: $item-dimension;
+    color: $item-dimension-text;
 
     &:hover, &.selected {
       background-color: darken($item-dimension, 6%);
@@ -36,6 +37,7 @@
 
   &.measure {
     background: $item-measure;
+    color: $item-measure-text;
 
     &:hover, &.selected {
       background-color: darken($item-measure, 6%);
