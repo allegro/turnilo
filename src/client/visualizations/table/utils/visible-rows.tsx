@@ -29,14 +29,14 @@ interface RowProps {
 
 interface VisibleRowsProps {
   visibleRowsIndexes: [number, number];
-  selectedRowIndex: number | null;
+  highlightedRowIndex: number | null;
   rowsData: PseudoDatum[];
   hoveredRowDatum?: Datum;
   renderRow: Unary<RowProps, JSX.Element>;
 }
 
 export const VisibleRows: React.SFC<VisibleRowsProps> = props => {
-  const { renderRow, hoveredRowDatum, rowsData, visibleRowsIndexes, selectedRowIndex } = props;
+  const { renderRow, hoveredRowDatum, rowsData, visibleRowsIndexes, highlightedRowIndex } = props;
 
   const [start, end] = visibleRowsIndexes;
   const visibleData = rowsData.slice(start, end);
@@ -45,8 +45,8 @@ export const VisibleRows: React.SFC<VisibleRowsProps> = props => {
     {visibleData.map((datum, i) => {
       const index = start + i;
       const top = index * ROW_HEIGHT;
-      const selected = index === selectedRowIndex;
-      const dimmed = !selected && selectedRowIndex !== null;
+      const selected = index === highlightedRowIndex;
+      const dimmed = !selected && highlightedRowIndex !== null;
       const hovered = datum === hoveredRowDatum;
 
       const highlight = selected || hovered;

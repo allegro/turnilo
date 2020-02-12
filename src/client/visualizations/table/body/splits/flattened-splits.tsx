@@ -29,17 +29,17 @@ interface FlattenedSplitsProps {
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
-  selectedIdx: number | null;
+  highlightedRowIndex: number | null;
 }
 
 export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
-  const { essence, data, selectedIdx, hoverRow, visibleRows, segmentWidth } = props;
+  const { essence, data, highlightedRowIndex, hoverRow, visibleRows, segmentWidth } = props;
   const { splits: { splits } } = essence;
 
   return <div className="flattened-splits-rows">
     <VisibleRows
       visibleRowsIndexes={visibleRows}
-      selectedRowIndex={selectedIdx}
+      highlightedRowIndex={highlightedRowIndex}
       rowsData={data}
       hoveredRowDatum={hoverRow}
       renderRow={props => {

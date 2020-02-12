@@ -29,17 +29,17 @@ interface NestedSplitsProps {
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
-  selectedIdx: number | null;
+  highlightedRowIndex: number | null;
 }
 
 export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
-  const { essence, data, selectedIdx, hoverRow, visibleRows, segmentWidth } = props;
+  const { essence, data, highlightedRowIndex, hoverRow, visibleRows, segmentWidth } = props;
 
   return <div className="nested-splits-rows">
     <VisibleRows
       hoveredRowDatum={hoverRow}
       visibleRowsIndexes={visibleRows}
-      selectedRowIndex={selectedIdx}
+      highlightedRowIndex={highlightedRowIndex}
       rowsData={data}
       renderRow={props => {
         const { index, top, datum, highlight, dimmed } = props;

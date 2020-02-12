@@ -27,7 +27,7 @@ interface SplitRowsProps {
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
-  selectedIdx: number | null;
+  highlightedRowIndex: number | null;
 }
 
 export const SplitRows: React.SFC<SplitRowsProps> = props => {

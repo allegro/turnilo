@@ -24,7 +24,7 @@ import { MeasureRow } from "./measure-row";
 interface MeasureRowsProps {
   visibleRows: [number, number];
   essence: Essence;
-  selectedIdx: number | null;
+  highlightedRowIndex: number | null;
   scales: Array<d3.scale.Linear<number, number>>;
   data: PseudoDatum[];
   hoverRow?: Datum;
@@ -33,11 +33,11 @@ interface MeasureRowsProps {
 }
 
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
-  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRows, selectedIdx } = props;
+  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRows, highlightedRowIndex } = props;
 
   return <VisibleRows
     visibleRowsIndexes={visibleRows}
-    selectedRowIndex={selectedIdx}
+    highlightedRowIndex={highlightedRowIndex}
     hoveredRowDatum={hoverRow}
     rowsData={data}
     renderRow={props => {
