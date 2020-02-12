@@ -213,9 +213,8 @@ export class Table extends BaseVisualization<TableState> {
     return collapseRows;
   }
 
-  private highlightedRowIndex(): number | null {
+  private highlightedRowIndex(flatData: PseudoDatum[]): number | null {
     const { essence } = this.props;
-    const { flatData } = this.state;
     if (!flatData) return null;
     if (!this.hasHighlight()) return null;
     const { splits } = essence;
@@ -229,7 +228,7 @@ export class Table extends BaseVisualization<TableState> {
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const collapseRows = this.shouldCollapseRows();
 
-    const highlightedRowIndex = this.highlightedRowIndex();
+    const highlightedRowIndex = this.highlightedRowIndex(flatData);
     const columnWidth = this.getIdealColumnWidth();
 
     const count = measureColumnsCount(essence);
