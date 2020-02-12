@@ -87,7 +87,12 @@ export class Table extends BaseVisualization<TableState> {
   protected innerTableRef = React.createRef<HTMLDivElement>();
 
   getDefaultState(): TableState {
-    return { flatData: null, hoverRow: null, segmentWidth: this.defaultSegmentWidth(), ...super.getDefaultState() };
+    return {
+      flatData: null,
+      hoverRow: null,
+      segmentWidth: this.defaultSegmentWidth(),
+      ...super.getDefaultState()
+    };
   }
 
   defaultSegmentWidth(): number {
@@ -193,7 +198,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  onMouseMove = (x: number, y: number) => {
+  setHoverRow = (x: number, y: number) => {
     const { hoverRow } = this.state;
     const { row } = this.calculateMousePosition(x, y);
     if (hoverRow !== row) {
@@ -201,51 +206,55 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  onMouseLeave = () => {
+  resetHover = () => {
     const { hoverRow } = this.state;
     if (hoverRow) {
       this.setState({ hoverRow: null });
     }
   }
 
+  setScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
+
+  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
+
+  private flattenOptions(): FlattenOptions {
+    if (this.shouldCollapseRows()) {
+      return { order: "inline", nestingName: "__nest" };
+    }
+    return { order: "preorder", nestingName: "__nest" };
+  }
+
   deriveDatasetState(dataset: Dataset): Partial<TableState> {
     if (!this.props.essence.splits.length()) return {};
-    const { essence: { visualizationSettings } } = this.props;
-    const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
-    const options = collapseRows ? { order: "inline", nestingName: "__nest" } : { order: "preorder", nestingName: "__nest" };
-    const flatDataset = dataset.flatten(options as FlattenOptions);
+    const flatDataset = dataset.flatten(this.flattenOptions());
     const flatData = flatDataset.data;
     return { flatData };
   }
 
-  getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
+  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
     const concreteSeries = essence.getConcreteSeries().toArray();
     const splitLength = essence.splits.length();
 
     return concreteSeries.map(series => {
-      let measureValues = flatData
+      const measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => series.selectValue(d));
 
-      // Ensure that 0 is in there
-      measureValues.push(0);
-
       return d3.scale.linear()
-        .domain(d3.extent(measureValues))
-        .range([0, 100]); // really those are percents
+      // Ensure that 0 is in there
+        .domain(d3.extent([0, ...measureValues]))
+        .range([0, 100]);
     });
   }
 
-  getIdealColumnWidth(): number {
+  private getIdealColumnWidth(): number {
     const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
     const columnsCount = this.columnsCount();
 
     return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
   }
 
-  onSimpleScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
-
-  getVisibleIndices(rowCount: number, height: number): [number, number] {
+  private getVisibleIndices(rowCount: number, height: number): [number, number] {
     const { scrollTop } = this.state;
 
     return [
@@ -254,12 +263,16 @@ export class Table extends BaseVisualization<TableState> {
     ];
   }
 
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
-
   private columnsCount(): number {
     const { essence } = this.props;
     const seriesCount = essence.getConcreteSeries().count();
     return essence.hasComparison() ? seriesCount * 3 : seriesCount;
+  }
+
+  private shouldCollapseRows(): boolean {
+    const { essence: { visualizationSettings } } = this.props;
+    const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
+    return collapseRows;
   }
 
   private selectedRowIdx(): number | null {
@@ -276,7 +289,7 @@ export class Table extends BaseVisualization<TableState> {
   protected renderInternals() {
     const { essence, stage } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
-    const { collapseRows } = essence.visualizationSettings as ImmutableRecord<TableSettings>;
+    const collapseRows = this.shouldCollapseRows();
 
     const selectedIdx = this.selectedRowIdx();
     const columnWidth = this.getIdealColumnWidth();
@@ -348,9 +361,9 @@ export class Table extends BaseVisualization<TableState> {
           collapseRows={collapseRows} />}
 
         onClick={this.onClick}
-        onMouseMove={this.onMouseMove}
-        onMouseLeave={this.onMouseLeave}
-        onScroll={this.onSimpleScroll}
+        onMouseMove={this.setHoverRow}
+        onMouseLeave={this.resetHover}
+        onScroll={this.setScroll}
 
       />
 
