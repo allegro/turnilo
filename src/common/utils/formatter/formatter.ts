@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import moment = require("moment");
+import * as moment from "moment";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
