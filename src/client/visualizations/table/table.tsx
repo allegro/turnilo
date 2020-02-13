@@ -48,7 +48,6 @@ export const SPACE_LEFT = 10;
 
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 const SEGMENT_WIDTH = 300;
-const THUMBNAIL_SEGMENT_WIDTH = 150;
 const MEASURE_WIDTH = 130;
 const SPACE_RIGHT = 10;
 const MIN_DIMENSION_WIDTH = 100;
@@ -67,15 +66,9 @@ export class Table extends BaseVisualization<TableState> {
     return {
       flatData: null,
       hoverRow: null,
-      segmentWidth: this.defaultSegmentWidth(),
+      segmentWidth: SEGMENT_WIDTH,
       ...super.getDefaultState()
     };
-  }
-
-  defaultSegmentWidth(): number {
-    const { isThumbnail } = this.props;
-
-    return isThumbnail ? THUMBNAIL_SEGMENT_WIDTH : SEGMENT_WIDTH;
   }
 
   private getIdealColumnWidth(): number {
@@ -90,12 +83,12 @@ export class Table extends BaseVisualization<TableState> {
       return this.innerTableRef.current.clientWidth - MIN_DIMENSION_WIDTH;
     }
 
-    return this.defaultSegmentWidth();
+    return SEGMENT_WIDTH;
   }
 
   getSegmentWidth(): number {
     const { segmentWidth } = this.state;
-    return segmentWidth || this.defaultSegmentWidth();
+    return segmentWidth || SEGMENT_WIDTH;
   }
 
   private setSortToSeries(series: Series, period: SeriesDerivation) {
@@ -252,7 +245,7 @@ export class Table extends BaseVisualization<TableState> {
       <ResizeHandle
         direction={Direction.LEFT}
         onResize={this.setSegmentWidth}
-        min={this.defaultSegmentWidth()}
+        min={SEGMENT_WIDTH}
         max={this.maxSegmentWidth()}
         value={segmentWidth}
       />
