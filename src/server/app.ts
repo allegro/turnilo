@@ -53,11 +53,13 @@ app.use(compress());
 
 // Add Strict Transport Security
 if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
-  app.use(hsts({
-    maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-    includeSubdomains: true, // Must be enabled to be approved by Google
-    preload: true
-  }));
+  app.use(
+    hsts({
+      maxAge: 10886400000, // Must be at least 18 weeks to be approved by Google
+      includeSubdomains: true, // Must be enabled to be approved by Google
+      preload: true
+    })
+  );
 }
 
 // development HMR
@@ -72,16 +74,20 @@ if (app.get("env") === "dev-hmr") {
   if (webpack && webpackDevMiddleware && webpackHotMiddleware) {
     const webpackCompiler = webpack(webpackConfig);
 
-    app.use(webpackDevMiddleware(webpackCompiler, {
-      hot: true,
-      noInfo: true,
-      publicPath: webpackConfig.output.publicPath
-    }));
+    app.use(
+      webpackDevMiddleware(webpackCompiler, {
+        hot: true,
+        noInfo: true,
+        publicPath: webpackConfig.output.publicPath
+      })
+    );
 
-    app.use(webpackHotMiddleware(webpackCompiler, {
-      log: console.log,
-      path: "/__webpack_hmr"
-    }));
+    app.use(
+      webpackHotMiddleware(webpackCompiler, {
+        log: console.log,
+        path: "/__webpack_hmr"
+      })
+    );
   }
 }
 
@@ -91,14 +97,18 @@ addRoutes("/", express.static(path.join(__dirname, "../../assets")));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
+const settingsGetter: SettingsGetter = opts =>
+  SETTINGS_MANAGER.getSettings(opts);
 
 // Auth
 if (AUTH) {
   app.use(AUTH);
 }
 
-addRoutes(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
+addRoutes(
+  SERVER_SETTINGS.getReadinessEndpoint(),
+  readinessRouter(settingsGetter)
+);
 addRoutes(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
@@ -134,9 +144,11 @@ app.use((err: any, req: Request, res: Response) => {
   res.status(err.status || 500);
   // no stacktraces leaked to user
   const error = isDev ? err : null;
-  res.send(errorLayout({ version: VERSION, title: "Error" }, err.message, error));
+  res.send(
+    errorLayout({ version: VERSION, title: "Error" }, err.message, error)
+  );
 });
 
 collectDefaultMetrics({ timeout: 5000, prefix: "turnilo_" });
 
-export = app;
+export default app;

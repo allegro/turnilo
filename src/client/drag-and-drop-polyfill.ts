@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-const common = require("./webpack.common");
-const merge = require("webpack-merge");
-const webpack = require('webpack');
-const hotMiddlewareScript = 'webpack-hot-middleware/client';
+export default function dragAndDropPolyfill() {
+  const div = document.createElement("div");
+  const dragDiv = "draggable" in div;
+  const evts = "ondragstart" in div && "ondrop" in div;
 
-module.exports = merge.smart(common, {
-  mode: 'development',
-  entry: {
-    main: [hotMiddlewareScript, "./src/client/main.tsx"]
-  },
-  output: {
-    publicPath: '/',
-    pathinfo: false
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('dev-hmr')
-    }),
-    new webpack.HotModuleReplacementPlugin(),
-  ]
-});
+  const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+
+  if (needsPatch) {
+    Promise.all([
+      // @ts-ignore
+      import("../../lib/polyfill/drag-drop-polyfill.min.js"),
+      // @ts-ignore
+      import("../../lib/polyfill/drag-drop-polyfill.css")
+    ]).then(([DragDropPolyfill, _]) => {
+      DragDropPolyfill.Initialize({});
+    });
+  }
+}
