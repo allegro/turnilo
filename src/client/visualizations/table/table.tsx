@@ -213,7 +213,7 @@ export class Table extends BaseVisualization<TableState> {
     return collapseRows;
   }
 
-  private highlightedRowIndex(flatData: PseudoDatum[]): number | null {
+  private highlightedRowIndex(flatData?: PseudoDatum[]): number | null {
     const { essence } = this.props;
     if (!flatData) return null;
     if (!this.hasHighlight()) return null;
@@ -231,14 +231,15 @@ export class Table extends BaseVisualization<TableState> {
     const highlightedRowIndex = this.highlightedRowIndex(flatData);
     const columnWidth = this.getIdealColumnWidth();
 
-    const count = measureColumnsCount(essence);
-    const visibleRows = getVisibleIndices(flatData.length, stage.height, scrollTop);
+    const columnsCount = measureColumnsCount(essence);
+    const rowsCount = flatData ? flatData.length : 0;
+    const visibleRows = getVisibleIndices(rowsCount, stage.height, scrollTop);
     const showHighlight = highlightedRowIndex !== null && flatData;
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
-      bodyWidth: columnWidth * count + SPACE_RIGHT,
-      bodyHeight: flatData ? flatData.length * ROW_HEIGHT : 0,
+      bodyWidth: columnWidth * columnsCount + SPACE_RIGHT,
+      bodyHeight: rowsCount * ROW_HEIGHT,
 
       // Gutters
       top: HEADER_HEIGHT,
@@ -289,7 +290,7 @@ export class Table extends BaseVisualization<TableState> {
           scales={this.getScalesForColumns(essence, flatData)}
           data={flatData}
           cellWidth={columnWidth}
-          rowWidth={columnWidth * count} />}
+          rowWidth={columnWidth * columnsCount} />}
 
         overlay={showHighlight && <Highlighter
           highlightedIndex={highlightedRowIndex}
