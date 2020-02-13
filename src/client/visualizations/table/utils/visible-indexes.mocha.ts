@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-import { Essence } from "../../../../common/models/essence/essence";
+import { expect } from "chai";
+import { getVisibleIndices } from "./visible-indexes";
 
-export function measureColumnsCount(essence: Essence): number {
-  const seriesCount = essence.series.series.count();
-  return essence.hasComparison() ? seriesCount * 3 : seriesCount;
-}
+describe("getVisibleIndices", () => {
+  it("should return first indices when no scroll given", () => {
+    expect(getVisibleIndices(100, 200, 0)).to.deep.equal([0, 7]);
+  });
+
+  it("should return indices when scrolled down", () => {
+    expect(getVisibleIndices(100, 200, 100)).to.deep.equal([3, 10]);
+  });
+
+  it("should return all indices when not enough rows to fill height", () => {
+    expect(getVisibleIndices(5, 200, 0)).to.deep.equal([0, 5]);
+  });
+});
