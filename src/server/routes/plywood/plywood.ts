@@ -93,13 +93,21 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       return;
     }
 
+    const requestDecoratorContext: Record<string, any> = {};
     // "native" clusters are not defined, maybe they should be defined as some stub object
     if (myDataCube.cluster) {
-      req.setTimeout(myDataCube.cluster.getTimeout(), null);
+      const timeout = myDataCube.cluster.getTimeout();
+      req.setTimeout(timeout, null);
+      requestDecoratorContext.requestDeadline = new Date().valueOf() + timeout;
     }
     const maxQueries = myDataCube.getMaxQueries();
     try {
-      const data = await myDataCube.executor(ex, { maxQueries, timezone: queryTimezone });
+      const data = await myDataCube.executor(
+        ex,
+        { maxQueries, timezone: queryTimezone },
+        { decoratorContext: requestDecoratorContext }
+      );
+
       const reply: any = {
         result: Dataset.isDataset(data) ? data.toJS() : data
       };
