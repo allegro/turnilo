@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ROW_HEIGHT } from "../table";
 
-@import '../../imports';
-@import 'utils/dimensions';
-
-.table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &.has-top-shadow {
-
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
-
-    .left-gutter, .top-left-corner {
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-      border-right: 1px solid $border-super-light;
-    }
-  }
+export function visibleIndexRange(rowCount: number, height: number, scrollTopOffset: number): [number, number] {
+  return [
+    Math.max(0, Math.floor(scrollTopOffset / ROW_HEIGHT)),
+    Math.min(rowCount, Math.ceil((scrollTopOffset + height) / ROW_HEIGHT))
+  ];
 }
-

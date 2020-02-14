@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +14,16 @@
  * limitations under the License.
  */
 
-@import '../../imports';
-@import 'utils/dimensions';
+import * as React from "react";
+import { Essence } from "../../../../../common/models/essence/essence";
+import { Corner } from "../../utils/corner";
 
-.table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &.has-top-shadow {
-
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
-
-    .left-gutter, .top-left-corner {
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-      border-right: 1px solid $border-super-light;
-    }
-  }
+interface CombinedSplitsTitle {
+  essence: Essence;
 }
 
+export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ essence }) => {
+  const { splits, dataCube } = essence;
+  const title = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
+  return <Corner>{title}</Corner>;
+};

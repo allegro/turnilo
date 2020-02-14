@@ -19,7 +19,7 @@ import { Record } from "immutable";
 import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 import { settings, TableSettings } from "./settings";
 
-describe.only("TableSettings", () => {
+describe("TableSettings", () => {
   describe("defaults", () => {
     const defaults = settings.defaults as ImmutableRecord<TableSettings>;
 

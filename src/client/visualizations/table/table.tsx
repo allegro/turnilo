@@ -16,63 +16,41 @@
  */
 
 import * as d3 from "d3";
-import { Dataset, Datum, PseudoDatum } from "plywood";
+import { Dataset, Datum, FlattenOptions, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { SeriesSort, SortDirection } from "../../../common/models/sort/sort";
-import { integerDivision } from "../../../common/utils/general/general";
+import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
+import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { TABLE_MANIFEST } from "../../../common/visualization-manifests/table/table";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
-import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
+import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
-import { Corner } from "./corner";
-import { getFilterFromDatum } from "./filter-for-datum";
-import { Highlighter } from "./highlight";
-import { MeasureRows } from "./measure-rows";
-import { MeasuresHeader } from "./measures-header";
-import { segmentName } from "./segment-name";
-import { Segments } from "./segments";
+import { MeasureRows } from "./body/measures/measure-rows";
+import { nestedSplitName } from "./body/splits/nested-split-name";
+import { SplitRows } from "./body/splits/split-rows";
+import { MeasuresHeader } from "./header/measures/measures-header";
+import { SplitsHeader } from "./header/splits/splits-header";
+import { Highlighter } from "./highlight/highlight";
 import "./table.scss";
+import { HoverElement, PositionHover, rowPosition, seriesPosition } from "./utils/calculate-hover-position";
+import { getFilterFromDatum } from "./utils/filter-for-datum";
+import { measureColumnsCount } from "./utils/measure-columns-count";
+import { visibleIndexRange } from "./utils/visible-index-range";
+
+export const HEADER_HEIGHT = 38;
+export const INDENT_WIDTH = 25;
+export const ROW_HEIGHT = 30;
+export const SPACE_LEFT = 10;
 
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
-const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
-const THUMBNAIL_SEGMENT_WIDTH = 150;
-export const INDENT_WIDTH = 25;
 const MEASURE_WIDTH = 130;
-export const ROW_HEIGHT = 30;
-const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const MIN_DIMENSION_WIDTH = 100;
-
-function indexToColumnType(index: number): ColumnType {
-  return [ColumnType.CURRENT, ColumnType.PREVIOUS, ColumnType.DELTA][index % 3];
-}
-
-function getSortPeriod(columnType: ColumnType): SeriesDerivation {
-  switch (columnType) {
-    case ColumnType.CURRENT:
-      return SeriesDerivation.CURRENT;
-    case ColumnType.PREVIOUS:
-      return SeriesDerivation.PREVIOUS;
-    case ColumnType.DELTA:
-      return SeriesDerivation.DELTA;
-  }
-}
-
-export enum ColumnType { CURRENT, PREVIOUS, DELTA }
-
-export enum HoverElement { CORNER, ROW, HEADER, WHITESPACE, SPACE_LEFT }
-
-export interface PositionHover {
-  element: HoverElement;
-  series?: Series;
-  columnType?: ColumnType;
-  row?: Datum;
-}
 
 export interface TableState extends BaseVisualizationState {
   flatData?: PseudoDatum[];
@@ -85,13 +63,19 @@ export class Table extends BaseVisualization<TableState> {
   protected innerTableRef = React.createRef<HTMLDivElement>();
 
   getDefaultState(): TableState {
-    return { flatData: null, hoverRow: null, segmentWidth: this.defaultSegmentWidth(), ...super.getDefaultState() };
+    return {
+      flatData: null,
+      hoverRow: null,
+      segmentWidth: SEGMENT_WIDTH,
+      ...super.getDefaultState()
+    };
   }
 
-  defaultSegmentWidth(): number {
-    const { isThumbnail } = this.props;
+  private getIdealColumnWidth(): number {
+    const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
+    const count = measureColumnsCount(this.props.essence);
 
-    return isThumbnail ? THUMBNAIL_SEGMENT_WIDTH : SEGMENT_WIDTH;
+    return count * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / count;
   }
 
   maxSegmentWidth(): number {
@@ -99,190 +83,156 @@ export class Table extends BaseVisualization<TableState> {
       return this.innerTableRef.current.clientWidth - MIN_DIMENSION_WIDTH;
     }
 
-    return this.defaultSegmentWidth();
+    return SEGMENT_WIDTH;
   }
 
   getSegmentWidth(): number {
     const { segmentWidth } = this.state;
-    return segmentWidth || this.defaultSegmentWidth();
+    return segmentWidth || SEGMENT_WIDTH;
   }
 
-  calculateMousePosition(x: number, y: number): PositionHover {
-    const { essence } = this.props;
-    const { flatData } = this.state;
-
-    if (x <= SPACE_LEFT) return { element: HoverElement.SPACE_LEFT };
-    x -= SPACE_LEFT;
-
-    if (y <= HEADER_HEIGHT) {
-      if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
-      const seriesList = essence.series.series;
-
-      x = x - this.getSegmentWidth();
-      const seriesWidth = this.getIdealColumnWidth();
-      const seriesIndex = Math.floor(x / seriesWidth);
-      if (essence.hasComparison()) {
-        const nominalIndex = integerDivision(seriesIndex, 3);
-        const series = seriesList.get(nominalIndex);
-        if (!series) return { element: HoverElement.WHITESPACE };
-        const columnType = indexToColumnType(seriesIndex);
-        return { element: HoverElement.HEADER, series, columnType };
-      }
-      const series = seriesList.get(seriesIndex);
-      if (!series) return { element: HoverElement.WHITESPACE };
-      return { element: HoverElement.HEADER, series, columnType: ColumnType.CURRENT };
-    }
-
-    y = y - HEADER_HEIGHT;
-    const rowIndex = Math.floor(y / ROW_HEIGHT);
-    const datum = flatData ? flatData[rowIndex] : null;
-    if (!datum) return { element: HoverElement.WHITESPACE };
-    return { element: HoverElement.ROW, row: datum };
-  }
-
-  private setSort({ series, element, columnType }: PositionHover) {
+  private setSortToSeries(series: Series, period: SeriesDerivation) {
     const { clicker, essence } = this.props;
     const { splits } = essence;
-    switch (element) {
-      case HoverElement.CORNER:
-        clicker.changeSplits(splits.setSortToDimension(), VisStrategy.KeepAlways); // set each to dimension ascending
-        return;
-      case HoverElement.HEADER:
-        const period = getSortPeriod(columnType);
-        const commonSort = essence.getCommonSort();
-        const reference = series.key();
-        const sort = new SeriesSort({ reference, period, direction: SortDirection.descending });
-        const sortWithDirection = commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
-        clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
-        return;
-    }
-    throw new Error(`Can't create sort reference for position element: ${element}`);
+    const commonSort = essence.getCommonSort();
+    const reference = series.key();
+    const sort = new SeriesSort({ reference, period, direction: SortDirection.descending });
+    const sortWithDirection = commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
+    clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
   }
 
-  onClick = (x: number, y: number) => {
+  private setSortToDimension() {
+    const { clicker, essence: { splits } } = this.props;
+    clicker.changeSplits(splits.setSortToDimension(), VisStrategy.KeepAlways); // set each to dimension ascending
+  }
+
+  private highlightRow(datum: Datum) {
     const { essence: { splits } } = this.props;
+    const rowHighlight = getFilterFromDatum(splits, datum);
 
-    const mousePos = this.calculateMousePosition(x, y);
-    const { row, element } = mousePos;
+    if (!rowHighlight) return;
 
-    switch (element) {
-      case HoverElement.CORNER:
-        this.setSort(mousePos);
-        return;
-      case HoverElement.HEADER:
-        this.setSort(mousePos);
-        return;
-      case HoverElement.ROW:
-        const rowHighlight = getFilterFromDatum(splits, row);
+    const alreadyHighlighted = this.hasHighlight() && rowHighlight.equals(this.getHighlightClauses());
+    if (alreadyHighlighted) {
+      this.dropHighlight();
+      return;
+    }
 
-        if (!rowHighlight) return;
+    this.highlight(rowHighlight, null);
+  }
 
-        if (this.hasHighlight()) {
-          if (rowHighlight.equals(this.getHighlightClauses())) {
-            this.dropHighlight();
-            return;
-          }
-        }
-
-        this.highlight(rowHighlight, null);
-        return;
+  private calculateMousePosition(x: number, y: number, part: ScrollerPart): PositionHover {
+    switch (part) {
+      case "top-left-corner":
+        return { element: HoverElement.CORNER };
+      case "top-gutter":
+        return seriesPosition(x, this.props.essence, this.getSegmentWidth(), this.getIdealColumnWidth());
+      case "body":
+      case "left-gutter":
+        return rowPosition(y, this.state.flatData);
       default:
-        return;
+        return { element: HoverElement.WHITESPACE };
     }
   }
 
-  onMouseMove = (x: number, y: number) => {
+  onClick = (x: number, y: number, part: ScrollerPart) => {
+    const position = this.calculateMousePosition(x, y, part);
+
+    switch (position.element) {
+      case HoverElement.CORNER:
+        this.setSortToDimension();
+        break;
+      case HoverElement.HEADER:
+        this.setSortToSeries(position.series, position.period);
+        break;
+      case HoverElement.ROW:
+        this.highlightRow(position.datum);
+        break;
+    }
+  }
+
+  setHoverRow = (x: number, y: number, part: ScrollerPart) => {
     const { hoverRow } = this.state;
-    const { row } = this.calculateMousePosition(x, y);
-    if (hoverRow !== row) {
-      this.setState({ hoverRow: row });
+    const position = this.calculateMousePosition(x, y, part);
+    if (position.element === HoverElement.ROW && position.datum !== hoverRow) {
+      this.setState({ hoverRow: position.datum });
     }
   }
 
-  onMouseLeave = () => {
+  resetHover = () => {
     const { hoverRow } = this.state;
     if (hoverRow) {
       this.setState({ hoverRow: null });
     }
   }
 
+  setScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
+
+  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
+
+  private flattenOptions(): FlattenOptions {
+    if (this.shouldCollapseRows()) {
+      return { order: "inline", nestingName: "__nest" };
+    }
+    return { order: "preorder", nestingName: "__nest" };
+  }
+
   deriveDatasetState(dataset: Dataset): Partial<TableState> {
     if (!this.props.essence.splits.length()) return {};
-    const flatDataset = dataset.flatten({ order: "preorder", nestingName: "__nest" });
+    const flatDataset = dataset.flatten(this.flattenOptions());
     const flatData = flatDataset.data;
     return { flatData };
   }
 
-  getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
+  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
     const concreteSeries = essence.getConcreteSeries().toArray();
     const splitLength = essence.splits.length();
 
     return concreteSeries.map(series => {
-      let measureValues = flatData
+      const measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => series.selectValue(d));
 
-      // Ensure that 0 is in there
-      measureValues.push(0);
-
       return d3.scale.linear()
-        .domain(d3.extent(measureValues))
-        .range([0, 100]); // really those are percents
+      // Ensure that 0 is in there
+        .domain(d3.extent([0, ...measureValues]))
+        .range([0, 100]);
     });
   }
 
-  getIdealColumnWidth(): number {
-    const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
-    const columnsCount = this.columnsCount();
-
-    return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
+  private shouldCollapseRows(): boolean {
+    const { essence: { visualizationSettings } } = this.props;
+    const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
+    return collapseRows;
   }
 
-  onSimpleScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
-
-  getVisibleIndices(rowCount: number, height: number): [number, number] {
-    const { scrollTop } = this.state;
-
-    return [
-      Math.max(0, Math.floor(scrollTop / ROW_HEIGHT)),
-      Math.min(rowCount, Math.ceil((scrollTop + height) / ROW_HEIGHT))
-    ];
-  }
-
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
-
-  private columnsCount(): number {
+  private highlightedRowIndex(flatData?: PseudoDatum[]): number | null {
     const { essence } = this.props;
-    const seriesCount = essence.getConcreteSeries().count();
-    return essence.hasComparison() ? seriesCount * 3 : seriesCount;
-  }
-
-  private selectedRowIdx(): number | null {
-    const { essence } = this.props;
-    const { flatData } = this.state;
     if (!flatData) return null;
     if (!this.hasHighlight()) return null;
     const { splits } = essence;
-    const idx = flatData.findIndex(d => this.getHighlightClauses().equals(getFilterFromDatum(splits, d)));
-    if (idx >= 0) return idx;
+    const index = flatData.findIndex(d => this.getHighlightClauses().equals(getFilterFromDatum(splits, d)));
+    if (index >= 0) return index;
     return null;
   }
 
   protected renderInternals() {
     const { essence, stage } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
-    const { splits, dataCube } = essence;
+    const collapseRows = this.shouldCollapseRows();
 
-    const selectedIdx = this.selectedRowIdx();
+    const highlightedRowIndex = this.highlightedRowIndex(flatData);
     const columnWidth = this.getIdealColumnWidth();
 
-    const columnsCount = this.columnsCount();
-    const visibleRows = this.getVisibleIndices(flatData.length, stage.height);
+    const columnsCount = measureColumnsCount(essence);
+    const rowsCount = flatData ? flatData.length : 0;
+    const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
+    const showHighlight = highlightedRowIndex !== null && flatData;
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
       bodyWidth: columnWidth * columnsCount + SPACE_RIGHT,
-      bodyHeight: flatData ? flatData.length * ROW_HEIGHT : 0,
+      bodyHeight: rowsCount * ROW_HEIGHT,
 
       // Gutters
       top: HEADER_HEIGHT,
@@ -291,17 +241,11 @@ export class Table extends BaseVisualization<TableState> {
       left: this.getSegmentWidth()
     };
 
-    const segmentTitle = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
-
-    const overlay = selectedIdx !== null && flatData && <Highlighter
-      top={selectedIdx * ROW_HEIGHT - scrollTop}
-      left={Math.max(0, flatData[selectedIdx].__nest - 1) * INDENT_WIDTH} />;
-
     return <div className="internals table-inner" ref={this.innerTableRef}>
       <ResizeHandle
         direction={Direction.LEFT}
         onResize={this.setSegmentWidth}
-        min={this.defaultSegmentWidth()}
+        min={SEGMENT_WIDTH}
         max={this.maxSegmentWidth()}
         value={segmentWidth}
       />
@@ -318,45 +262,49 @@ export class Table extends BaseVisualization<TableState> {
           />
         }
 
-        leftGutter={flatData &&
-          <Segments
-            selectedIdx={selectedIdx}
-            visibleRows={visibleRows}
-            hoverRow={hoverRow}
-            essence={essence}
-            data={flatData}
-            segmentWidth={this.getSegmentWidth()} />
+        leftGutter={<SplitRows
+          collapseRows={collapseRows}
+          highlightedRowIndex={highlightedRowIndex}
+          visibleRowsIndexRange={visibleRowsRange}
+          hoverRow={hoverRow}
+          essence={essence}
+          data={flatData}
+          segmentWidth={this.getSegmentWidth()} />
         }
 
-        topLeftCorner={<Corner title={segmentTitle} />}
+        topLeftCorner={<SplitsHeader essence={essence} collapseRows={collapseRows} />}
 
         body={flatData &&
-          <MeasureRows
-            hoverRow={hoverRow}
-            visibleRows={visibleRows}
-            essence={essence}
-            selectedIdx={selectedIdx}
-            scales={this.getScalesForColumns(essence, flatData)}
-            data={flatData}
-            cellWidth={columnWidth}
-            rowWidth={columnWidth * columnsCount} />}
+        <MeasureRows
+          hoverRow={hoverRow}
+          visibleRowsIndexRange={visibleRowsRange}
+          essence={essence}
+          highlightedRowIndex={highlightedRowIndex}
+          scales={this.getScalesForColumns(essence, flatData)}
+          data={flatData}
+          cellWidth={columnWidth}
+          rowWidth={columnWidth * columnsCount} />}
 
-        overlay={overlay}
+        overlay={showHighlight && <Highlighter
+          highlightedIndex={highlightedRowIndex}
+          highlightedNesting={flatData[highlightedRowIndex].__nest}
+          scrollTopOffset={scrollTop}
+          collapseRows={collapseRows} />}
 
         onClick={this.onClick}
-        onMouseMove={this.onMouseMove}
-        onMouseLeave={this.onMouseLeave}
-        onScroll={this.onSimpleScroll}
+        onMouseMove={this.setHoverRow}
+        onMouseLeave={this.resetHover}
+        onScroll={this.setScroll}
 
       />
 
-      {selectedIdx !== null &&
-        <HighlightModal
-          title={segmentName(flatData[selectedIdx], essence)}
-          left={stage.x + stage.width / 2}
-          top={stage.y + HEADER_HEIGHT + (selectedIdx * ROW_HEIGHT) - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-          acceptHighlight={this.acceptHighlight}
-          dropHighlight={this.dropHighlight} />}
+      {highlightedRowIndex !== null &&
+      <HighlightModal
+        title={nestedSplitName(flatData[highlightedRowIndex], essence)}
+        left={stage.x + stage.width / 2}
+        top={stage.y + HEADER_HEIGHT + (highlightedRowIndex * ROW_HEIGHT) - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
+        acceptHighlight={this.acceptHighlight}
+        dropHighlight={this.dropHighlight} />}
     </div>;
   }
 }

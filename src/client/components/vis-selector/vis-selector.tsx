@@ -21,7 +21,6 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
-import { noop } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { VisSelectorItem } from "./vis-selector-item";
@@ -90,7 +89,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
         ref={this.selector}
         className={classNames("vis-selector", { active: openMenu })}
         onClick={this.openMenu}>
-        <VisSelectorItem visualization={visualization} selected={true} onClick={noop} />
+        <VisSelectorItem visualization={visualization} selected={true} />
       </div>
       {this.renderMenu()}
     </React.Fragment>;

@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { PlywoodRange, Range, RefExpression } from "plywood";
+import { RefExpression } from "plywood";
 import { thread } from "../../utils/functional/functional";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { MANIFESTS } from "../../visualization-manifests";
@@ -399,6 +399,10 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public differentSeries(other: Essence): boolean {
     return !this.series.equals(other.series);
+  }
+
+  public differentSettings(other: Essence): boolean {
+    return !this.visualizationSettings.equals(other.visualizationSettings);
   }
 
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, unfilterDimension: Dimension = null): boolean {

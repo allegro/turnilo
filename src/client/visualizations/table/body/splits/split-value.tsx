@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +14,19 @@
  * limitations under the License.
  */
 
-@import '../../imports';
-@import 'utils/dimensions';
+import * as React from "react";
+import { classNames } from "../../../../utils/dom/dom";
+import "./split-value.scss";
 
-.table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &.has-top-shadow {
-
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
-
-    .left-gutter, .top-left-corner {
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-      border-right: 1px solid $border-super-light;
-    }
-  }
+interface SplitValueProps {
+  highlight: boolean;
+  dimmed: boolean;
+  className?: string;
+  style: React.CSSProperties;
 }
 
+export const SplitValue: React.SFC<SplitValueProps> = ({ className, highlight, dimmed, children, style }) =>
+  <div
+    className={classNames("split-value", className, { dimmed, highlight })}
+    style={style}
+  >{children}</div>;
