@@ -94,7 +94,7 @@
     "request": "2.87.0",
     "request-promise-native": "1.0.5",
     "rollbar": "2.6.1",
-    "xlsx-exporter": "0.0.6"
+    "xlsx-exporter": "0.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.7.2",
