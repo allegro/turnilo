@@ -11,8 +11,8 @@ context("Table", () => {
   const highlightModal = () => cy.get(".highlight-modal");
   const acceptHighlight = () => highlightModal().find(".accept");
   const dropHighlight = () => highlightModal().find(".drop");
-  const findSegment = label => table().find(`.segment:contains("${label}")`);
-  const nthRow = n => table().find(`.row:nth-child(${n})`);
+  const findSplitValue = label => table().find(`.split-value:contains("${label}")`);
+  const nthRow = n => table().find(`.measure-row:nth-child(${n})`);
 
   describe("Highlight", () => {
     const urls = {
@@ -21,33 +21,33 @@ context("Table", () => {
 
     beforeEach(() => {
       cy.visit(urls.threeSplits);
-      clickSegment("Main");
+      clickSplitValue("Main");
     });
 
-    function clickSegment(label) {
-      return findSegment(label)
-        .then($segment => {
-          const {top: scrollerOffset} = $segment.closest(".scroller").offset();
-          const {left, top: segmentOffset} = $segment.offset();
-          const height = $segment.height();
+    function clickSplitValue(label) {
+      return findSplitValue(label)
+        .then($splitValue => {
+          const {top: scrollerOffset} = $splitValue.closest(".scroller").offset();
+          const {left, top: splitValueOffset} = $splitValue.offset();
+          const height = $splitValue.height();
           // force because we have overlay upon overlay in table
-          clickTarget().click(left, segmentOffset - scrollerOffset + (height / 2), { force: true });
+          clickTarget().click(left, splitValueOffset - scrollerOffset + (height / 2), {force: true});
         });
     }
 
-    function assertSegmentRowHighlight(label) {
-      const segment = findSegment(label);
-      segment
-        .should("have.class", "selected")
-        .then($segment => {
-          const index = $segment.index();
-          nthRow(index + 1).should("have.class", "selected");
+    function assertSplitValueRowHighlight(label) {
+      const splitValue = findSplitValue(label);
+      splitValue
+        .should("have.class", "highlight")
+        .then($splitValue => {
+          const index = $splitValue.index();
+          nthRow(index + 1).should("have.class", "highlight");
         });
     }
 
     function assertNoRowHighlightIsSelected() {
       table().find(".row.selected").should("not.exist");
-      table().find(".segment.selected").should("not.exist");
+      table().find(".split-value.selected").should("not.exist");
     }
 
     function assertFilterTileValues(values, overflowValues) {
@@ -71,7 +71,7 @@ context("Table", () => {
       });
 
       it("should show row highlight", () => {
-        assertSegmentRowHighlight("Main");
+        assertSplitValueRowHighlight("Main");
       });
     });
 
@@ -100,15 +100,15 @@ context("Table", () => {
 
     describe("reselect highlight", () => {
       it("should show moved highlight modal", () => {
-        clickSegment("Lava Fire");
+        clickSplitValue("Lava Fire");
 
         highlightModal().should("contain", "Lava Fire");
       });
 
       it("should show moved highlighter", () => {
-        clickSegment("Lava Fire");
+        clickSplitValue("Lava Fire");
 
-        assertSegmentRowHighlight("Lava Fire");
+        assertSplitValueRowHighlight("Lava Fire");
       });
     });
 

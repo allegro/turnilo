@@ -27,7 +27,6 @@ export interface VisualizationProps {
   timekeeper: Timekeeper;
   stage: Stage;
   registerDownloadableDataset?: (dataset: Dataset) => void;
-  isThumbnail?: boolean;
   refreshRequestTimestamp: number;
 }
 

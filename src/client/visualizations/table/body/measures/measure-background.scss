@@ -14,32 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import '../../utils/dimensions';
+@import '../../../../imports';
 
-@import '../../imports';
-@import 'utils/dimensions';
+.measure-background-container {
+  position: absolute;
+  top: 0;
+  left: $measure-column-padding-left;
+  right: 0;
+  bottom: 0;
 
-.table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  .measure-background {
+    width: 0;
+    height: 100%;
 
-    &.has-top-shadow {
+    background-color: $background-brand-light;
+    border-top: 1px solid $highlight-border;
+    border-bottom: 1px solid $highlight-border;
 
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
-
-    .left-gutter, .top-left-corner {
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-      border-right: 1px solid $border-super-light;
+    &.highlight {
+      background-color: $highlight;
+      border-top: 1px solid $highlight-border;
+      border-bottom: 1px solid $highlight-border;
     }
   }
 }
-

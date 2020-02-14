@@ -87,7 +87,7 @@ context("Relative Time Filter Menu", () => {
     });
   });
 
-  describe.only("Overlap validation", () => {
+  describe("Overlap validation", () => {
     describe("Non overlapping periods", () => {
       beforeEach(() => {
         previousPreset("W").click();

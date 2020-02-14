@@ -151,6 +151,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.differentSeries(essence) ||
+      nextEssence.differentSettings(essence) ||
       this.differentBucketingTimezone(nextEssence) ||
       this.differentLastRefreshRequestTimestamp(nextProps);
   }

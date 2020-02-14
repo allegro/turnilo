@@ -24,14 +24,14 @@ import "./vis-selector-item.scss";
 interface VisSelectorItemProps {
   visualization: VisualizationManifest;
   selected: boolean;
-  onClick: Unary<VisualizationManifest, void>;
+  onClick?: Unary<VisualizationManifest, void>;
 }
 
 export const VisSelectorItem: React.SFC<VisSelectorItemProps> = ({ visualization, selected, onClick }) =>
   <div
     className={classNames("vis-item", (selected ? "selected" : "not-selected"))}
     key={visualization.name}
-    onClick={() => !selected && onClick(visualization)}
+    onClick={() => onClick && !selected && onClick(visualization)}
   >
     <SvgIcon svg={require("../../icons/vis-" + visualization.name + ".svg")} />
     <div className="vis-title">{visualization.title}</div>

@@ -22,6 +22,7 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import { MANIFESTS } from "../../../common/visualization-manifests";
+import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { STRINGS } from "../../config/constants";
 import { settingsComponent } from "../../visualization-settings/settings-component";
 import { Button } from "../button/button";
@@ -60,37 +61,38 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   changeSettings = (visualizationSettings: VisualizationSettings) => this.setState({ visualizationSettings });
 
   renderSettings() {
-    const { visualization, visualizationSettings } = this.state;
-    /*
-     TODO:
-      Right now we can't encode in type relationship between visualization and settings
-      on Essence type. That's why we use "any" here. Downside is that we can pass somehow
-      settings that are not valid for selected vis. This invariant is handled in code in
-      Essence - after changing viz, we change settings using viz defaults or viz reader -
-      bot of which return correct type.
-      Invariants inside component are held - component and settings are declared using same
-      type parameter. But still - this declaration is enforced locally - someone could write
-      HeatmapComponent<LineChartSettings>.
-      Idea is to encode settings and visualization behind one type parameter on Essence.
-      Issues:
-        Move manifest and mutbale settings into under one key
-        How to keep type parameter attached to essence (on Clicker.state) when:
-          Mutating something else (should keep type parameter)
-          Chanigng viz (should change type parameter)
-        Good solution would be to encode viz key and settings as union type with
-        key as discriminant. Unfortunately, Immutable.Record would break union
-        properties for typescript and will mash it into one super type.
-    */
-    const settings = visualizationSettings as ImmutableRecord<any>;
-    const Settings = settingsComponent(visualization.name);
-
-    if (!Settings) return null;
+    const component = this.settingsComponent();
+    if (!component) return null;
     return <div className="vis-settings">
       <div className="vis-settings-title">Settings</div>
-      <Settings
-        onChange={this.changeSettings}
-        settings={settings} />
+      {component}
     </div>;
+  }
+
+  settingsComponent(): JSX.Element | null {
+    const { visualization, visualizationSettings } = this.state;
+    /*
+      TODO:
+      Right now visualization and settings do not share type parameter.
+      We need to:
+        * move them together into union type indexed by visualization.name
+        * create getters for manifest in essence
+        * use switch to unpack both fields at once
+        * create mapped type acting like Visualization -> VisualizationSettings<Visualization>
+     */
+    switch (visualization.name) {
+      case "table":
+        const TableSettingsComponent = settingsComponent(visualization.name);
+        return <TableSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<TableSettings>}/>;
+      case "heatmap":
+        return null;
+      case "totals":
+        return null;
+      case "bar-chart":
+        return null;
+      case "line-chart":
+        return null;
+    }
   }
 
   render() {

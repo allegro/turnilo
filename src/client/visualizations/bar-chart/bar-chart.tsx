@@ -298,7 +298,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   getSingleChartStage(): Stage {
     const xScale = this.getPrimaryXScale();
-    const { essence, stage, isThumbnail } = this.props;
+    const { essence, stage } = this.props;
 
     const { stepWidth } = this.getBarDimensions(xScale.rangeBand());
     const xTicks = xScale.domain();
@@ -306,8 +306,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const measures = essence.getConcreteSeries();
     const availableHeight = stage.height - X_AXIS_HEIGHT;
-    const minHeight = isThumbnail ? 1 : MIN_CHART_HEIGHT;
-    const height = Math.max(minHeight, Math.floor(availableHeight / measures.size));
+    const height = Math.max(MIN_CHART_HEIGHT, Math.floor(availableHeight / measures.size));
 
     return new Stage({
       x: 0,
@@ -668,10 +667,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
     chartIndex: number,
     chartStage: Stage
   ): { yAxis: JSX.Element, chart: JSX.Element, highlight: JSX.Element } {
-    const { isThumbnail, essence } = this.props;
+    const { essence } = this.props;
     const mySplitDataset = dataset.data[0][SPLIT] as Dataset;
 
-    const measureLabel = !isThumbnail && <VisMeasureLabel
+    const measureLabel = <VisMeasureLabel
       series={series}
       datum={dataset.data[0]}
       showPrevious={essence.hasComparison()} />;
