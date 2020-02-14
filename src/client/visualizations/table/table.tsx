@@ -39,7 +39,7 @@ import "./table.scss";
 import { HoverElement, PositionHover, rowPosition, seriesPosition } from "./utils/calculate-hover-position";
 import { getFilterFromDatum } from "./utils/filter-for-datum";
 import { measureColumnsCount } from "./utils/measure-columns-count";
-import { getVisibleIndices } from "./utils/visible-indexes";
+import { visibleIndexRange } from "./utils/visible-index-range";
 
 export const HEADER_HEIGHT = 38;
 export const INDENT_WIDTH = 25;
@@ -226,7 +226,7 @@ export class Table extends BaseVisualization<TableState> {
 
     const columnsCount = measureColumnsCount(essence);
     const rowsCount = flatData ? flatData.length : 0;
-    const visibleRows = getVisibleIndices(rowsCount, stage.height, scrollTop);
+    const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
     const showHighlight = highlightedRowIndex !== null && flatData;
 
     const scrollerLayout: ScrollerLayout = {
@@ -265,7 +265,7 @@ export class Table extends BaseVisualization<TableState> {
         leftGutter={<SplitRows
           collapseRows={collapseRows}
           highlightedRowIndex={highlightedRowIndex}
-          visibleRows={visibleRows}
+          visibleRowsIndexRange={visibleRowsRange}
           hoverRow={hoverRow}
           essence={essence}
           data={flatData}
@@ -277,7 +277,7 @@ export class Table extends BaseVisualization<TableState> {
         body={flatData &&
         <MeasureRows
           hoverRow={hoverRow}
-          visibleRows={visibleRows}
+          visibleRowsIndexRange={visibleRowsRange}
           essence={essence}
           highlightedRowIndex={highlightedRowIndex}
           scales={this.getScalesForColumns(essence, flatData)}

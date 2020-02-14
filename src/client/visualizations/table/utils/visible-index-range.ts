@@ -15,7 +15,7 @@
  */
 import { ROW_HEIGHT } from "../table";
 
-export function getVisibleIndices(rowCount: number, height: number, scrollTopOffset: number): [number, number] {
+export function visibleIndexRange(rowCount: number, height: number, scrollTopOffset: number): [number, number] {
   return [
     Math.max(0, Math.floor(scrollTopOffset / ROW_HEIGHT)),
     Math.min(rowCount, Math.ceil((scrollTopOffset + height) / ROW_HEIGHT))

@@ -22,7 +22,7 @@ import { NestedSplits } from "./nested-splits";
 
 interface SplitRowsProps {
   collapseRows: boolean;
-  visibleRows: [number, number];
+  visibleRowsIndexRange: [number, number];
   essence: Essence;
   data: PseudoDatum[];
   hoverRow?: Datum;

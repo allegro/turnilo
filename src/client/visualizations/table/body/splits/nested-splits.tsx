@@ -24,7 +24,7 @@ import "./nested-splits.scss";
 import { SplitValue } from "./split-value";
 
 interface NestedSplitsProps {
-  visibleRows: [number, number];
+  visibleRowsIndexRange: [number, number];
   essence: Essence;
   data: PseudoDatum[];
   hoverRow?: Datum;
@@ -33,12 +33,12 @@ interface NestedSplitsProps {
 }
 
 export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
-  const { essence, data, highlightedRowIndex, hoverRow, visibleRows, segmentWidth } = props;
+  const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="nested-splits-rows">
     <VisibleRows
       hoveredRowDatum={hoverRow}
-      visibleRowsIndexes={visibleRows}
+      visibleRowsIndexRange={visibleRowsIndexRange}
       highlightedRowIndex={highlightedRowIndex}
       rowsData={data}
       renderRow={props => {

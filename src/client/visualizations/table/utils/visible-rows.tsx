@@ -28,7 +28,7 @@ interface RowProps {
 }
 
 interface VisibleRowsProps {
-  visibleRowsIndexes: [number, number];
+  visibleRowsIndexRange: [number, number];
   highlightedRowIndex: number | null;
   rowsData: PseudoDatum[];
   hoveredRowDatum?: Datum;
@@ -36,9 +36,9 @@ interface VisibleRowsProps {
 }
 
 export const VisibleRows: React.SFC<VisibleRowsProps> = props => {
-  const { renderRow, hoveredRowDatum, rowsData, visibleRowsIndexes, highlightedRowIndex } = props;
+  const { renderRow, hoveredRowDatum, rowsData, visibleRowsIndexRange, highlightedRowIndex } = props;
 
-  const [start, end] = visibleRowsIndexes;
+  const [start, end] = visibleRowsIndexRange;
   const visibleData = rowsData.slice(start, end);
 
   return <React.Fragment>

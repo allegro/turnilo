@@ -22,7 +22,7 @@ import { VisibleRows } from "../../utils/visible-rows";
 import { MeasureRow } from "./measure-row";
 
 interface MeasureRowsProps {
-  visibleRows: [number, number];
+  visibleRowsIndexRange: [number, number];
   essence: Essence;
   highlightedRowIndex: number | null;
   scales: Array<d3.scale.Linear<number, number>>;
@@ -33,10 +33,10 @@ interface MeasureRowsProps {
 }
 
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
-  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRows, highlightedRowIndex } = props;
+  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex } = props;
 
   return <VisibleRows
-    visibleRowsIndexes={visibleRows}
+    visibleRowsIndexRange={visibleRowsIndexRange}
     highlightedRowIndex={highlightedRowIndex}
     hoveredRowDatum={hoverRow}
     rowsData={data}

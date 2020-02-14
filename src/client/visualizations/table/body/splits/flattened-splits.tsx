@@ -24,7 +24,7 @@ import "./flattened-splits.scss";
 import { SplitValue } from "./split-value";
 
 interface FlattenedSplitsProps {
-  visibleRows: [number, number];
+  visibleRowsIndexRange: [number, number];
   essence: Essence;
   data: PseudoDatum[];
   hoverRow?: Datum;
@@ -33,12 +33,12 @@ interface FlattenedSplitsProps {
 }
 
 export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
-  const { essence, data, highlightedRowIndex, hoverRow, visibleRows, segmentWidth } = props;
+  const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
   const { splits: { splits } } = essence;
 
   return <div className="flattened-splits-rows">
     <VisibleRows
-      visibleRowsIndexes={visibleRows}
+      visibleRowsIndexRange={visibleRowsIndexRange}
       highlightedRowIndex={highlightedRowIndex}
       rowsData={data}
       hoveredRowDatum={hoverRow}
