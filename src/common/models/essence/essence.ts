@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { PlywoodRange, Range, RefExpression } from "plywood";
+import { RefExpression } from "plywood";
 import { thread } from "../../utils/functional/functional";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { MANIFESTS } from "../../visualization-manifests";
