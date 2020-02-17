@@ -150,7 +150,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       dragRange: null,
       dragOnSeries: series
     });
-  }
+  };
 
   onMouseMove = (dataset: Dataset, scaleX: any, e: React.MouseEvent<HTMLDivElement>) => {
     const { essence } = this.props;
@@ -179,7 +179,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         hoverRange: currentHoverRange
       });
     }
-  }
+  };
 
   getDragRange(e: MouseEvent): PlywoodRange | null {
     const { dragStartValue, axisRange, scaleX } = this.state;
@@ -240,7 +240,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState({
       dragRange
     });
-  }
+  };
 
   globalMouseUpListener = (e: MouseEvent) => {
     const { dragStartValue, dragRange, dragOnSeries } = this.state;
@@ -269,7 +269,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       : new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start: start as Date, end: end as Date })) });
 
     this.highlight(List.of(filterClause), dragOnSeries.key());
-  }
+  };
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
@@ -278,7 +278,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     if (dragStartValue === null) return;
 
     this.resetDrag();
-  }
+  };
 
   resetDrag() {
     this.setState({
@@ -292,7 +292,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState({
       hoverRange: null
     });
-  }
+  };
 
   highlightRange(): PlywoodRange {
     const clauses = this.getHighlightClauses();
@@ -670,7 +670,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       hoverRange: null,
       hoverSeries: null
     }));
-  }
+  };
 
   renderInternals(dataset: Dataset) {
     const { essence, stage } = this.props;

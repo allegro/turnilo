@@ -84,7 +84,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     if (this.removeRootFragmentFromHash(newHash) === newHash) return;
 
     if (this.state.hash !== newHash) this.onHashChange(newHash);
-  }
+  };
 
   removeRootFragmentFromHash(hash: string): string {
     const { rootFragment } = this.props;

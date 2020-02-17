@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import { split } from "ts-node";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";

@@ -31,8 +31,10 @@ describe("DateRangePicker", () => {
         endTime={new Date(Date.UTC(2004, 11, 2))}
         maxTime={new Date(Date.UTC(2004, 11, 2))}
         timezone={Timezone.UTC}
-        onStartChange={() => {}}
-        onEndChange={() => {}}
+        onStartChange={() => {
+        }}
+        onEndChange={() => {
+        }}
       />
     );
 
@@ -78,8 +80,10 @@ describe("DateRangePicker", () => {
           endTime={null}
           maxTime={new Date(Date.UTC(2004, 11, 2))}
           timezone={Timezone.UTC}
-          onStartChange={() => {}}
-          onEndChange={() => {}}
+          onStartChange={() => {
+          }}
+          onEndChange={() => {
+          }}
         />);
     }).to.not.throw();
   });

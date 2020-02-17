@@ -98,7 +98,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
       <SvgIcon svg={require("../../icons/preview-filter.svg")} />
       <div className="action-label">{STRINGS.filter}</div>
     </div>
-    <div className={classNames("pin",  "action", { disabled: !isPinable })} onClick={onPin}>
+    <div className={classNames("pin", "action", { disabled: !isPinable })} onClick={onPin}>
       <SvgIcon svg={require("../../icons/preview-pin.svg")} />
       <div className="action-label">{STRINGS.pin}</div>
     </div>

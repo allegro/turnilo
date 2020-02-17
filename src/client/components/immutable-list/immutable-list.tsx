@@ -46,11 +46,11 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
 
   editItem = (index: number) => {
     this.setState({ editedIndex: index });
-  }
+  };
 
   addItem = () => {
     this.setState({ pendingAddItem: this.props.getNewItem() });
-  }
+  };
 
   componentWillReceiveProps(nextProps: ImmutableListProps<T>) {
     if (nextProps.items) {
@@ -67,7 +67,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   deleteItem = (index: number) => {
     const { tempItems } = this.state;
     this.setState({ tempItems: tempItems.delete(index) }, this.onChange);
-  }
+  };
 
   onReorder = (oldIndex: number, newIndex: number) => {
     var tempItems: List<any> = this.state.tempItems;
@@ -79,7 +79,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
         .delete(oldIndex)
         .insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item)
     }, this.onChange);
-  }
+  };
 
   onChange() {
     this.props.onChange(this.state.tempItems);

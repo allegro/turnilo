@@ -64,13 +64,13 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   updateSplit = (oldSplit: Split, split: Split, colors: Colors) => {
     const { essence, clicker } = this.props;
     clicker.changeSplits(essence.splits.replace(oldSplit, split), VisStrategy.UnfairGame, colors);
-  }
+  };
 
   removeSplit = (split: Split) => {
     const { clicker } = this.props;
     clicker.removeSplit(split, VisStrategy.FairGame);
     this.closeOverflowMenu();
-  }
+  };
 
   canDrop(): boolean {
     const { essence: { splits, dataCube } } = this.props;
@@ -92,7 +92,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     setDragGhost(dataTransfer, label);
 
     this.closeOverflowMenu();
-  }
+  };
 
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
@@ -113,7 +113,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     this.setState({
       dragPosition: this.calculateDragPosition(e)
     });
-  }
+  };
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
@@ -121,14 +121,14 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  }
+  };
 
   dragLeave = () => {
     if (!this.canDrop()) return;
     this.setState({
       dragPosition: null
     });
-  }
+  };
 
   draggingSplit(): Split {
     const { essence: { dataCube } } = this.props;
@@ -158,21 +158,21 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     } else {
       this.insertSplit(split, dragPosition.insert);
     }
-  }
+  };
 
   appendSplit = (dimension: Dimension) => {
     this.props.clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
-  }
+  };
 
   insertSplit = (split: Split, index: number) => {
     const { clicker, essence: { splits } } = this.props;
     clicker.changeSplits(splits.insertByIndex(index, split), VisStrategy.FairGame);
-  }
+  };
 
   replaceSplit = (split: Split, index: number) => {
     const { clicker, essence: { splits } } = this.props;
     clicker.changeSplits(splits.replaceByIndex(index, split), VisStrategy.FairGame);
-  }
+  };
 
   render() {
     const { essence, menuStage } = this.props;
@@ -195,7 +195,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
           openOverflowMenu={this.openOverflowMenu} />
       </div>
       <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-      <AddSplit appendSplit={this.appendSplit} menuStage={menuStage} essence={essence}/>
+      <AddSplit appendSplit={this.appendSplit} menuStage={menuStage} essence={essence} />
     </div>;
   }
 }

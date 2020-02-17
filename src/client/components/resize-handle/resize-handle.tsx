@@ -58,7 +58,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     });
 
     event.preventDefault();
-  }
+  };
 
   onGlobalMouseUp = () => {
     this.setState({
@@ -70,13 +70,13 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     if (isFunction(this.props.onResizeEnd)) {
       this.props.onResizeEnd();
     }
-  }
+  };
 
   onGlobalMouseMove = (event: MouseEvent) => {
     const { anchor } = this.state;
     const currentValue = this.constrainValue(this.getCoordinate(event) - anchor);
     if (!!this.props.onResize) this.props.onResize(currentValue);
-  }
+  };
 
   private getValue(event: MouseEvent | React.MouseEvent<HTMLElement>): number {
     return this.constrainValue(this.getCoordinate(event));

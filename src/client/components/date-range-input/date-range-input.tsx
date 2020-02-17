@@ -73,7 +73,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     if (validateISODate(dateString)) {
       this.changeDate(dateString, this.state.timeString);
     }
-  }
+  };
 
   timeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeString = normalizeISOTime(e.target.value);
@@ -83,7 +83,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     if (validateISOTime(timeString)) {
       this.changeDate(this.state.dateString, timeString);
     }
-  }
+  };
 
   changeDate(possibleDateString: string, possibleTimeString: string): void {
     const { timezone, onChange } = this.props;

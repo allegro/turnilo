@@ -120,7 +120,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
           return error(err);
         }
       );
-  }
+  };
 
   private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
@@ -161,7 +161,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     if (!this.state.pasteModeEnabled && enterKey(e)) {
       this.onOkClick();
     }
-  }
+  };
 
   updateSearchText = (searchText: string) => this.setState({ searchText });
 
@@ -188,7 +188,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       return this.setState({ colorsForDimension, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
     return this.setState({ colorsForDimension, selectedValues: toggle(selectedValues, value) });
-  }
+  };
 
   onOkClick = () => {
     if (!this.isFilterValid()) return;
@@ -196,7 +196,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const { colorsForDimension } = this.state;
     clicker.changeFilter(this.constructFilter(), colorsForDimension);
     onClose();
-  }
+  };
 
   enablePasteMode = () => this.setState({ pasteModeEnabled: true });
 

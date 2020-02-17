@@ -53,7 +53,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     const { visualization, visualizationSettings } = this.state;
     onSelect(visualization, visualizationSettings);
     onClose();
-  }
+  };
 
   close = () => this.props.onClose();
 
@@ -83,7 +83,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     switch (visualization.name) {
       case "table":
         const TableSettingsComponent = settingsComponent(visualization.name);
-        return <TableSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<TableSettings>}/>;
+        return <TableSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<TableSettings>} />;
       case "heatmap":
         return null;
       case "totals":

@@ -53,7 +53,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { essence: { filter }, dimension } = this.props;
     const filterMode = filter.getModeForDimension(dimension);
     return filterMode || FilterMode.INCLUDE;
-  }
+  };
 
   state: StringFilterMenuState = { filterMode: this.initialFilterMode() };
 
@@ -73,7 +73,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     } else {
       return filter.setClause(clause);
     }
-  }
+  };
 
   getFilterOptions() {
     const { dimension } = this.props;

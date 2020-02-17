@@ -55,7 +55,7 @@ export class ImmutableFormDelegate<T> {
     for (let key in errors) canSave = canSave && (errors[key] === false);
 
     return { errors, canSave };
-  }
+  };
 
   onChange = (newItem: any, isValid: boolean, path: string, error: string) => {
     var { errors, canSave } = this.updateErrors(path, isValid, error);
@@ -72,5 +72,5 @@ export class ImmutableFormDelegate<T> {
         canSave: false
       });
     }
-  }
+  };
 }

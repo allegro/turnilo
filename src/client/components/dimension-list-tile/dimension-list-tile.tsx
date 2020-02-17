@@ -99,7 +99,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       menuOpenOn: target,
       menuDimension: dimension
     });
-  }
+  };
 
   closeMenu = () => {
     const { menuOpenOn } = this.state;
@@ -108,7 +108,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       menuOpenOn: null,
       menuDimension: null
     });
-  }
+  };
 
   dragStart = (dimensionName: string, e: DragEvent<HTMLElement>) => {
     const { essence: { dataCube } } = this.props;
@@ -122,12 +122,12 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
-  }
+  };
 
   toggleSearch = () => {
     this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
-  }
+  };
 
   onSearchChange = (text: string) => {
     const { searchText } = this.state;
@@ -138,7 +138,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     this.setState({
       searchText: newSearchText
     });
-  }
+  };
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage, triggerFilterMenu } = this.props;

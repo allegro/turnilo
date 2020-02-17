@@ -26,15 +26,15 @@ import { FilterMenu } from "./filter-menu";
 class Wrap extends React.Component {
   render() {
     return <FilterMenu
-        clicker={null}
-        containerStage={null}
-        dimension={DimensionFixtures.wikiCommentLength()}
-        essence={EssenceFixtures.wikiTotals()}
-        timekeeper={TimekeeperFixtures.fixed()}
-        changePosition={null}
-        onClose={null}
-        openOn={document.createElement("div")}
-      />;
+      clicker={null}
+      containerStage={null}
+      dimension={DimensionFixtures.wikiCommentLength()}
+      essence={EssenceFixtures.wikiTotals()}
+      timekeeper={TimekeeperFixtures.fixed()}
+      changePosition={null}
+      onClose={null}
+      openOn={document.createElement("div")}
+    />;
   }
 }
 
@@ -42,7 +42,7 @@ describe("FilterMenu", () => {
   it("adds the correct class", () => {
 
     var renderedComponent = renderIntoDocument(
-      <Wrap/>
+      <Wrap />
     );
 
     expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("filter-menu");

@@ -47,7 +47,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
 
   queryChange = (query: string) => {
     this.setState(state => ({ ...state, query }));
-  }
+  };
 
   renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
     return <DataCubeCard
@@ -94,7 +94,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
               onChange={this.queryChange}
               value={query}
               placeholder="Search data cubes..."
-              focusOnMount={true}/>
+              focusOnMount={true} />
           </div>
           {this.renderDataCubes()}
         </div>

@@ -56,21 +56,21 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
     }
     const { onHover = noop } = this.props;
     onHover(data);
-  }
+  };
 
   handleHoverStop = () => {
     this.setState({ hoveredRectangle: null });
     const { onHoverStop = noop } = this.props;
     onHoverStop();
-  }
+  };
 
   handleMaxLabelWidth = (maxLabelWidth: number) => {
     this.setState({ leftLabelsWidth: Math.min(maxLabelWidth, MAX_LEFT_LABELS_WIDTH) });
-  }
+  };
 
   handleMaxLabelHeight = (maxLabelHeight: number) => {
     this.setState({ topLabelsHeight: Math.min(maxLabelHeight, MAX_TOP_LABELS_HEIGHT) });
-  }
+  };
 
   render() {
     const { dataset, essence } = this.props;

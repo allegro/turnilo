@@ -60,9 +60,9 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
     onDragStart={handleDragStart}
   >
     <div className="icon">
-      <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")}/>
+      <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
     </div>
-    <HighlightString className={classNames("label")} text={title} highlight={searchText}/>
-    {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
+    <HighlightString className={classNames("label")} text={title} highlight={searchText} />
+    {description && <InfoBubble className={infoBubbleClassName} description={description} />}
   </div>;
 };

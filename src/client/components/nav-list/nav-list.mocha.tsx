@@ -23,7 +23,7 @@ import { NavList } from "./nav-list";
 
 describe("NavList", () => {
   it("adds the correct class", () => {
-    const navList = shallow(<NavList navLinks={[]}/>);
+    const navList = shallow(<NavList navLinks={[]} />);
 
     expect(navList.hasClass("nav-list"), "should contain class").to.be.true;
   });

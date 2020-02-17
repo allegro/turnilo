@@ -87,14 +87,14 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     if (!searchButtonElement || isInside(target, searchButtonElement)) return;
 
     toggleChangeFn();
-  }
+  };
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     const { toggleChangeFn, showSearch } = this.props;
     if (!escapeKey(e)) return;
     if (!showSearch) return;
     toggleChangeFn();
-  }
+  };
 
   onActionsMenuClose = () => {
     var { actionsMenuOpenOn } = this.state;
@@ -102,7 +102,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     this.setState({
       actionsMenuOpenOn: null
     });
-  }
+  };
 
   onActionsMenuClick = (e: React.MouseEvent<HTMLElement>) => {
     var { actionsMenuOpenOn } = this.state;
@@ -110,7 +110,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     this.setState({
       actionsMenuOpenOn: e.target as Element
     });
-  }
+  };
 
   onSelectGranularity(action: TileAction) {
     this.onActionsMenuClose();

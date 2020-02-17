@@ -40,16 +40,16 @@ export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCar
 
   showLess = () => {
     this.setState({ showingMore: false });
-  }
+  };
 
   showMore = () => {
     this.setState({ showingMore: true });
-  }
+  };
 
   renderDescription() {
     const { description, extendedDescription } = this.props;
     if (!extendedDescription) {
-      return <MarkdownNode markdown={description || STRINGS.noDescription}/>;
+      return <MarkdownNode markdown={description || STRINGS.noDescription} />;
     }
 
     const { showingMore } = this.state;
@@ -58,7 +58,7 @@ export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCar
     const action = showingMore ? this.showLess : this.showMore;
 
     return <React.Fragment>
-      <MarkdownNode markdown={content}/>
+      <MarkdownNode markdown={content} />
       <div className="show-more-action" onClick={action}>{actionLabel}</div>
     </React.Fragment>;
   }
@@ -68,10 +68,10 @@ export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCar
     return <div className="data-cube-card">
       <div className="inner-container">
         <div className="view-icon-container" onClick={onClick}>
-          <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)}/>
+          <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)} />
         </div>
         <div className="text">
-          <div className="title" onClick={onClick} >{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
+          <div className="title" onClick={onClick}>{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
           <div className="description">{this.renderDescription()}</div>
         </div>
       </div>

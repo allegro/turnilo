@@ -289,7 +289,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     }
 
     this.onCellClick(rows[rowIndex], columns[columnIndex]);
-  }
+  };
 
   onCellClick(row: any, column: SimpleTableColumn) {
     if (this.props.onRowClick && row) {
@@ -320,14 +320,14 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       hoveredRowIndex,
       hoveredActionIndex
     });
-  }
+  };
 
   onMouseLeave = () => {
     this.setState({
       hoveredRowIndex: undefined,
       hoveredActionIndex: undefined
     });
-  }
+  };
 
   render() {
     const { columns, rows, actions } = this.props;

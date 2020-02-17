@@ -84,7 +84,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
       return clause.values.first();
     }
     return "";
-  }
+  };
 
   state: PreviewStringFilterMenuState = { dataset: loading, searchText: this.initialSearchText() };
 
@@ -130,7 +130,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
           return error(err);
         }
       );
-  }
+  };
 
   private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
@@ -152,7 +152,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     if (enterKey(e)) {
       this.onOkClick();
     }
-  }
+  };
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
@@ -181,11 +181,11 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
-  }
+  };
 
   onCancelClick = () => {
     this.props.onClose();
-  }
+  };
 
   actionEnabled() {
     const { essence } = this.props;
@@ -212,15 +212,15 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
       <div className="preview-string-filter-menu">
         <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
           <div className="rows">
-          {isLoaded(dataset) && <PreviewList
+            {isLoaded(dataset) && <PreviewList
               dimension={dimension}
               dataset={dataset.dataset}
               searchText={searchText}
               regexErrorMessage={this.regexErrorMessage()}
               limit={TOP_N}
               filterMode={filterMode} />}
-          {isError(dataset) ? <QueryError error={dataset.error} /> : null}
-          {isLoading(dataset) ? <Loader /> : null}
+            {isError(dataset) ? <QueryError error={dataset.error} /> : null}
+            {isLoading(dataset) ? <Loader /> : null}
           </div>
         </div>
         <div className="ok-cancel-bar">

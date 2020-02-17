@@ -79,7 +79,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     clicker.changeFilter(this.constructRelativeFilter());
     clicker.changeComparisonShift(this.constructTimeShift());
     onClose();
-  }
+  };
 
   constructTimeShift(): TimeShift {
     return TimeShift.fromJS(this.state.timeShift);

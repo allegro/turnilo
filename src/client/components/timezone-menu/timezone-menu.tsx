@@ -51,6 +51,6 @@ export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({ timezone, timezones
       renderItem={(d: Timezone) => d.toString().replace(/_/g, " ")}
       items={timezones}
       onSelect={selectTimezone}
-      />
+    />
   </BubbleMenu>;
 };

@@ -384,7 +384,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     unfolded = !unfolded;
     this.setState({ unfolded });
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
-  }
+  };
 
   onDragStart = (e: React.DragEvent<HTMLElement>) => {
     const { dimension } = this.props;
@@ -395,12 +395,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
-  }
+  };
 
   toggleSearch = () => {
     this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
-  }
+  };
 
   onSearchChange = (text: string) => {
     const { searchText, dataset, fetchQueued, loading } = this.state;
@@ -421,7 +421,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       fetchQueued: true
     });
     this.collectTriggerSearch();
-  }
+  };
 
   getTitleHeader(): string {
     const { dimension } = this.props;
@@ -660,7 +660,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       </div>
       {foldControl}
       {error && <QueryError error={error} />}
-      {!sortOn && <Message content="No measure selected"/>}
+      {!sortOn && <Message content="No measure selected" />}
       {loading && <Loader />}
     </SearchableTile>;
   }

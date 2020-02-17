@@ -138,7 +138,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private seriesTile = React.createRef<SeriesTilesRow>();
   private splitTile = React.createRef<SplitTilesRow>();
 
-    constructor(props: CubeViewProps) {
+  constructor(props: CubeViewProps) {
     super(props);
 
     this.state = {
@@ -235,7 +235,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           lastRefreshRequestTimestamp: (new Date()).getTime()
         });
       });
-  }
+  };
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
@@ -341,7 +341,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
       visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
     });
-  }
+  };
 
   private isSmallDevice(): boolean {
     return this.state.deviceSize === DeviceSize.SMALL;
@@ -351,16 +351,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (!CubeView.canDrop()) return;
     e.preventDefault();
     this.setState({ dragOver: true });
-  }
+  };
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!CubeView.canDrop()) return;
     e.preventDefault();
-  }
+  };
 
   dragLeave = () => {
     this.setState({ dragOver: false });
-  }
+  };
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!CubeView.canDrop()) return;
@@ -370,19 +370,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
-  }
+  };
 
   openRawDataModal = () => {
     this.setState({
       showRawDataModal: true
     });
-  }
+  };
 
   onRawDataModalClose = () => {
     this.setState({
       showRawDataModal: false
     });
-  }
+  };
 
   renderRawDataModal() {
     const { showRawDataModal, essence, timekeeper } = this.state;
@@ -399,13 +399,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       showViewDefinitionModal: true
     });
-  }
+  };
 
   onViewDefinitionModalClose = () => {
     this.setState({
       showViewDefinitionModal: false
     });
-  }
+  };
 
   renderViewDefinitionModal() {
     const { showViewDefinitionModal, essence } = this.state;
@@ -421,13 +421,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       showDruidQueryModal: true
     });
-  }
+  };
 
   closeDruidQueryModal = () => {
     this.setState({
       showDruidQueryModal: false
     });
-  }
+  };
 
   renderDruidQueryModal() {
     const { showDruidQueryModal, essence, timekeeper } = this.state;
@@ -442,13 +442,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       urlShortenerModalProps: { url, title }
     });
-  }
+  };
 
   closeUrlShortenerModal = () => {
     this.setState({
       urlShortenerModalProps: null
     });
-  }
+  };
 
   renderUrlShortenerModal() {
     const { urlShortenerModalProps } = this.state;
@@ -462,18 +462,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
     this.filterTile.current.filterMenuRequest(dimension);
-  }
+  };
 
   appendDirtySeries = (series: Series) => {
     if (!series) return;
     this.seriesTile.current.appendDirtySeries(series);
-  }
+  };
 
   changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
     this.setState({ essence: newEssence });
-  }
+  };
 
   getStoredLayout(): CubeViewLayout {
     return localStorage.get("cube-view-layout-v2") || defaultLayout;
@@ -497,7 +497,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         hidden: !factPanel.hidden
       }
     });
-  }
+  };
 
   togglePinboard = () => {
     const { layout: { pinboard }, layout } = this.state;
@@ -508,7 +508,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         hidden: !pinboard.hidden
       }
     });
-  }
+  };
 
   onFactPanelResize = (width: number) => {
     const { layout: { factPanel }, layout } = this.state;
@@ -519,7 +519,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         width
       }
     });
-  }
+  };
 
   onPinboardPanelResize = (width: number) => {
     const { layout: { pinboard }, layout } = this.state;
@@ -530,11 +530,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         width
       }
     });
-  }
+  };
 
   onPanelResizeEnd = () => {
     this.globalResizeListener();
-  }
+  };
 
   render() {
     const clicker = this.clicker;
@@ -645,7 +645,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           max={MAX_PANEL_WIDTH}
         >
           <DragHandle />
-         </ResizeHandle>}
+        </ResizeHandle>}
         {!layout.pinboard.hidden && <PinboardPanel
           style={styles.pinboardPanel}
           clicker={clicker}

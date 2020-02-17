@@ -62,7 +62,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
       path,
       undefined
     );
-  }
+  };
 
   render() {
     const { label, items, equal, renderItem, keyItem, instance, path } = this.props;

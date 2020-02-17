@@ -107,7 +107,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
   globalResizeListener = () => {
     this.updateViewport();
-  }
+  };
 
   private getGutterStyle(side: XSide | YSide): React.CSSProperties {
     const { layout } = this.props;
@@ -234,7 +234,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         scrollLeft
       });
     }
-  }
+  };
 
   getRelativeMouseCoordinates(event: React.MouseEvent<HTMLElement>): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
@@ -274,7 +274,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (y < 0 || x < 0) return;
 
     this.props.onClick(x, y, part);
-  }
+  };
 
   onMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     if (this.props.onMouseMove === undefined) return;
@@ -283,7 +283,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (y < 0 || x < 0) return;
 
     this.props.onMouseMove(x, y, part);
-  }
+  };
 
   renderGutter(side: XSide | YSide): JSX.Element {
     var element = (this.props as any)[`${side}Gutter`];

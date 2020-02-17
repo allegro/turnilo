@@ -87,7 +87,7 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
       draggedItem: undefined,
       dropIndex: -1
     });
-  }
+  };
 
   renderRows(rows: SimpleRow[]): JSX.Element[] {
     if (!rows || !rows.length) return [];

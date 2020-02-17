@@ -117,7 +117,7 @@ export class UndecoratedHeatmapWithTooltip extends React.Component<Visualization
         tooltipData
       });
     }, 0);
-  }
+  };
 
   renderDatum(datum: Datum, concreteSeries: ConcreteSeries): JSXNode {
     if (!this.props.essence.hasComparison()) {

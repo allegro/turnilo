@@ -23,18 +23,18 @@ import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { ChartLine } from "./chart-line";
 
-class Wrap extends React.Component<{dataset: Dataset}> {
+class Wrap extends React.Component<{ dataset: Dataset }> {
   render() {
     return <ChartLine
-        dataset={this.props.dataset}
-        getX={d => d["TIME"] as TimeRange}
-        getY={d => d["numberOfKoalas"]}
-        scaleX={d => d["index"]}
-        scaleY={d => 2}
-        stage={StageFixtures.defaultA()}
-        color={"yes"}
-        showArea={null}
-      />;
+      dataset={this.props.dataset}
+      getX={d => d["TIME"] as TimeRange}
+      getY={d => d["numberOfKoalas"]}
+      scaleX={d => d["index"]}
+      scaleY={d => 2}
+      stage={StageFixtures.defaultA()}
+      color={"yes"}
+      showArea={null}
+    />;
   }
 }
 
@@ -62,7 +62,7 @@ describe("ChartLine", () => {
     ]);
 
     var renderedComponent = renderIntoDocument(
-      <Wrap dataset={dataset}/>
+      <Wrap dataset={dataset} />
     );
 
     expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("chart-line");

@@ -17,8 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { JSXNode } from "../../utils/dom/dom";
-import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
+import { classNames, escapeKey, isInside, JSXNode } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./dropdown.scss";
 
@@ -61,7 +60,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
   onClick = () => {
     this.setState(({ open }) => ({ open: !open }));
-  }
+  };
 
   globalMouseDownListener = (e: MouseEvent) => {
     const { open } = this.state;
@@ -73,14 +72,14 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
     if (isInside(target, myElement)) return;
     this.setState({ open: false });
-  }
+  };
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
     const { open } = this.state;
     if (!open) return;
     this.setState({ open: false });
-  }
+  };
 
   renderMenu() {
     const { items, renderItem = String, keyItem = renderItem, selectedItem, equal = simpleEqual, onSelect, menuClassName } = this.props;

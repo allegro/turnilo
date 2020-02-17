@@ -77,7 +77,7 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
     const { series } = this.state;
     saveSeries(series);
     onClose();
-  }
+  };
 
   validate(): boolean {
     const { isValid, series } = this.state;

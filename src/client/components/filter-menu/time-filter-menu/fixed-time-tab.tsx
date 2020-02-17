@@ -57,7 +57,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
       return { start, end, shift };
     }
     return { start: null, end: null, shift };
-  }
+  };
 
   onStartChange = (start: Date) => this.setState({ start });
 
@@ -131,7 +131,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     clicker.changeFilter(this.constructFixedFilter());
     clicker.changeComparisonShift(this.constructTimeShift());
     onClose();
-  }
+  };
 
   render() {
     const { essence: { timezone, dataCube }, timekeeper, dimension, onClose } = this.props;

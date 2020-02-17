@@ -120,7 +120,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
           if (!this.wasUsedForLastQuery(essence)) return null;
           reportError(err);
           return error(err);
-        })
+        });
 
   private wasUsedForLastQuery(essence: Essence) {
     return essence.equals(this.lastQueryEssence);
@@ -200,7 +200,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const { essence, clicker } = this.props;
     clicker.changeFilter(essence.filter.mergeClauses(this.getHighlightClauses()));
     this.setState({ highlight: null });
-  }
+  };
 
   protected highlight(clauses: List<FilterClause>, key: string) {
     const highlight = new Highlight(clauses, key);

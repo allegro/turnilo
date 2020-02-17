@@ -179,7 +179,7 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
 
   onChange = (notifications: Notification[]) => {
     this.setState({ notifications });
-  }
+  };
 
   renderCards(): JSX.Element[] {
     var cumuledHeight = 13;
@@ -218,7 +218,7 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
 
   onChange = (notifications: Notification[], question: Question) => {
     this.setState({ question });
-  }
+  };
 
   render() {
     const { question } = this.state;

@@ -54,7 +54,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   queryChange = (query: string) => {
     this.setState(state => ({ ...state, query }));
-  }
+  };
 
   globalMouseDownListener = (e: MouseEvent) => {
     const myElement = ReactDOM.findDOMNode(this) as Element;
@@ -62,12 +62,12 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
     if (isInside(target, myElement)) return;
     this.props.onClose();
-  }
+  };
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
     this.props.onClose();
-  }
+  };
 
   componentDidMount() {
     window.addEventListener("mousedown", this.globalMouseDownListener);

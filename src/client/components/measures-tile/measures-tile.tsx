@@ -82,7 +82,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       menuOpenOn: target,
       menuMeasure: measure
     });
-  }
+  };
 
   closeMenu = () => {
     const { menuOpenOn } = this.state;
@@ -91,7 +91,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       menuOpenOn: null,
       menuMeasure: null
     });
-  }
+  };
 
   dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
     const { essence: { dataCube } } = this.props;
@@ -103,13 +103,13 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     DragManager.setDragMeasure(measure);
     setDragGhost(dataTransfer, measure.title);
-  }
+  };
 
   toggleSearch = () => {
     const { showSearch } = this.state;
     this.setState({ showSearch: !showSearch });
     this.onSearchChange("");
-  }
+  };
 
   onSearchChange = (text: string) => {
     const { searchText } = this.state;
@@ -120,7 +120,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     this.setState({
       searchText: newSearchText
     });
-  }
+  };
 
   renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
     const { searchText } = this.state;
@@ -174,7 +174,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   private addSeries = (series: Series) => {
     const { clicker } = this.props;
     clicker.addSeries(series);
-  }
+  };
 
   private renderMenu() {
     const { essence, appendDirtySeries, menuStage } = this.props;

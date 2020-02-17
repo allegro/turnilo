@@ -22,7 +22,7 @@ import "./table-settings.scss";
 
 export const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ settings, onChange }) => {
   const toggleCollapseRows = () => onChange(settings.update("collapseRows", collapse => !collapse));
-  return  <div className="settings-row">
+  return <div className="settings-row">
     <Checkbox
       selected={settings.collapseRows}
       onClick={toggleCollapseRows} />

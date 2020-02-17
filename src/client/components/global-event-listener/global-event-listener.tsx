@@ -95,23 +95,23 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
 
   onResize = () => {
     if (this.props.resize) this.props.resize();
-  }
+  };
 
   onScroll = (e: MouseEvent) => {
     if (this.props.scroll) this.props.scroll(e);
-  }
+  };
 
   onMousedown = (e: MouseEvent) => {
     if (this.props.mouseDown) this.props.mouseDown(e);
-  }
+  };
 
   onMousemove = (e: MouseEvent) => {
     if (this.props.mouseMove) this.props.mouseMove(e);
-  }
+  };
 
   onMouseup = (e: MouseEvent) => {
     if (this.props.mouseUp) this.props.mouseUp(e);
-  }
+  };
 
   onKeydown = (e: KeyboardEvent) => {
     if (this.props.escape && escapeKey(e)) this.props.escape(e);
@@ -120,7 +120,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     if (this.props.left && leftKey(e)) this.props.left(e);
 
     if (this.props.keyDown) this.props.keyDown(e);
-  }
+  };
 
   render(): JSX.Element {
     return null;

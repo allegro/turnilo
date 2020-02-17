@@ -28,7 +28,7 @@ const PRESETS: Array<Preset<string>> = [{
 }];
 
 function renderInputWithPresets(selected: string, errorMessage?: string) {
-  return shallow(<InputWithPresets<string> presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected} formatCustomValue={identity} parseCustomValue={identity}/>);
+  return shallow(<InputWithPresets<string> presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected} formatCustomValue={identity} parseCustomValue={identity} />);
 }
 
 describe("<InputWithPresets>", () => {
