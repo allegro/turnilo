@@ -100,7 +100,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       onClose={onClose}
       inside={inside}
     >
-      <TabSelector selectedTab={tab} onTabSelect={this.selectTab}/>
+      <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
       {isRelativeTab ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
     </BubbleMenu>;
   }

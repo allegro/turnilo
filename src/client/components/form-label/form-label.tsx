@@ -71,7 +71,7 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
   onHelpClick = () => {
     this.setState({ helpVisible: !this.state.helpVisible, hideHelpIfNoError: false });
-  }
+  };
 
   renderIcon(): JSX.Element {
     const { helpText, errorText } = this.props;

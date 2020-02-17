@@ -53,13 +53,13 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     const { onClose, acceptHighlight } = this.props;
     acceptHighlight();
     if (onClose) onClose();
-  }
+  };
 
   onCancel = () => {
     const { onClose, dropHighlight } = this.props;
     dropHighlight();
     if (onClose) onClose();
-  }
+  };
 
   onMore = (e: React.MouseEvent<HTMLElement>) => {
     const { moreMenuOpenOn } = this.state;
@@ -67,13 +67,13 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     this.setState({
       moreMenuOpenOn: e.target as any
     });
-  }
+  };
 
   closeMoreMenu = () => {
     this.setState({
       moreMenuOpenOn: null
     });
-  }
+  };
 
   getUrl(): string {
     const { segmentLabel, dimension } = this.props;
@@ -84,7 +84,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
   openRawDataModal = () => {
     this.closeMoreMenu();
     this.props.openRawDataModal();
-  }
+  };
 
   renderMoreMenu() {
     const { segmentValue } = this.props;

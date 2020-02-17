@@ -51,7 +51,7 @@ export const MeasureRow: React.SFC<MeasureRowProps> = props => {
         scale={scales[i]}
         cellWidth={cellWidth}
         lastLevel={datum["__nest"] === splitLength}
-        showPrevious={essence.hasComparison()}/>;
+        showPrevious={essence.hasComparison()} />;
     })}
   </div>;
 };

@@ -38,7 +38,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
   public mounted: boolean;
 
   state: RangeHandleState = {
-      anchor: null
+    anchor: null
   };
 
   onGlobalMouseMove = (event: MouseEvent) => {
@@ -47,7 +47,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     let newX = getXFromEvent(event) - anchor;
 
     onChange(clamp(newX, leftBound, rightBound));
-  }
+  };
 
   onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
     const { offset, positionLeft } = this.props;
@@ -62,12 +62,12 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     event.preventDefault();
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
-  }
+  };
 
   onGlobalMouseUp = () => {
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
-  }
+  };
 
   render() {
     const { positionLeft, isAny, isBeyondMin, isBeyondMax } = this.props;

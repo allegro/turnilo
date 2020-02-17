@@ -149,7 +149,7 @@ export class Table extends BaseVisualization<TableState> {
         this.highlightRow(position.datum);
         break;
     }
-  }
+  };
 
   setHoverRow = (x: number, y: number, part: ScrollerPart) => {
     const { hoverRow } = this.state;
@@ -157,14 +157,14 @@ export class Table extends BaseVisualization<TableState> {
     if (position.element === HoverElement.ROW && position.datum !== hoverRow) {
       this.setState({ hoverRow: position.datum });
     }
-  }
+  };
 
   resetHover = () => {
     const { hoverRow } = this.state;
     if (hoverRow) {
       this.setState({ hoverRow: null });
     }
-  }
+  };
 
   setScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
 
@@ -194,7 +194,7 @@ export class Table extends BaseVisualization<TableState> {
         .map((d: Datum) => series.selectValue(d));
 
       return d3.scale.linear()
-      // Ensure that 0 is in there
+        // Ensure that 0 is in there
         .domain(d3.extent([0, ...measureValues]))
         .range([0, 100]);
     });

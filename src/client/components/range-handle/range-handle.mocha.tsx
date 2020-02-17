@@ -29,7 +29,8 @@ describe("RangeHandle", () => {
     var renderedComponent = renderIntoDocument(
       <RangeHandle
         positionLeft={20}
-        onChange={() => {}}
+        onChange={() => {
+        }}
         isAny={false}
         offset={600}
 

@@ -127,18 +127,18 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
     const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
-  }
+  };
 
   onCancelClick = () => {
     const { onClose } = this.props;
     onClose();
-  }
+  };
 
   selectValue = (value: Booleanish) => {
     const { selectedValues } = this.state;
     const newSelection = selectedValues.has(value) ? selectedValues.remove(value) : selectedValues.add(value);
     this.setState({ selectedValues: newSelection });
-  }
+  };
 
   renderRow = (value: Booleanish) => {
     const { selectedValues } = this.state;
@@ -152,7 +152,7 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
         <span className="label">{value.toString()}</span>
       </div>
     </div>;
-  }
+  };
 
   render() {
     const { onClose, containerStage, openOn, inside } = this.props;

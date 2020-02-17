@@ -54,7 +54,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     this.setState({
       openMenu: true
     });
-  }
+  };
 
   closeMenu = () => this.setState({ openMenu: false });
 

@@ -51,7 +51,7 @@ export interface LimitDropdownProps {
 export const LimitDropdown: React.SFC<LimitDropdownProps> = ({ onLimitSelect, limit, colors, includeNone }) => {
 
   function selectLimit(limit: number) {
-      onLimitSelect(limit, colors ? Colors.fromLimit(colors.dimension, limit) : colors);
+    onLimitSelect(limit, colors ? Colors.fromLimit(colors.dimension, limit) : colors);
   }
 
   return <Dropdown<number | string>

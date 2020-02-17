@@ -24,6 +24,7 @@
     "interface-name": [true, "never-prefix"], // don't allow prefixing interface names with "I"
     "jsdoc-format": [true, "check-multiline-start"], // don't allow text after "/**" in first line
     "max-line-length": [true, 200],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "member-access": false, // don't require explicit member access declaration
     "member-ordering": [true,
       "static-before-instance"

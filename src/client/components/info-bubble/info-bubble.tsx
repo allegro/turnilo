@@ -44,11 +44,11 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
     const willBubbleFit = currentTarget.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
     const direction = willBubbleFit ? "up" : "down";
     this.setState({ showInfo: { target: currentTarget, direction } });
-  }
+  };
 
   closeDescription = () => {
     this.setState({ showInfo: null });
-  }
+  };
 
   constructor(props: InfoBubbleProps) {
     super(props);
@@ -61,7 +61,7 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
     return <React.Fragment>
       <div className={classNames("info-button", className)} title={title || defaultTitle} onClick={this.showDescription}>
-        <SvgIcon svg={icon || defaultIcon}/>
+        <SvgIcon svg={icon || defaultIcon} />
       </div>
       {showInfo && <BubbleMenu
         className="description-menu"
@@ -69,7 +69,7 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
         onClose={this.closeDescription}
         stage={Stage.fromSize(300, 200)}
         openOn={showInfo.target}>
-        <MarkdownNode markdown={description}/>
+        <MarkdownNode markdown={description} />
       </BubbleMenu>}
     </React.Fragment>;
   }

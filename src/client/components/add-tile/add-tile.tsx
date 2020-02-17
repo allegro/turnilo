@@ -48,7 +48,7 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
 
   mountAdd = (addButton: HTMLElement) => {
     this.menuOpenOn = addButton;
-  }
+  };
 
   closeMenu = () => this.setState({ openMenu: false });
 
@@ -62,7 +62,7 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
     this.props.onSelect(value);
     this.resetQuery();
     this.closeMenu();
-  }
+  };
 
   renderRows(rows: Array<Tile<T>>) {
     const { query } = this.state;

@@ -16,7 +16,6 @@
  */
 
 import * as React from "react";
-import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./button.scss";

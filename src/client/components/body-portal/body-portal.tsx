@@ -68,6 +68,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
       BodyPortal.aboveAll = this;
     }
   }
+
   componentWillUnmount() {
     document.body.removeChild(this.target);
     if (BodyPortal.aboveAll === this) BodyPortal.aboveAll = undefined;

@@ -196,7 +196,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const relativePosition = absolutePosition - leftOffset;
     const newValue = this.relativePositionToValue(addNubSize(relativePosition), "start");
     onRangeStartChange(newValue);
-  }
+  };
 
   updateEnd = (absolutePosition: number) => {
     const { onRangeEndChange } = this.props;
@@ -206,7 +206,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const newValue = this.relativePositionToValue(relativePosition, "end");
 
     onRangeEndChange(newValue);
-  }
+  };
 
   render() {
     const { start, end, exclude } = this.props;
@@ -227,8 +227,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       const absoluteRightBound = leftOffset + rightBound;
 
       content = <div className="range-slider" onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}>
-        <div className="range-bar full"/>
-        <div className="range-bar selected" style={rangeBarSelected}/>
+        <div className="range-bar full" />
+        <div className="range-bar selected" style={rangeBarSelected} />
         <RangeHandle
           positionLeft={positionStart}
           onChange={this.updateStart}
@@ -252,8 +252,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
     return <div className={classNames("number-range-picker", { inverted: exclude })} ref={this.picker}>
       {content}
-      {loading && <Loader/>}
-      {error && <QueryError error={error}/>}
+      {loading && <Loader />}
+      {error && <QueryError error={error} />}
     </div>;
   }
 }

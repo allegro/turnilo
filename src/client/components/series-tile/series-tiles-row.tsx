@@ -27,8 +27,8 @@ import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants"
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
+import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSeries } from "./add-series";
-import { DragIndicator } from "./drag-indicator";
 import { SeriesTiles } from "./series-tiles";
 import "./series-tiles-row.scss";
 
@@ -87,19 +87,19 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   updateSeries = (oldSeries: Series, series: Series) => {
     const { essence, clicker } = this.props;
     clicker.changeSeriesList(essence.series.replaceSeries(oldSeries, series));
-  }
+  };
 
   savePlaceholderSeries = (series: Series) => {
     const { clicker } = this.props;
     clicker.addSeries(series);
     this.removePlaceholderSeries();
-  }
+  };
 
   removeSeries = (series: Series) => {
     const { clicker } = this.props;
     clicker.removeSeries(series);
     this.closeOverflowMenu();
-  }
+  };
 
   canDrop(): boolean {
     const { essence: { series: seriesList } } = this.props;
@@ -117,7 +117,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     setDragGhost(dataTransfer, label);
 
     this.closeOverflowMenu();
-  }
+  };
 
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
@@ -138,7 +138,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     this.setState({
       dragPosition: this.calculateDragPosition(e)
     });
-  }
+  };
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
@@ -146,14 +146,14 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  }
+  };
 
   dragLeave = () => {
     if (!this.canDrop()) return;
     this.setState({
       dragPosition: null
     });
-  }
+  };
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
@@ -165,7 +165,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     } else {
       this.dropNewSeries(fromMeasure(DragManager.draggingMeasure()), this.calculateDragPosition(e));
     }
-  }
+  };
 
   private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
     const { clicker, essence: { series } } = this.props;
@@ -201,7 +201,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
       return;
     }
     this.appendPlaceholder(series);
-  }
+  };
 
   render() {
     const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;

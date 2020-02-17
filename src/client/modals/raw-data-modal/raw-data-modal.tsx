@@ -136,11 +136,11 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
         stage: viewPortStage
       });
     }
-  }
+  };
 
   onScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({ scrollLeft, scrollTop });
-  }
+  };
 
   getStringifiedFilters(): List<string> {
     const { essence, timekeeper } = this.props;

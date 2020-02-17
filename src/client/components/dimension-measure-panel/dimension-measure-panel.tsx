@@ -78,7 +78,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
     const dividerPosition = initialPosition(containerHeight, this.props.essence.dataCube);
 
     this.setState({ dividerPosition, containerHeight });
-  }
+  };
 
   saveDividerPosition = (dividerPosition: number) => this.setState({ dividerPosition });
 
@@ -117,14 +117,14 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           style={dimensionListStyle}
         />
         {showResizeHandle &&
-            <ResizeHandle
-              onResize={this.saveDividerPosition}
-              direction={Direction.TOP}
-              min={minDividerPosition}
-              max={maxDividerPosition}
-              value={dividerPosition}>
-              <DragHandle />
-            </ResizeHandle>}
+        <ResizeHandle
+          onResize={this.saveDividerPosition}
+          direction={Direction.TOP}
+          min={minDividerPosition}
+          max={maxDividerPosition}
+          value={dividerPosition}>
+          <DragHandle />
+        </ResizeHandle>}
         <MeasuresTile
           menuStage={menuStage}
           style={measureListStyle}

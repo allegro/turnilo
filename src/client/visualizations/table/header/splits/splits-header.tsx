@@ -26,6 +26,6 @@ interface SplitHeaderProps {
 
 export const SplitsHeader: React.SFC<SplitHeaderProps> = ({ essence, collapseRows }) => {
   return collapseRows ?
-    <SplitColumnsHeader essence={essence}/> :
+    <SplitColumnsHeader essence={essence} /> :
     <CombinedSplitsTitle essence={essence} />;
 };

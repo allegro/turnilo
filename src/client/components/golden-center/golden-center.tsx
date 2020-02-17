@@ -61,7 +61,7 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
 
     var top = Math.max((myRect.height - childRect.height) * topRatio, minPadding);
     this.setState({ top });
-  }
+  };
 
   render() {
     const { minPadding, children } = this.props;

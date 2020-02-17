@@ -58,19 +58,19 @@ export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T
     const customValue = e.currentTarget.value;
     onChange(parseCustomValue(customValue));
     this.setState({ customValue });
-  }
+  };
 
   pickCustom = () => {
     const { onChange, parseCustomValue } = this.props;
     this.setState({ customPicked: true });
     onChange(parseCustomValue(this.state.customValue));
-  }
+  };
 
   pickPreset = (value: T) => {
     const { onChange } = this.props;
     this.setState({ customPicked: false });
     onChange(value);
-  }
+  };
 
   render() {
     const { errorMessage, selected, presets, placeholder, title, parseCustomValue } = this.props;

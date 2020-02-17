@@ -28,7 +28,8 @@ describe("FilterOptionsDropdown", () => {
     var renderedComponent = renderIntoDocument(
       <FilterOptionsDropdown
         selectedOption={null}
-        onSelectOption={() => {}}
+        onSelectOption={() => {
+        }}
       />
     );
 

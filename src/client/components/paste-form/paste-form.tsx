@@ -45,7 +45,7 @@ export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
       .split("\n")
       .map(s => s.trim())
       .filter(s => s.length > 0));
-  }
+  };
 
   select = () => {
     const { onClose, onSelect } = this.props;
@@ -53,7 +53,7 @@ export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
     if (values.isEmpty()) return;
     onSelect(Set(values));
     onClose();
-  }
+  };
 
   cancel = () => this.props.onClose();
 
@@ -65,7 +65,7 @@ export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
     return <div>
       <textarea ref={focus} className="paste-field" value={value} onChange={this.saveValue} />
       <div className="paste-actions">
-        <Button type="primary" title="Select" disabled={disabled}  onClick={this.select} />
+        <Button type="primary" title="Select" disabled={disabled} onClick={this.select} />
         <Button type="secondary" title="Cancel" onClick={this.cancel} />
       </div>
     </div>;

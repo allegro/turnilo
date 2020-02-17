@@ -102,14 +102,14 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   onEscape = () => {
     const { onClose, mandatory } = this.props;
     if (!mandatory) onClose();
-  }
+  };
 
   onEnter = () => {
     const { onEnter } = this.props;
     if (onEnter) {
       onEnter();
     }
-  }
+  };
 
   onMouseDown = (e: MouseEvent) => {
     var { onClose, mandatory } = this.props;
@@ -123,7 +123,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
 
     if (isInside(target, myElement)) return;
     onClose();
-  }
+  };
 
   render() {
     var { className, title, children, onClose } = this.props;

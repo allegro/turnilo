@@ -18,7 +18,7 @@ import * as React from "react";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
+import { FancyDragIndicator } from "./fancy-drag-indicator";
 
 interface DragIndicatorProps {
   drop: Unary<React.DragEvent<HTMLElement>, void>;

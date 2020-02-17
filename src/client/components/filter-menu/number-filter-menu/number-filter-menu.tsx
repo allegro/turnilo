@@ -121,45 +121,45 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     if (enterKey(e)) {
       this.onOkClick();
     }
-  }
+  };
 
   onOkClick = () => {
     if (!this.actionEnabled()) return;
     const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
-  }
+  };
 
   onCancelClick = () => {
     const { onClose } = this.props;
     onClose();
-  }
+  };
 
   onRangeInputStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const startInput = e.target.value;
     this.setState({
       start: stringToNumberOrAny(startInput)
     });
-  }
+  };
 
   onRangeInputEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const endInput = e.target.value;
     this.setState({
       end: stringToNumberOrAny(endInput)
     });
-  }
+  };
 
   onRangeStartChange = (start: number) => {
     this.setState({ start });
-  }
+  };
 
   onRangeEndChange = (end: number) => {
     this.setState({ end });
-  }
+  };
 
   onSelectFilterOption = (filterMode: FilterMode) => {
     this.setState({ filterMode });
-  }
+  };
 
   actionEnabled() {
     const { essence } = this.props;

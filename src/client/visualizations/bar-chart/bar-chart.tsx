@@ -81,18 +81,18 @@ export interface BarChartState extends BaseVisualizationState {
 
 function getFilterFromDatum(splits: Splits, dataPath: Datum[]): List<FilterClause> {
   return List(dataPath.map((datum, i) => {
-      const { type, reference } = splits.getSplit(i);
-      const segment: any = datum[reference];
+    const { type, reference } = splits.getSplit(i);
+    const segment: any = datum[reference];
 
-      switch (type) {
-        case SplitType.number:
-          return new NumberFilterClause({ reference, values: List.of(segment) });
-        case SplitType.time:
-          return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
-        case SplitType.string:
-          return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
-      }
-    }));
+    switch (type) {
+      case SplitType.number:
+        return new NumberFilterClause({ reference, values: List.of(segment) });
+      case SplitType.time:
+        return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
+      case SplitType.string:
+        return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
+    }
+  }));
 }
 
 function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Measure[]): Dataset {
@@ -228,15 +228,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
       scrollLeft,
       scrollTop
     });
-  }
+  };
 
   onMouseMove = (x: number, y: number) => {
     this.setState({ hoverInfo: this.calculateMousePosition(x, y) });
-  }
+  };
 
   onMouseLeave = () => {
     this.setState({ hoverInfo: null });
-  }
+  };
 
   onClick = (x: number, y: number) => {
     const { essence } = this.props;
@@ -270,7 +270,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     this.setState({ selectionInfo });
     this.highlight(rowHighlight, series.get(chartIndex).definition.key());
-  }
+  };
 
   getYExtent(data: Datum[], series: ConcreteSeries): number[] {
     const getY = (d: Datum) => series.selectValue(d);

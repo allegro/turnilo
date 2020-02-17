@@ -35,13 +35,13 @@ export class ModalBubble extends React.Component<ModalProps, {}> {
 
   setModalRef = (el: HTMLDivElement) => {
     this.modalRef = el;
-  }
+  };
 
   onMouseDown = (e: MouseEvent) => {
     const target = e.target as Element;
     if (isInside(target, this.modalRef)) return;
     this.props.onClose();
-  }
+  };
 
   render() {
     const { className, children, left, top } = this.props;

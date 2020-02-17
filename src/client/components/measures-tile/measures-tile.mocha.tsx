@@ -27,7 +27,8 @@ import { MeasuresTile } from "./measures-tile";
 describe("MeasuresTile", () => {
   it("adds the correct class", () => {
     const fakeClicker: Clicker = {
-      addSeries: () => {}
+      addSeries: () => {
+      }
     };
 
     const renderedComponent = renderIntoDocument(

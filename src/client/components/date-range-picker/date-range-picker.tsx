@@ -81,7 +81,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   onCalendarMouseLeave = () => {
     this.setState({ hoverTimeRange: null });
-  }
+  };
 
   selectNewRange(startDate: Date, endDate?: Date) {
     const { onStartChange, onEndChange, timezone } = this.props;

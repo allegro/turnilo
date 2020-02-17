@@ -102,7 +102,7 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
       column: yPosition,
       row: xPosition
     });
-  }
+  };
 
   private setup() {
     const { tileSize = 25, dataset, series, hoveredRectangle } = this.props;
@@ -161,27 +161,27 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
       <div className="heatmap-rectangles-container">
         <svg width={width} height={height} ref={rect => this.rect = rect as any}>
           <rect x={0} y={0} width={width} height={height} fill={white} />
-            <HeatmapRect
-              bins={bins}
-              count={count}
-              data={dataset}
-              xScale={xScale}
-              yScale={yScale}
-              colorScale={rectColorScale}
-              binWidth={tileSize}
-              binHeight={tileSize}
-              gap={2}
-            >
-              {heatmap => heatmap.map((bins, index) => (
-                    <HeatMapRectangleRow
-                      key={`heatmap-rect-row-${bins[0].column}`}
-                      bins={bins}
-                      hoveredBin={(hoveredRectangle && hoveredRectangle.column === index) ? hoveredRectangle.row : -1}
-                    />
-                  )
-                )
-              }
-            </HeatmapRect>
+          <HeatmapRect
+            bins={bins}
+            count={count}
+            data={dataset}
+            xScale={xScale}
+            yScale={yScale}
+            colorScale={rectColorScale}
+            binWidth={tileSize}
+            binHeight={tileSize}
+            gap={2}
+          >
+            {heatmap => heatmap.map((bins, index) => (
+                <HeatMapRectangleRow
+                  key={`heatmap-rect-row-${bins[0].column}`}
+                  bins={bins}
+                  hoveredBin={(hoveredRectangle && hoveredRectangle.column === index) ? hoveredRectangle.row : -1}
+                />
+              )
+            )
+            }
+          </HeatmapRect>
         </svg>
         <GlobalEventListener mouseMove={this.handleMouseMove} />
       </div>
