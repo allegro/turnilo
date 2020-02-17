@@ -15,12 +15,12 @@
  */
 
 import { expect } from "chai";
-import { TABLE_MANIFEST } from "../../../manifests/table/table";
 import { SeriesDerivation } from "../../../models/series/concrete-series";
 import { SortDirection } from "../../../models/sort/sort";
 import { Split } from "../../../models/split/split";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../../../models/split/split.fixtures";
 import { Splits } from "../../../models/splits/splits";
+import { TABLE_MANIFEST } from "../../../visualization-manifests/table/table";
 import { assertEqlEssenceWithoutVisResolve } from "../../test/assertions";
 import { mockEssence } from "../../test/essence.fixture";
 import { SplitDefinition } from "../split-definition";
@@ -30,10 +30,18 @@ import { assertConversionToEssence, toEssence } from "./utils";
 
 describe("Splits", () => {
   const mockViewDefinitionWithSplits = (...splits: SplitDefinition[]) =>
-    mockViewDefinition({ splits, visualization: TABLE_MANIFEST.name });
+    mockViewDefinition({
+      splits,
+      visualization: TABLE_MANIFEST.name,
+      visualizationSettings: null
+    });
 
   const mockEssenceWithSplits = (...splits: Split[]) =>
-    mockEssence({ splits: Splits.fromSplits(splits), visualization: TABLE_MANIFEST });
+    mockEssence({
+      splits: Splits.fromSplits(splits),
+      visualization: TABLE_MANIFEST,
+      visualizationSettings: TABLE_MANIFEST.visualizationSettings.defaults
+    });
 
   describe("String Dimensions", () => {
     it("reads basic split", () => {

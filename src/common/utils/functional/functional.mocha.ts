@@ -18,7 +18,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { sleep } from "../../../client/utils/test-utils";
-import { complement, concatTruthy, cons, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable } from "./functional";
+import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -26,6 +26,13 @@ const nil = (): void => null;
 const wrap = (...numbers: number[]) => numbers;
 
 describe("Functional utilities", () => {
+
+  describe("constant", () => {
+    it("should return function that always returns initial argument", () => {
+      const f = constant(42);
+      expect(f()).to.eq(42);
+    });
+  });
 
   describe("cons", () => {
     it("should append to empty array", () => {

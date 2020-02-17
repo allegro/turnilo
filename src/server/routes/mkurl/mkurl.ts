@@ -16,11 +16,11 @@
  */
 
 import { Request, Response, Router } from "express";
-import { MANIFESTS } from "../../../common/manifests";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Essence } from "../../../common/models/essence/essence";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
+import { MANIFESTS } from "../../../common/visualization-manifests";
 import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 export function mkurlRouter(settingsGetter: SettingsGetter) {
@@ -69,7 +69,7 @@ export function mkurlRouter(settingsGetter: SettingsGetter) {
     let essence: Essence;
 
     try {
-      essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube, MANIFESTS);
+      essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube);
     } catch ({ message }) {
       res.status(400).send({ error: "invalid viewDefinition object", message });
       return;

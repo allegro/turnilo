@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { HIGH_PRIORITY_ACTION, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";
+import { HIGH_PRIORITY_ACTION, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/visualization-manifest/visualization-manifest";
 import { Resolutions } from "./resolutions";
 import { Action } from "./rules-evaluator-builder";
 import { VisualizationDependentAction } from "./visualization-dependent-evaluator";

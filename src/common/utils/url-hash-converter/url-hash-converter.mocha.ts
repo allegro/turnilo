@@ -15,7 +15,6 @@
  */
 
 import { expect } from "chai";
-import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { Essence } from "../../models/essence/essence";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
@@ -42,7 +41,7 @@ describe("urlHashConverter", () => {
       const { visualization } = essence;
 
       it(`decodes ${visualization.name} version ${version} correctly`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki());
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
@@ -59,7 +58,7 @@ describe("urlHashConverter", () => {
       const { visualization } = essence;
 
       it(`decodes ${visualization.name} version ${version} correctly`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki());
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
@@ -76,14 +75,14 @@ describe("urlHashConverter", () => {
       const { visualization } = essence;
 
       it(`decodes ${visualization.name} version ${version} correctly`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki());
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
 
       it(`is symmetric in decode/encode for ${visualization.name} in version ${version}`, () => {
         const encodedHash = urlHashConverter.toHash(essence, version);
-        const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, DataCubeFixtures.wiki(), MANIFESTS);
+        const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, DataCubeFixtures.wiki());
 
         expect(essence.toJS()).to.deep.equal(decodedEssence.toJS());
       });
@@ -94,14 +93,14 @@ describe("urlHashConverter", () => {
       }
 
       it(`is symmetric in encode/decode for ${visualization.name} in version ${version}`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki());
         const encodedHash = urlHashConverter.toHash(decodedEssence, version);
 
         try {
           expect(encodedHash).to.equal(hash);
         } catch (e) {
           // rethrow assertion on decoded hashes for readability
-          expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
+          // expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
           // if test fails but expect on decoded succeeds (error in test definition) rethrow original assertion exception.
           throw e;
         }
@@ -116,7 +115,7 @@ describe("urlHashConverter", () => {
 
   minimalNumberOfSegmentsTests.forEach(({ version, hash }) => {
     it(`decodes version ${version} with minimal number of segments`, () => {
-      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki());
 
       expect(decodedEssence).to.be.an.instanceOf(Essence);
     });
@@ -131,7 +130,7 @@ describe("urlHashConverter", () => {
 
   wrongHashStructureTests.forEach(({ hash, errorMessage }) => {
     it(`throws error for hash: "${hash}" with wrong structure`, () => {
-      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
+      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki());
       expect(essenceFromHashCall).to.throw(errorMessage);
     });
   });

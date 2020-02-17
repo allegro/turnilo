@@ -51,33 +51,6 @@
     }
   }
 
-  .vis-item {
-    display: inline-block;
-    width: $vis-item-width;
-    height: $vis-item-height;
-    cursor: pointer;
-
-    .vis-title {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 7px;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 400;
-      color: $text-medium;
-    }
-
-    svg {
-      position: absolute;
-      top: 3px;
-      left: 50%;
-      width: 53px;
-      height: 53px;
-      margin-left: -27px;
-    }
-  }
-
   .vis-selector-menu {
     position: absolute;
     top: 100%;

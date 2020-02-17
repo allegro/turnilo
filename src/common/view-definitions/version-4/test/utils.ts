@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { MANIFESTS } from "../../../manifests";
 import { Essence } from "../../../models/essence/essence";
 import { assertEqlEssence } from "../../test/assertions";
 import { dataCube } from "../../test/data-cube.fixture";
@@ -22,7 +21,7 @@ import { ViewDefinition4 } from "../view-definition-4";
 import { ViewDefinitionConverter4 } from "../view-definition-converter-4";
 
 const converter = new ViewDefinitionConverter4();
-export const toEssence = (viewDef: ViewDefinition4) => converter.fromViewDefinition(viewDef, dataCube, MANIFESTS);
+export const toEssence = (viewDef: ViewDefinition4) => converter.fromViewDefinition(viewDef, dataCube);
 
 export function assertConversionToEssence(viewDef: ViewDefinition4, essence: Essence) {
   assertEqlEssence(toEssence(viewDef), essence);

@@ -17,10 +17,9 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { MANIFESTS } from "../../manifests";
-import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../../manifests/table/table";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
@@ -35,8 +34,8 @@ import { Essence, EssenceValue } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
-  visualizations: MANIFESTS,
   visualization: null,
+  visualizationSettings: null,
   timezone: Timezone.UTC,
   pinnedDimensions: OrderedSet([]),
   filter: new Filter({
@@ -77,15 +76,13 @@ export class EssenceFixtures {
 
   static getWikiContext() {
     return {
-      dataCube: DataCubeFixtures.wiki(),
-      visualizations: MANIFESTS
+      dataCube: DataCubeFixtures.wiki()
     };
   }
 
   static getTwitterContext() {
     return {
-      dataCube: DataCubeFixtures.twitter(),
-      visualizations: MANIFESTS
+      dataCube: DataCubeFixtures.twitter()
     };
   }
 
@@ -106,8 +103,8 @@ export class EssenceFixtures {
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
-      visualizations: MANIFESTS,
       visualization: TABLE_MANIFEST,
+      visualizationSettings: TABLE_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
@@ -130,8 +127,8 @@ export class EssenceFixtures {
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
-      visualizations: MANIFESTS,
       visualization: LINE_CHART_MANIFEST,
+      visualizationSettings: null,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),

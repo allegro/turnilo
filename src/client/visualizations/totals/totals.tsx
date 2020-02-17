@@ -17,7 +17,7 @@
 
 import { Dataset } from "plywood";
 import * as React from "react";
-import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
+import { TOTALS_MANIFEST } from "../../../common/visualization-manifests/totals/totals";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Total } from "./total";
 import "./totals.scss";

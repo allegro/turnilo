@@ -17,7 +17,6 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { MANIFESTS } from "../common/manifests";
 import { AppSettings, AppSettingsJS } from "../common/models/app-settings/app-settings";
 import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
@@ -57,7 +56,6 @@ const version = config.version;
 Ajax.version = version;
 
 const appSettings = AppSettings.fromJS(config.appSettings, {
-  visualizations: MANIFESTS,
   executorFactory: Ajax.queryUrlExecutorFactory
 });
 

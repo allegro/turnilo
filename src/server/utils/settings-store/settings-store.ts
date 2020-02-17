@@ -17,7 +17,6 @@
 
 import * as fs from "fs-promise";
 import * as yaml from "js-yaml";
-import { MANIFESTS } from "../../../common/manifests";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { inlineVars } from "../../../common/utils/general/general";
 import { Format } from "../../models/settings-location/settings-location";
@@ -36,7 +35,7 @@ function readSettingsFactory(filepath: string, format: Format, inline = false): 
     })
     .then(appSettingsJS => {
       if (inline) appSettingsJS = inlineVars(appSettingsJS, process.env);
-      return AppSettings.fromJS(appSettingsJS, { visualizations: MANIFESTS });
+      return AppSettings.fromJS(appSettingsJS, {  });
     });
 }
 

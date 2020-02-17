@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { BAR_CHART_MANIFEST } from "../manifests/bar-chart/bar-chart";
-import { LINE_CHART_MANIFEST } from "../manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../manifests/table/table";
-import { TOTALS_MANIFEST } from "../manifests/totals/totals";
 import { Essence } from "../models/essence/essence";
+import { Visualization } from "../models/visualization-manifest/visualization-manifest";
 import { ViewDefinition2 } from "./version-2/view-definition-2";
 import { ViewDefinitionConverter2 } from "./version-2/view-definition-converter-2";
 import { ViewDefinitionHashEncoder2 } from "./version-2/view-definition-hash-encoder2";
@@ -50,9 +47,9 @@ export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDe
 export const defaultDefinitionConverter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
 export const defaultDefinitionUrlEncoder = definitionUrlEncoders[DEFAULT_VIEW_DEFINITION_VERSION];
 
-export const version2Visualizations = [
-  TOTALS_MANIFEST.name,
-  TABLE_MANIFEST.name,
-  LINE_CHART_MANIFEST.name,
-  BAR_CHART_MANIFEST.name
-];
+export const version2Visualizations = new Set<Visualization>([
+  "totals",
+  "table",
+  "line-chart",
+  "bar-chart"
+]);

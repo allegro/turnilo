@@ -18,8 +18,6 @@
 import { Timezone } from "chronoshift";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { MANIFESTS } from "../../../common/manifests";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Customization } from "../../../common/models/customization/customization";
@@ -28,7 +26,6 @@ import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
-import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
@@ -38,7 +35,9 @@ import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
+import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Fn } from "../../../common/utils/general/general";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
@@ -91,7 +90,7 @@ export interface CubeViewProps {
   hash: string;
   updateViewHash: (newHash: string, force?: boolean) => void;
   getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
-  getEssenceFromHash: (hash: string, dateCube: DataCube, visualizations: Manifest[]) => Essence;
+  getEssenceFromHash: (hash: string, dateCube: DataCube) => Essence;
   dataCube: DataCube;
   onNavClick?: Fn;
   customization?: Customization;
@@ -196,9 +195,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.changeColors(colors) });
       },
-      changeVisualization: (visualization: Manifest) => {
+      changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeVisualization(visualization) });
+        this.setState({ essence: essence.changeVisualization(visualization, settings) });
       },
       pin: (dimension: Dimension) => {
         const { essence } = this.state;
@@ -316,7 +315,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromDataCube(dataCube: DataCube): Essence {
-    return Essence.fromDataCube(dataCube, MANIFESTS);
+    return Essence.fromDataCube(dataCube);
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
@@ -329,7 +328,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
 
     const { getEssenceFromHash } = this.props;
-    return getEssenceFromHash(hash, dataCube, MANIFESTS);
+    return getEssenceFromHash(hash, dataCube);
   }
 
   globalResizeListener = () => {

@@ -15,7 +15,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { flooredTimeFilterDefinition } from "./filter-definition.fixtures";
 import { ViewDefinition4 } from "./view-definition-4";
 

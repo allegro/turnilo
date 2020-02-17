@@ -16,7 +16,7 @@
  */
 
 import { basicExecutorFactory, Dataset } from "plywood";
-import { MANIFESTS } from "../../../common/manifests/index";
+import { MANIFESTS } from "../../visualization-manifests/index";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings, AppSettingsContext, AppSettingsJS } from "./app-settings";
@@ -318,9 +318,7 @@ export class AppSettingsFixtures {
   }
 
   static getContext(): AppSettingsContext {
-    return {
-      visualizations: MANIFESTS
-    };
+    return {};
   }
 
   static wikiOnly() {

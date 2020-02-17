@@ -15,12 +15,7 @@
  * limitations under the License.
  */
 
-import { BAR_CHART_MANIFEST } from "../../common/manifests/bar-chart/bar-chart";
-import { HEAT_MAP_MANIFEST } from "../../common/manifests/heat-map/heat-map";
-import { LINE_CHART_MANIFEST } from "../../common/manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../../common/manifests/table/table";
-import { TOTALS_MANIFEST } from "../../common/manifests/totals/totals";
-import { Manifest } from "../../common/models/manifest/manifest";
+import { Visualization, VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
 import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
@@ -29,16 +24,16 @@ import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
 
-type Visualisation<S extends BaseVisualizationState = BaseVisualizationState> = new(props: VisualizationProps) => BaseVisualization<S>;
+type VisualizationComponent<S extends BaseVisualizationState = BaseVisualizationState> = new(props: VisualizationProps) => BaseVisualization<S>;
 
-const VIS_COMPONENTS: Record<string, Visualisation> = {
-  [TOTALS_MANIFEST.name]: Totals,
-  [TABLE_MANIFEST.name]: Table,
-  [LINE_CHART_MANIFEST.name]: LineChart,
-  [BAR_CHART_MANIFEST.name]: BarChart,
-  [HEAT_MAP_MANIFEST.name]: HeatMap
+const VIS_COMPONENTS: Record<Visualization, VisualizationComponent> = {
+  "totals": Totals,
+  "table": Table,
+  "line-chart": LineChart,
+  "bar-chart": BarChart,
+  "heatmap": HeatMap
 };
 
-export function getVisualizationComponent({ name }: Manifest): Visualisation {
+export function getVisualizationComponent({ name }: VisualizationManifest): VisualizationComponent {
   return VIS_COMPONENTS[name];
 }

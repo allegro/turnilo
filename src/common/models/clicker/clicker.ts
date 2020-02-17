@@ -19,13 +19,14 @@ import { Colors } from "../colors/colors";
 import { Dimension } from "../dimension/dimension";
 import { VisStrategy } from "../essence/essence";
 import { Filter } from "../filter/filter";
-import { Manifest } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { Series } from "../series/series";
 import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
+import { VisualizationManifest } from "../visualization-manifest/visualization-manifest";
+import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 export interface Clicker {
   changeFilter?(filter: Filter, colors?: Colors): void;
@@ -48,7 +49,7 @@ export interface Clicker {
 
   changeColors?(colors: Colors): void;
 
-  changeVisualization?(visualization: Manifest): void;
+  changeVisualization?(visualization: VisualizationManifest, settings: VisualizationSettings): void;
 
   pin?(dimension: Dimension): void;
 

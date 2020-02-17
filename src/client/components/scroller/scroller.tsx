@@ -62,7 +62,7 @@ export interface ScrollerProps {
   topRightCorner?: JSX.Element | JSX.Element[];
   bottomRightCorner?: JSX.Element | JSX.Element[];
   bottomLeftCorner?: JSX.Element | JSX.Element[];
-  body?: JSX.Element[];
+  body?: JSX.Element | JSX.Element[];
   overlay?: JSX.Element | JSX.Element[];
 }
 

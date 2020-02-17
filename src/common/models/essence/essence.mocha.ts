@@ -17,11 +17,10 @@
 
 import { expect } from "chai";
 import { SinonSpy, spy, stub } from "sinon";
-import { MANIFESTS } from "../../manifests";
-import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
-import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
-import { TABLE_MANIFEST } from "../../manifests/table/table";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { BAR_CHART_MANIFEST } from "../../visualization-manifests/bar-chart/bar-chart";
+import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
+import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { DimensionKind } from "../dimension/dimension";
@@ -82,7 +81,7 @@ describe("EssenceProps", () => {
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {
-      const essence = Essence.fromDataCube(dataCube, MANIFESTS);
+      const essence = Essence.fromDataCube(dataCube);
 
       // TODO: don't test toJS
       expect(essence.toJS()).to.deep.equal({
@@ -154,7 +153,6 @@ describe("EssenceProps", () => {
       tests.forEach(({ splits, current, expected }) => {
         it(`chooses ${expected.name} given splits: [${splits}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
-            MANIFESTS,
             DataCubeFixtures.twitter(),
             Splits.fromSplits(splits),
             SeriesList.fromMeasureNames([]),
@@ -258,10 +256,14 @@ describe("EssenceProps", () => {
       });
 
       it("should handle adding too many splits for table", () => {
+        console.log("start it");
         const essence = EssenceFixtures.wikiTable();
+        console.log("splits before", essence.splits.length());
         const addedSplit = essence.addSplit(timeSplit, VisStrategy.KeepAlways);
+        console.log("splits after", addedSplit.splits.length());
 
         expect(addedSplit.splits.length()).to.be.eq(5);
+        console.log("visResolve", addedSplit.visResolve.state);
         expect(addedSplit.visResolve.isManual()).to.be.true;
         expect(addedSplit.visResolve.resolutions[0].adjustment.splits.length()).to.be.eq(4);
       });

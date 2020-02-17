@@ -22,7 +22,6 @@ import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, NumberRange, NumberRangeJS, PlywoodRange, Range, TimeRange, TimeRangeJS } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
@@ -38,6 +37,7 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { concatTruthy, flatMap, Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
+import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { ChartLine } from "../../components/chart-line/chart-line";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { GridLines } from "../../components/grid-lines/grid-lines";
@@ -479,7 +479,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   renderChart(dataset: Dataset, series: ConcreteSeries, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
-    const { essence, isThumbnail } = this.props;
+    const { essence } = this.props;
     const { splits } = essence;
     const formatter = series.formatter();
 
@@ -526,10 +526,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
             y2={chartStage.height - 0.5}
           />
         </svg>
-        {!isThumbnail && <VisMeasureLabel
+        <VisMeasureLabel
           series={series}
           datum={datum}
-          showPrevious={essence.hasComparison()} />}
+          showPrevious={essence.hasComparison()} />
         {this.renderHighlighter()}
       </div>
       {scale && this.renderChartBubble(splitData, series, chartIndex, containerStage, chartStage, extent, scale)}

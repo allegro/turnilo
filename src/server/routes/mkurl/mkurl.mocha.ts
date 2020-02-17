@@ -53,10 +53,10 @@ describe("mkurl router", () => {
       .expect(200)
       .expect(
         {
-          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8" +
-            "AbVBoAngAcmBDHSGTaw5hqaV9AJTjYA5rRnyQUEpLTMATAAYAjAFYAtM4Ccn1468zs54waHOAHTBzgBaQrTYACZObl6+" +
-            "/gDMQSFhwVHBcQC+ALollFDKSGhWxeVSEJb41trCUgnsaiDsmDDYDpTCmJLU6PgKKp2JOnAw4kJgiDCdIIWGE8x0cLDa" +
-            "K7UgyhDY2LSJACI0CVBY2DWUB0cnAMpDDgTdvf0gCLQWSfjYswQhSAA="
+          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEa" +
+            "JgCcuAbVBoAngAdxBIeMp6mGiTfU2ASnA5MjoKCT1oJACYABgBGAFYAWmCATkjQwKVg4Lxk1OCAOmTggC11JmwAEyCwqNj4gGYklLTkrOS8gF8" +
+            "AXRbKKHMkNCNm9v0IL3xjEHsNfQKZKxAZTBhsAMoNTD1BdHwTCynChzheBfBEGCmQRoFNiWE4WHsT3pBzCGxsJkKAEQhhbCgsL6G7h6eLwYywC" +
+            "BBmc32CCY7AKxW4vAQjSAA"
         },
         testComplete
       );

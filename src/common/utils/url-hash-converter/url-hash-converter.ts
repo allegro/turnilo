@@ -16,27 +16,21 @@
 
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
-import { Manifest } from "../../models/manifest/manifest";
-import {
-  DEFAULT_VIEW_DEFINITION_VERSION,
-  definitionConverters,
-  definitionUrlEncoders,
-  LEGACY_VIEW_DEFINITION_VERSION,
-  version2Visualizations,
-  ViewDefinitionVersion
-} from "../../view-definitions";
+import { Visualization } from "../../models/visualization-manifest/visualization-manifest";
+import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, LEGACY_VIEW_DEFINITION_VERSION, version2Visualizations, ViewDefinitionVersion } from "../../view-definitions";
 
 const SEGMENT_SEPARATOR = "/";
 const MINIMAL_HASH_SEGMENTS_COUNT = 2;
 
 export interface UrlHashConverter {
-  essenceFromHash(hash: string, dataCube: DataCube, visializations: Manifest[]): Essence;
+  essenceFromHash(hash: string, dataCube: DataCube): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
 
 function isLegacyWithVisualizationPrefix(hashParts: string[]) {
-  return version2Visualizations.indexOf(hashParts[0]) !== -1 && hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
+  const [visualization, version] = hashParts;
+  return version2Visualizations.has(visualization as Visualization) && version === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
 }
 
 function isVersion3VisualizationPrefix(hashParts: string[]) {
@@ -84,14 +78,14 @@ export function getHashSegments(hash: string): HashSegments {
 }
 
 export const urlHashConverter: UrlHashConverter = {
-  essenceFromHash(hash: string, dataCube: DataCube, visualizations: Manifest[]): Essence {
+  essenceFromHash(hash: string, dataCube: DataCube): Essence {
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
-    return definitionConverter.fromViewDefinition(definition, dataCube, visualizations);
+    return definitionConverter.fromViewDefinition(definition, dataCube);
   },
 
   toHash(essence: Essence, version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION): string {
