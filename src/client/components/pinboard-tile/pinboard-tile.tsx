@@ -36,8 +36,6 @@ import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { DataRows, EditMode, RowsMode } from "./data-rows";
 import { pinboardIcons } from "./pinboard-icons";
-import { SelectableRows } from "./selectable-rows";
-import { TextRows } from "./text-rows";
 import { isClauseEditable } from "./utils/is-clause-editable";
 import { isDimensionPinnable } from "./utils/is-dimension-pinnable";
 import { makeQuery } from "./utils/make-query";
@@ -236,7 +234,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   }
 
   render() {
-    const { dimension, sortOn, onClose } = this.props;
+    const { dimension, onClose } = this.props;
     const { datasetLoad, showSearch, searchText } = this.state;
 
     return <SearchableTile
@@ -249,7 +247,6 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
       showSearch={showSearch}
       icons={pinboardIcons({ showSearch, onClose, onSearchClick: this.toggleSearch })}
       className="pinboard-tile">
-      {!sortOn && <Message content="No measure selected" />}
       {isLoaded(datasetLoad) && this.renderData(datasetLoad.dataset.data)}
       {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
       {isLoading(datasetLoad) && <Loader />}
