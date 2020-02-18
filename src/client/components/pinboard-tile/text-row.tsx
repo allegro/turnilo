@@ -19,20 +19,20 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";
 
-interface ReadonlyRowProps {
+interface TextRowProps {
   value: string;
-  onSelect: Unary<string, void>;
+  onClick: Unary<string, void>;
   measure: string;
   searchText: string;
 }
 
-export const ReadonlyRow: React.SFC<ReadonlyRowProps> = props => {
-  const { measure, value, searchText, onSelect } = props;
-  const selectable = !!onSelect;
+export const TextRow: React.SFC<TextRowProps> = props => {
+  const { measure, value, searchText, onClick } = props;
+  const clickable = !!onClick;
   return <div
-    className={classNames("row", { selectable })}
+    className={classNames("row", { selectable: clickable })}
     key={value}
-    onClick={() => selectable && onSelect(value)}>
+    onClick={() => clickable && onClick(value)}>
     <div className="segment-value" title={value}>
       <HighlightString className="label" text={value} highlight={searchText} />
     </div>

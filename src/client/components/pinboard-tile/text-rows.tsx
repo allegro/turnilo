@@ -18,25 +18,25 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Unary } from "../../../common/utils/functional/functional";
-import { ReadonlyRow } from "./readonly-row";
+import { TextRow } from "./text-row";
 
-interface ReadonlyRowsProps {
+interface TextRowsProps {
   data: Datum[];
   dimension: Dimension;
   formatter: Unary<Datum, string>;
   searchText: string;
-  onSelect?: Unary<string, void>;
+  onClick?: Unary<string, void>;
 }
 
-export const ReadonlyRows: React.SFC<ReadonlyRowsProps> = props => {
-  const { data, dimension, onSelect, formatter, searchText } = props;
+export const TextRows: React.SFC<TextRowsProps> = props => {
+  const { data, dimension, onClick, formatter, searchText } = props;
   return <React.Fragment>
     {data.map(datum => {
       const value = String(datum[dimension.name]);
       const measure = formatter(datum);
-      return <ReadonlyRow
+      return <TextRow
         value={value}
-        onSelect={onSelect}
+        onClick={onClick}
         measure={measure}
         searchText={searchText}/>;
     })}

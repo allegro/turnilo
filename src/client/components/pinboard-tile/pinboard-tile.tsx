@@ -26,7 +26,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT } from "../../config/constants";
+import { MAX_SEARCH_LENGTH } from "../../config/constants";
 import { setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { reportError } from "../../utils/error-reporter/error-reporter";
@@ -34,15 +34,17 @@ import { Loader } from "../loader/loader";
 import { Message } from "../message/message";
 import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
+import { DataRows, EditMode, RowsMode } from "./data-rows";
 import { pinboardIcons } from "./pinboard-icons";
-import { ReadonlyRows } from "./readonly-rows";
 import { SelectableRows } from "./selectable-rows";
+import { TextRows } from "./text-rows";
 import { isClauseEditable } from "./utils/is-clause-editable";
 import { isDimensionPinnable } from "./utils/is-dimension-pinnable";
 import { makeQuery } from "./utils/make-query";
 import { isPinnableClause, PinnableClause } from "./utils/pinnable-clause";
 import { equalParams, QueryParams } from "./utils/query-params";
 import { shouldFetchData } from "./utils/should-fetch";
+import { tileStyles } from "./utils/tile-styles";
 
 export class PinboardTileProps {
   essence: Essence;
@@ -80,12 +82,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
         // TODO: encode it better
         // null is here when we get out of order request, so we just ignore it
         if (!loadedDataset) return;
-        if (isError(loadedDataset)) {
-          this.setState({ datasetLoad: loadedDataset });
-        }
-        if (isLoaded(loadedDataset)) {
-          this.setState({ datasetLoad: loadedDataset });
-        }
+        this.setState({ datasetLoad: loadedDataset });
       });
   }
 
@@ -144,15 +141,12 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
 
   toggleSearch = () => {
     this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
-    this.onSearchChange("");
+    this.setSearchText("");
   };
 
-  onSearchChange = (text: string) => {
-    const { searchText } = this.state;
-    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
-
-    if (searchText === newSearchText) return;
-    this.setState({ searchText: newSearchText });
+  setSearchText = (text: string) => {
+    const searchText = text.substr(0, MAX_SEARCH_LENGTH);
+    this.setState({ searchText });
   };
 
   private getFormatter(): Unary<Datum, string> {
@@ -161,15 +155,6 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     const series = sortOn && essence.findConcreteSeries(sortOn.key);
     if (!series) return null;
     return d => series.formatValue(d);
-  }
-
-  private tileStyles(): React.CSSProperties {
-    const { datasetLoad } = this.state;
-    const topOffset = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;
-    const rowsCount = isLoaded(datasetLoad) ? datasetLoad.dataset.count() : 0;
-    const rowsHeight = Math.max(4, rowsCount) * PIN_ITEM_HEIGHT;
-    const maxHeight = topOffset + (rowsHeight);
-    return { maxHeight };
   }
 
   private isEditable(): boolean {
@@ -189,7 +174,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     return null;
   }
 
-  private toggleFilterValue(value: string) {
+  private toggleFilterValue = (value: string) => {
     const { clicker, essence: { filter } } = this.props;
     const clause = this.pinnedClause();
     if (!isPinnableClause(clause)) throw Error(`Expected Boolean or String filter clause, got ${clause}`);
@@ -197,9 +182,9 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     // TODO: call looks the same but typescript distinguish them and otherwise can't find common call signature
     const newClause = clause instanceof StringFilterClause ? clause.update("values", updater) : clause.update("values", updater);
     clicker.changeFilter(filter.setClause(newClause));
-  }
+  };
 
-  private createFilterClause(value: string) {
+  private createFilterClause = (value: string) => {
     const { clicker, essence: { filter }, dimension } = this.props;
     const reference = dimension.name;
     const values = Set.of(value);
@@ -207,38 +192,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
       ? new StringFilterClause({ reference, action: StringFilterAction.IN, values })
       : new BooleanFilterClause({ reference, values });
     clicker.changeFilter(filter.addClause(clause));
-  }
-
-  renderSelectableRows(data: Datum[]) {
-    const { dimension } = this.props;
-    const { searchText } = this.state;
-
-    return <SelectableRows
-      data={data}
-      dimension={dimension}
-      formatter={this.getFormatter()}
-      clause={this.pinnedClause()}
-      searchText={searchText}
-      onSelect={this.toggleFilterValue} />;
-  }
-
-  renderReadonlyRows(data: Datum[]) {
-    const { dimension } = this.props;
-    const { searchText } = this.state;
-    const selectHandler = this.isEditable() ? this.createFilterClause : null;
-
-    return <ReadonlyRows
-      data={data}
-      dimension={dimension}
-      formatter={this.getFormatter()}
-      onSelect={selectHandler}
-      searchText={searchText} />;
-  }
-
-  renderRows(data: Datum[]) {
-    const inEditMode = this.isInEditMode();
-    return inEditMode ? this.renderSelectableRows(data) : this.renderReadonlyRows(data);
-  }
+  };
 
   filterData(data: Datum[]): Datum[] {
     const { searchText } = this.state;
@@ -248,12 +202,35 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     return data.filter(datum => String(datum[dimension.name]).includes(lowerSearchText));
   }
 
+  private getEditMode(): EditMode {
+    if (this.isInEditMode()) {
+      return {
+        id: RowsMode.IN_EDIT,
+        toggleValue: this.toggleFilterValue,
+        clause: this.pinnedClause()
+      };
+    }
+    if (this.isEditable()) {
+      return {
+        id: RowsMode.EDITABLE,
+        createClause: this.createFilterClause
+      };
+    }
+    return { id: RowsMode.NOT_EDITABLE };
+  }
+
   renderData(data: Datum[]) {
     const { searchText } = this.state;
+    const { dimension } = this.props;
     const filteredData = this.filterData(data);
     const emptySearchResults = searchText && filteredData.length === 0;
     return <div className="rows">
-      {this.renderRows(filteredData)}
+      <DataRows
+        data={filteredData}
+        dimension={dimension}
+        formatter={this.getFormatter()}
+        searchText={searchText}
+        editMode={this.getEditMode()}/>
       {emptySearchResults && <div className="message">{`No results for "${searchText}"`}</div>}
     </div>;
   }
@@ -263,11 +240,11 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     const { datasetLoad, showSearch, searchText } = this.state;
 
     return <SearchableTile
-      style={this.tileStyles()}
+      style={tileStyles(datasetLoad)}
       title={dimension.title}
       toggleChangeFn={this.toggleSearch}
       onDragStart={this.onDragStart}
-      onSearchChange={this.onSearchChange}
+      onSearchChange={this.setSearchText}
       searchText={searchText}
       showSearch={showSearch}
       icons={pinboardIcons({ showSearch, onClose, onSearchClick: this.toggleSearch })}
