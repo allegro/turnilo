@@ -16,38 +16,18 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { Unary } from "../../../common/utils/functional/functional";
-import { SelectableRows } from "./selectable-rows";
-import { TextRows } from "./text-rows";
-import { PinnableClause } from "./utils/pinnable-clause";
-
-export enum RowsMode { EDITABLE, IN_EDIT, NOT_EDITABLE }
-
-interface EditableProps {
-  id: RowsMode.EDITABLE;
-  createClause: Unary<string, void>;
-}
-
-interface InEditProps {
-  id: RowsMode.IN_EDIT;
-  toggleValue: Unary<string, void>;
-  clause: PinnableClause;
-}
-
-interface NotEditableProps {
-  id: RowsMode.NOT_EDITABLE;
-}
-
-export type EditMode = EditableProps | InEditProps | NotEditableProps;
+import { Dimension } from "../../../../common/models/dimension/dimension";
+import { Unary } from "../../../../common/utils/functional/functional";
+import { SelectableRows } from "../selectable-rows";
+import { TextRows } from "../text-rows";
+import { EditMode, RowsMode } from "./edit-mode";
 
 interface DataRowsProps {
   editMode: EditMode;
   data: Datum[];
+  searchText: string;
   dimension: Dimension;
   formatter: Unary<Datum, string>;
-  searchText: string;
-
 }
 
 export const DataRows: React.SFC<DataRowsProps> = props => {

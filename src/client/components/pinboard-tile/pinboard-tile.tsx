@@ -31,11 +31,10 @@ import { setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { Loader } from "../loader/loader";
-import { Message } from "../message/message";
 import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
-import { DataRows, EditMode, RowsMode } from "./data-rows";
 import { pinboardIcons } from "./pinboard-icons";
+import { EditMode, RowsMode } from "./utils/edit-mode";
 import { isClauseEditable } from "./utils/is-clause-editable";
 import { isDimensionPinnable } from "./utils/is-dimension-pinnable";
 import { makeQuery } from "./utils/make-query";
@@ -43,6 +42,7 @@ import { isPinnableClause, PinnableClause } from "./utils/pinnable-clause";
 import { equalParams, QueryParams } from "./utils/query-params";
 import { shouldFetchData } from "./utils/should-fetch";
 import { tileStyles } from "./utils/tile-styles";
+import { PinboardDataset } from "./pinboard-dataset";
 
 export class PinboardTileProps {
   essence: Essence;
@@ -192,14 +192,6 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     clicker.changeFilter(filter.addClause(clause));
   };
 
-  filterData(data: Datum[]): Datum[] {
-    const { searchText } = this.state;
-    if (!searchText) return data;
-    const lowerSearchText = searchText.toLowerCase();
-    const { dimension } = this.props;
-    return data.filter(datum => String(datum[dimension.name]).includes(lowerSearchText));
-  }
-
   private getEditMode(): EditMode {
     if (this.isInEditMode()) {
       return {
@@ -217,22 +209,6 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     return { id: RowsMode.NOT_EDITABLE };
   }
 
-  renderData(data: Datum[]) {
-    const { searchText } = this.state;
-    const { dimension } = this.props;
-    const filteredData = this.filterData(data);
-    const emptySearchResults = searchText && filteredData.length === 0;
-    return <div className="rows">
-      <DataRows
-        data={filteredData}
-        dimension={dimension}
-        formatter={this.getFormatter()}
-        searchText={searchText}
-        editMode={this.getEditMode()}/>
-      {emptySearchResults && <div className="message">{`No results for "${searchText}"`}</div>}
-    </div>;
-  }
-
   render() {
     const { dimension, onClose } = this.props;
     const { datasetLoad, showSearch, searchText } = this.state;
@@ -247,7 +223,12 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
       showSearch={showSearch}
       icons={pinboardIcons({ showSearch, onClose, onSearchClick: this.toggleSearch })}
       className="pinboard-tile">
-      {isLoaded(datasetLoad) && this.renderData(datasetLoad.dataset.data)}
+      {isLoaded(datasetLoad) && <PinboardDataset
+        editMode={this.getEditMode()}
+        data={datasetLoad.dataset.data}
+        searchText={searchText}
+        dimension={dimension}
+        formatter={this.getFormatter()}/>}
       {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
       {isLoading(datasetLoad) && <Loader />}
     </SearchableTile>;
