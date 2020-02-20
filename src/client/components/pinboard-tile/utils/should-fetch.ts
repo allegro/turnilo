@@ -28,7 +28,7 @@ export function shouldFetchData(
   const previousSearchText = previousState.searchText;
 
   return essence.differentDataCube(previousEssence) ||
-    essence.differentEffectiveFilter(previousEssence, timekeeper, previousTimekeeper) ||
+    essence.differentEffectiveFilter(previousEssence, timekeeper, previousTimekeeper, dimension) ||
     !dimension.equals(previousDimension) ||
     previousSearchText !== searchText ||
     !SortOn.equals(sortOn, previousSortOn);

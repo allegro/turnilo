@@ -24,7 +24,7 @@ describe("isDimensionPinnable", () => {
     });
 
     it("should return true for boolean dimension", () => {
-      expect(isDimensionPinnable(DimensionFixtures.isRobot())).to.be.true;
+      expect(isDimensionPinnable(DimensionFixtures.wikiIsRobot())).to.be.true;
     });
 
     it("should return false for number dimension", () => {
