@@ -98,7 +98,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
     if (myDataCube.cluster) {
       const timeout = myDataCube.cluster.getTimeout();
       req.setTimeout(timeout, null);
-      requestDecoratorContext.requestDeadline = new Date().valueOf() + timeout;
+      requestDecoratorContext.requestDeadline = Date.now() + timeout;
     }
     const maxQueries = myDataCube.getMaxQueries();
     try {
