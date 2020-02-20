@@ -173,24 +173,42 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     return null;
   }
 
-  private toggleFilterValue = (value: string) => {
+  private addClause(clause: PinnableClause) {
     const { clicker, essence: { filter } } = this.props;
+    clicker.changeFilter(filter.addClause(clause));
+  }
+
+  private removeClause(clause: PinnableClause) {
+    const { clicker, essence: { filter } } = this.props;
+    clicker.changeFilter(filter.removeClause(clause.reference));
+  }
+
+  private updateClause(clause: PinnableClause) {
+    const { clicker, essence: { filter } } = this.props;
+    clicker.changeFilter(filter.setClause(clause));
+  }
+
+  private toggleFilterValue = (value: string) => {
     const clause = this.pinnedClause();
     if (!isPinnableClause(clause)) throw Error(`Expected Boolean or String filter clause, got ${clause}`);
     const updater = (values: Set<string>) => values.has(value) ? values.remove(value) : values.add(value);
     // TODO: call looks the same but typescript distinguish them and otherwise can't find common call signature
     const newClause = clause instanceof StringFilterClause ? clause.update("values", updater) : clause.update("values", updater);
-    clicker.changeFilter(filter.setClause(newClause));
+    if (newClause.values.isEmpty()) {
+      this.removeClause(newClause);
+    } else {
+      this.updateClause(newClause);
+    }
   };
 
   private createFilterClause = (value: string) => {
-    const { clicker, essence: { filter }, dimension } = this.props;
+    const { dimension } = this.props;
     const reference = dimension.name;
     const values = Set.of(value);
     const clause = dimension.kind === "string"
       ? new StringFilterClause({ reference, action: StringFilterAction.IN, values })
       : new BooleanFilterClause({ reference, values });
-    clicker.changeFilter(filter.addClause(clause));
+    this.addClause(clause);
   };
 
   private getEditMode(): EditMode {
