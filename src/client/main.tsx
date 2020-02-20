@@ -17,11 +17,15 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AppSettingsJS } from "../common/models/app-settings/app-settings";
-import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
+import { MANIFESTS } from "../common/manifests";
+import { AppSettings, AppSettingsJS } from "../common/models/app-settings/app-settings";
+import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
+import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
+import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";
 import "./main.scss";
 import "./polyfills";
+import { Ajax } from "./utils/ajax/ajax";
 import { init as errorReporterInit } from "./utils/error-reporter/error-reporter";
 
 const container = document.getElementsByClassName("app-container")[0];
@@ -50,49 +54,23 @@ if (config.appSettings.customization.rollbar && config.appSettings.customization
 
 const version = config.version;
 
-require.ensure([], require => {
-  const { Ajax } = require("./utils/ajax/ajax");
-  const { Timekeeper } = require("../common/models/timekeeper/timekeeper");
-  const { AppSettings } = require("../common/models/app-settings/app-settings");
-  const { MANIFESTS } = require("../common/manifests/index");
-  const { TurniloApplication } = require("./applications/turnilo-application/turnilo-application");
+Ajax.version = version;
 
-  Ajax.version = version;
+const appSettings = AppSettings.fromJS(config.appSettings, {
+  visualizations: MANIFESTS,
+  executorFactory: Ajax.queryUrlExecutorFactory
+});
 
-  const appSettings = AppSettings.fromJS(config.appSettings, {
-    visualizations: MANIFESTS,
-    executorFactory: Ajax.queryUrlExecutorFactory
-  });
+const app =
+  <TurniloApplication
+    version={version}
+    appSettings={appSettings}
+    initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+  />;
 
-  const app =
-    <TurniloApplication
-      version={version}
-      appSettings={appSettings}
-      initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
-    />;
+ReactDOM.render(app, container);
 
-  ReactDOM.render(app, container);
-}, "app");
-
-// Polyfill =====================================
-
-// From ../../assets/polyfill/drag-drop-polyfill.js
-const div = document.createElement("div");
-const dragDiv = "draggable" in div;
-const evts = "ondragstart" in div && "ondrop" in div;
-
-const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
-
-if (needsPatch) {
-  require.ensure([
-    "../../lib/polyfill/drag-drop-polyfill.min.js",
-    "../../lib/polyfill/drag-drop-polyfill.css"
-  ], require => {
-    const DragDropPolyfill = require("../../lib/polyfill/drag-drop-polyfill.min.js");
-    require("../../lib/polyfill/drag-drop-polyfill.css");
-    DragDropPolyfill.Initialize({});
-  }, "ios-drag-drop");
-}
+applyDragAndDropPolyfill();
 
 if (process.env.NODE_ENV === "dev-hmr" && module.hot) {
   module.hot.accept();
