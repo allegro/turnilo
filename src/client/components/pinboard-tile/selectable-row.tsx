@@ -22,23 +22,23 @@ import { HighlightString } from "../highlight-string/highlight-string";
 import "./selectable-row.scss";
 
 interface SelectableRowProps {
-  value: string;
+  value: unknown;
   selected: boolean;
-  onSelect: Unary<string, void>;
+  onSelect: Unary<unknown, void>;
   measure: string;
   searchText: string;
 }
 
 export const SelectableRow: React.SFC<SelectableRowProps> = props => {
   const { measure, value, selected, searchText, onSelect } = props;
+  const strValue = String(value);
   return <div
-    className={classNames("row", { selected })}
-    key={value}
+    className={classNames("pinboard-selectable-row", { selected })}
     onClick={() => onSelect(value)}
   >
-    <div className="segment-value" title={value}>
+    <div className="segment-value" title={strValue}>
       <Checkbox selected={selected} type="check" />
-      <HighlightString className="label" text={value} highlight={searchText} />
+      <HighlightString className="label" text={strValue} highlight={searchText} />
     </div>
     {measure && <div className="measure-value">{measure}</div>}
   </div>;

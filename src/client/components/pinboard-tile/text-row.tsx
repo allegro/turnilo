@@ -21,21 +21,21 @@ import { HighlightString } from "../highlight-string/highlight-string";
 import "./text-row.scss";
 
 interface TextRowProps {
-  value: string;
-  onClick: Unary<string, void>;
+  value: unknown;
+  onClick: Unary<unknown, void>;
   measure: string;
   searchText: string;
 }
 
 export const TextRow: React.SFC<TextRowProps> = props => {
   const { measure, value, searchText, onClick } = props;
+  const strValue = String(value);
   const clickable = !!onClick;
   return <div
     className={classNames("pinboard-text-row", { selectable: clickable })}
-    key={value}
     onClick={() => clickable && onClick(value)}>
-    <div className="segment-value" title={value}>
-      <HighlightString className="label" text={value} highlight={searchText} />
+    <div className="segment-value" title={strValue}>
+      <HighlightString className="label" text={strValue} highlight={searchText} />
     </div>
     {measure && <div className="measure-value">{measure}</div>}
   </div>;

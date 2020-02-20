@@ -19,13 +19,13 @@
 $measure-width: 80px;
 $checkbox-width: 20px;
 
-.pinboard-text-row {
+.pinboard-selectable-row {
   height: $pin-item-height;
   color: $text-lighterish;
   cursor: pointer;
 
   &.selected {
-    color: $text-default-color;
+    color: $black;
   }
 
   &:hover {

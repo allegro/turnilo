@@ -25,16 +25,17 @@ interface TextRowsProps {
   dimension: Dimension;
   formatter: Unary<Datum, string>;
   searchText: string;
-  onClick?: Unary<string, void>;
+  onClick?: Unary<unknown, void>;
 }
 
 export const TextRows: React.SFC<TextRowsProps> = props => {
   const { data, dimension, onClick, formatter, searchText } = props;
   return <React.Fragment>
     {data.map(datum => {
-      const value = String(datum[dimension.name]);
+      const value = datum[dimension.name];
       const measure = formatter(datum);
       return <TextRow
+        key={String(value)}
         value={value}
         onClick={onClick}
         measure={measure}
