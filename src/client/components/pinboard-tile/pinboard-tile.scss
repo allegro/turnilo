@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import { Datum } from "plywood";
-import { Dimension } from "../../../../common/models/dimension/dimension";
+@import '../../imports';
 
-export default function filterByDimensionValue(data: Datum[], { name }: Dimension, searchText: string): Datum[] {
-  if (!searchText) return data;
-  const lowerSearchText = searchText.toLowerCase();
-  return data.filter(datum => String(datum[name]).toLowerCase().includes(lowerSearchText));
+.pinboard-tile {
+  min-height: 94px;
+  overflow-y: hidden;
+
+  .loader,
+  .message {
+    @include pin-full;
+  }
+
+  // TODO: check this
+  .message .message-container {
+    margin-top: -10px;
+  }
 }

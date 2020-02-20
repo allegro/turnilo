@@ -38,30 +38,30 @@ export function stringWithAction(reference: string, action: StringFilterAction, 
   return new StringFilterClause({ reference, action, values: Set(values), not });
 }
 
-export function stringIn(reference: string, values: string[], not = false): FilterClause {
+export function stringIn(reference: string, values: string[], not = false): StringFilterClause {
   return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set(values), not });
 }
 
-export function stringContains(reference: string, value: string, not = false): FilterClause {
+export function stringContains(reference: string, value: string, not = false): StringFilterClause {
   return new StringFilterClause({ reference, action: StringFilterAction.CONTAINS, values: Set.of(value), not });
 }
 
-export function stringMatch(reference: string, value: string, not = false): FilterClause {
+export function stringMatch(reference: string, value: string, not = false): StringFilterClause {
   return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
 }
 
-export function boolean(reference: string, values: Booleanish[], not = false): FilterClause {
+export function boolean(reference: string, values: Booleanish[], not = false): BooleanFilterClause {
   return new BooleanFilterClause({ reference, not, values: Set(values) });
 }
 
-export function numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): FilterClause {
+export function numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): NumberFilterClause {
   return new NumberFilterClause({ reference, not, values: List.of(new NumberRange({ bounds, start, end })) });
 }
 
-export function timeRange(reference: string, start: Date, end: Date): FilterClause {
+export function timeRange(reference: string, start: Date, end: Date): FixedTimeFilterClause {
   return new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start, end })) });
 }
 
-export function timePeriod(reference: string, duration: string, period: TimeFilterPeriod): FilterClause {
+export function timePeriod(reference: string, duration: string, period: TimeFilterPeriod): RelativeTimeFilterClause {
   return new RelativeTimeFilterClause({ reference, duration: Duration.fromJS(duration), period });
 }

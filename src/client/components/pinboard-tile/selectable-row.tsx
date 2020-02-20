@@ -19,6 +19,7 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
+import "./selectable-row.scss";
 
 interface SelectableRowProps {
   value: string;

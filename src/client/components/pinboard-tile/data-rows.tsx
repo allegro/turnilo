@@ -16,11 +16,11 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { Dimension } from "../../../../common/models/dimension/dimension";
-import { Unary } from "../../../../common/utils/functional/functional";
-import { SelectableRows } from "../selectable-rows";
-import { TextRows } from "../text-rows";
-import { EditMode, RowsMode } from "./edit-mode";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Unary } from "../../../common/utils/functional/functional";
+import { SelectableRows } from "./selectable-rows";
+import { TextRows } from "./text-rows";
+import { EditMode, RowsMode } from "./utils/edit-mode";
 
 interface DataRowsProps {
   editMode: EditMode;

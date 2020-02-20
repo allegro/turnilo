@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
-import { Datum } from "plywood";
-import { Dimension } from "../../../../common/models/dimension/dimension";
+import * as Chai from "chai";
+import { Expression } from "plywood";
+import some from "../../../common/utils/plywood/some";
 
-export default function filterByDimensionValue(data: Datum[], { name }: Dimension, searchText: string): Datum[] {
-  if (!searchText) return data;
-  const lowerSearchText = searchText.toLowerCase();
-  return data.filter(datum => String(datum[name]).toLowerCase().includes(lowerSearchText));
+export default function(chai: typeof Chai) {
+  chai.Assertion.addMethod("haveSubExpression", function(exp: Expression) {
+    this.assert(
+      some(this._obj, e => exp.equals(e)),
+      `expected to have expression ${exp.toString()}`,
+      `expected to not have expression ${exp.toString()}`,
+      exp,
+      this._obj,
+      true
+    );
+  });
+}
+
+declare global {
+  namespace Chai {
+    interface Assertion {
+      haveSubExpression(exp: Expression): Assertion;
+    }
+  }
 }

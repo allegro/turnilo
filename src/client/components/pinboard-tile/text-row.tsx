@@ -18,6 +18,7 @@ import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";
+import "./text-row.scss";
 
 interface TextRowProps {
   value: string;
@@ -30,7 +31,7 @@ export const TextRow: React.SFC<TextRowProps> = props => {
   const { measure, value, searchText, onClick } = props;
   const clickable = !!onClick;
   return <div
-    className={classNames("row", { selectable: clickable })}
+    className={classNames("pinboard-text-row", { selectable: clickable })}
     key={value}
     onClick={() => clickable && onClick(value)}>
     <div className="segment-value" title={value}>

@@ -22,6 +22,6 @@ export function tileStyles(datasetLoad: DatasetLoad): React.CSSProperties {
   const topOffset = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;
   const rowsCount = isLoaded(datasetLoad) ? datasetLoad.dataset.count() : 0;
   const rowsHeight = Math.max(4, rowsCount) * PIN_ITEM_HEIGHT;
-  const maxHeight = topOffset + (rowsHeight);
+  const maxHeight = topOffset + rowsHeight;
   return { maxHeight };
 }

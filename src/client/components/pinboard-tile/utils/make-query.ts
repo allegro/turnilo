@@ -15,35 +15,50 @@
  */
 
 import { $, Expression, r, SortExpression } from "plywood";
+import { SortOn } from "../../../../common/models/sort-on/sort-on";
 import { TimeShiftEnvType } from "../../../../common/models/time-shift/time-shift-env";
 import { CANONICAL_LENGTH_ID } from "../../../../common/utils/canonical-length/query";
 import timeFilterCanonicalLength from "../../../../common/utils/canonical-length/time-filter-canonical-length";
+import { thread } from "../../../../common/utils/functional/functional";
 import { QueryParams } from "./query-params";
 
 const TOP_N = 100;
 
-export function makeQuery({ essence, timekeeper, dimension, sortOn, searchText }: QueryParams): Expression {
-  const { dataCube } = essence;
-  let filter = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension });
+function filterExpression({ essence, searchText, timekeeper, dimension }: QueryParams): Expression {
+  const expression = essence
+    .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
+    .toExpression(essence.dataCube);
+  if (!searchText) return expression;
+  return expression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
+}
 
-  let filterExpression = filter.toExpression(dataCube);
-
-  if (searchText) {
-    filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
-  }
-
-  let query: any = $("main")
-    .filter(filterExpression)
-    .split(dimension.expression, dimension.name);
-
-  const sortExpression: Expression = $(sortOn.key);
-
+function insertSortReferenceExpression({ essence, sortOn, timekeeper }: QueryParams) {
   const sortSeries = essence.findConcreteSeries(sortOn.key);
-  if (sortSeries) {
-    query = query
+  return (query: Expression): Expression => {
+    if (!sortSeries) return query;
+    return query
       .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper))
       .performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
-  }
+  };
+}
 
-  return query.sort(sortExpression, SortExpression.DESCENDING).limit(TOP_N + 1);
+function applySort(sortOn: SortOn) {
+  return (query: Expression) => query.sort($(sortOn.key), SortExpression.DESCENDING);
+}
+
+function limit(query: Expression): Expression {
+  return query.limit(TOP_N + 1);
+}
+
+export function makeQuery(params: QueryParams): Expression {
+  const { dimension, sortOn } = params;
+
+  return thread(
+    $("main")
+      .filter(filterExpression(params))
+      .split(dimension.expression, dimension.name),
+    insertSortReferenceExpression(params),
+    applySort(sortOn),
+    limit
+  );
 }

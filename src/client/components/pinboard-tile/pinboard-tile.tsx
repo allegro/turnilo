@@ -33,7 +33,9 @@ import { reportError } from "../../utils/error-reporter/error-reporter";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
+import { PinboardDataset } from "./pinboard-dataset";
 import { pinboardIcons } from "./pinboard-icons";
+import "./pinboard-tile.scss";
 import { EditMode, RowsMode } from "./utils/edit-mode";
 import { isClauseEditable } from "./utils/is-clause-editable";
 import { isDimensionPinnable } from "./utils/is-dimension-pinnable";
@@ -42,7 +44,6 @@ import { isPinnableClause, PinnableClause } from "./utils/pinnable-clause";
 import { equalParams, QueryParams } from "./utils/query-params";
 import { shouldFetchData } from "./utils/should-fetch";
 import { tileStyles } from "./utils/tile-styles";
-import { PinboardDataset } from "./pinboard-dataset";
 
 export class PinboardTileProps {
   essence: Essence;
@@ -119,7 +120,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   }
 
   componentDidUpdate(previousProps: PinboardTileProps, previousState: PinboardTileState) {
-    if (shouldFetchData(previousProps, previousState)) {
+    if (shouldFetchData(this.props, previousProps, this.state, previousState)) {
       const { essence, timekeeper, dimension, sortOn } = this.props;
       const { searchText } = this.state;
       this.loadData({ essence, timekeeper, dimension, sortOn, searchText });
@@ -162,7 +163,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
 
   private isInEditMode(): boolean {
     const clause = this.pinnedClause();
-    return isClauseEditable(clause) && !clause.values.isEmpty();
+    return clause && isClauseEditable(clause) && !clause.values.isEmpty();
   }
 
   private pinnedClause(): PinnableClause | null {

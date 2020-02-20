@@ -16,9 +16,11 @@
 import { SortOn } from "../../../../common/models/sort-on/sort-on";
 import { PinboardTileProps, PinboardTileState } from "../pinboard-tile";
 
-export function shouldFetchData(previousProps: PinboardTileProps, previousState: PinboardTileState): boolean {
-  const { essence, timekeeper, dimension, sortOn } = this.props;
-  const { searchText } = this.state;
+export function shouldFetchData(
+  { essence, timekeeper, dimension, sortOn }: PinboardTileProps,
+  previousProps: PinboardTileProps,
+  { searchText }: PinboardTileState,
+  previousState: PinboardTileState): boolean {
   const previousEssence = previousProps.essence;
   const previousTimekeeper = previousProps.timekeeper;
   const previousDimension = previousProps.dimension;

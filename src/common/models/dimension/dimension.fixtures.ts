@@ -83,6 +83,15 @@ export class DimensionFixtures {
     });
   }
 
+  static isRobot(): Dimension {
+    return new Dimension({
+      name: "isRobot",
+      title: "Is Robot",
+      formula: "$isRobot",
+      kind: "boolean"
+    });
+  }
+
   static countryString() {
     return Dimension.fromJS(DimensionFixtures.COUNTRY_STRING_JS);
   }

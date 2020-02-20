@@ -18,9 +18,8 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Unary } from "../../../common/utils/functional/functional";
-import { DataRows } from "./utils/data-rows";
+import { DataRows } from "./data-rows";
 import { EditMode } from "./utils/edit-mode";
-import filterByDimensionValue from "./utils/filter-by-dimension-value";
 
 interface PinboardDatasetProps {
   editMode: EditMode;
@@ -30,16 +29,21 @@ interface PinboardDatasetProps {
   formatter: Unary<Datum, string>;
 }
 
+function noResultsMessage(searchText?: string): string {
+  return searchText ? `No results for "${searchText}"` : "No results";
+}
+
 export const PinboardDataset: React.SFC<PinboardDatasetProps> = props => {
   const { editMode, data, dimension, searchText, formatter } = props;
-  const filteredData = filterByDimensionValue(data, dimension, searchText);
-  const emptySearchResults = searchText && filteredData.length === 0;
-  return <div className="rows">
-    <DataRows editMode={editMode}
-              data={filteredData}
-              searchText={searchText}
-              dimension={dimension}
-              formatter={formatter} />
-    {emptySearchResults && <div className="message">{`No results for "${searchText}"`}</div>}
+  const noResults = data.length === 0;
+  return <div className="pinboard-rows">
+    {noResults ?
+      <div className="message">{noResultsMessage(searchText)}</div> :
+      <DataRows editMode={editMode}
+                data={data}
+                searchText={searchText}
+                dimension={dimension}
+                formatter={formatter} />
+    }
   </div>;
 };
