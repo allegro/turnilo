@@ -17,12 +17,14 @@
 
 import { Timezone } from "chronoshift";
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
+import { SortDirection } from "../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../common/models/split/split";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SPLIT } from "../../config/constants";
 
-export type Order<D> = (a: [string, number, D], b: [string, number, D]) => number;
+type Order<D> = (a: [string, number, D], b: [string, number, D]) => number;
 
-export const orderByValueDecreasing: Order<any> = ([_, countA], [__, countB]) => {
+export const orderByValueDecreasing: Order<unknown> = ([_, countA], [__, countB]) => {
   if (countA < countB) {
     return 1;
   }
@@ -34,7 +36,7 @@ export const orderByValueDecreasing: Order<any> = ([_, countA], [__, countB]) =>
   return 0;
 };
 
-export const orderByValueIncreasing: Order<any> = (a, b) => {
+export const orderByValueIncreasing: Order<unknown> = (a, b) => {
   return -orderByValueDecreasing(a, b);
 };
 
@@ -47,9 +49,36 @@ export const orderByNumberRangeDimensionIncreasing: Order<NumberRange> = ([_, __
 const datumKey = (dataset: Datum, key: string, timezone: Timezone): string =>
   formatValue(dataset[key], timezone);
 
-export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: string, secondSplitName: string, order: Order<any>, timezone: Timezone): Dataset => {
+const splitToFillOrder = (split: Split): Order<unknown> => {
+  const sort = split.sort;
+  switch (split.type) {
+    case SplitType.string:
+    default:
+      if (sort.direction === SortDirection.ascending) {
+        return orderByValueIncreasing;
+      } else {
+        return orderByValueDecreasing;
+      }
+    case SplitType.time:
+      if (sort.direction === SortDirection.ascending) {
+        return orderByTimeDimensionIncreasing;
+      } else {
+        return orderByTimeDimensionDecreasing;
+      }
+    case SplitType.number:
+      if (sort.direction === SortDirection.ascending) {
+        return orderByNumberRangeDimensionIncreasing;
+      } else {
+        return orderByNumberRangeDimensionDecreasing;
+      }
+  }
+};
+
+export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: string, secondSplit: Split, timezone: Timezone): Dataset => {
   const totals: { [ident: string]: number } = {};
   const identToOriginalKey: { [ident: string]: any } = {};
+  const order = splitToFillOrder(secondSplit);
+  const secondSplitName = secondSplit.reference;
 
   for (const datum of dataset.data) {
     const nestedDataset = (datum[SPLIT] as Dataset).data;

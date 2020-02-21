@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +14,13 @@
  * limitations under the License.
  */
 
-import { Bin } from "@vx/heatmap";
-import * as React from "react";
+@import '../../imports';
+@import './utils/sizes';
 
-interface HeatMapRectangleRowProps {
-  bins: Bin[];
-}
-
-export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {
-  render() {
-    const { bins } = this.props;
-    return bins.map(bin => <rect
-      key={`heatmap-rect-${bin.row}-${bin.column}`}
-      width={bin.width}
-      height={bin.height}
-      x={bin.y}
-      y={bin.x}
-      fill={bin.color}
-      fillOpacity={bin.opacity}
-    />);
-  }
+.heatmap-hover-indicator {
+  position: absolute;
+  height: $heatmap-rectangle-size - $heatmap-rectangle-gap;
+  width: $heatmap-rectangle-size - $heatmap-rectangle-gap;
+  box-sizing: border-box;
+  border: 1px solid $highlight-border;
 }

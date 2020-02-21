@@ -146,6 +146,7 @@
     "ignore-styles": "5.0.1",
     "immutable-class-tester": "0.5.12",
     "jsdom": "9.4.2",
+    "memoize-one": "5.1.1",
     "mime": "2.3.1",
     "mocha": "4.1.0",
     "nock": "11.0.0",
