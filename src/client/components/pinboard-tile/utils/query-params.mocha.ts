@@ -35,24 +35,36 @@ const mockQueryParams = (): QueryParams => ({
 describe("QueryParams", () => {
   describe("equalParams", () => {
     it("should return true if all params are equal", () => {
-      expect(equalParams(mockQueryParams(), mockQueryParams())).to.be.true;
+      const params = mockQueryParams();
+      expect(equalParams(params, params)).to.be.true;
     });
 
     it("should return false if dimension is different", () => {
-      expect(equalParams(mockQueryParams(), { ...mockQueryParams(), dimension: DimensionFixtures.countryURL() })).to.be.false;
+      const params = mockQueryParams();
+      const changedDimension = { ...params, dimension: DimensionFixtures.countryURL() };
+      expect(equalParams(params, changedDimension)).to.be.false;
     });
 
     it("should return false if timekeeper is different", () => {
-      expect(equalParams(mockQueryParams(), { ...mockQueryParams(), timekeeper: Timekeeper.fromJS({ timeTags: [] }) })).to.be.false;
+      const params = mockQueryParams();
+      const timekeeper = Timekeeper.fromJS({ timeTags: [] });
+      const changedTimekeeper = { ...params, timekeeper };
+      expect(equalParams(params, changedTimekeeper)).to.be.false;
     });
     it("should return false if essence is different", () => {
-      expect(equalParams(mockQueryParams(), { ...mockQueryParams(), essence: EssenceFixtures.wikiLineChart() })).to.be.false;
+      const params = mockQueryParams();
+      const changedEssence = { ...params, essence: EssenceFixtures.wikiLineChart() };
+      expect(equalParams(params, changedEssence)).to.be.false;
     });
     it("should return false if searchText is different", () => {
-      expect(equalParams(mockQueryParams(), { ...mockQueryParams(), searchText: "foobar" })).to.be.false;
+      const params = mockQueryParams();
+      const changedSearchText = { ...params, searchText: "foobar" };
+      expect(equalParams(params, changedSearchText)).to.be.false;
     });
     it("should return false if sortOn is different", () => {
-      expect(equalParams(mockQueryParams(), { ...mockQueryParams(), sortOn: SortOnFixtures.defaultC() })).to.be.false;
+      const params = mockQueryParams();
+      const changedSortOn = { ...params, sortOn: SortOnFixtures.defaultC() };
+      expect(equalParams(params, changedSortOn)).to.be.false;
     });
   });
 });

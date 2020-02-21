@@ -30,16 +30,19 @@ describe("tileStyles", () => {
   });
 
   it("should return minimal maxHeight for errored dataset", () => {
-    expect(tileStyles(error(new Error("foobar")))).to.include({ maxHeight: minimalMaxHeight });
+    const erroredDataset = error(new Error("foobar"));
+    expect(tileStyles(erroredDataset)).to.include({ maxHeight: minimalMaxHeight });
   });
 
   it("should return minimal maxHeight for dataset with less than 5 rows", () => {
     range(0, 5).forEach(n => {
-      expect(tileStyles(loaded(datasetWithNRows(n)))).to.include({ maxHeight: minimalMaxHeight });
+      const datasetLoaded = loaded(datasetWithNRows(n));
+      expect(tileStyles(datasetLoaded)).to.include({ maxHeight: minimalMaxHeight });
     });
   });
 
   it("should return correct maxHeight for every dataset length otherwise", () => {
-    expect(tileStyles(loaded(datasetWithNRows(8)))).to.include({ maxHeight: 248 });
+    const datasetLoaded = loaded(datasetWithNRows(8));
+    expect(tileStyles(datasetLoaded)).to.include({ maxHeight: 248 });
   });
 });
