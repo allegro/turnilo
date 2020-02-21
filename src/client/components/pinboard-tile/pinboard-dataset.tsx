@@ -34,16 +34,12 @@ function noResultsMessage(searchText?: string): string {
 }
 
 export const PinboardDataset: React.SFC<PinboardDatasetProps> = props => {
-  const { editMode, data, dimension, searchText, formatter } = props;
+  const { data, searchText } = props;
   const noResults = data.length === 0;
   return <div className="rows">
     {noResults ?
       <div className="message">{noResultsMessage(searchText)}</div> :
-      <DataRows editMode={editMode}
-                data={data}
-                searchText={searchText}
-                dimension={dimension}
-                formatter={formatter} />
+      <DataRows {...props} />
     }
   </div>;
 };

@@ -31,29 +31,19 @@ interface DataRowsProps {
 }
 
 export const DataRows: React.SFC<DataRowsProps> = props => {
-  const { editMode, data, dimension, searchText, formatter  } = props;
+  const { editMode, ...commonProps } = props;
 
   switch (editMode.id) {
     case RowsMode.EDITABLE:
       return <TextRows
-        data={data}
-        dimension={dimension}
-        formatter={formatter}
-        onClick={editMode.createClause}
-        searchText={searchText} />;
+        {...commonProps}
+        onClick={editMode.createClause} />;
     case RowsMode.IN_EDIT:
       return <SelectableRows
-        data={data}
-        dimension={dimension}
-        formatter={formatter}
+        {...commonProps}
         clause={editMode.clause}
-        searchText={searchText}
-        onSelect={editMode.toggleValue}/>;
+        onSelect={editMode.toggleValue} />;
     case RowsMode.NOT_EDITABLE:
-      return <TextRows
-        data={data}
-        dimension={dimension}
-        formatter={formatter}
-        searchText={searchText} />;
+      return <TextRows {...commonProps} />;
   }
 };
