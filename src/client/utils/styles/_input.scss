@@ -28,8 +28,8 @@
 }
 
 %input-selected {
+  @include css-variable('background-color', 'background-light');
   box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);
-  background: $background-light;
 }
 
 %input-cont-inset {

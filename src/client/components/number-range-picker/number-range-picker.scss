@@ -31,7 +31,7 @@ $bar-height: 6px;
     height: $bar-height;
 
     &.full {
-      background-color: $background-medium;
+      @include css-variable('background-color', 'background-medium');
       left: $num-size / 2;
       right: $num-size / 2;
     }
@@ -44,7 +44,7 @@ $bar-height: 6px;
   &.inverted {
     .range-bar {
       &.full { @include css-variable('background-color', 'brand'); }
-      &.selected { background-color: $background-medium; }
+      &.selected { @include css-variable('background-color', 'background-medium'); }
     }
   }
 

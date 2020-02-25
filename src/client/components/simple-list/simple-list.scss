@@ -33,7 +33,7 @@
     }
 
     &.dragged {
-      background: $background-lightest;
+      @include css-variable('background-color', 'background-lightest');
 
       &:hover .drag-handle {
         opacity: 0;

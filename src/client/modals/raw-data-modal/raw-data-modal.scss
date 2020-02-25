@@ -78,13 +78,13 @@ $row-height: 30px;
         padding-top: 8px;
 
         &.unsplitable {
-          background: $background-lightest;
+          @include css-variable('background-color', 'background-lightest');
         }
       }
 
       .header-cell {
         @include border-css-variable('border-bottom', 1px, solid, 'border-extra-light');
-        background: $background-lightest;
+        @include css-variable('background-color', 'background-lightest');
         height: $header-height;
 
         .title-wrap {

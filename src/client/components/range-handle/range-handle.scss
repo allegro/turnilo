@@ -34,8 +34,8 @@ $nub-size: 16px;
   }
 
   &.beyond::before {
+    @include css-variable('background-color', 'background-light');
     border-style: solid;
-    border-color: $background-light;
     border-width: 2.5px 2.5px 0 0;
     content: '';
     display: inline-block;

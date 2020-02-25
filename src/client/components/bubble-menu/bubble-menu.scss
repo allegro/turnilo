@@ -48,7 +48,7 @@
       }
 
       &.selected {
-        background: $background-light;
+        @include css-variable('background-color', 'background-light');
       }
     }
   }

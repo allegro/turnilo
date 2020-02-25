@@ -25,6 +25,11 @@ $variables: (
   background-base: $background-base,
   background-brand-text: #fff,
   background-brand: $brand,
+  background-dark: hsl(0, 0%, 55%),
+  background-light: hsl(0, 0%, 93%),
+  background-lighter: hsl(0, 0%, 95%),
+  background-lightest: hsl(0, 0%, 96%),
+  background-medium: hsl(0, 0%, 87%),
   border-darker: hsl(0, 0%, 40%),
   border-extra-light: hsl(0, 0%, 87%),
   border-light: hsl(0, 0%, 82%),
@@ -64,11 +69,6 @@ $negative: #e14040;
 // Colors -------------------
 
 
-$background-light:        hsl(0, 0%, 93%);
-$background-lighter:      hsl(0, 0%, 95%);
-$background-lightest:     hsl(0, 0%, 96%);
-$background-medium:       hsl(0, 0%, 87%);
-$background-dark:         hsl(0, 0%, 55%);
 
 $background-brand-light:  hsl(21, 100%, 70%);
 
