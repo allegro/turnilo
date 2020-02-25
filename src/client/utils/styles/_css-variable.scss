@@ -1,0 +1,5 @@
+// sass-lint:disable no-duplicate-properties
+@mixin css-variable($prop, $var) {
+  #{$prop}: #{map-get($variables, $var)};
+  #{$prop}: var(--#{$var});
+}

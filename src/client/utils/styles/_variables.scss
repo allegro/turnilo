@@ -17,6 +17,12 @@
 
 // Fonts -------------------
 
+$brand: hsl(21, 100%, 50%);
+
+$variables: (
+  brand: $brand,
+);
+
 $bold: 600;
 
 // Base Colors
@@ -32,7 +38,6 @@ $negative: #e14040;
 
 // Colors -------------------
 
-$brand:                   hsl(21, 100%, 50%);
 $dark:                    #004584;
 
 $error:                   hsla(0, 72%, 59%, 1.00);

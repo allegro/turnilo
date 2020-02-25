@@ -66,3 +66,9 @@ svg {
 //  background: $brand;
 //  opacity: 0.2;
 //}
+
+:root {
+  @each $var, $val in $variables {
+    #{'--' + $var}: #{$val};
+  }
+}
