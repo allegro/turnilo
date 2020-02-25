@@ -32,6 +32,7 @@ $variables: (
   button-secondary-active: rgba($brand, 0.38),
   button-secondary-hover: rgba($brand, 0.3),
   button-secondary: rgba($brand, 0.22),
+  dark: #004584,
   date-range-picker-selected: rgba($brand, 0.26),
   pinboard-icon: darken($background-base, 5%),
 );
@@ -50,8 +51,6 @@ $positive: #08b157;
 $negative: #e14040;
 
 // Colors -------------------
-
-$dark:                    #004584;
 
 $error:                   hsla(0, 72%, 59%, 1.00);
 

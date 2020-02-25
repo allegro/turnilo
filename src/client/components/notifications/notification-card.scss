@@ -52,7 +52,7 @@
   }
 
   &.success {
-    background-color: $dark;
+    @include css-variable('background-color', 'dark');
   }
 
   &.failure {
@@ -60,7 +60,7 @@
   }
 
   &.info {
-    background-color: $dark;
+    @include css-variable('background-color', 'dark');
   }
 
   .title {

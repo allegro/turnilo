@@ -49,6 +49,7 @@ svg {
 }
 
 .drag-ghost {
+  @include css-variable('background-color', 'dark');
   // Do not change these position things
   position: absolute;
   top: 0;
@@ -57,7 +58,6 @@ svg {
 
   margin: 10px;
   padding: 4px 8px;
-  background: $dark;
   color: $white;
   border-radius: 3px;
 }
