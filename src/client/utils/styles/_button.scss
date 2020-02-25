@@ -89,7 +89,7 @@
 
 %button-warn {
   @extend %button-base;
-  background: $error;
+  @include css-variable('background-color', 'button-warn');
   color: $white;
 
   svg path {
@@ -97,12 +97,12 @@
   }
 
   &:hover {
-    background: darken($error, 5%);
+    @include css-variable('background-color', 'button-warn-hover');
   }
 
   &.active,
   &:active {
-    background: darken($error, 10%);
+    @include css-variable('background-color', 'button-warn-active');
     color: darken($white, 12%);
 
     svg path {
