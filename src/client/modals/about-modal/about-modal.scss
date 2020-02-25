@@ -28,7 +28,7 @@
   }
 
   a {
-    color: $brand;
+    @include css-variable('color', 'brand');
     cursor: pointer;
 
     &:hover {

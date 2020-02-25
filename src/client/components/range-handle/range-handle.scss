@@ -20,11 +20,13 @@
 $nub-size: 16px;
 
 .range-handle {
+  @include css-variable('border-color', 'brand');
+  @include css-variable('background-color', 'brand');
   width: $nub-size;
   height: $nub-size;
-  background: $brand;
   border-radius: 50%;
-  border: 2px solid $brand;
+  border-width: 2px;
+  border-style: solid;
   z-index: 2;
 
   &.empty {

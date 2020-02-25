@@ -31,8 +31,8 @@ $folder-box-height: 32px;
 
   .folder {
     @include pin-bottom($folder-box-height);
+    @include css-variable('color', 'brand');
     cursor: pointer;
-    color: $brand;
     padding-left: 12px;
     padding-top: 9px;
     z-index: 2;
@@ -44,7 +44,7 @@ $folder-box-height: 32px;
       margin-top: 2px;
 
       path {
-        fill: $brand;
+        @include css-variable('fill', 'brand');
       }
     }
 

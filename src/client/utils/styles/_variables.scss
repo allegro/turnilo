@@ -18,9 +18,22 @@
 // Fonts -------------------
 
 $brand: hsl(21, 100%, 50%);
+$background-base:         #e1e1e1;
 
 $variables: (
+  background-base: $background-base,
+  background-brand-text: #fff,
+  background-brand: $brand,
+  brand-hover: rgba($brand, 0.12),
+  brand-selected: rgba($brand, 0.14),
   brand: $brand,
+  button-primary-active: darken($brand, 10%),
+  button-primary-hover: darken($brand, 5%),
+  button-secondary-active: rgba($brand, 0.38),
+  button-secondary-hover: rgba($brand, 0.3),
+  button-secondary: rgba($brand, 0.22),
+  date-range-picker-selected: rgba($brand, 0.26),
+  pinboard-icon: darken($background-base, 5%),
 );
 
 $bold: 600;
@@ -49,15 +62,12 @@ $border-medium:           hsl(0, 0%, 73%);
 $border-dark:             hsl(0, 0%, 60%);
 $border-darker:           hsl(0, 0%, 40%);
 
-$background-base:         #f7f7f7;
 $background-light:        hsl(0, 0%, 93%);
 $background-lighter:      hsl(0, 0%, 95%);
 $background-lightest:     hsl(0, 0%, 96%);
 $background-medium:       hsl(0, 0%, 87%);
 $background-dark:         hsl(0, 0%, 55%);
 
-$background-brand:        $brand;
-$background-brand-text:   #fff;
 $background-brand-light:  hsl(21, 100%, 70%);
 
 

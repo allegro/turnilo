@@ -78,15 +78,15 @@
       }
 
       &:hover {
-        background: rgba($brand, 0.12);
+        @include css-variable('background-color', 'brand-hover')
       }
     }
 
     .selected {
-      background: rgba($brand, 0.14);
+      @include css-variable('background', 'brand-selected');
 
       .icon svg path {
-        fill: $brand;
+        @include css-variable('fill', 'brand');
       }
     }
   }

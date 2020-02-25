@@ -60,7 +60,7 @@
   }
 
   &:focus {
-    border-color: $brand;
+    @include css-variable('border-color', 'brand');
   }
 
   &.error {

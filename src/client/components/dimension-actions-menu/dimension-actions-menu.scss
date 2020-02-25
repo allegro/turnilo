@@ -23,12 +23,12 @@ $action-size: 50px;
   padding: 8px;
 
   .action {
+    @include css-variable('color', 'brand');
     display: inline-block;
     width: $action-size;
     height: $action-size;
     cursor: pointer;
     text-align: center;
-    color: $brand;
     font-size: 12px;
 
     svg {
@@ -37,7 +37,7 @@ $action-size: 50px;
       padding-bottom: 4px;
 
       path {
-        fill: $brand;
+        @include css-variable('fill', 'brand');
       }
     }
 

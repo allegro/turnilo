@@ -45,9 +45,9 @@
     .actions {
       button {
         @extend %button-light;
+        @include css-variable('color', 'brand');
         font-size: 12px;
         text-transform: uppercase;
-        color: $brand;
         padding: 6px;
         border-radius: 2px;
 

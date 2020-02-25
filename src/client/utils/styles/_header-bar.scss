@@ -16,8 +16,8 @@
  */
 
 %header-bar {
-  background: $background-brand;
-  color: $background-brand-text;
+  @include css-variable('background', 'background-brand');
+  @include css-variable('color', 'background-brand-text');
   font-size: 16px;
   z-index: 11;
 
@@ -33,7 +33,7 @@
       padding: 11px 5px;
 
       svg path {
-        fill: $background-brand-text;
+        @include css-variable('fill', 'background-brand-text');
       }
     }
 
@@ -51,6 +51,7 @@
     right: 12px;
 
     .text-button {
+      @include css-variable('color', 'background-brand-text');
       display: inline-block;
       font-size: 12px;
       text-transform: uppercase;
@@ -61,7 +62,6 @@
       cursor: pointer;
 
       background-color: transparent;
-      color: $background-brand-text;
     }
 
     .icon-button {
@@ -87,6 +87,7 @@
       }
 
       &::after {
+        @include css-variable('color', 'background-brand-text');
         @extend %menu-cont;
         opacity: 0;
         pointer-events: none;
@@ -95,13 +96,12 @@
         bottom: -24px;
         right: 0;
         padding: 5px;
-        color: $background-brand-text;
         font-size: 12px;
         white-space: nowrap;
       }
 
       svg path {
-        fill: $background-brand-text;
+        @include css-variable('fill', 'background-brand-text');
       }
     }
 
@@ -115,7 +115,7 @@
       }
 
       .cancel {
-        color: $background-brand-text;
+      @include css-variable('color', 'background-brand-text');
         background-color: rgba($white, 0.28);
 
         &:hover {
@@ -124,7 +124,7 @@
       }
 
       .save {
-        color: $brand;
+        @include css-variable('color', 'brand');
         background-color: $white;
 
         &:hover {

@@ -64,7 +64,7 @@
       padding: 6px $padding-compact;
 
       &.no-results {
-        color: $brand;
+        @include css-variable('color', 'brand');
       }
 
       .label {

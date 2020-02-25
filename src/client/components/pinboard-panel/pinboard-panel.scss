@@ -74,7 +74,7 @@
       margin-top: -63px;
 
       path {
-        fill: darken($background-base, 5%);
+        @include css-variable('fill', 'pinboard-icon');
       }
     }
 

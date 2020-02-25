@@ -35,7 +35,7 @@ $title-margin: 6px;
     margin-bottom: 14px;
 
     .documentation-link {
-      color: $brand;
+      @include css-variable('color', 'brand');
       cursor: pointer;
 
       &:hover {

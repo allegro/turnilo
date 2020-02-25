@@ -37,13 +37,13 @@ $bar-height: 6px;
     }
 
     &.selected {
-      background-color: $brand;
+      @include css-variable('background-color', 'brand');
     }
   }
 
   &.inverted {
     .range-bar {
-      &.full { background-color: $brand; }
+      &.full { @include css-variable('background-color', 'brand'); }
       &.selected { background-color: $background-medium; }
     }
   }

@@ -44,7 +44,7 @@
       cursor: pointer;
 
       &:hover {
-        background: rgba($brand, 0.12);
+        @include css-variable('background-color', 'brand-hover')
       }
 
       &.selected {

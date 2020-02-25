@@ -31,9 +31,9 @@
   }
 
   li {
+    @include css-variable('color', 'brand');
     font-size: 14px;
     cursor: pointer;
-    color: $brand;
     margin-bottom: 10px;
 
     &:hover {

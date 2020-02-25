@@ -56,7 +56,7 @@
       color: $text-light;
 
       a {
-        color: $brand;
+        @include css-variable('color', 'brand');
         border-bottom: 1px dashed;
       }
     }
