@@ -40,9 +40,9 @@
 }
 
 %input-top-label {
+  @include css-variable('color', 'text-lighterish');
   text-transform: uppercase;
   font-size: 12px;
-  color: $text-lighterish;
   margin-bottom: 5px;
 }
 

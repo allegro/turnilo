@@ -60,8 +60,8 @@
       line-height: 1.5;
 
       .title {
+        @include css-variable('color', 'text-standard');
         font-size: 16px;
-        color: $text-standard;
         margin-bottom: 5px;
         margin-right: 12px;
         white-space: nowrap;
@@ -71,8 +71,8 @@
       }
 
       .description {
+        @include css-variable('color', 'text-lighterish');
         font-size: 13px;
-        color: $text-lighterish;
         overflow-y: hidden;
 
         .show-more-action {

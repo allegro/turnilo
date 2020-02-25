@@ -36,8 +36,8 @@ $row-height: 30px;
     .filters {
       @include pin-full;
       @include ellipsis;
+      @include css-variable('color', 'text-light');
       height: $control-height;
-      color: $text-light;
 
       .limit,
       .filter {

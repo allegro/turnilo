@@ -71,7 +71,7 @@ $folder-box-height: 32px;
     }
 
     &.not-selected {
-      color: $text-lighterish;
+      @include css-variable('color', 'text-lighterish');
     }
 
     .highlight-controls {

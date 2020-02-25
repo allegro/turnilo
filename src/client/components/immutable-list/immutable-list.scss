@@ -34,10 +34,10 @@
     width: 400px;
 
     .label {
+      @include css-variable('color', 'text-lighter');
       flex: 1 1;
       padding: 6px 0;
 
-      color: $text-lighter;
       font-size: 12px;
       text-transform: uppercase;
     }

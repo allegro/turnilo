@@ -29,7 +29,7 @@
   }
 
   text {
+    @include css-variable('fill', 'text-medium');
     font-size: 12px;
-    fill: $text-medium;
   }
 }

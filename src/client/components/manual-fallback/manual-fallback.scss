@@ -22,8 +22,8 @@
   padding: 100px 30px;
 
   .message {
+    @include css-variable('color', 'text-medium');
     font-size: 20px;
-    color: $text-medium;
   }
 
   ul {

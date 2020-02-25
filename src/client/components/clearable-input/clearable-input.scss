@@ -27,17 +27,17 @@
   }
 
   .clear {
+    @include css-variable('background-color', 'text-lightest');
     position: absolute;
     top: 5px;
     right: 6px;
     cursor: pointer;
-    background: $text-lightest;
     border-radius: 30px;
     width: 18px;
     height: 18px;
 
     &:hover {
-      background: $text-lighter;
+      @include css-variable('background-color', 'text-lighter');
     }
 
     svg {

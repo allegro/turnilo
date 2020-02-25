@@ -36,8 +36,8 @@
 }
 
 .error-view__message {
+  @include css-variable('color', 'text-medium');
   font-size: 14px;
-  color: $text-medium;
 }
 
 .error-view__reload {

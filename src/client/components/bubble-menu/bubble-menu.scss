@@ -30,8 +30,8 @@
   }
 
   .bubble-list-title {
+    @include css-variable('color', 'text-lighterish');
     line-height: 25px;
-    color: $text-lighterish;
   }
 
   ul.bubble-list {
@@ -44,7 +44,7 @@
       cursor: pointer;
 
       &:hover {
-        @include css-variable('background-color', 'brand-hover')
+        @include css-variable('background-color', 'brand-hover');
       }
 
       &.selected {

@@ -22,7 +22,7 @@
 }
 
 .previous-value {
+  @include css-variable('color', 'text-lighterish');
   margin-right: 8px;
-  color: $text-lighterish;
 }
 

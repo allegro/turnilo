@@ -24,8 +24,8 @@ $table-height: 80px;
   .menu-table {
 
     @extend %white-shadow;
+    @include css-variable('color', 'text-standard');
     background: $white;
-    color: $text-standard;
     height: $table-height;
 
     &::after {

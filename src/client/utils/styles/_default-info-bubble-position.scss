@@ -6,12 +6,12 @@
   top: 3px;
 
   svg path {
-    fill: $text-lighterish;
+    @include css-variable('fill', 'text-lighterish');
   }
 
   &:hover {
     svg path {
-      fill: $text-default-color;
+      @include css-variable('fill', 'text-default-color');
     }
   }
 }

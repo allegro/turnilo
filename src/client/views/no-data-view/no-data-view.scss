@@ -39,21 +39,21 @@
         width: 42px;
 
         path {
-          fill: $text-light;
+          @include css-variable('fill', 'text-light');
         }
       }
 
       .label {
+        @include css-variable('color', 'text-light');
         display: inline-block;
         height: 46px;
         padding-top: 13px;
         font-size: 20px;
-        color: $text-light;
       }
     }
 
     .action {
-      color: $text-light;
+      @include css-variable('color', 'text-light');
 
       a {
         @include css-variable('color', 'brand');

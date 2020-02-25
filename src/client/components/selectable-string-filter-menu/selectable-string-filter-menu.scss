@@ -29,9 +29,9 @@
 }
 
 .paste-prompt {
+  @include css-variable('color', 'text-standard');
   flex-grow: 1;
   line-height: 30px;
-  color: $text-standard;
 }
 
 .paste-form {
@@ -45,8 +45,8 @@
   .menu-table {
 
     @extend %white-shadow;
+    @include css-variable('color', 'text-standard');
     background: $white;
-    color: $text-standard;
 
     &::after {
       @include unpin-full(0, -14px, 0, -14px);

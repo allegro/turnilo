@@ -25,12 +25,12 @@
     flex: 1;
 
     svg path {
-      fill: $text-light;
+      @include css-variable('fill', 'text-light');
     }
 
     &:hover {
       svg path {
-        fill: $text-medium;
+        @include css-variable('fill', 'text-medium');
       }
     }
   }

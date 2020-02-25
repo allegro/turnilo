@@ -112,7 +112,7 @@
 }
 
 %button-light {
-  color: $text-standard;
+  @include css-variable('color', 'text-standard');
   background-color: transparent;
   cursor: pointer;
 

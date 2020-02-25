@@ -42,11 +42,11 @@ $action-size: 50px;
     }
 
     &.disabled {
+      @include css-variable('color', 'text-light');
       cursor: default;
-      color: $text-light;
 
       svg path {
-        fill: $text-light;
+        @include css-variable('fill', 'text-light');
       }
     }
 

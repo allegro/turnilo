@@ -79,6 +79,7 @@
     }
 
     .placeholder-message {
+      @include css-variable('color', 'text-lighterish');
       position: absolute;
       top: 50%;
       width: 100%;
@@ -88,7 +89,6 @@
       padding-right: 30px;
       font-style: italic;
       line-height: 20px;
-      color: $text-lighterish;
       text-align: center;
     }
   }

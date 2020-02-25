@@ -26,7 +26,7 @@ body {
   height: 100%;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   font-size: 13px;
-  color: $text-default-color;
+  @include css-variable('color', 'text-default-color');
   overflow: hidden;
 }
 

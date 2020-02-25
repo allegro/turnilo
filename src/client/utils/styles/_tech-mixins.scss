@@ -119,38 +119,38 @@
 // for the shpitz
 @mixin triangle($direction, $base, $altitude, $color) {
   @if $direction == up {
+    @include border-css-variable('border-bottom', $altitude, solid, $color);
     width: 0;
     height: 0;
     border-top: 0;
-    border-bottom: $base solid $color;
     border-left: $altitude solid transparent;
     border-right: $altitude solid transparent;
   }
 
   @if $direction == down {
+    @include border-css-variable('border-top', $altitude, solid, $color);
     width: 0;
     height: 0;
-    border-top: $altitude solid $color;
     border-bottom: 0;
     border-left: $base solid transparent;
     border-right: $base solid transparent;
   }
 
   @if $direction == left {
+    @include border-css-variable('border-right', $altitude, solid, $color);
     width: 0;
     height: 0;
     border-top: $base solid transparent;
     border-bottom: $base solid transparent;
     border-left: 0;
-    border-right: $altitude solid $color;
   }
 
   @if $direction == right {
+    @include border-css-variable('border-left', $altitude, solid, $color);
     width: 0;
     height: 0;
     border-top: $base solid transparent;
     border-bottom: $base solid transparent;
-    border-left: $altitude solid $color;
     border-right: 0;
   }
 }
