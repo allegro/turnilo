@@ -16,14 +16,14 @@
  */
 
 %input-cont {
+  @include border-css-variable('border', 1px, solid, 'border-light');
   background: $white;
-  border: 1px solid $border-light;
   border-radius: $corner;
   cursor: pointer;
   box-shadow: 0 1px 1px 0 hsla(0, 0, 0, 0.1);
 
   &:hover {
-    border-color: $border-medium;
+    @include css-variable('border-color', 'border-medium');
   }
 }
 
@@ -33,8 +33,8 @@
 }
 
 %input-cont-inset {
+  @include border-css-variable('border', 1px, solid, 'border-light');
   background: $white;
-  border: 1px solid $border-light;
   border-radius: $corner;
   box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);
 }

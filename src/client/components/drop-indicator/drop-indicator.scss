@@ -23,7 +23,7 @@ $icon-size: 30px;
 .drop-indicator {
   .white-out {
     @include unpin-full(8px);
-    background: rgba($border-darker, 0.14);
+    @include css-variable('background-color', 'drop-area-indicator');
     border-radius: 4px;
   }
 
@@ -42,7 +42,7 @@ $icon-size: 30px;
     }
 
     path {
-      fill: $border-darker;
+      @include css-variable('fill', 'border-darker')
     }
   }
 }

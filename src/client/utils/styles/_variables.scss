@@ -25,6 +25,11 @@ $variables: (
   background-base: $background-base,
   background-brand-text: #fff,
   background-brand: $brand,
+  border-darker: hsl(0, 0%, 40%),
+  border-extra-light: hsl(0, 0%, 87%),
+  border-light: hsl(0, 0%, 82%),
+  border-medium: hsl(0, 0%, 73%),
+  border-super-light: #e6e6e6,
   brand-hover: rgba($brand, 0.12),
   brand-selected: rgba($brand, 0.14),
   brand: $brand,
@@ -38,6 +43,7 @@ $variables: (
   button-warn: $error,
   dark: #004584,
   date-range-picker-selected: rgba($brand, 0.26),
+  drop-area-indicator: hsla(0, 0%, 40%, 0.14),
   error: $error,
   pinboard-icon: darken($background-base, 5%),
 );
@@ -57,11 +63,6 @@ $negative: #e14040;
 
 // Colors -------------------
 
-$border-extra-light:      hsl(0, 0%, 87%);
-$border-light:            hsl(0, 0%, 82%);
-$border-medium:           hsl(0, 0%, 73%);
-$border-dark:             hsl(0, 0%, 60%);
-$border-darker:           hsl(0, 0%, 40%);
 
 $background-light:        hsl(0, 0%, 93%);
 $background-lighter:      hsl(0, 0%, 95%);

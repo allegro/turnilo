@@ -44,8 +44,8 @@
 
     &::after {
       @include unpin-full(4px, 0, 4px, 0);
+      @include css-variable('background-color', 'drop-area-indicator');
       content: '';
-      background: rgba($border-darker, 0.14);
       border-radius: $corner;
     }
   }

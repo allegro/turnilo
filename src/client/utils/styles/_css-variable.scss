@@ -3,3 +3,8 @@
   #{$prop}: #{map-get($variables, $var)};
   #{$prop}: var(--#{$var});
 }
+
+@mixin border-css-variable($prop, $width, $style, $var) {
+  #{$prop}: #{$width} #{$style} #{map-get($variables, $var)};
+  #{$prop}: #{$width} #{$style} var(--#{$var});
+}

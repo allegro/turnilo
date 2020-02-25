@@ -25,11 +25,13 @@
       border-radius: $corner;
 
       &:hover {
-        box-shadow: inset 0 0 0 1px $border-extra-light;
+        box-shadow: inset 0 0 0 1px map-get($variables, 'border-extra-light');
+        box-shadow: inset 0 0 0 1px var(--border-extra-light);
       }
 
       &.selected {
-        box-shadow: inset 0 0 0 1px $border-light;
+        box-shadow: inset 0 0 0 1px map-get($variables, 'border-light');
+        box-shadow: inset 0 0 0 1px var(--border-light);
       }
     }
   }

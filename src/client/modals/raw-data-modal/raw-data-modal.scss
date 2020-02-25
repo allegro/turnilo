@@ -52,13 +52,13 @@ $row-height: 30px;
     }
 
     .scroller {
+      @include border-css-variable('border', 1px, solid, 'border-extra-light');
       position: absolute;
       top: $control-height;
       bottom: $control-height + $modal-window-padding + $padding;
       left: 0;
       right: 0;
 
-      border: 1px solid $border-extra-light;
       cursor: auto;
 
       .row {
@@ -70,9 +70,9 @@ $row-height: 30px;
       .header-cell,
       .cell {
         @include ellipsis;
+        @include border-css-variable('border-right', 1px, solid, 'border-extra-light');
         display: inline-block;
         height: 100%;
-        border-right: 1px solid $border-extra-light;
         padding-left: 6px;
         padding-right: 6px;
         padding-top: 8px;
@@ -83,9 +83,9 @@ $row-height: 30px;
       }
 
       .header-cell {
+        @include border-css-variable('border-bottom', 1px, solid, 'border-extra-light');
         background: $background-lightest;
         height: $header-height;
-        border-bottom: 1px solid $border-extra-light;
 
         .title-wrap {
           @include ellipsis;

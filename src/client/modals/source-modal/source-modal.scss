@@ -33,13 +33,14 @@ $row-height: 30px;
     overflow: hidden;
 
     .source-modal__source {
+      @include border-css-variable('border', 1px, solid, 'border-extra-light');
+
       position: absolute;
       top: $control-height;
       bottom: $control-height + $modal-window-padding + $padding;
       left: 0;
       right: 0;
 
-      border: 1px solid $border-extra-light;
       cursor: auto;
 
       width: 100%;
