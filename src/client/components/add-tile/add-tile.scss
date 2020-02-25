@@ -72,7 +72,7 @@
       }
 
       &:hover {
-        background: $hover;
+        @include css-variable('background-color', 'hover');
       }
     }
   }

@@ -28,11 +28,11 @@
   }
 
   &:hover {
-    background: $hover;
+    @include css-variable('background-color', 'hover');
   }
 
   &.selected {
-    background: $highlight;
+    @include css-variable('background-color', 'highlight');
   }
 
   .icon {

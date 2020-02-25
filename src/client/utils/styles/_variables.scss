@@ -20,9 +20,11 @@
 $brand: hsl(21, 100%, 50%);
 $background-base: #e1e1e1;
 $error: hsla(0, 72%, 59%, 1.00);
+$hover: hsl(21, 100%, 70%);
 
 $variables: (
   background-base: $background-base,
+  background-brand-light: hsl(21, 100%, 70%),
   background-brand-text: #fff,
   background-brand: $brand,
   background-dark: hsl(0, 0%, 55%),
@@ -50,6 +52,9 @@ $variables: (
   date-range-picker-selected: rgba($brand, 0.26),
   drop-area-indicator: hsla(0, 0%, 40%, 0.14),
   error: $error,
+  highlight: darken($hover, 10%),
+  highlight-border: darken($hover, 15%),
+  hover: hsl(21, 100%, 70%),
   pinboard-icon: darken($background-base, 5%),
   text-default-color: #444,
   text-light: #999,
@@ -78,16 +83,11 @@ $negative: #e14040;
 
 
 
-$background-brand-light:  hsl(21, 100%, 70%);
 
 $icon-light:              #bbb;
 $icon-hover:              #888;
 
 // other
-
-$hover:                   $background-brand-light;
-$highlight:               darken($hover, 10%);
-$highlight-border:        darken($hover, 15%);
 
 $input-height:            30px;
 $input-height-mini:       28px;

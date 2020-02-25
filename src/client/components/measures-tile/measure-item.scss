@@ -27,7 +27,7 @@
   white-space: nowrap;
 
   &:hover {
-    background: $hover;
+    @include css-variable('background-color', 'hover');
   }
 }
 

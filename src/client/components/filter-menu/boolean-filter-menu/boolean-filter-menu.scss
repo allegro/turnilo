@@ -56,7 +56,7 @@ $table-height: 80px;
       }
 
       &:hover {
-        background: $hover;
+        @include css-variable('background-color', 'hover');
       }
 
       &:last-child {

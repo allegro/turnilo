@@ -54,7 +54,7 @@ $folder-box-height: 32px;
     }
 
     &:hover {
-      background: $hover;
+      @include css-variable('background-color', 'hover');
     }
   }
 
@@ -63,7 +63,7 @@ $folder-box-height: 32px;
     cursor: pointer;
 
     &:hover {
-      background: $hover;
+      @include css-variable('background-color', 'hover');
     }
 
     &:last-child {

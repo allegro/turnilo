@@ -27,15 +27,15 @@
   overflow: hidden;
 
   .highlighter {
+    @include border-css-variable(border, 1px, solid, 'hover');
     right: 0;
     height: $row-height + 1;
     margin-top: -1px;
-    border: 1px solid $hover;
 
     &::after {
       @include unpin-full(-1px);
+      @include border-css-variable(border, 1px, dashed, highlight-border);
       content: '';
-      border: 1px dashed $highlight-border;
     }
   }
 }

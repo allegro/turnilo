@@ -53,13 +53,13 @@ $action-width: 58px;
 
     &:not(.disabled):hover {
       &::before {
+        @include css-variable('background-color', 'hover');
         content: '';
         position: absolute;
         top: 3px;
         bottom: 3px;
         left: 3px;
         right: 3px;
-        background: $hover;
       }
     }
   }

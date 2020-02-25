@@ -24,7 +24,7 @@
   left: 0;
 
   &.highlight {
-    background: $hover;
+    @include css-variable('background-color', 'hover');
   }
 
   &.dimmed {

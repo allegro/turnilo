@@ -76,7 +76,7 @@
         overflow-y: hidden;
 
         .show-more-action {
-          color: $background-brand-light;
+          @include css-variable('color', 'background-brand-light');
           cursor: pointer;
 
           &:hover {

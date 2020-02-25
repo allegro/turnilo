@@ -117,10 +117,10 @@
   cursor: pointer;
 
   &:hover {
-    background-color: $hover;
+    @include css-variable('background-color', 'hover');
   }
 
   &.active {
-    background-color: $highlight;
+    @include css-variable('background-color', 'highlight');
   }
 }

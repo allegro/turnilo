@@ -40,8 +40,8 @@
     }
 
     .hover-guide {
+      @include css-variable('stroke', 'background-brand-light');
       stroke-width: 1;
-      stroke: $background-brand-light;
     }
 
     .highlighter {

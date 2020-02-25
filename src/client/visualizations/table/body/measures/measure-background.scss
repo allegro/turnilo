@@ -25,17 +25,17 @@
   bottom: 0;
 
   .measure-background {
+    @include css-variable('background-color', 'background-brand-light');
+    @include border-css-variable(border-top, 1px, solid, highlight-border);
+    @include border-css-variable(border-bottom, 1px, solid, highlight-border);
     width: 0;
     height: 100%;
 
-    background-color: $background-brand-light;
-    border-top: 1px solid $highlight-border;
-    border-bottom: 1px solid $highlight-border;
 
     &.highlight {
-      background-color: $highlight;
-      border-top: 1px solid $highlight-border;
-      border-bottom: 1px solid $highlight-border;
+      @include css-variable('background-color', 'highlight');
+      @include border-css-variable(border-top, 1px, solid, highlight-border);
+      @include border-css-variable(border-bottom, 1px, solid, highlight-border);
     }
   }
 }

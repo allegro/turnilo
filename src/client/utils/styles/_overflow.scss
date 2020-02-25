@@ -42,7 +42,7 @@
     height: 29px;
 
     &.from-highlight {
-      border: 1px dashed $highlight-border;
+      @include border-css-variable(border, 1px, dashed, highlight-border);
       background: rgba($item-dimension, 0.5);
     }
   }
