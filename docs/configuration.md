@@ -749,6 +749,28 @@ customization:
     return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
 ```
 
+### CSS Overrides
+
+Turnilo allows you add some custom CSS to the application. This is especially usefull by changing CSS variables
+to add a custom theme to turnilo.
+
+For example:
+
+```yaml
+customization:
+  cssOverrides: >
+    :root {
+      --brand: #829aa3;
+      --item-dimension: #acbcc2;
+      --item-dimension-text: white;
+      --item-measure: #5bcbb7;
+      --item-measure-text: white;
+      --background-brand: white;
+      --background-brand-text: #999;
+      --background-base: #f7f7f7;
+    }
+```
+
 ### External links
 
 Turnilo supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.
