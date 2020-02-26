@@ -15,7 +15,18 @@
  * limitations under the License.
  */
 
-// Fonts -------------------
+// Base Colors
+
+$white: #fff;
+$red: #f00;
+$black: #000;
+$gray: #ccc;
+$danger: #e24c4c;
+
+$positive: #08b157;
+$negative: #e14040;
+
+// Theme Colors
 
 $brand: hsl(21, 100%, 50%);
 $background-base: #e1e1e1;
@@ -81,20 +92,10 @@ $variables: (
   text-standard: $text-standard,
 );
 
+// Fonts -------------------
+
+
 $bold: 600;
-
-// Base Colors
-
-$white: #fff;
-$red: #f00;
-$black: #000;
-$gray: #ccc;
-$danger: #e24c4c;
-
-$positive: #08b157;
-$negative: #e14040;
-
-// Colors -------------------
 
 // other
 
