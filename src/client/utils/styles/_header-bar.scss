@@ -87,8 +87,8 @@
       }
 
       &::after {
-        @include css-variable('color', 'background-brand-text');
         @extend %menu-cont;
+        @include css-variable('color', 'background-brand-text');
         opacity: 0;
         pointer-events: none;
         position: absolute;
@@ -115,7 +115,7 @@
       }
 
       .cancel {
-      @include css-variable('color', 'background-brand-text');
+        @include css-variable('color', 'background-brand-text');
         background-color: rgba($white, 0.28);
 
         &:hover {

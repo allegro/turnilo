@@ -23,10 +23,10 @@
 
 html,
 body {
+  @include css-variable('color', 'text-default-color');
   height: 100%;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   font-size: 13px;
-  @include css-variable('color', 'text-default-color');
   overflow: hidden;
 }
 

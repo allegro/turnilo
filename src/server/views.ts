@@ -67,7 +67,7 @@ export function mainLayout(options: ViewOptions): string {
   let cssOverrides: string | undefined;
 
   if (appSettings.customization.cssOverrides) {
-    cssOverrides = `<style>${appSettings.customization.cssOverrides}</style>`
+    cssOverrides = `<style>${appSettings.customization.cssOverrides}</style>`;
   }
 
   return layout(options, `<div class="app-container"></div>
