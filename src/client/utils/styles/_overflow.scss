@@ -40,10 +40,5 @@
     left: 8px;
     top: 0; // It gets vertical position from the JS
     height: 29px;
-
-    &.from-highlight {
-      @include border-css-variable(border, 1px, dashed, highlight-border);
-      background: rgba($item-dimension, 0.5);
-    }
   }
 }
