@@ -63,9 +63,17 @@ ${content}
 
 export function mainLayout(options: ViewOptions): string {
   const { version, appSettings, timekeeper } = options;
+
+  let cssOverrides: string | undefined;
+
+  if (appSettings.customization.cssOverrides) {
+    cssOverrides = `<style>${appSettings.customization.cssOverrides}</style>`
+  }
+
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, appSettings, timekeeper })};</script>
-<script charset="UTF-8" src="main.js?v=${version}"></script>`
+<script charset="UTF-8" src="main.js?v=${version}"></script>
+${cssOverrides}`
   );
 }
 

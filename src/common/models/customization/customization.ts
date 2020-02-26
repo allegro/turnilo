@@ -30,6 +30,7 @@ export interface CustomizationValue {
   logoutHref?: string;
   urlShortener?: UrlShortener;
   sentryDSN?: string;
+  cssOverrides?: string;
 }
 
 export interface CustomizationJS {
@@ -41,6 +42,7 @@ export interface CustomizationJS {
   logoutHref?: string;
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
+  cssOverrides?: string;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -79,7 +81,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
       logoutHref: parameters.logoutHref,
-      sentryDSN: parameters.sentryDSN
+      sentryDSN: parameters.sentryDSN,
+      cssOverrides: parameters.cssOverrides
     };
 
     var paramViewsJS = parameters.externalViews;
@@ -111,6 +114,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public logoutHref: string;
   public urlShortener: UrlShortener;
   public sentryDSN: string;
+  public cssOverrides?: string;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -121,6 +125,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     this.logoutHref = parameters.logoutHref;
     if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
     if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
+    if (parameters.cssOverrides) this.cssOverrides = parameters.cssOverrides;
   }
 
   public valueOf(): CustomizationValue {
@@ -132,7 +137,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       timezones: this.timezones,
       urlShortener: this.urlShortener,
       logoutHref: this.logoutHref,
-      sentryDSN: this.sentryDSN
+      sentryDSN: this.sentryDSN,
+      cssOverrides: this.cssOverrides
     };
   }
 
@@ -152,6 +158,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       js.urlShortener = this.urlShortener.toJS();
     }
     if (this.logoutHref) js.logoutHref = this.logoutHref;
+    if (this.cssOverrides) js.cssOverrides = this.cssOverrides;
+
     return js;
   }
 
@@ -173,7 +181,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       immutableArraysEqual(this.externalViews, other.externalViews) &&
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.sentryDSN === other.sentryDSN &&
-      this.logoutHref === other.logoutHref;
+      this.logoutHref === other.logoutHref &&
+      this.cssOverrides === other.cssOverrides;
   }
 
   public getTitle(version: string): string {
