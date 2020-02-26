@@ -54,7 +54,7 @@
     flex-shrink: 0;
 
     path {
-      fill: $icon-light;
+      @include css-variable(fill, icon-light);
     }
   }
 }

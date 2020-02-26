@@ -52,9 +52,11 @@ $variables: (
   date-range-picker-selected: rgba($brand, 0.26),
   drop-area-indicator: hsla(0, 0%, 40%, 0.14),
   error: $error,
-  highlight: darken($hover, 10%),
   highlight-border: darken($hover, 15%),
+  highlight: darken($hover, 10%),
   hover: hsl(21, 100%, 70%),
+  icon-hover: #888,
+  icon-light: #bbb,
   pinboard-icon: darken($background-base, 5%),
   text-default-color: #444,
   text-light: #999,
@@ -80,12 +82,6 @@ $positive: #08b157;
 $negative: #e14040;
 
 // Colors -------------------
-
-
-
-
-$icon-light:              #bbb;
-$icon-hover:              #888;
 
 // other
 
