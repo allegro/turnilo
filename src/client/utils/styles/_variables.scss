@@ -24,6 +24,7 @@ $hover: hsl(21, 100%, 70%);
 $text-standard: hsl(0, 0%, 13%);
 $item-dimension: hsl(21, 100%, 80%);
 $item-measure: hsl(205, 60%, 77%);
+$main-time-line: rgb(202,	236,	230);
 
 $variables: (
   background-base: $background-base,
@@ -55,6 +56,7 @@ $variables: (
   date-range-picker-selected: rgba($brand, 0.26),
   drop-area-indicator: hsla(0, 0%, 40%, 0.14),
   error: $error,
+  grid-line-color: hsl(0, 0%, 92%),
   highlight-border: darken($hover, 15%),
   highlight: darken($hover, 10%),
   hover: hsl(21, 100%, 70%),
@@ -66,6 +68,8 @@ $variables: (
   item-measure-hover: darken($item-measure, 6%),
   item-measure-text: $text-standard,
   item-measure: $item-measure,
+  main-time-area: rgba($main-time-line, 0.14),
+  main-time-line: $main-time-line,
   pinboard-icon: darken($background-base, 5%),
   text-default-color: #444,
   text-light: #999,
@@ -98,11 +102,6 @@ $input-height:            30px;
 $input-height-mini:       28px;
 $form-spacing-compact:    14px;
 
-// Vis
-
-$main-time-line:          rgb(202,	236,	230);
-$main-time-area:          rgba($main-time-line, 0.14);
-$grid-line-color:         hsl(0, 0%, 92%);
 
 // Transitions ----------------
 
