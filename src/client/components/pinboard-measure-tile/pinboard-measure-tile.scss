@@ -23,7 +23,7 @@
   margin-bottom: 1px;
 
   .title {
-    @include css-variable('color', 'text-light');
+    @include css-variable(color, text-light);
     margin-left: $padding-compact;
     margin-top: 12px;
     font-size: 12px;
@@ -40,7 +40,7 @@
 
     .selected-item {
       @include ellipsis;
-      @include css-variable('color', 'text-light');
+      @include css-variable(color, text-light);
       line-height: 19px;
       padding: 2px 22px 2px 7px;
       border: 1px solid transparent;
@@ -54,17 +54,17 @@
         bottom: 6px;
 
         path {
-          @include css-variable('fill', 'text-lighter');
+          @include css-variable(fill, text-lighter);
         }
       }
 
       &:hover {
         @extend %input-cont;
-        @include css-variable('color', 'text-standard');
+        @include css-variable(color, text-standard);
 
         .caret-icon {
           path {
-            @include css-variable('fill', 'text-light');
+            @include css-variable(fill, text-light);
           }
         }
       }

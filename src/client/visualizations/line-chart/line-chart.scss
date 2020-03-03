@@ -40,7 +40,7 @@
     }
 
     .hover-guide {
-      @include css-variable('stroke', 'background-brand-light');
+      @include css-variable(stroke, background-brand-light);
       stroke-width: 1;
     }
 

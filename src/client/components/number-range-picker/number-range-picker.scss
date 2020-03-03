@@ -31,20 +31,20 @@ $bar-height: 6px;
     height: $bar-height;
 
     &.full {
-      @include css-variable('background-color', 'background-medium');
+      @include css-variable(background-color, background-medium);
       left: $num-size / 2;
       right: $num-size / 2;
     }
 
     &.selected {
-      @include css-variable('background-color', 'brand');
+      @include css-variable(background-color, brand);
     }
   }
 
   &.inverted {
     .range-bar {
-      &.full { @include css-variable('background-color', 'brand'); }
-      &.selected { @include css-variable('background-color', 'background-medium'); }
+      &.full { @include css-variable(background-color, brand); }
+      &.selected { @include css-variable(background-color, background-medium); }
     }
   }
 

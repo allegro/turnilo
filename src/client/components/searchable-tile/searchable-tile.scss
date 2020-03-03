@@ -79,7 +79,7 @@ $search-box-height: 26px;
   }
 
   .message {
-    @include css-variable('color', 'text-light');
+    @include css-variable(color, text-light);
     padding: 4px 10px;
     font-style: italic;
   }

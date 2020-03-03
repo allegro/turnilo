@@ -33,7 +33,7 @@
     }
 
     &.dragged {
-      @include css-variable('background-color', 'background-lightest');
+      @include css-variable(background-color, background-lightest);
 
       &:hover .drag-handle {
         opacity: 0;
@@ -41,7 +41,7 @@
     }
 
     &.drop-before::after {
-      @include css-variable('border-color', 'brand');
+      @include css-variable(border-color, brand);
       content: '';
       position: absolute;
       top: -1px;
@@ -54,7 +54,7 @@
     }
 
     &.drop-after::after {
-      @include css-variable('border-bottom-color', 'brand');
+      @include css-variable(border-bottom-color, brand);
       content: '';
       position: absolute;
       bottom: -1px;
@@ -72,7 +72,7 @@
       margin: 6px;
 
       path {
-        @include css-variable('fill', 'brand');
+        @include css-variable(fill, brand);
       }
     }
 
@@ -84,7 +84,7 @@
       opacity: 0;
 
       .svg-icon path {
-        @include css-variable('fill', 'text-lightest');
+        @include css-variable(fill, text-lightest);
       }
     }
 
@@ -100,13 +100,13 @@
       }
 
       .title {
-        @include css-variable('color', 'text-medium');
+        @include css-variable(color, text-medium);
         line-height: 16px;
         margin-bottom: 2px;
       }
 
       .description {
-        @include css-variable('color', 'text-lighter');
+        @include css-variable(color, text-lighter);
         font-size: 12px;
         line-height: 14px;
       }

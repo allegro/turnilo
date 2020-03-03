@@ -44,7 +44,7 @@
 
     &::after {
       @include unpin-full(4px, 0, 4px, 0);
-      @include css-variable('background-color', 'drop-area-indicator');
+      @include css-variable(background-color, drop-area-indicator);
       content: '';
       border-radius: $corner;
     }
@@ -74,12 +74,12 @@
       margin-top: -63px;
 
       path {
-        @include css-variable('fill', 'pinboard-icon');
+        @include css-variable(fill, pinboard-icon);
       }
     }
 
     .placeholder-message {
-      @include css-variable('color', 'text-lighterish');
+      @include css-variable(color, text-lighterish);
       position: absolute;
       top: 50%;
       width: 100%;

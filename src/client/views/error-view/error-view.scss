@@ -29,19 +29,19 @@
 }
 
 .error-view__title {
-  @include css-variable('color', 'brand');
+  @include css-variable(color, brand);
   margin-bottom: 12px;
   font-size: 20px;
   text-align: center;
 }
 
 .error-view__message {
-  @include css-variable('color', 'text-medium');
+  @include css-variable(color, text-medium);
   font-size: 14px;
 }
 
 .error-view__reload {
-  @include css-variable('color', 'brand');
+  @include css-variable(color, brand);
   margin-top: 24px;
   font-size: 18px;
   cursor: pointer;

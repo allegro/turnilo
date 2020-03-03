@@ -23,7 +23,7 @@ $action-size: 50px;
   padding: 8px;
 
   .action {
-    @include css-variable('color', 'brand');
+    @include css-variable(color, brand);
     display: inline-block;
     width: $action-size;
     height: $action-size;
@@ -37,22 +37,22 @@ $action-size: 50px;
       padding-bottom: 4px;
 
       path {
-        @include css-variable('fill', 'brand');
+        @include css-variable(fill, brand);
       }
     }
 
     &.disabled {
-      @include css-variable('color', 'text-light');
+      @include css-variable(color, text-light);
       cursor: default;
 
       svg path {
-        @include css-variable('fill', 'text-light');
+        @include css-variable(fill, text-light);
       }
     }
 
     &:not(.disabled):hover {
       &::before {
-        @include css-variable('background-color', 'hover');
+        @include css-variable(background-color, hover);
         content: '';
         position: absolute;
         top: 3px;

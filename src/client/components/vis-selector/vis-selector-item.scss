@@ -23,7 +23,7 @@
   cursor: pointer;
 
   .vis-title {
-    @include css-variable('color', 'text-medium');
+    @include css-variable(color, text-medium);
     position: absolute;
     left: 0;
     right: 0;

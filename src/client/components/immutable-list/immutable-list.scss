@@ -34,7 +34,7 @@
     width: 400px;
 
     .label {
-      @include css-variable('color', 'text-lighter');
+      @include css-variable(color, text-lighter);
       flex: 1 1;
       padding: 6px 0;
 
@@ -45,7 +45,7 @@
     .actions {
       button {
         @extend %button-light;
-        @include css-variable('color', 'brand');
+        @include css-variable(color, brand);
         font-size: 12px;
         text-transform: uppercase;
         padding: 6px;

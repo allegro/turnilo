@@ -49,7 +49,7 @@
       opacity: 0.6;
 
       path {
-        @include css-variable('fill', 'brand');
+        @include css-variable(fill, brand);
       }
     }
 
@@ -60,7 +60,7 @@
       line-height: 1.5;
 
       .title {
-        @include css-variable('color', 'text-standard');
+        @include css-variable(color, text-standard);
         font-size: 16px;
         margin-bottom: 5px;
         margin-right: 12px;
@@ -71,16 +71,16 @@
       }
 
       .description {
-        @include css-variable('color', 'text-lighterish');
+        @include css-variable(color, text-lighterish);
         font-size: 13px;
         overflow-y: hidden;
 
         .show-more-action {
-          @include css-variable('color', 'background-brand-light');
+          @include css-variable(color, background-brand-light);
           cursor: pointer;
 
           &:hover {
-            @include css-variable('color', 'brand');
+            @include css-variable(color, brand);
           }
         }
       }

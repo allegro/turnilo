@@ -19,7 +19,7 @@
 .markdown-content {
 
   a {
-    @include css-variable('color', 'brand');
+    @include css-variable(color, brand);
     cursor: pointer;
   }
 

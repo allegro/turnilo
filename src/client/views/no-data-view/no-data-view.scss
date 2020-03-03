@@ -39,12 +39,12 @@
         width: 42px;
 
         path {
-          @include css-variable('fill', 'text-light');
+          @include css-variable(fill, text-light);
         }
       }
 
       .label {
-        @include css-variable('color', 'text-light');
+        @include css-variable(color, text-light);
         display: inline-block;
         height: 46px;
         padding-top: 13px;
@@ -53,10 +53,10 @@
     }
 
     .action {
-      @include css-variable('color', 'text-light');
+      @include css-variable(color, text-light);
 
       a {
-        @include css-variable('color', 'brand');
+        @include css-variable(color, brand);
         border-bottom: 1px dashed;
       }
     }

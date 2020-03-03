@@ -22,7 +22,7 @@ $loader-size: 30px;
 .loader {
   svg {
     @include center($loader-size, $loader-size);
-    @include css-variable('fill', 'brand');
+    @include css-variable(fill, brand);
 
     animation-name: loader-appears;
     animation-duration: .3s;

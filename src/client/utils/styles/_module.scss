@@ -23,7 +23,7 @@
 %module-h-title {
   .title {
     @include pin-left($bar-title-width);
-    @include css-variable('color', 'text-light');
+    @include css-variable(color, text-light);
     padding: 12px 5px 0 0;
     font-size: 12px;
     text-transform: uppercase;

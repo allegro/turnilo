@@ -46,7 +46,7 @@
 
 %button-primary {
   @extend %button-base;
-  @include css-variable('background-color', 'brand');
+  @include css-variable(background-color, brand);
   color: $white;
 
   svg path {
@@ -54,12 +54,12 @@
   }
 
   &:hover {
-    @include css-variable('background-color', 'button-primary-hover');
+    @include css-variable(background-color, button-primary-hover);
   }
 
   &.active,
   &:active {
-    @include css-variable('background-color', 'button-primary-active');
+    @include css-variable(background-color, button-primary-active);
     color: darken($white, 12%);
 
     svg path {
@@ -70,26 +70,26 @@
 
 %button-secondary {
   @extend %button-base;
-  @include css-variable('color', 'brand');
-  @include css-variable('background-color', 'button-secondary');
+  @include css-variable(color, brand);
+  @include css-variable(background-color, button-secondary);
 
   svg path {
-    @include css-variable('fill', 'brand');
+    @include css-variable(fill, brand);
   }
 
   &:hover {
-    @include css-variable('background-color', 'button-secondary-hover');
+    @include css-variable(background-color, button-secondary-hover);
   }
 
   &.active,
   &:active {
-    @include css-variable('background-color', 'button-secondary-active');
+    @include css-variable(background-color, button-secondary-active);
   }
 }
 
 %button-warn {
   @extend %button-base;
-  @include css-variable('background-color', 'button-warn');
+  @include css-variable(background-color, button-warn);
   color: $white;
 
   svg path {
@@ -97,12 +97,12 @@
   }
 
   &:hover {
-    @include css-variable('background-color', 'button-warn-hover');
+    @include css-variable(background-color, button-warn-hover);
   }
 
   &.active,
   &:active {
-    @include css-variable('background-color', 'button-warn-active');
+    @include css-variable(background-color, button-warn-active);
     color: darken($white, 12%);
 
     svg path {
@@ -112,15 +112,15 @@
 }
 
 %button-light {
-  @include css-variable('color', 'text-standard');
+  @include css-variable(color, text-standard);
   background-color: transparent;
   cursor: pointer;
 
   &:hover {
-    @include css-variable('background-color', 'hover');
+    @include css-variable(background-color, hover);
   }
 
   &.active {
-    @include css-variable('background-color', 'highlight');
+    @include css-variable(background-color, highlight);
   }
 }

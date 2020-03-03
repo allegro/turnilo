@@ -23,7 +23,7 @@ $arrow-width: 16px;
   pointer-events: none;
 
   .drag-ghost-element {
-    @include css-variable('background-color', 'drop-area-indicator');
+    @include css-variable(background-color, drop-area-indicator);
 
     position: absolute;
     // left: 0; It gets left from the JS

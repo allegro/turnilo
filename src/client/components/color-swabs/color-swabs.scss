@@ -42,7 +42,7 @@
   }
 
   .color-previous {
-    @include css-variable('color', 'text-lighterish');
+    @include css-variable(color, text-lighterish);
   }
 
   .color-delta {

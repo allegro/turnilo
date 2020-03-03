@@ -25,7 +25,7 @@
   &:hover {
     .caret-icon {
       path {
-        @include css-variable('fill', 'text-light');
+        @include css-variable(fill, text-light);
       }
     }
   }
@@ -51,7 +51,7 @@
     bottom: 9px;
 
     path {
-      @include css-variable('fill', 'text-lighterish');
+      @include css-variable(fill, text-lighterish);
     }
   }
 
@@ -80,11 +80,11 @@
     cursor: pointer;
 
     &.selected {
-      @include css-variable('background-color', 'background-light');
+      @include css-variable(background-color, background-light);
     }
 
     &:hover {
-      @include css-variable('background-color', 'hover');
+      @include css-variable(background-color, hover);
     }
   }
 }

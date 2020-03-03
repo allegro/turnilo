@@ -44,8 +44,8 @@ $resize-handle-size: 12px;
   }
 
   .resize-handle {
-    @include css-variable('border-color', 'background-base');
-    @include css-variable('background-color', 'background-lightest');
+    @include css-variable(border-color, background-base);
+    @include css-variable(background-color, background-lightest);
     border-width: 1px;
     border-style: solid;
     border-left-width: 0;

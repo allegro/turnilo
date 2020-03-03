@@ -24,12 +24,12 @@
   padding: 4px;
 
   svg path {
-    @include css-variable('fill', 'background-dark');
+    @include css-variable(fill, background-dark);
   }
 }
 
 .paste-prompt {
-  @include css-variable('color', 'text-standard');
+  @include css-variable(color, text-standard);
   flex-grow: 1;
   line-height: 30px;
 }
@@ -45,7 +45,7 @@
   .menu-table {
 
     @extend %white-shadow;
-    @include css-variable('color', 'text-standard');
+    @include css-variable(color, text-standard);
     background: $white;
 
     &::after {

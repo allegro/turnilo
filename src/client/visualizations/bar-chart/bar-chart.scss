@@ -37,7 +37,7 @@
     position: absolute;
 
     .selection-highlight {
-      @include css-variable('border-color', 'brand');
+      @include css-variable(border-color, brand);
       pointer-events: none;
       border-width: 1px;
       border-style: dashed;
@@ -117,7 +117,7 @@
         }
 
         > rect.background {
-          @include css-variable('fill', 'brand');
+          @include css-variable(fill, brand);
           pointer-events: none;
         }
 

@@ -29,13 +29,13 @@ $title-margin: 6px;
   }
 
   .format-hint {
-    @include css-variable('color', 'text-light');
+    @include css-variable(color, text-light);
     padding: 0 3px;
     font-style: italic;
     margin-bottom: 14px;
 
     .documentation-link {
-      @include css-variable('color', 'brand');
+      @include css-variable(color, brand);
       cursor: pointer;
 
       &:hover {

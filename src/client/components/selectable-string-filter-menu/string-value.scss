@@ -24,7 +24,7 @@ $checkbox-width: 20px;
   padding: 0 $padding-compact;
 
   &:hover {
-    @include css-variable('background-color', 'hover');
+    @include css-variable(background-color, hover);
   }
 
   &:last-child {

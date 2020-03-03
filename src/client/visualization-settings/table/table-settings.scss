@@ -21,7 +21,7 @@
   cursor: pointer;
 
   .settings-label {
-    @include css-variable('color', 'text-medium');
+    @include css-variable(color, text-medium);
     display: inline-block;
     vertical-align: top;
     padding-top: 4px;

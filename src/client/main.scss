@@ -23,7 +23,7 @@
 
 html,
 body {
-  @include css-variable('color', 'text-default-color');
+  @include css-variable(color, text-default-color);
   height: 100%;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   font-size: 13px;
@@ -49,7 +49,7 @@ svg {
 }
 
 .drag-ghost {
-  @include css-variable('background-color', 'dark');
+  @include css-variable(background-color, dark);
   // Do not change these position things
   position: absolute;
   top: 0;

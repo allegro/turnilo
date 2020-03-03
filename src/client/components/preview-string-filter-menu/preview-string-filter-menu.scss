@@ -37,7 +37,7 @@
   .menu-table {
 
     @extend %white-shadow;
-    @include css-variable('color', 'text-standard');
+    @include css-variable(color, text-standard);
     background: $white;
 
     &::after {

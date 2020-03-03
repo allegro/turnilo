@@ -84,7 +84,7 @@ $control-panel-height: 3 * $control-tile-height + 2px;
       }
 
       .dimension-panel-toggle, .pinboard-toggle {
-        @include css-variable('background-color', 'background-lightest');
+        @include css-variable(background-color, background-lightest);
         display: flex;
         align-items: center;
         height: 100%;
@@ -94,7 +94,7 @@ $control-panel-height: 3 * $control-tile-height + 2px;
           width: $toggle-icon-width;
 
           path {
-            @include css-variable('fill', 'background-dark');
+            @include css-variable(fill, background-dark);
           }
         }
       }

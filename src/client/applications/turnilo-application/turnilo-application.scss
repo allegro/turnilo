@@ -18,7 +18,7 @@
 @import '../../imports';
 
 .turnilo-application {
-  @include css-variable('background-color', 'background-base');
+  @include css-variable(background-color, background-base);
   position: absolute;
   top: 0;
   left: 0;

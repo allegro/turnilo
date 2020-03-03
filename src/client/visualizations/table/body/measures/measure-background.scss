@@ -25,7 +25,7 @@
   bottom: 0;
 
   .measure-background {
-    @include css-variable('background-color', 'background-brand-light');
+    @include css-variable(background-color, background-brand-light);
     @include border-css-variable(border-top, 1px, solid, highlight-border);
     @include border-css-variable(border-bottom, 1px, solid, highlight-border);
     width: 0;
@@ -33,7 +33,7 @@
 
 
     &.highlight {
-      @include css-variable('background-color', 'highlight');
+      @include css-variable(background-color, highlight);
       @include border-css-variable(border-top, 1px, solid, highlight-border);
       @include border-css-variable(border-bottom, 1px, solid, highlight-border);
     }

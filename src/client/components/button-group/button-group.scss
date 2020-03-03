@@ -59,7 +59,7 @@ $title-margin: 6px;
       }
 
       &:not(.selected):not(:hover) {
-        @include css-variable('color', 'text-light');
+        @include css-variable(color, text-light);
       }
     }
   }
