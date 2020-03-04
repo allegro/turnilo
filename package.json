@@ -82,7 +82,7 @@
     "nopt": "4.0.1",
     "numbro": "2.1.0",
     "on-finished": "2.3.0",
-    "plywood": "github:remerge/plywood#3f483292a0d63f276ff95d4c99810440bc70171f",
+    "plywood": "github:remerge/plywood#5e1a73224411e36f3df245599ee1661a0f9ca2dd",
     "plywood-base-api": "0.2.8",
     "plywood-druid-requester": "2.6.1",
     "prom-client": "11.3.0",
