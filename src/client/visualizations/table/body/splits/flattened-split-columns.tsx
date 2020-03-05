@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
+import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { PseudoDatum } from "plywood";
 import * as React from "react";
 import { Split } from "../../../../../common/models/split/split";
+import { formatSegment } from "../../../../../common/utils/formatter/formatter";
 import "./flattened-split-columns.scss";
 
 interface FlattenedSplitColumnsProps {
   splits: List<Split>;
   datum: PseudoDatum;
+  timezone: Timezone;
 }
 
-export const FlattenedSplitColumns: React.SFC<FlattenedSplitColumnsProps> = ({ splits, datum }) =>
+export const FlattenedSplitColumns: React.SFC<FlattenedSplitColumnsProps> = ({ splits, datum, timezone }) =>
   <React.Fragment>
     {splits.map(split => {
       const { reference } = split;
       const value = datum[reference];
-      return <div key={reference} className="flattened-split-value">{String(value)}</div>;
+      return <div key={reference} className="flattened-split-value">{formatSegment(value, timezone)}</div>;
     })}
   </React.Fragment>;

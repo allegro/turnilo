@@ -34,7 +34,7 @@ interface FlattenedSplitsProps {
 
 export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
   const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
-  const { splits: { splits } } = essence;
+  const { splits: { splits }, timezone } = essence;
 
   return <div className="flattened-splits-rows">
     <VisibleRows
@@ -52,7 +52,7 @@ export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
           style={segmentStyle}
           dimmed={dimmed}
           highlight={highlight}>
-          <FlattenedSplitColumns splits={splits} datum={datum} />
+          <FlattenedSplitColumns splits={splits} datum={datum} timezone={timezone} />
         </SplitValue>;
       }} />
   </div>;
