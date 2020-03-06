@@ -29,7 +29,7 @@ interface MeasureHeaderCellProps {
 export const MeasureHeaderCell: React.SFC<MeasureHeaderCellProps> = ({ sort, width, title, className }) => {
   const sorted = sort !== null;
   return <div
-    className={classNames("measure-name", className, { sorted })}
+    className={classNames("measure-header-cell", className, { sorted })}
     style={{ width }}>
     <div className="title-wrap">{title}</div>
     {sort && <SortIcon direction={sort} />}
