@@ -96,7 +96,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     if (!this.validate()) return;
     const { split, saveSplit, onClose } = this.props;
     const newSplit = this.constructSplitCombine();
-    saveSplit(newSplit, split, this.state.colors);
+    saveSplit(split, newSplit, this.state.colors);
     onClose();
   };
 

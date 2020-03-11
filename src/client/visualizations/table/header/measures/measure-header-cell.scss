@@ -18,8 +18,9 @@
 @import '../../utils/dimensions';
 @import '../../../../imports';
 
-.measure-name {
+.measure-header-cell {
   @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
+
   background-color: $white;
   padding-top: $header-padding-top;
 
