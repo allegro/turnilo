@@ -1,10 +1,10 @@
 // sass-lint:disable no-duplicate-properties
 @mixin css-variable($prop, $var) {
-  #{$prop}: #{map-get($variables, $var)};
+  #{$prop}: #{map-get($theme-colors, $var)};
   #{$prop}: var(--#{$var});
 }
 
 @mixin border-css-variable($prop, $width, $style, $var) {
-  #{$prop}: #{$width} #{$style} #{map-get($variables, $var)};
+  #{$prop}: #{$width} #{$style} #{map-get($theme-colors, $var)};
   #{$prop}: #{$width} #{$style} var(--#{$var});
 }

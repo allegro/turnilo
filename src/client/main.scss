@@ -68,7 +68,7 @@ svg {
 //}
 
 :root {
-  @each $var, $val in $variables {
+  @each $var, $val in $theme-colors {
     #{'--' + $var}: #{$val};
   }
 }
