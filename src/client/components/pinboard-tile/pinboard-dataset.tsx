@@ -19,10 +19,10 @@ import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Unary } from "../../../common/utils/functional/functional";
 import { DataRows } from "./data-rows";
-import { EditMode } from "./utils/edit-mode";
+import { RowMode } from "./utils/row-mode";
 
 interface PinboardDatasetProps {
-  editMode: EditMode;
+  rowMode: RowMode;
   data: Datum[];
   searchText: string;
   dimension: Dimension;

@@ -17,33 +17,42 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { Unary } from "../../../common/utils/functional/functional";
+import { Omit, Unary } from "../../../common/utils/functional/functional";
 import { SelectableRows } from "./selectable-rows";
 import { TextRows } from "./text-rows";
-import { EditMode, RowsMode } from "./utils/edit-mode";
+import { EditState, InEditMode, ReadyToEditMode, RowMode, RowModeId } from "./utils/row-mode";
 
 interface DataRowsProps {
-  editMode: EditMode;
+  rowMode: RowMode;
   data: Datum[];
   searchText: string;
   dimension: Dimension;
   formatter: Unary<Datum, string>;
 }
 
-export const DataRows: React.SFC<DataRowsProps> = props => {
-  const { editMode, ...commonProps } = props;
+type EditableRowsProps = { rowMode: ReadyToEditMode | InEditMode } & Omit<DataRowsProps, "mode">;
 
-  switch (editMode.id) {
-    case RowsMode.EDITABLE:
+// This component is for guiding typescript through nested tagged union. Probably it could be inlined on ts 3.7
+const EditableRows: React.SFC<EditableRowsProps> = props => {
+  const { rowMode, ...commonProps } = props;
+  switch (rowMode.state) {
+    case EditState.READY:
       return <TextRows
         {...commonProps}
-        onClick={editMode.createClause} />;
-    case RowsMode.IN_EDIT:
+        onClick={rowMode.createClause} />;
+    case EditState.IN_EDIT:
       return <SelectableRows
         {...commonProps}
-        clause={editMode.clause}
-        onSelect={editMode.toggleValue} />;
-    case RowsMode.NOT_EDITABLE:
+        clause={rowMode.clause}
+        onSelect={rowMode.toggleValue} />;
+  }
+};
+
+export const DataRows: React.SFC<DataRowsProps> = ({ rowMode, ...commonProps }) => {
+  switch (rowMode.mode) {
+    case RowModeId.READONLY:
       return <TextRows {...commonProps} />;
+    case RowModeId.EDITABLE:
+      return <EditableRows {...commonProps} rowMode={rowMode}/>;
   }
 };

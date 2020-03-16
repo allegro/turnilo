@@ -36,12 +36,12 @@ import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { PinboardDataset } from "./pinboard-dataset";
 import { pinboardIcons } from "./pinboard-icons";
 import "./pinboard-tile.scss";
-import { EditMode, RowsMode } from "./utils/edit-mode";
 import { isClauseEditable } from "./utils/is-clause-editable";
 import { isDimensionPinnable } from "./utils/is-dimension-pinnable";
 import { makeQuery } from "./utils/make-query";
 import { isPinnableClause, PinnableClause } from "./utils/pinnable-clause";
 import { equalParams, QueryParams } from "./utils/query-params";
+import { EditState, RowMode, RowModeId } from "./utils/row-mode";
 import { shouldFetchData } from "./utils/should-fetch";
 import { tileStyles } from "./utils/tile-styles";
 
@@ -161,7 +161,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     return clause ? isClauseEditable(clause) : isDimensionPinnable(this.props.dimension);
   }
 
-  private isInEditMode(): boolean {
+  private isInEdit(): boolean {
     const clause = this.pinnedClause();
     return clause && isClauseEditable(clause) && !clause.values.isEmpty();
   }
@@ -211,21 +211,23 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     this.addClause(clause);
   };
 
-  private getEditMode(): EditMode {
-    if (this.isInEditMode()) {
+  private getRowMode(): RowMode {
+    if (this.isInEdit()) {
       return {
-        id: RowsMode.IN_EDIT,
+        mode: RowModeId.EDITABLE,
+        state: EditState.IN_EDIT,
         toggleValue: this.toggleFilterValue,
         clause: this.pinnedClause()
       };
     }
     if (this.isEditable()) {
       return {
-        id: RowsMode.EDITABLE,
+        mode: RowModeId.EDITABLE,
+        state: EditState.READY,
         createClause: this.createFilterClause
       };
     }
-    return { id: RowsMode.NOT_EDITABLE };
+    return { mode: RowModeId.READONLY };
   }
 
   render() {
@@ -243,7 +245,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
       icons={pinboardIcons({ showSearch, onClose, onSearchClick: this.toggleSearch })}
       className="pinboard-tile">
       {isLoaded(datasetLoad) && <PinboardDataset
-        editMode={this.getEditMode()}
+        rowMode={this.getRowMode()}
         data={datasetLoad.dataset.data}
         searchText={searchText}
         dimension={dimension}

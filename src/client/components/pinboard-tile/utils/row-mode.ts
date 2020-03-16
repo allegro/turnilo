@@ -17,21 +17,25 @@
 import { Unary } from "../../../../common/utils/functional/functional";
 import { PinnableClause } from "./pinnable-clause";
 
-export enum RowsMode { EDITABLE, IN_EDIT, NOT_EDITABLE }
+export enum RowModeId { READONLY, EDITABLE }
 
-interface EditableProps {
-  id: RowsMode.EDITABLE;
-  createClause: Unary<string, void>;
+export interface ReadonlyMode {
+  mode: RowModeId.READONLY;
 }
 
-interface InEditProps {
-  id: RowsMode.IN_EDIT;
+export enum EditState { READY, IN_EDIT }
+
+export interface InEditMode  {
+  mode: RowModeId.EDITABLE;
+  state: EditState.IN_EDIT;
   toggleValue: Unary<string, void>;
   clause: PinnableClause;
 }
 
-interface NotEditableProps {
-  id: RowsMode.NOT_EDITABLE;
+export interface ReadyToEditMode {
+  mode: RowModeId.EDITABLE;
+  state: EditState.READY;
+  createClause: Unary<string, void>;
 }
 
-export type EditMode = EditableProps | InEditProps | NotEditableProps;
+export type RowMode = ReadonlyMode | InEditMode | ReadyToEditMode;
