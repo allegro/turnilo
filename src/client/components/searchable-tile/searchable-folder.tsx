@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { MouseEvent, PureComponent } from "react";
+import { PureComponent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { InfoBubble } from "../info-bubble/info-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -38,7 +38,6 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   readonly state: SearchableFolderState;
 
-  private readonly infoBubbleClassName = "info-icon";
   private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
   private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
 
@@ -59,9 +58,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     }
   }
 
-  handleClick = (e: MouseEvent<HTMLElement>) => {
-    const target = e.target as Element;
-    if (target.classList && target.classList.contains(this.infoBubbleClassName)) return;
+  handleClick = () => {
     this.setState(prevState => ({ opened: !prevState.opened }));
   };
 
@@ -73,10 +70,14 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     const hidden = inSearchMode && !hasItemsWithSearchText;
 
     return <div className={classNames("folder", { hidden })}>
-      <div className={classNames("folder-header")} onClick={this.handleClick}>
-        <div className="folder-icon">{isGroupOpen ? this.openIcon : this.closedIcon}</div>
-        <span className="label">{title}</span>
-        {description && <InfoBubble className={this.infoBubbleClassName} description={description} />}
+      <div className="folder-header">
+        <div className="icon-label-container" onClick={this.handleClick}>
+          <div className="folder-icon">
+            {isGroupOpen ? this.openIcon : this.closedIcon}
+          </div>
+          <span className="label">{title}</span>
+        </div>
+        {description && <InfoBubble className="info-icon" description={description} />}
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen })}>
         {children}
