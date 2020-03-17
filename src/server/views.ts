@@ -17,6 +17,7 @@
 
 import { AppSettings } from "../common/models/app-settings/app-settings";
 import { Timekeeper } from "../common/models/timekeeper/timekeeper";
+import { remergeClientConfig } from "./remerge/config";
 
 export interface ViewOptions {
   version: string;
@@ -65,6 +66,7 @@ export function mainLayout(options: ViewOptions): string {
   const { version, appSettings, timekeeper } = options;
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, appSettings, timekeeper })};</script>
+<script>var __REMERGE_CONFIG__ = ${JSON.stringify(remergeClientConfig())};</script>
 <script charset="UTF-8" src="main.js?v=${version}"></script>`
   );
 }
