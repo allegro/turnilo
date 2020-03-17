@@ -27,6 +27,7 @@ import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
+import { trackLoadData, trackViewData } from "../../remerge/tracking";
 import { classNames } from "../../utils/dom/dom";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import "./base-visualization.scss";
@@ -86,6 +87,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private loadData(essence: Essence, timekeeper: Timekeeper, showSpinner = true) {
     if (showSpinner) this.handleDatasetLoad(loading);
+    if (showSpinner) trackLoadData();
     this.fetchData(essence, timekeeper)
       .then(loadedDataset => {
         // TODO: encode it better
@@ -105,19 +107,22 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return this.debouncedCallExecutor(essence, timekeeper);
   }
 
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
-    essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
-      .then((dataset: Dataset) => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          return loaded(dataset);
-        },
-        err => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          reportError(err);
-          return error(err);
-        })
+  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> => {
+    const startTime = Date.now();
+    return essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
+        .then((dataset: Dataset) => {
+            // signal out of order requests with null
+            if (!this.wasUsedForLastQuery(essence)) return null;
+            trackViewData(this.className, essence, (Date.now() - startTime) / 1000);
+            return loaded(dataset);
+          },
+          err => {
+            // signal out of order requests with null
+            if (!this.wasUsedForLastQuery(essence)) return null;
+            reportError(err);
+            return error(err);
+          });
+      }
 
   private wasUsedForLastQuery(essence: Essence) {
     return essence.equals(this.lastQueryEssence);
