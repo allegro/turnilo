@@ -32,9 +32,9 @@ describe("Delta", () => {
     });
 
     it("should calculate delta attributes correctly", () => {
-      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
-      expect(formatDelta(5, 10)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
-      expect(formatDelta(10, 10)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
+      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaRatio: 1, deltaSign: 1 });
+      expect(formatDelta(5, 10)).to.deep.equal({ delta: -5, deltaRatio: 0.5, deltaSign: -1 });
+      expect(formatDelta(10, 10)).to.deep.equal({ delta: 0, deltaRatio: 0, deltaSign: 0 });
     });
   });
 
@@ -56,7 +56,7 @@ describe("Delta", () => {
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-positive")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("▲50 (100%)");
+      expect(deltaNode.text()).to.be.equal("▲50 (100.0%)");
     });
 
     it("should render properly positive delta for lower-is-better measure", () => {
@@ -65,7 +65,7 @@ describe("Delta", () => {
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-negative")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("▲50 (100%)");
+      expect(deltaNode.text()).to.be.equal("▲50 (100.0%)");
     });
 
     it("should render properly negative delta", () => {
@@ -74,7 +74,7 @@ describe("Delta", () => {
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-negative")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("▼100 (50%)");
+      expect(deltaNode.text()).to.be.equal("▼100 (50.0%)");
     });
 
     it("should render properly negative delta for lower-is-better measure", () => {
@@ -83,7 +83,7 @@ describe("Delta", () => {
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-positive")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("▼100 (50%)");
+      expect(deltaNode.text()).to.be.equal("▼100 (50.0%)");
     });
 
     it("should render properly neutral delta", () => {
@@ -92,7 +92,7 @@ describe("Delta", () => {
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-neutral")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("0 (0%)");
+      expect(deltaNode.text()).to.be.equal("0 (0.0%)");
     });
 
     it("should handle infinite cases for delta percentage", () => {
@@ -107,6 +107,24 @@ describe("Delta", () => {
 
       expect(negativeNode.hasClass("delta-negative")).to.be.true;
       expect(negativeNode.text()).to.be.equal("▼100");
+    });
+
+    describe("rounding for percentage", () => {
+      it("should round down ratios below 0.5 decimal", () => {
+        const delta = shallow(<Delta currentValue={10004} previousValue={10000} formatter={formatter} />);
+
+        const node = delta.find("span");
+
+        expect(node.text()).to.be.equal("▲4 (0.0%)");
+      });
+
+      it("should round up ratios above 0.5 decimal", () => {
+        const delta = shallow(<Delta currentValue={10005} previousValue={10000} formatter={formatter} />);
+
+        const node = delta.find("span");
+
+        expect(node.text()).to.be.equal("▲5 (0.1%)");
+      });
     });
   });
 });
