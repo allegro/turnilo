@@ -25,6 +25,7 @@ import { Loader } from "./components/loader/loader";
 import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";
 import "./main.scss";
 import "./polyfills";
+import { init as trackingInit } from "./remerge/tracking";
 import { Ajax } from "./utils/ajax/ajax";
 import { init as errorReporterInit } from "./utils/error-reporter/error-reporter";
 
@@ -51,6 +52,8 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
 if (config.appSettings.customization.rollbar && config.appSettings.customization.rollbar.client_token ) {
   errorReporterInit(config.appSettings.customization.rollbar);
 }
+
+trackingInit();
 
 const version = config.version;
 
