@@ -37,11 +37,10 @@
 
 .heatmap-corner-column-title {
   position: absolute;
-  top: 0;
-  right: 12px;
+  bottom: 0;
 
   .heatmap-corner-overflow-label {
     transform: rotate(270deg);
-    transform-origin: right;
+    transform-origin: left;
   }
 }
