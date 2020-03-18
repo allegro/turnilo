@@ -36,7 +36,7 @@ import { HeatmapHoverIndicator } from "./heatmap-hover-indicator";
 import { HeatmapHoverTooltip } from "./heatmap-hover-tooltip";
 import { HeatmapLabels } from "./heatmap-labels";
 import { HeatMapRectangles } from "./heatmap-rectangles";
-import createHighlightClauses from "./utils/create-highlight-clauses";
+import createHighlightClauses, { isClickablePart } from "./utils/create-highlight-clauses";
 import getHighlightPosition from "./utils/get-highlight-position";
 import getHoverPosition, { HoverPosition } from "./utils/get-hover-position";
 import { modalTitle } from "./utils/modal-title";
@@ -100,12 +100,11 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
   saveTopLabelHeight = (maxLabelHeight: number) => this.setState({ topLabelsHeight: Math.min(maxLabelHeight, MAX_TOP_LABELS_HEIGHT) });
 
   handleHighlight = (x: number, y: number, part: ScrollerPart) => {
-    if (part === "body" || part === "top-gutter" || part === "left-gutter") {
-      const { saveHighlight, essence, dataset } = this.props;
-      const layout = this.layout();
-      const clauses = createHighlightClauses({ x: x - layout.left, y: y - layout.top, part }, essence, dataset);
-      saveHighlight(List(clauses));
-    }
+    if (!isClickablePart(part)) return;
+    const { saveHighlight, essence, dataset } = this.props;
+    const layout = this.layout();
+    const clauses = createHighlightClauses({ x: x - layout.left, y: y - layout.top, part }, essence, dataset);
+    saveHighlight(List(clauses));
   };
 
   private layout(): ScrollerLayout {

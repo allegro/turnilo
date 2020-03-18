@@ -29,6 +29,7 @@ import {
   StringFilterClause
 } from "../../../../common/models/filter-clause/filter-clause";
 import { Booleanish } from "../../../components/filter-menu/boolean-filter-menu/boolean-filter-menu";
+import { ScrollerPart } from "../../../components/scroller/scroller";
 import { SPLIT } from "../../../config/constants";
 import { TILE_SIZE } from "../labeled-heatmap";
 
@@ -69,6 +70,10 @@ function splitSelectionToClause({ value, dimension: { kind, name: reference } }:
 }
 
 type ClickablePart = "body" | "top-gutter" | "left-gutter";
+
+export function isClickablePart(part: ScrollerPart): part is ClickablePart {
+  return part === "body" || part === "top-gutter" || part === "left-gutter";
+}
 
 interface Position {
   part: ClickablePart;
