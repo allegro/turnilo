@@ -15,30 +15,40 @@
  */
 
 import { expect } from "chai";
-import { HeatMapRectanglesProps } from "../heatmap-rectangles";
-import { equalProps } from "./equal-props";
+import { equalProps as innerEqualProps } from "./equal-props";
+
+const equalProps = (a: any, b: any) => innerEqualProps(a, b);
+
+const propsMock = {
+  propString: "foo",
+  propNumber: 42,
+  propBoolean: true,
+  propObject: {
+    bazz: true
+  }
+};
 
 describe("equalProps", () => {
   it("should return true if all props are the referentially identical", () => {
-    const props = { propString: "foo", propNumber: 42, propBoolean: true, propObject: { bazz: true } } as any as HeatMapRectanglesProps;
+    const props = propsMock;
     expect(equalProps(props, props)).to.be.true;
   });
 
   it("should return false if one prop has different reference", () => {
-    const props = { propString: "foo", propNumber: 42, propBoolean: true, propObject: { bazz: true } } as any as HeatMapRectanglesProps;
-    const changedProps = { ...props, propObject: {} } as HeatMapRectanglesProps;
-    expect(equalProps(props, changedProps)).to.be.false;
+    const oldProps = propsMock;
+    const newProps = { ...propsMock, propObject: {} };
+    expect(equalProps(oldProps, newProps)).to.be.false;
   });
 
   it("should return true if one prop has different reference but returns true for equals method", () => {
-    const props = { propString: "foo", propNumber: 42, propBoolean: true, propObject: { equals: () => true } } as any as HeatMapRectanglesProps;
-    const changedProps = { ...props, propObject: { equals: () => true } } as HeatMapRectanglesProps;
-    expect(equalProps(props, changedProps)).to.be.true;
+    const oldProps = { ...propsMock, equalableProp: { equals: () => true } };
+    const newProps = { ...propsMock, equalableProp: { equals: () => true } };
+    expect(equalProps(oldProps, newProps)).to.be.true;
   });
 
   it("should return false if one prop has different reference and returns false for equals method", () => {
-    const props = { propString: "foo", propNumber: 42, propBoolean: true, propObject: { equals: () => false } } as any as HeatMapRectanglesProps;
-    const changedProps = { ...props, propObject: { equals: () => false } } as HeatMapRectanglesProps;
-    expect(equalProps(props, changedProps)).to.be.false;
+    const oldProps = { ...propsMock, equalableProp: { equals: () => false } };
+    const newProps = { ...propsMock, equalableProp: { equals: () => false } };
+    expect(equalProps(oldProps, newProps)).to.be.false;
   });
 });
