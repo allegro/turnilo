@@ -42,6 +42,7 @@ import getHoverPosition, { HoverPosition } from "./utils/get-hover-position";
 import { modalTitle } from "./utils/modal-title";
 import { nestedDataset } from "./utils/nested-dataset";
 import { ColorScale, LinearScale } from "./utils/scales";
+import scrollerLayout from "./utils/scroller-layout";
 
 interface LabelledHeatmapProps {
   stage: Stage;
@@ -67,10 +68,10 @@ interface LabelledHeatmapState {
 
 export const TILE_SIZE = 25;
 export const TILE_GAP = 2;
-const MIN_LEFT_LABELS_WIDTH = 100;
-const MAX_LEFT_LABELS_WIDTH = 200;
-const MIN_TOP_LABELS_HEIGHT = 100;
-const MAX_TOP_LABELS_HEIGHT = 150;
+export const MIN_LEFT_LABELS_WIDTH = 100;
+export const MAX_LEFT_LABELS_WIDTH = 200;
+export const MIN_TOP_LABELS_HEIGHT = 100;
+export const MAX_TOP_LABELS_HEIGHT = 150;
 
 function formatSegments(dataset: Datum[], fieldName: string, timezone: Timezone): string[] {
   return dataset.map(datum => formatSegment(datum[fieldName], timezone));
@@ -95,9 +96,9 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
 
   saveScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
 
-  saveLeftLabelWidth = (maxLabelWidth: number) => this.setState({ leftLabelsWidth: Math.min(maxLabelWidth, MAX_LEFT_LABELS_WIDTH) });
+  saveLeftLabelWidth = (maxLabelWidth: number) => this.setState({ leftLabelsWidth: clamp(maxLabelWidth, MIN_LEFT_LABELS_WIDTH, MAX_LEFT_LABELS_WIDTH) });
 
-  saveTopLabelHeight = (maxLabelHeight: number) => this.setState({ topLabelsHeight: Math.min(maxLabelHeight, MAX_TOP_LABELS_HEIGHT) });
+  saveTopLabelHeight = (maxLabelHeight: number) => this.setState({ topLabelsHeight: clamp(maxLabelHeight, MIN_TOP_LABELS_HEIGHT, MAX_TOP_LABELS_HEIGHT) });
 
   handleHighlight = (x: number, y: number, part: ScrollerPart) => {
     if (!isClickablePart(part)) return;
@@ -110,19 +111,7 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
   private layout(): ScrollerLayout {
     const { topLabelsHeight, leftLabelsWidth } = this.state;
     const { dataset } = this.props;
-    const top =  clamp(topLabelsHeight, MIN_TOP_LABELS_HEIGHT, MAX_TOP_LABELS_HEIGHT);
-    const left =  clamp(leftLabelsWidth, MIN_LEFT_LABELS_WIDTH, MAX_LEFT_LABELS_WIDTH);
-    const height = dataset.length * TILE_SIZE;
-    const width = nestedDataset(dataset[0]).length * TILE_SIZE;
-
-    return {
-      bodyHeight: height,
-      bodyWidth: width,
-      top,
-      left,
-      right: 0,
-      bottom: 0
-    };
+    return scrollerLayout(dataset, topLabelsHeight, leftLabelsWidth);
   }
 
   render() {

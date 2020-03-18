@@ -19,10 +19,10 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { ScrollerLayout } from "../../components/scroller/scroller";
-import { TILE_GAP, TILE_SIZE } from "./labeled-heatmap";
 import { HighlightPosition } from "./utils/get-highlight-position";
+import { calculateLeft, calculateTop } from "./utils/highlight-modal-position";
 
-interface HeatmapHighlightModalProps {
+export interface HeatmapHighlightModalProps {
   title: string;
   stage: Stage;
   layout: ScrollerLayout;
@@ -30,18 +30,6 @@ interface HeatmapHighlightModalProps {
   position: HighlightPosition;
   dropHighlight: Fn;
   acceptHighlight: Fn;
-}
-
-function calculateLeft(props: HeatmapHighlightModalProps): number {
-  const { position: { column }, layout, stage, scroll } = props;
-  if (column === null) return stage.x + (stage.width / 2);
-  return column * TILE_SIZE + TILE_GAP + layout.left + 20 + stage.x - scroll.left;
-}
-
-function calculateTop(props: HeatmapHighlightModalProps): number {
-  const { position: { row }, layout, stage, scroll } = props;
-  if (row === null) return stage.y + (stage.height / 2);
-  return row * TILE_SIZE + layout.top + stage.y - 5 - scroll.top;
 }
 
 export const HeatmapHighlightModal: React.SFC<HeatmapHighlightModalProps> = props => {
