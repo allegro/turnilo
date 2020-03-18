@@ -15,7 +15,8 @@
  */
 
 import { List, Set } from "immutable";
-import { Dataset, Datum } from "plywood";
+import { Datum } from "plywood";
+import { DataCube } from "../../../../common/models/data-cube/data-cube";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -28,32 +29,35 @@ import {
   StringFilterAction,
   StringFilterClause
 } from "../../../../common/models/filter-clause/filter-clause";
+import { Split } from "../../../../common/models/split/split";
 import { Booleanish } from "../../../components/filter-menu/boolean-filter-menu/boolean-filter-menu";
 import { ScrollerPart } from "../../../components/scroller/scroller";
-import { SPLIT } from "../../../config/constants";
 import { TILE_SIZE } from "../labeled-heatmap";
+import { nestedDataset } from "./nested-dataset";
 
 interface SplitSelection {
   value: unknown;
   dimension: Dimension;
 }
 
-function firstSplitSelection(topOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
-  const { dataCube, splits: { splits } } = essence;
-  const dimensionName = splits.get(0).reference;
+function splitSelection(split: Split, offset: number, dataCube: DataCube, dataset: Datum[]): SplitSelection {
+  const dimensionName = split.reference;
   const dimension = dataCube.getDimension(dimensionName);
-  const labelIndex = Math.floor(topOffset / TILE_SIZE);
+  const labelIndex = Math.floor(offset / TILE_SIZE);
   const value = dataset[labelIndex][dimensionName];
   return { value, dimension };
 }
 
+function firstSplitSelection(topOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
+  const { dataCube, splits: { splits } } = essence;
+  const split = splits.get(0);
+  return splitSelection(split, topOffset, dataCube, dataset);
+}
+
 function secondSplitSelection(leftOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
   const { dataCube, splits: { splits } } = essence;
-  const dimensionName = splits.get(1).reference;
-  const dimension = dataCube.getDimension(dimensionName);
-  const labelIndex = Math.floor(leftOffset / TILE_SIZE);
-  const value = (dataset[0][SPLIT] as Dataset).data[labelIndex][dimensionName];
-  return { value, dimension };
+  const split = splits.get(1);
+  return splitSelection(split, leftOffset, dataCube, nestedDataset(dataset[0]));
 }
 
 function splitSelectionToClause({ value, dimension: { kind, name: reference } }: SplitSelection): FilterClause {
