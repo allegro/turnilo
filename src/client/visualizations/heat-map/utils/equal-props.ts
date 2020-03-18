@@ -29,7 +29,5 @@ function equals(a: any, b: unknown): boolean {
 
 export function equalProps(oldProps: HeatMapRectanglesProps, newProps: HeatMapRectanglesProps): boolean {
   const keys = Object.keys(oldProps) as Array<keyof HeatMapRectanglesProps>;
-  return keys.reduce((result, key) => {
-    return equals(oldProps[key], newProps[key]) && result;
-  }, true);
+  return keys.every(key => equals(oldProps[key], newProps[key]));
 }
