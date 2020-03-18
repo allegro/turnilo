@@ -44,7 +44,7 @@ describe("Functional utilities", () => {
     });
   });
 
-  describe.only("zip", () => {
+  describe("zip", () => {
     it("should merge arrays with same length", () => {
       expect(zip([1, 2, 3], ["a", "b", "c"])).to.deep.eq([
         [1, "a"],
