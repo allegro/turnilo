@@ -60,22 +60,16 @@ export const NO_DATA: ViewType = "no-data";
 
 export class TurniloApplication extends React.Component<TurniloApplicationProps, TurniloApplicationState> {
   private hashUpdating = false;
-  private readonly urlHashConverter: UrlHashConverter;
-
-  constructor(props: TurniloApplicationProps) {
-    super(props);
-
-    this.urlHashConverter = urlHashConverter;
-    this.state = {
-      appSettings: null,
-      drawerOpen: false,
-      selectedItem: null,
-      viewType: null,
-      viewHash: null,
-      showAboutModal: false,
-      errorId: null
-    };
-  }
+  private readonly urlHashConverter: UrlHashConverter = urlHashConverter;
+  state: TurniloApplicationState = {
+    appSettings: null,
+    drawerOpen: false,
+    selectedItem: null,
+    viewType: null,
+    viewHash: null,
+    showAboutModal: false,
+    errorId: null
+  };
 
   componentDidCatch(error: Error) {
     const errorId = reportError(error);
@@ -143,12 +137,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       const { appSettings } = this.state;
       return appSettings.getVersion();
     };
-    Ajax.onUpdate = () => {
-      console.log("UPDATE!!");
-    };
-
-    // There was a clipboard module that did nothing here
-    // maybe it should be restored one day
   }
 
   componentWillUnmount() {
@@ -228,52 +216,34 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     if (force) this.hashToState(hash);
   }
 
-  updateViewHash = (viewHash: string, force = false) => {
-    const { viewType } = this.state;
-
-    let newHash: string;
-    if (viewType === CUBE) {
-      newHash = `${this.state.selectedItem.name}/${viewHash}`;
-    } else {
-      newHash = viewType;
-    }
-
+  updateEssenceInHash = (essence: Essence, force = false) => {
+    const newHash = `${this.state.selectedItem.name}/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
   };
 
-  getCubeViewHash = (essence: Essence, withPrefix = false): string => {
-    const cubeViewHash = this.urlHashConverter.toHash(essence);
-
-    return withPrefix ? this.getUrlPrefix() + cubeViewHash : cubeViewHash;
+  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null) => {
+    const essenceHashPart = essence && this.convertEssenceToHash(essence);
+    const hash = `${dataCube.name}/${essenceHashPart || ""}`;
+    this.changeHash(hash, true);
   };
 
-  getUrlPrefix(baseOnly = false): string {
-    const { viewType } = this.state;
-    const url = window.location;
-    const urlBase = url.origin + url.pathname;
-    if (baseOnly) return urlBase;
+  urlForEssence = (essence: Essence): string => {
+    return `${this.getUrlPrefix()}${this.convertEssenceToHash(essence)}`;
+  };
 
-    let newPrefix: string;
-    if (this.viewTypeNeedsAnItem(viewType)) {
-      newPrefix = `${this.state.selectedItem.name}/`;
-    } else {
-      newPrefix = viewType;
-    }
-
-    return urlBase + "#" + newPrefix;
+  private convertEssenceToHash(essence: Essence): string {
+    return this.urlHashConverter.toHash(essence);
   }
 
-  openAboutModal = () => {
-    this.setState({
-      showAboutModal: true
-    });
-  };
+  getUrlPrefix(): string {
+    const { origin, pathname } = window.location;
+    const dataCubeName = `${this.state.selectedItem.name}/`;
+    return `${origin}${pathname}#${dataCubeName}`;
+  }
 
-  onAboutModalClose = () => {
-    this.setState({
-      showAboutModal: false
-    });
-  };
+  openAboutModal = () => this.setState({ showAboutModal: true });
+
+  onAboutModalClose = () => this.setState({ showAboutModal: false });
 
   renderAboutModal() {
     const { version } = this.props;
@@ -283,14 +253,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       version={version}
       onClose={this.onAboutModalClose}
     />;
-  }
-
-  renderNotifications() {
-    return <Notifications />;
-  }
-
-  renderQuestions() {
-    return <Questions />;
   }
 
   renderView() {
@@ -319,8 +281,9 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           appSettings={appSettings}
           initTimekeeper={timekeeper}
           hash={viewHash}
-          updateViewHash={this.updateViewHash}
-          getCubeViewHash={this.getCubeViewHash}
+          changeEssence={this.updateEssenceInHash}
+          changeDataCubeAndEssence={this.changeDataCubeWithEssence}
+          urlForEssence={this.urlForEssence}
           getEssenceFromHash={this.urlHashConverter.essenceFromHash}
           openAboutModal={this.openAboutModal}
           maxFilters={maxFilters}
@@ -340,8 +303,8 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       <main className="turnilo-application">
         {this.renderView()}
         {this.renderAboutModal()}
-        {this.renderNotifications()}
-        {this.renderQuestions()}
+        <Notifications />
+        <Questions />
       </main>
     </React.StrictMode>;
   }

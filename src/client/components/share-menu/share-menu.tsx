@@ -36,7 +36,7 @@ export interface ShareMenuProps {
   onClose: Fn;
   openUrlShortenerModal: Binary<string, string, void>;
   customization: Customization;
-  getCubeViewHash: (essence: Essence, withPrefix?: boolean) => string;
+  urlForEssence: (essence: Essence) => string;
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
@@ -63,12 +63,12 @@ function exportItems(props: ExportProps) {
   );
 }
 
-type LinkProps = Pick<ShareMenuProps, "essence" | "customization" | "onClose" | "getCubeViewHash" | "openUrlShortenerModal" | "timekeeper">;
+type LinkProps = Pick<ShareMenuProps, "essence" | "customization" | "onClose" | "urlForEssence" | "openUrlShortenerModal" | "timekeeper">;
 
-function linkItems({ essence, customization, timekeeper, onClose, getCubeViewHash, openUrlShortenerModal }: LinkProps) {
+function linkItems({ essence, customization, timekeeper, onClose, urlForEssence, openUrlShortenerModal }: LinkProps) {
   const isRelative = essence.filter.isRelative();
-  const hash = getCubeViewHash(essence, true);
-  const specificHash = getCubeViewHash(essence.convertToSpecificFilter(timekeeper), true);
+  const hash = urlForEssence(essence);
+  const specificHash = urlForEssence(essence.convertToSpecificFilter(timekeeper));
 
   function openShortenerModal(url: string, title: string) {
     openUrlShortenerModal(url, title);

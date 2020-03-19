@@ -18,26 +18,26 @@
 import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
-import * as sinon from "sinon";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
+import { noop } from "../../../common/utils/functional/functional";
 import { Totals } from "../../visualizations/totals/totals";
 import { CubeView } from "./cube-view";
 
 describe("CubeView", () => {
   it("embeds correct Visualization component", () => {
-    const updateViewHash = sinon.stub();
-    const getEssenceFromHash = sinon.stub();
-    const getCubeViewHash = sinon.stub();
 
     const cubeView = mount(
       <CubeView
+        openAboutModal={noop}
+        appSettings={null}
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
         dataCube={DataCubeFixtures.wiki()}
-        updateViewHash={updateViewHash}
-        getCubeViewHash={getCubeViewHash}
-        getEssenceFromHash={getEssenceFromHash}
+        changeDataCubeAndEssence={null}
+        getEssenceFromHash={null}
+        changeEssence={null}
+        urlForEssence={null}
       />
     );
 

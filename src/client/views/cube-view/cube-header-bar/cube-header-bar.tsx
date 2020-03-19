@@ -39,7 +39,7 @@ export interface CubeHeaderBarProps {
   essence: Essence;
   timekeeper: Timekeeper;
   onNavClick: Fn;
-  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
+  urlForEssence: (essence: Essence) => string;
   refreshMaxTime?: Fn;
   updatingMaxTime?: boolean;
   openRawDataModal?: Fn;
@@ -128,7 +128,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { customization, essence, timekeeper, openUrlShortenerModal, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, openUrlShortenerModal, urlForEssence, getDownloadableDataset } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
@@ -139,7 +139,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}
       customization={customization}
-      getCubeViewHash={getCubeViewHash}
+      urlForEssence={urlForEssence}
       getDownloadableDataset={getDownloadableDataset}
     />;
   }

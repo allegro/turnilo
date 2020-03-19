@@ -20,7 +20,7 @@ import * as ReactDOM from "react-dom";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
-import { Unary } from "../../../common/utils/functional/functional";
+import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
@@ -37,7 +37,7 @@ export interface SideDrawerProps {
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  getCubeViewHash: Unary<Essence, string>;
+  changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
 }
 
 function openHome() {
@@ -97,18 +97,21 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
-  private cubeHref(dataCube: DataCube): string {
-    const { getCubeViewHash, essence } = this.props;
+  essenceForDataCube(dataCube: DataCube): Essence | null {
+    const { essence } = this.props;
     const { dataCube: currentCube } = essence;
-    if (!DataCube.isDataCube(dataCube)) return "";
-    const cleanCubeHref = `#${name}`;
-
-    if (dataCube === currentCube) return cleanCubeHref;
-    if (!currentCube.sameGroup(dataCube)) return cleanCubeHref;
-    if (!essence) return cleanCubeHref;
-
-    return `${cleanCubeHref}/${getCubeViewHash(essence.updateDataCube(dataCube))}`;
+    if (dataCube === currentCube || !currentCube.sameGroup(dataCube)) {
+      return null;
+    }
+    return essence.updateDataCube(dataCube);
   }
+
+  navigateToCube = (dataCube: DataCube) => {
+    const { onClose, changeDataCubeAndEssence } = this.props;
+    const essence = this.essenceForDataCube(dataCube);
+    changeDataCubeAndEssence(dataCube, essence);
+    onClose();
+  };
 
   private renderDataCubeList(): JSX.Element {
     const { dataCubes, essence: { dataCube } } = this.props;
@@ -121,11 +124,10 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     }
     const navLinks = cubes.map(dataCube => {
         const { name, title } = dataCube;
-        const href = this.cubeHref(dataCube);
         return {
           name,
           title,
-          href
+          onClick: () => this.navigateToCube(dataCube)
         };
       }
     );

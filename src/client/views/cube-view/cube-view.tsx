@@ -39,6 +39,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
+import { Binary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
@@ -89,9 +90,10 @@ export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
   hash: string;
-  updateViewHash: (newHash: string, force?: boolean) => void;
-  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
-  getEssenceFromHash: (hash: string, dateCube: DataCube) => Essence;
+  changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
+  changeEssence: Binary<Essence, boolean, void>;
+  urlForEssence: Unary<Essence, string>;
+  getEssenceFromHash: Binary<string, DataCube, Essence>;
   dataCube: DataCube;
   openAboutModal: Fn;
   customization?: Customization;
@@ -268,10 +270,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    const { updateViewHash, getCubeViewHash } = this.props;
+    const { changeEssence } = this.props;
     const { essence } = this.state;
-    if (updateViewHash && !nextState.essence.equals(essence)) {
-      updateViewHash(getCubeViewHash(nextState.essence));
+    if (!nextState.essence.equals(essence)) {
+      changeEssence(nextState.essence, false);
     }
   }
 
@@ -291,9 +293,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     try {
       essence = this.getEssenceFromHash(hash, dataCube);
     } catch (e) {
-      const { getCubeViewHash, updateViewHash } = this.props;
+      const { changeEssence } = this.props;
       essence = this.getEssenceFromDataCube(dataCube);
-      updateViewHash(getCubeViewHash(essence), true);
+      changeEssence(essence, true);
     }
     this.setState({ essence });
   }
@@ -523,7 +525,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     const clicker = this.clicker;
 
-    const { getCubeViewHash, customization } = this.props;
+    const { urlForEssence, customization } = this.props;
     const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
@@ -535,7 +537,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence={essence}
       timekeeper={timekeeper}
       onNavClick={this.sideDrawerOpen}
-      getCubeViewHash={getCubeViewHash}
+      urlForEssence={urlForEssence}
       refreshMaxTime={this.refreshMaxTime}
       openRawDataModal={this.openRawDataModal}
       openViewDefinitionModal={this.openViewDefinitionModal}
@@ -656,7 +658,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   };
 
   renderSideDrawer() {
-    const { getCubeViewHash, openAboutModal, appSettings } = this.props;
+    const { changeDataCubeAndEssence, openAboutModal, appSettings } = this.props;
     const { showSideBar, essence } = this.state;
     const { dataCubes, customization } = appSettings;
     const transitionTimeout = { enter: 500, exit: 300 };
@@ -674,8 +676,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         onOpenAbout={openAboutModal}
         onClose={this.sideDrawerClose}
         customization={customization}
-        getCubeViewHash={getCubeViewHash}
-      />;
+        changeDataCubeAndEssence={changeDataCubeAndEssence}
+      />
     </CSSTransition>;
   }
 
