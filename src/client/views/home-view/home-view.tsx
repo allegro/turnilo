@@ -23,12 +23,11 @@ import { ClearableInput } from "../../components/clearable-input/clearable-input
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { DataCubeCard } from "./data-cube-card/data-cube-card";
-import { HomeHeaderBar } from "./home-header-bar/home-header-bar";
+import { HeaderBar } from "../../components/header-bar/header-bar";
 import "./home-view.scss";
 
 export interface HomeViewProps {
   dataCubes?: DataCube[];
-  onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
 }
@@ -73,19 +72,18 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   }
 
   render() {
-    const { onNavClick, onOpenAbout, customization } = this.props;
+    const { onOpenAbout, customization } = this.props;
     const { query } = this.state;
 
     return <div className="home-view">
-      <HomeHeaderBar
-        onNavClick={onNavClick}
+      <HeaderBar
         customization={customization}
         title={STRINGS.home}
       >
         <button className="text-button" onClick={onOpenAbout}>
           {STRINGS.infoAndFeedback}
         </button>
-      </HomeHeaderBar>
+      </HeaderBar>
 
       <div className="container">
         <div className="data-cubes">

@@ -19,16 +19,15 @@ import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Customization } from "../../../common/models/customization/customization";
 import { Fn } from "../../../common/utils/general/general";
+import { HeaderBar } from "../../components/header-bar/header-bar";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../config/constants";
-import { NoDataHeaderBar } from "./no-data-header-bar/no-data-header-bar";
 import "./no-data-view.scss";
 
 export type Mode = "no-cluster" | "no-cube";
 
 export interface NoDataViewProps {
   appSettings?: AppSettings;
-  onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
 }
@@ -72,17 +71,16 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
   }
 
   render() {
-    const { onNavClick, onOpenAbout, customization } = this.props;
+    const { onOpenAbout, customization } = this.props;
     return <div className="no-data-view">
-      <NoDataHeaderBar
-        onNavClick={onNavClick}
+      <HeaderBar
         customization={customization}
         title={STRINGS.home}
       >
         <button className="text-button" onClick={onOpenAbout}>
           {STRINGS.infoAndFeedback}
         </button>
-      </NoDataHeaderBar>
+      </HeaderBar>
       <div className="container">
         {this.renderTitle()}
       </div>
