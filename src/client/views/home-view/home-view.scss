@@ -19,10 +19,6 @@
 .home-view {
   @import '../../utils/styles/grid';
 
-  .home-header-bar {
-    @include pin-top($header-height);
-  }
-
   .container {
     @include unpin-top($header-height);
     overflow-y: auto;
