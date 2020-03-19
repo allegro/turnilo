@@ -17,19 +17,15 @@
 
 import { NamedArray } from "immutable-class";
 import * as React from "react";
-import { CSSTransition } from "react-transition-group";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { Notifications, Questions } from "../../components/notifications/notifications";
-import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
-import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
 import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { ErrorView } from "../../views/error-view/error-view";
@@ -52,7 +48,6 @@ export interface TurniloApplicationState {
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
-  cubeViewSupervisor?: ViewSupervisor;
   errorId?: string;
 }
 
@@ -63,18 +58,14 @@ export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
 export const NO_DATA: ViewType = "no-data";
 
-const transitionTimeout = { enter: 500, exit: 300 };
-
 export class TurniloApplication extends React.Component<TurniloApplicationProps, TurniloApplicationState> {
   private hashUpdating = false;
-  private readonly sideBarHrefFn: FunctionSlot<string>;
   private readonly urlHashConverter: UrlHashConverter;
 
   constructor(props: TurniloApplicationProps) {
     super(props);
 
     this.urlHashConverter = urlHashConverter;
-    this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {
       appSettings: null,
       drawerOpen: false,
@@ -223,14 +214,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return parts.join("/");
   }
 
-  sideDrawerOpen = () => {
-    this.setState({ drawerOpen: true });
-  };
-
-  sideDrawerClose = () => {
-    this.setState({ drawerOpen: false });
-  };
-
   changeHash(hash: string, force = false): void {
     this.hashUpdating = true;
 
@@ -310,44 +293,14 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return <Questions />;
   }
 
-  renderSideDrawer() {
-    const { viewType, selectedItem, appSettings } = this.state;
-    const { dataCubes, customization } = appSettings;
-
-    return <SideDrawer
-      key="drawer"
-      selectedItem={selectedItem}
-      dataCubes={dataCubes}
-      onOpenAbout={this.openAboutModal}
-      onClose={this.sideDrawerClose}
-      customization={customization}
-      itemHrefFn={this.sideBarHrefFn}
-      viewType={viewType}
-    />;
-  }
-
-  renderSideDrawerTransition() {
-    const { drawerOpen } = this.state;
-    return <CSSTransition
-      in={drawerOpen}
-      classNames="side-drawer"
-      mountOnEnter={true}
-      unmountOnExit={true}
-      timeout={transitionTimeout}
-    >
-      {this.renderSideDrawer()}
-    </CSSTransition>;
-  }
-
   renderView() {
     const { maxFilters } = this.props;
-    const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor, errorId } = this.state;
+    const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
     switch (viewType) {
       case NO_DATA:
         return <NoDataView
-          onNavClick={this.sideDrawerOpen}
           onOpenAbout={this.openAboutModal}
           customization={customization}
           appSettings={appSettings}
@@ -356,24 +309,22 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       case HOME:
         return <HomeView
           dataCubes={dataCubes}
-          onNavClick={this.sideDrawerOpen}
           onOpenAbout={this.openAboutModal}
           customization={customization}
         />;
 
       case CUBE:
         return <CubeView
-          dataCube={selectedItem as DataCube}
+          dataCube={selectedItem}
+          appSettings={appSettings}
           initTimekeeper={timekeeper}
           hash={viewHash}
           updateViewHash={this.updateViewHash}
           getCubeViewHash={this.getCubeViewHash}
           getEssenceFromHash={this.urlHashConverter.essenceFromHash}
+          openAboutModal={this.openAboutModal}
           maxFilters={maxFilters}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
-          transitionFnSlot={this.sideBarHrefFn}
-          supervisor={cubeViewSupervisor}
         />;
 
       case ERROR:
@@ -388,7 +339,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return <React.StrictMode>
       <main className="turnilo-application">
         {this.renderView()}
-        {this.renderSideDrawerTransition()}
         {this.renderAboutModal()}
         {this.renderNotifications()}
         {this.renderQuestions()}
