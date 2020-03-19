@@ -26,44 +26,44 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+  }
 
-    .data-cubes {
-      margin-top: 36px;
+  .data-cubes {
+    margin-top: 36px;
+    width: 100%;
+    max-width: 720px;
+
+    &__search-box {
+      font-size: 16px;
+      font-weight: 100;
       width: 100%;
-      max-width: 720px;
+      margin-bottom: 20px;
 
-      &__search-box {
-        font-size: 16px;
-        font-weight: 100;
+      .clearable-input {
+        @extend %input-cont-inset;
         width: 100%;
-        margin-bottom: 20px;
+        height: 46px;
+        padding: 3px 10px 3px 16px;
 
-        .clearable-input {
-          @extend %input-cont-inset;
-          width: 100%;
-          height: 46px;
-          padding: 3px 10px 3px 16px;
-
-          .clear {
-            top: 14px;
-            right: 8px;
-          }
+        .clear {
+          top: 14px;
+          right: 8px;
         }
       }
+    }
 
-      &__container {
-        margin-bottom: 50px;
+    &__container {
+      margin-bottom: 50px;
 
-        .data-cube-card {
-          min-width: 310px;
-        }
+      .data-cube-card {
+        min-width: 310px;
       }
+    }
 
-      &__message {
-        padding: 0 10px;
-        font-style: italic;
-        font-size: 16px;
-      }
+    &__message {
+      padding: 0 10px;
+      font-style: italic;
+      font-size: 16px;
     }
   }
 }

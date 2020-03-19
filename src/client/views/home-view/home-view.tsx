@@ -20,10 +20,10 @@ import { Customization } from "../../../common/models/customization/customizatio
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Fn } from "../../../common/utils/general/general";
 import { ClearableInput } from "../../components/clearable-input/clearable-input";
+import { HeaderBar } from "../../components/header-bar/header-bar";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { DataCubeCard } from "./data-cube-card/data-cube-card";
-import { HeaderBar } from "../../components/header-bar/header-bar";
 import "./home-view.scss";
 
 export interface HomeViewProps {

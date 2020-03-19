@@ -18,6 +18,7 @@
 import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
+import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { noop } from "../../../common/utils/functional/functional";
@@ -30,13 +31,13 @@ describe("CubeView", () => {
     const cubeView = mount(
       <CubeView
         openAboutModal={noop}
-        appSettings={null}
+        appSettings={AppSettingsFixtures.wikiOnly()}
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
         dataCube={DataCubeFixtures.wiki()}
         changeDataCubeAndEssence={null}
         getEssenceFromHash={null}
-        changeEssence={null}
+        changeEssence={noop}
         urlForEssence={null}
       />
     );
