@@ -38,6 +38,14 @@ export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
 }
 
+export function zip<T, U>(xs: T[], ys: U[]): Array<[T, U]> {
+  const length = Math.min(xs.length, ys.length);
+  return xs.slice(0, length).map((x, idx) => {
+    const y = ys[idx];
+    return [x, y] as [T, U];
+  });
+}
+
 export function flatMap<T, S>(coll: T[], mapper: Binary<T, number, S[]>): S[] {
   return [].concat(...coll.map(mapper));
 }

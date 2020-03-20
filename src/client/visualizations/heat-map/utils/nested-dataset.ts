@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +14,7 @@
  * limitations under the License.
  */
 
-.heatmap-container {
-  margin: 10px;
+import { Dataset, Datum } from "plywood";
+import { SPLIT } from "../../../config/constants";
 
-  .scroller {
-    height: 100%;
-  }
-}
-
-.heatmap-rectangle-hovered {
-  stroke: #ff5a00;
-  stroke-width: 1;
-}
+export const nestedDataset = (d: Datum) => (d && d[SPLIT] && (d[SPLIT] as Dataset).data) || [];
