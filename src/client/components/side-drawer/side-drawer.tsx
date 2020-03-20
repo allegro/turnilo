@@ -108,12 +108,12 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
       return <div className="data-cubes__message">{message}</div>;
     }
-    const navLinks = cubes.map(dataCube => ({
-        name: dataCube.name,
-        title: dataCube.title,
-        href: itemHrefFn(selectedItem, dataCube) || `#${dataCube.name}`
-      })
-    );
+    const navLinks = cubes.map(dataCube => {
+      const hash = itemHrefFn(selectedItem, dataCube);
+      const { name, title } = dataCube;
+      const href = `#${name}/${hash}`;
+      return { name, title, href };
+    });
 
     return <NavList
       selected={selectedItem ? selectedItem.name : null}

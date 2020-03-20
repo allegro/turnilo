@@ -23,10 +23,12 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { SeriesSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { mapTruthy } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
+import { PinboardTile } from "../pinboard-tile/pinboard-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./pinboard-panel.scss";
 
@@ -178,12 +180,11 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     const pinnedSortMeasure = essence.getPinnedSortMeasure();
     const pinnedSortSeries = pinnedSortMeasure && essence.findConcreteSeries(pinnedSortMeasure.name);
     const pinnedSortSortOn = pinnedSortSeries && new SeriesSortOn(pinnedSortSeries);
-    let dimensionTiles: JSX.Element[] = [];
-    pinnedDimensions.forEach(dimensionName => {
+    const pinboardtiles = mapTruthy(pinnedDimensions.toArray(), dimensionName => {
       const dimension = dataCube.getDimension(dimensionName);
       if (!dimension) return null;
 
-      dimensionTiles.push(<DimensionTile
+      return <PinboardTile
         key={dimension.name}
         clicker={clicker}
         essence={essence}
@@ -191,11 +192,11 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         dimension={dimension}
         sortOn={pinnedSortSortOn}
         onClose={clicker.unpin ? clicker.unpin.bind(clicker, dimension) : null}
-      />);
+      />;
     });
 
     let placeholder: JSX.Element = null;
-    if (!dragOver && !dimensionTiles.length) {
+    if (!dragOver && !pinboardtiles.length) {
       placeholder = <div className="placeholder">
         <SvgIcon svg={require("../../icons/preview-pin.svg")} />
         <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
@@ -215,7 +216,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         sortOn={pinnedSortSortOn}
         onSelect={this.onPinboardSortOnSelect}
       />
-      {dimensionTiles}
+      {pinboardtiles}
       {dragOver ? <div className="drop-indicator-tile" /> : null}
       {placeholder}
       {dragOver ? <div

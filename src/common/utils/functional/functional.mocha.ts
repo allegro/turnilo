@@ -18,7 +18,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { sleep } from "../../../client/utils/test-utils";
-import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable } from "./functional";
+import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable, zip } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -41,6 +41,30 @@ describe("Functional utilities", () => {
 
     it("should keep nested arrays", () => {
       expect(cons([], [1])).to.deep.eq([[1]]);
+    });
+  });
+
+  describe("zip", () => {
+    it("should merge arrays with same length", () => {
+      expect(zip([1, 2, 3], ["a", "b", "c"])).to.deep.eq([
+        [1, "a"],
+        [2, "b"],
+        [3, "c"]
+      ]);
+    });
+
+    it("should merge common subsets of arrays with different length (first array longer)", () => {
+      expect(zip([1, 2, 3, 4], ["a", "b"])).to.deep.eq([
+        [1, "a"],
+        [2, "b"]
+      ]);
+    });
+
+    it("should merge common subsets of arrays with different length (second array longer)", () => {
+      expect(zip([1, 2], ["a", "b", "c", "d"])).to.deep.eq([
+        [1, "a"],
+        [2, "b"]
+      ]);
     });
   });
 

@@ -445,7 +445,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .resolveVisualizationAndUpdate();
   }
 
-  public changeFilter(filter: Filter, removeHighlight = false): Essence {
+  public changeFilter(filter: Filter): Essence {
     const { filter: oldFilter } = this;
 
     return this

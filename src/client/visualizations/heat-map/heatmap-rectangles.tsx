@@ -16,174 +16,63 @@
  */
 
 import { HeatmapRect } from "@vx/heatmap";
-import { scaleLinear } from "@vx/scale";
-import { max, min } from "d3";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { noop } from "../../../common/utils/functional/functional";
-import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { SPLIT } from "../../config/constants";
 import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
+import "./heatmap-rectangles.scss";
+import { equalProps } from "./utils/equal-props";
+import { ColorScale, LinearScale } from "./utils/scales";
 
-const white = "#fff";
-const orange = "#ff5a00";
+export interface HeatMapRectanglesProps {
+  dataset: Datum[];
+  series: ConcreteSeries;
+  colorScale: ColorScale;
+  xScale: LinearScale;
+  yScale: LinearScale;
+  tileSize: number;
+  gap: number;
+  leftLabelName: string;
+  topLabelName: string;
+}
 
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
-export interface RectangleData {
-  xLabel: string;
-  yLabel: string;
-  datum: Datum;
-  x: number;
-  y: number;
-  column: number;
-  row: number;
-}
-
-interface HeatMapRectanglesProps {
-  dataset: Datum[];
-  tileSize?: number;
-  series: ConcreteSeries;
-  leftLabelName: string;
-  topLabelName: string;
-  hoveredRectangle?: RectangleData;
-  onHover?: (data: RectangleData) => void;
-  onHoverStop?: () => void;
-}
-
 export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
-  private rect: HTMLDivElement | null = null;
 
-  handleMouseMove = (event: MouseEvent) => {
-    const { clientX: x, clientY: y } = event;
-    const {
-      onHoverStop = noop,
-      onHover = noop,
-      leftLabelName,
-      topLabelName,
-      dataset
-    } = this.props;
-
-    const {
-      xScale,
-      yScale
-    } = this.setup();
-
-    if (!this.rect) {
-      return;
-    }
-    const { top, bottom, left, right } = this.rect.getBoundingClientRect();
-
-    if ((y < top || y > bottom) || (x < left || x > right)) {
-      onHoverStop();
-      return;
-    }
-
-    const xPosition = Math.floor(xScale.invert(x - left));
-    const yPosition = Math.floor(yScale.invert(y - top));
-
-    const hoveredBins = dataset[yPosition];
-    if (!hoveredBins) {
-      return;
-    }
-
-    const hoveredBin = bins(hoveredBins)[xPosition];
-    if (!hoveredBin) {
-      return;
-    }
-
-    onHover({
-      datum: hoveredBin,
-      xLabel: hoveredBins[leftLabelName] as string,
-      yLabel: hoveredBin[topLabelName] as string,
-      x,
-      y,
-      column: yPosition,
-      row: xPosition
-    });
-  };
-
-  private setup() {
-    const { tileSize = 25, dataset, series, hoveredRectangle } = this.props;
-    const count = (d: Datum) => series.selectValue(d);
-
-    const colorMin = min(dataset, d => min(bins(d), count));
-    const colorMax = max(dataset, d => max(bins(d), count));
-    const bucketSizeMax = max(dataset, d => bins(d).length);
-    const dataLength = dataset.length;
-
-    const width = bucketSizeMax * tileSize;
-    const height = dataLength * tileSize;
-
-    const xScale = scaleLinear({
-      domain: [0, bucketSizeMax],
-      range: [0, width]
-    });
-
-    const yScale = scaleLinear({
-      domain: [dataLength, 0],
-      range: [height, 0]
-    });
-
-    const rectColorScale = scaleLinear({
-      range: [white, orange],
-      domain: [Math.min(colorMin, 0), colorMax]
-    });
-
-    return {
-      width,
-      height,
-      count,
-      dataset,
-      xScale,
-      yScale,
-      rectColorScale,
-      tileSize,
-      hoveredRectangle
-    };
+  shouldComponentUpdate(nextProps: Readonly<HeatMapRectanglesProps>): boolean {
+    return !equalProps(this.props, nextProps);
   }
 
   render() {
-    const {
-      width,
-      height,
-      count,
-      dataset,
-      xScale,
-      yScale,
-      rectColorScale,
-      tileSize,
-      hoveredRectangle
-    } = this.setup();
+    const { series, colorScale, xScale, yScale, gap, tileSize, dataset } = this.props;
+
+    const [height] = yScale.range();
+    const [, width] = xScale.range();
 
     return (
       <div className="heatmap-rectangles-container">
-        <svg width={width} height={height} ref={rect => this.rect = rect as any}>
-          <rect x={0} y={0} width={width} height={height} fill={white} />
+        <svg width={width} height={height}>
+          <rect x={0} y={0} width={width} height={height} fill="#fff" />
           <HeatmapRect
             bins={bins}
-            count={count}
+            count={d => series.selectValue(d)}
             data={dataset}
             xScale={xScale}
             yScale={yScale}
-            colorScale={rectColorScale}
+            colorScale={colorScale}
             binWidth={tileSize}
             binHeight={tileSize}
-            gap={2}
+            gap={gap}
           >
-            {heatmap => heatmap.map((bins, index) => (
-                <HeatMapRectangleRow
-                  key={`heatmap-rect-row-${bins[0].column}`}
-                  bins={bins}
-                  hoveredBin={(hoveredRectangle && hoveredRectangle.column === index) ? hoveredRectangle.row : -1}
-                />
-              )
-            )
-            }
+            {heatmap => heatmap.map(bins => (
+              <HeatMapRectangleRow
+                key={`heatmap-rect-row-${bins[0].column}`}
+                bins={bins} />
+            ))}
           </HeatmapRect>
         </svg>
-        <GlobalEventListener mouseMove={this.handleMouseMove} />
       </div>
     );
   }
