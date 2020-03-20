@@ -79,7 +79,7 @@ export class Predicates {
 
   public static noSelectedMeasures(): VisualizationIndependentPredicate {
     return ({ series }) => {
-      return series.count() === 0;
+      return series.isEmpty();
     };
   }
 }
