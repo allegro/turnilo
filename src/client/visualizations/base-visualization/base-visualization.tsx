@@ -22,6 +22,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Series } from "../../../common/models/series/series";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { Visualization } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise, noop } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
@@ -42,7 +43,7 @@ export interface BaseVisualizationState {
 }
 
 export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
-  protected className = "base-visualization";
+  protected className: Visualization = null;
 
   constructor(props: VisualizationProps) {
     super(props);
@@ -202,10 +203,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this.setState({ highlight: null });
   };
 
-  protected highlight(clauses: List<FilterClause>, key: string) {
+  protected highlight = (clauses: List<FilterClause>, key: string | null = null) => {
     const highlight = new Highlight(clauses, key);
     this.setState({ highlight });
-  }
+  };
 
   deriveDatasetState(dataset: Dataset): Partial<S> {
     return {};

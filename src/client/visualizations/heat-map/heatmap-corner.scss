@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-import { Bin } from "@vx/heatmap";
-import * as React from "react";
+@import '../../imports';
 
-interface HeatMapRectangleRowProps {
-  bins: Bin[];
+.heatmap-corner {
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid $border-super-light;
+  border-left: 0;
+  border-top: 0;
 }
 
-export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {
-  render() {
-    const { bins } = this.props;
-    return bins.map(bin => <rect
-      key={`heatmap-rect-${bin.row}-${bin.column}`}
-      width={bin.width}
-      height={bin.height}
-      x={bin.y}
-      y={bin.x}
-      fill={bin.color}
-      fillOpacity={bin.opacity}
-    />);
+.heatmap-corner-overflow-label {
+  @include ellipsis;
+  display: inline-block;
+}
+
+.heatmap-corner-row-title {
+  position: absolute;
+  bottom: 5px;
+}
+
+.heatmap-corner-column-title {
+  position: absolute;
+  bottom: 0;
+
+  .heatmap-corner-overflow-label {
+    transform: rotate(270deg);
+    transform-origin: left;
   }
 }

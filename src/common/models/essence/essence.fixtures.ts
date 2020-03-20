@@ -17,6 +17,7 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
+import { HEAT_MAP_MANIFEST } from "../../visualization-manifests/heat-map/heat-map";
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
@@ -84,6 +85,29 @@ export class EssenceFixtures {
     return {
       dataCube: DataCubeFixtures.twitter()
     };
+  }
+
+  static wikiHeatmap(): Essence {
+    const filterClauses = [
+      timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z"))
+    ];
+    const splitCombines = [
+      stringSplitCombine("channel", { sort: { reference: "added", direction: SortDirection.descending }, limit: 50 }),
+      stringSplitCombine("namespace", { sort: { reference: "added", direction: SortDirection.descending }, limit: 5 })
+    ];
+    return new Essence({
+      dataCube: DataCubeFixtures.wiki(),
+      visualization: HEAT_MAP_MANIFEST,
+      visualizationSettings: HEAT_MAP_MANIFEST.visualizationSettings.defaults,
+      timezone: Timezone.fromJS("Etc/UTC"),
+      timeShift: TimeShift.empty(),
+      filter: Filter.fromClauses(filterClauses),
+      splits: new Splits({ splits: List(splitCombines) }),
+      series: SeriesList.fromMeasureNames(["added"]),
+      pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
+      colors: null,
+      pinnedSort: "delta"
+    });
   }
 
   static wikiTable(): Essence {
