@@ -83,6 +83,23 @@ export class DimensionFixtures {
     });
   }
 
+  static wikiIsRobot(): Dimension {
+    return new Dimension({
+      name: "isRobot",
+      title: "Is Robot",
+      formula: "$isRobot",
+      kind: "boolean"
+    });
+  }
+
+  static wikiChannel(): Dimension {
+    return new Dimension({
+      name: "channel",
+      title: "Channel",
+      formula: "$channel"
+    });
+  }
+
   static countryString() {
     return Dimension.fromJS(DimensionFixtures.COUNTRY_STRING_JS);
   }
