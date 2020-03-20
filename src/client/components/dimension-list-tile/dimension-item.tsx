@@ -55,14 +55,15 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
   return <div
     className={className}
     key={name}
-    onClick={handleClick}
     draggable={true}
     onDragStart={handleDragStart}
   >
-    <div className="icon">
-      <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
+    <div className="label-icon-container" onClick={handleClick}>
+      <div className="icon">
+        <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
+      </div>
+      <HighlightString className={"label"} text={title} highlight={searchText} />
     </div>
-    <HighlightString className={classNames("label")} text={title} highlight={searchText} />
     {description && <InfoBubble className={infoBubbleClassName} description={description} />}
   </div>;
 };
