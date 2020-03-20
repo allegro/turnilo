@@ -189,6 +189,12 @@ The cluster that the data cube belongs to (or "native" if this is a file based d
 
 Druid data source name or names. Multiple names result in [Union Data Source](http://druid.io/docs/latest/querying/datasource.html)
 
+**group** (string), default: null
+
+Name of group which data cube belongs to. Data cubes in same source should have same domain and similar schema.
+If data cubes have same group, turnilo will preserve filters, splits and series when switching between them. 
+Group names are just arbitrary string, they do not need any additional definition.
+
 **defaultTimezone** (string - timezone)
 
 The default timezone, expressed as an [Olsen Timezone](https://en.wikipedia.org/wiki/Tz_database),
