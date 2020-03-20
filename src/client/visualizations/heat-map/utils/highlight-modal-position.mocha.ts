@@ -42,7 +42,7 @@ const defaults: CoordinatesProps = {
 
 const mockProps = (props: Partial<CoordinatesProps> = {}): CoordinatesProps => ({ ...defaults, ...props });
 
-describe.only("highlightModalPosition", () => {
+describe("highlightModalPosition", () => {
   describe("calculateLeft", () => {
     describe("with existing column", () => {
       it("should return correct value", () => {
