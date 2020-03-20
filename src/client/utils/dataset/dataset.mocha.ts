@@ -18,43 +18,58 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import { Dataset } from "plywood";
+import { DimensionSort, SortDirection } from "../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../common/models/split/split";
 import { SPLIT } from "../../config/constants";
 import "../../utils/test-utils";
-import {
-  fillDatasetWithMissingValues,
-  orderByNumberRangeDimensionIncreasing,
-  orderByTimeDimensionDecreasing,
-  orderByTimeDimensionIncreasing,
-  orderByValueDecreasing,
-  orderByValueIncreasing
-} from "./dataset";
+import { fillDatasetWithMissingValues } from "./dataset";
 import { expectedDataset, expectedDatasetReversed, rawDataset, rawDatasetWithTimeDimension, rawDataWithNumberRanges, reversedDatasetWithTimeDimension } from "./test-fixtures";
 
 const timezone = Timezone.UTC;
 
+const mockSplit = (reference: string, type: SplitType, direction: SortDirection) =>
+  new Split({ reference, type, sort: new DimensionSort({ reference, direction }) });
+
+const pickNestedDataset = (dataset: Dataset) => Dataset.fromJS(dataset.data[0][SPLIT] as Dataset);
+
 describe("Dataset", () => {
   it("works", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", orderByValueDecreasing, timezone).toJS())
-      .to.deep.equal(Dataset.fromJS(expectedDataset.data[0][SPLIT] as Dataset).toJS());
+    const siteSplit = mockSplit("site", SplitType.string, SortDirection.descending);
+    const inputDataset = pickNestedDataset(rawDataset);
+    const expectedInnerDataset = pickNestedDataset(expectedDataset);
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "pv_count", siteSplit, timezone);
+    expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works reversed", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDataset.data[0][SPLIT] as Dataset), "pv_count", "site", orderByValueIncreasing, timezone).toJS())
-      .to.deep.equal(Dataset.fromJS(expectedDatasetReversed.data[0][SPLIT] as Dataset).toJS());
+    const siteSplit = mockSplit("site", SplitType.string, SortDirection.ascending);
+    const inputDataset = pickNestedDataset(rawDataset);
+    const expectedInnerDataset = pickNestedDataset(expectedDatasetReversed);
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "pv_count", siteSplit, timezone);
+    expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works with time dimension", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionIncreasing, timezone).toJS())
-      .to.deep.equal(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
+    const timeSplit = mockSplit("__time", SplitType.time, SortDirection.ascending);
+    const inputDataset = pickNestedDataset(rawDatasetWithTimeDimension);
+    const expectedInnerDataset = pickNestedDataset(rawDatasetWithTimeDimension);
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "click", timeSplit, timezone);
+    expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works when reversing time dimension", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDatasetWithTimeDimension.data[0][SPLIT] as Dataset), "click", "__time", orderByTimeDimensionDecreasing, timezone).toJS())
-    .to.deep.equal(Dataset.fromJS(reversedDatasetWithTimeDimension.data[0][SPLIT] as Dataset).toJS());
+    const timeSplit = mockSplit("__time", SplitType.time, SortDirection.descending);
+    const inputDataset = pickNestedDataset(rawDatasetWithTimeDimension);
+    const expectedInnerDataset = pickNestedDataset(reversedDatasetWithTimeDimension);
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "click", timeSplit, timezone);
+    expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works with number ranges", () => {
-    expect(fillDatasetWithMissingValues(Dataset.fromJS(rawDataWithNumberRanges.data[0][SPLIT] as Dataset), "added", "deltaBucket100", orderByNumberRangeDimensionIncreasing, timezone).toJS())
-    .to.deep.equal(Dataset.fromJS(rawDataWithNumberRanges.data[0][SPLIT] as Dataset).toJS());
+    const deltaSplit = mockSplit("deltaBucket100", SplitType.number, SortDirection.ascending);
+    const inputDataset = pickNestedDataset(rawDataWithNumberRanges);
+    const expectedInnerDataset = pickNestedDataset(rawDataWithNumberRanges);
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "added", deltaSplit, timezone);
+    expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 });
