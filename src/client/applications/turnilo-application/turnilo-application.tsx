@@ -277,6 +277,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
       case CUBE:
         return <CubeView
+          key={selectedItem.name}
           dataCube={selectedItem}
           appSettings={appSettings}
           initTimekeeper={timekeeper}
