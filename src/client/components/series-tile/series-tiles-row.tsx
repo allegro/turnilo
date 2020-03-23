@@ -15,9 +15,7 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
-import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { QuantileSeries } from "../../../common/models/series/quantile-series";
@@ -27,14 +25,13 @@ import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants"
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
+import { CubeContext, CubeContextValue } from "../../views/cube-view/cube-context";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSeries } from "./add-series";
 import { SeriesTiles } from "./series-tiles";
 import "./series-tiles-row.scss";
 
 interface SeriesTilesRowProps {
-  clicker: Clicker;
-  essence: Essence;
   menuStage: Stage;
 }
 
@@ -51,12 +48,14 @@ interface SeriesTilesRowState {
 }
 
 export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
+  static contextType = CubeContext;
 
   state: SeriesTilesRowState = {};
   private items = React.createRef<HTMLDivElement>();
 
   private maxItems(): number {
-    const { menuStage, essence: { series } } = this.props;
+    const { essence: { series } } = this.context;
+    const { menuStage } = this.props;
     return menuStage && getMaxItems(menuStage.width, series.count());
   }
 
@@ -69,7 +68,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     this.setState({
       placeholderSeries: {
         series,
-        index: this.props.essence.series.count()
+        index: this.context.essence.series.count()
       }
     });
   }
@@ -85,24 +84,24 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   closeOverflowMenu = () => this.setState({ overflowOpen: false });
 
   updateSeries = (oldSeries: Series, series: Series) => {
-    const { essence, clicker } = this.props;
+    const { essence, clicker } = this.context;
     clicker.changeSeriesList(essence.series.replaceSeries(oldSeries, series));
   };
 
   savePlaceholderSeries = (series: Series) => {
-    const { clicker } = this.props;
+    const { clicker } = this.context;
     clicker.addSeries(series);
     this.removePlaceholderSeries();
   };
 
   removeSeries = (series: Series) => {
-    const { clicker } = this.props;
+    const { clicker } = this.context;
     clicker.removeSeries(series);
     this.closeOverflowMenu();
   };
 
   canDrop(): boolean {
-    const { essence: { series: seriesList } } = this.props;
+    const { essence: { series: seriesList } } = this.context;
     const measure = DragManager.draggingMeasure();
     if (measure) return !seriesList.hasMeasure(measure);
     return DragManager.isDraggingSeries();
@@ -120,7 +119,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
-    const { essence } = this.props;
+    const { essence } = this.context;
     const numItems = essence.series.count();
     const rect = this.items.current.getBoundingClientRect();
     const x = getXFromEvent(e);
@@ -168,7 +167,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
-    const { clicker, essence: { series } } = this.props;
+    const { clicker, essence: { series } } = this.context;
     const isDuplicateQuantile = newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
     if (isDuplicateQuantile) {
       if (dragPosition.isReplace()) {
@@ -183,7 +182,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   }
 
   private rearrangeSeries(series: Series, dragPosition: DragPosition) {
-    const { clicker, essence } = this.props;
+    const { clicker, essence } = this.context;
 
     if (dragPosition.isReplace()) {
       clicker.changeSeriesList(essence.series.replaceByIndex(dragPosition.replace, series));
@@ -195,9 +194,9 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   appendMeasureSeries = (measure: Measure) => {
     const series = fromMeasure(measure);
     const isMeasureSeries = series instanceof MeasureSeries;
-    const isUniqueQuantile = !this.props.essence.series.hasSeries(series);
+    const isUniqueQuantile = !this.context.essence.series.hasSeries(series);
     if (isMeasureSeries || isUniqueQuantile) {
-      this.props.clicker.addSeries(series);
+      this.context.clicker.addSeries(series);
       return;
     }
     this.appendPlaceholder(series);
@@ -205,7 +204,8 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
 
   render() {
     const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;
-    const { menuStage, essence } = this.props;
+    const { essence } = this.context;
+    const { menuStage } = this.props;
     return <div className="series-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.series}</div>
       <div className="items" ref={this.items}>
