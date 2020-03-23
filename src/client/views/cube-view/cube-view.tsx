@@ -16,6 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
+import memoizeOne from "memoize-one";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
@@ -62,6 +63,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations";
+import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
 
@@ -522,6 +524,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
   };
 
+  private getCubeContext(): CubeContextValue {
+    const { essence } = this.state;
+    return this.constructContext(essence,  this.clicker);
+  }
+
+  private constructContext = memoizeOne(
+    (essence: Essence, clicker: Clicker) =>
+      ({ essence, clicker }),
+    ([nextEssence, nextClicker]: [Essence, Clicker], [prevEssence, prevClicker]: [Essence, Clicker]) =>
+      nextEssence.equals(prevEssence) && nextClicker === prevClicker);
+
   render() {
     const clicker = this.clicker;
 
@@ -549,7 +562,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       updatingMaxTime={updatingMaxTime}
     />;
 
-    return <React.Fragment>
+    return <CubeContext.Provider value={this.getCubeContext()}>
       <div className="cube-view">
         <GlobalEventListener resize={this.globalResizeListener} />
         {headerBar}
@@ -593,12 +606,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   essence={essence}
                   menuStage={visualizationStage}
                 />
-                <SeriesTilesRow
-                  ref={this.seriesTile}
-                  clicker={clicker}
-                  essence={essence}
-                  menuStage={visualizationStage}
-                />
+                <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage} />
               </div>
               <VisSelector clicker={clicker} essence={essence} />
               <div className="pinboard-toggle"
@@ -646,7 +654,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         {this.renderUrlShortenerModal()}
       </div>
       {this.renderSideDrawer()}
-    </React.Fragment>;
+    </CubeContext.Provider>;
   }
 
   sideDrawerOpen = () => {
