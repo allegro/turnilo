@@ -29,6 +29,7 @@ global.document = document;
 global.window = document.defaultView;
 // setup for type-detect, should be solved in https://github.com/chaijs/type-detect/pull/129
 global.HTMLElement = global.window.HTMLElement;
+global.XMLHttpRequest = global.window.XMLHttpRequest;
 // setup for React
 global.navigator = {userAgent: 'testing'};
 
