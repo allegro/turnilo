@@ -97,19 +97,9 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
-  essenceForDataCube(dataCube: DataCube): Essence | null {
-    const { essence } = this.props;
-    const { dataCube: currentCube } = essence;
-    if (dataCube === currentCube || !currentCube.sameGroup(dataCube)) {
-      return null;
-    }
-    return essence.updateDataCube(dataCube);
-  }
-
   navigateToCube = (dataCube: DataCube) => {
-    const { onClose, changeDataCubeAndEssence } = this.props;
-    const essence = this.essenceForDataCube(dataCube);
-    changeDataCubeAndEssence(dataCube, essence);
+    const { onClose, essence, changeDataCubeAndEssence } = this.props;
+    changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube));
     onClose();
   };
 

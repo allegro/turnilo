@@ -999,10 +999,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public changeMeasures(measures: List<Measure>) {
     return this.change("measures", measures);
   }
-
-  public sameGroup(otherDataCube: DataCube): boolean {
-    return Boolean(this.group && this.group === otherDataCube.group);
-  }
 }
 
 check = DataCube;
