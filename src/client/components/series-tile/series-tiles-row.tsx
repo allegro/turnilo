@@ -49,6 +49,7 @@ interface SeriesTilesRowState {
 
 export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
   static contextType = CubeContext;
+  context: CubeContextValue;
 
   state: SeriesTilesRowState = {};
   private items = React.createRef<HTMLDivElement>();
