@@ -78,8 +78,6 @@ export class Predicates {
   }
 
   public static noSelectedMeasures(): VisualizationIndependentPredicate {
-    return ({ series }) => {
-      return series.isEmpty();
-    };
+    return ({ series }) => series.isEmpty();
   }
 }

@@ -27,12 +27,7 @@ export interface HeaderBarProps {
 export const HeaderBar: React.SFC<HeaderBarProps> = props => {
   const { customization, title } = props;
 
-  let headerStyle: any = null;
-  if (customization && customization.headerBackground) {
-    headerStyle = {
-      background: customization.headerBackground
-    };
-  }
+  const headerStyle: React.CSSProperties = customization && customization.headerBackground && { background: customization.headerBackground };
 
   return <header className="header-bar" style={headerStyle}>
     <div className="left-bar">
