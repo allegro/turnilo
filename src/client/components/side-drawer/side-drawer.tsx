@@ -19,8 +19,9 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { Essence } from "../../../common/models/essence/essence";
+import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { ViewType } from "../../applications/turnilo-application/turnilo-application";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
@@ -31,13 +32,12 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 import "./side-drawer.scss";
 
 export interface SideDrawerProps {
-  selectedItem: DataCube;
+  essence: Essence;
   dataCubes: DataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  itemHrefFn?: (oldItem?: DataCube, newItem?: DataCube) => string;
-  viewType: ViewType;
+  changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
 }
 
 function openHome() {
@@ -86,11 +86,9 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   private renderHomeLink() {
-    const { viewType } = this.props;
-
     return <div className="home-container">
       <div
-        className={classNames("home-link", { selected: viewType === "home" })}
+        className={classNames("home-link")}
         onClick={openHome}
       >
         <SvgIcon svg={require("../../icons/home.svg")} />
@@ -99,8 +97,14 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
+  navigateToCube = (dataCube: DataCube) => {
+    const { onClose, essence, changeDataCubeAndEssence } = this.props;
+    changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube));
+    onClose();
+  };
+
   private renderDataCubeList(): JSX.Element {
-    const { dataCubes, itemHrefFn, selectedItem } = this.props;
+    const { dataCubes, essence: { dataCube } } = this.props;
     const { query } = this.state;
 
     const cubes = filterDataCubes(dataCubes, query, false);
@@ -109,14 +113,17 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       return <div className="data-cubes__message">{message}</div>;
     }
     const navLinks = cubes.map(dataCube => {
-      const hash = itemHrefFn(selectedItem, dataCube);
-      const { name, title } = dataCube;
-      const href = `#${name}/${hash}`;
-      return { name, title, href };
-    });
+        const { name, title } = dataCube;
+        return {
+          name,
+          title,
+          onClick: () => this.navigateToCube(dataCube)
+        };
+      }
+    );
 
     return <NavList
-      selected={selectedItem ? selectedItem.name : null}
+      selected={dataCube.name}
       navLinks={navLinks}
       iconSvg={require("../../icons/full-cube.svg")}
     />;
