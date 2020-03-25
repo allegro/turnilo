@@ -526,7 +526,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   private getCubeContext(): CubeContextValue {
     const { essence } = this.state;
-    return this.constructContext(essence,  this.clicker);
+    /*
+     React determine context value change using value reference.
+     Because we're creating new object, reference would be different despite same values inside,
+     hence memoization. More info: https://reactjs.org/docs/context.html#caveats
+    */
+    return this.constructContext(essence, this.clicker);
   }
 
   private constructContext = memoizeOne(
