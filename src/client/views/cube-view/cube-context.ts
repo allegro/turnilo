@@ -24,6 +24,10 @@ export interface CubeContextValue {
 }
 
 export const CubeContext = React.createContext<CubeContextValue>({
-  essence: null,
-  clicker: null
+  get essence(): Essence {
+    throw new Error("Attempted to consume CubeContext when there was no Provider in place.");
+  },
+  get clicker(): Clicker {
+    throw new Error("Attempted to consume CubeContext when there was no Provider in place.");
+  }
 });
