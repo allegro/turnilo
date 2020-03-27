@@ -17,7 +17,6 @@
 
 import { Duration } from "chronoshift";
 import * as React from "react";
-import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
@@ -25,7 +24,7 @@ import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on"
 import { Sort } from "../../../common/models/sort/sort";
 import { Bucket, Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import { Ternary } from "../../../common/utils/functional/functional";
+import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
@@ -38,7 +37,7 @@ import "./split-menu.scss";
 
 export interface SplitMenuProps {
   essence: Essence;
-  saveSplit: Ternary<Split, Split, Colors, void>;
+  saveSplit: Binary<Split, Split, void>;
   openOn: Element;
   containerStage: Stage;
   onClose: Fn;
@@ -51,26 +50,21 @@ export interface SplitMenuState {
   granularity?: string;
   sort?: Sort;
   limit?: number;
-  colors?: Colors;
 }
 
 export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
-  public mounted: boolean;
 
   state: SplitMenuState = {};
 
   componentWillMount() {
-    const { essence: { colors }, split } = this.props;
+    const { split } = this.props;
     const { bucket, reference, sort, limit } = split;
-
-    const colorsDimensionMatch = colors && colors.dimension === split.reference;
 
     this.setState({
       reference,
       sort,
       limit,
-      granularity: bucket && granularityToString(bucket),
-      colors: colorsDimensionMatch ? colors : null
+      granularity: bucket && granularityToString(bucket)
     });
   }
 
@@ -88,7 +82,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   saveSort = (sort: Sort) => this.setState({ sort });
 
-  saveLimit = (limit: number, colors: Colors) => this.setState({ colors, limit });
+  saveLimit = (limit: number) => this.setState({ limit });
 
   onCancelClick = () => this.props.onClose();
 
@@ -96,7 +90,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     if (!this.validate()) return;
     const { split, saveSplit, onClose } = this.props;
     const newSplit = this.constructSplitCombine();
-    saveSplit(split, newSplit, this.state.colors);
+    saveSplit(split, newSplit);
     onClose();
   };
 
@@ -120,13 +114,12 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   validate() {
-    const { dimension: { kind }, split: originalSplit, essence: { colors: originalColors } } = this.props;
+    const { dimension: { kind }, split: originalSplit  } = this.props;
     if (!isGranularityValid(kind, this.state.granularity)) {
       return false;
     }
     const newSplit: Split = this.constructSplitCombine();
-    return !originalSplit.equals(newSplit)
-      || (originalColors && !originalColors.equals(this.state.colors));
+    return !originalSplit.equals(newSplit);
   }
 
   renderSortDropdown() {
@@ -145,7 +138,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   render() {
     const { containerStage, openOn, dimension, onClose } = this.props;
-    const { colors, granularity, limit } = this.state;
+    const { granularity, limit } = this.state;
     if (!dimension) return null;
 
     return <BubbleMenu
@@ -163,7 +156,6 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       />
       {this.renderSortDropdown()}
       <LimitDropdown
-        colors={colors}
         onLimitSelect={this.saveLimit}
         limit={limit}
         includeNone={dimension.isContinuous()} />

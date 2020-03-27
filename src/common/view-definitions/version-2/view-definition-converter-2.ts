@@ -33,7 +33,6 @@ import {
   TimeRange,
   TimeRangeExpression
 } from "plywood";
-import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
@@ -75,7 +74,6 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
     const splits = Splits.fromSplits(splitJSConverter(definition.splits, dataCube));
     const timeShift = TimeShift.empty();
-    const colors = definition.colors && Colors.fromJS(definition.colors);
     const pinnedSort = definition.pinnedSort;
 
     return new Essence({
@@ -88,7 +86,6 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
       splits,
       pinnedDimensions,
       series,
-      colors,
       pinnedSort
     });
   }

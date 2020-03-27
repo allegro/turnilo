@@ -22,6 +22,7 @@ import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, NumberRange, NumberRangeJS, PlywoodRange, Range, TimeRange, TimeRangeJS } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { NORMAL_COLORS } from "../../../common/models/colors/colors";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
@@ -127,11 +128,6 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const scaleX = this.getScaleX(this.getContinuousDimension().kind as ContinuousDimensionKind, axisRange, width);
       this.setState({ scaleX });
     }
-  }
-
-  protected shouldFetchData(props: VisualizationProps): boolean {
-    const { essence } = props;
-    return this.differentVisualizationDefinition(props) || essence.differentColors(this.props.essence);
   }
 
   getMyEventX(e: React.MouseEvent<HTMLElement> | MouseEvent): number {
@@ -391,7 +387,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   renderChartLines(dataset: Dataset, showHoverPoint: boolean, stage: Stage, getY: Unary<Datum, number>, getYP: Unary<Datum, number>, scaleY: Linear<number, number>) {
     const { essence } = this.props;
     const hasComparison = essence.hasComparison();
-    const { splits, colors } = essence;
+    const { splits } = essence;
 
     const { hoverRange, scaleX } = this.state;
     const continuousDimension = this.getContinuousDimension();
@@ -421,14 +417,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
         }} />);
     }
 
-    const firstSplit = essence.splits.splits.first();
-    const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
-    const colorValues = colors && colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-
     return flatMap(dataset.data, (datum, i) => {
       const subDataset = datum[SPLIT] as Dataset;
       if (!subDataset) return [];
-      const color = colorValues && colorValues[i];
+      const color = NORMAL_COLORS[i];
       const doubleSplitProps = { ...lineProps, color, dataset: subDataset, showArea: false };
       return concatTruthy(
         <ChartLine {...{

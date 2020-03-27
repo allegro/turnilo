@@ -27,7 +27,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.supportedSplitsCount())
   .then(Actions.removeExcessiveSplits("Table"))
 
-  .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
+  .otherwise(({ splits, dataCube, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(split.reference);
@@ -40,11 +40,6 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
       return split;
     }));
-
-    if (colors) {
-      colors = null;
-      autoChanged = true;
-    }
 
     return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
