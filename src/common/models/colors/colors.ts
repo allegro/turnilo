@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-const NULL_COLOR = "#666666";
-// const OTHERS_COLOR = '#AAAAAA';
 export const NORMAL_COLORS = [
   "#2D95CA",
   "#EFB925",
