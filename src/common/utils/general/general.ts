@@ -16,12 +16,11 @@
  */
 
 import { Collection, List } from "immutable";
-import { Equalable, immutableArraysEqual } from "immutable-class";
 
 // The most generic function
 export type Fn = () => void;
 
-var objectHasOwnProperty = Object.prototype.hasOwnProperty;
+const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
@@ -40,8 +39,12 @@ export function isBlank(str: string): boolean {
   return str.length === 0;
 }
 
+export function isNumber(n: unknown): n is number {
+  return typeof n === "number";
+}
+
 export function isFiniteNumber(n: number): boolean {
-  return typeof n === "number" && isFinite(n) && !isNaN(n);
+  return isFinite(n) && !isNaN(n);
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {

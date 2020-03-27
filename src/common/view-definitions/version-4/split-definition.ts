@@ -19,7 +19,7 @@ import { availableLimits } from "../../../client/components/split-menu/limit-dro
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
-import { isFiniteNumber } from "../../utils/general/general";
+import { isFiniteNumber, isNumber } from "../../utils/general/general";
 
 export interface SplitSortDefinition {
   ref: string;
@@ -95,9 +95,9 @@ function fromSort(sort: Sort): SplitSortDefinition {
   return { ref, ...rest };
 }
 
-function toLimit(limit: number): number | null {
-  if (limit === null) return limit;
-  if (isFiniteNumber(limit)) return limit;
+function toLimit(limit: unknown): number | null {
+  if (limit === null) return null;
+  if (isNumber(limit) && isFiniteNumber(limit)) return limit;
   return availableLimits[0];
 }
 
