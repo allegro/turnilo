@@ -15,7 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
-import { availableLimits } from "../../../client/components/split-menu/limit-dropdown";
+import { availableLimits } from "../../limit/limit";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
