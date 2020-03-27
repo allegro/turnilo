@@ -45,11 +45,13 @@ import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Highlighter } from "../../components/highlighter/highlighter";
 import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";
 import { HighlightTooltip, HoverTooltip } from "../../components/line-chart-tooltip/line-chart-tooltip";
+import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { LineChartLegend } from "./line-chart-legend/line-chart-legend";
 import "./line-chart.scss";
 import Linear = d3.scale.Linear;
 
@@ -669,6 +671,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { axisRange, scaleX, xTicks } = this.state;
     const { splits, timezone } = essence;
 
+    const showLegend = splits.length() === 2;
     let measureCharts: JSX.Element[];
     let bottomAxis: JSX.Element;
 
@@ -712,11 +715,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
       <GlobalEventListener
         scroll={this.scrollCharts}
       />
-      <div
-        className="measure-line-charts"
+      {showLegend && <LegendSpot>
+        <LineChartLegend
+          dataset={dataset}
+          essence={essence} />
+      </LegendSpot>}
+      <div className="measure-line-charts"
         style={measureChartsStyle}
-        ref={this.container}
-      >
+        ref={this.container}>
         {measureCharts}
       </div>
       {bottomAxis}
