@@ -431,7 +431,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const seriesInNewCube = this.series.constrainToMeasures(newDataCube.measures);
     const newSeriesList = !seriesInNewCube.isEmpty()
       ? seriesInNewCube
-      : SeriesList.fromMeasureNames(newDataCube.defaultSelectedMeasures.toArray());
+      : SeriesList.fromMeasureNames(newDataCube.getDefaultSelectedMeasures().toArray());
     return this
       .set("dataCube", newDataCube)
       .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))
