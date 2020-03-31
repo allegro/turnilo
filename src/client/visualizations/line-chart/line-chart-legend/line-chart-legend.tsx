@@ -15,16 +15,45 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
+import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { NORMAL_COLORS } from "../../../../common/models/colors/colors";
 import { Essence } from "../../../../common/models/essence/essence";
+import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
+import { SPLIT } from "../../../config/constants";
 import "./line-chart-legend.scss";
 
 export interface LineChartLegendProps {
   dataset: Dataset;
   essence: Essence;
 }
+
+interface LegendValuesProps {
+  dataset: Datum[];
+  series?: ConcreteSeries;
+  splitReference: string;
+}
+
+const LegendValues: React.SFC<LegendValuesProps> = props => {
+  const { dataset, series, splitReference } = props;
+  return <div className="legend-values">
+    <table className="legend-values-table">
+      {dataset.map((datum, i) => {
+        const splitValue = String(datum[splitReference]);
+        const style = { background: NORMAL_COLORS[i] };
+        return <tr key={splitValue} className="legend-value">
+          <td className="legend-value-color-cell">
+            <div className="legend-value-color" style={style} />
+          </td>
+          <td className="legend-value-label">
+            <span className="legend-value-name">{splitValue}</span>
+          </td>
+          {series && <td className="legend-value-measure">{series.formatValue(datum)}</td>}
+        </tr>;
+      })}
+    </table>
+  </div>;
+};
 
 export const LineChartLegend: React.SFC<LineChartLegendProps> = props => {
   const { essence, dataset } = props;
@@ -37,22 +66,9 @@ export const LineChartLegend: React.SFC<LineChartLegendProps> = props => {
     <div className="legend-header">
       {legendSplit.getTitle(legendDimension)}
     </div>
-    <div className="legend-values">
-      <table className="legend-values-table">
-        {(dataset.data[0]["SPLIT"] as Dataset).data.map((datum, i) => {
-          const splitValue = String(datum[legendSplit.reference]);
-          const style = { background: NORMAL_COLORS[i] };
-          return <tr key={splitValue} className="legend-value">
-            <td className="legend-value-color-cell">
-              <div className="legend-value-color" style={style} />
-            </td>
-            <td className="legend-value-label">
-              <span className="legend-value-name">{splitValue}</span>
-            </td>
-            {series && <td className="legend-value-measure">{series.formatValue(datum)}</td>}
-          </tr>;
-        })}
-      </table>
-    </div>
+      <LegendValues
+        dataset={(dataset.data[0][SPLIT] as Dataset).data}
+        series={series}
+        splitReference={legendSplit.reference} />
   </div>;
 };
