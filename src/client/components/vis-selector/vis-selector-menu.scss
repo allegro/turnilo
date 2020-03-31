@@ -25,13 +25,11 @@
       border-radius: $corner;
 
       &:hover {
-        box-shadow: inset 0 0 0 1px map-get($theme-colors, 'border-extra-light');
-        box-shadow: inset 0 0 0 1px var(--border-extra-light); // sass-lint:disable-line no-duplicate-properties
+        @include box-shadow-css-variable(0, 0, 0, 1px, border-extra-light)
       }
 
       &.selected {
-        box-shadow: inset 0 0 0 1px map-get($theme-colors, 'border-light');
-        box-shadow: inset 0 0 0 1px var(--border-light); // sass-lint:disable-line no-duplicate-properties
+        @include box-shadow-css-variable(0, 0, 0, 1px, border-light)
       }
     }
   }

@@ -8,3 +8,8 @@
   #{$prop}: #{$width} #{$style} #{map-get($theme-colors, $var)};
   #{$prop}: #{$width} #{$style} var(--#{$var});
 }
+
+@mixin box-shadow-css-variable($offset-x, $offset-y, $blur-radius, $spread-radius, $var) {
+  box-shadow: inset #{$offset-x} #{$offset-y} #{$blur-radius} #{$spread-radius} #{map-get($theme-colors, $var)};
+  box-shadow: inset #{$offset-x} #{$offset-y} #{$blur-radius} #{$spread-radius} var(--#{$var});
+}
