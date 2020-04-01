@@ -17,10 +17,10 @@
 
 import { Timezone } from "chronoshift";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { LOGGER } from "../../logger/logger";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
-import { LOGGER } from "../../logger/logger";
 
 const availableCssVariables = [
   "background-base",
