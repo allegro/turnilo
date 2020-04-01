@@ -31,23 +31,27 @@ export interface PinboardMeasureTileProps {
   onSelect: (sel: SortOn) => void;
 }
 
+const renderSelectedItem = (item: SortOn) => item ? SortOn.getTitle(item) : "---";
+
 export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props => {
   const { essence, title, dimension, sortOn, onSelect } = props;
 
   const sortOns = concatTruthy(
     dimension && new DimensionSortOn(dimension),
+    // FIX: we can't sort in pinboard on complex series, only simple series
     ...essence.seriesSortOns(false).toArray()
   );
 
   return <div className="pinboard-measure-tile">
     <div className="title">{title}</div>
-    {sortOn && <Dropdown<SortOn>
+    <Dropdown<SortOn>
       items={sortOns}
       selectedItem={sortOn}
       equal={SortOn.equals}
       renderItem={SortOn.getTitle}
+      renderSelectedItem={renderSelectedItem}
       keyItem={SortOn.getKey}
-      onSelect={onSelect}
-    />}
+      onSelect={onSelect} />
+    {!sortOn && <div className="pinboard-sort-error">No measure selected.</div>}
   </div>;
 };
