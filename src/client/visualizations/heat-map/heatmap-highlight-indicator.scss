@@ -23,8 +23,8 @@
 
   &::after {
     @include unpin-full(-1px);
+    @include border-css-variable(border, 1px, dashed, highlight-border);
     content: '';
-    border: 1px dashed $highlight-border;
   }
 
   &.heatmap-highlighter-column {

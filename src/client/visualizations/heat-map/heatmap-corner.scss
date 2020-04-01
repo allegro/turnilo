@@ -18,9 +18,9 @@
 @import '../../imports';
 
 .heatmap-corner {
+  @include border-css-variable(border, 1px, solid, border-super-light);
   height: 100%;
   background-color: #fff;
-  border: 1px solid $border-super-light;
   border-left: 0;
   border-top: 0;
 }

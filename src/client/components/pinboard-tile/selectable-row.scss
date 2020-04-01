@@ -20,8 +20,8 @@ $measure-width: 80px;
 $checkbox-width: 20px;
 
 .pinboard-selectable-row {
+  @include css-variable(color, text-lighterish);
   height: $pin-item-height;
-  color: $text-lighterish;
   cursor: pointer;
 
   &.selected {
