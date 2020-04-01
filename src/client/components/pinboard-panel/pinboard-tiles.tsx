@@ -34,9 +34,8 @@ interface PinboardTilesProps {
 }
 
 function pinnedSortOn(essence: Essence): SortOn | null {
-  const pinnedSortMeasure = essence.getPinnedSortMeasure();
-  const pinnedSortSeries = pinnedSortMeasure && essence.findConcreteSeries(pinnedSortMeasure.name);
-  return pinnedSortSeries && new SeriesSortOn(pinnedSortSeries);
+  const sortSeries = essence.getPinnedSortSeries();
+  return sortSeries && new SeriesSortOn(sortSeries);
 }
 
 function pinnedDimensions(essence: Essence): Dimension[] {
@@ -46,7 +45,6 @@ function pinnedDimensions(essence: Essence): Dimension[] {
 
 export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
   const { essence, timekeeper, clicker, hidePlaceholder } = props;
-  const { dataCube } = essence;
   const tileDimensions = pinnedDimensions(essence);
   const sortOn = pinnedSortOn(essence);
 
@@ -56,11 +54,14 @@ export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
       essence={essence}
       title={STRINGS.pinboard}
       sortOn={sortOn}
-      onSelect={sortOn =>
-        clicker.changePinnedSortMeasure(dataCube.getMeasure(sortOn.key))}
+      onSelect={sortOn => {
+        const series = essence.series.getSeriesWithKey(sortOn.key);
+        clicker.changePinnedSortSeries(series);
+      }}
     />
 
     {sortOn && tileDimensions.map(dimension => <PinboardTile
+      key={dimension.name}
       essence={essence}
       clicker={clicker}
       dimension={dimension}
