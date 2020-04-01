@@ -18,6 +18,8 @@ declare module "@vx/*";
 
 declare module "@vx/heatmap" {
 
+  import { ColorScale, LinearScale } from "./visualizations/heat-map/utils/scales";
+
   interface Bin {
     width: number;
     height: number;
@@ -33,14 +35,15 @@ declare module "@vx/heatmap" {
     bins(rawDataPoint: any): any;
     count(rawDataPoint: any): number;
     data: any[];
-    xScale: d3.scale.Linear<any, any>;
-    yScale: d3.scale.Linear<any, any>;
-    colorScale: d3.scale.Linear<any, any>;
+    xScale: LinearScale;
+    yScale: LinearScale;
+    colorScale: ColorScale;
     binWidth: number;
     binHeight: number;
     gap: number;
     children?: (heatmap: Bin[][]) => React.ReactNode;
   }
+
   export class HeatmapRect extends React.Component<HeatmapRectProps> {
 
   }
@@ -53,22 +56,10 @@ declare module "@vx/scale" {
     domain: [number, number];
   }
 
-  export const scaleLinear: <Range, Output = any>(options: ScaleLinearOptions<Range, Output>) => d3.scale.Linear<number, number>;
+  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => d3.scale.Linear<Range, Output>;
 }
 
 declare module "@vx/tooltip" {
-  export interface TooltipProps<D> {
-    tooltipOpen: boolean;
-    tooltipLeft: number;
-    tooltipTop: number;
-    tooltipData: D;
-    hideTooltip: () => void;
-    showTooltip: (
-      args: { tooltipLeft: number; tooltipTop: number; tooltipData: D }
-    ) => void;
-  }
-  export const withTooltip: <P>(component: React.ComponentType<P & TooltipProps<any>>, options: any) => React.ComponentType<P>;
-
   interface TooltipWithBoundsProps {
     key: number | string;
     top: number;

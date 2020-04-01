@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +14,10 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
+import { BooleanFilterClause, FilterClause, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 
-.no-data-header-bar {
-  @extend %header-bar;
+export type PinnableClause = StringFilterClause | BooleanFilterClause;
+
+export function isPinnableClause(clause?: FilterClause): clause is PinnableClause {
+  return clause instanceof StringFilterClause || clause instanceof BooleanFilterClause;
 }

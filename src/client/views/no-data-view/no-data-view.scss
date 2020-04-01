@@ -20,10 +20,6 @@
 .no-data-view {
   @import '../../utils/styles/grid';
 
-  .no-data-header-bar {
-    @include pin-top($header-height);
-  }
-
   .container {
     position: absolute;
     top: 50%;

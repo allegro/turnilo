@@ -275,34 +275,6 @@ context("Split Tile", () => {
       splitMenu().find(".button-bar .primary").should("not.have.attr", "disabled");
     });
 
-    describe("String Split menu", () => {
-      it("should show split menu for string dimension", () => {
-        splitTile("Page").click();
-
-        splitMenu().should("exist");
-      });
-
-      it("string split menu has sort controls", () => {
-        splitTile("Page").click();
-
-        splitMenu().find(".sort-direction").within(() => {
-          cy.get(".direction").should("have.class", "descending");
-          cy.get(".dropdown-label").should("contain", "Sort by");
-          cy.get(".dropdown .selected-item").should("contain", "Added");
-        });
-      });
-
-      it("string split menu has limit controls", () => {
-        splitTile("Page").click();
-
-        // TODO: add meaningful classnames for limit dropdown!
-        cy.get(".split-menu > .dropdown.down").within(() => {
-          cy.get(".dropdown-label").should("contain", "Limit");
-          cy.get(".selected-item").should("contain", "5");
-        });
-      });
-    });
-
     describe("Time Split menu", () => {
       it("should show split menu for time dimension", () => {
         splitTile("Time").click();

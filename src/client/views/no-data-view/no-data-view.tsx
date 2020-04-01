@@ -19,73 +19,46 @@ import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Customization } from "../../../common/models/customization/customization";
 import { Fn } from "../../../common/utils/general/general";
+import { HeaderBar } from "../../components/header-bar/header-bar";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../config/constants";
-import { NoDataHeaderBar } from "./no-data-header-bar/no-data-header-bar";
 import "./no-data-view.scss";
-
-export type Mode = "no-cluster" | "no-cube";
 
 export interface NoDataViewProps {
   appSettings?: AppSettings;
-  onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
 }
 
-export interface NoDataViewState {
-  mode?: Mode;
+function label(appSettings: AppSettings): string {
+  const { clusters } = appSettings;
+
+  const hasClusters = clusters && clusters.length > 0;
+  return !hasClusters ? STRINGS.noConnectedData : STRINGS.noQueryableDataCubes;
 }
 
-export class NoDataView extends React.Component <NoDataViewProps, NoDataViewState> {
+const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = props => {
+  return <div className="title">
+    <div className="icon">
+      <SvgIcon svg={require("../../icons/data-cubes.svg")} />
+    </div>
+    <div className="label">{label(props.appSettings)}</div>
+  </div>;
+};
 
-  static NO_CLUSTER: Mode = "no-cluster";
-  static NO_CUBE: Mode = "no-cube";
-
-  constructor(props: NoDataViewProps) {
-    super(props);
-    this.state = {};
-  }
-
-  componentWillReceiveProps(nextProps: NoDataViewProps) {
-    const { clusters } = nextProps.appSettings;
-
-    if (!clusters || !clusters.length) {
-      this.setState({
-        mode: NoDataView.NO_CLUSTER
-      });
-    } else {
-      this.setState({
-        mode: NoDataView.NO_CUBE
-      });
-    }
-  }
-
-  renderTitle(): JSX.Element {
-    const { mode } = this.state;
-    return <div className="title">
-      <div className="icon">
-        <SvgIcon svg={require("../../icons/data-cubes.svg")} />
-      </div>
-      <div className="label">{mode === NoDataView.NO_CUBE ? STRINGS.noQueryableDataCubes : STRINGS.noConnectedData}</div>
-    </div>;
-  }
-
-  render() {
-    const { onNavClick, onOpenAbout, customization } = this.props;
-    return <div className="no-data-view">
-      <NoDataHeaderBar
-        onNavClick={onNavClick}
-        customization={customization}
-        title={STRINGS.home}
-      >
-        <button className="text-button" onClick={onOpenAbout}>
-          {STRINGS.infoAndFeedback}
-        </button>
-      </NoDataHeaderBar>
-      <div className="container">
-        {this.renderTitle()}
-      </div>
-    </div>;
-  }
-}
+export const NoDataView: React.SFC<NoDataViewProps> = props => {
+  const { onOpenAbout, customization, appSettings } = props;
+  return <div className="no-data-view">
+    <HeaderBar
+      customization={customization}
+      title={STRINGS.home}
+    >
+      <button className="text-button" onClick={onOpenAbout}>
+        {STRINGS.infoAndFeedback}
+      </button>
+    </HeaderBar>
+    <div className="container">
+      <NoDataTitle appSettings={appSettings} />
+    </div>
+  </div>;
+};

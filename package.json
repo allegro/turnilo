@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.22.0",
+  "version": "1.23.1",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -51,7 +51,6 @@
     "build:dev": "npm run clean && npm run tsc -- -p src/server/tsconfig.json",
     "dev": "npm run clean && npm run tsc -- -p tsconfig.json -w --pretty",
     "clean": "rimraf build/*",
-    "check": "npm-run-all -c -p lint test build e2e",
     "tsc": "tsc",
     "lint": "npm-run-all -p lint:*",
     "lint:ts": "tslint -p . --format verbose",
@@ -59,7 +58,8 @@
     "start:examples": "npm run start -- --examples",
     "start:dev:examples": "npm run start:dev -- --examples",
     "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
-    "e2e:dev": "cypress open"
+    "e2e:dev": "cypress open",
+    "check": "npm-run-all -c -p lint test build e2e"
   },
   "dependencies": {
     "@sentry/browser": "5.0.6",
@@ -146,6 +146,7 @@
     "ignore-styles": "5.0.1",
     "immutable-class-tester": "0.5.12",
     "jsdom": "9.4.2",
+    "memoize-one": "5.1.1",
     "mime": "2.3.1",
     "mocha": "4.1.0",
     "nock": "11.0.0",
@@ -170,6 +171,7 @@
     "ts-node": "4.1.0",
     "tslint": "5.10.0",
     "tslint-eslint-rules": "5.3.1",
+    "tslint-no-focused-test": "0.5.0",
     "tslint-react": "3.6.0",
     "typescript": "3.3.1",
     "webpack": "4.41.5",

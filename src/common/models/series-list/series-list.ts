@@ -120,6 +120,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.series.count();
   }
 
+  public isEmpty(): boolean {
+    return this.series.isEmpty();
+  }
+
   private updateSeries(updater: Unary<List<Series>, List<Series>>) {
     return this.update("series", updater);
   }

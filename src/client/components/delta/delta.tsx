@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { format } from "d3";
 import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { isNil } from "../../../common/utils/general/general";
@@ -23,7 +24,7 @@ export type DeltaSign = -1 | 0 | 1;
 
 export interface DeltaAttributes {
   delta: number;
-  deltaPercentage: number;
+  deltaRatio: number;
   deltaSign: DeltaSign;
 }
 
@@ -34,9 +35,9 @@ export function formatDelta(currentValue: number, previousValue: number): DeltaA
 
   const delta = currentValue - previousValue;
   const deltaSign = delta ? delta < 0 ? -1 : 1 : 0;
-  const deltaPercentage = Math.floor((delta / previousValue) * 100);
+  const deltaRatio = Math.abs(delta / previousValue);
 
-  return { deltaSign, deltaPercentage, delta };
+  return { deltaSign, deltaRatio, delta };
 }
 
 function deltaSignToSymbol(deltaSign: DeltaSign): string {
@@ -61,6 +62,13 @@ function deltaSignToClassName(deltaSign: DeltaSign, lowerIsBetter = false): stri
   }
 }
 
+const percentageFormatter = format(".1%");
+
+function printDeltaRatio(ratio: number): string | null {
+  if (!isFinite(ratio)) return null;
+  return ` (${percentageFormatter(ratio)})`;
+}
+
 export interface DeltaProps {
   currentValue: number;
   previousValue: number;
@@ -74,10 +82,10 @@ export const Delta: React.SFC<DeltaProps> = ({ lowerIsBetter, currentValue, prev
     return <span className="delta-neutral">-</span>;
   }
 
-  const { delta, deltaPercentage, deltaSign } = formattedDelta;
+  const { delta, deltaRatio, deltaSign } = formattedDelta;
   return <span className={deltaSignToClassName(deltaSign, lowerIsBetter)}>
     {deltaSignToSymbol(deltaSign)}
     {formatter(Math.abs(delta))}
-    {isFinite(deltaPercentage) && ` (${Math.abs(deltaPercentage)}%)`}
+    {printDeltaRatio(deltaRatio)}
   </span>;
 };

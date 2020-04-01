@@ -20,25 +20,19 @@ import * as React from "react";
 
 interface HeatMapRectangleRowProps {
   bins: Bin[];
-  hoveredBin: number;
 }
 
 export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {
   render() {
-    const { bins, hoveredBin } = this.props;
-    return (
-      bins.map((bin, index) => (
-        <rect
-          key={`heatmap-rect-${bin.row}-${bin.column}`}
-          className={index === hoveredBin ? "heatmap-rectangle-hovered" : ""}
-          width={bin.width}
-          height={bin.height}
-          x={bin.y}
-          y={bin.x}
-          fill={bin.color}
-          fillOpacity={bin.opacity}
-        />
-      ))
-    );
+    const { bins } = this.props;
+    return bins.map(bin => <rect
+      key={`heatmap-rect-${bin.row}-${bin.column}`}
+      width={bin.width}
+      height={bin.height}
+      x={bin.y}
+      y={bin.x}
+      fill={bin.color}
+      fillOpacity={bin.opacity}
+    />);
   }
 }

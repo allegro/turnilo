@@ -428,14 +428,12 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public updateDataCube(newDataCube: DataCube): Essence {
     const { dataCube } = this;
     if (dataCube.equals(newDataCube)) return this;
-    const newSeriesList = this.series.constrainToMeasures(newDataCube.measures);
+    const seriesInNewCube = this.series.constrainToMeasures(newDataCube.measures);
+    const newSeriesList = !seriesInNewCube.isEmpty()
+      ? seriesInNewCube
+      : SeriesList.fromMeasureNames(newDataCube.getDefaultSelectedMeasures().toArray());
     return this
       .set("dataCube", newDataCube)
-      // Make sure that all the elements of state are still valid
-      /*
-        TODO: Tthis line was here and there was some check for old timeFilter, really don't know what was that for.
-      .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute, dataCube.timeAttribute))
-      */
       .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))
       .set("series", newSeriesList)
       .update("splits", splits => splits.constrainToDimensionsAndSeries(newDataCube.dimensions, newSeriesList))
@@ -445,7 +443,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .resolveVisualizationAndUpdate();
   }
 
-  public changeFilter(filter: Filter, removeHighlight = false): Essence {
+  public changeFilter(filter: Filter): Essence {
     const { filter: oldFilter } = this;
 
     return this
