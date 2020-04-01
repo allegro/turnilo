@@ -626,12 +626,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.update("pinnedDimensions", pinned => pinned.remove(name));
   }
 
-  public getPinnedSortMeasure(): Measure {
-    return this.dataCube.getMeasure(this.pinnedSort);
-  }
-
-  public changePinnedSortMeasure({ name }: Measure): Essence {
-    return this.set("pinnedSort", name);
+  public changePinnedSortSeries(series: Series): Essence {
+    return this.set("pinnedSort", series.plywoodKey());
   }
 
   public seriesSortOns(withTimeShift?: boolean): List<SortOn> {
@@ -645,5 +641,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
         new SeriesSortOn(series, SeriesDerivation.DELTA)
       ];
     });
+  }
+
+  public getPinnedSortSeries(): ConcreteSeries {
+    return this.findConcreteSeries(this.pinnedSort);
   }
 }

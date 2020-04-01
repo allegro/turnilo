@@ -19,7 +19,6 @@ import { Colors } from "../colors/colors";
 import { Dimension } from "../dimension/dimension";
 import { VisStrategy } from "../essence/essence";
 import { Filter } from "../filter/filter";
-import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { Series } from "../series/series";
 import { Split } from "../split/split";
@@ -55,5 +54,5 @@ export interface Clicker {
 
   unpin?(dimension: Dimension): void;
 
-  changePinnedSortMeasure?(measure: Measure): void;
+  changePinnedSortSeries?(series: Series): void;
 }

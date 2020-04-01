@@ -210,9 +210,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.unpin(dimension) });
       },
-      changePinnedSortMeasure: (measure: Measure) => {
+      changePinnedSortSeries: (series: Series) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changePinnedSortMeasure(measure) });
+        this.setState({ essence: essence.changePinnedSortSeries(series) });
       }
     };
   }
