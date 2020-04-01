@@ -142,9 +142,9 @@ export const CUSTOMIZATION = {
     label: "Timezones",
     description: "These timezones will appear in the dropdown instead of the default."
   },
-  cssOverrides: {
-    label: "CSS Overrides",
-    description: "Custom CSS to change styling."
+  cssVariables: {
+    label: "CSS Variables",
+    description: "Override CSS variables for themeing purposes"
   }
 };
 

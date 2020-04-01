@@ -30,7 +30,7 @@ export interface CustomizationValue {
   logoutHref?: string;
   urlShortener?: UrlShortener;
   sentryDSN?: string;
-  cssOverrides?: string;
+  cssVariables?: Record<string, string>;
 }
 
 export interface CustomizationJS {
@@ -42,7 +42,7 @@ export interface CustomizationJS {
   logoutHref?: string;
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
-  cssOverrides?: string;
+  cssVariables?: Record<string, string>;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -82,7 +82,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       customLogoSvg: parameters.customLogoSvg,
       logoutHref: parameters.logoutHref,
       sentryDSN: parameters.sentryDSN,
-      cssOverrides: parameters.cssOverrides
+      cssVariables: parameters.cssVariables
     };
 
     var paramViewsJS = parameters.externalViews;
@@ -114,7 +114,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public logoutHref: string;
   public urlShortener: UrlShortener;
   public sentryDSN: string;
-  public cssOverrides?: string;
+  public cssVariables?: Record<string, string>;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -125,7 +125,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     this.logoutHref = parameters.logoutHref;
     if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
     if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
-    if (parameters.cssOverrides) this.cssOverrides = parameters.cssOverrides;
+    if (parameters.cssVariables) this.cssVariables = parameters.cssVariables;
   }
 
   public valueOf(): CustomizationValue {
@@ -138,7 +138,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       urlShortener: this.urlShortener,
       logoutHref: this.logoutHref,
       sentryDSN: this.sentryDSN,
-      cssOverrides: this.cssOverrides
+      cssVariables: this.cssVariables
     };
   }
 
@@ -158,7 +158,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       js.urlShortener = this.urlShortener.toJS();
     }
     if (this.logoutHref) js.logoutHref = this.logoutHref;
-    if (this.cssOverrides) js.cssOverrides = this.cssOverrides;
+    if (this.cssVariables) js.cssVariables = this.cssVariables;
 
     return js;
   }
@@ -182,7 +182,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.sentryDSN === other.sentryDSN &&
       this.logoutHref === other.logoutHref &&
-      this.cssOverrides === other.cssOverrides;
+      this.cssVariables === other.cssVariables;
   }
 
   public getTitle(version: string): string {

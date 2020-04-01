@@ -749,26 +749,23 @@ customization:
     return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
 ```
 
-### CSS Overrides
+### CSS Variables
 
-Turnilo allows you add some custom CSS to the application. This is especially usefull by changing CSS variables
-to add a custom theme to turnilo.
+Turnilo allows you to override CSS variables to apply your own theming
 
 For example:
 
 ```yaml
 customization:
-  cssOverrides: >
-    :root {
-      --brand: #829aa3;
-      --item-dimension: #acbcc2;
-      --item-dimension-text: white;
-      --item-measure: #5bcbb7;
-      --item-measure-text: white;
-      --background-brand: white;
-      --background-brand-text: #999;
-      --background-base: #f7f7f7;
-    }
+  cssVariables:
+    brand: '#829aa3;'
+    item-dimension: '#f2cee0;'
+    item-dimension-text: white;
+    item-measure: '#cef2e0;'
+    item-measure-text: white;
+    background-brand: white;
+    background-brand-text: '#999;'
+    background-base: '#fbfbfb;'
 ```
 
 ### External links
