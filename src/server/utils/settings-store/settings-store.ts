@@ -35,7 +35,9 @@ function readSettingsFactory(filepath: string, format: Format, inline = false): 
     })
     .then(appSettingsJS => {
       if (inline) appSettingsJS = inlineVars(appSettingsJS, process.env);
-      return AppSettings.fromJS(appSettingsJS, {  });
+      const appSettings = AppSettings.fromJS(appSettingsJS, {  });
+      appSettings.validate();
+      return appSettings;
     });
 }
 

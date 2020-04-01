@@ -20,6 +20,62 @@ import { Class, immutableArraysEqual, Instance } from "immutable-class";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
+import { LOGGER } from "../../logger/logger";
+
+const availableCssVariables = [
+  "background-base",
+  "background-brand-light",
+  "background-brand-text",
+  "background-brand",
+  "background-dark",
+  "background-light",
+  "background-lighter",
+  "background-lightest",
+  "background-medium",
+  "border-darker",
+  "border-extra-light",
+  "border-light",
+  "border-medium",
+  "border-super-light",
+  "brand-hover",
+  "brand-selected",
+  "brand",
+  "button-primary-active",
+  "button-primary-hover",
+  "button-secondary-active",
+  "button-secondary-hover",
+  "button-secondary",
+  "button-warn-active",
+  "button-warn-hover",
+  "button-warn",
+  "dark",
+  "date-range-picker-selected",
+  "drop-area-indicator",
+  "error",
+  "grid-line-color",
+  "highlight-border",
+  "highlight",
+  "hover",
+  "icon-hover",
+  "icon-light",
+  "item-dimension-hover",
+  "item-dimension-text",
+  "item-dimension",
+  "item-measure-hover",
+  "item-measure-text",
+  "item-measure",
+  "main-time-area",
+  "main-time-line",
+  "pinboard-icon",
+  "text-default-color",
+  "text-light",
+  "text-lighter",
+  "text-lighterish",
+  "text-lightest",
+  "text-link",
+  "text-medium",
+  "text-standard"
+];
 
 export interface CustomizationValue {
   title?: string;
@@ -204,6 +260,21 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   public getLogoutHref() {
     return this.logoutHref || Customization.DEFAULT_LOGOUT_HREF;
+  }
+
+  validate(): boolean {
+    let valid = true;
+
+    if (this.cssVariables) {
+      Object.keys(this.cssVariables).forEach(variableName => {
+        if (availableCssVariables.indexOf(variableName) < 0) {
+          valid = false;
+          LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
+        }
+      });
+    }
+
+    return valid;
   }
 }
 
