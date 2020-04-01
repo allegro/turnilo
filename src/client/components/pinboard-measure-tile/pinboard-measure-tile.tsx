@@ -38,7 +38,6 @@ export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props =>
 
   const sortOns = concatTruthy(
     dimension && new DimensionSortOn(dimension),
-    // FIX: we can't sort in pinboard on complex series, only simple series
     ...essence.seriesSortOns(false).toArray()
   );
 
