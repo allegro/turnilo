@@ -144,7 +144,7 @@ export const CUSTOMIZATION = {
   },
   cssVariables: {
     label: "CSS Variables",
-    description: "Override CSS variables for themeing purposes"
+    description: "Override CSS variables for theming purposes"
   }
 };
 
