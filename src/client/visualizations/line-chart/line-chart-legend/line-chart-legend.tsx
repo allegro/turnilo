@@ -38,6 +38,7 @@ const LegendValues: React.SFC<LegendValuesProps> = props => {
   const { dataset, series, splitReference } = props;
   return <div className="legend-values">
     <table className="legend-values-table">
+      <tbody>
       {dataset.map((datum, i) => {
         const splitValue = String(datum[splitReference]);
         const style = { background: NORMAL_COLORS[i] };
@@ -51,6 +52,7 @@ const LegendValues: React.SFC<LegendValuesProps> = props => {
           {series && <td className="legend-value-measure">{series.formatValue(datum)}</td>}
         </tr>;
       })}
+      </tbody>
     </table>
   </div>;
 };
@@ -66,9 +68,9 @@ export const LineChartLegend: React.SFC<LineChartLegendProps> = props => {
     <div className="legend-header">
       {legendSplit.getTitle(legendDimension)}
     </div>
-      <LegendValues
-        dataset={(dataset.data[0][SPLIT] as Dataset).data}
-        series={series}
-        splitReference={legendSplit.reference} />
+    <LegendValues
+      dataset={(dataset.data[0][SPLIT] as Dataset).data}
+      series={series}
+      splitReference={legendSplit.reference} />
   </div>;
 };
