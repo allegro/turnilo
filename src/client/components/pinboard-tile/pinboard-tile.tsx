@@ -51,7 +51,6 @@ export class PinboardTileProps {
   dimension: Dimension;
   timekeeper: Timekeeper;
   sortOn: SortOn;
-  onClose: Fn;
 }
 
 export interface PinboardTileState {
@@ -67,14 +66,10 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   state: PinboardTileState = {
     searchText: "",
     showSearch: false,
-    datasetLoad: this.props.sortOn ? loading : error(noMeasureError)
+    datasetLoad: loading
   };
 
   private loadData(params: QueryParams) {
-    if (!params.sortOn) {
-      this.setState({ datasetLoad: error(noMeasureError) });
-      return;
-    }
     this.setState({ datasetLoad: loading });
     this.fetchData(params)
       .then(loadedDataset => {
@@ -150,9 +145,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
 
   private getFormatter(): Unary<Datum, string> {
     const { sortOn, essence } = this.props;
-
-    const series = sortOn && essence.findConcreteSeries(sortOn.key);
-    if (!series) return null;
+    const series = essence.findConcreteSeries(sortOn.key);
     return d => series.formatValue(d);
   }
 
@@ -187,6 +180,11 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     const { clicker, essence: { filter } } = this.props;
     clicker.changeFilter(filter.setClause(clause));
   }
+
+  unpin = () => {
+    const { clicker, dimension } = this.props;
+    clicker.unpin(dimension);
+  };
 
   private toggleFilterValue = (value: string) => {
     const clause = this.pinnedClause();
@@ -231,7 +229,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   }
 
   render() {
-    const { dimension, onClose } = this.props;
+    const { dimension } = this.props;
     const { datasetLoad, showSearch, searchText } = this.state;
 
     return <SearchableTile
@@ -242,7 +240,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
       onSearchChange={this.setSearchText}
       searchText={searchText}
       showSearch={showSearch}
-      icons={pinboardIcons({ showSearch, onClose, onSearchClick: this.toggleSearch })}
+      icons={pinboardIcons({ showSearch, onClose: this.unpin, onSearchClick: this.toggleSearch })}
       className="pinboard-tile">
       {isLoaded(datasetLoad) && <PinboardDataset
         rowMode={this.getRowMode()}

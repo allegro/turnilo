@@ -20,17 +20,14 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { SeriesSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { SortDirection } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { mapTruthy } from "../../../common/utils/functional/functional";
-import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
-import { PinboardTile } from "../pinboard-tile/pinboard-tile";
-import { SvgIcon } from "../svg-icon/svg-icon";
 import "./pinboard-panel.scss";
+import { PinboardTiles } from "./pinboard-tiles";
 
 export interface PinboardPanelProps {
   clicker: Clicker;
@@ -124,12 +121,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     }
   };
 
-  onPinboardSortOnSelect = (sortOn: SortOn) => {
-    const { essence: { dataCube } } = this.props;
-    const measure = dataCube.getMeasure(sortOn.key);
-    this.props.clicker.changePinnedSortMeasure(measure);
-  };
-
   onRemoveLegend = () => {
     const { clicker, essence } = this.props;
     const { dataCube, splits, colors } = essence;
@@ -148,7 +139,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     const { clicker, essence, timekeeper, style } = this.props;
     const { dragOver } = this.state;
-    const { dataCube, pinnedDimensions, colors } = essence;
+    const { dataCube, colors } = essence;
 
     let legendMeasureSelector: JSX.Element = null;
     let legendDimensionTile: JSX.Element = null;
@@ -177,32 +168,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       }
     }
 
-    const pinnedSortMeasure = essence.getPinnedSortMeasure();
-    const pinnedSortSeries = pinnedSortMeasure && essence.findConcreteSeries(pinnedSortMeasure.name);
-    const pinnedSortSortOn = pinnedSortSeries && new SeriesSortOn(pinnedSortSeries);
-    const pinboardtiles = mapTruthy(pinnedDimensions.toArray(), dimensionName => {
-      const dimension = dataCube.getDimension(dimensionName);
-      if (!dimension) return null;
-
-      return <PinboardTile
-        key={dimension.name}
-        clicker={clicker}
-        essence={essence}
-        timekeeper={timekeeper}
-        dimension={dimension}
-        sortOn={pinnedSortSortOn}
-        onClose={clicker.unpin ? clicker.unpin.bind(clicker, dimension) : null}
-      />;
-    });
-
-    let placeholder: JSX.Element = null;
-    if (!dragOver && !pinboardtiles.length) {
-      placeholder = <div className="placeholder">
-        <SvgIcon svg={require("../../icons/preview-pin.svg")} />
-        <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
-      </div>;
-    }
-
     return <div
       className="pinboard-panel"
       onDragEnter={this.dragEnter}
@@ -210,22 +175,19 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     >
       {legendMeasureSelector}
       {legendDimensionTile}
-      <PinboardMeasureTile
+      <PinboardTiles
+        hidePlaceholder={dragOver}
         essence={essence}
-        title={STRINGS.pinboard}
-        sortOn={pinnedSortSortOn}
-        onSelect={this.onPinboardSortOnSelect}
-      />
-      {pinboardtiles}
-      {dragOver ? <div className="drop-indicator-tile" /> : null}
-      {placeholder}
-      {dragOver ? <div
+        clicker={clicker}
+        timekeeper={timekeeper} />
+      {dragOver && <div className="drop-indicator-tile" />}
+      {dragOver && <div
         className="drag-mask"
         onDragOver={this.dragOver}
         onDragLeave={this.dragLeave}
         onDragExit={this.dragLeave}
         onDrop={this.drop}
-      /> : null}
+      />}
     </div>;
   }
 }
