@@ -49,7 +49,12 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Vie
       definition.selectedMeasures, // 5
       definition.pinnedDimensions, // 6
       definition.pinnedSort,       // 7
-      null,           // 8
+      /*
+       There were stored colors. We don't support them anymore so we write null here.
+       We can't omit it here because that would force us to change decodeUrlHash and that
+       would make it incompatible with old urls.
+      */
+      null,                        // 8
       definition.compare,          // 9
       definition.highlight         // 10
     ];

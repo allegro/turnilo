@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { availableLimits } from "../../../common/limit/limit";
+import { AVAILABLE_LIMITS } from "../../../common/limit/limit";
 import { Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { Dropdown } from "../dropdown/dropdown";
@@ -25,8 +25,8 @@ function formatLimit(limit: number): string {
 }
 
 function calculateLimits(includeNone: boolean) {
-  if (!includeNone) return availableLimits;
-  return [...availableLimits, null];
+  if (!includeNone) return AVAILABLE_LIMITS;
+  return [...AVAILABLE_LIMITS, null];
 }
 
 export interface LimitDropdownProps {
