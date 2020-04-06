@@ -63,9 +63,23 @@ ${content}
 
 export function mainLayout(options: ViewOptions): string {
   const { version, appSettings, timekeeper } = options;
+
+  let cssOverrides: string | undefined;
+
+  if (appSettings.customization.cssVariables) {
+    const cssVariables = appSettings.customization.cssVariables;
+    const renderedCssVariables = Object.keys(cssVariables).map(name => `--${name}: ${cssVariables[name]};`).join("\n");
+    cssOverrides = `<style>
+:root {
+  ${renderedCssVariables}
+}
+</style>`;
+  }
+
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, appSettings, timekeeper })};</script>
-<script charset="UTF-8" src="main.js?v=${version}"></script>`
+<script charset="UTF-8" src="main.js?v=${version}"></script>
+${cssOverrides}`
   );
 }
 

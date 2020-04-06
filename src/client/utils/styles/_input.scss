@@ -16,33 +16,33 @@
  */
 
 %input-cont {
+  @include border-css-variable('border', 1px, solid, 'border-light');
   background: $white;
-  border: 1px solid $border-light;
   border-radius: $corner;
   cursor: pointer;
   box-shadow: 0 1px 1px 0 hsla(0, 0, 0, 0.1);
 
   &:hover {
-    border-color: $border-medium;
+    @include css-variable(border-color, border-medium);
   }
 }
 
 %input-selected {
+  @include css-variable(background-color, background-light);
   box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);
-  background: $background-light;
 }
 
 %input-cont-inset {
+  @include border-css-variable('border', 1px, solid, 'border-light');
   background: $white;
-  border: 1px solid $border-light;
   border-radius: $corner;
   box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);
 }
 
 %input-top-label {
+  @include css-variable(color, text-lighterish);
   text-transform: uppercase;
   font-size: 12px;
-  color: $text-lighterish;
   margin-bottom: 5px;
 }
 
@@ -60,7 +60,7 @@
   }
 
   &:focus {
-    border-color: $brand;
+    @include css-variable(border-color, brand);
   }
 
   &.error {

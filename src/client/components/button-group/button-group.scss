@@ -49,7 +49,7 @@ $title-margin: 6px;
       }
 
       &:last-child {
-        border-right: 1px solid $border-light;
+        @include border-css-variable('border-right', 1px, solid, 'border-light');
         border-top-right-radius: $corner;
         border-bottom-right-radius: $corner;
       }
@@ -59,7 +59,7 @@ $title-margin: 6px;
       }
 
       &:not(.selected):not(:hover) {
-        color: $text-light;
+        @include css-variable(color, text-light);
       }
     }
   }

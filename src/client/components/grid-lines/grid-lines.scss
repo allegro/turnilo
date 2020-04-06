@@ -19,7 +19,7 @@
 
 .grid-lines {
   line {
+    @include css-variable(stroke, grid-line-color);
     pointer-events: none;
-    stroke: $grid-line-color;
   }
 }

@@ -22,8 +22,8 @@
   padding: 100px 30px;
 
   .message {
+    @include css-variable(color, text-medium);
     font-size: 20px;
-    color: $text-medium;
   }
 
   ul {
@@ -31,9 +31,9 @@
   }
 
   li {
+    @include css-variable(color, brand);
     font-size: 14px;
     cursor: pointer;
-    color: $brand;
     margin-bottom: 10px;
 
     &:hover {

@@ -102,7 +102,7 @@
         &.value {
           &.selectable,
           &.selected {
-            background: rgba($brand, 0.26);
+            @include css-variable(background-color, date-range-picker-selected);
 
             &.past:not(.selected-edge),
             &.future:not(.selected-edge) {
@@ -140,7 +140,7 @@
           }
 
           &.selected-edge {
-            background: $brand;
+            @include css-variable(color, brand);
             color: $white;
           }
         }

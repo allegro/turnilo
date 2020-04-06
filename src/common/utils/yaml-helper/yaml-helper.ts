@@ -44,6 +44,13 @@ function yamlObject(lines: string[], indent = 2): string[] {
   });
 }
 
+function yamlMap(map: Record<string, string>, indent = 2): string[] {
+  const pad = spaces(indent);
+  return Object.keys(map).map(key => {
+    return `${pad}${key}: "${map[key]}"`;
+  });
+}
+
 interface PropAdderOptions {
   object: any;
   propName: string;
@@ -103,7 +110,7 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
 }
 
 function customizationToYAML(customization: Customization, withComments: boolean): string[] {
-  const { timezones, externalViews } = customization;
+  const { timezones, externalViews, cssVariables } = customization;
   let lines: string[] = [];
 
   getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
@@ -127,7 +134,16 @@ function customizationToYAML(customization: Customization, withComments: boolean
     });
   }
 
-  return yamlObject(lines);
+  if (cssVariables && Object.keys(cssVariables).length > 0) {
+    if (withComments) {
+      lines.push(...commentLines(CUSTOMIZATION.cssVariables.description));
+    }
+    lines.push("cssVariables:");
+    lines.push(...yamlMap(cssVariables));
+  }
+
+  const pad = spaces(2);
+  return lines.map(line => `${pad}${line}`);
 }
 
 function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {

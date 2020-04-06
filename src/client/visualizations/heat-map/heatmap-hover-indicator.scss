@@ -18,9 +18,9 @@
 @import './utils/sizes';
 
 .heatmap-hover-indicator {
+  @include border-css-variable(border, 1px, solid, highlight-border);
   position: absolute;
   height: $heatmap-rectangle-size - $heatmap-rectangle-gap;
   width: $heatmap-rectangle-size - $heatmap-rectangle-gap;
   box-sizing: border-box;
-  border: 1px solid $highlight-border;
 }

@@ -19,14 +19,14 @@
 .preview-string-filter-menu {
 
   .error-notice {
+    @include css-variable(color, text-light);
     padding: 4px 10px;
-    color: $text-light;
     font-style: italic;
   }
 
   .matching-values-message {
+    @include css-variable(color, text-light);
     padding: 4px 10px;
-    color: $text-light;
   }
 
   .row {
@@ -45,7 +45,7 @@
     }
 
     &:hover {
-      background: $hover;
+      @include css-variable(background-color, hover);
     }
 
     &:last-child {

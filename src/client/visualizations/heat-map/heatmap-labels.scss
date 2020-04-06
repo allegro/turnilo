@@ -19,13 +19,13 @@
 @import '../../imports';
 
 .top-labels {
+  @include border-css-variable(border-bottom, 1px, solid, border-super-light);
   background-color: #fff;
   padding-left: 2px;
   height: 100%;
   white-space: nowrap;
   display: flex;
   align-items: flex-end;
-  border-bottom: 1px solid $border-super-light;
 
   .heatmap-label-wrapper {
     display: inline-block;
@@ -61,8 +61,8 @@
 
     &::after {
       @include unpin-full(-1px, 0, -1px, 0);
+      @include border-css-variable(border, 1px, dashed, highlight-border);
       content: '';
-      border: 1px dashed $highlight-border;
       border-left: 0;
     }
   }
@@ -81,12 +81,12 @@
 }
 
 .left-labels {
+  @include border-css-variable(border-right, 1px, solid, border-super-light);
   background-color: #fff;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   height: 100%;
-  border-right: 1px solid $border-super-light;
 
   .heatmap-label-wrapper {
     height: $heatmap-rectangle-size - $heatmap-rectangle-gap;
@@ -122,8 +122,8 @@
 
     &::after {
       @include unpin-full(-1px, 0, -1px, 0);
+      @include border-css-variable(border, 1px, dashed, highlight-border);
       content: '';
-      border: 1px dashed $highlight-border;
       border-right: 0;
     }
   }

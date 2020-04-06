@@ -23,10 +23,10 @@
 
 html,
 body {
+  @include css-variable(color, text-default-color);
   height: 100%;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   font-size: 13px;
-  color: $text-default-color;
   overflow: hidden;
 }
 
@@ -49,6 +49,7 @@ svg {
 }
 
 .drag-ghost {
+  @include css-variable(background-color, dark);
   // Do not change these position things
   position: absolute;
   top: 0;
@@ -57,7 +58,6 @@ svg {
 
   margin: 10px;
   padding: 4px 8px;
-  background: $dark;
   color: $white;
   border-radius: 3px;
 }
@@ -66,3 +66,9 @@ svg {
 //  background: $brand;
 //  opacity: 0.2;
 //}
+
+:root {
+  @each $var, $val in $theme-colors {
+    #{'--' + $var}: #{$val};
+  }
+}

@@ -212,6 +212,10 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return this.dataCubes;
   }
 
+  public validate(): boolean {
+    return this.customization.validate();
+  }
+
   changeCustomization(customization: Customization): AppSettings {
     return this.change("customization", customization);
   }

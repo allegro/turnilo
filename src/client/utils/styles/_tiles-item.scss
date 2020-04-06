@@ -27,18 +27,20 @@
   width: $item-width;
 
   &.dimension {
-    background: $item-dimension;
+    @include css-variable(background-color, item-dimension);
+    @include css-variable(color, item-dimension-text);
 
     &:hover, &.selected {
-      background-color: darken($item-dimension, 6%);
+      @include css-variable(background-color, item-dimension-hover);
     }
   }
 
   &.measure {
-    background: $item-measure;
+    @include css-variable(background-color, item-measure);
+    @include css-variable(color, item-measure-text);
 
     &:hover, &.selected {
-      background-color: darken($item-measure, 6%);
+      @include css-variable(background-color, item-measure-hover);
     }
   }
 

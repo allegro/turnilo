@@ -39,7 +39,7 @@
 
       .copy-button {
         @extend %input-cont;
-        background: $background-base;
+        @include css-variable(background-color, background-base);
         cursor: pointer;
         flex: 0;
         border-top-right-radius: $corner;
@@ -49,20 +49,20 @@
     }
 
     .copied-hint {
+      @include css-variable(color, brand);
       margin-top: 14px;
-      color: $brand;
     }
   }
 
   .url-notice {
+    @include css-variable(color, text-medium);
     margin-top: 16px;
     padding: 0 5px;
-    color: $text-medium;
     font-style: italic;
     line-height: 1.4;
 
     .copy-action {
-      color: $brand;
+      @include css-variable(color, brand);
       cursor: pointer;
 
       &:hover {
@@ -71,8 +71,8 @@
     }
 
     .copied-hint {
+      @include css-variable(color, brand);
       font-style: normal;
-      color: $brand;
     }
   }
 }

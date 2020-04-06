@@ -19,8 +19,8 @@
 .markdown-content {
 
   a {
+    @include css-variable(color, brand);
     cursor: pointer;
-    color: $brand;
   }
 
   code {

@@ -41,14 +41,14 @@
     width: auto;
 
     svg path {
-      fill: #fff;
+      @include css-variable(fill, background-brand-text);
     }
 
     &:hover {
       background-color: transparent;
 
       svg path {
-        fill: #fff;
+        @include css-variable(fill, background-brand-text);
       }
     }
 

@@ -31,7 +31,7 @@
   }
 
   &::after {
-    @include triangle(down, 7px, 9px, $text-medium);
+    @include triangle(down, 7px, 9px, 'text-medium');
     content: '';
     z-index: 7;
     position: absolute;

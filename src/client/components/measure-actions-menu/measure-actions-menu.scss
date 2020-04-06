@@ -24,12 +24,12 @@ $action-width: 58px;
   padding: 8px;
 
   .action {
+    @include css-variable(color, brand);
     display: inline-block;
     width: $action-width;
     height: $action-height;
     cursor: pointer;
     text-align: center;
-    color: $brand;
     font-size: 12px;
 
     svg {
@@ -38,28 +38,28 @@ $action-width: 58px;
       padding-bottom: 4px;
 
       path {
-        fill: $brand;
+        @include css-variable(fill, brand);
       }
     }
 
     &.disabled {
+      @include css-variable(color, text-light);
       cursor: default;
-      color: $text-light;
 
       svg path {
-        fill: $text-light;
+        @include css-variable(fill, text-light);
       }
     }
 
     &:not(.disabled):hover {
       &::before {
+        @include css-variable(background-color, hover);
         content: '';
         position: absolute;
         top: 3px;
         bottom: 3px;
         left: 3px;
         right: 3px;
-        background: $hover;
       }
     }
   }

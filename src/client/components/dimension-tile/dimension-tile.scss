@@ -31,12 +31,12 @@ $folder-box-height: 32px;
 
   .folder {
     @include pin-bottom($folder-box-height);
+    @include css-variable(color, brand);
+    @include border-css-variable('border-top', 1px, solid, 'border-super-light');
     cursor: pointer;
-    color: $brand;
     padding-left: 12px;
     padding-top: 9px;
     z-index: 2;
-    border-top: 1px solid $border-super-light;
 
     svg {
       width: 11px;
@@ -44,7 +44,7 @@ $folder-box-height: 32px;
       margin-top: 2px;
 
       path {
-        fill: $brand;
+        @include css-variable(fill, brand);
       }
     }
 
@@ -54,7 +54,7 @@ $folder-box-height: 32px;
     }
 
     &:hover {
-      background: $hover;
+      @include css-variable(background-color, hover);
     }
   }
 
@@ -63,7 +63,7 @@ $folder-box-height: 32px;
     cursor: pointer;
 
     &:hover {
-      background: $hover;
+      @include css-variable(background-color, hover);
     }
 
     &:last-child {
@@ -71,7 +71,7 @@ $folder-box-height: 32px;
     }
 
     &.not-selected {
-      color: $text-lighterish;
+      @include css-variable(color, text-lighterish);
     }
 
     .highlight-controls {

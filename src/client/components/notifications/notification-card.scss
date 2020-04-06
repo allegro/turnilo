@@ -19,6 +19,7 @@
 
 .notification-card {
   @include linear(top, opacity);
+  @include css-variable(background-color, background-brand-light);
 
   position: absolute;
   min-width: 250px;
@@ -27,7 +28,6 @@
   transform: translate(-50%, 0);
   opacity: 0;
 
-  background-color: $background-brand-light;
   color: $white;
   box-shadow: 0 3px 4px 0 rgba($black, 0.25);
   border-radius: $corner;
@@ -52,15 +52,15 @@
   }
 
   &.success {
-    background-color: $dark;
+    @include css-variable(background-color, dark);
   }
 
   &.failure {
-    background-color: $error;
+    @include css-variable(background-color, error);
   }
 
   &.info {
-    background-color: $dark;
+    @include css-variable(background-color, dark);
   }
 
   .title {

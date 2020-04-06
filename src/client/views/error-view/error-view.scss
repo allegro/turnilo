@@ -29,21 +29,21 @@
 }
 
 .error-view__title {
+  @include css-variable(color, brand);
   margin-bottom: 12px;
   font-size: 20px;
-  color: $brand;
   text-align: center;
 }
 
 .error-view__message {
+  @include css-variable(color, text-medium);
   font-size: 14px;
-  color: $text-medium;
 }
 
 .error-view__reload {
+  @include css-variable(color, brand);
   margin-top: 24px;
   font-size: 18px;
-  color: $brand;
   cursor: pointer;
   text-align: center;
 
