@@ -150,7 +150,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
-      nextEssence.differentColors(essence) ||
       nextEssence.differentSeries(essence) ||
       nextEssence.differentSettings(essence) ||
       this.differentBucketingTimezone(nextEssence) ||

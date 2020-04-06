@@ -35,7 +35,6 @@ type EssenceKeys
   | "series"
   | "pinnedDimensions"
   | "pinnedSort"
-  | "colors"
   | "timeShift";
 
 type EssenceOptions = Pick<EssenceValue, EssenceKeys>;
@@ -52,7 +51,6 @@ const defaults: EssenceOptions = {
   filter: Filter.fromClause(defaultTimeClause),
   series: SeriesList.fromMeasures([count, sum]),
   splits: Splits.fromSplits([]),
-  colors: null,
   pinnedDimensions: OrderedSet(["string_a"]),
   pinnedSort: "count",
   timeShift: TimeShift.empty(),

@@ -22,6 +22,7 @@ import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, NumberRange, NumberRangeJS, PlywoodRange, Range, TimeRange, TimeRangeJS } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { NORMAL_COLORS } from "../../../common/models/colors/colors";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
@@ -44,11 +45,13 @@ import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Highlighter } from "../../components/highlighter/highlighter";
 import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";
 import { HighlightTooltip, HoverTooltip } from "../../components/line-chart-tooltip/line-chart-tooltip";
+import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { LineChartLegend } from "./line-chart-legend/line-chart-legend";
 import "./line-chart.scss";
 import Linear = d3.scale.Linear;
 
@@ -127,11 +130,6 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const scaleX = this.getScaleX(this.getContinuousDimension().kind as ContinuousDimensionKind, axisRange, width);
       this.setState({ scaleX });
     }
-  }
-
-  protected shouldFetchData(props: VisualizationProps): boolean {
-    const { essence } = props;
-    return this.differentVisualizationDefinition(props) || essence.differentColors(this.props.essence);
   }
 
   getMyEventX(e: React.MouseEvent<HTMLElement> | MouseEvent): number {
@@ -391,7 +389,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   renderChartLines(dataset: Dataset, showHoverPoint: boolean, stage: Stage, getY: Unary<Datum, number>, getYP: Unary<Datum, number>, scaleY: Linear<number, number>) {
     const { essence } = this.props;
     const hasComparison = essence.hasComparison();
-    const { splits, colors } = essence;
+    const { splits } = essence;
 
     const { hoverRange, scaleX } = this.state;
     const continuousDimension = this.getContinuousDimension();
@@ -421,14 +419,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
         }} />);
     }
 
-    const firstSplit = essence.splits.splits.first();
-    const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
-    const colorValues = colors && colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-
     return flatMap(dataset.data, (datum, i) => {
       const subDataset = datum[SPLIT] as Dataset;
       if (!subDataset) return [];
-      const color = colorValues && colorValues[i];
+      const color = NORMAL_COLORS[i];
       const doubleSplitProps = { ...lineProps, color, dataset: subDataset, showArea: false };
       return concatTruthy(
         <ChartLine {...{
@@ -677,6 +671,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { axisRange, scaleX, xTicks } = this.state;
     const { splits, timezone } = essence;
 
+    const showLegend = splits.length() === 2;
     let measureCharts: JSX.Element[];
     let bottomAxis: JSX.Element;
 
@@ -720,11 +715,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
       <GlobalEventListener
         scroll={this.scrollCharts}
       />
-      <div
-        className="measure-line-charts"
+      {showLegend && <LegendSpot>
+        <LineChartLegend
+          dataset={dataset}
+          essence={essence} />
+      </LegendSpot>}
+      <div className="measure-line-charts"
         style={measureChartsStyle}
-        ref={this.container}
-      >
+        ref={this.container}>
         {measureCharts}
       </div>
       {bottomAxis}

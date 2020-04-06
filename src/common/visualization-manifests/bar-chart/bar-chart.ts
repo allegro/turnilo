@@ -31,7 +31,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))
-  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
+  .then(({ splits, dataCube, isSelectedVisualization }) => {
     let continuousBoost = 0;
 
     // Auto adjustment
@@ -54,11 +54,6 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       // ToDo: review this
       if (!split.limit && (autoChanged || splitDimension.kind !== "time")) {
         split = split.changeLimit(25);
-        autoChanged = true;
-      }
-
-      if (colors) {
-        colors = null;
         autoChanged = true;
       }
 

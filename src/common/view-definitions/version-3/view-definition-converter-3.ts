@@ -23,7 +23,6 @@ import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
 import { manifestByName } from "../../visualization-manifests";
 import { filterDefinitionConverter } from "../version-4/filter-definition";
-import { legendConverter } from "../version-4/legend-definition";
 import { splitConverter } from "../version-4/split-definition";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { seriesDefinitionConverter } from "./measures-definition";
@@ -45,7 +44,6 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
-    const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.measures, dataCube.measures);
 
@@ -59,7 +57,6 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       splits,
       pinnedDimensions,
       series,
-      colors,
       pinnedSort
     });
   }

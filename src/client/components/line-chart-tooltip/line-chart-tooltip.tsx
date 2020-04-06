@@ -17,6 +17,7 @@
 import { TooltipWithBounds } from "@vx/tooltip";
 import { Dataset, Datum, PlywoodRange } from "plywood";
 import * as React from "react";
+import { NORMAL_COLORS } from "../../../common/models/colors/colors";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { formatValue } from "../../../common/utils/formatter/formatter";
@@ -59,6 +60,10 @@ function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSer
     formatter={formatter} />;
 }
 
+function hasSecondSplit(essence: Essence): boolean {
+  return essence.splits.length() === 2;
+}
+
 interface HighlightTooltipProps {
   dataset: Dataset;
   series: ConcreteSeries;
@@ -72,10 +77,10 @@ interface HighlightTooltipProps {
 
 export function HighlightTooltip(props: HighlightTooltipProps): JSX.Element {
   const { series, leftOffset, topOffset, acceptHighlight, dropHighlight, essence, highlightRange, dataset } = props;
-  const { colors, timezone } = essence;
+  const { timezone } = essence;
   const segmentLabel = formatValue(highlightRange, timezone);
 
-  if (colors) {
+  if (hasSecondSplit(essence)) {
     return <HighlightModal
       left={leftOffset}
       top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
@@ -108,11 +113,11 @@ interface HoverTooltipProps {
 }
 
 function colorEntries(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ColorEntry[] {
-  const { splits: { splits }, dataCube, colors } = essence;
+  const { splits: { splits }, dataCube } = essence;
   const categoryDimension = dataCube.getDimension(splits.first().reference);
   const continuousDimension = dataCube.getDimension(splits.get(1).reference);
   const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, range));
-  const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
+  const colorValues = NORMAL_COLORS;
   const hasComparison = essence.hasComparison();
   return mapTruthy(dataset.data, (d, i) => {
     const segment = d[categoryDimension.name];
@@ -144,10 +149,10 @@ function colorEntries(dataset: Dataset, range: PlywoodRange, series: ConcreteSer
 
 export function HoverTooltip(props: HoverTooltipProps): JSX.Element {
   const { leftOffset, topOffset, series, essence, hoverRange, dataset } = props;
-  const { colors, timezone } = essence;
+  const { timezone } = essence;
   const segmentLabel = formatValue(hoverRange, timezone);
 
-  if (colors) {
+  if (hasSecondSplit(essence)) {
     return <TooltipWithBounds
       key={Math.random()}
       left={leftOffset}

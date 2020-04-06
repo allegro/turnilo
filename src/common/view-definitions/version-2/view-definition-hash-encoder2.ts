@@ -34,7 +34,6 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Vie
       selectedMeasures: jsArray[5],
       pinnedDimensions: jsArray[6],
       pinnedSort: jsArray[7],
-      colors: jsArray[8] || null,
       compare: jsArray[9] || null,
       highlight: jsArray[10] || null
     };
@@ -50,7 +49,12 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Vie
       definition.selectedMeasures, // 5
       definition.pinnedDimensions, // 6
       definition.pinnedSort,       // 7
-      definition.colors,           // 8
+      /*
+       There were stored colors. We don't support them anymore so we write null here.
+       We can't omit it here because that would force us to change decodeUrlHash and that
+       would make it incompatible with old urls.
+      */
+      null,                        // 8
       definition.compare,          // 9
       definition.highlight         // 10
     ];

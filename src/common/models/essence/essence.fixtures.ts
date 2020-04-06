@@ -21,7 +21,6 @@ import { HEAT_MAP_MANIFEST } from "../../visualization-manifests/heat-map/heat-m
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
-import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
@@ -45,7 +44,6 @@ const defaultEssence: EssenceValue = {
       new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.LATEST, duration: Duration.fromJS("P1D") })
     ])
   }),
-  colors: null,
   pinnedSort: null,
   splits: EMPTY_SPLITS,
   timeShift: TimeShift.empty(),
@@ -105,7 +103,6 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: null,
       pinnedSort: "delta"
     });
   }
@@ -135,7 +132,6 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: null,
       pinnedSort: "delta"
     });
   }
@@ -159,7 +155,6 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta"
     });
   }
