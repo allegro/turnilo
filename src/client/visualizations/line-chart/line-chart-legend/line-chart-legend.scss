@@ -27,12 +27,12 @@ $color-swab-margin: 5px;
 
   .legend-header {
     @extend %module;
+    @include css-variable(color, text-light);
     margin-bottom: 1px;
     height: 36px;
     padding-left: 14px;
     padding-top: 12px;
     font-size: 12px;
-    color: $text-light;
     text-transform: uppercase;
   }
 
