@@ -64,6 +64,6 @@
   }
 
   &.error {
-    border-color: $danger;
+    @include css-variable(border-color, danger);
   }
 }
