@@ -156,7 +156,6 @@ describe("EssenceProps", () => {
             DataCubeFixtures.twitter(),
             Splits.fromSplits(splits),
             SeriesList.fromMeasureNames([]),
-            null,
             current);
 
           expect(visualization).to.deep.equal(expected);

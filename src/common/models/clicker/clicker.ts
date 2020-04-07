@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { Colors } from "../colors/colors";
 import { Dimension } from "../dimension/dimension";
 import { VisStrategy } from "../essence/essence";
 import { Filter } from "../filter/filter";
@@ -28,11 +27,11 @@ import { VisualizationManifest } from "../visualization-manifest/visualization-m
 import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 export interface Clicker {
-  changeFilter?(filter: Filter, colors?: Colors): void;
+  changeFilter?(filter: Filter): void;
 
   changeComparisonShift?(timeShift: TimeShift): void;
 
-  changeSplits?(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
+  changeSplits?(splits: Splits, strategy: VisStrategy): void;
 
   changeSplit?(split: Split, strategy: VisStrategy): void;
 
@@ -45,8 +44,6 @@ export interface Clicker {
   addSeries?(series: Series): void;
 
   removeSeries?(series: Series): void;
-
-  changeColors?(colors: Colors): void;
 
   changeVisualization?(visualization: VisualizationManifest, settings: VisualizationSettings): void;
 

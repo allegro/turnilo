@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { SeriesList } from "../../models/series-list/series-list";
 import { Splits } from "../../models/splits/splits";
@@ -31,7 +30,6 @@ export interface ActionVariables {
   dataCube?: DataCube;
   splits?: Splits;
   series: SeriesList;
-  colors?: Colors;
   isSelectedVisualization?: boolean;
 }
 

@@ -16,12 +16,11 @@
  */
 
 import * as React from "react";
-import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import { Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SplitMenu } from "../split-menu/split-menu";
@@ -35,7 +34,7 @@ interface SplitTileProps {
   open: boolean;
   style?: React.CSSProperties;
   removeSplit: Unary<Split, void>;
-  updateSplit: Ternary<Split, Split, Colors, void>;
+  updateSplit: Binary<Split, Split, void>;
   openMenu: Unary<Split, void>;
   closeMenu: Fn;
   dragStart: Ternary<string, Split, React.DragEvent<HTMLElement>, void>;

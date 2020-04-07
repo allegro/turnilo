@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { ColorsJS } from "../../models/colors/colors";
-
 export interface ViewDefinition2 {
   visualization?: string;
   timezone?: string;
@@ -25,7 +23,6 @@ export interface ViewDefinition2 {
   selectedMeasures: string[];
   multiMeasureMode: boolean;
   pinnedDimensions?: string[];
-  colors?: ColorsJS;
   pinnedSort?: string;
   compare?: any;
   highlight?: any;

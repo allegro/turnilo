@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-require('ts-node').register({
-  typeCheck: true,
+require("ts-node").register({
   compilerOptions: {
-    module: 'commonjs',
-    target: 'es5'
-  }
+    module: "commonjs",
+    target: "es5",
+  },
+  typeCheck: true,
 });
-require('ignore-styles');
+require("ignore-styles");
 
-const jsdom = require('jsdom').jsdom;
+const jsdom = require("jsdom").jsdom;
 
-const document = (new jsdom('<!doctype html><html><body></body></html>'));
+const document = (new jsdom("<!doctype html><html><body></body></html>"));
 global.document = document;
 global.window = document.defaultView;
 // setup for type-detect, should be solved in https://github.com/chaijs/type-detect/pull/129
 global.HTMLElement = global.window.HTMLElement;
 // setup for React
-global.navigator = {userAgent: 'testing'};
+global.navigator = {userAgent: "testing"};
 
-
-var enzyme = require('enzyme');
-var Adapter = require('enzyme-adapter-react-16');
+const enzyme = require("enzyme");
+const Adapter = require("enzyme-adapter-react-16");
 
 enzyme.configure({ adapter: new Adapter() });

@@ -16,7 +16,6 @@
  */
 
 import { VisualizationDependentEvaluator } from "../../utils/rules/visualization-dependent-evaluator";
-import { Colors } from "../colors/colors";
 import { SeriesList } from "../series-list/series-list";
 import { Splits } from "../splits/splits";
 import { VisualizationSettingsConfig } from "../visualization-settings/visualization-settings";
@@ -24,7 +23,6 @@ import { VisualizationSettingsConfig } from "../visualization-settings/visualiza
 export interface Adjustment {
   series?: SeriesList;
   splits?: Splits;
-  colors?: Colors;
 }
 
 export const HIGH_PRIORITY_ACTION = 4;

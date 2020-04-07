@@ -16,7 +16,6 @@
 
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -61,9 +60,9 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
 
   closeOverflowMenu = () => this.setState({ overflowOpen: false });
 
-  updateSplit = (oldSplit: Split, split: Split, colors: Colors) => {
+  updateSplit = (oldSplit: Split, split: Split) => {
     const { essence, clicker } = this.props;
-    clicker.changeSplits(essence.splits.replace(oldSplit, split), VisStrategy.UnfairGame, colors);
+    clicker.changeSplits(essence.splits.replace(oldSplit, split), VisStrategy.UnfairGame);
   };
 
   removeSplit = (split: Split) => {

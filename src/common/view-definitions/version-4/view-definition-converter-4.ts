@@ -24,7 +24,6 @@ import { TimeShift } from "../../models/time-shift/time-shift";
 import { manifestByName } from "../../visualization-manifests";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { filterDefinitionConverter } from "./filter-definition";
-import { legendConverter } from "./legend-definition";
 import { seriesDefinitionConverter } from "./series-definition";
 import { splitConverter } from "./split-definition";
 import { ViewDefinition4 } from "./view-definition-4";
@@ -46,7 +45,6 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
-    const colors = definition.legend && legendConverter.toColors(definition.legend);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.series, dataCube.measures);
 
@@ -60,14 +58,11 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       splits,
       pinnedDimensions,
       series,
-      colors,
       pinnedSort
     });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition4 {
-    const { dataCube } = essence;
-
     return {
       visualization: essence.visualization.name,
       visualizationSettings: toViewDefinition(essence.visualization, essence.visualizationSettings),
@@ -77,8 +72,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       series: seriesDefinitionConverter.fromEssenceSeries(essence.series),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
-      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
-      legend: essence.colors && legendConverter.fromColors(essence.colors)
+      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined
     };
   }
 }

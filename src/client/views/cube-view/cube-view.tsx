@@ -16,12 +16,12 @@
  */
 
 import { Timezone } from "chronoshift";
+import memoizeOne from "memoize-one";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { Colors } from "../../../common/models/colors/colors";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
@@ -62,6 +62,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations";
+import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
 
@@ -153,11 +154,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     };
 
     this.clicker = {
-      changeFilter: (filter: Filter, colors?: Colors) => {
+      changeFilter: (filter: Filter) => {
         this.setState(state => {
           let { essence } = state;
           essence = essence.changeFilter(filter);
-          if (colors) essence = essence.changeColors(colors);
           return { ...state, essence };
         });
       },
@@ -165,9 +165,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         this.setState(state =>
           ({ ...state, essence: state.essence.changeComparisonShift(timeShift) }));
       },
-      changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
-        let { essence } = this.state;
-        if (colors) essence = essence.changeColors(colors);
+      changeSplits: (splits: Splits, strategy: VisStrategy) => {
+        const { essence } = this.state;
         this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
       changeSplit: (split: Split, strategy: VisStrategy) => {
@@ -193,10 +192,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       removeSeries: (series: Series) => {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSeries(series) });
-      },
-      changeColors: (colors: Colors) => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.changeColors(colors) });
       },
       changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
         const { essence } = this.state;
@@ -522,6 +517,22 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
   };
 
+  private getCubeContext(): CubeContextValue {
+    const { essence } = this.state;
+    /*
+     React determine context value change using value reference.
+     Because we're creating new object, reference would be different despite same values inside,
+     hence memoization. More info: https://reactjs.org/docs/context.html#caveats
+    */
+    return this.constructContext(essence, this.clicker);
+  }
+
+  private constructContext = memoizeOne(
+    (essence: Essence, clicker: Clicker) =>
+      ({ essence, clicker }),
+    ([nextEssence, nextClicker]: [Essence, Clicker], [prevEssence, prevClicker]: [Essence, Clicker]) =>
+      nextEssence.equals(prevEssence) && nextClicker === prevClicker);
+
   render() {
     const clicker = this.clicker;
 
@@ -549,7 +560,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       updatingMaxTime={updatingMaxTime}
     />;
 
-    return <React.Fragment>
+    return <CubeContext.Provider value={this.getCubeContext()}>
       <div className="cube-view">
         <GlobalEventListener resize={this.globalResizeListener} />
         {headerBar}
@@ -593,12 +604,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   essence={essence}
                   menuStage={visualizationStage}
                 />
-                <SeriesTilesRow
-                  ref={this.seriesTile}
-                  clicker={clicker}
-                  essence={essence}
-                  menuStage={visualizationStage}
-                />
+                <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage} />
               </div>
               <VisSelector clicker={clicker} essence={essence} />
               <div className="pinboard-toggle"
@@ -646,7 +652,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         {this.renderUrlShortenerModal()}
       </div>
       {this.renderSideDrawer()}
-    </React.Fragment>;
+    </CubeContext.Provider>;
   }
 
   sideDrawerOpen = () => {

@@ -15,9 +15,11 @@
  */
 
 import { Duration } from "chronoshift";
+import { AVAILABLE_LIMITS } from "../../limit/limit";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
+import { isFiniteNumber, isNumber } from "../../utils/general/general";
 
 export interface SplitSortDefinition {
   ref: string;
@@ -93,6 +95,12 @@ function fromSort(sort: Sort): SplitSortDefinition {
   return { ref, ...rest };
 }
 
+function toLimit(limit: unknown): number | null {
+  if (limit === null) return null;
+  if (isNumber(limit) && isFiniteNumber(limit)) return limit;
+  return AVAILABLE_LIMITS[0];
+}
+
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
   toSplitCombine(split: NumberSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
@@ -101,7 +109,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
       reference: dimension,
       bucket: granularity,
       sort: sort && toSort(sort, dimension),
-      limit
+      limit: toLimit(limit)
     });
   },
 
@@ -128,7 +136,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
       reference: dimension,
       bucket: Duration.fromJS(granularity),
       sort: sort && toSort(sort, dimension),
-      limit
+      limit: toLimit(limit)
     });
   },
 
@@ -154,7 +162,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     return new Split({
       reference: dimension,
       sort: sort && toSort(sort, dimension),
-      limit
+      limit: toLimit(limit)
     });
   },
 

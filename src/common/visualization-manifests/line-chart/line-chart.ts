@@ -16,7 +16,7 @@
  */
 
 import { List } from "immutable";
-import { Colors } from "../../models/colors/colors";
+import { NORMAL_COLORS } from "../../models/colors/colors";
 import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -25,12 +25,14 @@ import { emptySettingsConfig } from "../../models/visualization-settings/empty-s
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
+const COLORS_COUNT = NORMAL_COLORS.length;
+
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(({ dataCube }) => !(dataCube.getDimensionsByKind("time").length || dataCube.getDimensionsByKind("number").length))
   .then(() => Resolve.NEVER)
 
   .when(Predicates.noSplits())
-  .then(({ splits, dataCube }) => {
+  .then(({ dataCube }) => {
     const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "This visualization requires a continuous dimension split",
       continuousDimensions.map(continuousDimension => {
@@ -46,7 +48,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.areExactSplitKinds("time"))
   .or(Predicates.areExactSplitKinds("number"))
-  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
+  .then(({ splits, dataCube, isSelectedVisualization }) => {
     let score = 4;
 
     let continuousSplit = splits.getSplit(0);
@@ -80,10 +82,6 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    if (colors) {
-      autoChanged = true;
-    }
-
     if (continuousDimension.kind === "time") score += 3;
 
     if (!autoChanged) return Resolve.ready(isSelectedVisualization ? 10 : score);
@@ -91,7 +89,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
-  .then(({ splits, dataCube, colors }) => {
+  .then(({ splits, dataCube }) => {
     let timeSplit = splits.getSplit(0);
     const timeDimension = dataCube.getDimension(timeSplit.reference);
 
@@ -110,21 +108,16 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       timeSplit = timeSplit.changeLimit(null);
     }
 
-    const colorSplit = splits.getSplit(1);
-    const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
-    if (!colors || colors.dimension !== colorSplitDimension.name) {
-      colors = Colors.fromLimit(colorSplitDimension.name, 5);
-    }
+    const colorSplit = splits.getSplit(1).update("limit", limit => Math.max(limit, COLORS_COUNT));
 
     return Resolve.automatic(8, {
-      splits: new Splits({ splits: List([colorSplit, timeSplit]) }),
-      colors
+      splits: new Splits({ splits: List([colorSplit, timeSplit]) })
     });
   })
 
   .when(Predicates.areExactSplitKinds("*", "time"))
   .or(Predicates.areExactSplitKinds("*", "number"))
-  .then(({ series, splits, dataCube, colors }) => {
+  .then(({ splits, dataCube }) => {
     let timeSplit = splits.getSplit(1);
     const timeDimension = dataCube.getDimension(timeSplit.reference);
 
@@ -147,17 +140,17 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    const colorSplit = splits.getSplit(0);
-    const colorSplitDimension = dataCube.getDimension(colorSplit.reference);
-    if (!colors || colors.dimension !== colorSplitDimension.name) {
-      colors = Colors.fromLimit(colorSplitDimension.name, 5);
-      autoChanged = true;
-    }
+    const colorSplit = splits.getSplit(0).update("limit", limit => {
+      if (limit > COLORS_COUNT) {
+        autoChanged = true;
+        return COLORS_COUNT;
+      }
+      return limit;
+    });
 
     if (!autoChanged) return Resolve.ready(10);
     return Resolve.automatic(8, {
-      splits: new Splits({ splits: List([colorSplit, timeSplit]) }),
-      colors
+      splits: new Splits({ splits: List([colorSplit, timeSplit]) })
     });
   })
 
