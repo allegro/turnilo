@@ -27,13 +27,13 @@ $error-msg-top-margin: 6px;
   margin-bottom: $bottom-space;
 
   &.invalid {
-    border-color: $negative;
+    @include css-variable(border-color, negative);
   }
 }
 
 .error-message {
+  @include css-variable(color, negative);
   font-size: 10px;
-  color: $negative;
   margin-top: -$error-msg-top-margin;
   padding-left: 3px;
 }

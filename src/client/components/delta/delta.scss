@@ -17,7 +17,7 @@
 @import '../../imports';
 
 .delta-negative {
-  color: $negative;
+  @include css-variable(color, negative);
 }
 
 .delta-neutral {
@@ -25,5 +25,5 @@
 }
 
 .delta-positive {
-  color: $positive;
+  @include css-variable(color, positive);
 }

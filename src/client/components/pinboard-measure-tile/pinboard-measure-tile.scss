@@ -31,8 +31,8 @@
   }
 
   .pinboard-sort-error {
+    @include css-variable(color, negative);
     font-size: 10px;
-    color: $negative;
     margin-left: 14px;
     margin-top: 8px;
   }

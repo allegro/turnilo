@@ -57,8 +57,8 @@
     }
 
     .overlap-error-message {
+      @include css-variable(color, negative);
       font-size: 10px;
-      color: $negative;
       margin-top: 10px;
       padding-left: 3px;
       margin-bottom: 10px;

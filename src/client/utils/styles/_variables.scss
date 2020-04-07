@@ -21,10 +21,6 @@ $white: #fff;
 $red: #f00;
 $black: #000;
 $gray: #ccc;
-$danger: #e24c4c;
-
-$positive: #08b157;
-$negative: #e14040;
 
 // Theme Colors
 
@@ -63,6 +59,7 @@ $theme-colors: (
   button-warn-active: darken($error, 10%),
   button-warn-hover: darken($error, 5%),
   button-warn: $error,
+  danger: #e24c4c,
   dark: #004584,
   date-range-picker-selected: rgba($brand, 0.26),
   drop-area-indicator: hsla(0, 0%, 40%, 0.14),
@@ -81,7 +78,9 @@ $theme-colors: (
   item-measure: $item-measure,
   main-time-area: rgba($main-time-line, 0.14),
   main-time-line: $main-time-line,
+  negative: #e14040,
   pinboard-icon: darken($background-base, 5%),
+  positive: #08b157,
   text-default-color: #444,
   text-light: #999,
   text-lighter: hsl(0, 0%, 73%),
