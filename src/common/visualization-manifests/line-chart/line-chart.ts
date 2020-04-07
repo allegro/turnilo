@@ -141,7 +141,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     }
 
     const colorSplit = splits.getSplit(0).update("limit", limit => {
-      if (limit > COLORS_COUNT) {
+      if (limit === null || limit > COLORS_COUNT) {
         autoChanged = true;
         return COLORS_COUNT;
       }
