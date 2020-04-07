@@ -88,7 +88,7 @@
 
       &::after {
         @extend %menu-cont;
-        @include css-variable(color, background-brand-text);
+        @include css-variable(color, text-standard);
         opacity: 0;
         pointer-events: none;
         position: absolute;
