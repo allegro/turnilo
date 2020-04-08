@@ -30,6 +30,7 @@ import {
   StringFilterClause
 } from "../../../../common/models/filter-clause/filter-clause";
 import { Split } from "../../../../common/models/split/split";
+import { isTruthy } from "../../../../common/utils/general/general";
 import { Booleanish } from "../../../components/filter-menu/boolean-filter-menu/boolean-filter-menu";
 import { ScrollerPart } from "../../../components/scroller/scroller";
 import { TILE_SIZE } from "../labeled-heatmap";
@@ -44,6 +45,9 @@ function splitSelection(split: Split, offset: number, dataCube: DataCube, datase
   const dimensionName = split.reference;
   const dimension = dataCube.getDimension(dimensionName);
   const labelIndex = Math.floor(offset / TILE_SIZE);
+  if (labelIndex > dataset.length - 1) {
+    return null;
+  }
   const value = dataset[labelIndex][dimensionName];
   return { value, dimension };
 }
@@ -85,13 +89,21 @@ interface Position {
   y: number;
 }
 
-export default function createHighlightClauses({ x, y, part }: Position, essence: Essence, dataset: Datum[]): FilterClause[] {
+function pickSplitSelections({ x, y, part }: Position, essence: Essence, dataset: Datum[]): SplitSelection[] {
   switch (part) {
     case "top-gutter":
-      return [splitSelectionToClause(secondSplitSelection(x, essence, dataset))];
+      return [secondSplitSelection(x, essence, dataset)];
     case "left-gutter":
-      return [splitSelectionToClause(firstSplitSelection(y, essence, dataset))];
+      return [firstSplitSelection(y, essence, dataset)];
     case "body":
-      return [firstSplitSelection(y, essence, dataset), secondSplitSelection(x, essence, dataset)].map(splitSelectionToClause);
+      return [firstSplitSelection(y, essence, dataset), secondSplitSelection(x, essence, dataset)];
   }
+}
+
+export default function createHighlightClauses(position: Position, essence: Essence, dataset: Datum[]): FilterClause[] {
+  const selections = pickSplitSelections(position, essence, dataset);
+  if (selections.every(isTruthy)) {
+    return selections.map(splitSelectionToClause);
+  }
+  return [];
 }
