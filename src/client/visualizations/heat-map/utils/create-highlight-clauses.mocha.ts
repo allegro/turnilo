@@ -23,28 +23,61 @@ import { dataset } from "./datum-fixtures";
 const essence = EssenceFixtures.wikiHeatmap();
 
 describe("createHighlightClauses", () => {
-  it("should create clause for second split if clicked on top-gutter", () => {
-    const clauses = createHighlightClauses({ x: 50, y: 0, part: "top-gutter" }, essence, dataset);
-    expect(clauses).to.be.length(1);
+  describe("second split", () => {
+    it("should create clause for second split if clicked on top-gutter", () => {
+      const clauses = createHighlightClauses({ x: 50, y: 0, part: "top-gutter" }, essence, dataset);
+      expect(clauses).to.be.length(1);
 
-    const [clause] = clauses;
-    expect(clause.equals(stringIn("namespace", ["c"]))).to.be.true;
+      const [clause] = clauses;
+      expect(clause.equals(stringIn("namespace", ["c"]))).to.be.true;
+    });
+
+    it("should return empty clause list if clicked outside rendered values", () => {
+      const clauses = createHighlightClauses({ x: 450, y: 0, part: "top-gutter" }, essence, dataset);
+      expect(clauses).to.be.deep.equal([]);
+    });
   });
 
-  it("should create clause for first split if clicked on left-gutter", () => {
-    const clauses = createHighlightClauses({ x: 0, y: 30, part: "left-gutter" }, essence, dataset);
-    expect(clauses).to.be.length(1);
+  describe("first split", () => {
+    it("should create clause for first split if clicked on left-gutter", () => {
+      const clauses = createHighlightClauses({ x: 0, y: 30, part: "left-gutter" }, essence, dataset);
+      expect(clauses).to.be.length(1);
 
-    const [clause] = clauses;
-    expect(clause.equals(stringIn("channel", ["de"]))).to.be.true;
+      const [clause] = clauses;
+      expect(clause.equals(stringIn("channel", ["de"]))).to.be.true;
+    });
+
+    it("should return empty clause list if clicked outside rendered values", () => {
+      const clauses = createHighlightClauses({ x: 0, y: 150, part: "left-gutter" }, essence, dataset);
+      expect(clauses).to.be.deep.equal([]);
+    });
   });
 
-  it("should create two clauses if clicked on body", () => {
-    const clauses = createHighlightClauses({ x: 50, y: 30, part: "body" }, essence, dataset);
-    expect(clauses).to.be.length(2);
+  describe("both splits", () => {
+    it("should create two clauses if clicked on body", () => {
+      const clauses = createHighlightClauses({ x: 50, y: 30, part: "body" }, essence, dataset);
+      expect(clauses).to.be.length(2);
 
-    const [first, second] = clauses;
-    expect(first.equals(stringIn("channel", ["de"]))).to.be.true;
-    expect(second.equals(stringIn("namespace", ["c"]))).to.be.true;
+      const [first, second] = clauses;
+      expect(first.equals(stringIn("channel", ["de"]))).to.be.true;
+      expect(second.equals(stringIn("namespace", ["c"]))).to.be.true;
+    });
+
+    describe("clicks outside rendered values", () => {
+      it("should return no splits if clicked too far right", () => {
+        const clauses = createHighlightClauses({ x: 450, y: 30, part: "body" }, essence, dataset);
+        expect(clauses).to.be.deep.equal([]);
+      });
+
+      it("should return no splits if clicked too far down", () => {
+        const clauses = createHighlightClauses({ x: 50, y: 230, part: "body" }, essence, dataset);
+        expect(clauses).to.be.deep.equal([]);
+      });
+
+      it("should return no splits if clicked outside rendered values", () => {
+        const clauses = createHighlightClauses({ x: 450, y: 230, part: "body" }, essence, dataset);
+        expect(clauses).to.be.deep.equal([]);
+      });
+    });
   });
 });
