@@ -63,6 +63,10 @@ function getSourceFromExternal(external: External): string {
   return String(external.source);
 }
 
+function externalContainsSource(external: External, source: string): boolean {
+  return Array.isArray(external.source) ? external.source.indexOf(source) > -1 : String(external.source) === source;
+}
+
 export class ClusterManager {
   public logger: Logger;
   public verbose: boolean;
@@ -344,7 +348,7 @@ export class ClusterManager {
           });
 
           sources.forEach(source => {
-            const existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
+            const existingExternalsForSource = this.managedExternals.filter(managedExternal => externalContainsSource(managedExternal.external, source));
 
             if (existingExternalsForSource.length) {
               if (verbose) logger.log(`Cluster '${cluster.name}' already has an external for '${source}' ('${existingExternalsForSource[0].name}')`);
@@ -391,7 +395,7 @@ export class ClusterManager {
             (sources: string[]) => {
               let introspectionTasks: Array<Promise<void>> = [];
               sources.forEach(source => {
-                const existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
+                const existingExternalsForSource = this.managedExternals.filter(managedExternal => externalContainsSource(managedExternal.external, source));
 
                 if (existingExternalsForSource.length) {
                   existingExternalsForSource.forEach(existingExternalForSource => {
