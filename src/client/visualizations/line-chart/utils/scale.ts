@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +14,6 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import * as d3 from "d3";
 
-.line-chart-axis {
-  @include pin-full;
-
-  line {
-    pointer-events: none;
-    stroke: $gray;
-  }
-
-  text {
-    @include css-variable(fill, text-medium);
-    text-anchor: middle;
-    font-size: 12px;
-  }
-}
+export type ContinuousScale = d3.time.Scale<number, number> | d3.scale.Linear<number, number>;

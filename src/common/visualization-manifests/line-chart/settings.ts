@@ -18,24 +18,28 @@ import { Record } from "immutable";
 import { VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
 import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
-export type TableConfig = VisualizationSettingsConfig<TableSettings>;
+export type LineChartVisualizationSettings = VisualizationSettingsConfig<LineChartSettings>;
 
-export interface TableSettings {
-  collapseRows: boolean;
+export enum ChartsPer { SPLIT, MEASURE }
+
+export interface LineChartSettings {
+  chartsPer: ChartsPer;
 }
 
-const defaults: TableSettings = {
-  collapseRows: false
+const defaults: LineChartSettings = {
+  chartsPer: ChartsPer.MEASURE
 };
 
-const settingsFactory = Record<TableSettings>(defaults);
+const settingsFactory = Record<LineChartSettings>(defaults);
 
-const createSettings = (settings: Partial<TableSettings>): ImmutableRecord<TableSettings> => new (settingsFactory)(settings);
+const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<LineChartSettings> => new (settingsFactory)(settings);
 
-export const settings: TableConfig = {
+export const settings: LineChartVisualizationSettings = {
   converter: {
-    print: (settings: ImmutableRecord<TableSettings>) => settings.toJS(),
-    read: (input: TableSettings) => createSettings({ collapseRows: !!input.collapseRows })
+    print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
+    read: (input: LineChartSettings) => createSettings({
+      chartsPer: input.chartsPer || defaults.chartsPer
+    })
   },
   defaults: createSettings({})
 };
