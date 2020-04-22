@@ -18,9 +18,12 @@ import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
+import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
 import { VIS_H_PADDING } from "../../../../config/constants";
+import { LineChartLegend } from "../../../line-chart-old/line-chart-legend/line-chart-legend";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
+import { hasNominalSplit } from "../../utils/splits";
 import { SeriesChart } from "./series-chart";
 
 interface ChartsPerSeriesProps {
@@ -59,6 +62,9 @@ export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
   const chartStage = calculateChartStage(stage, essence.series.count());
 
   return <React.Fragment>
+    {hasNominalSplit(essence) && <LegendSpot>
+      <LineChartLegend dataset={dataset} essence={essence}/>
+    </LegendSpot>}
     {concreteSeries.map(series =>
       <SeriesChart
         key={series.reactKey()}
