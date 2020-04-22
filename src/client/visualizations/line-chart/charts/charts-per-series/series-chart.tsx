@@ -16,6 +16,7 @@
 
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import * as React from "react";
+import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
@@ -27,7 +28,7 @@ import { BaseChart } from "../../base-chart/base-chart";
 import { ChartLine } from "../../chart-line/chart-line";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
-import { getContinuousDimension, hasNominalSplit } from "../../utils/splits";
+import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import calculateExtend from "./extend";
 
 interface SeriesChart {
@@ -42,26 +43,65 @@ interface SeriesChart {
 export const SeriesChart: React.SFC<SeriesChart> = props => {
   const { chartStage, essence, series, xScale, xTicks, dataset } = props;
 
-  if (hasNominalSplit(essence)) {
-    throw new Error("Only single split");
-  }
-
-  const hasComparison = essence.hasComparison();
-
-  const continuousDimension = getContinuousDimension(essence);
-  const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
-  const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
-  const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
-
   const datum = dataset.data[0];
+  // TODO: better name
   const timeSeries = datum[SPLIT] as Dataset;
-
-  const extent = calculateExtend(timeSeries, essence.splits, getY, getYP);
+  const hasComparison = essence.hasComparison();
 
   const label = <VisMeasureLabel
     series={series}
     datum={datum}
     showPrevious={hasComparison} />;
+
+  const continuousSplit = getContinuousSplit(essence);
+  const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
+  const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
+  const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
+
+  const extent = calculateExtend(timeSeries, essence.splits, getY, getYP);
+
+  if (hasNominalSplit(essence)) {
+    const nominalSplit = getNominalSplit(essence);
+    return <BaseChart
+      label={label}
+      xScale={xScale}
+      xTicks={xTicks}
+      chartStage={chartStage}
+      formatter={series.formatter()}
+      yDomain={extent}>
+      {({ yScale, lineStage }) => <React.Fragment>
+        {timeSeries.data.map((datum, index) => {
+          const splitKey = datum[nominalSplit.reference];
+          const color = NORMAL_COLORS[index];
+          const dataset = datum[SPLIT] as Dataset;
+          return <React.Fragment key={String(splitKey)}>
+            <ChartLine
+              key={series.reactKey()}
+              xScale={xScale}
+              yScale={yScale}
+              getX={getX}
+              getY={getY}
+              showArea={false}
+              dashed={false}
+              dataset={dataset}
+              color={color}
+              stage={lineStage} />
+            {hasComparison && <ChartLine
+              key={series.reactKey(SeriesDerivation.PREVIOUS)}
+              xScale={xScale}
+              yScale={yScale}
+              getX={getX}
+              getY={getYP}
+              showArea={false}
+              dashed={true}
+              dataset={dataset}
+              color={color}
+              stage={lineStage} />}
+          </React.Fragment>;
+        })}
+      </React.Fragment>}
+    </BaseChart>;
+  }
 
   return <BaseChart
     label={label}
@@ -72,6 +112,7 @@ export const SeriesChart: React.SFC<SeriesChart> = props => {
     xTicks={xTicks}>
     {({ yScale, lineStage }) => <React.Fragment>
       <ChartLine
+        key={series.reactKey()}
         xScale={xScale}
         yScale={yScale}
         getX={getX}
@@ -81,6 +122,7 @@ export const SeriesChart: React.SFC<SeriesChart> = props => {
         dataset={timeSeries}
         stage={lineStage} />
       {hasComparison && <ChartLine
+        key={series.reactKey(SeriesDerivation.PREVIOUS)}
         xScale={xScale}
         yScale={yScale}
         getX={getX}

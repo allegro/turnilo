@@ -32,7 +32,7 @@ export function getContinuousDimension(essence: Essence): Dimension {
 }
 
 export function getNominalSplit({ splits: { splits } }: Essence): Split | null {
-   return splits.count() === 1 ? null : splits.last();
+   return splits.count() === 1 ? null : splits.first();
 }
 
 export function hasNominalSplit(essence: Essence): boolean {
