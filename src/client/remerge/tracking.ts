@@ -199,7 +199,7 @@ export function trackViewData(visualization: string, essence: Essence, timeToRen
 export function init() {
   const { mixpanelToken, loginUrl } = clientConfig();
 
-  window.addEventListener("unload", () => sendLastViewData(true));
+  window.addEventListener("beforeunload", () => sendLastViewData(true));
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       sendLastViewData();
