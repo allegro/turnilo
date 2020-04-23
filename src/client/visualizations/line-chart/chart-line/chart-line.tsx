@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import { Dataset, Datum, NumberRange, PlywoodRange, TimeRange } from "plywood";
+import { Datum, NumberRange, PlywoodRange, TimeRange } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { concatTruthy, flatMap, Unary } from "../../../../common/utils/functional/functional";
@@ -34,7 +34,7 @@ interface ChartLineProps {
   color?: string;
   showArea: boolean;
   dashed: boolean;
-  dataset: Dataset;
+  dataset: Datum[];
   stage: Stage;
 }
 
@@ -51,14 +51,13 @@ function areDetached(a: PlywoodRange, b: PlywoodRange): boolean {
 
 function prepareDataPoints(props: Pick<ChartLineProps, "dataset" | "getX" | "getY">): DataPoint[] {
   const { getX, getY, dataset } = props;
-  const datums = dataset.data;
-  return flatMap(datums, (datum, index) => {
+  return flatMap(dataset, (datum, index) => {
 
     const range = getX(datum);
     const rangeMidpoint = range.midpoint();
     const measureValue = getY(datum);
-    const previous = datums[index - 1];
-    const next = datums[index + 1];
+    const previous = dataset[index - 1];
+    const next = dataset[index + 1];
     const midValue = rangeMidpoint.valueOf();
     const rangeWidth = range.end.valueOf() - range.start.valueOf();
 
