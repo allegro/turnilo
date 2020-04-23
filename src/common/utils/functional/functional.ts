@@ -34,6 +34,9 @@ export const identity = <T>(x: T): T => x;
 
 export const constant = <T>(val: T): Nullary<T> => () => val;
 
+export const compose = <A, B, C>(f: Unary<A, B>, g: Unary<B, C>): Unary<A, C> =>
+  (x: A) => g(f(x));
+
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
 }
