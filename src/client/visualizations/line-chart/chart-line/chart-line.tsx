@@ -25,7 +25,7 @@ export type Scale = d3.scale.Linear<number, number>;
 
 type Range = NumberRange | TimeRange;
 
-interface ChartLineProps {
+export interface ChartLineProps {
   // TODO: ContinuousScale does not have compatible call signatures (union of function getting number and Date)
   xScale: any;
   yScale: Scale;

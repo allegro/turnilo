@@ -25,7 +25,8 @@ import { readNumber } from "../../../../../common/utils/general/general";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
 import { SPLIT } from "../../../../config/constants";
 import { BaseChart } from "../../base-chart/base-chart";
-import { ChartLine } from "../../chart-line/chart-line";
+import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
+import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
@@ -44,7 +45,6 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   const { chartStage, essence, series, xScale, xTicks, dataset } = props;
 
   const datum = dataset.data[0];
-  // TODO: better name
   const continuousSplitDataset = datum[SPLIT] as Dataset;
   const hasComparison = essence.hasComparison();
 
@@ -58,7 +58,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
   const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
 
-  const extent = calculateExtend(continuousSplitDataset, essence.splits, getY, getYP);
+  const domain = calculateExtend(continuousSplitDataset, essence.splits, getY, getYP);
 
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);
@@ -68,36 +68,22 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
       xTicks={xTicks}
       chartStage={chartStage}
       formatter={series.formatter()}
-      yDomain={extent}>
+      yDomain={domain}>
       {({ yScale, lineStage }) => <React.Fragment>
         {continuousSplitDataset.data.map((datum, index) => {
           const splitKey = datum[nominalSplit.reference];
           const color = NORMAL_COLORS[index];
           const dataset = (datum[SPLIT] as Dataset).data;
-          return <React.Fragment key={String(splitKey)}>
-            <ChartLine
-              key={series.reactKey()}
-              xScale={xScale}
-              yScale={yScale}
-              getX={getX}
-              getY={getY}
-              showArea={false}
-              dashed={false}
-              dataset={dataset}
-              color={color}
-              stage={lineStage} />
-            {hasComparison && <ChartLine
-              key={series.reactKey(SeriesDerivation.PREVIOUS)}
-              xScale={xScale}
-              yScale={yScale}
-              getX={getX}
-              getY={getYP}
-              showArea={false}
-              dashed={true}
-              dataset={dataset}
-              color={color}
-              stage={lineStage} />}
-          </React.Fragment>;
+          return <ColoredSeriesChartLine
+            key={String(splitKey)}
+            xScale={xScale}
+            yScale={yScale}
+            getX={getX}
+            color={color}
+            dataset={dataset}
+            stage={lineStage}
+            essence={essence}
+            series={series} />;
         })}
       </React.Fragment>}
     </BaseChart>;
@@ -106,31 +92,17 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   return <BaseChart
     label={label}
     chartStage={chartStage}
-    yDomain={extent}
+    yDomain={domain}
     formatter={series.formatter()}
     xScale={xScale}
     xTicks={xTicks}>
-    {({ yScale, lineStage }) => <React.Fragment>
-      <ChartLine
-        key={series.reactKey()}
-        xScale={xScale}
-        yScale={yScale}
-        getX={getX}
-        getY={getY}
-        showArea={true}
-        dashed={false}
-        dataset={continuousSplitDataset.data}
-        stage={lineStage} />
-      {hasComparison && <ChartLine
-        key={series.reactKey(SeriesDerivation.PREVIOUS)}
-        xScale={xScale}
-        yScale={yScale}
-        getX={getX}
-        getY={getYP}
-        showArea={true}
-        dashed={true}
-        dataset={continuousSplitDataset.data}
-        stage={lineStage} />}
-    </React.Fragment>}
+    {({ yScale, lineStage }) => <SingletonSeriesChartLine
+      xScale={xScale}
+      yScale={yScale}
+      getX={getX}
+      dataset={continuousSplitDataset.data}
+      stage={lineStage}
+      essence={essence}
+      series={series} />}
   </BaseChart>;
 };
