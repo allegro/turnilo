@@ -19,11 +19,11 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
-import { VIS_H_PADDING } from "../../../../config/constants";
 import { LineChartLegend } from "../../../line-chart-old/line-chart-legend/line-chart-legend";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { hasNominalSplit } from "../../utils/splits";
+import { calculateChartStage } from "../calculate-chart-stage";
 import { SeriesChart } from "./series-chart";
 
 interface ChartsPerSeriesProps {
@@ -32,27 +32,6 @@ interface ChartsPerSeriesProps {
   xScale: ContinuousScale;
   xTicks: ContinuousTicks;
   stage: Stage;
-}
-
-const X_AXIS_HEIGHT = 30;
-const MIN_CHART_HEIGHT = 140;
-const MAX_ASPECT_RATIO = 1; // width / height
-
-function calculateChartStage(stage: Stage, seriesCount: number): Stage {
-  const chartWidth = stage.width - VIS_H_PADDING * 2;
-  const chartHeight = Math.max(
-    MIN_CHART_HEIGHT,
-    Math.floor(Math.min(
-      chartWidth / MAX_ASPECT_RATIO,
-      (stage.height - X_AXIS_HEIGHT) / seriesCount
-    ))
-  );
-  return new Stage({
-    x: VIS_H_PADDING,
-    y: 0,
-    width: chartWidth,
-    height: chartHeight
-  });
 }
 
 export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
