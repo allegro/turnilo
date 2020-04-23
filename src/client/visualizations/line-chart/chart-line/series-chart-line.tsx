@@ -27,10 +27,10 @@ interface OwnProps {
   series: ConcreteSeries;
 }
 
-export type SeriesChartLineProps = Pick<ChartLineProps, "getX" | "xScale" | "yScale" | "dataset" | "color" | "stage"> & OwnProps;
+export type SeriesChartLineProps = Pick<ChartLineProps, "showArea" | "getX" | "xScale" | "yScale" | "dataset" | "color" | "stage"> & OwnProps;
 
 export const SeriesChartLine: React.SFC<SeriesChartLineProps> = props => {
-  const { essence, series, getX, stage, dataset, xScale, yScale, color } = props;
+  const { showArea, essence, series, getX, stage, dataset, xScale, yScale, color } = props;
 
   const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
   const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
@@ -42,7 +42,7 @@ export const SeriesChartLine: React.SFC<SeriesChartLineProps> = props => {
       yScale={yScale}
       getX={getX}
       getY={getY}
-      showArea={false}
+      showArea={showArea}
       color={color}
       dashed={false}
       dataset={dataset}
@@ -53,7 +53,7 @@ export const SeriesChartLine: React.SFC<SeriesChartLineProps> = props => {
       yScale={yScale}
       getX={getX}
       getY={getYP}
-      showArea={false}
+      showArea={showArea}
       color={color}
       dashed={true}
       dataset={dataset}

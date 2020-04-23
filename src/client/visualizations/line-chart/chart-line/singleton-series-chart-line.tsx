@@ -18,8 +18,8 @@ import * as React from "react";
 import { Omit } from "../../../../common/utils/functional/functional";
 import { SeriesChartLine, SeriesChartLineProps } from "./series-chart-line";
 
-type SingletonSeriesChartLineProps = Omit<SeriesChartLineProps, "color">;
+type SingletonSeriesChartLineProps = Omit<SeriesChartLineProps, "color" | "showArea">;
 
 export const SingletonSeriesChartLine: React.SFC<SingletonSeriesChartLineProps> = props => {
-  return <SeriesChartLine {...props} />;
+  return <SeriesChartLine {...props} showArea={true} />;
 };
