@@ -31,7 +31,7 @@ import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import calculateExtend from "./extend";
 
-interface SeriesChart {
+interface SeriesChartProps {
   essence: Essence;
   dataset: Dataset;
   series: ConcreteSeries;
@@ -40,12 +40,12 @@ interface SeriesChart {
   chartStage: Stage;
 }
 
-export const SeriesChart: React.SFC<SeriesChart> = props => {
+export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   const { chartStage, essence, series, xScale, xTicks, dataset } = props;
 
   const datum = dataset.data[0];
   // TODO: better name
-  const timeSeries = datum[SPLIT] as Dataset;
+  const continuousSplitDataset = datum[SPLIT] as Dataset;
   const hasComparison = essence.hasComparison();
 
   const label = <VisMeasureLabel
@@ -58,7 +58,7 @@ export const SeriesChart: React.SFC<SeriesChart> = props => {
   const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
   const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
 
-  const extent = calculateExtend(timeSeries, essence.splits, getY, getYP);
+  const extent = calculateExtend(continuousSplitDataset, essence.splits, getY, getYP);
 
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);
@@ -70,10 +70,10 @@ export const SeriesChart: React.SFC<SeriesChart> = props => {
       formatter={series.formatter()}
       yDomain={extent}>
       {({ yScale, lineStage }) => <React.Fragment>
-        {timeSeries.data.map((datum, index) => {
+        {continuousSplitDataset.data.map((datum, index) => {
           const splitKey = datum[nominalSplit.reference];
           const color = NORMAL_COLORS[index];
-          const dataset = datum[SPLIT] as Dataset;
+          const dataset = (datum[SPLIT] as Dataset).data;
           return <React.Fragment key={String(splitKey)}>
             <ChartLine
               key={series.reactKey()}
@@ -119,7 +119,7 @@ export const SeriesChart: React.SFC<SeriesChart> = props => {
         getY={getY}
         showArea={true}
         dashed={false}
-        dataset={timeSeries}
+        dataset={continuousSplitDataset.data}
         stage={lineStage} />
       {hasComparison && <ChartLine
         key={series.reactKey(SeriesDerivation.PREVIOUS)}
@@ -129,7 +129,7 @@ export const SeriesChart: React.SFC<SeriesChart> = props => {
         getY={getYP}
         showArea={true}
         dashed={true}
-        dataset={timeSeries}
+        dataset={continuousSplitDataset.data}
         stage={lineStage} />}
     </React.Fragment>}
   </BaseChart>;

@@ -23,25 +23,21 @@ import { ChartsPer, LineChartSettings } from "../../../../common/visualization-m
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { ChartsPerSeries } from "./charts-per-series/charts-per-series";
+import { ChartsPerSplit } from "./charts-per-split/charts-per-split";
 
 interface ChartsProps {
   essence: Essence;
-  scale: ContinuousScale;
-  ticks: ContinuousTicks;
+  xScale: ContinuousScale;
+  xTicks: ContinuousTicks;
   dataset: Dataset;
   stage: Stage;
 }
 
 export const Charts: React.SFC<ChartsProps> = props => {
-  const { essence, stage, scale, ticks, dataset } = props;
+  const { essence } = props;
   const { chartsPer } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
 
-  return chartsPer === ChartsPer.MEASURE
-    ? <ChartsPerSeries
-      stage={stage}
-      essence={essence}
-      dataset={dataset}
-      xScale={scale}
-      xTicks={ticks} />
-    : null;
+  return chartsPer === ChartsPer.SERIES
+    ? <ChartsPerSeries {...props} />
+    : <ChartsPerSplit {...props} />;
 };

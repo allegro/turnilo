@@ -45,8 +45,8 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
           <Charts
             stage={stage}
             essence={essence}
-            scale={scale}
-            ticks={ticks}
+            xScale={scale}
+            xTicks={ticks}
             dataset={dataset} />
           <XAxis
             width={stage.width}
