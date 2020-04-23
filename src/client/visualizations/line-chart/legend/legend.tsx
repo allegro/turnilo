@@ -14,41 +14,33 @@
  * limitations under the License.
  */
 
-import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { NORMAL_COLORS } from "../../../../common/models/colors/colors";
-import { Essence } from "../../../../common/models/essence/essence";
-import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
-import { SPLIT } from "../../../config/constants";
 import "./legend.scss";
 
 export interface LegendProps {
-  dataset: Dataset;
-  essence: Essence;
+  values: string[];
+  title: string;
 }
 
 interface LegendValuesProps {
-  dataset: Datum[];
-  series?: ConcreteSeries;
-  splitReference: string;
+  values: string[];
 }
 
 const LegendValues: React.SFC<LegendValuesProps> = props => {
-  const { dataset, series, splitReference } = props;
+  const { values } = props;
   return <div className="legend-values">
     <table className="legend-values-table">
       <tbody>
-      {dataset.map((datum, i) => {
-        const splitValue = String(datum[splitReference]);
+      {values.map((value, i) => {
         const style = { background: NORMAL_COLORS[i] };
-        return <tr key={splitValue} className="legend-value">
+        return <tr key={value} className="legend-value">
           <td className="legend-value-color-cell">
             <div className="legend-value-color" style={style} />
           </td>
           <td className="legend-value-label">
-            <span className="legend-value-name">{splitValue}</span>
+            <span className="legend-value-name">{value}</span>
           </td>
-          {series && <td className="legend-value-measure">{series.formatValue(datum)}</td>}
         </tr>;
       })}
       </tbody>
@@ -57,19 +49,12 @@ const LegendValues: React.SFC<LegendValuesProps> = props => {
 };
 
 export const Legend: React.SFC<LegendProps> = props => {
-  const { essence, dataset } = props;
-  const legendSplit = essence.splits.splits.first();
-  const legendDimension = essence.dataCube.getDimension(legendSplit.reference);
-  const splitSortReference = legendSplit.sort.reference;
-  const series = essence.findConcreteSeries(splitSortReference);
+  const { values, title } = props;
 
   return <div className="line-chart-legend">
     <div className="legend-header">
-      {legendSplit.getTitle(legendDimension)}
+      {title}
     </div>
-    <LegendValues
-      dataset={(dataset.data[0][SPLIT] as Dataset).data}
-      series={series}
-      splitReference={legendSplit.reference} />
+    <LegendValues values={values} />
   </div>;
 };

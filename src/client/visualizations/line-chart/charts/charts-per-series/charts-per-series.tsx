@@ -19,7 +19,7 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
-import { LineChartLegend } from "../../../line-chart-old/line-chart-legend/line-chart-legend";
+import { SplitLegend } from "../../legend/split-legend";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { hasNominalSplit } from "../../utils/splits";
@@ -42,7 +42,7 @@ export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
 
   return <React.Fragment>
     {hasNominalSplit(essence) && <LegendSpot>
-      <LineChartLegend dataset={dataset} essence={essence}/>
+      <SplitLegend dataset={dataset} essence={essence}/>
     </LegendSpot>}
     {concreteSeries.map(series =>
       <SeriesChart
