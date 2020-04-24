@@ -20,14 +20,14 @@ import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
 export type LineChartVisualizationSettings = VisualizationSettingsConfig<LineChartSettings>;
 
-export enum ChartsPer { SPLIT, MEASURE }
+export enum ChartsPer { SPLIT, SERIES }
 
 export interface LineChartSettings {
   chartsPer: ChartsPer;
 }
 
 const defaults: LineChartSettings = {
-  chartsPer: ChartsPer.MEASURE
+  chartsPer: ChartsPer.SERIES
 };
 
 const settingsFactory = Record<LineChartSettings>(defaults);
