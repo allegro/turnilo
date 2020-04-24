@@ -16,27 +16,15 @@
 
 import * as React from "react";
 import { VisualizationSettingsComponent } from "../../../common/models/visualization-settings/visualization-settings";
-import { ChartsPer, LineChartSettings } from "../../../common/visualization-manifests/line-chart/settings";
-import { Dropdown } from "../../components/dropdown/dropdown";
-
-function renderChartsPer(chartsPer: ChartsPer): string {
-  switch (chartsPer) {
-    case ChartsPer.SPLIT:
-      return "split";
-    case ChartsPer.SERIES:
-      return "series";
-  }
-}
+import { LineChartSettings } from "../../../common/visualization-manifests/line-chart/settings";
+import { Checkbox } from "../../components/checkbox/checkbox";
 
 export const LineChartSettingsComponent: VisualizationSettingsComponent<LineChartSettings> = ({ settings, onChange }) => {
-  const saveChartsPer = (value: ChartsPer) => onChange(settings.set("chartsPer", value));
+  const toggleGroupSeries = () => onChange(settings.update("groupSeries", groupSeries => !groupSeries));
   return <div className="settings-row">
-    <span className="settings-label">Chart per:</span>
-    <Dropdown<ChartsPer>
-      items={[ChartsPer.SPLIT, ChartsPer.SERIES]}
-      onSelect={saveChartsPer}
-      selectedItem={settings.chartsPer}
-      renderItem={renderChartsPer}
-    />
+    <Checkbox
+      selected={settings.groupSeries}
+      onClick={toggleGroupSeries} />
+    <span className="settings-label">Group series</span>
   </div>;
 };

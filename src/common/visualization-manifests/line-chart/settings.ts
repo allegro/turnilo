@@ -20,14 +20,12 @@ import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
 export type LineChartVisualizationSettings = VisualizationSettingsConfig<LineChartSettings>;
 
-export enum ChartsPer { SPLIT, SERIES }
-
 export interface LineChartSettings {
-  chartsPer: ChartsPer;
+  groupSeries: boolean;
 }
 
 const defaults: LineChartSettings = {
-  chartsPer: ChartsPer.SERIES
+  groupSeries: false
 };
 
 const settingsFactory = Record<LineChartSettings>(defaults);
@@ -37,9 +35,7 @@ const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<L
 export const settings: LineChartVisualizationSettings = {
   converter: {
     print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
-    read: (input: LineChartSettings) => createSettings({
-      chartsPer: input.chartsPer || defaults.chartsPer
-    })
+    read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries })
   },
   defaults: createSettings({})
 };

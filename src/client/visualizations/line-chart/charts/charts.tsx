@@ -19,7 +19,7 @@ import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Stage } from "../../../../common/models/stage/stage";
 import { ImmutableRecord } from "../../../../common/utils/immutable-utils/immutable-utils";
-import { ChartsPer, LineChartSettings } from "../../../../common/visualization-manifests/line-chart/settings";
+import { LineChartSettings } from "../../../../common/visualization-manifests/line-chart/settings";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { ChartsPerSeries } from "./charts-per-series/charts-per-series";
@@ -35,9 +35,9 @@ interface ChartsProps {
 
 export const Charts: React.SFC<ChartsProps> = props => {
   const { essence } = props;
-  const { chartsPer } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
+  const { groupSeries } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
 
-  return chartsPer === ChartsPer.SERIES
-    ? <ChartsPerSeries {...props} />
-    : <ChartsPerSplit {...props} />;
+  return groupSeries
+    ? <ChartsPerSplit {...props} />
+    : <ChartsPerSeries {...props} />;
 };
