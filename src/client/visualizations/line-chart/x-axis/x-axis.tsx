@@ -61,9 +61,9 @@ export const XAxis: React.SFC<XAxisProps> = props => {
   });
 
   const labelY = TICK_HEIGHT + TEXT_OFFSET;
-  const labels = ticks.map((tick: any) => {
+  const labels = ticks.map((tick: any, index: number) => {
     const x = scale(tick);
-    return <text key={String(tick)} x={x} y={labelY}>{format(tick)}</text>;
+    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>{format(tick)}</text>;
   });
 
   return <svg className="bottom-axis" width={stage.width} height={stage.height}>

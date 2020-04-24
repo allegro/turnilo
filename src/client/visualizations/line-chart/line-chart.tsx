@@ -37,17 +37,21 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
     const scale = calculateXScale(essence, timekeeper, dataset, stage.width - Y_AXIS_WIDTH);
     const ticks = pickXAxisTicks(scale, essence.timezone);
 
+    const maxHeight = stage.height - 30; /* magic number for: X_AXIS_HEIGHT; */
+
     return <Interactions
       highlight={this.getHighlight()}
       saveHighlight={this.highlight}>
       {({ interaction }) => {
         return <div className="line-chart-container">
-          <Charts
-            stage={stage}
-            essence={essence}
-            xScale={scale}
-            xTicks={ticks}
-            dataset={dataset} />
+          <div className="line-charts" style={{ maxHeight }}>
+            <Charts
+              stage={stage}
+              essence={essence}
+              xScale={scale}
+              xTicks={ticks}
+              dataset={dataset} />
+          </div>
           <XAxis
             width={stage.width}
             ticks={ticks}

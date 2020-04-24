@@ -18,13 +18,17 @@
 @import '../../imports';
 
 .line-chart {
+
   .line-chart-container {
+    padding-left: $vis-h-padding;
+  }
+
+  .line-charts {
     @include internet-explorer {
       overflow-y: hidden;
     }
     overflow-x: hidden;
     overflow-y: auto;
-    padding-left: $vis-h-padding;
   }
 
   .measure-line-chart {
