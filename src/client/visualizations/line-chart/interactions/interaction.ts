@@ -36,7 +36,7 @@ export const createHover = (key: string, range: PlywoodRange): Hover => ({
   key
 });
 
-export const isHover = (interaction: Interaction): interaction is Hover => interaction.kind === InteractionKind.HOVER;
+export const isHover = (interaction?: Interaction): interaction is Hover => interaction && interaction.kind === InteractionKind.HOVER;
 
 export type ContinuousValue = number | Date;
 
@@ -54,7 +54,7 @@ export const createDragging = (key: string, start: ContinuousValue, end?: Contin
   key
 });
 
-export const isDragging = (interaction: Interaction): interaction is Dragging => interaction.kind === InteractionKind.DRAGGING;
+export const isDragging = (interaction?: Interaction): interaction is Dragging => interaction && interaction.kind === InteractionKind.DRAGGING;
 
 interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
@@ -68,7 +68,7 @@ export const createHighlight = (highlight: VizHighlight): Highlight => ({
   key: highlight.key
 });
 
-export const isHighlight = (interaction: Interaction): interaction is Highlight => interaction.kind === InteractionKind.HIGHLIGHT;
+export const isHighlight = (interaction?: Interaction): interaction is Highlight => interaction && interaction.kind === InteractionKind.HIGHLIGHT;
 
 export type MouseInteraction = Hover | Dragging;
 
