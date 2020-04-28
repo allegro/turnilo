@@ -59,9 +59,13 @@ export class InteractionController extends React.Component<InteractionController
   handleHover = (chartId: string, e: React.MouseEvent<HTMLDivElement>) => {
     // calculate hover range and setState
     const hoverRange = this.findRange(e);
+    if (hoverRange === null) {
+      this.setState({ interaction: null });
+      return;
+    }
     const { interaction } = this.state;
     if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
-    this.setState({ interaction: createHover(chartId, this.findRange(e)) });
+    this.setState({ interaction: createHover(chartId, hoverRange) });
   };
 
   onMouseLeave = () => {
@@ -110,11 +114,11 @@ export class InteractionController extends React.Component<InteractionController
     return xScale.invert(this.getX(e));
   }
 
-  private findRange(e: MouseEvent | React.MouseEvent<HTMLDivElement>): PlywoodRange {
+  private findRange(e: MouseEvent | React.MouseEvent<HTMLDivElement>): PlywoodRange | null {
     const value = this.findValue(e);
     const { essence, xScale, dataset } = this.props;
     const closestDatum = findClosestDatum(value, essence, dataset, xScale);
-    const range = closestDatum[getContinuousReference(essence)];
+    const range = closestDatum && closestDatum[getContinuousReference(essence)];
     return range as PlywoodRange;
   }
 

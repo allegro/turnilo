@@ -41,12 +41,11 @@ function findClosest(data: Datum[], dragDate: ContinuousValue, scaleX: Continuou
   return closestDatum;
 }
 
-export function findClosestDatum(value: ContinuousValue, essence: Essence, dataset: Dataset, xScale: ContinuousScale): Datum {
+export function findClosestDatum(value: ContinuousValue, essence: Essence, dataset: Dataset, xScale: ContinuousScale): Datum | null {
   const continuousDimension = getContinuousDimension(essence);
   if (hasNominalSplit(essence)) {
     const flattened = selectFirstSplitDataset(dataset).flatten();
     return findClosest(flattened.data, value, xScale, continuousDimension);
-  } else {
-    return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousDimension);
   }
+  return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousDimension);
 }
