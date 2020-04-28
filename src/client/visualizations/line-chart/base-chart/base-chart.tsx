@@ -19,11 +19,13 @@ import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { Scale } from "../chart-line/chart-line";
+import { isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { Background } from "./background";
 import "./base-chart.scss";
+import { HoverGuide } from "./hover-guide";
 import getScale from "./scale";
 
 interface ChartLinesProps {
@@ -46,7 +48,7 @@ class BaseChartProps {
 const TEXT_SPACER = 36;
 
 export const BaseChart: React.SFC<BaseChartProps> = props => {
-  const { interactions: { dragStart, handleHover, mouseLeave }, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = props;
+  const { interactions: { interaction, dragStart, handleHover, mouseLeave }, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = props;
 
   const [, xRange] = xScale.range();
   const lineStage = chartStage.within({ top: TEXT_SPACER, right: chartStage.width - xRange, bottom: 1 }); // leave 1 for border
@@ -57,7 +59,6 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
   return <React.Fragment>
     <div className="line-base-chart" style={chartStage.getWidthHeight()}>
       <svg className="chart-stage" viewBox={chartStage.getViewBox()}>
-        {/*{renderHoverGuide(scale(0), lineStage)}*/}
         <Background
           axisStage={axisStage}
           formatter={formatter}
@@ -67,6 +68,11 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
           yScale={yScale}
         />
         {children({ yScale, lineStage })}
+        {isHover(interaction) && interaction.key === chartId && <HoverGuide
+          hover={interaction}
+          stage={lineStage}
+          yScale={yScale}
+          xScale={xScale}/>}
       </svg>
       <div style={lineStage.getWidthHeight()}
            className="event-region"

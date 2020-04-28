@@ -24,7 +24,7 @@ interface InteractionBase {
   kind: InteractionKind;
 }
 
-interface Hover extends InteractionBase {
+export interface Hover extends InteractionBase {
   kind: InteractionKind.HOVER;
   range: PlywoodRange;
   key: string;
@@ -40,7 +40,7 @@ export const isHover = (interaction?: Interaction): interaction is Hover => inte
 
 export type ContinuousValue = number | Date;
 
-interface Dragging extends InteractionBase {
+export interface Dragging extends InteractionBase {
   kind: InteractionKind.DRAGGING;
   key: string;
   start: ContinuousValue;
@@ -56,7 +56,7 @@ export const createDragging = (key: string, start: ContinuousValue, end?: Contin
 
 export const isDragging = (interaction?: Interaction): interaction is Dragging => interaction && interaction.kind === InteractionKind.DRAGGING;
 
-interface Highlight extends InteractionBase {
+export interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
   clause: FilterClause;
   key: string;
