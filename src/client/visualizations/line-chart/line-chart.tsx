@@ -20,7 +20,7 @@ import * as React from "react";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Charts } from "./charts/charts";
-import { Interactions } from "./interactions/interactions";
+import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
 import calculateXScale from "./utils/calculate-x-scale";
 import pickXAxisTicks from "./utils/pick-x-axis-ticks";
@@ -39,16 +39,17 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
 
     const maxHeight = stage.height - 30; /* magic number for: X_AXIS_HEIGHT; */
 
-    return <Interactions
+    return <InteractionController
       dataset={dataset}
       xScale={scale}
       essence={essence}
       highlight={this.getHighlight()}
       saveHighlight={this.highlight}>
-      {({ interaction }) => {
+      {interactions => {
         return <div className="line-chart-container">
           <div className="line-charts" style={{ maxHeight }}>
             <Charts
+              interactions={interactions}
               stage={stage}
               essence={essence}
               xScale={scale}
@@ -62,6 +63,6 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
             timezone={essence.timezone} />
         </div>;
       }}
-    </Interactions>;
+    </InteractionController>;
   }
 }

@@ -21,6 +21,7 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { compose, Unary } from "../../../../../common/utils/functional/functional";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
 import { SPLIT } from "../../../../config/constants";
+import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
@@ -29,6 +30,7 @@ import { calculateChartStage } from "../calculate-chart-stage";
 import { SplitChart } from "./split-chart";
 
 interface ChartsPerSplit {
+  interactions: InteractionsProps;
   essence: Essence;
   dataset: Dataset;
   xScale: ContinuousScale;
@@ -50,7 +52,7 @@ function getChartsSelectors(essence: Essence, dataset: Dataset): Array<Unary<Dat
 }
 
 export const ChartsPerSplit: React.SFC<ChartsPerSplit> = props => {
-  const { xScale, xTicks, essence, dataset, stage } = props;
+  const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const hasMultipleSeries = essence.series.count() > 1;
   const selectors = getChartsSelectors(essence, dataset);
@@ -60,6 +62,7 @@ export const ChartsPerSplit: React.SFC<ChartsPerSplit> = props => {
       <SeriesLegend essence={essence} />
     </LegendSpot>}
     {selectors.map(selector => <SplitChart
+      interactions={interactions}
       essence={essence}
       dataset={dataset}
       selectDatum={selector}

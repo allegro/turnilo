@@ -15,29 +15,13 @@
  */
 
 import { Datum, PlywoodValue } from "plywood";
-import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
 import { getNominalDimension, hasNominalSplit } from "../../utils/splits";
 
-interface LabelProps {
-  essence: Essence;
-  datum: Datum;
+export function nominalLabel(datum: Datum, essence: Essence): string {
+  if (!hasNominalSplit(essence)) return "no-nominal-split";
+  const nominalDimension = getNominalDimension(essence);
+  const splitValue = datum[nominalDimension.name] as PlywoodValue;
+  return formatSegment(splitValue, essence.timezone);
 }
-
-export const Label: React.SFC<LabelProps> = props => {
-  const { essence, datum } = props;
-  if (hasNominalSplit(essence)) {
-    const nominalDimension = getNominalDimension(essence);
-    const splitValue = datum[nominalDimension.name] as PlywoodValue;
-    return <div className="split-chart-label">
-    <span className="split-chart-dimension-title">
-      {nominalDimension.title}
-    </span>
-      <span className="split-chart-value">
-      : {formatSegment(splitValue, essence.timezone)}
-    </span>
-    </div>;
-  }
-  return null;
-};

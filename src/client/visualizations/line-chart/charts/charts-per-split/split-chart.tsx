@@ -25,13 +25,16 @@ import { SPLIT } from "../../../../config/constants";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
+import { InteractionsProps } from "../../interactions/interaction-controller";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit } from "../../utils/splits";
 import calculateExtend from "./calculate-extend";
 import { Label } from "./label";
+import { nominalLabel } from "./nominal-label";
 
 interface SplitChartProps {
+  interactions: InteractionsProps;
   essence: Essence;
   dataset: Dataset;
   selectDatum: Unary<Dataset, Datum>;
@@ -41,13 +44,14 @@ interface SplitChartProps {
 }
 
 export const SplitChart: React.SFC<SplitChartProps> = props => {
-  const { chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
+  const { interactions, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
   const splitDatum = selectDatum(dataset);
   const splitDataset = splitDatum[SPLIT] as Dataset;
 
   const series = essence.getConcreteSeries();
 
   const label = <Label essence={essence} datum={splitDatum} />;
+  const chartId = nominalLabel(splitDatum, essence);
 
   const continuousSplit = getContinuousSplit(essence);
   const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
@@ -56,6 +60,8 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
   if (series.count() === 1) {
     const firstSeries = series.first();
     return <BaseChart
+      chartId={chartId}
+      interactions={interactions}
       label={label}
       xScale={xScale}
       xTicks={xTicks}
@@ -76,6 +82,8 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
   }
 
   return <BaseChart
+    chartId={chartId}
+    interactions={interactions}
     label={label}
     xScale={xScale}
     xTicks={xTicks}

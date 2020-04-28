@@ -19,6 +19,7 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
+import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SplitLegend } from "../../legend/split-legend";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
@@ -27,6 +28,7 @@ import { calculateChartStage } from "../calculate-chart-stage";
 import { SeriesChart } from "./series-chart";
 
 interface ChartsPerSeriesProps {
+  interactions: InteractionsProps;
   essence: Essence;
   dataset: Dataset;
   xScale: ContinuousScale;
@@ -35,7 +37,7 @@ interface ChartsPerSeriesProps {
 }
 
 export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
-  const { xScale, xTicks, essence, dataset, stage } = props;
+  const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();
   const chartStage = calculateChartStage(stage, essence.series.count());
@@ -46,6 +48,7 @@ export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
     </LegendSpot>}
     {concreteSeries.map(series =>
       <SeriesChart
+        interactions={interactions}
         key={series.reactKey()}
         dataset={dataset}
         essence={essence}

@@ -31,11 +31,11 @@ import { ContinuousValue, createDragging, createHighlight, createHover, Interact
 import { snapRangeToGrid } from "./snap-range-to-grid";
 import { toFilterClause } from "./to-filter-clause";
 
-interface InteractionsProps {
+interface InteractionControllerProps {
   xScale: ContinuousScale;
   essence: Essence;
   dataset: Dataset;
-  children: Unary<InteractionsHOCArgument, ReactNode>;
+  children: Unary<InteractionsProps, ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
 }
@@ -45,14 +45,14 @@ interface InteractionsState {
   scrollTop: number;
 }
 
-export interface InteractionsHOCArgument {
+export interface InteractionsProps {
   interaction: Interaction | null;
   dragStart: Binary<string, React.MouseEvent<HTMLDivElement>, void>;
   handleHover: Binary<string, React.MouseEvent<HTMLDivElement>, void>;
   mouseLeave: Nullary<void>;
 }
 
-export class Interactions extends React.Component<InteractionsProps, InteractionsState> {
+export class InteractionController extends React.Component<InteractionControllerProps, InteractionsState> {
 
   state: InteractionsState = { interaction: null, scrollTop: 0 };
 
@@ -136,7 +136,7 @@ export class Interactions extends React.Component<InteractionsProps, Interaction
   render() {
     const interaction = this.interaction();
     const { children } = this.props;
-    const hocProps: InteractionsHOCArgument = {
+    const hocProps: InteractionsProps = {
       interaction,
       dragStart: this.handleDragStart,
       handleHover: this.handleHover,

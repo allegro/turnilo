@@ -19,6 +19,7 @@ import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { Scale } from "../chart-line/chart-line";
+import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { Background } from "./background";
@@ -30,6 +31,7 @@ interface ChartLinesProps {
 }
 
 class BaseChartProps {
+  chartId: string;
   children: Unary<ChartLinesProps, ReactNode>;
   label: ReactNode;
   xScale: ContinuousScale;
@@ -37,12 +39,13 @@ class BaseChartProps {
   chartStage: Stage;
   formatter: Unary<number, string>;
   yDomain: [number, number];
+  interactions: InteractionsProps;
 }
 
 const TEXT_SPACER = 36;
 
 export const BaseChart: React.SFC<BaseChartProps> = props => {
-  const { yDomain, chartStage, children, label, formatter, xScale, xTicks } = props;
+  const { interactions: { dragStart, handleHover, mouseLeave }, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = props;
 
   const [, xRange] = xScale.range();
   const lineStage = chartStage.within({ top: TEXT_SPACER, right: chartStage.width - xRange, bottom: 1 }); // leave 1 for border
@@ -53,19 +56,19 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
   return <React.Fragment>
     <div
       className="measure-line-chart"
-      // onMouseDown={e => onMouseDown(series.definition, e)}
-      // onMouseMove={e => onMouseMove(splitData, scaleX, e)}
-      // onMouseLeave={() => onMouseLeave()}
+      onMouseDown={e => dragStart(chartId, e)}
+      onMouseMove={e => handleHover(chartId, e)}
+      onMouseLeave={mouseLeave}
     >
       <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
         {/*{renderHoverGuide(scale(0), lineStage)}*/}
         <Background
-         axisStage={axisStage}
-         formatter={formatter}
-         gridStage={lineStage}
-         xScale={xScale}
-         xTicks={xTicks}
-         yScale={yScale}
+          axisStage={axisStage}
+          formatter={formatter}
+          gridStage={lineStage}
+          xScale={xScale}
+          xTicks={xTicks}
+          yScale={yScale}
         />
         {children({ yScale, lineStage })}
       </svg>

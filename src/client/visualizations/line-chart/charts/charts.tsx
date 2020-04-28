@@ -20,12 +20,14 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { Stage } from "../../../../common/models/stage/stage";
 import { ImmutableRecord } from "../../../../common/utils/immutable-utils/immutable-utils";
 import { LineChartSettings } from "../../../../common/visualization-manifests/line-chart/settings";
+import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { ChartsPerSeries } from "./charts-per-series/charts-per-series";
 import { ChartsPerSplit } from "./charts-per-split/charts-per-split";
 
 interface ChartsProps {
+  interactions: InteractionsProps;
   essence: Essence;
   xScale: ContinuousScale;
   xTicks: ContinuousTicks;

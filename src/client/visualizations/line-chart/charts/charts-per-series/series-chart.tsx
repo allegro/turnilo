@@ -27,12 +27,14 @@ import { SPLIT } from "../../../../config/constants";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
+import { InteractionsProps } from "../../interactions/interaction-controller";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import calculateExtend from "./extend";
 
 interface SeriesChartProps {
+  interactions: InteractionsProps;
   essence: Essence;
   dataset: Dataset;
   series: ConcreteSeries;
@@ -42,7 +44,7 @@ interface SeriesChartProps {
 }
 
 export const SeriesChart: React.SFC<SeriesChartProps> = props => {
-  const { chartStage, essence, series, xScale, xTicks, dataset } = props;
+  const { interactions, chartStage, essence, series, xScale, xTicks, dataset } = props;
 
   const datum = dataset.data[0];
   const continuousSplitDataset = datum[SPLIT] as Dataset;
@@ -63,6 +65,8 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);
     return <BaseChart
+      chartId={series.plywoodKey()}
+      interactions={interactions}
       label={label}
       xScale={xScale}
       xTicks={xTicks}
@@ -90,6 +94,8 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   }
 
   return <BaseChart
+    chartId={series.plywoodKey()}
+    interactions={interactions}
     label={label}
     chartStage={chartStage}
     yDomain={domain}
