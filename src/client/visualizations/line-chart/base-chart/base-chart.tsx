@@ -23,6 +23,7 @@ import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { Background } from "./background";
+import "./base-chart.scss";
 import getScale from "./scale";
 
 interface ChartLinesProps {
@@ -54,13 +55,8 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
   const yScale = getScale(yDomain, lineStage.height);
 
   return <React.Fragment>
-    <div
-      className="measure-line-chart"
-      onMouseDown={e => dragStart(chartId, e)}
-      onMouseMove={e => handleHover(chartId, e)}
-      onMouseLeave={mouseLeave}
-    >
-      <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
+    <div className="line-base-chart" style={chartStage.getWidthHeight()}>
+      <svg className="chart-stage" viewBox={chartStage.getViewBox()}>
         {/*{renderHoverGuide(scale(0), lineStage)}*/}
         <Background
           axisStage={axisStage}
@@ -72,6 +68,12 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
         />
         {children({ yScale, lineStage })}
       </svg>
+      <div style={lineStage.getWidthHeight()}
+           className="event-region"
+           onMouseDown={e => dragStart(chartId, e)}
+           onMouseMove={e => handleHover(chartId, e)}
+           onMouseLeave={mouseLeave}
+      />
       {label}
       {/*{renderHighlighter()}*/}
     </div>
