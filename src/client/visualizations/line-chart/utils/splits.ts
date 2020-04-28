@@ -31,6 +31,10 @@ export function getContinuousDimension(essence: Essence): Dimension {
    return dimensionForSplit(essence, split);
 }
 
+export function getContinuousReference(essence: Essence): string {
+   return getContinuousSplit(essence).reference;
+}
+
 export function getNominalSplit({ splits: { splits } }: Essence): Split | null {
    return splits.count() === 1 ? null : splits.first();
 }

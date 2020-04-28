@@ -38,8 +38,8 @@ export const SeriesHighlighter: React.SFC<SeriesHighlighterProps> = props => {
 
   if (isDragging(interaction)) {
     const range = Range.fromJS({
-      start: interaction.start.start,
-      end: interaction.end.end
+      start: interaction.start,
+      end: interaction.end
     });
     return <Highlighter highlightRange={range} scaleX={scaleX} />;
   }

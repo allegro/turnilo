@@ -15,46 +15,116 @@
  */
 
 import { List } from "immutable";
+import { Dataset, PlywoodRange, Range } from "plywood";
 import * as React from "react";
 import { ReactNode } from "react";
+import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { Binary, Unary } from "../../../../common/utils/functional/functional";
+import { Binary, Nullary, Unary } from "../../../../common/utils/functional/functional";
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
+import { getXFromEvent } from "../../../utils/dom/dom";
 import { Highlight } from "../../base-visualization/highlight";
-import { createHighlight, Interaction, MouseInteraction } from "./interaction";
+import { ContinuousScale } from "../utils/scale";
+import { getContinuousReference } from "../utils/splits";
+import { findClosestDatum } from "./find-closest-datum";
+import { ContinuousValue, createDragging, createHighlight, createHover, Interaction, isDragging, isHover, MouseInteraction } from "./interaction";
+import { snapRangeToGrid } from "./snap-range-to-grid";
+import { toFilterClause } from "./to-filter-clause";
 
 interface InteractionsProps {
-  children: Unary<{ interaction: Interaction }, ReactNode>;
+  xScale: ContinuousScale;
+  essence: Essence;
+  dataset: Dataset;
+  children: Unary<InteractionsHOCArgument, ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
 }
 
 interface InteractionsState {
   interaction: MouseInteraction | null;
+  scrollTop: number;
+}
+
+export interface InteractionsHOCArgument {
+  interaction: Interaction | null;
+  dragStart: Binary<string, React.MouseEvent<HTMLDivElement>, void>;
+  handleHover: Binary<string, React.MouseEvent<HTMLDivElement>, void>;
+  mouseLeave: Nullary<void>;
 }
 
 export class Interactions extends React.Component<InteractionsProps, InteractionsState> {
 
-  state: InteractionsState = { interaction: null };
+  state: InteractionsState = { interaction: null, scrollTop: 0 };
 
-  handleHover = (e: React.MouseEvent<HTMLDivElement>) => {
+  handleHover = (chartId: string, e: React.MouseEvent<HTMLDivElement>) => {
     // calculate hover range and setState
+    const hoverRange = this.findRange(e);
+    const { interaction } = this.state;
+    if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
+    this.setState({ interaction: createHover(chartId, this.findRange(e)) });
   };
 
   onMouseLeave = () => {
     // if hover, reset interaction
+    const { interaction } = this.state;
+    if (!isHover(interaction)) return;
+    this.setState({ interaction: null });
   };
 
-  handleDragStart = () => {
+  handleDragStart = (chartId: string, e: React.MouseEvent<HTMLDivElement>) => {
     // calculate dragStart in Dragging and setState
+    this.setState({ interaction: createDragging(chartId, this.findValue(e)) });
   };
 
-  globalMouseMoveListener = () => {
+  dragging = (e: MouseEvent) => {
     // active only if we're in Dragging. Update dragEnd in state
+    const { interaction } = this.state;
+    if (!isDragging(interaction)) return;
+    const { start, key } = interaction;
+    const end = this.findValue(e);
+    // TODO: remember to ensure that we're inside xScale.domain!
+    this.setState({ interaction: createDragging(key, start, end) });
   };
 
-  globalMouseUpListener = () => {
+  stopDragging = (e: MouseEvent) => {
     // if we're in Dragging - stop, update dragEnd and saveHighlight (handle highlighting different charts!)
+    const { interaction } = this.state;
+    if (!isDragging(interaction)) return;
+    const { start } = interaction;
+    const end = this.findValue(e);
+    this.setState({ interaction: null });
+    const { essence, saveHighlight } = this.props;
+    // TODO: ensure that start < end
+    // TODO: remember to ensure that we're inside xScale.domain!
+    const range = snapRangeToGrid(Range.fromJS({ start, end }), essence);
+    saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), "chart-id?");
+  };
+
+  private getX(e: MouseEvent | React.MouseEvent<HTMLDivElement>, offset = 0): number {
+    return getXFromEvent(e) - offset;
+  }
+
+  private findValue(e: MouseEvent | React.MouseEvent<HTMLDivElement>): ContinuousValue {
+    const { xScale } = this.props;
+    // TODO: remember to ensure that we're inside xScale.domain!
+    return xScale.invert(this.getX(e));
+  }
+
+  private findRange(e: MouseEvent | React.MouseEvent<HTMLDivElement>): PlywoodRange {
+    const value = this.findValue(e);
+    const { essence, xScale, dataset } = this.props;
+    const closestDatum = findClosestDatum(value, essence, dataset, xScale);
+    const range = closestDatum[getContinuousReference(essence)];
+    return range as PlywoodRange;
+  }
+
+  scrollCharts = (scrollEvent: MouseEvent) => {
+    const { scrollTop } = scrollEvent.target as Element;
+
+    this.setState({
+      interaction: null,
+      scrollTop
+    });
   };
 
   interaction(): Interaction | null {
@@ -66,9 +136,18 @@ export class Interactions extends React.Component<InteractionsProps, Interaction
   render() {
     const interaction = this.interaction();
     const { children } = this.props;
+    const hocProps: InteractionsHOCArgument = {
+      interaction,
+      dragStart: this.handleDragStart,
+      handleHover: this.handleHover,
+      mouseLeave: this.onMouseLeave
+    };
     return <React.Fragment>
-      <GlobalEventListener />
-      {children({ interaction })}
+      <GlobalEventListener
+        mouseUp={this.stopDragging}
+        mouseMove={this.dragging}
+        scroll={this.scrollCharts} />
+      {children(hocProps)}
     </React.Fragment>;
   }
 }

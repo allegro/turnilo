@@ -27,25 +27,31 @@ interface InteractionBase {
 interface Hover extends InteractionBase {
   kind: InteractionKind.HOVER;
   range: PlywoodRange;
+  key: string;
 }
 
-export const createHover = (range: PlywoodRange): Hover => ({
+export const createHover = (key: string, range: PlywoodRange): Hover => ({
   kind: InteractionKind.HOVER,
-  range
+  range,
+  key
 });
 
 export const isHover = (interaction: Interaction): interaction is Hover => interaction.kind === InteractionKind.HOVER;
 
+export type ContinuousValue = number | Date;
+
 interface Dragging extends InteractionBase {
   kind: InteractionKind.DRAGGING;
-  start: PlywoodRange;
-  end?: PlywoodRange;
+  key: string;
+  start: ContinuousValue;
+  end?: ContinuousValue;
 }
 
-export const createDragging = (start: PlywoodRange, end?: PlywoodRange): Dragging => ({
+export const createDragging = (key: string, start: ContinuousValue, end?: ContinuousValue): Dragging => ({
   kind: InteractionKind.DRAGGING,
   start,
-  end
+  end,
+  key
 });
 
 export const isDragging = (interaction: Interaction): interaction is Dragging => interaction.kind === InteractionKind.DRAGGING;
@@ -53,13 +59,13 @@ export const isDragging = (interaction: Interaction): interaction is Dragging =>
 interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
   clause: FilterClause;
-  chartKey: string;
+  key: string;
 }
 
 export const createHighlight = (highlight: VizHighlight): Highlight => ({
   kind: InteractionKind.HIGHLIGHT,
   clause: highlight.clauses.first(),
-  chartKey: highlight.key
+  key: highlight.key
 });
 
 export const isHighlight = (interaction: Interaction): interaction is Highlight => interaction.kind === InteractionKind.HIGHLIGHT;

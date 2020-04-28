@@ -40,6 +40,9 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
     const maxHeight = stage.height - 30; /* magic number for: X_AXIS_HEIGHT; */
 
     return <Interactions
+      dataset={dataset}
+      xScale={scale}
+      essence={essence}
       highlight={this.getHighlight()}
       saveHighlight={this.highlight}>
       {({ interaction }) => {

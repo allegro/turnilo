@@ -16,4 +16,6 @@
 
 import * as d3 from "d3";
 
-export type ContinuousScale = d3.time.Scale<number, number> | d3.scale.Linear<number, number>;
+// TODO: ContinuousScale does not have compatible call signatures (union of function getting number and Date)
+// export type ContinuousScale = d3.time.Scale<number, number> | d3.scale.Linear<number, number>;
+export type ContinuousScale = any;

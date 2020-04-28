@@ -19,6 +19,7 @@ import { Datum, NumberRange, PlywoodRange, TimeRange } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { concatTruthy, flatMap, Unary } from "../../../../common/utils/functional/functional";
+import { ContinuousScale } from "../utils/scale";
 import "./chart-line.scss";
 
 export type Scale = d3.scale.Linear<number, number>;
@@ -26,8 +27,7 @@ export type Scale = d3.scale.Linear<number, number>;
 type Range = NumberRange | TimeRange;
 
 export interface ChartLineProps {
-  // TODO: ContinuousScale does not have compatible call signatures (union of function getting number and Date)
-  xScale: any;
+  xScale: ContinuousScale;
   yScale: Scale;
   getX: Unary<Datum, Range>;
   getY: Unary<Datum, number>;
