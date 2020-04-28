@@ -28,6 +28,7 @@ import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
 import { InteractionsProps } from "../../interactions/interaction-controller";
+import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
@@ -46,13 +47,12 @@ interface SeriesChartProps {
 export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   const { interactions, chartStage, essence, series, xScale, xTicks, dataset } = props;
 
-  const datum = dataset.data[0];
-  const continuousSplitDataset = datum[SPLIT] as Dataset;
   const hasComparison = essence.hasComparison();
+  const continuousSplitDataset = selectFirstSplitDataset(dataset);
 
   const label = <VisMeasureLabel
     series={series}
-    datum={datum}
+    datum={selectMainDatum(dataset)}
     showPrevious={hasComparison} />;
 
   const continuousSplit = getContinuousSplit(essence);
@@ -77,14 +77,13 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
         {continuousSplitDataset.data.map((datum, index) => {
           const splitKey = datum[nominalSplit.reference];
           const color = NORMAL_COLORS[index];
-          const dataset = (datum[SPLIT] as Dataset).data;
           return <ColoredSeriesChartLine
             key={String(splitKey)}
             xScale={xScale}
             yScale={yScale}
             getX={getX}
             color={color}
-            dataset={dataset}
+            dataset={selectSplitDatums(datum)}
             stage={lineStage}
             essence={essence}
             series={series} />;

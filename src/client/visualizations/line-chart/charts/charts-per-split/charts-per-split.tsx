@@ -20,9 +20,9 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { compose, Unary } from "../../../../../common/utils/functional/functional";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
-import { SPLIT } from "../../../../config/constants";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
+import { selectFirstSplitDatums, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { hasNominalSplit } from "../../utils/splits";
@@ -39,15 +39,14 @@ interface ChartsPerSplit {
 }
 
 function getChartsSelectors(essence: Essence, dataset: Dataset): Array<Unary<Dataset, Datum>> {
-  const get1stLevel = (dataset: Dataset) => dataset.data[0];
   if (!hasNominalSplit(essence)) {
-    return [get1stLevel];
+    return [selectMainDatum];
   }
 
-  const splitDatums = (get1stLevel(dataset)[SPLIT] as Dataset).data;
+  const splitDatums = selectFirstSplitDatums(dataset);
   return splitDatums.map((datum, index) => {
-    const get2ndLevel = (datum: Datum) => (datum[SPLIT] as Dataset).data[index];
-    return compose<Dataset, Datum, Datum>(get1stLevel, get2ndLevel);
+    const getNthDatum = compose(selectSplitDatums, datums => datums[index]);
+    return compose<Dataset, Datum, Datum>(selectMainDatum, getNthDatum);
   });
 }
 

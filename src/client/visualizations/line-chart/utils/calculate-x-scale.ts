@@ -78,6 +78,7 @@ function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): Ply
 
   const firstDatum = dataset.data[0];
   let ranges: PlywoodRange[];
+  // TODO: fix SPLIT accessors - use utils/dataset
   if (firstDatum["SPLIT"]) {
     ranges = dataset.data.map(d => getDatasetXRange(d["SPLIT"] as Dataset, continuousDimension));
   } else {

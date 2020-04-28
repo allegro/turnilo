@@ -19,6 +19,7 @@ const MAX_HOVER_DIST = 50;
 import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
+import { selectFirstSplitDataset, selectFirstSplitDatums } from "../utils/dataset";
 import { ContinuousScale } from "../utils/scale";
 import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
 import { ContinuousValue } from "./interaction";
@@ -43,9 +44,9 @@ function findClosest(data: Datum[], dragDate: ContinuousValue, scaleX: Continuou
 export function findClosestDatum(value: ContinuousValue, essence: Essence, dataset: Dataset, xScale: ContinuousScale): Datum {
   const continuousDimension = getContinuousDimension(essence);
   if (hasNominalSplit(essence)) {
-    const flattened = dataset.flatten();
+    const flattened = selectFirstSplitDataset(dataset).flatten();
     return findClosest(flattened.data, value, xScale, continuousDimension);
   } else {
-    return findClosest(dataset.data, value, xScale, continuousDimension);
+    return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousDimension);
   }
 }

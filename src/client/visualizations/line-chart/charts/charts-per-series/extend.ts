@@ -17,7 +17,7 @@ import * as d3 from "d3";
 import { Dataset, Datum } from "plywood";
 import { Splits } from "../../../../../common/models/splits/splits";
 import { Unary } from "../../../../../common/utils/functional/functional";
-import { SPLIT } from "../../../../config/constants";
+import { selectSplitDataset } from "../../utils/dataset";
 
 export default function calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>): [number, number] {
 
@@ -31,7 +31,7 @@ export default function calculateExtend(dataset: Dataset, splits: Splits, getY: 
     return [d3.min([currMin, prevMin]), d3.max([currMax, prevMax])];
   } else {
     return dataset.data.reduce((acc, datum) => {
-      const split = datum[SPLIT] as Dataset;
+      const split = selectSplitDataset(datum);
       // TODO: wtf?
       if (!split) {
         return acc;
