@@ -22,6 +22,7 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../../common/utils/functional/functional";
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
+import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Highlight } from "../../base-visualization/highlight";
 import { ContinuousScale } from "../utils/scale";
 import { getContinuousReference } from "../utils/splits";
@@ -37,6 +38,7 @@ interface InteractionControllerProps {
   children: Unary<InteractionsProps, ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
+  chartsXOffset: number;
 }
 
 interface InteractionsState {
@@ -79,13 +81,18 @@ export class InteractionController extends React.Component<InteractionController
     this.setState({ interaction: createDragging(chartId, this.findValueUnderOffset(offset)) });
   };
 
+  private calculateOffset(e: MouseEvent): number {
+    const { chartsXOffset } = this.props;
+    const [x] = mouseEventOffset(e);
+    return x - chartsXOffset;
+  }
+
   dragging = (e: MouseEvent) => {
     // active only if we're in Dragging. Update dragEnd in state
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
     const { start, key } = interaction;
-    // const end = this.findValue(e);
-    const end = 100;
+    const end = this.findValueUnderOffset(this.calculateOffset(e));
     // TODO: remember to ensure that we're inside xScale.domain!
     this.setState({ interaction: createDragging(key, start, end) });
   };
@@ -95,8 +102,7 @@ export class InteractionController extends React.Component<InteractionController
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
     const { start } = interaction;
-    // const end = this.findValue(e);
-    const end = 100;
+    const end = this.findValueUnderOffset(this.calculateOffset(e));
     this.setState({ interaction: null });
     const { essence, saveHighlight } = this.props;
     // TODO: ensure that start < end

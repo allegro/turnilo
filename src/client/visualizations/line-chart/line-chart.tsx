@@ -26,10 +26,13 @@ import calculateXScale from "./utils/calculate-x-scale";
 import pickXAxisTicks from "./utils/pick-x-axis-ticks";
 import { XAxis } from "./x-axis/x-axis";
 
+// magic number, probably shared
 const Y_AXIS_WIDTH = 60;
 
 export class LineChart extends BaseVisualization<BaseVisualizationState> {
   protected className = LINE_CHART_MANIFEST.name;
+
+  private chartsRef = React.createRef<HTMLDivElement>();
 
   protected renderInternals(dataset: Dataset): JSX.Element {
     const { essence, timekeeper, stage } = this.props;
@@ -39,15 +42,19 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
 
     const maxHeight = stage.height - 30; /* magic number for: X_AXIS_HEIGHT; */
 
+    const chartNode = this.chartsRef.current;
+    const chartsXOffset = chartNode ? chartNode.getBoundingClientRect().left : 0;
+
     return <InteractionController
       dataset={dataset}
       xScale={scale}
+      chartsXOffset={chartsXOffset}
       essence={essence}
       highlight={this.getHighlight()}
       saveHighlight={this.highlight}>
       {interactions => {
         return <div className="line-chart-container">
-          <div className="line-charts" style={{ maxHeight }}>
+          <div className="line-charts" ref={this.chartsRef} style={{ maxHeight }}>
             <Charts
               interactions={interactions}
               stage={stage}
