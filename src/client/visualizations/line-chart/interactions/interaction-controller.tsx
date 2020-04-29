@@ -22,7 +22,6 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../../common/utils/functional/functional";
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
-import { getXFromEvent } from "../../../utils/dom/dom";
 import { Highlight } from "../../base-visualization/highlight";
 import { ContinuousScale } from "../utils/scale";
 import { getContinuousReference } from "../utils/splits";
@@ -47,8 +46,8 @@ interface InteractionsState {
 
 export interface InteractionsProps {
   interaction: Interaction | null;
-  dragStart: Binary<string, React.MouseEvent<HTMLDivElement>, void>;
-  handleHover: Binary<string, React.MouseEvent<HTMLDivElement>, void>;
+  dragStart: Binary<string, number, void>;
+  handleHover: Binary<string, number, void>;
   mouseLeave: Nullary<void>;
 }
 
@@ -56,9 +55,9 @@ export class InteractionController extends React.Component<InteractionController
 
   state: InteractionsState = { interaction: null, scrollTop: 0 };
 
-  handleHover = (chartId: string, e: React.MouseEvent<HTMLDivElement>) => {
+  handleHover = (chartId: string, offset: number) => {
     // calculate hover range and setState
-    const hoverRange = this.findRange(e);
+    const hoverRange = this.findRangeUnderOffset(offset);
     if (hoverRange === null) {
       this.setState({ interaction: null });
       return;
@@ -75,9 +74,9 @@ export class InteractionController extends React.Component<InteractionController
     this.setState({ interaction: null });
   };
 
-  handleDragStart = (chartId: string, e: React.MouseEvent<HTMLDivElement>) => {
+  handleDragStart = (chartId: string, offset: number) => {
     // calculate dragStart in Dragging and setState
-    this.setState({ interaction: createDragging(chartId, this.findValue(e)) });
+    this.setState({ interaction: createDragging(chartId, this.findValueUnderOffset(offset)) });
   };
 
   dragging = (e: MouseEvent) => {
@@ -85,7 +84,8 @@ export class InteractionController extends React.Component<InteractionController
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
     const { start, key } = interaction;
-    const end = this.findValue(e);
+    // const end = this.findValue(e);
+    const end = 100;
     // TODO: remember to ensure that we're inside xScale.domain!
     this.setState({ interaction: createDragging(key, start, end) });
   };
@@ -95,7 +95,8 @@ export class InteractionController extends React.Component<InteractionController
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
     const { start } = interaction;
-    const end = this.findValue(e);
+    // const end = this.findValue(e);
+    const end = 100;
     this.setState({ interaction: null });
     const { essence, saveHighlight } = this.props;
     // TODO: ensure that start < end
@@ -104,18 +105,14 @@ export class InteractionController extends React.Component<InteractionController
     saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), "chart-id?");
   };
 
-  private getX(e: MouseEvent | React.MouseEvent<HTMLDivElement>, offset = 0): number {
-    return getXFromEvent(e) - offset;
-  }
-
-  private findValue(e: MouseEvent | React.MouseEvent<HTMLDivElement>): ContinuousValue {
+  private findValueUnderOffset(offset: number): ContinuousValue {
     const { xScale } = this.props;
     // TODO: remember to ensure that we're inside xScale.domain!
-    return xScale.invert(this.getX(e));
+    return xScale.invert(offset);
   }
 
-  private findRange(e: MouseEvent | React.MouseEvent<HTMLDivElement>): PlywoodRange | null {
-    const value = this.findValue(e);
+  private findRangeUnderOffset(offset: number): PlywoodRange | null {
+    const value = this.findValueUnderOffset(offset);
     const { essence, xScale, dataset } = this.props;
     const closestDatum = findClosestDatum(value, essence, dataset, xScale);
     const range = closestDatum && closestDatum[getContinuousReference(essence)];

@@ -18,6 +18,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
+import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Scale } from "../chart-line/chart-line";
 import { isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
@@ -46,6 +47,8 @@ class BaseChartProps {
 }
 
 const TEXT_SPACER = 36;
+
+const offsetX = (e: React.MouseEvent<HTMLElement> | MouseEvent) => mouseEventOffset(e)[0];
 
 export const BaseChart: React.SFC<BaseChartProps> = props => {
   const { interactions: { interaction, dragStart, handleHover, mouseLeave }, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = props;
@@ -76,8 +79,8 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
       </svg>
       <div style={lineStage.getWidthHeight()}
            className="event-region"
-           onMouseDown={e => dragStart(chartId, e)}
-           onMouseMove={e => handleHover(chartId, e)}
+           onMouseDown={e => dragStart(chartId, offsetX(e))}
+           onMouseMove={e => handleHover(chartId, offsetX(e))}
            onMouseLeave={mouseLeave}
       />
       {label}
