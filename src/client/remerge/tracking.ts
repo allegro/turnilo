@@ -186,6 +186,11 @@ export function trackLoadData() {
 }
 
 export function trackViewData(visualization: string, essence: Essence, timeToRender: number) {
+  const secondsSinceLastTrackCall = lastViewData ? Date.now() / 1000 - lastViewData.viewStartAt : 0;
+  if (secondsSinceLastTrackCall <= 10) {
+    lastViewData = undefined;
+    return;
+  }
   sendLastViewData();
 
   lastViewData = {
