@@ -22,17 +22,19 @@ import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/s
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { readNumber } from "../../../../../common/utils/general/general";
+import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
-import { SPLIT } from "../../../../config/constants";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
+import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import calculateExtend from "./extend";
+import { SeriesHoverContent } from "./series-hover-content";
 
 interface SeriesChartProps {
   interactions: InteractionsProps;
@@ -46,9 +48,15 @@ interface SeriesChartProps {
 
 export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   const { interactions, chartStage, essence, series, xScale, xTicks, dataset } = props;
-
   const hasComparison = essence.hasComparison();
   const continuousSplitDataset = selectFirstSplitDataset(dataset);
+  const { interaction } = interactions;
+
+  const hoverContent = isHover(interaction) && <SeriesHoverContent
+    essence={essence}
+    dataset={continuousSplitDataset}
+    range={interaction.range}
+    series={series}/>;
 
   const label = <VisMeasureLabel
     series={series}
@@ -67,6 +75,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
     return <BaseChart
       chartId={series.plywoodKey()}
       interactions={interactions}
+      hoverContent={hoverContent}
       timezone={essence.timezone}
       label={label}
       xScale={xScale}
@@ -92,10 +101,10 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
       </React.Fragment>}
     </BaseChart>;
   }
-
   return <BaseChart
     chartId={series.plywoodKey()}
     interactions={interactions}
+    hoverContent={hoverContent}
     timezone={essence.timezone}
     label={label}
     chartStage={chartStage}

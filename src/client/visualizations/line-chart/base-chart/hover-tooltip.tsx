@@ -17,9 +17,9 @@
 import { TooltipWithBounds } from "@vx/tooltip";
 import { Timezone } from "chronoshift";
 import * as React from "react";
-import { formatSegment } from "../../../../common/utils/formatter/formatter";
+import { ReactNode } from "react";
+import { formatValue } from "../../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../../components/segment-bubble/segment-bubble";
-import { JSXNode } from "../../../utils/dom/dom";
 import { Hover } from "../interactions/interaction";
 import { ContinuousScale } from "../utils/scale";
 
@@ -27,7 +27,7 @@ interface HoverTooltipProps {
   interaction: Hover;
   xScale: ContinuousScale;
   timezone: Timezone;
-  content: JSXNode;
+  content: ReactNode;
 }
 
 export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
@@ -38,7 +38,7 @@ export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
   return <TooltipWithBounds
     key={Math.random()} top={80} left={x}>
     <SegmentBubbleContent
-      title={formatSegment(range, timezone)}
+      title={formatValue(range, timezone)}
       content={content} />
   </TooltipWithBounds>;
 };

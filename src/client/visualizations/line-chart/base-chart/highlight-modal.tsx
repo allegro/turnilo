@@ -16,7 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import React from "react";
-import { formatSegment } from "../../../../common/utils/formatter/formatter";
+import { formatValue } from "../../../../common/utils/formatter/formatter";
 import { Nullary } from "../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../components/highlight-modal/highlight-modal";
 import { toPlywoodRange } from "../interactions/highlight-clause";
@@ -37,7 +37,7 @@ export const HighlightModal: React.SFC<HighlightModalProps> = props => {
   const range = toPlywoodRange(interaction.clause);
   const x = xScale(range.midpoint());
   return <BaseHighlightModal
-    title={formatSegment(range, timezone)}
+    title={formatValue(range, timezone)}
     left={left + x}
     top={top + 80}
     dropHighlight={dropHighlight}

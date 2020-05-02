@@ -24,6 +24,7 @@ import { Unary } from "../../../../../common/utils/functional/functional";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
+import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { selectSplitDataset } from "../../utils/dataset";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
@@ -32,6 +33,7 @@ import { getContinuousSplit } from "../../utils/splits";
 import calculateExtend from "./calculate-extend";
 import { Label } from "./label";
 import { nominalLabel } from "./nominal-label";
+import { SplitHoverContent } from "./split-hover-content";
 
 interface SplitChartProps {
   interactions: InteractionsProps;
@@ -45,12 +47,17 @@ interface SplitChartProps {
 
 export const SplitChart: React.SFC<SplitChartProps> = props => {
   const { interactions, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
+  const { interaction } = interactions;
   const splitDatum = selectDatum(dataset);
   const splitDataset = selectSplitDataset(splitDatum);
 
   const series = essence.getConcreteSeries();
 
   const label = <Label essence={essence} datum={splitDatum} />;
+  const hoverContent = isHover(interaction) && <SplitHoverContent
+    interaction={interaction}
+    essence={essence}
+    dataset={splitDataset} />;
   const chartId = nominalLabel(splitDatum, essence);
 
   const continuousSplit = getContinuousSplit(essence);
@@ -62,6 +69,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
     return <BaseChart
       chartId={chartId}
       interactions={interactions}
+      hoverContent={hoverContent}
       timezone={essence.timezone}
       label={label}
       xScale={xScale}
@@ -85,6 +93,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
   return <BaseChart
     chartId={chartId}
     timezone={essence.timezone}
+    hoverContent={hoverContent}
     interactions={interactions}
     label={label}
     xScale={xScale}

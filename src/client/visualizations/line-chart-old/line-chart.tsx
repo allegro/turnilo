@@ -43,7 +43,6 @@ import { ChartLine } from "../../components/chart-line/chart-line";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Highlighter } from "../../components/highlighter/highlighter";
-import { HighlightTooltip, HoverTooltip } from "../../components/line-chart-tooltip/line-chart-tooltip";
 import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
@@ -334,29 +333,29 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
 
-    if ((dragRange && dragOnSeries.equals(series)) || (!dragRange && this.highlightOn(series.definition.key()))) {
-      const highlightRange = dragRange || this.highlightRange();
-      const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(highlightRange.midpoint());
-      return <HighlightTooltip
-        highlightRange={highlightRange}
-        dataset={dataset}
-        series={series}
-        essence={essence}
-        dropHighlight={this.dropHighlight}
-        acceptHighlight={this.acceptHighlight}
-        topOffset={topOffset + containerYPosition}
-        leftOffset={leftOffset} />;
-    } else if (!dragRange && hoverRange) {
-      const leftOffset = VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
-      return <HoverTooltip
-        hoverRange={hoverRange}
-        dataset={dataset}
-        series={series}
-        essence={essence}
-        topOffset={topOffset}
-        leftOffset={leftOffset}
-      />;
-    }
+    // if ((dragRange && dragOnSeries.equals(series)) || (!dragRange && this.highlightOn(series.definition.key()))) {
+    //   const highlightRange = dragRange || this.highlightRange();
+    //   const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(highlightRange.midpoint());
+    //   return <HighlightTooltip
+    //     highlightRange={highlightRange}
+    //     dataset={dataset}
+    //     series={series}
+    //     essence={essence}
+    //     dropHighlight={this.dropHighlight}
+    //     acceptHighlight={this.acceptHighlight}
+    //     topOffset={topOffset + containerYPosition}
+    //     leftOffset={leftOffset} />;
+    // } else if (!dragRange && hoverRange) {
+    //   const leftOffset = VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
+    //   return <HoverTooltip
+    //     hoverRange={hoverRange}
+    //     dataset={dataset}
+    //     series={series}
+    //     essence={essence}
+    //     topOffset={topOffset}
+    //     leftOffset={leftOffset}
+    //   />;
+    // }
 
     return null;
   }

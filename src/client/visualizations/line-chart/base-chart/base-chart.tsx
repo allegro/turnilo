@@ -43,7 +43,7 @@ class BaseChartProps {
   chartId: string;
   children: Unary<ChartLinesProps, ReactNode>;
   label: ReactNode;
-  hoverContent?: JSXNode;
+  hoverContent?: ReactNode;
   xScale: ContinuousScale;
   timezone: Timezone;
   xTicks: ContinuousTicks;
