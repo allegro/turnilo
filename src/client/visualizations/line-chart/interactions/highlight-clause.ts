@@ -15,9 +15,10 @@
  */
 
 import { List } from "immutable";
-import { NumberRange as PlywoodNumberRange, PlywoodRange, TimeRange } from "plywood";
+import { NumberRange as PlywoodNumberRange, PlywoodRange, Range, TimeRange } from "plywood";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
+import { isValidClause } from "../utils/is-valid-clause";
 
 export function toFilterClause(range: PlywoodRange, reference: string): FilterClause {
   if (TimeRange.isTimeRange(range)) {
@@ -31,4 +32,12 @@ export function toFilterClause(range: PlywoodRange, reference: string): FilterCl
     return new NumberFilterClause({ reference, values });
   }
   throw new Error(`Expected Number or Time range, got: ${range}`);
+}
+
+export function toPlywoodRange(clause: FilterClause): PlywoodRange {
+  if (!isValidClause(clause)) {
+    throw new Error(`Expected Number or FixedTime Filter Clause. Got ${clause}`);
+  }
+  const value = clause.values.first();
+  return Range.fromJS(value);
 }

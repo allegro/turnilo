@@ -62,6 +62,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
     return <BaseChart
       chartId={chartId}
       interactions={interactions}
+      timezone={essence.timezone}
       label={label}
       xScale={xScale}
       xTicks={xTicks}
@@ -83,6 +84,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
 
   return <BaseChart
     chartId={chartId}
+    timezone={essence.timezone}
     interactions={interactions}
     label={label}
     xScale={xScale}

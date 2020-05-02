@@ -31,7 +31,7 @@ import { constructRange } from "./construct-range";
 import { findClosestDatum } from "./find-closest-datum";
 import { ContinuousValue, createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
-import { toFilterClause } from "./to-filter-clause";
+import { toFilterClause } from "./highlight-clause";
 
 interface InteractionControllerProps {
   xScale: ContinuousScale;
@@ -52,6 +52,8 @@ interface InteractionsState {
 
 export interface InteractionsProps {
   interaction: Interaction | null;
+  dropHighlight: Nullary<void>;
+  acceptHighlight: Nullary<void>;
   dragStart: Binary<string, number, void>;
   handleHover: Binary<string, number, void>;
   mouseLeave: Nullary<void>;
@@ -155,9 +157,11 @@ export class InteractionController extends React.Component<InteractionController
 
   render() {
     const interaction = this.interaction();
-    const { children } = this.props;
+    const { children, acceptHighlight, dropHighlight } = this.props;
     const hocProps: InteractionsProps = {
       interaction,
+      acceptHighlight,
+      dropHighlight,
       dragStart: this.handleDragStart,
       handleHover: this.handleHover,
       mouseLeave: this.onMouseLeave

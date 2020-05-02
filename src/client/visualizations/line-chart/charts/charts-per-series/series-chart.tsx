@@ -67,6 +67,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
     return <BaseChart
       chartId={series.plywoodKey()}
       interactions={interactions}
+      timezone={essence.timezone}
       label={label}
       xScale={xScale}
       xTicks={xTicks}
@@ -95,6 +96,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   return <BaseChart
     chartId={series.plywoodKey()}
     interactions={interactions}
+    timezone={essence.timezone}
     label={label}
     chartStage={chartStage}
     yDomain={domain}
