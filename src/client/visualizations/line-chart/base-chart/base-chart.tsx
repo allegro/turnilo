@@ -19,20 +19,17 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
-import { JSXNode } from "../../../utils/dom/dom";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Scale } from "../chart-line/chart-line";
-import { isHighlight, isHover } from "../interactions/interaction";
+import { isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/scale";
 import { Background } from "./background";
 import "./base-chart.scss";
-import { HighlightModal } from "./highlight-modal";
+import { Foreground } from "./foreground";
 import { HoverGuide } from "./hover-guide";
-import { HoverTooltip } from "./hover-tooltip";
 import getScale from "./scale";
-import { SelectionOverlay } from "./selection-overlay";
 
 interface ChartLinesProps {
   yScale: Scale;
@@ -97,21 +94,13 @@ export class BaseChart extends React.Component<BaseChartProps> {
              onMouseLeave={mouseLeave}
         />
         {label}
-        {hasInteraction && <SelectionOverlay
+        {hasInteraction && <Foreground
           interaction={interaction}
-          xScale={xScale} />}
-        {hasInteraction && isHover(interaction) && <HoverTooltip
-          interaction={interaction}
-          xScale={xScale}
-          content={hoverContent}
-          timezone={timezone}/>}
-        {hasInteraction && isHighlight(interaction) && <HighlightModal
-          rect={this.container.current.getBoundingClientRect()}
-          interaction={interaction}
-          xScale={xScale}
-          timezone={timezone}
+          hoverContent={hoverContent}
           dropHighlight={dropHighlight}
-          acceptHighlight={acceptHighlight} />}
+          acceptHighlight={acceptHighlight}
+          xScale={xScale}
+          timezone={timezone} />}
       </div>
     </React.Fragment>;
   }
