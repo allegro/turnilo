@@ -18,11 +18,10 @@ import { Timezone } from "chronoshift";
 import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
-import { formatSegment } from "../../../../common/utils/formatter/formatter";
 import { Unary } from "../../../../common/utils/functional/functional";
+import { JSXNode } from "../../../utils/dom/dom";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Scale } from "../chart-line/chart-line";
-import { toPlywoodRange } from "../interactions/highlight-clause";
 import { isHighlight, isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
@@ -31,6 +30,7 @@ import { Background } from "./background";
 import "./base-chart.scss";
 import { HighlightModal } from "./highlight-modal";
 import { HoverGuide } from "./hover-guide";
+import { HoverTooltip } from "./hover-tooltip";
 import getScale from "./scale";
 import { SelectionOverlay } from "./selection-overlay";
 
@@ -43,6 +43,7 @@ class BaseChartProps {
   chartId: string;
   children: Unary<ChartLinesProps, ReactNode>;
   label: ReactNode;
+  hoverContent?: JSXNode;
   xScale: ContinuousScale;
   timezone: Timezone;
   xTicks: ContinuousTicks;
@@ -61,7 +62,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const { interactions, timezone, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = this.props;
+    const { hoverContent, interactions, timezone, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = this.props;
     const { interaction, dropHighlight, acceptHighlight, mouseLeave, dragStart, handleHover } = interactions;
 
     const [, xRange] = xScale.range();
@@ -99,6 +100,11 @@ export class BaseChart extends React.Component<BaseChartProps> {
         {hasInteraction && <SelectionOverlay
           interaction={interaction}
           xScale={xScale} />}
+        {hasInteraction && isHover(interaction) && <HoverTooltip
+          interaction={interaction}
+          xScale={xScale}
+          content={hoverContent}
+          timezone={timezone}/>}
         {hasInteraction && isHighlight(interaction) && <HighlightModal
           rect={this.container.current.getBoundingClientRect()}
           interaction={interaction}
