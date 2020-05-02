@@ -24,35 +24,29 @@ export interface HighlighterProps {
   scaleX: any;
 }
 
-export interface HighlighterState {
-}
+export function Highlighter(props: HighlighterProps) {
+  const { highlightRange, scaleX } = props;
+  if (!highlightRange) return null;
 
-export class Highlighter extends React.Component<HighlighterProps, HighlighterState> {
+  const startPos = scaleX(highlightRange.start);
+  const endPos = scaleX(highlightRange.end);
 
-  render() {
-    const { highlightRange, scaleX } = this.props;
-    if (!highlightRange) return null;
+  const whiteoutLeftStyle = {
+    width: Math.max(startPos, 0)
+  };
 
-    var startPos = scaleX(highlightRange.start);
-    var endPos = scaleX(highlightRange.end);
+  const frameStyle = {
+    left: startPos,
+    width: Math.max(endPos - startPos, 0)
+  };
 
-    var whiteoutLeftStyle = {
-      width: Math.max(startPos, 0)
-    };
+  const whiteoutRightStyle = {
+    left: endPos
+  };
 
-    var frameStyle = {
-      left: startPos,
-      width: Math.max(endPos - startPos, 0)
-    };
-
-    var whiteoutRightStyle = {
-      left: endPos
-    };
-
-    return <div className="highlighter">
-      <div className="whiteout left" style={whiteoutLeftStyle}></div>
-      <div className="frame" style={frameStyle}></div>
-      <div className="whiteout right" style={whiteoutRightStyle}></div>
-    </div>;
-  }
+  return <div className="highlighter">
+    <div className="whiteout left" style={whiteoutLeftStyle}></div>
+    <div className="frame" style={frameStyle}></div>
+    <div className="whiteout right" style={whiteoutRightStyle}></div>
+  </div>;
 }

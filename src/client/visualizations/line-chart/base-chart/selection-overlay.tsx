@@ -14,38 +14,32 @@
  * limitations under the License.
  */
 
-import { PlywoodRange, Range } from "plywood";
+import { Range } from "plywood";
 import * as React from "react";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Highlighter } from "../../../components/highlighter/highlighter";
+import { constructRange } from "../interactions/construct-range";
 import { Interaction, isDragging, isHighlight } from "../interactions/interaction";
+import { isValidClause } from "../utils/is-valid-clause";
 import { ContinuousScale } from "../utils/scale";
 
-interface SeriesHighlighterProps {
-  scaleX: ContinuousScale;
+interface SelectionOverlayProps {
   interaction: Interaction;
+  xScale: ContinuousScale;
 }
 
-function highlightRange(clause: FilterClause): PlywoodRange {
-  if ((clause instanceof NumberFilterClause) || (clause instanceof FixedTimeFilterClause)) {
-    return Range.fromJS(clause.values.first());
-  }
-  return null;
-}
-
-export const SeriesHighlighter: React.SFC<SeriesHighlighterProps> = props => {
-  const { interaction, scaleX } = props;
-
+export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
+  const { interaction, xScale } = props;
   if (isDragging(interaction)) {
-    const range = Range.fromJS({
-      start: interaction.start,
-      end: interaction.end
-    });
-    return <Highlighter highlightRange={range} scaleX={scaleX} />;
+    const range = constructRange(interaction.start, interaction.end);
+    return <Highlighter highlightRange={range} scaleX={xScale} />;
   }
   if (isHighlight(interaction)) {
-    const range = highlightRange(interaction.clause);
-    return <Highlighter highlightRange={range} scaleX={scaleX} />;
+    const { clause } = interaction;
+    if (!isValidClause(clause)) {
+      throw new Error(`Expected FixedTime or Number Filter clause. Got: ${clause}`);
+    }
+    const range = Range.fromJS(clause.values.first());
+    return <Highlighter highlightRange={range} scaleX={xScale} />;
   }
   return null;
 };

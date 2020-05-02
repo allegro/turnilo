@@ -42,15 +42,14 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
 
     const maxHeight = stage.height - 30; /* magic number for: X_AXIS_HEIGHT; */
 
-    const chartNode = this.chartsRef.current;
-    const chartsXOffset = chartNode ? chartNode.getBoundingClientRect().left : 0;
-
     return <InteractionController
       dataset={dataset}
       xScale={scale}
-      chartsXOffset={chartsXOffset}
+      chartsContainerRef={this.chartsRef}
       essence={essence}
       highlight={this.getHighlight()}
+      dropHighlight={this.dropHighlight}
+      acceptHighlight={this.acceptHighlight}
       saveHighlight={this.highlight}>
       {interactions => {
         return <div className="line-chart-container">

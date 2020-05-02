@@ -28,6 +28,7 @@ import { Background } from "./background";
 import "./base-chart.scss";
 import { HoverGuide } from "./hover-guide";
 import getScale from "./scale";
+import { SelectionOverlay } from "./selection-overlay";
 
 interface ChartLinesProps {
   yScale: Scale;
@@ -58,6 +59,7 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
   const axisStage = chartStage.within({ top: TEXT_SPACER, left: xRange, bottom: 1 });
 
   const yScale = getScale(yDomain, lineStage.height);
+  const hasInteraction = interaction && interaction.key === chartId;
 
   return <React.Fragment>
     <div className="line-base-chart" style={chartStage.getWidthHeight()}>
@@ -71,11 +73,11 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
           yScale={yScale}
         />
         {children({ yScale, lineStage })}
-        {isHover(interaction) && interaction.key === chartId && <HoverGuide
+        {hasInteraction && isHover(interaction) && <HoverGuide
           hover={interaction}
           stage={lineStage}
           yScale={yScale}
-          xScale={xScale}/>}
+          xScale={xScale} />}
       </svg>
       <div style={lineStage.getWidthHeight()}
            className="event-region"
@@ -84,10 +86,9 @@ export const BaseChart: React.SFC<BaseChartProps> = props => {
            onMouseLeave={mouseLeave}
       />
       {label}
-      {/*{renderHighlighter()}*/}
+      {hasInteraction && <SelectionOverlay
+        interaction={interaction}
+        xScale={xScale} />}
     </div>
-    {/* renderChartBubble(splitData, series, chartIndex, containerStage, chartStage, extent, scale) */}
-    {/* maybe in chart group??? */}
-    {/*<Tooltip/>*/}
-  </React.Fragment>;
+ </React.Fragment>;
 };
