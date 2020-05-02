@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { second } from "chronoshift";
 import { List } from "immutable";
-import { Dataset, PlywoodRange, Range } from "plywood";
+import { Dataset, PlywoodRange } from "plywood";
 import * as React from "react";
 import { ReactNode } from "react";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -26,8 +27,9 @@ import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-
 import { Highlight } from "../../base-visualization/highlight";
 import { ContinuousScale } from "../utils/scale";
 import { getContinuousReference } from "../utils/splits";
+import { constructRange } from "./construct-range";
 import { findClosestDatum } from "./find-closest-datum";
-import { ContinuousValue, createDragging, createHighlight, createHover, Interaction, isDragging, isHover, MouseInteraction } from "./interaction";
+import { ContinuousValue, createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
 import { toFilterClause } from "./to-filter-clause";
 
@@ -38,7 +40,9 @@ interface InteractionControllerProps {
   children: Unary<InteractionsProps, ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
-  chartsXOffset: number;
+  dropHighlight: Nullary<void>;
+  acceptHighlight: Nullary<void>;
+  chartsContainerRef: React.RefObject<HTMLDivElement>;
 }
 
 interface InteractionsState {
@@ -59,12 +63,13 @@ export class InteractionController extends React.Component<InteractionController
 
   handleHover = (chartId: string, offset: number) => {
     // calculate hover range and setState
+    const { interaction } = this.state;
+    if (isDragging(interaction) || isHighlight(interaction)) return;
     const hoverRange = this.findRangeUnderOffset(offset);
     if (hoverRange === null) {
       this.setState({ interaction: null });
       return;
     }
-    const { interaction } = this.state;
     if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
     this.setState({ interaction: createHover(chartId, hoverRange) });
   };
@@ -78,21 +83,28 @@ export class InteractionController extends React.Component<InteractionController
 
   handleDragStart = (chartId: string, offset: number) => {
     // calculate dragStart in Dragging and setState
-    this.setState({ interaction: createDragging(chartId, this.findValueUnderOffset(offset)) });
+    const { essence: { timezone } } = this.props;
+    const start = this.findValueUnderOffset(offset);
+    const end = start instanceof Date ? second.shift(start, timezone, 1) : start + 1;
+    this.setState({ interaction: createDragging(chartId, start, end) });
   };
 
-  private calculateOffset(e: MouseEvent): number {
-    const { chartsXOffset } = this.props;
+  private calculateOffset(e: MouseEvent): number | null {
+    const { chartsContainerRef } = this.props;
+    if (!chartsContainerRef.current) return null;
     const [x] = mouseEventOffset(e);
-    return x - chartsXOffset;
+    const { left } = chartsContainerRef.current.getBoundingClientRect();
+    return x - left;
   }
 
   dragging = (e: MouseEvent) => {
     // active only if we're in Dragging. Update dragEnd in state
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
+    const offset = this.calculateOffset(e);
+    if (offset === null) return;
+    const end = this.findValueUnderOffset(offset);
     const { start, key } = interaction;
-    const end = this.findValueUnderOffset(this.calculateOffset(e));
     // TODO: remember to ensure that we're inside xScale.domain!
     this.setState({ interaction: createDragging(key, start, end) });
   };
@@ -101,14 +113,15 @@ export class InteractionController extends React.Component<InteractionController
     // if we're in Dragging - stop, update dragEnd and saveHighlight (handle highlighting different charts!)
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
-    const { start } = interaction;
-    const end = this.findValueUnderOffset(this.calculateOffset(e));
+    const offset = this.calculateOffset(e);
+    if (offset === null) return;
     this.setState({ interaction: null });
     const { essence, saveHighlight } = this.props;
-    // TODO: ensure that start < end
+    const { start, key } = interaction;
+    const end = this.findValueUnderOffset(offset);
     // TODO: remember to ensure that we're inside xScale.domain!
-    const range = snapRangeToGrid(Range.fromJS({ start, end }), essence);
-    saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), "chart-id?");
+    const range = snapRangeToGrid(constructRange(start, end), essence);
+    saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), key);
   };
 
   private findValueUnderOffset(offset: number): ContinuousValue {

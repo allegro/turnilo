@@ -22,12 +22,12 @@ enum InteractionKind { HOVER, DRAGGING, HIGHLIGHT }
 
 interface InteractionBase {
   kind: InteractionKind;
+  key: string;
 }
 
 export interface Hover extends InteractionBase {
   kind: InteractionKind.HOVER;
   range: PlywoodRange;
-  key: string;
 }
 
 export const createHover = (key: string, range: PlywoodRange): Hover => ({
@@ -42,12 +42,11 @@ export type ContinuousValue = number | Date;
 
 export interface Dragging extends InteractionBase {
   kind: InteractionKind.DRAGGING;
-  key: string;
   start: ContinuousValue;
-  end?: ContinuousValue;
+  end: ContinuousValue;
 }
 
-export const createDragging = (key: string, start: ContinuousValue, end?: ContinuousValue): Dragging => ({
+export const createDragging = (key: string, start: ContinuousValue, end: ContinuousValue): Dragging => ({
   kind: InteractionKind.DRAGGING,
   start,
   end,
@@ -59,7 +58,6 @@ export const isDragging = (interaction?: Interaction): interaction is Dragging =
 export interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
   clause: FilterClause;
-  key: string;
 }
 
 export const createHighlight = (highlight: VizHighlight): Highlight => ({
