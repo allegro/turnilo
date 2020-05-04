@@ -95,6 +95,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
         />
         {label}
         {hasInteraction && <Foreground
+          container={this.container}
           interaction={interaction}
           hoverContent={hoverContent}
           dropHighlight={dropHighlight}

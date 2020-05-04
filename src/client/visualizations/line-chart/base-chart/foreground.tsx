@@ -26,6 +26,7 @@ import { SelectionOverlay } from "./selection-overlay";
 
 interface ForegroundProps {
   interaction: Interaction;
+  container: React.RefObject<HTMLDivElement>;
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
   hoverContent?: ReactNode;
@@ -34,19 +35,19 @@ interface ForegroundProps {
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { interaction, xScale, timezone, hoverContent, dropHighlight, acceptHighlight } = props;
+  const { interaction, container, xScale, timezone, hoverContent, dropHighlight, acceptHighlight } = props;
 
   return <React.Fragment>
-    {<SelectionOverlay
+    <SelectionOverlay
       interaction={interaction}
-      xScale={xScale} />}
+      xScale={xScale} />
     {isHover(interaction) && <HoverTooltip
       interaction={interaction}
       xScale={xScale}
       content={hoverContent}
       timezone={timezone} />}
     {isHighlight(interaction) && <HighlightModal
-      rect={this.container.current.getBoundingClientRect()}
+      rect={container.current.getBoundingClientRect()}
       interaction={interaction}
       xScale={xScale}
       timezone={timezone}
