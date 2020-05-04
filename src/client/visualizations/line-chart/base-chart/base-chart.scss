@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import "../../../imports";
+@import '../../../imports';
 
 .line-base-chart {
   position: relative;
@@ -26,7 +26,7 @@
   }
 
   .chart-stage {
-    @include pin-full();
+    @include pin-full;
   }
 
   .vis-measure-label {
