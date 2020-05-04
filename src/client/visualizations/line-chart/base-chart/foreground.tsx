@@ -40,6 +40,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
   return <React.Fragment>
     <SelectionOverlay
       interaction={interaction}
+      timezone={timezone}
       xScale={xScale} />
     {isHover(interaction) && <HoverTooltip
       interaction={interaction}

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+import { second, Timezone } from "chronoshift";
 import { PlywoodRange, Range } from "plywood";
 import { ContinuousValue } from "./interaction";
 
-function orderValues(a: ContinuousValue, b: ContinuousValue): [ContinuousValue, ContinuousValue] {
-  return a > b ? [b, a] : [a, b];
+function orderValues(a: ContinuousValue, b: ContinuousValue, timezone: Timezone): [ContinuousValue, ContinuousValue] {
+  if (a > b) return [b, a];
+  if (b > a) return [a, b];
+  return [a, shiftByOne(a, timezone)];
 }
 
-export function constructRange(a: ContinuousValue, b: ContinuousValue): PlywoodRange {
-  const [start, end] = orderValues(a, b);
+export function constructRange(a: ContinuousValue, b: ContinuousValue, timezone: Timezone): PlywoodRange {
+  const [start, end] = orderValues(a, b, timezone);
   return Range.fromJS({ start, end });
+}
+
+export function shiftByOne(value: ContinuousValue, timezone: Timezone): ContinuousValue {
+  return value instanceof Date ? second.shift(value, timezone, 1) : value + 1;
 }

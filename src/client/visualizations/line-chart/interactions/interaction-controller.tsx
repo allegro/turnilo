@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { second } from "chronoshift";
 import { List } from "immutable";
 import { Dataset, PlywoodRange } from "plywood";
 import * as React from "react";
@@ -27,11 +26,11 @@ import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-
 import { Highlight } from "../../base-visualization/highlight";
 import { ContinuousScale } from "../utils/scale";
 import { getContinuousReference } from "../utils/splits";
-import { constructRange } from "./construct-range";
+import { constructRange, shiftByOne } from "./continuous-range";
 import { findClosestDatum } from "./find-closest-datum";
+import { toFilterClause } from "./highlight-clause";
 import { ContinuousValue, createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
-import { toFilterClause } from "./highlight-clause";
 
 interface InteractionControllerProps {
   xScale: ContinuousScale;
@@ -87,7 +86,7 @@ export class InteractionController extends React.Component<InteractionController
     // calculate dragStart in Dragging and setState
     const { essence: { timezone } } = this.props;
     const start = this.findValueUnderOffset(offset);
-    const end = start instanceof Date ? second.shift(start, timezone, 1) : start + 1;
+    const end = shiftByOne(start, timezone);
     this.setState({ interaction: createDragging(chartId, start, end) });
   };
 
@@ -122,7 +121,7 @@ export class InteractionController extends React.Component<InteractionController
     const { start, key } = interaction;
     const end = this.findValueUnderOffset(offset);
     // TODO: remember to ensure that we're inside xScale.domain!
-    const range = snapRangeToGrid(constructRange(start, end), essence);
+    const range = snapRangeToGrid(constructRange(start, end, essence.timezone), essence);
     saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), key);
   };
 

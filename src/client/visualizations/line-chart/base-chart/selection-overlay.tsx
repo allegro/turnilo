@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { Timezone } from "chronoshift";
 import { Range } from "plywood";
 import * as React from "react";
 import { Highlighter } from "../../../components/highlighter/highlighter";
-import { constructRange } from "../interactions/construct-range";
+import { constructRange } from "../interactions/continuous-range";
 import { Interaction, isDragging, isHighlight } from "../interactions/interaction";
 import { isValidClause } from "../utils/is-valid-clause";
 import { ContinuousScale } from "../utils/scale";
@@ -25,12 +26,13 @@ import { ContinuousScale } from "../utils/scale";
 interface SelectionOverlayProps {
   interaction: Interaction;
   xScale: ContinuousScale;
+  timezone: Timezone;
 }
 
 export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
-  const { interaction, xScale } = props;
+  const { timezone, interaction, xScale } = props;
   if (isDragging(interaction)) {
-    const range = constructRange(interaction.start, interaction.end);
+    const range = constructRange(interaction.start, interaction.end, timezone);
     return <Highlighter highlightRange={range} scaleX={xScale} />;
   }
   if (isHighlight(interaction)) {
