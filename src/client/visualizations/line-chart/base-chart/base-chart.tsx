@@ -24,7 +24,7 @@ import { Scale } from "../chart-line/chart-line";
 import { isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 import { Background } from "./background";
 import "./base-chart.scss";
 import { Foreground } from "./foreground";

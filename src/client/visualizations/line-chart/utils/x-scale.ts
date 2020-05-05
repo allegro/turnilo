@@ -24,19 +24,20 @@ import { Split } from "../../../../common/models/split/split";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { union } from "../../../../common/utils/plywood/range";
 import { toPlywoodRange } from "../interactions/highlight-clause";
-import { ContinuousScale } from "./scale";
+import { ContinuousScale } from "./continuous-types";
 import { getContinuousDimension, getContinuousSplit } from "./splits";
 
+// This function is responsible for aligning d3 types with our domain types.
 function constructContinuousScale(kind: ContinuousDimensionKind, domainRange: PlywoodRange, width: number): ContinuousScale {
   const range = [0, width];
   switch (kind) {
     case "number": {
       const domain = [domainRange.start, domainRange.end] as [number, number];
-      return d3.scale.linear().domain(domain).range(range);
+      return (d3.scale.linear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
     case "time": {
       const domain = [domainRange.start, domainRange.end] as [Date, Date];
-      return d3.time.scale().domain(domain).range(range);
+      return (d3.time.scale().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
   }
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { PlywoodRange } from "plywood";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Highlight as VizHighlight } from "../../base-visualization/highlight";
+import { ContinuousRange, ContinuousValue } from "../utils/continuous-types";
 
 enum InteractionKind { HOVER, DRAGGING, HIGHLIGHT }
 
@@ -27,18 +27,16 @@ interface InteractionBase {
 
 export interface Hover extends InteractionBase {
   kind: InteractionKind.HOVER;
-  range: PlywoodRange;
+  range: ContinuousRange;
 }
 
-export const createHover = (key: string, range: PlywoodRange): Hover => ({
+export const createHover = (key: string, range: ContinuousRange): Hover => ({
   kind: InteractionKind.HOVER,
   range,
   key
 });
 
 export const isHover = (interaction?: Interaction): interaction is Hover => interaction && interaction.kind === InteractionKind.HOVER;
-
-export type ContinuousValue = number | Date;
 
 export interface Dragging extends InteractionBase {
   kind: InteractionKind.DRAGGING;

@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
+import { NumberRange, TimeRange } from "plywood";
 
-// TODO: ContinuousScale does not have compatible call signatures (union of function getting number and Date)
-// export type ContinuousScale = d3.time.Scale<number, number> | d3.scale.Linear<number, number>;
-export type ContinuousScale = any;
+export type ContinuousValue = number | Date;
+export type ContinuousRange = NumberRange | TimeRange;
+
+export type ContinuousDomain = [ContinuousValue, ContinuousValue];
+
+export interface ContinuousScale {
+  (x: ContinuousValue): number;
+  invert(x: number): ContinuousValue;
+  domain(): ContinuousDomain;
+  domain(domain: ContinuousDomain): ContinuousScale;
+  range(): number[];
+  range(range: number[]): ContinuousScale;
+}

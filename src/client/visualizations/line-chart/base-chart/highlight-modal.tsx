@@ -21,7 +21,7 @@ import { Nullary } from "../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../components/highlight-modal/highlight-modal";
 import { toPlywoodRange } from "../interactions/highlight-clause";
 import { Highlight } from "../interactions/interaction";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 
 interface HighlightModalProps {
   interaction: Highlight;

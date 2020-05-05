@@ -19,7 +19,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Nullary } from "../../../../common/utils/functional/functional";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 import { HighlightModal } from "./highlight-modal";
 import { HoverTooltip } from "./hover-tooltip";
 import { SelectionOverlay } from "./selection-overlay";

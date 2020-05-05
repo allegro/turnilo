@@ -16,13 +16,14 @@
 import { Duration } from "chronoshift";
 import { NumberRange, PlywoodRange, TimeRange } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
+import { ContinuousRange } from "../utils/continuous-types";
 import { getContinuousSplit } from "../utils/splits";
 
 function roundTo(v: number, roundTo: number) {
   return Math.round(Math.floor(v / roundTo)) * roundTo;
 }
 
-export function snapRangeToGrid(range: PlywoodRange, essence: Essence): PlywoodRange {
+export function snapRangeToGrid(range: PlywoodRange, essence: Essence): ContinuousRange {
   // floors range to scale ranges
   const continuousSplit = getContinuousSplit(essence);
 

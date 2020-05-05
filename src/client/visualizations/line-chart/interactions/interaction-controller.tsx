@@ -15,7 +15,7 @@
  */
 
 import { List } from "immutable";
-import { Dataset, PlywoodRange } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { ReactNode } from "react";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -24,12 +24,12 @@ import { Binary, Nullary, Unary } from "../../../../common/utils/functional/func
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Highlight } from "../../base-visualization/highlight";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousRange, ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousReference } from "../utils/splits";
 import { constructRange, shiftByOne } from "./continuous-range";
 import { findClosestDatum } from "./find-closest-datum";
 import { toFilterClause } from "./highlight-clause";
-import { ContinuousValue, createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
+import { createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
 
 interface InteractionControllerProps {
@@ -71,6 +71,13 @@ export class InteractionController extends React.Component<InteractionController
       this.setState({ interaction: null });
       return;
     }
+    /*
+      Plywood expects that `equals` argument in concrete Range types (NumberRange, TimeRange)
+      have exact type as object. Because we move union type into covariant position, typescript
+      would expect that `hoverRange` has type NumberRange & TimeRange which is impossible.
+      Plywood handles mismatched types correctly.
+     */
+    // @ts-ignore
     if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
     this.setState({ interaction: createHover(chartId, hoverRange) });
   };
@@ -131,12 +138,12 @@ export class InteractionController extends React.Component<InteractionController
     return xScale.invert(offset);
   }
 
-  private findRangeUnderOffset(offset: number): PlywoodRange | null {
+  private findRangeUnderOffset(offset: number): ContinuousRange | null {
     const value = this.findValueUnderOffset(offset);
     const { essence, xScale, dataset } = this.props;
     const closestDatum = findClosestDatum(value, essence, dataset, xScale);
     const range = closestDatum && closestDatum[getContinuousReference(essence)];
-    return range as PlywoodRange;
+    return range as ContinuousRange;
   }
 
   scrollCharts = (scrollEvent: MouseEvent) => {

@@ -17,7 +17,7 @@
 import { Duration, Timezone } from "chronoshift";
 import { NumberRange, TimeRange } from "plywood";
 import { getBestBucketUnitForRange } from "../../../../common/models/granularity/granularity";
-import { ContinuousScale } from "./scale";
+import { ContinuousScale } from "./continuous-types";
 
 export type ContinuousTicks = Array<Date | number>;
 

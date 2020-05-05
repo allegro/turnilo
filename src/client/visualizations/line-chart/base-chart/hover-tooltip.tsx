@@ -21,7 +21,7 @@ import { ReactNode } from "react";
 import { formatValue } from "../../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../../components/segment-bubble/segment-bubble";
 import { Hover } from "../interactions/interaction";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 
 interface HoverTooltipProps {
   interaction: Hover;

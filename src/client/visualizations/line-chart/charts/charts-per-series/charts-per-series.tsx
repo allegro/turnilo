@@ -22,7 +22,7 @@ import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SplitLegend } from "../../legend/split-legend";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../../utils/scale";
+import { ContinuousScale } from "../../utils/continuous-types";
 import { hasNominalSplit } from "../../utils/splits";
 import { calculateChartStage } from "../calculate-chart-stage";
 import { SeriesChart } from "./series-chart";

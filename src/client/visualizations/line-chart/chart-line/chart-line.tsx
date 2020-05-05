@@ -19,7 +19,7 @@ import { Datum, NumberRange, PlywoodRange, TimeRange } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { concatTruthy, flatMap, Unary } from "../../../../common/utils/functional/functional";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 import "./chart-line.scss";
 
 export type Scale = d3.scale.Linear<number, number>;

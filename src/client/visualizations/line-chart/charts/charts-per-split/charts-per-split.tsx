@@ -24,7 +24,7 @@ import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
 import { selectFirstSplitDatums, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../../utils/scale";
+import { ContinuousScale } from "../../utils/continuous-types";
 import { hasNominalSplit } from "../../utils/splits";
 import { calculateChartStage } from "../calculate-chart-stage";
 import { SplitChart } from "./split-chart";

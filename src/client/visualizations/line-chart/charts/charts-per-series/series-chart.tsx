@@ -29,7 +29,7 @@ import { InteractionsProps } from "../../interactions/interaction-controller";
 import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
 import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../../utils/scale";
+import { ContinuousScale } from "../../utils/continuous-types";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import { SeriesHoverContent } from "./series-hover-content";
 

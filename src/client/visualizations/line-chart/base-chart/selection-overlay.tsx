@@ -20,8 +20,8 @@ import * as React from "react";
 import { Highlighter } from "../../../components/highlighter/highlighter";
 import { constructRange } from "../interactions/continuous-range";
 import { Interaction, isDragging, isHighlight } from "../interactions/interaction";
+import { ContinuousScale } from "../utils/continuous-types";
 import { isValidClause } from "../utils/is-valid-clause";
-import { ContinuousScale } from "../utils/scale";
 
 interface SelectionOverlayProps {
   interaction: Interaction;

@@ -29,7 +29,7 @@ import { InteractionsProps } from "../../interactions/interaction-controller";
 import { selectSplitDataset } from "../../utils/dataset";
 import { extentAcrossSeries } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../../utils/scale";
+import { ContinuousScale } from "../../utils/continuous-types";
 import { getContinuousSplit } from "../../utils/splits";
 import { Label } from "./label";
 import { nominalLabel } from "./nominal-label";

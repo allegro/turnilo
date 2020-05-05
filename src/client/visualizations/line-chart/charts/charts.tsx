@@ -22,7 +22,7 @@ import { ImmutableRecord } from "../../../../common/utils/immutable-utils/immuta
 import { LineChartSettings } from "../../../../common/visualization-manifests/line-chart/settings";
 import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 import { ChartsPerSeries } from "./charts-per-series/charts-per-series";
 import { ChartsPerSplit } from "./charts-per-split/charts-per-split";
 

@@ -22,7 +22,7 @@ import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { getMoment, scaleTicksFormatter } from "../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../utils/dom/dom";
-import { ContinuousScale } from "../utils/scale";
+import { ContinuousScale } from "../utils/continuous-types";
 import "./x-axis.scss";
 
 const TICK_HEIGHT = 5;
