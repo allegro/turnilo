@@ -27,10 +27,10 @@ import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-char
 import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { selectSplitDataset } from "../../utils/dataset";
+import { extentAcrossSeries } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit } from "../../utils/splits";
-import calculateExtend from "./calculate-extend";
 import { Label } from "./label";
 import { nominalLabel } from "./nominal-label";
 import { SplitHoverContent } from "./split-hover-content";
@@ -62,7 +62,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
 
   const continuousSplit = getContinuousSplit(essence);
   const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
-  const domain = calculateExtend(splitDataset, essence);
+  const domain = extentAcrossSeries(splitDataset, essence);
 
   if (series.count() === 1) {
     const firstSeries = series.first();

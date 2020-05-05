@@ -18,11 +18,8 @@ import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import * as React from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { Unary } from "../../../../../common/utils/functional/functional";
-import { readNumber } from "../../../../../common/utils/general/general";
-import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
@@ -30,10 +27,10 @@ import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-char
 import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
+import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/scale";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
-import calculateExtend from "./extend";
 import { SeriesHoverContent } from "./series-hover-content";
 
 interface SeriesChartProps {
@@ -65,10 +62,8 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
 
   const continuousSplit = getContinuousSplit(essence);
   const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
-  const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
-  const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
 
-  const domain = calculateExtend(continuousSplitDataset, essence.splits, getY, getYP);
+  const domain = extentAcrossSplits(continuousSplitDataset, essence, series);
 
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);
