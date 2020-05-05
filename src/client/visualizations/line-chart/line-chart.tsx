@@ -22,7 +22,7 @@ import { BaseVisualization, BaseVisualizationState } from "../base-visualization
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
-import calculateXScale from "./utils/calculate-x-scale";
+import calculateXScale from "./utils/x-scale";
 import pickXAxisTicks from "./utils/pick-x-axis-ticks";
 import { XAxis } from "./x-axis/x-axis";
 
