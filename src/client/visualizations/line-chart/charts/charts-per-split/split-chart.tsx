@@ -26,17 +26,18 @@ import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-li
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
 import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
+import { ContinuousScale } from "../../utils/continuous-types";
 import { selectSplitDataset } from "../../utils/dataset";
 import { extentAcrossSeries } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../../utils/continuous-types";
 import { getContinuousSplit } from "../../utils/splits";
 import { Label } from "./label";
-import { nominalLabel } from "./nominal-label";
+import { nominalValueKey } from "./nominal-value-key";
 import { SplitHoverContent } from "./split-hover-content";
 
 interface SplitChartProps {
   interactions: InteractionsProps;
+  chartId: string;
   essence: Essence;
   dataset: Dataset;
   selectDatum: Unary<Dataset, Datum>;
@@ -46,7 +47,7 @@ interface SplitChartProps {
 }
 
 export const SplitChart: React.SFC<SplitChartProps> = props => {
-  const { interactions, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
+  const { chartId, interactions, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
   const { interaction } = interactions;
   const splitDatum = selectDatum(dataset);
   const splitDataset = selectSplitDataset(splitDatum);
@@ -58,7 +59,6 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
     interaction={interaction}
     essence={essence}
     dataset={splitDataset} />;
-  const chartId = nominalLabel(splitDatum, essence);
 
   const continuousSplit = getContinuousSplit(essence);
   const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
@@ -105,6 +105,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
       {series.toArray().map((series, index) => {
         const color = NORMAL_COLORS[index];
         return <ColoredSeriesChartLine
+          key={series.plywoodKey()}
           xScale={xScale}
           yScale={yScale}
           getX={getX}

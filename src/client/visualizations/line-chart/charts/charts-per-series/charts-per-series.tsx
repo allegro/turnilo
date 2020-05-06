@@ -21,8 +21,8 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SplitLegend } from "../../legend/split-legend";
-import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/continuous-types";
+import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { hasNominalSplit } from "../../utils/splits";
 import { calculateChartStage } from "../calculate-chart-stage";
 import { SeriesChart } from "./series-chart";
@@ -46,16 +46,19 @@ export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
     {hasNominalSplit(essence) && <LegendSpot>
       <SplitLegend dataset={dataset} essence={essence}/>
     </LegendSpot>}
-    {concreteSeries.map(series =>
-      <SeriesChart
-        interactions={interactions}
-        key={series.reactKey()}
-        dataset={dataset}
-        essence={essence}
-        series={series}
-        chartStage={chartStage}
-        xScale={xScale}
-        xTicks={xTicks}/>
+    {concreteSeries.map(series => {
+      const key = series.reactKey();
+      return <SeriesChart
+          interactions={interactions}
+          key={key}
+          chartId={key}
+          dataset={dataset}
+          essence={essence}
+          series={series}
+          chartStage={chartStage}
+          xScale={xScale}
+          xTicks={xTicks} />;
+      }
     )}
   </React.Fragment>;
 };

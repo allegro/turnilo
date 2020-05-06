@@ -26,14 +26,15 @@ import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-li
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
 import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
+import { ContinuousScale } from "../../utils/continuous-types";
 import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
 import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { ContinuousScale } from "../../utils/continuous-types";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import { SeriesHoverContent } from "./series-hover-content";
 
 interface SeriesChartProps {
+  chartId: string;
   interactions: InteractionsProps;
   essence: Essence;
   dataset: Dataset;
@@ -44,7 +45,7 @@ interface SeriesChartProps {
 }
 
 export const SeriesChart: React.SFC<SeriesChartProps> = props => {
-  const { interactions, chartStage, essence, series, xScale, xTicks, dataset } = props;
+  const { chartId, interactions, chartStage, essence, series, xScale, xTicks, dataset } = props;
   const hasComparison = essence.hasComparison();
   const continuousSplitDataset = selectFirstSplitDataset(dataset);
   const { interaction } = interactions;
@@ -68,7 +69,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);
     return <BaseChart
-      chartId={series.plywoodKey()}
+      chartId={chartId}
       interactions={interactions}
       hoverContent={hoverContent}
       timezone={essence.timezone}

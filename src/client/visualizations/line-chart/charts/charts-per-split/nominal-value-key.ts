@@ -19,7 +19,7 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
 import { getNominalDimension, hasNominalSplit } from "../../utils/splits";
 
-export function nominalLabel(datum: Datum, essence: Essence): string {
+export function nominalValueKey(datum: Datum, essence: Essence): string {
   if (!hasNominalSplit(essence)) return "no-nominal-split";
   const nominalDimension = getNominalDimension(essence);
   const splitValue = datum[nominalDimension.name] as PlywoodValue;

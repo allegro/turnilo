@@ -22,11 +22,12 @@ import { compose, Unary } from "../../../../../common/utils/functional/functiona
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
-import { selectFirstSplitDatums, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
-import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../../utils/continuous-types";
+import { selectFirstSplitDatums, selectMainDatum, selectSplitDataset, selectSplitDatums } from "../../utils/dataset";
+import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { hasNominalSplit } from "../../utils/splits";
 import { calculateChartStage } from "../calculate-chart-stage";
+import { nominalValueKey } from "./nominal-value-key";
 import { SplitChart } from "./split-chart";
 
 interface ChartsPerSplit {
@@ -60,13 +61,18 @@ export const ChartsPerSplit: React.SFC<ChartsPerSplit> = props => {
     {hasMultipleSeries && <LegendSpot>
       <SeriesLegend essence={essence} />
     </LegendSpot>}
-    {selectors.map(selector => <SplitChart
-      interactions={interactions}
-      essence={essence}
-      dataset={dataset}
-      selectDatum={selector}
-      xScale={xScale}
-      xTicks={xTicks}
-      chartStage={chartStage} />)}
+    {selectors.map(selector => {
+      const key = nominalValueKey(selector(dataset), essence);
+      return <SplitChart
+        key={key}
+        chartId={key}
+        interactions={interactions}
+        essence={essence}
+        dataset={dataset}
+        selectDatum={selector}
+        xScale={xScale}
+        xTicks={xTicks}
+        chartStage={chartStage} />;
+    })}
   </React.Fragment>;
 };
