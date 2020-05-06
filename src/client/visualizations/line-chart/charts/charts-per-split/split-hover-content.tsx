@@ -88,7 +88,7 @@ export const SplitHoverContent: React.SFC<SplitHoverContentProps> = props => {
   const series = essence.getConcreteSeries().toArray();
   const hasComparison = essence.hasComparison();
   const reference = getContinuousReference(essence);
-  const datum = dataset.findDatumByAttribute(reference, range);
+  const datum = dataset.findDatumByAttribute(reference, range) || {};
   if (series.length === 1) {
     return <SingleSeries series={series[0]} datum={datum} hasComparison={hasComparison} />;
   }
