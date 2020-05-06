@@ -24,19 +24,41 @@ function areDetached(a: PlywoodRange | null, b: PlywoodRange | null): boolean {
   return a && b && a.end.valueOf() !== b.start.valueOf();
 }
 
+function nextMidpoint(range: ContinuousRange): number {
+  const rangeWidth = range.end.valueOf() - range.start.valueOf();
+  return range.midpoint().valueOf() + rangeWidth;
+}
+
+function previousMidpoint(range: ContinuousRange): number {
+  const rangeWidth = range.end.valueOf() - range.start.valueOf();
+  return range.midpoint().valueOf() - rangeWidth;
+}
+
+function shouldInsertPreviousPoint(dataset: Datum[], currentIndex: number, getX: Unary<Datum, ContinuousRange>): boolean {
+  const previous = dataset[currentIndex - 1];
+  if (!previous) return false;
+  const current = dataset[currentIndex];
+  return areDetached(getX(previous), getX(current));
+}
+
+function shouldInsertNextPoint(dataset: Datum[], currentIndex: number, getX: Unary<Datum, ContinuousRange>): boolean {
+  const next = dataset[currentIndex + 1];
+  if (!next) return false;
+  const current = dataset[currentIndex];
+  return areDetached(getX(current), getX(next));
+}
+
 export function prepareDataPoints(dataset: Datum[], getX: Unary<Datum, ContinuousRange>, getY: Unary<Datum, number>): DataPoint[] {
   return flatMap(dataset, (datum, index) => {
     const range = getX(datum);
-    const rangeWidth = range.end.valueOf() - range.start.valueOf();
     const x = range.midpoint().valueOf();
-    const y = getY(datum);
-    const previous = dataset[index - 1];
-    const next = dataset[index + 1];
+    const maybeY = getY(datum);
+    const y = isNaN(maybeY) ? 0 : maybeY;
 
-    return concatTruthy(
-      previous && areDetached(getX(previous), range) && [x - rangeWidth, 0] as DataPoint,
-      [x, isNaN(y) ? 0 : y] as DataPoint,
-      next && areDetached(range, getX(next)) && [x + rangeWidth, 0] as DataPoint
+    return concatTruthy<DataPoint>(
+      shouldInsertPreviousPoint(dataset, index, getX) && [previousMidpoint(range), 0],
+      [x, y],
+      shouldInsertNextPoint(dataset, index, getX) && [nextMidpoint(range), 0]
     );
   });
 }
