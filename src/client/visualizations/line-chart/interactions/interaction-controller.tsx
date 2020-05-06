@@ -83,14 +83,12 @@ export class InteractionController extends React.Component<InteractionController
   };
 
   onMouseLeave = () => {
-    // if hover, reset interaction
     const { interaction } = this.state;
     if (!isHover(interaction)) return;
     this.setState({ interaction: null });
   };
 
   handleDragStart = (chartId: string, offset: number) => {
-    // calculate dragStart in Dragging and setState
     const { essence: { timezone } } = this.props;
     const start = this.findValueUnderOffset(offset);
     const end = shiftByOne(start, timezone);
@@ -106,19 +104,16 @@ export class InteractionController extends React.Component<InteractionController
   }
 
   dragging = (e: MouseEvent) => {
-    // active only if we're in Dragging. Update dragEnd in state
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
     const offset = this.calculateOffset(e);
     if (offset === null) return;
     const end = this.findValueUnderOffset(offset);
     const { start, key } = interaction;
-    // TODO: remember to ensure that we're inside xScale.domain!
     this.setState({ interaction: createDragging(key, start, end) });
   };
 
   stopDragging = (e: MouseEvent) => {
-    // if we're in Dragging - stop, update dragEnd and saveHighlight (handle highlighting different charts!)
     const { interaction } = this.state;
     if (!isDragging(interaction)) return;
     const offset = this.calculateOffset(e);
@@ -127,14 +122,12 @@ export class InteractionController extends React.Component<InteractionController
     const { essence, saveHighlight } = this.props;
     const { start, key } = interaction;
     const end = this.findValueUnderOffset(offset);
-    // TODO: remember to ensure that we're inside xScale.domain!
     const range = snapRangeToGrid(constructRange(start, end, essence.timezone), essence);
     saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), key);
   };
 
   private findValueUnderOffset(offset: number): ContinuousValue {
     const { xScale } = this.props;
-    // TODO: remember to ensure that we're inside xScale.domain!
     return xScale.invert(offset);
   }
 
