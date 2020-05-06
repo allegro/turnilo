@@ -15,21 +15,20 @@
  */
 
 import * as d3 from "d3";
-import { Datum, NumberRange, PlywoodRange, TimeRange } from "plywood";
+import { Datum } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
-import { concatTruthy, flatMap, Unary } from "../../../../common/utils/functional/functional";
-import { ContinuousScale } from "../utils/continuous-types";
+import { Unary } from "../../../../common/utils/functional/functional";
+import { ContinuousRange, ContinuousScale } from "../utils/continuous-types";
 import "./chart-line.scss";
+import { prepareDataPoints } from "./prepare-data-points";
 
 export type Scale = d3.scale.Linear<number, number>;
-
-type Range = NumberRange | TimeRange;
 
 export interface ChartLineProps {
   xScale: ContinuousScale;
   yScale: Scale;
-  getX: Unary<Datum, Range>;
+  getX: Unary<Datum, ContinuousRange>;
   getY: Unary<Datum, number>;
   color?: string;
   showArea: boolean;
@@ -38,45 +37,19 @@ export interface ChartLineProps {
   stage: Stage;
 }
 
-type DataPoint = [number, number];
-
 const stroke = (color: string, dashed: boolean): Pick<React.CSSProperties, "stroke" | "strokeDasharray"> => ({
   stroke: color,
   strokeDasharray: dashed ? "4 2" : undefined
 });
 
-function areDetached(a: PlywoodRange, b: PlywoodRange): boolean {
-  return a.end.valueOf() !== b.start.valueOf();
-}
-
-function prepareDataPoints(props: Pick<ChartLineProps, "dataset" | "getX" | "getY">): DataPoint[] {
-  const { getX, getY, dataset } = props;
-  return flatMap(dataset, (datum, index) => {
-
-    const range = getX(datum);
-    const rangeMidpoint = range.midpoint();
-    const measureValue = getY(datum);
-    const previous = dataset[index - 1];
-    const next = dataset[index + 1];
-    const midValue = rangeMidpoint.valueOf();
-    const rangeWidth = range.end.valueOf() - range.start.valueOf();
-
-    return concatTruthy(
-      previous && areDetached(getX(previous), range) && [0, midValue - rangeWidth] as DataPoint,
-      [rangeMidpoint, isNaN(measureValue) ? 0 : measureValue] as DataPoint,
-      next && areDetached(range, getX(next)) && [0, midValue + rangeWidth] as DataPoint
-    );
-  });
-}
-
 export const ChartLine: React.SFC<ChartLineProps> = props => {
-  const { color, dashed, showArea, stage, xScale, yScale } = props;
+  const { color, dashed, getX, getY, dataset, showArea, stage, xScale, yScale } = props;
 
   const area = d3.svg.area().y0(yScale(0));
   const line = d3.svg.line();
 
-  const points = prepareDataPoints(props);
-  const scaledPoints = points.map(([x, y]) => [xScale(x), yScale(y)] as DataPoint);
+  const points = prepareDataPoints(dataset, getX, getY);
+  const scaledPoints = points.map(([x, y]) => [xScale(x), yScale(y)] as [number, number]);
   const hasMultiplePoints = points.length > 1;
 
   return <g className="chart-line" transform={stage.getTransform()}>
