@@ -30,7 +30,7 @@ import { SortDirection } from "../sort/sort";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { Essence, EssenceValue } from "./essence";
+import { Essence, EssenceValue, VisStrategy } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
@@ -164,7 +164,9 @@ export class EssenceFixtures {
   }
 
   static wikiLineChartNoSplit() {
-    return new Essence({ ...EssenceFixtures.lineChart(), ...EssenceFixtures.getWikiContext() });
+    const essence = EssenceFixtures.wikiLineChart();
+    const split = essence.splits.getSplit(0);
+    return essence.removeSplit(split, VisStrategy.FairGame);
   }
 
   static twitterNoVisualisation() {
