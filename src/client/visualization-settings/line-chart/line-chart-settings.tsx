@@ -24,7 +24,7 @@ export const LineChartSettingsComponent: VisualizationSettingsComponent<LineChar
   return <div className="settings-row">
     <Checkbox
       selected={settings.groupSeries}
+      label="Group series"
       onClick={toggleGroupSeries} />
-    <span className="settings-label">Group series</span>
   </div>;
 };
