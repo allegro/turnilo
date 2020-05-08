@@ -28,23 +28,23 @@ describe("getScale", () => {
     expect(scale.range()).to.be.deep.eq([389, 0]);
   });
 
-  it("should pad upper range if positive", () => {
-    const scale = getScale([0, 100], 10);
-    expect(scale.domain()).to.be.deep.eq([0, 100 * 1.1]);
+  it("should nicely pad upper range if positive", () => {
+    const scale = getScale([0, 113], 10);
+    expect(scale.domain()).to.be.deep.eq([0, 120]);
   });
 
-  it("should pad lower range if negative", () => {
-    const scale = getScale([-100, 0], 10);
-    expect(scale.domain()).to.be.deep.eq([-100 * 1.1, 0]);
+  it("should nicely pad lower range if negative", () => {
+    const scale = getScale([-109, 0], 10);
+    expect(scale.domain()).to.be.deep.eq([-120, 0]);
   });
 
   it("should snap upper range to zero if negative", () => {
     const scale = getScale([-100, -20], 10);
-    expect(scale.domain()).to.be.deep.eq([-100 * 1.1, 0]);
+    expect(scale.domain()).to.be.deep.eq([-100, 0]);
   });
 
   it("should snap lower range to zero if positive", () => {
     const scale = getScale([10, 100], 10);
-    expect(scale.domain()).to.be.deep.eq([0, 100 * 1.1]);
+    expect(scale.domain()).to.be.deep.eq([0, 100]);
   });
 });

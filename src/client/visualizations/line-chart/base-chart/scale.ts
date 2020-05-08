@@ -15,12 +15,15 @@
  */
 import * as d3 from "d3";
 
-export default function getScale(extent: number[], height: number): d3.scale.Linear<number, number> {
-  if (isNaN(extent[0]) || isNaN(extent[1])) {
+export const TICKS_COUNT = 5;
+
+export default function getScale([min, max]: number[], height: number): d3.scale.Linear<number, number> {
+  if (isNaN(min) || isNaN(max)) {
     return null;
   }
 
   return d3.scale.linear()
-    .domain([Math.min(extent[0] * 1.1, 0), Math.max(extent[1] * 1.1, 0)])
+    .domain([Math.min(min, 0), Math.max(max, 0)])
+    .nice(TICKS_COUNT)
     .range([height, 0]);
 }

@@ -24,6 +24,7 @@ import { roundToHalfPx } from "../../../utils/dom/dom";
 import { ContinuousScale } from "../utils/continuous-types";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import "./background.scss";
+import { TICKS_COUNT } from "./scale";
 
 interface BackgroundProps {
   gridStage: Stage;
@@ -37,7 +38,7 @@ interface BackgroundProps {
 type Linear = scale.Linear<number, number>;
 
 function calculateTicks(scale: Linear) {
-  return scale.ticks(5).filter(n => n !== 0);
+  return scale.ticks(TICKS_COUNT).filter(n => n !== 0);
 }
 
 const TICK_WIDTH = 5;
@@ -51,7 +52,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
       scale={yScale}
       ticks={calculateTicks(yScale)}
       stage={gridStage}
-    />;
+    />
     {/* omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
     <GridLines
       orientation="vertical"
@@ -65,7 +66,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
       formatter={formatter}
       ticks={calculateTicks(yScale)}
       scale={yScale}
-    />;
+    />
     <line
       className="vis-bottom"
       transform={gridStage.getTransform()}
