@@ -17,6 +17,7 @@
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import { ReactNode } from "react";
+import { Stage } from "../../../../common/models/stage/stage";
 import { Nullary } from "../../../../common/utils/functional/functional";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
 import { ContinuousScale } from "../utils/continuous-types";
@@ -26,6 +27,7 @@ import { SelectionOverlay } from "./selection-overlay";
 
 interface ForegroundProps {
   interaction: Interaction;
+  stage: Stage;
   container: React.RefObject<HTMLDivElement>;
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
@@ -35,10 +37,11 @@ interface ForegroundProps {
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { interaction, container, xScale, timezone, hoverContent, dropHighlight, acceptHighlight } = props;
+  const { stage, interaction, container, xScale, timezone, hoverContent, dropHighlight, acceptHighlight } = props;
 
   return <React.Fragment>
     <SelectionOverlay
+      stage={stage}
       interaction={interaction}
       timezone={timezone}
       xScale={xScale} />

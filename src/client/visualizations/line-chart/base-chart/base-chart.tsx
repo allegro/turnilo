@@ -23,8 +23,8 @@ import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-
 import { Scale } from "../chart-line/chart-line";
 import { isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
-import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/continuous-types";
+import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { Background } from "./background";
 import "./base-chart.scss";
 import { Foreground } from "./foreground";
@@ -96,6 +96,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
         {label}
         {hasInteraction && <Foreground
           container={this.container}
+          stage={lineStage}
           interaction={interaction}
           hoverContent={hoverContent}
           dropHighlight={dropHighlight}

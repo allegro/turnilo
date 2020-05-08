@@ -21,8 +21,8 @@ import { Unary } from "../../../../common/utils/functional/functional";
 import { GridLines } from "../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../components/vertical-axis/vertical-axis";
 import { roundToHalfPx } from "../../../utils/dom/dom";
-import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/continuous-types";
+import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import "./background.scss";
 
 interface BackgroundProps {
