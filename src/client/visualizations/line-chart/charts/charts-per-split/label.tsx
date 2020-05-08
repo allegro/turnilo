@@ -19,6 +19,7 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
 import { getNominalDimension, hasNominalSplit } from "../../utils/splits";
+import "./label.scss";
 
 interface LabelProps {
   essence: Essence;
