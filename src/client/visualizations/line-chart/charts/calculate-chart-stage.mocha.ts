@@ -21,15 +21,15 @@ import { calculateChartStage } from "./calculate-chart-stage";
 
 use(equivalent);
 
-const stage = Stage.fromSize(600, 400);
+const stage = Stage.fromSize(1000, 800);
 
 describe("calculateChartStage", () => {
   it("should fit one chart into stage with correct padding", () => {
     expect(calculateChartStage(stage, 1)).to.be.equivalent(Stage.fromJS({
       x: 10,
       y: 0,
-      width: 580,
-      height: 370
+      width: 980,
+      height: 770
     }));
   });
 
@@ -37,8 +37,8 @@ describe("calculateChartStage", () => {
     expect(calculateChartStage(stage, 2)).to.be.equivalent(Stage.fromJS({
       x: 10,
       y: 0,
-      width: 580,
-      height: 185
+      width: 980,
+      height: 385
     }));
   });
 
@@ -46,8 +46,8 @@ describe("calculateChartStage", () => {
     expect(calculateChartStage(stage, 10)).to.be.equivalent(Stage.fromJS({
       x: 10,
       y: 0,
-      width: 580,
-      height: 140
+      width: 980,
+      height: 200
     }));
   });
 });

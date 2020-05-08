@@ -18,7 +18,7 @@ import { Stage } from "../../../../common/models/stage/stage";
 import { VIS_H_PADDING } from "../../../config/constants";
 
 const X_AXIS_HEIGHT = 30;
-const MIN_CHART_HEIGHT = 140;
+const MIN_CHART_HEIGHT = 200;
 const MAX_ASPECT_RATIO = 1; // width / height
 
 export function calculateChartStage(stage: Stage, chartsCount: number): Stage {
