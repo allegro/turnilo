@@ -148,7 +148,7 @@ export class EssenceFixtures {
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: LINE_CHART_MANIFEST,
-      visualizationSettings: null,
+      visualizationSettings: LINE_CHART_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
@@ -163,10 +163,15 @@ export class EssenceFixtures {
     return new Essence({ ...EssenceFixtures.totals(), ...EssenceFixtures.getWikiContext() });
   }
 
-  static wikiLineChartNoSplit() {
+  static wikiLineChartNoNominalSplit() {
     const essence = EssenceFixtures.wikiLineChart();
     const split = essence.splits.getSplit(0);
     return essence.removeSplit(split, VisStrategy.FairGame);
+  }
+
+  static wikiLineChartNoSplits() {
+    const essence = EssenceFixtures.wikiLineChart();
+    return essence.changeSplits(Splits.fromSplits([]), VisStrategy.KeepAlways);
   }
 
   static twitterNoVisualisation() {

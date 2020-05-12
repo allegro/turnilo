@@ -19,7 +19,7 @@ import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtu
 import { makeDataset, nominalDataset, nonNominalDataset, scale, sparseNominalDataset, sparseNonNominalDataset } from "../utils/dataset-fixtures";
 import { findClosestDatum } from "./find-closest-datum";
 
-const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoSplit();
+const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
 
 describe("findClosestDatum", () => {

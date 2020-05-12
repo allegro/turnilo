@@ -28,7 +28,7 @@ describe("ManualFallback", () => {
     var renderedComponent = renderIntoDocument(
       <ManualFallback
         clicker={null}
-        essence={EssenceFixtures.wikiLineChartNoSplit()}
+        essence={EssenceFixtures.wikiLineChartNoSplits()}
       />
     );
 

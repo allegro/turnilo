@@ -20,7 +20,7 @@ import { nominalValueKey } from "./nominal-value-key";
 
 describe("nominalValueKey", () => {
   it("should return specific key if no nominal split present", () => {
-    expect(nominalValueKey(null, EssenceFixtures.wikiLineChartNoSplit())).to.eq("no-nominal-split");
+    expect(nominalValueKey(null, EssenceFixtures.wikiLineChartNoNominalSplit())).to.eq("no-nominal-split");
   });
 
   it("should select split value from datum", () => {

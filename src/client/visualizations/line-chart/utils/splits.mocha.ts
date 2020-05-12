@@ -22,7 +22,7 @@ import { getContinuousDimension, getContinuousReference, getContinuousSplit, get
 use(equivalent);
 
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
-const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoSplit();
+const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const timeDimension = essenceWithNominalSplit.getTimeDimension();
 const channelDimension = essenceWithNominalSplit.dataCube.getDimension("channel");
 const timeSplit = essenceWithNominalSplit.splits.findSplitForDimension(timeDimension);
