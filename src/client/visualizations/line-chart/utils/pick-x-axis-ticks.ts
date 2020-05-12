@@ -15,28 +15,30 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
+import { range } from "d3";
 import { NumberRange, TimeRange } from "plywood";
 import { getBestBucketUnitForRange } from "../../../../common/models/granularity/granularity";
-import { ContinuousScale } from "./continuous-types";
+import { ContinuousDomain } from "./continuous-types";
 
 export type ContinuousTicks = Array<Date | number>;
 
-export default function pickXAxisTicks(scale: ContinuousScale, timezone: Timezone): ContinuousTicks {
-  const [start, end] = scale.domain();
+function generateDateTicks(bucket: Duration, start: Date, end: Date, timezone: Timezone): Date[] {
+  return bucket.materialize(start, end as Date, timezone);
+}
+
+function generateNumberTicks(bucket: number, start: number, end: number): number[] {
+  const sequence = range(start, end, bucket);
+  return [...sequence, end];
+}
+
+export default function pickXAxisTicks([start, end]: ContinuousDomain, timezone: Timezone): ContinuousTicks {
   if (start instanceof Date && end instanceof Date) {
-    const tickDuration = getBestBucketUnitForRange(TimeRange.fromJS({ start, end }), true) as Duration;
-    return tickDuration.materialize(start, end as Date, timezone);
+    const bucket = getBestBucketUnitForRange(TimeRange.fromJS({ start, end }), true) as Duration;
+    return generateDateTicks(bucket, start, end, timezone);
   }
   if (typeof start === "number" && typeof end === "number") {
-    const unit = getBestBucketUnitForRange(NumberRange.fromJS({ start, end }), true) as number;
-    let values: number[] = [];
-    let iter = Math.round((start as number) * unit) / unit;
-
-    while (iter <= end) {
-      values.push(iter);
-      iter += unit;
-    }
-    return values;
+    const bucket = getBestBucketUnitForRange(NumberRange.fromJS({ start, end }), true) as number;
+    return generateNumberTicks(bucket, start, end);
   }
-  throw new Error(`Expected scale domain to be continuous. Got ${scale.domain()}`);
+  throw new Error(`Expected domain to be continuous. Got [${start}, ${end}]`);
 }

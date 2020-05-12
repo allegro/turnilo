@@ -26,8 +26,8 @@ import pickXAxisTicks from "./utils/pick-x-axis-ticks";
 import calculateXScale from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
 
-// magic number, probably shared
 const Y_AXIS_WIDTH = 60;
+const X_AXIS_HEIGHT = 30;
 
 export class LineChart extends BaseVisualization<BaseVisualizationState> {
   protected className = LINE_CHART_MANIFEST.name;
@@ -38,9 +38,9 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
     const { essence, timekeeper, stage } = this.props;
 
     const scale = calculateXScale(essence, timekeeper, dataset, stage.width - Y_AXIS_WIDTH);
-    const ticks = pickXAxisTicks(scale, essence.timezone);
+    const ticks = pickXAxisTicks(scale.domain(), essence.timezone);
 
-    const maxHeight = stage.height - 30; /* magic number for: X_AXIS_HEIGHT; */
+    const maxHeight = stage.height - X_AXIS_HEIGHT;
 
     return <InteractionController
       dataset={dataset}
