@@ -50,6 +50,6 @@ export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
   const range = getHighlightRange(interaction, timezone);
   if (!range) return null;
   return <div style={stage.getLeftTopWidthHeight()}>
-    <Highlighter highlightRange={range} scaleX={xScale}/>;
+    <Highlighter highlightRange={range} scaleX={xScale}/>
   </div>;
 };

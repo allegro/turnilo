@@ -4,7 +4,7 @@ context("Line Chart", () => {
 
   const header = () => cy.get(".cube-header-bar");
   const timeFilter = () => cy.get(".filter-tile .filter:first");
-  const lineChart = () => cy.get(".measure-line-chart");
+  const lineChart = () => cy.get(".line-base-chart");
   const highlighter = () => lineChart().find(".highlighter");
   const highlighterFrame = () => highlighter().find(".frame");
   const highlightModal = () => cy.get(".highlight-modal");
@@ -47,7 +47,7 @@ context("Line Chart", () => {
         });
 
         it("should show highlighter on correct coordinates", () => {
-          assertHighlighterPosition(90, 30);
+          assertHighlighterPosition(92, 31);
         });
       });
 
@@ -77,17 +77,17 @@ context("Line Chart", () => {
         });
       });
 
-      describe("reselect highlight", () => {
-        it("should show moved highlight modal", () => {
+      describe.only("resetting highlight", () => {
+        it("should remove highlight modal", () => {
           lineChart().click(500, 200);
 
-          highlightModal().should("contain", "12 Sep 2015 16:00 - 12 Sep 2015 17:00");
+          highlightModal().should("not.exist");
         });
 
-        it("should show moved highlighter", () => {
+        it("should remove highlighter", () => {
           lineChart().click(500, 200);
 
-          assertHighlighterPosition(480, 30);
+          highlighter().should("not.exist");
         });
       });
 
@@ -131,7 +131,7 @@ context("Line Chart", () => {
       });
 
       it("should show time period on highlight modal", () => {
-        highlightModal().should("contain", "12 Sep 2015 6:00 - 12 Sep 2015 14:00");
+        highlightModal().should("contain", "12 Sep 2015 6:00 - 12 Sep 2015 13:00");
       });
 
       it("should show highlighter", () => {
@@ -139,7 +139,7 @@ context("Line Chart", () => {
       });
 
       it("should show highlighter on correct coordinates", () => {
-        assertHighlighterPosition(180, 240);
+        assertHighlighterPosition(185, 216);
       });
     });
   });
