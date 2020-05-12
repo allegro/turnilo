@@ -5,96 +5,78 @@ context("Line Chart Legend", () => {
   const legendValues = () => legend().find(".legend-value");
   const legendValue = (idx) => legend().find(`.legend-value:nth-child(${idx})`);
   const legendValueName = idx => legendValue(idx).find(".legend-value-name");
-  const legendValueMeasure = idx => legendValue(idx).find(".legend-value-measure");
 
   const urls = {
     baseLineChart: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHzYYCBEwwBbYshzF8IAKJpyAegCqAFQDCjEADMICNMRpC8AbVBoAngAd5BKfKY1i+hc73OACqawAJuZWIAEwNOhYuAQ+AIwAInpQJnb4pLES9o6E6MTJIAC+ALrFTFB2SGjB1lkKyTQQAnoBENLYUFEKVHDYJAhJmHT4oG4eBHABAcQB3rUEUP55zRBu5BzRoXnkxNgtTUwODZgzBIVMSJIQ9HgArAUMNQ6erS6hL+2dTi96/BEiCLQrjYFD5NLEABIDIZ4EbuZ7SWZPAgtNodHDLVbrBRwKDbXaNfhnQitK7CUQIUogBYNJaWWH6Uw7bbYybTPT6QaSdDDEC2JGbfRwUT0JhgRAwbJEvnZaQ48LySl2RokALxd5o9r4Cwgbq9Yj9JjYODScpwZlMaAAJUwACNMPQigdldNOINriAJlMZgUgA=",
+    groupedBySeries: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHyh+NTDAAO3GhGJC8aGjGIBfJhgC2xZDmL4QAUTTkA9AFUAKgGFGIAGYQEaYjXkBtUGgCeEvQU16TDTEdvoBtgEACi5YACbuoLEwNOhYuASRAIwAIrZQzhL4pJnqPn6E6HL0KgC6tUxQEkhoCSDevmEQWraxXcTYUGmd3UyicNgwCLQQ3vqRFpkAEnmYdMIgwaH+fRFl+r1aA0NMvcHkHOkgcFDk/b0CIGqEXTP4EwgI9SBQMXL4HhsQi5+rd9HBYrFiLFbHZVhp0Ot2uVIXY4JN6EwwIhlPpHqUOgQtNdkno1KBNsDsKCCORxNgMfY4Qi8J49gQUWinLYsQgcQQ8W02SAibBgo8akwJBBsCRYtk+kccO4QFRxiQELZsHAtI04KCmNAAEqYABGmHoEpAUplUM4q3oBHBkOhKiAA===",
     secondSplitDimensionFiltered: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHzYYCBEwwBbYshzF8IAKJpyAegCqAFQDCjEADMICNMRpC8AbVBoAngAd5BKfKY1i+hc73OACqawAJuZWIAEwNOhYuAQ+AIwAInpQJnb4pLES9o6E6MTJIAC+ALoFDNZZCsk0EAJ6bh4EVHDYJAh6cOQc0SA1emCIMHn4FiAAVnB9EHp29EVM2Jj0ePqIUMTFTFB2SGjB5Q6VaNW1TAEQ0thQUQpNLcRtm5h0+KD1CnABAcQB3hUEa9UhqcIG5OtcCF8oORiNgzicQA5qpgfgRCkwkJIIEsAKylfbZLzAi5XHCec4uED8CIiBC0LE2BQ+TSxAASSSeS1e7jJ0l+Bwh5Mu12BoK67yhMLh/DRhHOWOEogQGxAAIgQ0sXP0phh0Pen2+en0T0k6BeIFs/NC7jgonoTH6CEGChlFuy0jgsDchTmCJqJAC8UFJMuwxAt1aemwcGkWw6FOgACVMAAjRYgH12P3fTgcvVfH4FIA==",
-    secondSplitSortedByDimension: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHzYYCBEwwBbYshzF8IAKJpyAegCqAFQDCjEADMICNMRpC8AbVBoAngAd5BKfKY1i+hc73OACqawAJuZWIAEwNOhYuAQ+AIwAInpQJnb4pLES9o6E6MTJIAC+ALrFTFB2SGjB1lkKyTQQAnoBENLYUFEKVHDYJAhJmHT4oG4eBN29xP2ZDgotbR04zRBu5BzRIHBQ5MTYLU0FTEiSEPR4AKyHNbNOrS6hd+2dt9J6/BEiCLSnNgo+mrEABIDIZ4EbuTx3by1AjzXaLXBMFqrdYKLY7PaNfiFI6tU7CUQIUogKD+PL4EKjUy7HZogIBYgBPT6QaSdDDEC2G4gYgADzgaz0YEQMGyOM5MJA0i24XkxLsjRIAXijwRwRAEz6emwcGk5QF92gACVMAAjTD0IpMBWTAKcQZnTb0xmFIA",
-    sortSeriesExactFormat: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHzYYCBEwwBbYshzF8IAKJpyAegCqAFQDCjEADMICNMRpC8AbVBoAngAd5BKfKY1i+hc73OACqawAJuZWIAEwNOhYuAQ+AIwAInpQJnb4pLES9o6E6MTJIAC+ALrFTFB2SGjB1lkKyTQQAnoBENLYUFEKVHDYJAhJmHT4oG4eBHABAcQB3rUEUP55zRBu5BzRoXnkxNgtTUwODZgzBIVMSJIQ9HgArAUMNQ6erS6hL+2dTi96/BEiCLQrjYFD5NLEABIDIZ4EbuZ7SWZPAgtNodHDLVbrBRwKDbXaNfhnQitK7CUQIUogBYNJaWWH6Uw7bbYybTPT6QaSdDDEC2JEgYgADzgaz0YEQMGyRL52WkOPC8kpdkaJAC8XeaPa+AsIG6vWI/SY2Dg0nKIte0AASpgAEaYehFA4q6acQbXEATKYzApAA=",
+    secondSplitSortedByDimension: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHzYYCBEwwBbYshzF8IAKJpyAegCqAFQDCjEADMICNMRpC8AbVBoAngAd5BKfKY1i+hc73OACqawAJuZWIAEwNOhYuAQ+AIwAInpQJnb4pLES9o6E6MTJIAC+ALrFTFB2SGjB1lkKyTQQAnoBENLYUFEKVHDYJAhJmHT4oG4eBN29xP2ZDgotbR04zRBu5BzRIHBQ5MTYLU0FTEiSEPR4AKyHNbNOrS6hd+2dt9J6/BEiCLSnNgo+mrEABIDIZ4EbuTx3by1AjzXaLXBMFqrdYKLY7PaNfiFI6tU7CUQIUogKD+PL4EKjUy7HZogIBYgBPT6QaSdDDEC2G4gYgADzgaz0YEQMGyOM5MJA0i24XkxLsjRIAXijwRwRAEz6emwcGk5QF92gACVMAAjTD0IpMBWTAKcQZnTb0xmFIA"
   };
 
   function assertLegendRowsInOrder(...values) {
     const rows = legendValues();
     rows.should("have.length", values.length);
 
-    values.forEach(({label, value}, idx) => {
+    values.forEach((label, idx) => {
       legendValueName(idx + 1).should("contain", label);
-      if (value !== undefined) {
-        legendValueMeasure(idx + 1).should("contain", value);
-      } else {
-        legendValueMeasure(idx + 1).should("not.exist");
-      }
     });
   }
 
   describe("Legend render", () => {
-    beforeEach(() => {
-      cy.visit(urls.baseLineChart);
+    describe("Split charts", () => {
+      beforeEach(() => {
+        cy.visit(urls.baseLineChart);
+      });
+
+      it("should render legend", () => {
+        legend().should("exist");
+      });
+
+      it("should render legend title", () => {
+        legendTitle().should("contain", "Channel");
+      });
+
+      it("should render correct values", () => {
+        assertLegendRowsInOrder("en", "it", "fr", "ru", "es");
+      });
+
+      describe("Legend reflects split sort", () => {
+        beforeEach(() => {
+          cy.visit(urls.secondSplitSortedByDimension);
+        });
+
+        it("should show only labels based on channel sort", () => {
+          assertLegendRowsInOrder("ar", "be", "bg", "ca", "ce");
+        });
+      });
+
+      describe("Legend reflects filters", () => {
+        beforeEach(() => {
+          cy.visit(urls.secondSplitDimensionFiltered);
+        });
+
+        it("should show only filtered values", () => {
+          assertLegendRowsInOrder("ja", "vi", "pt");
+        });
+      });
     });
 
-    it("should render legend", () => {
-      legend().should("exist");
-    });
+    describe("Series charts", () => {
+      beforeEach(() => {
+        cy.visit(urls.groupedBySeries);
+      });
 
-    it("should render legend title", () => {
-      legendTitle().should("contain", "Channel");
-    });
+      it("should render legend", () => {
+        legend().should("exist");
+      });
 
-    it("should render correct values", () => {
-      assertLegendRowsInOrder(
-        {label: "en", value: "3.0 m"},
-        {label: "it", value: "711.0 k"},
-        {label: "fr", value: "642.6 k"},
-        {label: "ru", value: "640.7 k"},
-        {label: "es", value: "634.7 k"},
-      );
-    });
-  });
+      it("should render legend title", () => {
+        legendTitle().should("contain", "Series");
+      });
 
-  describe("Legend reflects series formatting", () => {
-    beforeEach(() => {
-      cy.visit(urls.sortSeriesExactFormat);
-    });
-
-    it("should format values with series formatter", () => {
-      assertLegendRowsInOrder(
-        {label: "en", value: "3,045,299"},
-        {label: "it", value: "711,011"},
-        {label: "fr", value: "642,555"},
-        {label: "ru", value: "640,698"},
-        {label: "es", value: "634,670"},
-      );
-    });
-  });
-
-  describe("Legend reflects split sort", () => {
-    beforeEach(() => {
-      cy.visit(urls.secondSplitSortedByDimension);
-    });
-
-    it("should show only labels based on channel sort", () => {
-      assertLegendRowsInOrder(
-        {label: "ar"},
-        {label: "be"},
-        {label: "bg"},
-        {label: "ca"},
-        {label: "ce"},
-      );
-    });
-  });
-
-  describe("Legend reflects filters", () => {
-    beforeEach(() => {
-      cy.visit(urls.secondSplitDimensionFiltered);
-    });
-
-    it("should show only filtered values", () => {
-      assertLegendRowsInOrder(
-        {label: "ja", value: "317.2 k"},
-        {label: "vi", value: "296.0 k"},
-        {label: "pt", value: "229.1 k"},
-      );
+      it("should render correct values", () => {
+        assertLegendRowsInOrder("Added", "Rows");
+      });
     });
   });
 });
