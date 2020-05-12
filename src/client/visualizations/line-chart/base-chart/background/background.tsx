@@ -16,15 +16,15 @@
 
 import { scale } from "d3";
 import * as React from "react";
-import { Stage } from "../../../../common/models/stage/stage";
-import { Unary } from "../../../../common/utils/functional/functional";
-import { GridLines } from "../../../components/grid-lines/grid-lines";
-import { VerticalAxis } from "../../../components/vertical-axis/vertical-axis";
-import { roundToHalfPx } from "../../../utils/dom/dom";
-import { ContinuousScale } from "../utils/continuous-types";
-import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
+import { Stage } from "../../../../../common/models/stage/stage";
+import { Unary } from "../../../../../common/utils/functional/functional";
+import { GridLines } from "../../../../components/grid-lines/grid-lines";
+import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
+import { ContinuousScale } from "../../utils/continuous-types";
+import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
+import { TICK_WIDTH, TICKS_COUNT } from "../scale";
 import "./background.scss";
-import { TICKS_COUNT } from "./scale";
+import { BottomBorder } from "./bottom-border";
 
 interface BackgroundProps {
   gridStage: Stage;
@@ -41,8 +41,6 @@ function calculateTicks(scale: Linear) {
   return scale.ticks(TICKS_COUNT).filter(n => n !== 0);
 }
 
-const TICK_WIDTH = 5;
-
 export const Background: React.SFC<BackgroundProps> = props => {
   const { formatter, gridStage, axisStage, xScale, yScale, xTicks } = props;
 
@@ -53,7 +51,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
       ticks={calculateTicks(yScale)}
       stage={gridStage}
     />
-    {/* omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
+    {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
     <GridLines
       orientation="vertical"
       scale={xScale}
@@ -67,13 +65,6 @@ export const Background: React.SFC<BackgroundProps> = props => {
       ticks={calculateTicks(yScale)}
       scale={yScale}
     />
-    <line
-      className="vis-bottom"
-      transform={gridStage.getTransform()}
-      x1={0}
-      x2={gridStage.width + TICK_WIDTH}
-      y1={roundToHalfPx(gridStage.height)}
-      y2={roundToHalfPx(gridStage.height)}
-    />
+    <BottomBorder stage={gridStage} />
   </React.Fragment>;
 };

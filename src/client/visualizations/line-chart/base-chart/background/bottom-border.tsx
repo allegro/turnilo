@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as d3 from "d3";
 
-export const TICKS_COUNT = 5;
+import * as React from "react";
+import { Stage } from "../../../../../common/models/stage/stage";
+import { roundToHalfPx } from "../../../../utils/dom/dom";
+import { TICK_WIDTH } from "../scale";
 
-export const TICK_WIDTH = 5;
-
-export default function getScale([min, max]: number[], height: number): d3.scale.Linear<number, number> {
-  if (isNaN(min) || isNaN(max)) {
-    return null;
-  }
-
-  return d3.scale.linear()
-    .domain([Math.min(min, 0), Math.max(max, 0)])
-    .nice(TICKS_COUNT)
-    .range([height, 0]);
+interface BottomBorderProps {
+ stage: Stage;
 }
+
+export const BottomBorder: React.SFC<BottomBorderProps> = ({ stage }) => {
+ return <line
+   className="vis-bottom"
+   transform={stage.getTransform()}
+   x1={0}
+   x2={stage.width + TICK_WIDTH}
+   y1={roundToHalfPx(stage.height)}
+   y2={roundToHalfPx(stage.height)}
+ />;
+};

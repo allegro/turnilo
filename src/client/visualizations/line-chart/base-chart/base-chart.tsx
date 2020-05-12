@@ -25,7 +25,7 @@ import { isHover } from "../interactions/interaction";
 import { InteractionsProps } from "../interactions/interaction-controller";
 import { ContinuousScale } from "../utils/continuous-types";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
-import { Background } from "./background";
+import { Background } from "./background/background";
 import "./base-chart.scss";
 import { Foreground } from "./foreground";
 import { HoverGuide } from "./hover-guide";
