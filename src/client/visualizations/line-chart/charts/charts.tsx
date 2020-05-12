@@ -21,8 +21,8 @@ import { Stage } from "../../../../common/models/stage/stage";
 import { ImmutableRecord } from "../../../../common/utils/immutable-utils/immutable-utils";
 import { LineChartSettings } from "../../../../common/visualization-manifests/line-chart/settings";
 import { InteractionsProps } from "../interactions/interaction-controller";
-import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ContinuousScale } from "../utils/continuous-types";
+import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { ChartsPerSeries } from "./charts-per-series/charts-per-series";
 import { ChartsPerSplit } from "./charts-per-split/charts-per-split";
 
