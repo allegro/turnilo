@@ -22,7 +22,7 @@ import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { TICK_WIDTH, TICKS_COUNT } from "../scale";
+import { TICK_WIDTH, TICKS_COUNT } from "../y-scale";
 import "./background.scss";
 import { BottomBorder } from "./bottom-border";
 

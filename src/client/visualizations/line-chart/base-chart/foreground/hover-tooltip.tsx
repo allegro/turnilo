@@ -18,10 +18,10 @@ import { TooltipWithBounds } from "@vx/tooltip";
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import { ReactNode } from "react";
-import { formatValue } from "../../../../common/utils/formatter/formatter";
-import { SegmentBubbleContent } from "../../../components/segment-bubble/segment-bubble";
-import { Hover } from "../interactions/interaction";
-import { ContinuousScale } from "../utils/continuous-types";
+import { formatValue } from "../../../../../common/utils/formatter/formatter";
+import { SegmentBubbleContent } from "../../../../components/segment-bubble/segment-bubble";
+import { Hover } from "../../interactions/interaction";
+import { ContinuousScale } from "../../utils/continuous-types";
 
 interface HoverTooltipProps {
   interaction: Hover;

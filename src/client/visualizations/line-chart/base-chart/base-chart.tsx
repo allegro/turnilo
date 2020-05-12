@@ -27,9 +27,9 @@ import { ContinuousScale } from "../utils/continuous-types";
 import { ContinuousTicks } from "../utils/pick-x-axis-ticks";
 import { Background } from "./background/background";
 import "./base-chart.scss";
-import { Foreground } from "./foreground";
-import { HoverGuide } from "./hover-guide";
-import getScale from "./scale";
+import { Foreground } from "./foreground/foreground";
+import { HoverGuide } from "./foreground/hover-guide";
+import getScale from "./y-scale";
 
 interface ChartLinesProps {
   yScale: Scale;

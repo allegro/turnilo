@@ -17,7 +17,7 @@
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
-import { TICK_WIDTH } from "../scale";
+import { TICK_WIDTH } from "../y-scale";
 
 interface BottomBorderProps {
  stage: Stage;

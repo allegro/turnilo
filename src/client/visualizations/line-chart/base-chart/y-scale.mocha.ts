@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import getScale from "./scale";
+import getScale from "./y-scale";
 
 describe("getScale", () => {
   it("should return null for NaN extent", () => {
