@@ -22,18 +22,19 @@ const MIN_CHART_HEIGHT = 200;
 const MAX_ASPECT_RATIO = 1; // width / height
 
 export function calculateChartStage(stage: Stage, chartsCount: number): Stage {
-  const chartWidth = stage.width - VIS_H_PADDING * 2;
-  const chartHeight = Math.max(
-    MIN_CHART_HEIGHT,
-    Math.floor(Math.min(
-      chartWidth / MAX_ASPECT_RATIO,
-      (stage.height - X_AXIS_HEIGHT) / chartsCount
-    ))
-  );
+  const width = stage.width - VIS_H_PADDING * 2;
+  const maxHeightFromRatio = width / MAX_ASPECT_RATIO;
+  const heightFromStageDivision = (stage.height - X_AXIS_HEIGHT) / chartsCount;
+  const boundedChartHeight = Math.floor(Math.min(
+    maxHeightFromRatio,
+    heightFromStageDivision
+  ));
+  const height = Math.max(MIN_CHART_HEIGHT, boundedChartHeight);
+
   return new Stage({
     x: VIS_H_PADDING,
     y: 0,
-    width: chartWidth,
-    height: chartHeight
+    width,
+    height
   });
 }
