@@ -29,7 +29,7 @@ $checkbox-width: 20px;
   }
 
   &:hover {
-    background: $hover;
+    @include css-variable(background-color, hover);
   }
 
   &:last-child {

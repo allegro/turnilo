@@ -105,7 +105,9 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
     const { saveHighlight, essence, dataset } = this.props;
     const layout = this.layout();
     const clauses = createHighlightClauses({ x: x - layout.left, y: y - layout.top, part }, essence, dataset);
-    saveHighlight(List(clauses));
+    if (clauses.length > 0) {
+      saveHighlight(List(clauses));
+    }
   };
 
   private layout(): ScrollerLayout {
