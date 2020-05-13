@@ -59,7 +59,7 @@ export class UrlShortenerPrompt extends React.Component<UrlProp, UrlShortenerPro
   }
 
   shortenUrl() {
-    return fetch("/shorten?url=" + encodeURIComponent(this.props.url))
+    return fetch("shorten?url=" + encodeURIComponent(this.props.url))
       .then(response => response.json());
   }
 
