@@ -18,44 +18,16 @@
 @import '../../imports';
 
 .line-chart {
-  .measure-line-charts {
+
+  .line-chart-container {
+    padding-left: $vis-h-padding;
+  }
+
+  .line-charts {
     @include internet-explorer {
       overflow-y: hidden;
     }
     overflow-x: hidden;
     overflow-y: auto;
-    padding-left: $vis-h-padding;
-  }
-
-  .measure-line-chart {
-    .vis-measure-label {
-      position: absolute;
-      left: 6px;
-      top: 12px;
-    }
-
-    .vis-bottom {
-      pointer-events: none;
-      stroke: $gray;
-    }
-
-    .hover-guide {
-      @include css-variable(stroke, background-brand-light);
-      stroke-width: 1;
-    }
-
-    .highlighter {
-      @include pin-full;
-    }
-
-    &:nth-child(n+2) { // same as not(first-child)
-      .highlighter .frame {
-        border-top: 0;
-      }
-    }
-  }
-
-  .bottom-axis {
-    padding-left: $vis-h-padding;
   }
 }

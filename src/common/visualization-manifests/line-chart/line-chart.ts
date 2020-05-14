@@ -23,9 +23,9 @@ import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
-import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
+import { settings } from "./settings";
 
 const COLORS_COUNT = NORMAL_COLORS.length;
 
@@ -188,5 +188,5 @@ export const LINE_CHART_MANIFEST = new VisualizationManifest(
   "line-chart",
   "Line Chart",
   rulesEvaluator,
-  emptySettingsConfig
+  settings
 );

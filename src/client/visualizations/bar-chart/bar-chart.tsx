@@ -636,6 +636,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       key={series.reactKey()}
       stage={axisStage}
       ticks={yTicks}
+      tickSize={5}
       scale={yScale}
       hideZero={true}
     />;

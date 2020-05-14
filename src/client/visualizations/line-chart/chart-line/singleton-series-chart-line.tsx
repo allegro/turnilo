@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +14,12 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import * as React from "react";
+import { Omit } from "../../../../common/utils/functional/functional";
+import { SeriesChartLine, SeriesChartLineProps } from "./series-chart-line";
 
-.line-chart-axis {
-  @include pin-full;
+type SingletonSeriesChartLineProps = Omit<SeriesChartLineProps, "color" | "showArea">;
 
-  line {
-    pointer-events: none;
-    stroke: $gray;
-  }
-
-  text {
-    @include css-variable(fill, text-medium);
-    text-anchor: middle;
-    font-size: 12px;
-  }
-}
+export const SingletonSeriesChartLine: React.SFC<SingletonSeriesChartLineProps> = props => {
+  return <SeriesChartLine {...props} showArea={true} />;
+};

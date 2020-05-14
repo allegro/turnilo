@@ -18,14 +18,13 @@ import * as React from "react";
 import { VisualizationSettingsComponent } from "../../../common/models/visualization-settings/visualization-settings";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { Checkbox } from "../../components/checkbox/checkbox";
-import "./table-settings.scss";
 
 export const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ settings, onChange }) => {
   const toggleCollapseRows = () => onChange(settings.update("collapseRows", collapse => !collapse));
   return <div className="settings-row">
     <Checkbox
       selected={settings.collapseRows}
+      label="Collapse rows"
       onClick={toggleCollapseRows} />
-    <span className="settings-label">Collapse rows</span>
   </div>;
 };

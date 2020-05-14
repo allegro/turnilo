@@ -54,6 +54,8 @@ export const exactFormat = "0,0";
 const exactFormatter = formatFnFactory(exactFormat);
 export const percentFormat = "0[.]00%";
 const percentFormatter = formatFnFactory(percentFormat);
+export const measureDefaultFormat = "0,0.0 a";
+export const defaultFormatter = formatFnFactory(measureDefaultFormat);
 
 export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
   switch (format.type) {
