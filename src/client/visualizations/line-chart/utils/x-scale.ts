@@ -72,13 +72,13 @@ function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRa
   return (a && b) ? a.extend(b) : (a || b);
 }
 
-function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange {
+function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
   const continuousDimensionKey = continuousDimension.name;
   const flatDataset = dataset.flatten();
   return flatDataset
     .data
     .map(datum => datum[continuousDimensionKey] as PlywoodRange)
-    .reduce(safeRangeSum);
+    .reduce(safeRangeSum, null);
 }
 
 export default function calculateXScale(essence: Essence, timekeeper: Timekeeper, dataset: Dataset, width: number): ContinuousScale {
