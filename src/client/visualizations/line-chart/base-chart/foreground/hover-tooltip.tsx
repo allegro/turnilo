@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { TooltipWithBounds } from "@vx/tooltip";
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../../../components/segment-bubble/segment-bubble";
+import { TooltipWithinStage } from "../../../../components/tooltip-within-stage/tooltip-within-stage";
 import { Hover } from "../../interactions/interaction";
 import { ContinuousScale } from "../../utils/continuous-types";
 
@@ -37,10 +37,9 @@ export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
   const { range } = interaction;
   const x = xScale(range.midpoint());
 
-  return <TooltipWithBounds
-    key={Math.random()} top={80} left={x}>
+  return <TooltipWithinStage key={x} top={60} left={x} stage={stage}>
     <SegmentBubbleContent
       title={formatValue(range, timezone)}
       content={content} />
-  </TooltipWithBounds>;
+  </TooltipWithinStage>;
 };
