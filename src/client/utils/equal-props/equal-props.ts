@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { isEqualable } from "../../../../common/utils/immutable-utils/immutable-utils";
-import { HeatMapRectanglesProps } from "../heatmap-rectangles";
+import { isEqualable } from "../../../common/utils/immutable-utils/immutable-utils";
 
 function equals(a: any, b: unknown): boolean {
   if (a === null) {
@@ -27,7 +26,7 @@ function equals(a: any, b: unknown): boolean {
   return a === b;
 }
 
-export function equalProps(oldProps: HeatMapRectanglesProps, newProps: HeatMapRectanglesProps): boolean {
-  const keys = Object.keys(oldProps) as Array<keyof HeatMapRectanglesProps>;
+export function equalProps<T extends object>(oldProps: T, newProps: T): boolean {
+  const keys = Object.keys(oldProps) as Array<keyof T>;
   return keys.every(key => equals(oldProps[key], newProps[key]));
 }

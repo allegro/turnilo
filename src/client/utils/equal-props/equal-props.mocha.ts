@@ -15,9 +15,7 @@
  */
 
 import { expect } from "chai";
-import { equalProps as innerEqualProps } from "./equal-props";
-
-const equalProps = (a: any, b: any) => innerEqualProps(a, b);
+import { equalProps } from "./equal-props";
 
 const propsMock = {
   propString: "foo",
