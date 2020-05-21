@@ -45,6 +45,7 @@ class BaseChartProps {
   timezone: Timezone;
   xTicks: ContinuousTicks;
   chartStage: Stage;
+  visualisationStage: Stage;
   formatter: Unary<number, string>;
   yDomain: [number, number];
   interactions: InteractionsProps;
@@ -59,7 +60,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const { hoverContent, interactions, timezone, yDomain, chartStage, chartId, children, label, formatter, xScale, xTicks } = this.props;
+    const { hoverContent, interactions, timezone, yDomain, visualisationStage, chartStage, chartId, children, label, formatter, xScale, xTicks } = this.props;
     const { interaction, dropHighlight, acceptHighlight, mouseLeave, dragStart, handleHover } = interactions;
 
     const [, xRange] = xScale.range();
@@ -97,6 +98,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
         {hasInteraction && <Foreground
           container={this.container}
           stage={lineStage}
+          visualisationStage={visualisationStage}
           interaction={interaction}
           hoverContent={hoverContent}
           dropHighlight={dropHighlight}

@@ -18,6 +18,7 @@ import { TooltipWithBounds } from "@vx/tooltip";
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import { ReactNode } from "react";
+import { Stage } from "../../../../../common/models/stage/stage";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../../../components/segment-bubble/segment-bubble";
 import { Hover } from "../../interactions/interaction";
@@ -28,10 +29,11 @@ interface HoverTooltipProps {
   xScale: ContinuousScale;
   timezone: Timezone;
   content: ReactNode;
+  stage: Stage;
 }
 
 export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
-  const { content, interaction, xScale, timezone } = props;
+  const { content, interaction, xScale, timezone, stage } = props;
   const { range } = interaction;
   const x = xScale(range.midpoint());
 

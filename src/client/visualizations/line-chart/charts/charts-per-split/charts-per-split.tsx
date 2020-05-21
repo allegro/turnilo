@@ -72,6 +72,7 @@ export const ChartsPerSplit: React.SFC<ChartsPerSplit> = props => {
         selectDatum={selector}
         xScale={xScale}
         xTicks={xTicks}
+        visualisationStage={stage}
         chartStage={chartStage} />;
     })}
   </React.Fragment>;

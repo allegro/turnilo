@@ -56,6 +56,7 @@ export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
           essence={essence}
           series={series}
           chartStage={chartStage}
+          visualisationStage={stage}
           xScale={xScale}
           xTicks={xTicks} />;
       }
