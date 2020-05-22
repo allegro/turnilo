@@ -16,9 +16,10 @@
 
 import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
+import { calculatePosition, Rect } from "./calculate-position";
 import "./tooltip-within-stage.scss";
 
-interface TooltipWithinStageProps {
+export interface TooltipWithinStageProps {
   stage: Stage;
   top: number;
   left: number;
@@ -26,10 +27,8 @@ interface TooltipWithinStageProps {
 }
 
 interface TooltipWithinStageState {
-  rect?: ClientRect | DOMRect;
+  rect?: Rect
 }
-
-type Position = Pick<React.CSSProperties, "left" | "top">;
 
 export class TooltipWithinStage extends React.Component<TooltipWithinStageProps, TooltipWithinStageState> {
 
@@ -43,38 +42,11 @@ export class TooltipWithinStage extends React.Component<TooltipWithinStageProps,
     });
   }
 
-  calculatePosition(): Position {
-    const { top: initialTop, left: initialLeft, stage, margin = 10 } = this.props;
-    const { rect } = this.state;
-    if (!rect) {
-      const top = initialTop + margin;
-      const left = initialLeft + margin;
-      return { top, left };
-    }
-
-    const stageBottom = stage.y + stage.height;
-    const stageRight = stage.x + stage.width;
-
-    const top = rect.bottom > stageBottom
-      ? initialTop - margin - rect.height
-      : rect.top < stage.y
-      ? initialTop + rect.height
-      : initialTop + margin;
-
-    const left = rect.right > stageRight
-      ? initialLeft - margin - rect.width
-      : rect.left < stage.x
-      ? initialLeft + rect.width
-      : initialLeft + margin;
-
-    return { top, left };
-  }
-
   render() {
     const { children } = this.props;
     return <div
       className="tooltip-within-stage"
-      style={this.calculatePosition()}
+      style={calculatePosition(this.props, this.state.rect)}
       ref={this.self}>
       {children}
     </div>;
