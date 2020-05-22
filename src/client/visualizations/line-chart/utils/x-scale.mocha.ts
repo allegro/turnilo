@@ -49,19 +49,24 @@ describe("x-scale", () => {
     it("should merge filter and dataset range", () => {
       const essence = essenceInJanuary(1, 5);
       const dataset = createDailyNominalDatasetInJanuary(3, 7);
-      expect(calculateXRange(essence, timekeeper, dataset)).to.be.equivalent(timeRangeInJanuary(1, 7));
+      const range = calculateXRange(essence, timekeeper, dataset);
+      const expected = timeRangeInJanuary(1, 7);
+      expect(range).to.be.equivalent(expected);
     });
 
     it("should return filter range if dataset is empty", () => {
       const essence = essenceInJanuary(1, 5);
       const dataset = makeDataset([]);
-      expect(calculateXRange(essence, timekeeper, dataset)).to.be.equivalent(timeRangeInJanuary(1, 5));
+      const range = calculateXRange(essence, timekeeper, dataset);
+      const expected = timeRangeInJanuary(1, 5);
+      expect(range).to.be.equivalent(expected);
     });
 
     it("should return null if both ranges have no common parts", () => {
       const essence = essenceInJanuary(1, 3);
       const dataset = createDailyNominalDatasetInJanuary(4, 10);
-      expect(calculateXRange(essence, timekeeper, dataset)).to.be.null;
+      const range = calculateXRange(essence, timekeeper, dataset);
+      expect(range).to.be.null;
     });
 
     it("should return dataset range if there is no filter for continuous dimension", () => {
@@ -71,17 +76,19 @@ describe("x-scale", () => {
         { commentLength: { type: "NUMBER_RANGE", start: 20, end: 30 } },
         { commentLength: { type: "NUMBER_RANGE", start: 30, end: 40 } }
       ]);
-      const expectedRange = new NumberRange({
+      const expected = new NumberRange({
         start: 10,
         end: 40
       });
-      expect(calculateXRange(essence, timekeeper, dataset)).to.be.equivalent(expectedRange);
+      const range = calculateXRange(essence, timekeeper, dataset);
+      expect(range).to.be.equivalent(expected);
     });
 
     it("should return null if dataset is empty and there is no filter for continuous dimension", () => {
       const essence = essenceWithoutFilterOnContinuousSplit;
       const dataset = makeDataset([]);
-      expect(calculateXRange(essence, timekeeper, dataset)).to.be.null;
+      const range = calculateXRange(essence, timekeeper, dataset);
+      expect(range).to.be.null;
     });
   });
 });
