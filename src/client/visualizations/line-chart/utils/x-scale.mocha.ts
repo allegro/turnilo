@@ -38,30 +38,34 @@ const timeRangeInJanuary = (start: number, end: number) => new TimeRange({
   end: january(end)
 });
 
+const timekeeper = Timekeeper.EMPTY;
+
+const essenceWithoutFilterOnContinuousSplit = EssenceFixtures
+  .wikiLineChartNoNominalSplit()
+  .changeSplits(Splits.fromSplit(numberSplitCombine("commentLength", 10)), VisStrategy.KeepAlways);
+
 describe("x-scale", () => {
   describe("calculateXRange", () => {
     it("should merge filter and dataset range", () => {
       const essence = essenceInJanuary(1, 5);
       const dataset = createDailyNominalDatasetInJanuary(3, 7);
-      expect(calculateXRange(essence, Timekeeper.EMPTY, dataset)).to.be.equivalent(timeRangeInJanuary(1, 7));
+      expect(calculateXRange(essence, timekeeper, dataset)).to.be.equivalent(timeRangeInJanuary(1, 7));
     });
 
     it("should return filter range if dataset is empty", () => {
       const essence = essenceInJanuary(1, 5);
       const dataset = makeDataset([]);
-      expect(calculateXRange(essence, Timekeeper.EMPTY, dataset)).to.be.equivalent(timeRangeInJanuary(1, 5));
+      expect(calculateXRange(essence, timekeeper, dataset)).to.be.equivalent(timeRangeInJanuary(1, 5));
     });
 
     it("should return null if both ranges have no common parts", () => {
       const essence = essenceInJanuary(1, 3);
       const dataset = createDailyNominalDatasetInJanuary(4, 10);
-      expect(calculateXRange(essence, Timekeeper.EMPTY, dataset)).to.be.null;
+      expect(calculateXRange(essence, timekeeper, dataset)).to.be.null;
     });
 
     it("should return dataset range if there is no filter for continuous dimension", () => {
-      const essence = EssenceFixtures
-        .wikiLineChartNoNominalSplit()
-        .changeSplits(Splits.fromSplit(numberSplitCombine("commentLength", 10)), VisStrategy.KeepAlways);
+      const essence = essenceWithoutFilterOnContinuousSplit;
       const dataset = makeDataset([
         { commentLength: { type: "NUMBER_RANGE", start: 10, end: 20 } },
         { commentLength: { type: "NUMBER_RANGE", start: 20, end: 30 } },
@@ -71,7 +75,13 @@ describe("x-scale", () => {
         start: 10,
         end: 40
       });
-      expect(calculateXRange(essence, Timekeeper.EMPTY, dataset)).to.be.equivalent(expectedRange);
+      expect(calculateXRange(essence, timekeeper, dataset)).to.be.equivalent(expectedRange);
+    });
+
+    it("should return null if dataset is empty and there is no filter for continuous dimension", () => {
+      const essence = essenceWithoutFilterOnContinuousSplit;
+      const dataset = makeDataset([]);
+      expect(calculateXRange(essence, timekeeper, dataset)).to.be.null;
     });
   });
 });
