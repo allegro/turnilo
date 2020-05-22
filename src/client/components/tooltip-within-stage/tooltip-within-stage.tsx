@@ -27,7 +27,7 @@ export interface TooltipWithinStageProps {
 }
 
 interface TooltipWithinStageState {
-  rect?: Rect
+  rect?: Rect;
 }
 
 export class TooltipWithinStage extends React.Component<TooltipWithinStageProps, TooltipWithinStageState> {
