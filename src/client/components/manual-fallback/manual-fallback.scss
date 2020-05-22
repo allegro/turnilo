@@ -17,17 +17,17 @@
 
 @import '../../imports';
 
-  .manual-fallback {
-    margin-top: 24px;
-  }
+.manual-fallback {
+  margin-top: 24px;
+}
 
-  .resolution-item {
-    @include css-variable(color, brand);
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 10px;
+.resolution-item {
+  @include css-variable(color, brand);
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 10px;
 
-    &:hover {
-      text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
   }
+}
