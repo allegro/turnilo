@@ -718,11 +718,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private manualFallback() {
     const { essence } = this.state;
     if (!essence.visResolve.isManual()) return null;
-    const clicker = this.clicker;
-    return React.createElement(ManualFallback, {
-      clicker,
-      essence
-    });
+    return <ManualFallback clicker={this.clicker} essence={essence} />;
   }
 
   private visElement() {

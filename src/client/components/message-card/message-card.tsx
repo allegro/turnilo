@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +14,17 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import * as React from "react";
+import "./message-card.scss";
 
-  .manual-fallback {
-    margin-top: 24px;
-  }
+interface MessageCardProps {
+  title: string;
+}
 
-  .resolution-item {
-    @include css-variable(color, brand);
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 10px;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+export const MessageCard: React.SFC<MessageCardProps> = props => {
+  const { title, children } = props;
+  return <div className="message-card">
+    <div className="message-card-title">{title}</div>
+    {children}
+  </div>;
+};

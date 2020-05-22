@@ -18,6 +18,7 @@
 import { Dataset } from "plywood";
 import * as React from "react";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
+import { MessageCard } from "../../components/message-card/message-card";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
@@ -39,7 +40,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
 
     const range = calculateXRange(essence, timekeeper, dataset);
     if (!range) {
-      return null;
+      return <MessageCard title="No data found. Try different filters."/>;
     }
     const scale = createContinuousScale(essence, range, stage.width - Y_AXIS_WIDTH);
     const ticks = pickXAxisTicks(scale.domain(), essence.timezone);
