@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import "../../imports";
+@import '../../imports';
 
 .tooltip-within-stage {
   @include box-shadow-css-variable(0, 0, 0, 1px, border-extra-light);
