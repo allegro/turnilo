@@ -32,31 +32,36 @@ const renderFallback = () => shallow(
 describe("ManualFallback", () => {
   it("should render MessageCard", () => {
     const fallback = renderFallback();
+    const card = fallback.find(MessageCard);
 
-    expect(fallback.find(MessageCard).exists()).to.be.true;
+    expect(card.exists()).to.be.true;
   });
 
   it("should pass visResolve message to MessageCard", () => {
     const fallback = renderFallback();
+    const titleProp = fallback.find(MessageCard).prop("title");
 
-    expect(fallback.find(MessageCard).prop("title")).to.be.equal("This visualization requires a continuous dimension split");
+    expect(titleProp).to.be.equal("This visualization requires a continuous dimension split");
   });
 
   it("should render resolutions", () => {
     const fallback = renderFallback();
+    const resolutions = fallback.find(".resolution-item");
 
-    expect(fallback.find(".resolution-item").length).to.be.equal(2);
+    expect(resolutions.length).to.be.equal(2);
   });
 
   it("should render first resolution with correct text", () => {
     const fallback = renderFallback();
+    const firstResolution = fallback.find(".resolution-item").first();
 
-    expect(fallback.find(".resolution-item").first().text()).to.be.equal("Add a split on Time");
+    expect(firstResolution.text()).to.be.equal("Add a split on Time");
   });
 
   it("should render resolutions", () => {
     const fallback = renderFallback();
+    const secondResolution = fallback.find(".resolution-item").at(1);
 
-    expect(fallback.find(".resolution-item").at(1).text()).to.be.equal("Add a split on Comment Length");
+    expect(secondResolution.text()).to.be.equal("Add a split on Comment Length");
   });
 });
