@@ -896,7 +896,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const newVersionSupports = or(Predicates.areExactSplitKinds("time"), Predicates.areExactSplitKinds("*", "time"));
     if (newVersionSupports(essence)) {
       return <ImprovedBarChart
-        xScale={this.getPrimaryXScale()}
         dataset={dataset}
         essence={essence}
         stage={stage} />;

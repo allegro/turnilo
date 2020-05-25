@@ -14,21 +14,41 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
 import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Stage } from "../../../../common/models/stage/stage";
-
-type OrdinalScale = d3.scale.Ordinal<string, number>;
+import { Scroller } from "../../../components/scroller/scroller";
+import { BarCharts } from "./bar-charts/bar-charts";
+import { calculateChartWidth } from "./utils/chart-width";
+import { calculateLayout } from "./utils/scroller-layout";
+import { getXDomain } from "./utils/x-domain";
+import { calculateXScale } from "./utils/x-scale";
+import { XAxis } from "./x-axis/x-axis";
+import { YAxis } from "./y-axis/y-axis";
 
 interface BarChartProps {
-  xScale: OrdinalScale;
   essence: Essence;
   stage: Stage;
   dataset: Dataset;
 }
 
+const Y_AXIS_WIDTH = 60;
+const X_AXIS_HEIGHT = 40;
+
 export const BarChart: React.SFC<BarChartProps> = props => {
- return <div>BarChart</div>;
+  const { dataset, essence, stage } = props;
+  const domain = getXDomain(essence, dataset);
+  const width = calculateChartWidth(domain.length, stage.width - Y_AXIS_WIDTH);
+  const xScale = calculateXScale(domain, width);
+  const layout = calculateLayout(stage, width, { right: Y_AXIS_WIDTH, bottom: X_AXIS_HEIGHT });
+
+  return <Scroller
+    layout={layout}
+    body={<BarCharts
+      dataset={dataset}
+      essence={essence}
+      xScale={xScale} />}
+    rightGutter={<YAxis />}
+    bottomGutter={<XAxis />} />;
 };
