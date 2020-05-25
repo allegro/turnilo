@@ -16,13 +16,14 @@
 
 import * as d3 from "d3";
 import { Dataset } from "plywood";
+import { range } from "../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../config/constants";
 import { ContinuousScale } from "./continuous-types";
 
 export const makeDataset = (datums: any[]) =>
   Dataset.fromJS([{ [SPLIT]: datums }]);
 
-const january = (n: number) => new Date(`2000-01-${n}`);
+export const january = (n: number) => new Date(`2000-01-${n}`);
 
 const nonNominalDatums = [
   { time: { type: "TIME_RANGE", start: january(1), end: january(2) }, measure: 12 },
@@ -45,3 +46,12 @@ export const nominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: nonNomi
 export const sparseNominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: sparseNonNominalDatums }]);
 
 export const scale = d3.time.scale().domain([january(1), january(7)]).range([0, 1000]) as unknown as ContinuousScale;
+
+export function createDailyNominalDatasetInJanuary(startDay: number, endDay: number): Dataset {
+  const datums = range(startDay, endDay).map(i => {
+    const start = january(i);
+    const end = january(i + 1);
+    return { time: { type: "TIME_RANGE", start, end } };
+  });
+  return makeDataset(datums);
+}

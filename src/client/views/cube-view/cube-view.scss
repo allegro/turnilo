@@ -120,10 +120,6 @@ $control-panel-height: 3 * $control-tile-height + 2px;
         border-radius: $corner;
       }
 
-      .manual-fallback {
-        @include pin-full;
-      }
-
       .drop-indicator {
         @include pin-full;
         z-index: 9;

@@ -18,12 +18,13 @@
 import { Dataset } from "plywood";
 import * as React from "react";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
+import { MessageCard } from "../../components/message-card/message-card";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
 import pickXAxisTicks from "./utils/pick-x-axis-ticks";
-import calculateXScale from "./utils/x-scale";
+import { calculateXRange, createContinuousScale } from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
 
 const Y_AXIS_WIDTH = 60;
@@ -37,7 +38,11 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
   protected renderInternals(dataset: Dataset): JSX.Element {
     const { essence, timekeeper, stage } = this.props;
 
-    const scale = calculateXScale(essence, timekeeper, dataset, stage.width - Y_AXIS_WIDTH);
+    const range = calculateXRange(essence, timekeeper, dataset);
+    if (!range) {
+      return <MessageCard title="No data found. Try different filters."/>;
+    }
+    const scale = createContinuousScale(essence, range, stage.width - Y_AXIS_WIDTH);
     const ticks = pickXAxisTicks(scale.domain(), essence.timezone);
 
     const maxHeight = stage.height - X_AXIS_HEIGHT;

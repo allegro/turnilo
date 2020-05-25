@@ -24,11 +24,13 @@ import { Split } from "../../../../common/models/split/split";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { union } from "../../../../common/utils/plywood/range";
 import { toPlywoodRange } from "../interactions/highlight-clause";
-import { ContinuousScale } from "./continuous-types";
+import { ContinuousRange, ContinuousScale } from "./continuous-types";
 import { getContinuousDimension, getContinuousSplit } from "./splits";
 
 // This function is responsible for aligning d3 types with our domain types.
-function constructContinuousScale(kind: ContinuousDimensionKind, domainRange: PlywoodRange, width: number): ContinuousScale {
+export function createContinuousScale(essence: Essence, domainRange: PlywoodRange, width: number): ContinuousScale {
+  const continuousDimension = getContinuousDimension(essence);
+  const kind = continuousDimension.kind as ContinuousDimensionKind;
   const range = [0, width];
   switch (kind) {
     case "number": {
@@ -59,10 +61,11 @@ function includeMaxTimeBucket(filterRange: PlywoodRange, maxTime: Date, continuo
   return filterRange;
 }
 
-function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange {
+function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange | null {
   const continuousSplit = getContinuousSplit(essence);
   const effectiveFilter = essence.getEffectiveFilter(timekeeper);
   const continuousFilterClause = effectiveFilter.clauseForReference(continuousSplit.reference);
+  if (!continuousFilterClause) return null;
   const filterRange = toPlywoodRange(continuousFilterClause);
   const maxTime = essence.dataCube.getMaxTime(timekeeper);
   return includeMaxTimeBucket(filterRange, maxTime, continuousSplit, essence.timezone);
@@ -81,10 +84,9 @@ function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): Ply
     .reduce(safeRangeSum, null);
 }
 
-export default function calculateXScale(essence: Essence, timekeeper: Timekeeper, dataset: Dataset, width: number): ContinuousScale {
+export function calculateXRange(essence: Essence, timekeeper: Timekeeper, dataset: Dataset): ContinuousRange | null {
   const continuousDimension = getContinuousDimension(essence);
   const filterRange = getFilterRange(essence, timekeeper);
   const datasetRange = getDatasetXRange(dataset, continuousDimension);
-  const scaleDomain = union(filterRange, datasetRange);
-  return constructContinuousScale(continuousDimension.kind as ContinuousDimensionKind, scaleDomain, width);
+  return union(filterRange, datasetRange) as ContinuousRange;
 }
