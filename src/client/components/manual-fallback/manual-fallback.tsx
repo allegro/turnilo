@@ -19,6 +19,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Resolution } from "../../../common/models/visualization-manifest/visualization-manifest";
+import { MessageCard } from "../message-card/message-card";
 import "./manual-fallback.scss";
 
 export interface ManualFallbackProps {
@@ -47,12 +48,13 @@ export class ManualFallback extends React.Component<ManualFallbackProps, {}> {
     if (!visResolve.isManual()) return null;
 
     const resolutionItems = visResolve.resolutions.map((resolution, i) => {
-      return <li key={i} onClick={this.onResolutionClick.bind(this, resolution)}>{resolution.description}</li>;
+      return <li className="resolution-item" key={i} onClick={this.onResolutionClick.bind(this, resolution)}>{resolution.description}</li>;
     });
 
-    return <div className="manual-fallback">
-      <div className="message">{visResolve.message}</div>
-      <ul>{resolutionItems}</ul>
-    </div>;
+    return <MessageCard title={visResolve.message}>
+      <ul className="manual-fallback">
+        {resolutionItems}
+      </ul>
+    </MessageCard>;
   }
 }
