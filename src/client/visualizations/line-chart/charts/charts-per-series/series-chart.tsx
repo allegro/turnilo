@@ -42,10 +42,11 @@ interface SeriesChartProps {
   xScale: ContinuousScale;
   xTicks: ContinuousTicks;
   chartStage: Stage;
+  visualisationStage: Stage;
 }
 
 export const SeriesChart: React.SFC<SeriesChartProps> = props => {
-  const { chartId, interactions, chartStage, essence, series, xScale, xTicks, dataset } = props;
+  const { chartId, interactions, visualisationStage, chartStage, essence, series, xScale, xTicks, dataset } = props;
   const hasComparison = essence.hasComparison();
   const continuousSplitDataset = selectFirstSplitDataset(dataset);
   const { interaction } = interactions;
@@ -69,6 +70,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);
     return <BaseChart
+      visualisationStage={visualisationStage}
       chartId={chartId}
       interactions={interactions}
       hoverContent={hoverContent}
@@ -99,6 +101,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
   }
   return <BaseChart
     chartId={series.plywoodKey()}
+    visualisationStage={visualisationStage}
     interactions={interactions}
     hoverContent={hoverContent}
     timezone={essence.timezone}

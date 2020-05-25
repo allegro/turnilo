@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +16,12 @@
 
 @import '../../imports';
 
-.chart-line {
-  pointer-events: none;
-
-  .area {
-    @include css-variable(fill, main-time-area);
-    stroke: none;
-    fill-opacity: .9;
-  }
-
-  .line {
-    @include css-variable(stroke, main-time-line);
-    fill: none;
-    stroke-width: 1.6px;
-  }
-
-  .singleton {
-    @include css-variable(fill, main-time-line);
-    stroke: none;
-  }
-
-  .hover {
-    @include css-variable(stroke, main-time-line);
-    fill: $white;
-    stroke-width: 2;
-  }
+.tooltip-within-stage {
+  @include box-shadow-css-variable(0, 0, 0, 1px, border-extra-light);
+  position: absolute;
+  border-radius: 3px;
+  padding: 6px;
+  background: $white;
+  // TODO: we need some solution for z-indexes
+  z-index: 800;
 }

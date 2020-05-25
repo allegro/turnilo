@@ -61,7 +61,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
           <div className="line-charts" ref={this.chartsRef} style={{ maxHeight }}>
             <Charts
               interactions={interactions}
-              stage={stage}
+              stage={stage.changeHeight(maxHeight)}
               essence={essence}
               xScale={scale}
               xTicks={ticks}

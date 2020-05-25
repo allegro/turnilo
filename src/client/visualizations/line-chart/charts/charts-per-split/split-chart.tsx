@@ -32,7 +32,6 @@ import { extentAcrossSeries } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { getContinuousSplit } from "../../utils/splits";
 import { Label } from "./label";
-import { nominalValueKey } from "./nominal-value-key";
 import { SplitHoverContent } from "./split-hover-content";
 
 interface SplitChartProps {
@@ -44,10 +43,11 @@ interface SplitChartProps {
   xScale: ContinuousScale;
   xTicks: ContinuousTicks;
   chartStage: Stage;
+  visualisationStage: Stage;
 }
 
 export const SplitChart: React.SFC<SplitChartProps> = props => {
-  const { chartId, interactions, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
+  const { chartId, interactions, visualisationStage, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
   const { interaction } = interactions;
   const splitDatum = selectDatum(dataset);
   const splitDataset = selectSplitDataset(splitDatum);
@@ -76,7 +76,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
       xTicks={xTicks}
       chartStage={chartStage}
       formatter={firstSeries.formatter()}
-      yDomain={domain}>
+      yDomain={domain} visualisationStage={visualisationStage}>
       {({ yScale, lineStage }) => {
         return <SingletonSeriesChartLine
           xScale={xScale}
@@ -92,6 +92,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
 
   return <BaseChart
     chartId={chartId}
+    visualisationStage={visualisationStage}
     timezone={essence.timezone}
     hoverContent={hoverContent}
     interactions={interactions}
