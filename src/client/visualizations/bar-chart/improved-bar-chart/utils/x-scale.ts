@@ -22,5 +22,5 @@ export type OrdinalScale = d3.scale.Ordinal<string, number>;
 export function calculateXScale(domain: XDomain, width: number): OrdinalScale {
   return d3.scale.ordinal()
     .domain(domain.map(value => value.toString()))
-    .rangeRoundBands([0, width], 0.1);
+    .rangeRoundBands([0, width], 0.1, 0);
 }

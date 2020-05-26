@@ -22,10 +22,10 @@ interface Margins {
   bottom: number;
 }
 
-export function calculateLayout(stage: Stage, width: number, { right, bottom }: Margins): ScrollerLayout {
+export function calculateLayout({ height }: Stage, width: number, { right, bottom }: Margins): ScrollerLayout {
   return {
     // TODO: probably add scroll on height to - something like seriesCount * minChartHeight
-    bodyHeight: stage.height,
+    bodyHeight: height - bottom,
     bodyWidth: width,
 
     top: 0,

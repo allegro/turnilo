@@ -38,7 +38,10 @@ export const Bars: React.SFC<BarsProps> = props => {
   const getX = (datum: Datum) => datum[firstSplitReference].toString();
   const datums = selectFirstSplitDatums(dataset);
   const yExtent = d3.extent(datums, datum => series.selectValue(datum));
-  const yScale = d3.scale.linear().domain(yExtent).range([0, 100]);
+  const yScale = d3.scale.linear()
+    .domain(yExtent)
+    .range([0, 100])
+    .nice(5);
   return <svg height={stage.height} width={stage.width}>
     {datums.map(datum => {
       const x = getX(datum);
@@ -49,6 +52,7 @@ export const Bars: React.SFC<BarsProps> = props => {
       const yPos = 200 - height;
 
       return <rect
+        key={x}
         x={xPos}
         y={yPos}
         width={width}

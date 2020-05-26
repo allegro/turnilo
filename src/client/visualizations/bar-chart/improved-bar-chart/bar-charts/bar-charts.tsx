@@ -22,19 +22,21 @@ import { Bars } from "../bars/bars";
 import { OrdinalScale } from "../utils/x-scale";
 
 interface BarChartsProps {
+  stage: Stage;
   essence: Essence;
   dataset: Dataset;
   xScale: OrdinalScale;
 }
 
 export const BarCharts: React.SFC<BarChartsProps> = props => {
-  const { essence, dataset, xScale } = props;
+  const { essence, dataset, xScale, stage } = props;
   const seriesList = essence.getConcreteSeries().toArray();
+  const chartStage = Stage.fromSize(stage.width, stage.height / seriesList.length);
   return <React.Fragment>
     {seriesList.map(series =>
       <Bars
         key={series.reactKey()}
-        stage={Stage.fromSize(1500, 300)}
+        stage={chartStage}
         essence={essence}
         series={series}
         xScale={xScale}

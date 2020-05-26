@@ -47,6 +47,7 @@ export const BarChart: React.SFC<BarChartProps> = props => {
     layout={layout}
     body={<BarCharts
       dataset={dataset}
+      stage={Stage.fromSize(layout.bodyWidth, layout.bodyHeight)}
       essence={essence}
       xScale={xScale} />}
     rightGutter={<YAxis />}
