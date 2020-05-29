@@ -48,11 +48,8 @@ function labelFormatter(scale: ContinuousScale, timezone: Timezone): Unary<Date 
 }
 
 export const XAxis: React.SFC<XAxisProps> = props => {
-
   const { width, ticks, scale, timezone } = props;
-
   const stage = Stage.fromSize(width, X_AXIS_HEIGHT);
-
   const format = labelFormatter(scale, timezone);
 
   const lines = ticks.map((tick: any) => {

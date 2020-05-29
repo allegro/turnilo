@@ -64,8 +64,8 @@ export class BaseChart extends React.Component<BaseChartProps> {
     const { interaction, dropHighlight, acceptHighlight, mouseLeave, dragStart, handleHover } = interactions;
 
     const [, xRange] = xScale.range();
-    const lineStage = chartStage.within({ top: TEXT_SPACER, right: chartStage.width - xRange, bottom: 1 }); // leave 1 for border
-    const axisStage = chartStage.within({ top: TEXT_SPACER, left: xRange, bottom: 1 });
+    const lineStage = chartStage.within({ top: TEXT_SPACER, right: chartStage.width - xRange });
+    const axisStage = chartStage.within({ top: TEXT_SPACER, left: xRange });
 
     const yScale = getScale(yDomain, lineStage.height);
     const hasInteraction = interaction && interaction.key === chartId;
@@ -79,8 +79,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
             gridStage={lineStage}
             xScale={xScale}
             xTicks={xTicks}
-            yScale={yScale}
-          />
+            yScale={yScale} />
           {children({ yScale, lineStage })}
           {hasInteraction && isHover(interaction) && <HoverGuide
             hover={interaction}

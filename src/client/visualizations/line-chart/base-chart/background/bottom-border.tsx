@@ -29,7 +29,7 @@ export const BottomBorder: React.SFC<BottomBorderProps> = ({ stage }) => {
    transform={stage.getTransform()}
    x1={0}
    x2={stage.width + TICK_WIDTH}
-   y1={roundToHalfPx(stage.height)}
-   y2={roundToHalfPx(stage.height)}
+   y1={roundToHalfPx(stage.height - 1)}
+   y2={roundToHalfPx(stage.height - 1)}
  />;
 };

@@ -37,8 +37,8 @@ interface BackgroundProps {
 
 type Linear = scale.Linear<number, number>;
 
-function calculateTicks(scale: Linear) {
-  return scale.ticks(TICKS_COUNT).filter(n => n !== 0);
+export function calculateTicks(scale: Linear, ticksCount: number) {
+  return scale.ticks(ticksCount).filter(n => n !== 0);
 }
 
 export const Background: React.SFC<BackgroundProps> = props => {
@@ -48,7 +48,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
     <GridLines
       orientation="horizontal"
       scale={yScale}
-      ticks={calculateTicks(yScale)}
+      ticks={calculateTicks(yScale, TICKS_COUNT)}
       stage={gridStage}
     />
     {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
@@ -62,7 +62,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
       tickSize={TICK_WIDTH}
       stage={axisStage}
       formatter={formatter}
-      ticks={calculateTicks(yScale)}
+      ticks={calculateTicks(yScale, TICKS_COUNT)}
       scale={yScale}
     />
     <BottomBorder stage={gridStage} />
