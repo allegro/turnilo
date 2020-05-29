@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-const BAR_MIN_WIDTH = 10;
+@import '../../../../imports';
 
-export function calculateChartWidth(barCount: number, stageWidth: number): number {
-  return Math.max(stageWidth, barCount * BAR_MIN_WIDTH);
+.spacer {
+  @include pin-full;
+  background-color: $white;
 }
