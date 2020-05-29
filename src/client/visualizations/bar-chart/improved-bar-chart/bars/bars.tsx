@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import d3 from "d3";
+import * as d3 from "d3";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
@@ -45,7 +45,7 @@ export const Bars: React.SFC<BarsProps> = props => {
   const datums = selectFirstSplitDatums(dataset);
 
   // TODO: extract and test?
-  const yExtent = d3.extent(datums, datum => series.selectValue(datum));
+  const yExtent = d3.extent(datums, (datum: Datum) => series.selectValue(datum));
   const yScale = getScale(yExtent, chartStage.height);
   return <div className="bar-chart-bars" style={stage.getWidthHeight()}>
     <svg viewBox={chartStage.getViewBox()}>
