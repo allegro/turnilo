@@ -20,8 +20,13 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
+import getScale from "../../../line-chart/base-chart/y-scale";
 import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
-import { OrdinalScale } from "../utils/x-scale";
+import { calculateChartStage } from "../utils/layout";
+import { firstSplitRef } from "../utils/splits";
+import { OrdinalScale, xGetter } from "../utils/x-scale";
+import { Background } from "./background";
+import "./bars.scss";
 
 interface BarsProps {
   essence: Essence;
@@ -33,30 +38,36 @@ interface BarsProps {
 
 export const Bars: React.SFC<BarsProps> = props => {
   const { stage, series, dataset, essence, xScale } = props;
-  const firstSplitReference = essence.splits.splits.first().reference;
-  // TODO: helper for getters, which could serialize PlywoodValues to desired d3 representation (string | number)
-  const getX = (datum: Datum) => datum[firstSplitReference].toString();
+  const chartStage = calculateChartStage(stage);
+  const firstSplitReference = firstSplitRef(essence);
+  const getX = xGetter(firstSplitReference);
+  // TODO: move outside line chart
   const datums = selectFirstSplitDatums(dataset);
-  const yExtent = d3.extent(datums, datum => series.selectValue(datum));
-  const yScale = d3.scale.linear()
-    .domain(yExtent)
-    .range([0, 100])
-    .nice(5);
-  return <svg height={stage.height} width={stage.width}>
-    {datums.map(datum => {
-      const x = getX(datum);
-      const xPos = xScale(x);
-      const width = xScale.rangeBand();
-      const y = series.selectValue(datum);
-      const height = yScale(y);
-      const yPos = 200 - height;
 
-      return <rect
-        key={x}
-        x={xPos}
-        y={yPos}
-        width={width}
-        height={height} />;
-    })}
-  </svg>;
+  // TODO: extract and test?
+  const yExtent = d3.extent(datums, datum => series.selectValue(datum));
+  const yScale = getScale(yExtent, chartStage.height);
+  return <div className="bar-chart-bars" style={stage.getWidthHeight()}>
+    <svg viewBox={chartStage.getViewBox()}>
+      <Background gridStage={chartStage} yScale={yScale} />
+      <g transform={chartStage.getTransform()}>
+        {datums.map(datum => {
+          const x = getX(datum);
+          const xPos = xScale(x) + 1;
+          const width = xScale.rangeBand() - 2;
+          const y = series.selectValue(datum);
+          const yPos = yScale(y);
+          const height = chartStage.height - yPos;
+
+          return <rect
+            key={x}
+            className="bar-chart-bar"
+            x={xPos}
+            y={yPos}
+            width={width}
+            height={height} />;
+        })}
+      </g>
+    </svg>
+  </div>;
 };
