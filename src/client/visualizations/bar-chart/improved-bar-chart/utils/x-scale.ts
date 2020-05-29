@@ -15,12 +15,31 @@
  */
 
 import * as d3 from "d3";
-import { XDomain } from "./x-domain";
+import { Datum, NumberRange, TimeRange } from "plywood";
+import { Unary } from "../../../../../common/utils/functional/functional";
+import { DomainValue, XDomain } from "./x-domain";
 
 export type OrdinalScale = d3.scale.Ordinal<string, number>;
 
 export function calculateXScale(domain: XDomain, width: number): OrdinalScale {
   return d3.scale.ordinal()
-    .domain(domain.map(value => value.toString()))
-    .rangeRoundBands([0, width], 0.1, 0);
+    .domain(domain.map(value => formatDomainValue(value)))
+    .rangeRoundBands([0, width], 0, 0);
+}
+
+export const xGetter = (reference: string): Unary<Datum, string> => datum => {
+  const value = datum[reference];
+  return formatDomainValue(value as DomainValue);
+};
+
+function formatDomainValue(value: DomainValue): string {
+  if (TimeRange.isTimeRange(value)) {
+    const { start } = value;
+    return start.toISOString();
+  }
+  if (NumberRange.isNumberRange(value)) {
+    const { start } = value;
+    return start.toString(10);
+  }
+  return String(value);
 }
