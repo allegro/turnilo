@@ -14,11 +14,40 @@
  * limitations under the License.
  */
 
+import d3 from "d3";
+import { Dataset } from "plywood";
 import * as React from "react";
+import { Essence } from "../../../../../common/models/essence/essence";
+import { Stage } from "../../../../../common/models/stage/stage";
+// TODO: move outside line chart
+import getScale from "../../../line-chart/base-chart/y-scale";
+import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { calculateYAxisStage } from "../utils/layout";
+import { SingleYAxis } from "./single-y-axis";
 
 interface YAxisProps {
+  stage: Stage;
+  dataset: Dataset;
+  essence: Essence;
 }
 
 export const YAxis: React.SFC<YAxisProps> = props => {
- return null;
+  const { essence, stage, dataset } = props;
+  const seriesList = essence.getConcreteSeries().toArray();
+  const datums = selectFirstSplitDatums(dataset);
+  const axisStage = calculateYAxisStage(stage);
+  return <React.Fragment>
+    {seriesList.map(series => {
+      const extent = d3.extent(datums, datum => series.selectValue(datum));
+      const scale = getScale(extent, axisStage.height);
+      return <div
+        style={stage.getWidthHeight()}
+        key={series.reactKey()}>
+        <SingleYAxis
+          series={series}
+          scale={scale}
+          stage={axisStage} />
+      </div>;
+    })}
+  </React.Fragment>;
 };

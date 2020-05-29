@@ -20,8 +20,8 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Scroller } from "../../../components/scroller/scroller";
 import { BarCharts } from "./bar-charts/bar-charts";
-import { calculateChartWidth } from "./utils/chart-width";
-import { calculateLayout } from "./utils/scroller-layout";
+import { Spacer } from "./spacer/spacer";
+import { calculateLayout } from "./utils/layout";
 import { getXDomain } from "./utils/x-domain";
 import { calculateXScale } from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
@@ -32,24 +32,27 @@ interface BarChartProps {
   stage: Stage;
   dataset: Dataset;
 }
-
-const Y_AXIS_WIDTH = 60;
-const X_AXIS_HEIGHT = 40;
-
 export const BarChart: React.SFC<BarChartProps> = props => {
   const { dataset, essence, stage } = props;
+  const seriesCount = essence.series.count();
   const domain = getXDomain(essence, dataset);
-  const width = calculateChartWidth(domain.length, stage.width - Y_AXIS_WIDTH);
-  const xScale = calculateXScale(domain, width);
-  const layout = calculateLayout(stage, width, { right: Y_AXIS_WIDTH, bottom: X_AXIS_HEIGHT });
+  const { scroller, segment } = calculateLayout(stage, domain.length, seriesCount);
+  const xScale = calculateXScale(domain, segment.width);
 
   return <Scroller
-    layout={layout}
+    layout={scroller}
+    leftGutter={<Spacer />}
     body={<BarCharts
       dataset={dataset}
-      stage={Stage.fromSize(layout.bodyWidth, layout.bodyHeight)}
+      stage={segment}
       essence={essence}
       xScale={xScale} />}
-    rightGutter={<YAxis />}
-    bottomGutter={<XAxis />} />;
+    rightGutter={<YAxis
+      essence={essence}
+      dataset={dataset}
+      stage={Stage.fromSize(scroller.right, segment.height)}/>}
+    bottomGutter={<XAxis
+      scale={xScale}
+      stage={Stage.fromSize(segment.width, scroller.bottom)}
+    />} />;
 };

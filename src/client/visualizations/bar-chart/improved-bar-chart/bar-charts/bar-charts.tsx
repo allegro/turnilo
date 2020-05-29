@@ -31,12 +31,11 @@ interface BarChartsProps {
 export const BarCharts: React.SFC<BarChartsProps> = props => {
   const { essence, dataset, xScale, stage } = props;
   const seriesList = essence.getConcreteSeries().toArray();
-  const chartStage = Stage.fromSize(stage.width, stage.height / seriesList.length);
   return <React.Fragment>
     {seriesList.map(series =>
       <Bars
         key={series.reactKey()}
-        stage={chartStage}
+        stage={stage}
         essence={essence}
         series={series}
         xScale={xScale}
