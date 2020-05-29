@@ -15,10 +15,26 @@
  */
 
 import * as React from "react";
+import { Stage } from "../../../../../common/models/stage/stage";
+import { roundToHalfPx } from "../../../../utils/dom/dom";
+import { OrdinalScale } from "../utils/x-scale";
+import "./x-axis.scss";
 
 interface XAxisProps {
+  stage: Stage;
+  scale: OrdinalScale;
 }
 
+const TICK_HEIGHT = 10;
+
 export const XAxis: React.SFC<XAxisProps> = props => {
- return null;
+  const { stage, scale } = props;
+  return <svg width={stage.width} height={stage.height}>
+    <g className="bar-chart-x-axis">
+      {scale.domain().map(value => {
+        const x = roundToHalfPx(scale(value));
+        return <line key={value} x1={x} x2={x} y1={0} y2={TICK_HEIGHT} />;
+      })}
+    </g>
+  </svg>;
 };

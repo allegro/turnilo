@@ -17,14 +17,14 @@
 import { Dataset, NumberRange, TimeRange } from "plywood";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { firstSplitRef } from "./splits";
 
-type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;
+export type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;
 
 export type XDomain = DomainValue[];
 
 export function getXDomain(essence: Essence, dataset: Dataset): XDomain {
-  const xSplit = essence.splits.getSplit(0);
-  const ref = xSplit.reference;
+  const ref = firstSplitRef(essence);
   const firstSplitDatums = selectFirstSplitDatums(dataset);
 
   return firstSplitDatums.map(datum => datum[ref] as DomainValue);
