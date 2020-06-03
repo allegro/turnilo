@@ -24,7 +24,7 @@ import getScale from "../../../line-chart/base-chart/y-scale";
 import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
 import { calculateChartStage } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
-import { OrdinalScale, xGetter } from "../utils/x-scale";
+import { XScale, xGetter } from "../utils/x-scale";
 import { Background } from "./background";
 import { Bar } from "./bar";
 import "./bars.scss";
@@ -33,7 +33,7 @@ interface BarsProps {
   essence: Essence;
   series: ConcreteSeries;
   dataset: Dataset;
-  xScale: OrdinalScale;
+  xScale: XScale;
   stage: Stage;
 }
 

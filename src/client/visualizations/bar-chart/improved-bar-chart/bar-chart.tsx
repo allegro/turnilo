@@ -28,7 +28,7 @@ import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";
 import { calculateLayout } from "./utils/layout";
 import { getXDomain } from "./utils/x-domain";
-import { calculateXScale } from "./utils/x-scale";
+import { createXScale } from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
 import { YAxis } from "./y-axis/y-axis";
 
@@ -47,7 +47,7 @@ export const BarChart: React.SFC<BarChartProps> = props => {
   const seriesCount = essence.series.count();
   const domain = getXDomain(essence, dataset);
   const { scroller, segment } = calculateLayout(stage, domain.length, seriesCount);
-  const xScale = calculateXScale(domain, segment.width);
+  const xScale = createXScale(domain, segment.width);
 
   return <InteractionController
     xScale={xScale}
@@ -82,7 +82,6 @@ export const BarChart: React.SFC<BarChartProps> = props => {
       bottomGutter={<XAxis
         essence={essence}
         scale={xScale}
-        domain={domain}
         stage={Stage.fromSize(segment.width, scroller.bottom)}
       />} />}
   </InteractionController>;

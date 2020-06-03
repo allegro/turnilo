@@ -19,20 +19,35 @@ import { Datum, NumberRange, TimeRange } from "plywood";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { DomainValue, XDomain } from "./x-domain";
 
-export type OrdinalScale = d3.scale.Ordinal<string, number>;
-
-export function calculateXScale(domain: XDomain, width: number): OrdinalScale {
-  return d3.scale.ordinal()
-    .domain(domain.map(value => formatDomainValue(value)))
-    .rangeRoundBands([0, width], 0, 0);
+export interface XScale {
+  calculate(x: DomainValue): number;
+  invert(x: number): DomainValue;
+  domain(): XDomain;
+  rangeBand(): number;
 }
 
-export const xGetter = (reference: string): Unary<Datum, string> => datum => {
-  const value = datum[reference];
-  return formatDomainValue(value as DomainValue);
-};
+export function createXScale(domain: XDomain, width: number): XScale {
+  const range: [number, number] = [0, width];
+  const stringifiedDomain = domain.map(formatDomainValue);
+  const ordinalScale = d3.scale.ordinal()
+    .domain(stringifiedDomain)
+    .rangeRoundBands(range, 0, 0);
+  const quantizedScale = d3.scale.quantize<DomainValue>()
+    .domain(range)
+    .range(domain);
 
-export function formatDomainValue(value: DomainValue): string {
+  return {
+    calculate: (value: DomainValue) => ordinalScale(formatDomainValue(value)),
+    domain: () => domain,
+    invert: (x: number) => quantizedScale(x),
+    rangeBand: () => ordinalScale.rangeBand()
+  };
+}
+
+export const xGetter = (reference: string): Unary<Datum, DomainValue> =>
+    datum => (datum[reference] as DomainValue);
+
+function formatDomainValue(value: DomainValue): string {
   if (TimeRange.isTimeRange(value)) {
     const { start } = value;
     return start.toISOString();

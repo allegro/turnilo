@@ -21,14 +21,13 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { formatStartOfTimeRange } from "../../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
 import { XDomain } from "../utils/x-domain";
-import { formatDomainValue, OrdinalScale } from "../utils/x-scale";
+import { XScale } from "../utils/x-scale";
 import "./x-axis.scss";
 
 interface XAxisProps {
   essence: Essence;
   stage: Stage;
-  scale: OrdinalScale;
-  domain: XDomain;
+  scale: XScale;
 }
 
 const TICK_HEIGHT = 10;
@@ -38,12 +37,12 @@ function calculateTicks(domain: XDomain, essence: Essence): any[] {
 }
 
 export const XAxis: React.SFC<XAxisProps> = props => {
-  const { domain, essence, stage, scale } = props;
-  const ticks = calculateTicks(domain, essence);
+  const { essence, stage, scale } = props;
+  const ticks = calculateTicks(scale.domain(), essence);
   return <svg width={stage.width} height={stage.height}>
     <g className="bar-chart-x-axis">
       {ticks.map(value => {
-        const x = roundToHalfPx(scale(formatDomainValue(value)));
+        const x = roundToHalfPx(scale.calculate(value));
         return <g key={value} transform={`translate(${x}, 0)`}>
             <line key={value} x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
             <text y={TICK_HEIGHT + 12} style={{ textAnchor: "start" }}>

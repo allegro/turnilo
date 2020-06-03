@@ -19,13 +19,13 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Bars } from "../bars/bars";
-import { OrdinalScale } from "../utils/x-scale";
+import { XScale } from "../utils/x-scale";
 
 interface BarChartsProps {
   stage: Stage;
   essence: Essence;
   dataset: Dataset;
-  xScale: OrdinalScale;
+  xScale: XScale;
 }
 
 export const BarCharts: React.SFC<BarChartsProps> = props => {

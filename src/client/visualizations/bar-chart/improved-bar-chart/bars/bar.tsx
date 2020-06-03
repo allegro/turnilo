@@ -18,14 +18,15 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../heat-map/utils/scales";
-import { OrdinalScale } from "../utils/x-scale";
+import { DomainValue } from "../utils/x-domain";
+import { XScale } from "../utils/x-scale";
 
 interface BarProps {
   datum: Datum;
   yScale: LinearScale;
-  xScale: OrdinalScale;
+  xScale: XScale;
   getY: Unary<Datum, number>;
-  getX: Unary<Datum, string>;
+  getX: Unary<Datum, DomainValue>;
   maxHeight: number;
 }
 
@@ -34,7 +35,7 @@ const BAR_PADDING = 3;
 export const Bar: React.SFC<BarProps> = props => {
   const { datum, xScale, yScale, getX, getY, maxHeight } = props;
   const x = getX(datum);
-  const xPos = xScale(x) + BAR_PADDING;
+  const xPos = xScale.calculate(x) + BAR_PADDING;
   const width = xScale.rangeBand() - (2 * BAR_PADDING);
   const y = getY(datum);
   const yPos = yScale(y);
