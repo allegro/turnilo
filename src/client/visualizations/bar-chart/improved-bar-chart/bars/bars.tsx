@@ -26,6 +26,7 @@ import { calculateChartStage } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { OrdinalScale, xGetter } from "../utils/x-scale";
 import { Background } from "./background";
+import { Bar } from "./bar";
 import "./bars.scss";
 
 interface BarsProps {
@@ -41,32 +42,25 @@ export const Bars: React.SFC<BarsProps> = props => {
   const chartStage = calculateChartStage(stage);
   const firstSplitReference = firstSplitRef(essence);
   const getX = xGetter(firstSplitReference);
+  const getY = (datum: Datum) => series.selectValue(datum);
   // TODO: move outside line chart
   const datums = selectFirstSplitDatums(dataset);
 
-  // TODO: extract and test?
-  const yExtent = d3.extent(datums, (datum: Datum) => series.selectValue(datum));
+  const yExtent = d3.extent(datums, getY);
   const yScale = getScale(yExtent, chartStage.height);
+
   return <div className="bar-chart-bars" style={stage.getWidthHeight()}>
     <svg viewBox={chartStage.getViewBox()}>
       <Background gridStage={chartStage} yScale={yScale} />
       <g transform={chartStage.getTransform()}>
-        {datums.map(datum => {
-          const x = getX(datum);
-          const xPos = xScale(x) + 1;
-          const width = xScale.rangeBand() - 2;
-          const y = series.selectValue(datum);
-          const yPos = yScale(y);
-          const height = chartStage.height - yPos;
-
-          return <rect
-            key={x}
-            className="bar-chart-bar"
-            x={xPos}
-            y={yPos}
-            width={width}
-            height={height} />;
-        })}
+        {datums.map((datum: Datum, index: number) => <Bar
+          key={index}
+          datum={datum}
+          yScale={yScale}
+          xScale={xScale}
+          getY={getY}
+          getX={getX}
+          maxHeight={chartStage.height} />)}
       </g>
     </svg>
   </div>;
