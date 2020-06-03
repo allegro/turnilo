@@ -24,7 +24,7 @@ import getScale from "../../../line-chart/base-chart/y-scale";
 import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
 import { calculateChartStage } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
-import { XScale, xGetter } from "../utils/x-scale";
+import { xGetter, XScale } from "../utils/x-scale";
 import { Background } from "./background";
 import { Bar } from "./bar";
 import "./bars.scss";

@@ -16,7 +16,7 @@
 
 import { List } from "immutable";
 import { Dataset, Datum } from "plywood";
-import React, { ReactNode } from "react";
+import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../../../common/utils/functional/functional";
@@ -37,7 +37,7 @@ interface InteractionControllerProps {
   xScale: XScale;
   essence: Essence;
   dataset: Dataset;
-  children: Unary<InteractionProps, ReactNode>;
+  children: Unary<InteractionProps, React.ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
   dropHighlight: Nullary<void>;
@@ -133,8 +133,6 @@ export class InteractionController extends React.Component<InteractionController
 
   getDatumFromEvent(x: number, y: number, part: ScrollerPart): Datum | null {
     if (part !== "body") return null;
-    const {} = this.props;
-    debugger;
     return null;
   }
 
