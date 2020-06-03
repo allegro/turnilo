@@ -31,7 +31,6 @@ import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { isLoaded } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
-import { or } from "../../../common/utils/functional/functional";
 import { Predicates } from "../../../common/utils/rules/predicates";
 import { BAR_CHART_MANIFEST } from "../../../common/visualization-manifests/bar-chart/bar-chart";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
@@ -893,7 +892,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   renderInternals(dataset: Dataset) {
     const { essence, stage } = this.props;
     const { splits } = essence;
-    const newVersionSupports = or(Predicates.areExactSplitKinds("time"), Predicates.areExactSplitKinds("*", "time"));
+    const newVersionSupports = Predicates.areExactSplitKinds("time");
     if (newVersionSupports(essence)) {
       return <ImprovedBarChart
         dataset={dataset}
