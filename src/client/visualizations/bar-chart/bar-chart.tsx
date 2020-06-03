@@ -895,6 +895,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const newVersionSupports = Predicates.areExactSplitKinds("time");
     if (newVersionSupports(essence)) {
       return <ImprovedBarChart
+        highlight={this.getHighlight()}
+        dropHighlight={this.dropHighlight}
+        acceptHighlight={this.acceptHighlight}
+        saveHighlight={this.highlight}
         dataset={dataset}
         essence={essence}
         stage={stage} />;
