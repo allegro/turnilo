@@ -52,7 +52,9 @@ export const BarChart: React.SFC<BarChartProps> = props => {
       dataset={dataset}
       stage={Stage.fromSize(scroller.right, segment.height)}/>}
     bottomGutter={<XAxis
+      essence={essence}
       scale={xScale}
+      domain={domain}
       stage={Stage.fromSize(segment.width, scroller.bottom)}
     />} />;
 };

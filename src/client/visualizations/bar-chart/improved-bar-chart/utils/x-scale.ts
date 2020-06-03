@@ -32,7 +32,7 @@ export const xGetter = (reference: string): Unary<Datum, string> => datum => {
   return formatDomainValue(value as DomainValue);
 };
 
-function formatDomainValue(value: DomainValue): string {
+export function formatDomainValue(value: DomainValue): string {
   if (TimeRange.isTimeRange(value)) {
     const { start } = value;
     return start.toISOString();
