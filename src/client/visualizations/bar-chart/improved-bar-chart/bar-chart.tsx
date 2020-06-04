@@ -46,13 +46,15 @@ export const BarChart: React.SFC<BarChartProps> = props => {
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
   const seriesCount = essence.series.count();
   const domain = getXDomain(essence, dataset);
-  const { scroller, segment } = calculateLayout(stage, domain.length, seriesCount);
+  const barChartLayout = calculateLayout(stage, domain.length, seriesCount);
+  const { scroller, segment } = barChartLayout;
   const xScale = createXScale(domain, segment.width);
 
   return <InteractionController
     xScale={xScale}
     essence={essence}
     dataset={dataset}
+    layout={barChartLayout}
     saveHighlight={saveHighlight}
     dropHighlight={dropHighlight}
     acceptHighlight={acceptHighlight}
@@ -71,6 +73,7 @@ export const BarChart: React.SFC<BarChartProps> = props => {
       onMouseMove={onMouseMove}
       leftGutter={<Spacer />}
       body={<BarCharts
+        interaction={interaction}
         dataset={dataset}
         stage={segment}
         essence={essence}

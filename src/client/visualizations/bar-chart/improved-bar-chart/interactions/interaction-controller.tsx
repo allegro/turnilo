@@ -15,15 +15,20 @@
  */
 
 import { List } from "immutable";
-import { Dataset, Datum } from "plywood";
+import { Dataset, TimeRange } from "plywood";
 import * as React from "react";
+import { DateRange } from "../../../../../common/models/date-range/date-range";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { FilterClause } from "../../../../../common/models/filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause } from "../../../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../../../common/utils/functional/functional";
+import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
 import { Highlight } from "../../../base-visualization/highlight";
+import { BarChartLayout } from "../utils/layout";
+import { firstSplitRef } from "../utils/splits";
+import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
-import { createHighlight, Hover, Interaction } from "./interaction";
+import { createHighlight, createHover, Hover, Interaction } from "./interaction";
 
 interface InteractionProps {
   onClick?: (x: number, y: number, part: ScrollerPart) => void;
@@ -37,6 +42,7 @@ interface InteractionControllerProps {
   xScale: XScale;
   essence: Essence;
   dataset: Dataset;
+  layout: BarChartLayout;
   children: Unary<InteractionProps, React.ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
@@ -54,62 +60,6 @@ export class InteractionController extends React.Component<InteractionController
 
   state: InteractionControllerState = { hover: null, scrollLeft: 0, scrollTop: 0 };
 
-  // calculateMousePosition(x: number, y: number): BubbleInfo {
-  //   const { essence } = this.props;
-  //
-  //   const series = essence.getConcreteSeries();
-  //   const chartStage = this.getSingleChartStage();
-  //   const chartHeight = this.getOuterChartHeight(chartStage);
-  //
-  //   if (y >= chartHeight * series.size) return null; // on x axis
-  //   if (x >= chartStage.width) return null; // on y axis
-  //
-  //   const xScale = this.getPrimaryXScale();
-  //   const chartIndex = Math.floor(y / chartHeight);
-  //
-  //   const chartCoordinates = this.getBarsCoordinates(chartIndex, xScale);
-  //
-  //   const { path, coordinates } = this.findBarCoordinatesForX(x, chartCoordinates, []);
-  //
-  //   return {
-  //     path: this.findPathForIndices(path),
-  //     series: series.get(chartIndex),
-  //     chartIndex,
-  //     coordinates
-  //   };
-  // }
-  //
-  // findPathForIndices(indices: number[]): Datum[] {
-  //   const { datasetLoad } = this.state;
-  //   if (!isLoaded(datasetLoad)) return null;
-  //   const mySplitDataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
-  //
-  //   const path: Datum[] = [];
-  //   let currentData: Dataset = mySplitDataset;
-  //   indices.forEach(i => {
-  //     let datum = currentData.data[i];
-  //     path.push(datum);
-  //     currentData = (datum[SPLIT] as Dataset);
-  //   });
-  //
-  //   return path;
-  // }
-  //
-  // findBarCoordinatesForX(x: number, coordinates: BarCoordinates[], currentPath: number[]): { path: number[], coordinates: BarCoordinates } {
-  //   for (let i = 0; i < coordinates.length; i++) {
-  //     if (coordinates[i].isXWithin(x)) {
-  //       currentPath.push(i);
-  //       if (coordinates[i].hasChildren()) {
-  //         return this.findBarCoordinatesForX(x, coordinates[i].children, currentPath);
-  //       } else {
-  //         return { path: currentPath, coordinates: coordinates[i] };
-  //       }
-  //     }
-  //   }
-  //
-  //   return { path: [], coordinates: null };
-  // }
-
   saveScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({
       hover: null,
@@ -119,56 +69,38 @@ export class InteractionController extends React.Component<InteractionController
   };
 
   saveHover = (x: number, y: number, part: ScrollerPart) => {
-    // TODO: implement
-    this.setState({ hover: null });
+    const { highlight } = this.props;
+    if (highlight) return;
+    const value = this.getValueFromEvent(x, part);
+    if (!TimeRange.isTimeRange(value)) return;
+    const { hover } = this.state;
+    if (hover && safeEquals(value, hover.value)) return;
+    this.setState({ hover: createHover("foobar", value) });
   };
 
   resetHover = () => {
-    this.setState({ hover: null });
+    const { hover } = this.state;
+    if (hover) {
+      this.setState({ hover: null });
+    }
   };
 
   handleClick = (x: number, y: number, part: ScrollerPart) => {
-    this.getDatumFromEvent(x, y, part);
+    const value = this.getValueFromEvent(x, part);
+    if (!TimeRange.isTimeRange(value)) return;
+    this.setState({ hover: null });
+    const { saveHighlight, essence } = this.props;
+    const reference = firstSplitRef(essence);
+    const values = List.of(new DateRange(value));
+    const clause = new FixedTimeFilterClause({ reference, values });
+    saveHighlight(List.of(clause), "foobar");
   };
 
-  getDatumFromEvent(x: number, y: number, part: ScrollerPart): Datum | null {
+  getValueFromEvent(x: number, part: ScrollerPart): DomainValue | null {
     if (part !== "body") return null;
-    return null;
+    const { layout, xScale } = this.props;
+    return xScale.invert(x - layout.scroller.left);
   }
-
-  // onClick = (x: number, y: number) => {
-  //   const { essence } = this.props;
-  //
-  //   const selectionInfo = this.calculateMousePosition(x, y);
-  //
-  //   if (!selectionInfo) return;
-  //
-  //   if (!selectionInfo.coordinates) {
-  //     this.dropHighlight();
-  //     this.setState({ selectionInfo: null });
-  //     return;
-  //   }
-  //
-  //   const { path, chartIndex } = selectionInfo;
-  //
-  //   const { splits } = essence;
-  //   const series = essence.getConcreteSeries();
-  //
-  //   const rowHighlight = getFilterFromDatum(splits, path);
-  //
-  //   const currentSeries = series.get(chartIndex).definition;
-  //   if (this.highlightOn(currentSeries.key())) {
-  //     const delta = this.getHighlightClauses();
-  //     if (rowHighlight.equals(delta)) {
-  //       this.dropHighlight();
-  //       this.setState({ selectionInfo: null });
-  //       return;
-  //     }
-  //   }
-  //
-  //   this.setState({ selectionInfo });
-  //   this.highlight(rowHighlight, series.get(chartIndex).definition.key());
-  // };
 
   interaction(): Interaction | null {
     const { highlight } = this.props;

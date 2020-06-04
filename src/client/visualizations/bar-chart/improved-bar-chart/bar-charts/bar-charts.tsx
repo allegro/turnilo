@@ -19,9 +19,11 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Bars } from "../bars/bars";
+import { Interaction } from "../interactions/interaction";
 import { XScale } from "../utils/x-scale";
 
 interface BarChartsProps {
+  interaction: Interaction;
   stage: Stage;
   essence: Essence;
   dataset: Dataset;
@@ -29,16 +31,19 @@ interface BarChartsProps {
 }
 
 export const BarCharts: React.SFC<BarChartsProps> = props => {
-  const { essence, dataset, xScale, stage } = props;
+  const { interaction, essence, dataset, xScale, stage } = props;
   const seriesList = essence.getConcreteSeries().toArray();
   return <React.Fragment>
-    {seriesList.map(series =>
-      <Bars
+    {seriesList.map(series => {
+      const hasInteraction = interaction && interaction.key === series.reactKey();
+      return <Bars
         key={series.reactKey()}
         stage={stage}
+        interaction={hasInteraction && interaction}
         essence={essence}
         series={series}
         xScale={xScale}
-        dataset={dataset} />)}
+        dataset={dataset} />;
+    })}
   </React.Fragment>;
 };

@@ -33,12 +33,12 @@ interface Margins {
   bottom: number;
 }
 
-interface Layout {
+export interface BarChartLayout {
   scroller: ScrollerLayout;
   segment: Stage;
 }
 
-export function calculateLayout(visualisationStage: Stage, domainLength: number, seriesCount: number): Layout {
+export function calculateLayout(visualisationStage: Stage, domainLength: number, seriesCount: number): BarChartLayout {
   const bodyStage = visualisationStage.within(MARGINS);
   const segmentStage = calculateSegmentStage(bodyStage, domainLength, seriesCount);
   const innerBodyHeight = segmentStage.height * seriesCount;

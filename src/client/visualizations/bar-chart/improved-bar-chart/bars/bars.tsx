@@ -22,6 +22,7 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Stage } from "../../../../../common/models/stage/stage";
 import getScale from "../../../line-chart/base-chart/y-scale";
 import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { Interaction } from "../interactions/interaction";
 import { calculateChartStage } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { xGetter, XScale } from "../utils/x-scale";
@@ -31,23 +32,28 @@ import "./bars.scss";
 
 interface BarsProps {
   essence: Essence;
+  interaction?: Interaction;
   series: ConcreteSeries;
   dataset: Dataset;
   xScale: XScale;
   stage: Stage;
 }
 
-export const Bars: React.SFC<BarsProps> = props => {
-  const { stage, series, dataset, essence, xScale } = props;
-  const chartStage = calculateChartStage(stage);
-  const firstSplitReference = firstSplitRef(essence);
-  const getX = xGetter(firstSplitReference);
-  const getY = (datum: Datum) => series.selectValue(datum);
-  // TODO: move outside line chart
-  const datums = selectFirstSplitDatums(dataset);
+export class Bars extends React.Component<BarsProps> {
 
-  const yExtent = d3.extent(datums, getY);
-  const yScale = getScale(yExtent, chartStage.height);
+  private container = React.createRef<HTMLDivElement>();
+
+  render() {
+    const { interaction, stage, series, dataset, essence, xScale } = this.props;
+    const chartStage = calculateChartStage(stage);
+    const firstSplitReference = firstSplitRef(essence);
+    const getX = xGetter(firstSplitReference);
+    const getY = (datum: Datum) => series.selectValue(datum);
+    // TODO: move outside line chart
+    const datums = selectFirstSplitDatums(dataset);
+
+    const yExtent = d3.extent(datums, getY);
+    const yScale = getScale(yExtent, chartStage.height);
 
   return <div className="bar-chart-bars" style={stage.getWidthHeight()}>
     <svg viewBox={chartStage.getViewBox()}>
