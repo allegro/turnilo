@@ -56,15 +56,13 @@ export const BarChart: React.SFC<BarChartProps> = props => {
     dataset={dataset}
     layout={barChartLayout}
     saveHighlight={saveHighlight}
-    dropHighlight={dropHighlight}
-    acceptHighlight={acceptHighlight}
     highlight={highlight}>
     {({
-      onClick,
-      onScroll,
-      onMouseLeave,
-      onMouseMove,
-      interaction
+        onClick,
+        onScroll,
+        onMouseLeave,
+        onMouseMove,
+        interaction
       }) => <Scroller
       layout={scroller}
       onMouseLeave={onMouseLeave}
@@ -77,7 +75,9 @@ export const BarChart: React.SFC<BarChartProps> = props => {
         dataset={dataset}
         stage={segment}
         essence={essence}
-        xScale={xScale} />}
+        xScale={xScale}
+        acceptHighlight={acceptHighlight}
+        dropHighlight={dropHighlight} />}
       rightGutter={<YAxis
         essence={essence}
         dataset={dataset}

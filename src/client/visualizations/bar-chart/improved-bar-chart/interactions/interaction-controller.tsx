@@ -15,20 +15,23 @@
  */
 
 import { List } from "immutable";
-import { Dataset, TimeRange } from "plywood";
+import { Dataset, Datum, TimeRange } from "plywood";
 import * as React from "react";
 import { DateRange } from "../../../../../common/models/date-range/date-range";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { FilterClause, FixedTimeFilterClause } from "../../../../../common/models/filter-clause/filter-clause";
-import { Binary, Nullary, Unary } from "../../../../../common/utils/functional/functional";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { Binary, Unary } from "../../../../../common/utils/functional/functional";
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
 import { Highlight } from "../../../base-visualization/highlight";
+import { toPlywoodRange } from "../../../line-chart/interactions/highlight-clause";
+import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
 import { BarChartLayout } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
-import { createHighlight, createHover, Hover, Interaction } from "./interaction";
+import { createHighlight, createHover, equalInteractions, Hover, Interaction } from "./interaction";
 
 interface InteractionProps {
   onClick?: (x: number, y: number, part: ScrollerPart) => void;
@@ -46,8 +49,6 @@ interface InteractionControllerProps {
   children: Unary<InteractionProps, React.ReactNode>;
   highlight?: Highlight;
   saveHighlight: Binary<List<FilterClause>, string, void>;
-  dropHighlight: Nullary<void>;
-  acceptHighlight: Nullary<void>;
 }
 
 interface InteractionControllerState {
@@ -73,9 +74,12 @@ export class InteractionController extends React.Component<InteractionController
     if (highlight) return;
     const value = this.getValueFromEvent(x, part);
     if (!TimeRange.isTimeRange(value)) return;
-    const { hover } = this.state;
-    if (hover && safeEquals(value, hover.value)) return;
-    this.setState({ hover: createHover("foobar", value) });
+    const series = this.getSeriesFromEvent(y, part);
+    const datum = this.findDatumByValue(value);
+    const hover = createHover(series.plywoodKey(), datum);
+    const { hover: oldHover } = this.state;
+    if (oldHover && equalInteractions(oldHover, hover)) return;
+    this.setState({ hover });
   };
 
   resetHover = () => {
@@ -89,11 +93,12 @@ export class InteractionController extends React.Component<InteractionController
     const value = this.getValueFromEvent(x, part);
     if (!TimeRange.isTimeRange(value)) return;
     this.setState({ hover: null });
+    const series = this.getSeriesFromEvent(y, part);
     const { saveHighlight, essence } = this.props;
     const reference = firstSplitRef(essence);
     const values = List.of(new DateRange(value));
     const clause = new FixedTimeFilterClause({ reference, values });
-    saveHighlight(List.of(clause), "foobar");
+    saveHighlight(List.of(clause), series.plywoodKey());
   };
 
   getValueFromEvent(x: number, part: ScrollerPart): DomainValue | null {
@@ -102,9 +107,28 @@ export class InteractionController extends React.Component<InteractionController
     return xScale.invert(x - layout.scroller.left);
   }
 
+  findDatumByValue(value: DomainValue): Datum | null {
+    const { essence, dataset } = this.props;
+    const datums = selectFirstSplitDatums(dataset);
+    const reference = firstSplitRef(essence);
+    return datums.find(datum => safeEquals(value, datum[reference]));
+  }
+
+  getSeriesFromEvent(y: number, part: ScrollerPart): ConcreteSeries | null {
+    if (part !== "body") return null;
+    const { layout: { segment: { height: seriesHeight } }, essence } = this.props;
+    const index = Math.floor(y / seriesHeight);
+    return essence.getConcreteSeries().get(index);
+  }
+
   interaction(): Interaction | null {
     const { highlight } = this.props;
-    if (highlight) return createHighlight(highlight);
+    if (highlight) {
+      // TODO: move outside line chart
+      const value = toPlywoodRange(highlight.clauses.first());
+      const datum = this.findDatumByValue(value);
+      return createHighlight(highlight.key, datum);
+    }
     return this.state.hover;
   }
 

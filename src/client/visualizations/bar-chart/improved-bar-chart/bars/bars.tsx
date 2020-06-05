@@ -20,8 +20,10 @@ import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
+import { Nullary } from "../../../../../common/utils/functional/functional";
 import getScale from "../../../line-chart/base-chart/y-scale";
 import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
 import { calculateChartStage } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
@@ -31,6 +33,8 @@ import { Bar } from "./bar";
 import "./bars.scss";
 
 interface BarsProps {
+  dropHighlight: Nullary<void>;
+  acceptHighlight: Nullary<void>;
   essence: Essence;
   interaction?: Interaction;
   series: ConcreteSeries;
@@ -44,7 +48,7 @@ export class Bars extends React.Component<BarsProps> {
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const { interaction, stage, series, dataset, essence, xScale } = this.props;
+    const { dropHighlight, acceptHighlight, interaction, stage, series, dataset, essence, xScale } = this.props;
     const chartStage = calculateChartStage(stage);
     const firstSplitReference = firstSplitRef(essence);
     const getX = xGetter(firstSplitReference);
@@ -55,19 +59,37 @@ export class Bars extends React.Component<BarsProps> {
     const yExtent = d3.extent(datums, getY);
     const yScale = getScale(yExtent, chartStage.height);
 
-  return <div className="bar-chart-bars" style={stage.getWidthHeight()}>
-    <svg viewBox={chartStage.getViewBox()}>
-      <Background gridStage={chartStage} yScale={yScale} />
-      <g transform={chartStage.getTransform()}>
-        {datums.map((datum: Datum, index: number) => <Bar
-          key={index}
-          datum={datum}
-          yScale={yScale}
-          xScale={xScale}
-          getY={getY}
-          getX={getX}
-          maxHeight={chartStage.height} />)}
-      </g>
-    </svg>
-  </div>;
-};
+    // TODO: this should represent stage available for tooltip
+    const stage1 = Stage.fromSize(1000, 800);
+
+    return <div
+      ref={this.container}
+      className="bar-chart-bars"
+      style={stage.getWidthHeight()}>
+      {interaction && <Foreground
+        stage={stage1}
+        interaction={interaction}
+        container={this.container}
+        dropHighlight={dropHighlight}
+        acceptHighlight={acceptHighlight}
+        timezone={essence.timezone}
+        xScale={xScale}
+        getY={getY}
+        getX={getX}
+        yScale={yScale} />}
+      <svg viewBox={chartStage.getViewBox()}>
+        <Background gridStage={chartStage} yScale={yScale} />
+        <g transform={chartStage.getTransform()}>
+          {datums.map((datum: Datum, index: number) => <Bar
+            key={index}
+            datum={datum}
+            yScale={yScale}
+            xScale={xScale}
+            getY={getY}
+            getX={getX}
+            maxHeight={chartStage.height} />)}
+        </g>
+      </svg>
+    </div>;
+  }
+}

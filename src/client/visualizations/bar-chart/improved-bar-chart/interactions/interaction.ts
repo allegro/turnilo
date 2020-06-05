@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import { FilterClause } from "../../../../../common/models/filter-clause/filter-clause";
-import { Highlight as VizHighlight } from "../../../base-visualization/highlight";
-import { DomainValue } from "../utils/x-domain";
+import { Datum } from "plywood";
+import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 
 enum InteractionKind { HOVER, HIGHLIGHT }
 
 interface InteractionBase {
   kind: InteractionKind;
+  datum: Datum;
   key: string;
 }
 
 export interface Hover extends InteractionBase {
   kind: InteractionKind.HOVER;
-  value: DomainValue;
 }
 
-export const createHover = (key: string, value: DomainValue): Hover => ({
+export const createHover = (key: string, datum: Datum): Hover => ({
   kind: InteractionKind.HOVER,
-  value,
+  datum,
   key
 });
 
@@ -40,15 +39,20 @@ export const isHover = (interaction?: Interaction): interaction is Hover => inte
 
 export interface Highlight extends InteractionBase {
   kind: InteractionKind.HIGHLIGHT;
-  clause: FilterClause;
 }
 
-export const createHighlight = (highlight: VizHighlight): Highlight => ({
+export const createHighlight = (key: string, datum: Datum): Highlight => ({
   kind: InteractionKind.HIGHLIGHT,
-  clause: highlight.clauses.first(),
-  key: highlight.key
+  datum,
+  key
 });
 
 export const isHighlight = (interaction?: Interaction): interaction is Highlight => interaction && interaction.kind === InteractionKind.HIGHLIGHT;
 
-export type Interaction = Hover  | Highlight;
+export type Interaction = Hover | Highlight;
+
+export function equalInteractions(a: Interaction, b: Interaction): boolean {
+  return a.kind === b.kind
+    && a.key === b.key
+    && safeEquals(a.datum, b.datum);
+}
