@@ -45,10 +45,6 @@
     stroke-width: 1;
   }
 
-  .highlighter {
-    @include pin-full;
-  }
-
   &:nth-child(n+2) { // same as not(first-child)
     .highlighter .frame {
       border-top: 0;

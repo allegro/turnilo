@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-import { PlywoodRange } from "plywood";
 import * as React from "react";
 import "./highlighter.scss";
 
 export interface HighlighterProps {
-  highlightRange: PlywoodRange;
-  scaleX: any;
+  left: number;
+  right: number;
+  top?: number;
+  bottom?: number;
 }
 
 export function Highlighter(props: HighlighterProps) {
-  const { highlightRange, scaleX } = props;
-  if (!highlightRange) return null;
-
-  const startPos = scaleX(highlightRange.start);
-  const endPos = scaleX(highlightRange.end);
+  const { left, bottom = 0, right, top = 0 } = props;
 
   const whiteoutLeftStyle = {
-    width: Math.max(startPos, 0)
+    width: Math.max(left, 0)
   };
 
   const frameStyle = {
-    left: startPos,
-    width: Math.max(endPos - startPos, 0)
+    left,
+    top,
+    bottom,
+    width: Math.max(right - left, 0)
   };
 
   const whiteoutRightStyle = {
-    left: endPos
+    left: right
   };
 
   return <div className="highlighter">
