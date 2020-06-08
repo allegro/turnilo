@@ -18,7 +18,7 @@
 @import '../../imports';
 
 .highlighter {
-  @include pin-full();
+  @include pin-full;
   pointer-events: none;
 
   .frame {
