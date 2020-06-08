@@ -17,6 +17,7 @@
 import { Timezone } from "chronoshift";
 import { Datum } from "plywood";
 import * as React from "react";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../heat-map/utils/scales";
@@ -24,41 +25,52 @@ import { Interaction, isHighlight, isHover } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { HighlightModal } from "./highlight-modal";
+import { HighlightOverlay } from "./highlight-overlay";
 import { HoverTooltip } from "./hover-tooltip";
 
 interface ForegroundProps {
-  stage: Stage;
   interaction: Interaction;
   container: React.RefObject<HTMLDivElement>;
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
   xScale: XScale;
   yScale: LinearScale;
-  getY: Unary<Datum, number>;
+  series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
   timezone: Timezone;
+  stage: Stage;
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, timezone, getX, getY, xScale, yScale, interaction } = props;
+  const { stage, dropHighlight, acceptHighlight, container, timezone, getX, series, xScale, yScale, interaction } = props;
+  const rect = container.current.getBoundingClientRect();
   return <React.Fragment>
-    {isHighlight(interaction) && <HighlightModal
-      interaction={interaction}
-      dropHighlight={dropHighlight}
-      acceptHighlight={acceptHighlight}
-      timezone={timezone}
-      xScale={xScale}
-      yScale={yScale}
-      getX={getX}
-      getY={getY}
-      rect={container.current.getBoundingClientRect()}/>}
+    {isHighlight(interaction) && <React.Fragment>
+      <HighlightModal
+        interaction={interaction}
+        dropHighlight={dropHighlight}
+        acceptHighlight={acceptHighlight}
+        timezone={timezone}
+        xScale={xScale}
+        yScale={yScale}
+        getX={getX}
+        series={series}
+        rect={rect} />
+      <HighlightOverlay
+        interaction={interaction}
+        stage={stage}
+        xScale={xScale}
+        yScale={yScale}
+        series={series}
+        getX={getX} />
+    </React.Fragment>}
     {isHover(interaction) && <HoverTooltip
-      stage={stage}
+      rect={rect}
       interaction={interaction}
       xScale={xScale}
       yScale={yScale}
       getX={getX}
-      getY={getY}
-      timezone={timezone}/>}
+      series={series}
+      timezone={timezone} />}
   </React.Fragment>;
 };

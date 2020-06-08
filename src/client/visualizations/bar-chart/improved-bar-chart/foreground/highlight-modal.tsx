@@ -17,6 +17,7 @@
 import { Timezone } from "chronoshift";
 import { Datum } from "plywood";
 import * as React from "react";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
@@ -32,9 +33,8 @@ interface HighlightModalProps {
   timezone: Timezone;
   xScale: XScale;
   yScale: LinearScale;
-  getY: Unary<Datum, number>;
+  series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-
   rect: ClientRect | DOMRect;
 }
 
@@ -47,11 +47,11 @@ export const HighlightModal: React.SFC<HighlightModalProps> = props => {
     acceptHighlight,
     yScale,
     getX,
-    getY,
+    series,
     xScale } = props;
   const xValue = getX(datum);
   const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
-  const yValue = getY(datum);
+  const yValue = series.selectValue(datum);
   const y = yScale(yValue);
   return <BaseHighlightModal
     title={formatValue(xValue, timezone)}

@@ -14,44 +14,33 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
 import { Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { formatValue } from "../../../../../common/utils/formatter/formatter";
+import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
-import { SegmentBubble } from "../../../../components/segment-bubble/segment-bubble";
+import { Highlighter } from "../../../../components/highlighter/highlighter";
 import { LinearScale } from "../../../heat-map/utils/scales";
-import { Hover } from "../interactions/interaction";
+import { BAR_PADDING } from "../bars/bar";
+import { Highlight } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 
-interface HoverTooltipProps {
-  interaction: Hover;
+interface HighlightOverlayProps {
+  interaction: Highlight;
   xScale: XScale;
   yScale: LinearScale;
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-  timezone: Timezone;
-  rect: ClientRect | DOMRect;
+  stage: Stage;
 }
 
-export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
-  const {
-    timezone,
-    rect: { left, top },
-    interaction: { datum },
-    getX,
-    series,
-    xScale,
-    yScale
-  } = props;
-  const y = yScale(series.selectValue(datum));
+export const HighlightOverlay: React.SFC<HighlightOverlayProps> = props => {
+  const { stage, yScale, series, xScale, interaction: { datum }, getX } = props;
   const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
-  return <SegmentBubble
-    top={top + y}
-    left={left + x}
-    title={formatValue(xValue, timezone)}
-    content={series.formatValue(datum)} />;
+  const left = xScale.calculate(xValue);
+  const right = left + xScale.rangeBand();
+  const yValue = series.selectValue(datum);
+  const top = yScale(yValue) + stage.y - BAR_PADDING;
+  return <Highlighter left={left} right={right} top={top} />;
 };
