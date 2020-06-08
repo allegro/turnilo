@@ -749,6 +749,25 @@ customization:
     return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
 ```
 
+### CSS Variables
+
+Turnilo allows you to override CSS variables to apply your own theming
+
+For example:
+
+```yaml
+customization:
+  cssVariables:
+    brand: '#829aa3;'
+    item-dimension: '#f2cee0;'
+    item-dimension-text: white;
+    item-measure: '#cef2e0;'
+    item-measure-text: white;
+    background-brand: white;
+    background-brand-text: '#999;'
+    background-base: '#fbfbfb;'
+```
+
 ### External links
 
 Turnilo supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.

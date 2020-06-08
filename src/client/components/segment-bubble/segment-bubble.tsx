@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { JSXNode } from "../../utils/dom/dom";
+import { ReactNode } from "react";
 import { BodyPortal } from "../body-portal/body-portal";
 import { BubbleTitle } from "../bubble-title/bubble-title";
 import { Shpitz } from "../shpitz/shpitz";
@@ -41,7 +41,7 @@ export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbl
 
 export interface SegmentBubbleContentProps {
   title: string;
-  content?: JSXNode;
+  content?: ReactNode;
 }
 
 export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => (

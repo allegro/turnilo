@@ -25,9 +25,9 @@
   }
 
   .measure-previous-value {
+    @include css-variable(color, text-lighterish);
     padding-left: 10px;
     padding-right: 10px;
-    color: $text-lighterish;
   }
 }
 

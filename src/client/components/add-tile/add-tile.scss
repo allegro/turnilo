@@ -25,12 +25,12 @@
     flex: 1;
 
     svg path {
-      fill: $text-light;
+      @include css-variable(fill, text-light);
     }
 
     &:hover {
       svg path {
-        fill: $text-medium;
+        @include css-variable(fill, text-medium);
       }
     }
   }
@@ -64,7 +64,7 @@
       padding: 6px $padding-compact;
 
       &.no-results {
-        color: $brand;
+        @include css-variable(color, brand);
       }
 
       .label {
@@ -72,7 +72,7 @@
       }
 
       &:hover {
-        background: $hover;
+        @include css-variable(background-color, hover);
       }
     }
   }

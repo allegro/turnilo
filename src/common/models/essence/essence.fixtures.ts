@@ -21,7 +21,6 @@ import { HEAT_MAP_MANIFEST } from "../../visualization-manifests/heat-map/heat-m
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
-import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
@@ -31,7 +30,7 @@ import { SortDirection } from "../sort/sort";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { Essence, EssenceValue } from "./essence";
+import { Essence, EssenceValue, VisStrategy } from "./essence";
 
 const defaultEssence: EssenceValue = {
   dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
@@ -45,7 +44,6 @@ const defaultEssence: EssenceValue = {
       new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.LATEST, duration: Duration.fromJS("P1D") })
     ])
   }),
-  colors: null,
   pinnedSort: null,
   splits: EMPTY_SPLITS,
   timeShift: TimeShift.empty(),
@@ -105,7 +103,6 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: null,
       pinnedSort: "delta"
     });
   }
@@ -135,7 +132,6 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: null,
       pinnedSort: "delta"
     });
   }
@@ -152,14 +148,13 @@ export class EssenceFixtures {
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: LINE_CHART_MANIFEST,
-      visualizationSettings: null,
+      visualizationSettings: LINE_CHART_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta"
     });
   }
@@ -168,8 +163,15 @@ export class EssenceFixtures {
     return new Essence({ ...EssenceFixtures.totals(), ...EssenceFixtures.getWikiContext() });
   }
 
-  static wikiLineChartNoSplit() {
-    return new Essence({ ...EssenceFixtures.lineChart(), ...EssenceFixtures.getWikiContext() });
+  static wikiLineChartNoNominalSplit() {
+    const essence = EssenceFixtures.wikiLineChart();
+    const split = essence.splits.getSplit(0);
+    return essence.removeSplit(split, VisStrategy.FairGame);
+  }
+
+  static wikiLineChartNoSplits() {
+    const essence = EssenceFixtures.wikiLineChart();
+    return essence.changeSplits(Splits.fromSplits([]), VisStrategy.KeepAlways);
   }
 
   static twitterNoVisualisation() {

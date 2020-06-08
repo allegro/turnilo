@@ -20,7 +20,7 @@ import { BaseImmutable, Property } from "immutable-class";
 import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import some from "../../utils/plywood/some";
-import { formatFnFactory } from "../series/series-format";
+import { formatFnFactory, measureDefaultFormat } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 export interface MeasureValue {
@@ -46,7 +46,7 @@ export interface MeasureJS {
 }
 
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
-  static DEFAULT_FORMAT = "0,0.0 a";
+  static DEFAULT_FORMAT = measureDefaultFormat;
   static DEFAULT_TRANSFORMATION = "none";
   static TRANSFORMATIONS = ["none", "percent-of-parent", "percent-of-total"];
 

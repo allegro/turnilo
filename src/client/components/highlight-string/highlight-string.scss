@@ -19,6 +19,6 @@
 
 .highlight-string {
   .bold {
-    border-bottom: 1px solid $text-standard;
+    @include border-css-variable('color', 1px, solid, 'text-standard');
   }
 }

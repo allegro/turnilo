@@ -1,0 +1,15 @@
+// sass-lint:disable no-duplicate-properties
+@mixin css-variable($prop, $var) {
+  #{$prop}: #{map-get($theme-colors, $var)};
+  #{$prop}: var(--#{$var});
+}
+
+@mixin border-css-variable($prop, $width, $style, $var) {
+  #{$prop}: #{$width} #{$style} #{map-get($theme-colors, $var)};
+  #{$prop}: #{$width} #{$style} var(--#{$var});
+}
+
+@mixin box-shadow-css-variable($offset-x, $offset-y, $blur-radius, $spread-radius, $var) {
+  box-shadow: inset #{$offset-x} #{$offset-y} #{$blur-radius} #{$spread-radius} #{map-get($theme-colors, $var)};
+  box-shadow: inset #{$offset-x} #{$offset-y} #{$blur-radius} #{$spread-radius} var(--#{$var});
+}

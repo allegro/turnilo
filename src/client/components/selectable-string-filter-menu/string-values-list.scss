@@ -17,8 +17,8 @@
 
 .no-string-values {
   @include pin-full;
+  @include css-variable(color, text-light);
   padding: 4px 10px;
-  color: $text-light;
   font-style: italic;
 }
 

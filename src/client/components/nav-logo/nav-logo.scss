@@ -41,7 +41,7 @@
     right: $nav-padding;
 
     svg path {
-      fill: $brand;
+      @include css-variable(fill, brand);
     }
   }
 }

@@ -16,7 +16,7 @@
 
 import { PlywoodRange, Range } from "plywood";
 
-export function union(first: PlywoodRange, second: PlywoodRange): PlywoodRange | null {
+export function union(first: PlywoodRange | null, second: PlywoodRange | null): PlywoodRange | null {
   if (!Range.isRange(first) && !Range.isRange(second)) {
     return null;
   }

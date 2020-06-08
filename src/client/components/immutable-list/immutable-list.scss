@@ -27,17 +27,17 @@
   right: 0;
 
   .list-title {
+    @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
     display: flex;
     height: $list-title-height;
     padding-top: 12px;
     width: 400px;
-    border-bottom: 1px solid $border-super-light;
 
     .label {
+      @include css-variable(color, text-lighter);
       flex: 1 1;
       padding: 6px 0;
 
-      color: $text-lighter;
       font-size: 12px;
       text-transform: uppercase;
     }
@@ -45,9 +45,9 @@
     .actions {
       button {
         @extend %button-light;
+        @include css-variable(color, brand);
         font-size: 12px;
         text-transform: uppercase;
-        color: $brand;
         padding: 6px;
         border-radius: 2px;
 

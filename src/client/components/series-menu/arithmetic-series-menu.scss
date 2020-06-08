@@ -32,8 +32,8 @@
 }
 
 .arithmetic-operation-warning {
+  @include css-variable(color, negative);
   font-size: 10px;
-  color: $negative;
   margin-top: -6px;
   padding-left: 3px;
   margin-bottom: 10px;

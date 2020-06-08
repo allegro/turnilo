@@ -17,7 +17,7 @@
 import { Record } from "immutable";
 import * as numbro from "numbro";
 import { Unary } from "../../utils/functional/functional";
-import { isFiniteNumber } from "../../utils/general/general";
+import { isFiniteNumber, isNumber } from "../../utils/general/general";
 import { Measure } from "../measure/measure";
 
 export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
@@ -45,7 +45,7 @@ export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFo
 
 export function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
-    if (!isFiniteNumber(n)) return "-";
+    if (!isNumber(n) || !isFiniteNumber(n)) return "-";
     return numbro(n).format(format);
   };
 }
@@ -54,6 +54,8 @@ export const exactFormat = "0,0";
 const exactFormatter = formatFnFactory(exactFormat);
 export const percentFormat = "0[.]00%";
 const percentFormatter = formatFnFactory(percentFormat);
+export const measureDefaultFormat = "0,0.0 a";
+export const defaultFormatter = formatFnFactory(measureDefaultFormat);
 
 export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
   switch (format.type) {

@@ -18,13 +18,13 @@
 @import 'dimensions';
 
 @mixin row-style {
+  @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
   position: absolute;
   height: $row-height;
-  border-bottom: 1px solid $border-super-light;
   left: 0;
 
   &.highlight {
-    background: $hover;
+    @include css-variable(background-color, hover);
   }
 
   &.dimmed {

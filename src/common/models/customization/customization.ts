@@ -17,9 +17,68 @@
 
 import { Timezone } from "chronoshift";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { LOGGER } from "../../logger/logger";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
+
+const availableCssVariables = [
+  "background-base",
+  "background-brand-light",
+  "background-brand-text",
+  "background-brand",
+  "background-dark",
+  "background-light",
+  "background-lighter",
+  "background-lightest",
+  "background-medium",
+  "border-darker",
+  "border-extra-light",
+  "border-light",
+  "border-medium",
+  "border-super-light",
+  "brand-hover",
+  "brand-selected",
+  "brand",
+  "button-primary-active",
+  "button-primary-hover",
+  "button-secondary-active",
+  "button-secondary-hover",
+  "button-secondary",
+  "button-warn-active",
+  "button-warn-hover",
+  "button-warn",
+  "danger",
+  "dark",
+  "date-range-picker-selected",
+  "drop-area-indicator",
+  "error",
+  "grid-line-color",
+  "highlight-border",
+  "highlight",
+  "hover",
+  "icon-hover",
+  "icon-light",
+  "item-dimension-hover",
+  "item-dimension-text",
+  "item-dimension",
+  "item-measure-hover",
+  "item-measure-text",
+  "item-measure",
+  "main-time-area",
+  "main-time-line",
+  "negative",
+  "pinboard-icon",
+  "positive",
+  "text-default-color",
+  "text-light",
+  "text-lighter",
+  "text-lighterish",
+  "text-lightest",
+  "text-link",
+  "text-medium",
+  "text-standard"
+];
 
 export interface CustomizationValue {
   title?: string;
@@ -30,6 +89,7 @@ export interface CustomizationValue {
   logoutHref?: string;
   urlShortener?: UrlShortener;
   sentryDSN?: string;
+  cssVariables?: Record<string, string>;
 }
 
 export interface CustomizationJS {
@@ -41,6 +101,7 @@ export interface CustomizationJS {
   logoutHref?: string;
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
+  cssVariables?: Record<string, string>;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -79,7 +140,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
       logoutHref: parameters.logoutHref,
-      sentryDSN: parameters.sentryDSN
+      sentryDSN: parameters.sentryDSN,
+      cssVariables: parameters.cssVariables
     };
 
     var paramViewsJS = parameters.externalViews;
@@ -111,6 +173,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public logoutHref: string;
   public urlShortener: UrlShortener;
   public sentryDSN: string;
+  public cssVariables?: Record<string, string>;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -121,6 +184,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     this.logoutHref = parameters.logoutHref;
     if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
     if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
+    if (parameters.cssVariables) this.cssVariables = parameters.cssVariables;
   }
 
   public valueOf(): CustomizationValue {
@@ -132,7 +196,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       timezones: this.timezones,
       urlShortener: this.urlShortener,
       logoutHref: this.logoutHref,
-      sentryDSN: this.sentryDSN
+      sentryDSN: this.sentryDSN,
+      cssVariables: this.cssVariables
     };
   }
 
@@ -152,6 +217,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       js.urlShortener = this.urlShortener.toJS();
     }
     if (this.logoutHref) js.logoutHref = this.logoutHref;
+    if (this.cssVariables) js.cssVariables = this.cssVariables;
+
     return js;
   }
 
@@ -173,7 +240,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       immutableArraysEqual(this.externalViews, other.externalViews) &&
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.sentryDSN === other.sentryDSN &&
-      this.logoutHref === other.logoutHref;
+      this.logoutHref === other.logoutHref &&
+      this.cssVariables === other.cssVariables;
   }
 
   public getTitle(version: string): string {
@@ -195,6 +263,21 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   public getLogoutHref() {
     return this.logoutHref || Customization.DEFAULT_LOGOUT_HREF;
+  }
+
+  validate(): boolean {
+    let valid = true;
+
+    if (this.cssVariables) {
+      Object.keys(this.cssVariables).forEach(variableName => {
+        if (availableCssVariables.indexOf(variableName) < 0) {
+          valid = false;
+          LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
+        }
+      });
+    }
+
+    return valid;
   }
 }
 

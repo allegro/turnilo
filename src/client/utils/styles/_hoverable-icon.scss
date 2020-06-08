@@ -3,10 +3,10 @@
 
 %hoverable-icon {
   svg path {
-    fill: $icon-light;
+    @include css-variable(fill, icon-light);
   }
 
   &:hover svg path {
-    fill: $icon-hover;
+    @include css-variable(fill, icon-hover);
   }
 }

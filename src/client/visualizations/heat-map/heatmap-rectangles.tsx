@@ -20,9 +20,9 @@ import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { SPLIT } from "../../config/constants";
+import { equalProps } from "../../utils/equal-props/equal-props";
 import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
 import "./heatmap-rectangles.scss";
-import { equalProps } from "./utils/equal-props";
 import { ColorScale, LinearScale } from "./utils/scales";
 
 export interface HeatMapRectanglesProps {

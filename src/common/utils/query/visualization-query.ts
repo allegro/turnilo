@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
-import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
@@ -49,11 +47,8 @@ function applySort(sort: Sort) {
   return (query: Expression) => query.performAction(sort.toExpression());
 }
 
-function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
+function applyLimit(limit: number, dimension: Dimension) {
   return (query: Expression) => {
-    if (colors && colors.dimension === dimension.name) {
-      return query.performAction(colors.toLimitExpression());
-    }
     if (limit) {
       return query.performAction(new LimitExpression({ value: limit }));
     }
@@ -62,18 +57,6 @@ function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
       // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
       // 5000 is just a randomly selected number that's high enough that it's not immediately obvious that there's a limit.
       return query.limit(5000);
-    }
-    return query;
-  };
-}
-
-function applyHaving(colors: Colors, splitDimension: Dimension) {
-  return (query: Expression): Expression => {
-    if (colors && colors.dimension === splitDimension.name) {
-      const havingFilter = colors.toHavingFilter(splitDimension.name);
-      if (havingFilter) {
-        return query.performAction(havingFilter);
-      }
     }
     return query;
   };
@@ -104,7 +87,7 @@ function applyDimensionFilter(dimension: Dimension, filter: Filter) {
 }
 
 function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
-  const { splits, dataCube, colors } = essence;
+  const { splits, dataCube } = essence;
   const split = splits.getSplit(index);
   const dimension = dataCube.getDimension(split.reference);
   const { sort, limit } = split;
@@ -120,10 +103,9 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
     $main.split(currentSplit, dimension.name),
     applyDimensionFilter(dimension, essence.filter),
     applyCanonicalLengthForTimeSplit(split, dataCube),
-    applyHaving(colors, dimension),
     applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
     applySort(sort),
-    applyLimit(colors, limit, dimension),
+    applyLimit(limit, dimension),
     applySubSplit(nestingLevel, essence, timeShiftEnv)
   );
 }

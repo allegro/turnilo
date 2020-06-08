@@ -81,7 +81,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public removeSplit(split: Split): Splits {
-    return this.updateSplits(splits => splits.filter(s => s !== split));
+    return this.updateSplits(splits => splits.filter(s => s.reference !== split.reference));
   }
 
   public changeSort(sort: Sort): Splits {

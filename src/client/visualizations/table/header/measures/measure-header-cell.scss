@@ -19,8 +19,9 @@
 @import '../../../../imports';
 
 .measure-header-cell {
+  @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
+
   background-color: $white;
-  border-bottom: 1px solid $border-super-light;
   padding-top: $header-padding-top;
 
   white-space: nowrap;

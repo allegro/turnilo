@@ -64,13 +64,13 @@
       margin-right: 9px;
 
       path {
-        fill: $brand;
+        @include css-variable(fill, brand);
       }
     }
 
     &:hover,
     &.selected {
-      background: rgba($brand, 0.12);
+      @include css-variable(background-color, brand-hover);
 
       .svg-icon {
         opacity: 1;
@@ -79,7 +79,7 @@
 
     &.selected {
       svg path {
-        fill: $brand;
+        @include css-variable(fill, brand);
       }
     }
   }
@@ -94,7 +94,7 @@
           opacity: 0.6;
 
           svg path {
-            fill: $brand;
+            @include css-variable(fill, brand);
           }
         }
 

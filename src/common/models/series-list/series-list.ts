@@ -66,7 +66,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   public removeSeries(series: Series): SeriesList {
-    return this.updateSeries(list => list.filter(s => s !== series));
+    return this.updateSeries(list => list.filter(s => s.key() !== series.key()));
   }
 
   public replaceSeries(original: Series, newSeries: Series): SeriesList {

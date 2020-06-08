@@ -17,15 +17,11 @@
 
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { SortOn } from "../../../common/models/sort-on/sort-on";
-import { SortDirection } from "../../../common/models/sort/sort";
+import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
-import { DimensionTile } from "../dimension-tile/dimension-tile";
-import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
+import { createTeleporter } from "../../utils/teleporter/teleporter";
 import "./pinboard-panel.scss";
 import { PinboardTiles } from "./pinboard-tiles";
 
@@ -39,6 +35,10 @@ export interface PinboardPanelProps {
 export interface PinboardPanelState {
   dragOver?: boolean;
 }
+
+const Legend = createTeleporter();
+
+export const LegendSpot = Legend.Source;
 
 export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardPanelState> {
 
@@ -88,93 +88,15 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     this.setState({ dragOver: false });
   };
 
-  getColorsSortOn(): SortOn {
-    const { essence } = this.props;
-    const { dataCube, splits, colors } = essence;
-    if (colors) {
-      const dimension = dataCube.getDimension(colors.dimension);
-      if (dimension) {
-        const split = splits.findSplitForDimension(dimension);
-        if (split) {
-          return SortOn.fromSort(split.sort, essence);
-        }
-      }
-    }
-    return null;
-  }
-
-  onLegendSortOnSelect = (sortOn: SortOn) => {
-    const { clicker, essence } = this.props;
-    const { dataCube, splits, colors } = essence;
-    if (colors) {
-      const dimension = dataCube.getDimension(colors.dimension);
-      if (dimension) {
-        const split = splits.findSplitForDimension(dimension);
-        if (split) {
-          const sort = split.sort;
-          const direction = sort ? sort.direction : SortDirection.descending;
-          const newSplit = split.changeSort(sortOn.toSort(direction));
-          const newColors = Colors.fromLimit(colors.dimension, 5);
-          clicker.changeSplits(splits.replace(split, newSplit), VisStrategy.UnfairGame, newColors);
-        }
-      }
-    }
-  };
-
-  onRemoveLegend = () => {
-    const { clicker, essence } = this.props;
-    const { dataCube, splits, colors } = essence;
-
-    if (colors) {
-      const dimension = dataCube.getDimension(colors.dimension);
-      if (dimension) {
-        const split = splits.findSplitForDimension(dimension);
-        if (split) {
-          clicker.changeSplits(splits.removeSplit(split), VisStrategy.UnfairGame, null);
-        }
-      }
-    }
-  };
-
   render() {
     const { clicker, essence, timekeeper, style } = this.props;
     const { dragOver } = this.state;
-    const { dataCube, colors } = essence;
-
-    let legendMeasureSelector: JSX.Element = null;
-    let legendDimensionTile: JSX.Element = null;
-    let colorDimension = colors ? colors.dimension : null;
-    if (colorDimension) {
-      const dimension = dataCube.getDimension(colorDimension);
-      const colorsSortOn = this.getColorsSortOn();
-      if (dimension && colorsSortOn) {
-        legendMeasureSelector = <PinboardMeasureTile
-          essence={essence}
-          title="Legend"
-          dimension={dimension}
-          sortOn={colorsSortOn}
-          onSelect={this.onLegendSortOnSelect}
-        />;
-
-        legendDimensionTile = <DimensionTile
-          clicker={clicker}
-          essence={essence}
-          timekeeper={timekeeper}
-          dimension={dimension}
-          sortOn={colorsSortOn}
-          colors={colors}
-          onClose={this.onRemoveLegend}
-        />;
-      }
-    }
 
     return <div
       className="pinboard-panel"
       onDragEnter={this.dragEnter}
-      style={style}
-    >
-      {legendMeasureSelector}
-      {legendDimensionTile}
+      style={style}>
+      <Legend.Target />
       <PinboardTiles
         hidePlaceholder={dragOver}
         essence={essence}

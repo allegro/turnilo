@@ -18,7 +18,7 @@ import { Record } from "immutable";
 import { VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
 import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
-export type TableVisualizationSettings = VisualizationSettingsConfig<TableSettings>;
+export type TableConfig = VisualizationSettingsConfig<TableSettings>;
 
 export interface TableSettings {
   collapseRows: boolean;
@@ -32,7 +32,7 @@ const settingsFactory = Record<TableSettings>(defaults);
 
 const createSettings = (settings: Partial<TableSettings>): ImmutableRecord<TableSettings> => new (settingsFactory)(settings);
 
-export const settings: TableVisualizationSettings = {
+export const settings: TableConfig = {
   converter: {
     print: (settings: ImmutableRecord<TableSettings>) => settings.toJS(),
     read: (input: TableSettings) => createSettings({ collapseRows: !!input.collapseRows })
