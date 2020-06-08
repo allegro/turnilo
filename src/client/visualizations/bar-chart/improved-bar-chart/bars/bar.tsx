@@ -30,7 +30,7 @@ interface BarProps {
   maxHeight: number;
 }
 
-const BAR_PADDING = 3;
+export const BAR_PADDING = 3;
 
 export const Bar: React.SFC<BarProps> = props => {
   const { datum, xScale, yScale, getX, getY, maxHeight } = props;

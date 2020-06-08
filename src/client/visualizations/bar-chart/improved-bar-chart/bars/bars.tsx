@@ -59,24 +59,10 @@ export class Bars extends React.Component<BarsProps> {
     const yExtent = d3.extent(datums, getY);
     const yScale = getScale(yExtent, chartStage.height);
 
-    // TODO: this should represent stage available for tooltip
-    const stage1 = Stage.fromSize(1000, 800);
-
     return <div
       ref={this.container}
       className="bar-chart-bars"
       style={stage.getWidthHeight()}>
-      {interaction && <Foreground
-        stage={stage1}
-        interaction={interaction}
-        container={this.container}
-        dropHighlight={dropHighlight}
-        acceptHighlight={acceptHighlight}
-        timezone={essence.timezone}
-        xScale={xScale}
-        getY={getY}
-        getX={getX}
-        yScale={yScale} />}
       <svg viewBox={chartStage.getViewBox()}>
         <Background gridStage={chartStage} yScale={yScale} />
         <g transform={chartStage.getTransform()}>
@@ -90,6 +76,17 @@ export class Bars extends React.Component<BarsProps> {
             maxHeight={chartStage.height} />)}
         </g>
       </svg>
+      {interaction && <Foreground
+        interaction={interaction}
+        container={this.container}
+        stage={chartStage}
+        dropHighlight={dropHighlight}
+        acceptHighlight={acceptHighlight}
+        timezone={essence.timezone}
+        xScale={xScale}
+        series={series}
+        getX={getX}
+        yScale={yScale} />}
     </div>;
   }
 }
