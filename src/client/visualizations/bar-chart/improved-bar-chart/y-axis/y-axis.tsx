@@ -43,10 +43,10 @@ export const YAxis: React.SFC<YAxisProps> = props => {
       return <div
         style={stage.getWidthHeight()}
         key={series.reactKey()}>
-        <SingleYAxis
+        {scale && <SingleYAxis
           series={series}
           scale={scale}
-          stage={axisStage} />
+          stage={axisStage} />}
       </div>;
     })}
   </React.Fragment>;

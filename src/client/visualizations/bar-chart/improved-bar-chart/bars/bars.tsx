@@ -21,8 +21,9 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
+import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
 import getScale from "../../../line-chart/base-chart/y-scale";
-import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { selectFirstSplitDatums, selectMainDatum } from "../../../line-chart/utils/dataset";
 import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
 import { calculateChartStage } from "../utils/layout";
@@ -63,30 +64,32 @@ export class Bars extends React.Component<BarsProps> {
       ref={this.container}
       className="bar-chart-bars"
       style={stage.getWidthHeight()}>
-      <svg viewBox={chartStage.getViewBox()}>
-        <Background gridStage={chartStage} yScale={yScale} />
-        <g transform={chartStage.getTransform()}>
-          {datums.map((datum: Datum, index: number) => <Bar
-            key={index}
-            datum={datum}
-            yScale={yScale}
-            xScale={xScale}
-            getY={getY}
-            getX={getX}
-            maxHeight={chartStage.height} />)}
-        </g>
-      </svg>
-      {interaction && <Foreground
-        interaction={interaction}
-        container={this.container}
-        stage={chartStage}
-        dropHighlight={dropHighlight}
-        acceptHighlight={acceptHighlight}
-        timezone={essence.timezone}
-        xScale={xScale}
-        series={series}
-        getX={getX}
-        yScale={yScale} />}
+      {yScale && <React.Fragment>
+        <svg viewBox={chartStage.getViewBox()}>
+          <Background gridStage={chartStage} yScale={yScale} />
+          <g transform={chartStage.getTransform()}>
+            {datums.map((datum: Datum, index: number) => <Bar
+              key={index}
+              datum={datum}
+              yScale={yScale}
+              xScale={xScale}
+              getY={getY}
+              getX={getX}
+              maxHeight={chartStage.height} />)}
+          </g>
+        </svg>
+        {interaction && <Foreground
+          interaction={interaction}
+          container={this.container}
+          stage={chartStage}
+          dropHighlight={dropHighlight}
+          acceptHighlight={acceptHighlight}
+          timezone={essence.timezone}
+          xScale={xScale}
+          series={series}
+          getX={getX}
+          yScale={yScale} />}
+      </React.Fragment>}
     </div>;
   }
 }

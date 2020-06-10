@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import * as d3 from "d3";
+import { LinearScale } from "../../heat-map/utils/scales";
 
 export const TICKS_COUNT = 5;
-
 export const TICK_WIDTH = 5;
 
-export default function getScale([min, max]: number[], height: number): d3.scale.Linear<number, number> {
+export default function getScale([min, max]: number[], height: number): LinearScale | null {
   if (isNaN(min) || isNaN(max)) {
     return null;
   }
