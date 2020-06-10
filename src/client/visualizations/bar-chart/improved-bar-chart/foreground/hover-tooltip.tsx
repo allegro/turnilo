@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { Essence } from "../../../../../common/models/essence/essence";
+import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Unary } from "../../../../../common/utils/functional/functional";
+import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubble } from "../../../../components/segment-bubble/segment-bubble";
 import { LinearScale } from "../../../heat-map/utils/scales";
 import { Hover } from "../interactions/interaction";
@@ -32,13 +33,37 @@ interface HoverTooltipProps {
   yScale: LinearScale;
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-  timezone: Timezone;
+  essence: Essence;
   rect: ClientRect | DOMRect;
 }
 
+interface LabelProps {
+  showPrevious: boolean;
+  datum: Datum;
+  series: ConcreteSeries;
+}
+
+const Label: React.SFC<LabelProps> = props => {
+  const { showPrevious, series, datum } = props;
+  if (!showPrevious) {
+    return <React.Fragment>
+      {series.formatValue(datum)}
+    </React.Fragment>;
+  }
+  const currentValue = series.selectValue(datum);
+  const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
+  const formatter = series.formatter();
+  return <MeasureBubbleContent
+    lowerIsBetter={series.measure.lowerIsBetter}
+    formatter={formatter}
+    current={currentValue}
+    previous={previousValue}
+  />;
+};
+
 export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
   const {
-    timezone,
+    essence,
     rect: { left, top },
     interaction: { datum },
     getX,
@@ -52,6 +77,9 @@ export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
   return <SegmentBubble
     top={top + y}
     left={left + x}
-    title={formatValue(xValue, timezone)}
-    content={series.formatValue(datum)} />;
+    title={formatValue(xValue, essence.timezone)}
+    content={<Label
+      showPrevious={essence.hasComparison()}
+      datum={datum}
+      series={series} />} />;
 };

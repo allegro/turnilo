@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
 import { Datum } from "plywood";
 import * as React from "react";
+import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
@@ -37,12 +37,12 @@ interface ForegroundProps {
   yScale: LinearScale;
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-  timezone: Timezone;
+  essence: Essence;
   stage: Stage;
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, timezone, getX, series, xScale, yScale, interaction } = props;
+  const { stage, dropHighlight, acceptHighlight, container, essence, getX, series, xScale, yScale, interaction } = props;
   const rect = container.current.getBoundingClientRect();
   return <React.Fragment>
     {isHighlight(interaction) && <React.Fragment>
@@ -50,7 +50,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         interaction={interaction}
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
-        timezone={timezone}
+        timezone={essence.timezone}
         xScale={xScale}
         yScale={yScale}
         getX={getX}
@@ -71,6 +71,6 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
       yScale={yScale}
       getX={getX}
       series={series}
-      timezone={timezone} />}
+      essence={essence} />}
   </React.Fragment>;
 };

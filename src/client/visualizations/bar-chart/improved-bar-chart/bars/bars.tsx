@@ -88,7 +88,7 @@ export class Bars extends React.Component<BarsProps> {
           stage={chartStage}
           dropHighlight={dropHighlight}
           acceptHighlight={acceptHighlight}
-          timezone={essence.timezone}
+          essence={essence}
           xScale={xScale}
           series={series}
           getX={getX}
