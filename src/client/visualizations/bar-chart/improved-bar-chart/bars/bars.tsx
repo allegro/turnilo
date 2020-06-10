@@ -64,6 +64,10 @@ export class Bars extends React.Component<BarsProps> {
       ref={this.container}
       className="bar-chart-bars"
       style={stage.getWidthHeight()}>
+      <VisMeasureLabel
+        series={series}
+        datum={selectMainDatum(dataset)}
+        showPrevious={essence.hasComparison()} />
       {yScale && <React.Fragment>
         <svg viewBox={chartStage.getViewBox()}>
           <Background gridStage={chartStage} yScale={yScale} />

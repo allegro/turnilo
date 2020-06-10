@@ -55,7 +55,7 @@ export function calculateLayout(visualisationStage: Stage, domainLength: number,
   };
 }
 
-const TOP_MARGIN = 20;
+const TOP_MARGIN = 30;
 const BOTTOM_MARGIN = 0;
 
 export function calculateChartStage(segmentStage: Stage): Stage {
