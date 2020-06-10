@@ -18,9 +18,10 @@ import { TimeRange } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
+import { Predicates } from "../../../../../common/utils/rules/predicates";
 import { formatStartOfTimeRange } from "../../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
-import { XDomain } from "../utils/x-domain";
+import { DomainValue, XDomain } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import "./x-axis.scss";
 
@@ -32,8 +33,11 @@ interface XAxisProps {
 
 const TICK_HEIGHT = 10;
 
-function calculateTicks(domain: XDomain, essence: Essence): any[] {
-  return domain.filter((_, idx) => idx % 5 === 0);
+function calculateTicks(domain: XDomain, essence: Essence): DomainValue[] {
+  if (Predicates.areExactSplitKinds("time")(essence)) {
+    return domain.filter((_, idx) => idx % 5 === 0);
+  }
+  return domain;
 }
 
 export const XAxis: React.SFC<XAxisProps> = props => {
@@ -41,11 +45,12 @@ export const XAxis: React.SFC<XAxisProps> = props => {
   const ticks = calculateTicks(scale.domain(), essence);
   return <svg width={stage.width} height={stage.height}>
     <g className="bar-chart-x-axis">
-      {ticks.map(value => {
+      {ticks.map((value, index) => {
         const x = roundToHalfPx(scale.calculate(value));
-        return <g key={value} transform={`translate(${x}, 0)`}>
-            <line key={value} x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
-            <text y={TICK_HEIGHT + 12} style={{ textAnchor: "start" }}>
+        const textAnchor = index === 0 ? "start" : "middle";
+        return <g key={String(value)} transform={`translate(${x}, 0)`}>
+            <line x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
+            <text y={TICK_HEIGHT + 12} style={{ textAnchor }}>
               {formatStartOfTimeRange(value as TimeRange, essence.timezone)}
             </text>
         </g>;
