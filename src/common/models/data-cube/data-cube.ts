@@ -828,7 +828,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const $main = $("main");
 
     for (let newAttribute of newAttributes) {
-      const { name, type, nativeType } = newAttribute;
+      const { name, type, nativeType, maker } = newAttribute;
 
       // Already exists as a current attribute
       if (attributes && NamedArray.findByName(attributes, name)) continue;
@@ -888,11 +888,22 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
         case "NULL":
           if (!autofillMeasures) continue;
 
-          const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
-          newMeasures.forEach(newMeasure => {
-            if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
-            measures = (name === "count") ? measures.prepend(newMeasure) : measures.append(newMeasure);
-          });
+          if (!maker){
+            expression = $(name);
+            if (this.getDimensionByExpression(expression)) continue;
+            dimensions = dimensions.append(new Dimension({
+              name: urlSafeName,
+              kind: "number",
+              formula: expression.toString()
+            }));
+          }
+          else {
+            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+            newMeasures.forEach(newMeasure => {
+              if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
+              measures = (name === "count") ? measures.prepend(newMeasure) : measures.append(newMeasure);
+            });
+          }
           break;
 
         default:

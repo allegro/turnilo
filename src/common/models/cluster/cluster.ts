@@ -91,9 +91,9 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = "auto";
   static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ["disable", "auto"];
   static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
-  static DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = false;
+  static DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = true;
   static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
-  static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
+  static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = true;
   static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
   static DEFAULT_GUARD_DATA_CUBES = false;
 

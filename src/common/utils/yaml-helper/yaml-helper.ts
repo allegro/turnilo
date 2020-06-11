@@ -158,9 +158,9 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
     .add("version")
     .add("timeout", { defaultValue: Cluster.DEFAULT_TIMEOUT })
     .add("sourceListScan", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN })
-    .add("sourceListRefreshOnLoad", { defaultValue: false })
+    .add("sourceListRefreshOnLoad", { defaultValue: true })
     .add("sourceListRefreshInterval", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
-    .add("sourceReintrospectOnLoad", { defaultValue: false })
+    .add("sourceReintrospectOnLoad", { defaultValue: true })
     .add("sourceReintrospectInterval", { defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
   ;
 
