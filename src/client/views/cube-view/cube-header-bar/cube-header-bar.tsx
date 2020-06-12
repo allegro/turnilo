@@ -241,9 +241,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       <div className="text-button" onClick={this.toggleTimezoneMenu}>
         {this.props.essence.timezone.toString()}
       </div>
-      <div className={classNames("icon-button", "auto-refresh", { refreshing: this.state.animating })} onClick={this.toggleAutoRefreshMenu}>
-        <SvgIcon svg={require("../../../icons/full-refresh.svg")} />
-      </div>
       <div className="icon-button" onClick={this.toggleShareMenu}>
         <SvgIcon svg={require("../../../icons/full-hiluk.svg")} />
       </div>

@@ -82,7 +82,7 @@ const defaultEssence: EssenceValue = {
   dataCube: null,
   visualization: null,
   visualizationSettings: null,
-  timezone: Timezone.UTC,
+  timezone: new Timezone("Asia/Kolkata"),
   filter: null,
   splits: null,
   series: null,
@@ -206,7 +206,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     const constrainedFilter = filter.constrainToDimensions(dataCube.dimensions);
 
-    const validTimezone = timezone || Timezone.UTC;
+    const validTimezone = timezone || new Timezone("Asia/Kolkata");
 
     const timeFilter = Essence.timeFilter(filter, dataCube);
     const constrainedTimeShift = timeShift.constrainToFilter(timeFilter, validTimezone);

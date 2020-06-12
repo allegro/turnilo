@@ -24,17 +24,17 @@ $gray: #ccc;
 
 // Theme Colors
 
-$brand: hsl(21, 100%, 50%);
+$brand: hsl(203, 100%, 38%);
 $background-base: #e1e1e1;
 $error: hsla(0, 72%, 59%, 1.00);
 $hover: lighten($brand, 40%);
 $text-standard: hsl(0, 0%, 13%);
-$item-dimension: hsl(21, 100%, 80%);
-$item-measure: hsl(205, 60%, 77%);
+$item-dimension: hsl(205, 60%, 77%);
+$item-measure: hsl(21, 100%, 80%);
 
 $theme-colors: (
   background-base: $background-base,
-  background-brand-light: hsl(21, 100%, 70%),
+  background-brand-light: hsl(203, 100%, 60%),
   background-brand-text: #fff,
   background-brand: $brand,
   background-dark: hsl(0, 0%, 55%),

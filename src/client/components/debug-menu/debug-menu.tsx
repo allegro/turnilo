@@ -60,9 +60,6 @@ export const DebugMenu: React.SFC<DebugMenuProps> = ({ dataCube, openOn, onClose
       <li key="view-raw-data" onClick={displayRawData}>
         {STRINGS.displayRawData}
       </li>
-      <li key="display-view-definition" onClick={displayViewDefinition}>
-        {STRINGS.displayViewDefinition}
-      </li>
       {!isNativeCluster && <li key="view-druid-query" onClick={displayDruidQuery}>
         {STRINGS.displayDruidQuery}
       </li>}

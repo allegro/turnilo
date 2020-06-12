@@ -78,11 +78,8 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     return <div className="home-view">
       <HeaderBar
         customization={customization}
-        title={STRINGS.home}
+        title={"Explore"}
       >
-        <button className="text-button" onClick={onOpenAbout}>
-          {STRINGS.infoAndFeedback}
-        </button>
       </HeaderBar>
 
       <div className="container">

@@ -126,7 +126,6 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
     onClose={onClose}
   >
     <ul className="bubble-list">
-      {linkItems(props)}
       {exportItems(props)}
       {externalViewItems(props)}
     </ul>

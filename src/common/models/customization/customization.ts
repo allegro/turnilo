@@ -122,6 +122,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     Timezone.UTC,
     new Timezone("Asia/Jerusalem"), // +2.0
     new Timezone("Europe/Paris"), // +1.0
+    new Timezone("Asia/Kolkata"), // +5.5
     new Timezone("Asia/Kathmandu"), // +5.8
     new Timezone("Asia/Hong_Kong"), // +8.0
     new Timezone("Asia/Seoul"), // +9.0

@@ -222,7 +222,7 @@ let check: Class<DataCubeValue, DataCubeJS>;
 export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_INTROSPECTION: Introspection = "autofill-all";
   static INTROSPECTION_VALUES: Introspection[] = ["none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all"];
-  static DEFAULT_DEFAULT_TIMEZONE = Timezone.UTC;
+  static DEFAULT_DEFAULT_TIMEZONE = new Timezone("Asia/Kolkata");
   static DEFAULT_DEFAULT_FILTER = EMPTY_FILTER;
   static DEFAULT_DEFAULT_SPLITS = EMPTY_SPLITS;
   static DEFAULT_DEFAULT_DURATION = Duration.fromJS("P1D");
