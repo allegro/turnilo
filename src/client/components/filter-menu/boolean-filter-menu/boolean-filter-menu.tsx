@@ -46,7 +46,7 @@ interface BooleanFilterMenuProps {
   inside?: Element;
 }
 
-export type Booleanish = string | boolean;
+export type Booleanish = string | boolean | null;
 
 interface BooleanFilterMenuState {
   loading?: boolean;
@@ -144,12 +144,12 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
     const { selectedValues } = this.state;
     return <div
       className="row"
-      key={value.toString()}
-      title={value.toString()}
+      key={String(value)}
+      title={String(value)}
       onClick={() => this.selectValue(value)}>
       <div className="row-wrapper">
         <Checkbox selected={selectedValues.has(value)} />
-        <span className="label">{value.toString()}</span>
+        <span className="label">{String(value)}</span>
       </div>
     </div>;
   };
