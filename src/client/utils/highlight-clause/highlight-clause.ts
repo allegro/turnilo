@@ -16,10 +16,10 @@
 
 import { List } from "immutable";
 import { NumberRange as PlywoodNumberRange, Range, TimeRange } from "plywood";
-import { DateRange } from "../../../../common/models/date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
-import { ContinuousRange } from "../utils/continuous-types";
-import { isValidClause } from "../utils/is-valid-clause";
+import { DateRange } from "../../../common/models/date-range/date-range";
+import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange } from "../../../common/models/filter-clause/filter-clause";
+import { ContinuousRange } from "../../visualizations/line-chart/utils/continuous-types";
+import { isValidClause } from "../../visualizations/line-chart/utils/is-valid-clause";
 
 export function toFilterClause(range: ContinuousRange, reference: string): FilterClause {
   if (TimeRange.isTimeRange(range)) {

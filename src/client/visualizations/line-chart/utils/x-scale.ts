@@ -23,7 +23,7 @@ import { ContinuousDimensionKind } from "../../../../common/models/granularity/g
 import { Split } from "../../../../common/models/split/split";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { union } from "../../../../common/utils/plywood/range";
-import { toPlywoodRange } from "../interactions/highlight-clause";
+import { toPlywoodRange } from "../../../utils/highlight-clause/highlight-clause";
 import { ContinuousRange, ContinuousScale } from "./continuous-types";
 import { getContinuousDimension, getContinuousSplit } from "./splits";
 

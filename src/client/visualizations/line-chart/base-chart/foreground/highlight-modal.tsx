@@ -19,7 +19,7 @@ import * as React from "react";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
-import { toPlywoodRange } from "../../interactions/highlight-clause";
+import { toPlywoodRange } from "../../../../utils/highlight-clause/highlight-clause";
 import { Highlight } from "../../interactions/interaction";
 import { ContinuousScale } from "../../utils/continuous-types";
 

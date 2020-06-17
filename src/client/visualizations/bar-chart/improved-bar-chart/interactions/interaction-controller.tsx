@@ -24,9 +24,9 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Binary, Unary } from "../../../../../common/utils/functional/functional";
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
-import { Highlight } from "../../../base-visualization/highlight";
-import { toPlywoodRange } from "../../../line-chart/interactions/highlight-clause";
 import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/dataset";
+import { toPlywoodRange } from "../../../../utils/highlight-clause/highlight-clause";
+import { Highlight } from "../../../base-visualization/highlight";
 import { BarChartLayout } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { DomainValue } from "../utils/x-domain";
@@ -124,7 +124,6 @@ export class InteractionController extends React.Component<InteractionController
   interaction(): Interaction | null {
     const { highlight } = this.props;
     if (highlight) {
-      // TODO: move outside line chart
       const value = toPlywoodRange(highlight.clauses.first());
       const datum = this.findDatumByValue(value);
       return createHighlight(highlight.key, datum);
