@@ -13,19 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as d3 from "d3";
-import { LinearScale } from "../../../utils/scales/scales";
 
-export const TICKS_COUNT = 5;
-export const TICK_WIDTH = 5;
+import { scale } from "d3";
 
-export default function getScale([min, max]: number[], height: number): LinearScale | null {
-  if (isNaN(min) || isNaN(max)) {
-    return null;
-  }
-
-  return d3.scale.linear()
-    .domain([Math.min(min, 0), Math.max(max, 0)])
-    .nice(TICKS_COUNT)
-    .range([height, 0]);
-}
+export type LinearScale = scale.Linear<number, number>;

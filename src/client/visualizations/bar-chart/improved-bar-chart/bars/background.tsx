@@ -17,13 +17,12 @@
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
-import { LinearScale } from "../../../heat-map/utils/scales";
+import { LinearScale } from "../../../../utils/scales/scales";
 import { calculateTicks } from "../../../line-chart/base-chart/background/background";
 import { BottomBorder } from "../../../line-chart/base-chart/background/bottom-border";
 
 interface BackgroundProps {
   gridStage: Stage;
-  // TODO: move outside heatmap
   yScale: LinearScale;
 }
 

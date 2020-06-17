@@ -20,7 +20,7 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
-import { LinearScale } from "../../../heat-map/utils/scales";
+import { LinearScale } from "../../../../utils/scales/scales";
 import { BAR_PADDING } from "../bars/bar";
 import { Highlight } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
