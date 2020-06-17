@@ -21,7 +21,7 @@ import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { SPLIT } from "../../config/constants";
 import { equalProps } from "../../utils/equal-props/equal-props";
-import { LinearScale } from "../../utils/scales/scales";
+import { LinearScale } from "../../utils/linear-scale/linear-scale";
 import { HeatMapRectangleRow } from "./heatmap-rectangle-row";
 import "./heatmap-rectangles.scss";
 import { ColorScale } from "./utils/scales";

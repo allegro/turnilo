@@ -20,7 +20,7 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
-import { LinearScale } from "../../../../utils/scales/scales";
+import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";

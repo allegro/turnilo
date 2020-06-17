@@ -22,7 +22,7 @@ import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubble } from "../../../../components/segment-bubble/segment-bubble";
-import { LinearScale } from "../../../../utils/scales/scales";
+import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Hover } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";

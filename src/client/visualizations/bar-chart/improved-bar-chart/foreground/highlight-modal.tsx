@@ -21,7 +21,7 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
-import { LinearScale } from "../../../../utils/scales/scales";
+import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Highlight } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";

@@ -17,7 +17,7 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { Unary } from "../../../../../common/utils/functional/functional";
-import { LinearScale } from "../../../../utils/scales/scales";
+import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 

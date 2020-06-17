@@ -19,6 +19,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
+import getScale from "../../../utils/linear-scale/linear-scale";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Scale } from "../chart-line/chart-line";
 import { isHover } from "../interactions/interaction";
@@ -29,7 +30,6 @@ import { Background } from "./background/background";
 import "./base-chart.scss";
 import { Foreground } from "./foreground/foreground";
 import { HoverGuide } from "./foreground/hover-guide";
-import getScale from "./y-scale";
 
 interface ChartLinesProps {
   yScale: Scale;

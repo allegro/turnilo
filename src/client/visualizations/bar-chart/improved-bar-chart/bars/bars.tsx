@@ -22,8 +22,8 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
-import getScale from "../../../line-chart/base-chart/y-scale";
 import { selectFirstSplitDatums, selectMainDatum } from "../../../../utils/dataset/selectors/dataset";
+import getScale from "../../../../utils/linear-scale/linear-scale";
 import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
 import { calculateChartStage } from "../utils/layout";
