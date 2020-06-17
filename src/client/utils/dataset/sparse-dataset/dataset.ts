@@ -17,10 +17,10 @@
 
 import { Timezone } from "chronoshift";
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
-import { SortDirection } from "../../../common/models/sort/sort";
-import { Split, SplitType } from "../../../common/models/split/split";
-import { formatValue } from "../../../common/utils/formatter/formatter";
-import { SPLIT } from "../../config/constants";
+import { SortDirection } from "../../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../../common/models/split/split";
+import { formatValue } from "../../../../common/utils/formatter/formatter";
+import { SPLIT } from "../../../config/constants";
 
 type Order<D> = (a: [string, number, D], b: [string, number, D]) => number;
 

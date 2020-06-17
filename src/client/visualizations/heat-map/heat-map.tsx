@@ -26,7 +26,7 @@ import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
-import { fillDatasetWithMissingValues } from "../../utils/dataset/dataset";
+import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";

@@ -16,7 +16,7 @@
  */
 
 import { Dataset } from "plywood";
-import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
+import { DataSetWithTabOptions } from "../../../views/cube-view/cube-view";
 
 export const rawDataset = {
   data: [

@@ -26,7 +26,7 @@ import { safeEquals } from "../../../../../common/utils/immutable-utils/immutabl
 import { ScrollerPart } from "../../../../components/scroller/scroller";
 import { Highlight } from "../../../base-visualization/highlight";
 import { toPlywoodRange } from "../../../line-chart/interactions/highlight-clause";
-import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/dataset";
 import { BarChartLayout } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { DomainValue } from "../utils/x-domain";

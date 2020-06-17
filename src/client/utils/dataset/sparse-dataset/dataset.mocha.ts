@@ -18,10 +18,10 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import { Dataset } from "plywood";
-import { DimensionSort, SortDirection } from "../../../common/models/sort/sort";
-import { Split, SplitType } from "../../../common/models/split/split";
-import { SPLIT } from "../../config/constants";
-import "../../utils/test-utils";
+import { DimensionSort, SortDirection } from "../../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../../common/models/split/split";
+import { SPLIT } from "../../../config/constants";
+import "../../test-utils";
 import { fillDatasetWithMissingValues } from "./dataset";
 import { expectedDataset, expectedDatasetReversed, rawDataset, rawDatasetWithTimeDimension, rawDataWithNumberRanges, reversedDatasetWithTimeDimension } from "./test-fixtures";
 

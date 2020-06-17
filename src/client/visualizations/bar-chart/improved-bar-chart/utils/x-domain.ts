@@ -16,7 +16,7 @@
 
 import { Dataset, NumberRange, TimeRange } from "plywood";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/dataset";
 import { firstSplitRef } from "./splits";
 
 export type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;

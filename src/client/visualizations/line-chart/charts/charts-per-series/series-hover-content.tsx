@@ -24,7 +24,7 @@ import { mapTruthy } from "../../../../../common/utils/functional/functional";
 import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { Delta } from "../../../../components/delta/delta";
 import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
-import { selectSplitDataset } from "../../utils/dataset";
+import { selectSplitDataset } from "../../../../utils/dataset/selectors/dataset";
 import { getContinuousDimension, getContinuousReference, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 
 function findNestedDatumByAttribute(dimensionName: string, range: PlywoodRange): (d: Datum) => Datum {

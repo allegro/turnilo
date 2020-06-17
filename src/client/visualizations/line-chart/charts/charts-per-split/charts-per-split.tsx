@@ -23,7 +23,7 @@ import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
 import { ContinuousScale } from "../../utils/continuous-types";
-import { selectFirstSplitDatums, selectMainDatum, selectSplitDataset, selectSplitDatums } from "../../utils/dataset";
+import { selectFirstSplitDatums, selectMainDatum, selectSplitDataset, selectSplitDatums } from "../../../../utils/dataset/selectors/dataset";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { hasNominalSplit } from "../../utils/splits";
 import { calculateChartStage } from "../calculate-chart-stage";

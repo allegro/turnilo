@@ -18,7 +18,7 @@ import * as d3 from "d3";
 import { Dataset } from "plywood";
 import { range } from "../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../config/constants";
-import { ContinuousScale } from "./continuous-types";
+import { ContinuousScale } from "../../../visualizations/line-chart/utils/continuous-types";
 
 export const makeDataset = (datums: any[]) =>
   Dataset.fromJS([{ [SPLIT]: datums }]);

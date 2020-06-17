@@ -21,7 +21,7 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 // TODO: move outside line chart
 import getScale from "../../../line-chart/base-chart/y-scale";
-import { selectFirstSplitDatums } from "../../../line-chart/utils/dataset";
+import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/dataset";
 import { calculateYAxisStage } from "../utils/layout";
 import { SingleYAxis } from "./single-y-axis";
 

@@ -27,7 +27,7 @@ import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-char
 import { isHover } from "../../interactions/interaction";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { ContinuousScale } from "../../utils/continuous-types";
-import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../utils/dataset";
+import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../../../utils/dataset/selectors/dataset";
 import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";

@@ -20,7 +20,7 @@ import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { ContinuousScale, ContinuousValue } from "../utils/continuous-types";
-import { selectFirstSplitDataset, selectFirstSplitDatums } from "../utils/dataset";
+import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/dataset";
 import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
 
 function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousScale, continuousDimension: Dimension): Datum | null {

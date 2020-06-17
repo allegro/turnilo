@@ -24,7 +24,7 @@ import { numberSplitCombine } from "../../../../common/models/split/split.fixtur
 import { Splits } from "../../../../common/models/splits/splits";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import equivalent from "../../../utils/test-utils/equivalent";
-import { createDailyNominalDatasetInJanuary, january, makeDataset } from "./dataset-fixtures";
+import { createDailyNominalDatasetInJanuary, january, makeDataset } from "../../../utils/dataset/selectors/dataset-fixtures";
 import { calculateXRange } from "./x-scale";
 
 use(equivalent);
