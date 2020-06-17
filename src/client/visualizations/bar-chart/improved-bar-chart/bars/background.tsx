@@ -16,10 +16,10 @@
 
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
+import { BottomBorder } from "../../../../components/bottom-border/bottom-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { LinearScale } from "../../../../utils/scales/scales";
 import { pickTicks } from "../../../../utils/ticks/ticks";
-import { BottomBorder } from "../../../line-chart/base-chart/background/bottom-border";
 import { TICKS_COUNT } from "../y-axis/single-y-axis";
 
 interface BackgroundProps {
@@ -37,7 +37,6 @@ export const Background: React.SFC<BackgroundProps> = props => {
       ticks={ticks}
       stage={gridStage}
     />
-    // TODO: move outside line chart
     <BottomBorder stage={gridStage} />
   </React.Fragment>;
 };

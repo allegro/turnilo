@@ -15,9 +15,9 @@
  */
 
 import * as React from "react";
-import { Stage } from "../../../../../common/models/stage/stage";
-import { roundToHalfPx } from "../../../../utils/dom/dom";
-import { TICK_WIDTH } from "../y-scale";
+import { Stage } from "../../../common/models/stage/stage";
+import { roundToHalfPx } from "../../utils/dom/dom";
+import { TICK_WIDTH } from "../../visualizations/line-chart/base-chart/y-scale";
 
 interface BottomBorderProps {
  stage: Stage;

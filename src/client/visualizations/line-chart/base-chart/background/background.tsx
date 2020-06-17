@@ -25,7 +25,7 @@ import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { TICK_WIDTH, TICKS_COUNT } from "../y-scale";
 import "./background.scss";
-import { BottomBorder } from "./bottom-border";
+import { BottomBorder } from "../../../../components/bottom-border/bottom-border";
 
 interface BackgroundProps {
   gridStage: Stage;
