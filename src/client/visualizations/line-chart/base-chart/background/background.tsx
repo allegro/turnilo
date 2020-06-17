@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { scale } from "d3";
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
+import { LinearScale } from "../../../../utils/scales/scales";
+import { pickTicks } from "../../../../utils/ticks/ticks";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { TICK_WIDTH, TICKS_COUNT } from "../y-scale";
@@ -31,14 +32,8 @@ interface BackgroundProps {
   axisStage: Stage;
   xScale: ContinuousScale;
   xTicks: ContinuousTicks;
-  yScale: Linear;
+  yScale: LinearScale;
   formatter: Unary<number, string>;
-}
-
-type Linear = scale.Linear<number, number>;
-
-export function calculateTicks(scale: Linear, ticksCount: number) {
-  return scale.ticks(ticksCount).filter(n => n !== 0);
 }
 
 export const Background: React.SFC<BackgroundProps> = props => {
@@ -48,7 +43,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
     <GridLines
       orientation="horizontal"
       scale={yScale}
-      ticks={calculateTicks(yScale, TICKS_COUNT)}
+      ticks={pickTicks(yScale, TICKS_COUNT)}
       stage={gridStage}
     />
     {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
@@ -62,7 +57,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
       tickSize={TICK_WIDTH}
       stage={axisStage}
       formatter={formatter}
-      ticks={calculateTicks(yScale, TICKS_COUNT)}
+      ticks={pickTicks(yScale, TICKS_COUNT)}
       scale={yScale}
     />
     <BottomBorder stage={gridStage} />

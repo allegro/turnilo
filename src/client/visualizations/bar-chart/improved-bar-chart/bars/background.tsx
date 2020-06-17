@@ -18,8 +18,9 @@ import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { LinearScale } from "../../../../utils/scales/scales";
-import { calculateTicks } from "../../../line-chart/base-chart/background/background";
+import { pickTicks } from "../../../../utils/ticks/ticks";
 import { BottomBorder } from "../../../line-chart/base-chart/background/bottom-border";
+import { TICKS_COUNT } from "../y-axis/single-y-axis";
 
 interface BackgroundProps {
   gridStage: Stage;
@@ -28,8 +29,7 @@ interface BackgroundProps {
 
 export const Background: React.SFC<BackgroundProps> = props => {
   const { gridStage, yScale } = props;
-  // TODO: move outside line chart
-  const ticks = calculateTicks(yScale, 5);
+  const ticks = pickTicks(yScale, TICKS_COUNT);
   return <React.Fragment>
     <GridLines
       orientation="horizontal"
