@@ -87,7 +87,8 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
     onSeriesChange(series.setIn(["expression", "reference"], name));
   }
 
-  const duplicate = !series.equals(initialSeries) && seriesList.getSeriesWithKey(series.key());
+  const otherSeries = seriesList.removeSeries(initialSeries);
+  const duplicate = otherSeries.getSeriesWithKey(series.key());
   const expression = series.expression as ArithmeticExpression;
   const operation = OPERATIONS.find(op => op.id === expression.operation);
   const operand = measures.getMeasureByName(expression.reference);
