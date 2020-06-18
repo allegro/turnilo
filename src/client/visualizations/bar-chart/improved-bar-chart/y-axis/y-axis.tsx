@@ -19,7 +19,7 @@ import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/dataset";
+import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import getScale from "../../../../utils/linear-scale/linear-scale";
 import { calculateYAxisStage } from "../utils/layout";
 import { SingleYAxis } from "./single-y-axis";

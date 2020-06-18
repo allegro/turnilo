@@ -16,14 +16,14 @@
 import { expect } from "chai";
 import { Dataset, Datum } from "plywood";
 import { SPLIT } from "../../../config/constants";
-import { selectFirstSplitDataset, selectFirstSplitDatums, selectMainDatum, selectSplitDataset, selectSplitDatums } from "./dataset";
 import { makeDataset } from "./dataset-fixtures";
+import { selectFirstSplitDataset, selectFirstSplitDatums, selectMainDatum, selectSplitDataset, selectSplitDatums } from "./selectors";
 
 const datum = { foobar: 100 };
 const dataset = Dataset.fromJS([datum]);
 const splitDatum = (data: unknown) => ({ [SPLIT]: data }) as Datum;
 
-describe("dataset", () => {
+describe("dataset selectors", () => {
   describe("selectMainDatum", () => {
     it("should pick first datum", () => {
       expect(selectMainDatum(dataset)).to.deep.equal(datum);

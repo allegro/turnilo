@@ -20,7 +20,7 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { flatMap, Unary } from "../../../../common/utils/functional/functional";
 import { readNumber } from "../../../../common/utils/general/general";
-import { selectSplitDataset } from "../../../utils/dataset/selectors/dataset";
+import { selectSplitDataset } from "../../../utils/dataset/selectors/selectors";
 import { hasNominalSplit } from "./splits";
 
 type Getter = Unary<Datum, number>;

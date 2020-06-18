@@ -21,7 +21,7 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { defaultFormatter } from "../../../../../common/models/series/series-format";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
-import { selectSplitDataset } from "../../../../utils/dataset/selectors/dataset";
+import { selectSplitDataset } from "../../../../utils/dataset/selectors/selectors";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";

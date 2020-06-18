@@ -19,7 +19,7 @@ const MAX_HOVER_DIST = 50;
 import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/dataset";
+import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
 import { ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
 

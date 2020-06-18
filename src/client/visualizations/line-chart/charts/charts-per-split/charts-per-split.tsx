@@ -20,7 +20,7 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { compose, Unary } from "../../../../../common/utils/functional/functional";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
-import { selectFirstSplitDatums, selectMainDatum, selectSplitDatums } from "../../../../utils/dataset/selectors/dataset";
+import { selectFirstSplitDatums, selectMainDatum, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { InteractionsProps } from "../../interactions/interaction-controller";
 import { SeriesLegend } from "../../legend/series-legend";
 import { ContinuousScale } from "../../utils/continuous-types";

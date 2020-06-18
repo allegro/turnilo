@@ -24,7 +24,7 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Binary, Unary } from "../../../../../common/utils/functional/functional";
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
-import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/dataset";
+import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { toPlywoodRange } from "../../../../utils/highlight-clause/highlight-clause";
 import { Highlight } from "../../../base-visualization/highlight";
 import { BarChartLayout } from "../utils/layout";

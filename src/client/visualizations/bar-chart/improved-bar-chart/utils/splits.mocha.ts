@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { Dataset, NumberRange, TimeRange } from "plywood";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
+import { expect } from "chai";
+import { EssenceFixtures } from "../../../../../common/models/essence/essence.fixtures";
 import { firstSplitRef } from "./splits";
 
-export type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;
-
-export type XDomain = DomainValue[];
-
-export function getXDomain(essence: Essence, dataset: Dataset): XDomain {
-  const ref = firstSplitRef(essence);
-  const firstSplitDatums = selectFirstSplitDatums(dataset);
-
-  return firstSplitDatums.map(datum => datum[ref] as DomainValue);
-}
+describe("Splits", () => {
+  describe("firstSplitRef", () => {
+    it("should pick first split reference", () => {
+      const essence = EssenceFixtures.wikiTable();
+      expect(firstSplitRef(essence)).to.be.equal("channel");
+    });
+  });
+});
