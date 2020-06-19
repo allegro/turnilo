@@ -28,7 +28,6 @@ import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
-import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
@@ -537,7 +536,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const clicker = this.clicker;
 
     const { urlForEssence, customization } = this.props;
-    const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
+    const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime, lastRefreshRequestTimestamp } = this.state;
 
     if (!essence) return null;
 
@@ -644,7 +643,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             clicker={clicker}
             essence={essence}
             timekeeper={timekeeper}
-          />}
+            refreshRequestTimestamp={lastRefreshRequestTimestamp} />}
         </div>
         {this.renderDruidQueryModal()}
         {this.renderRawDataModal()}
