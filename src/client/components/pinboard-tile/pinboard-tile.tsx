@@ -50,6 +50,7 @@ export class PinboardTileProps {
   clicker: Clicker;
   dimension: Dimension;
   timekeeper: Timekeeper;
+  refreshRequestTimestamp: number;
   sortOn: SortOn;
 }
 
