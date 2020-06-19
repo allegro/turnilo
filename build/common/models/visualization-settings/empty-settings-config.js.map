@@ -1,0 +1,1 @@
+{"version":3,"file":"empty-settings-config.js","sourceRoot":"","sources":["../../../../src/common/models/visualization-settings/empty-settings-config.ts"],"names":[],"mappings":";;AAgBA,gEAA6D;AAGhD,QAAA,mBAAmB,GAAoC;IAClE,SAAS,EAAE;QACT,IAAI,EAAE,qBAAQ,CAAC,IAAI,CAAC;QACpB,KAAK,EAAE,qBAAQ,CAAC,IAAI,CAAC;KACtB;IACD,QAAQ,EAAE,IAAI;CACf,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"split-canonical-length.js","sourceRoot":"","sources":["../../../../src/common/utils/canonical-length/split-canonical-length.ts"],"names":[],"mappings":";;AAoBA,SAAwB,oBAAoB,CAAC,KAAY,EAAE,QAAkB;IACnE,IAAA,2BAAS,EAAE,qBAAM,CAAW;IACpC,IAAI,SAAS,KAAK,QAAQ,CAAC,aAAa,CAAC,IAAI;QAAE,OAAO,IAAI,CAAC;IAC3D,OAAQ,MAAmB,CAAC,kBAAkB,EAAE,CAAC;AACnD,CAAC;AAJD,uCAIC"}

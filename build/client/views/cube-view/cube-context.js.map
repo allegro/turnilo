@@ -1,0 +1,1 @@
+{"version":3,"file":"cube-context.js","sourceRoot":"","sources":["../../../../src/client/views/cube-view/cube-context.ts"],"names":[],"mappings":";;AAgBA,6BAA+B;AASlB,QAAA,WAAW,GAAG,KAAK,CAAC,aAAa,CAAmB;IAC/D,IAAI,OAAO;QACT,MAAM,IAAI,KAAK,CAAC,uEAAuE,CAAC,CAAC;IAC3F,CAAC;IACD,IAAI,OAAO;QACT,MAAM,IAAI,KAAK,CAAC,uEAAuE,CAAC,CAAC;IAC3F,CAAC;CACF,CAAC,CAAC"}

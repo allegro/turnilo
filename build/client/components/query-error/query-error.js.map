@@ -1,0 +1,1 @@
+{"version":3,"file":"query-error.js","sourceRoot":"","sources":["../../../../src/client/components/query-error/query-error.tsx"],"names":[],"mappings":";;AAiBA,6BAA+B;AAC/B,oDAAiD;AACjD,8CAA6C;AAMhC,QAAA,UAAU,GAA+B,UAAC,EAAS;QAAP,gBAAK;IAC5D,OAAO,oBAAC,iBAAO,IACb,KAAK,EAAC,OAAO,EACb,OAAO,EAAE,KAAK,CAAC,OAAO,EACtB,KAAK,EAAE,mBAAO,CAAC,UAAU,GAAI,CAAC;AAClC,CAAC,CAAC"}

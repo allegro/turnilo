@@ -1,0 +1,1 @@
+{"version":3,"file":"some.js","sourceRoot":"","sources":["../../../../src/common/utils/plywood/some.ts"],"names":[],"mappings":";;AAmBA,SAAwB,IAAI,CAAC,EAAc,EAAE,SAAqC;IAChF,IAAI,KAAK,GAAG,KAAK,CAAC;IAClB,EAAE,CAAC,OAAO,CAAC,UAAA,KAAK;QACd,IAAI,SAAS,CAAC,KAAK,CAAC,EAAE;YACpB,KAAK,GAAG,IAAI,CAAC;SACd;IACH,CAAC,CAAC,CAAC;IACH,OAAO,KAAK,CAAC;AACf,CAAC;AARD,uBAQC"}

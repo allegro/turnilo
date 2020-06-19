@@ -1,0 +1,18 @@
+import * as React from "react";
+export declare type JSXNode = JSX.Element | string;
+export declare function isInside(child: Element, parent: Element | Text): boolean;
+export declare function findParentWithClass(child: Element, className: string): Element;
+export declare function setDragGhost(dataTransfer: DataTransfer, text: string): void;
+export declare const setDragData: (dataTransfer: DataTransfer, format: string, data: string) => void;
+export declare function enterKey(e: KeyboardEvent): boolean;
+export declare function escapeKey(e: KeyboardEvent): boolean;
+export declare function leftKey(e: KeyboardEvent): boolean;
+export declare function rightKey(e: KeyboardEvent): boolean;
+export declare function uniqueId(prefix: string): string;
+export declare function transformStyle(x: number, y: number): any;
+export declare function getXFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>): number;
+export declare function getYFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>): number;
+export declare function roundToPx(n: number): number;
+export declare function roundToHalfPx(n: number): number;
+export declare function clamp(n: number, min: number, max: number): number;
+export declare function classNames(...args: Array<string | Record<string, any>>): string;

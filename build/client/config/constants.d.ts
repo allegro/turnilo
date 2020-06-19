@@ -1,0 +1,32 @@
+import { Locale } from "../../common/utils/time/time";
+import { FileFormat } from "../utils/download/download";
+export declare const TITLE_HEIGHT = 36;
+export declare const DIMENSION_HEIGHT = 27;
+export declare const MEASURE_HEIGHT = 27;
+export declare const CORE_ITEM_WIDTH = 192;
+export declare const CORE_ITEM_GAP = 8;
+export declare const BAR_TITLE_WIDTH = 66;
+export declare const PANEL_TOGGLE_WIDTH = 15;
+export declare const ADD_TILE_WIDTH = 25;
+export declare const PIN_TITLE_HEIGHT = 36;
+export declare const PIN_ITEM_HEIGHT = 25;
+export declare const PIN_PADDING_BOTTOM = 12;
+export declare const VIS_H_PADDING = 10;
+export declare const VIS_SELECTOR_WIDTH = 79;
+export declare const OVERFLOW_WIDTH = 40;
+export declare const SPLIT = "SPLIT";
+export declare const MAX_SEARCH_LENGTH = 300;
+export declare const SEARCH_WAIT = 900;
+export declare const STRINGS: any;
+export declare const DATA_CUBES_STRATEGIES_LABELS: {
+    "none": string;
+    "no-autofill": string;
+    "autofill-dimensions-only": string;
+    "autofill-measures-only": string;
+    "autofill-all": string;
+};
+export declare function getLocale(): Locale;
+export declare const exportOptions: Array<{
+    label: string;
+    fileFormat: FileFormat;
+}>;

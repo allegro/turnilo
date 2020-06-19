@@ -1,0 +1,1 @@
+{"version":3,"file":"liveness.js","sourceRoot":"","sources":["../../../../src/server/routes/liveness/liveness.ts"],"names":[],"mappings":";;AAgBA,mCAAoD;AAEpD,IAAM,MAAM,GAAG,gBAAM,EAAE,CAAC;AAExB,MAAM,CAAC,GAAG,CAAC,GAAG,EAAE,UAAC,GAAY,EAAE,GAAa;IAC1C,GAAG,CAAC,UAAU,CAAC,GAAG,CAAC,CAAC;AACtB,CAAC,CAAC,CAAC;AAEU,QAAA,cAAc,GAAG,MAAM,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"url-shortener.fixtures.js","sourceRoot":"","sources":["../../../../src/common/models/url-shortener/url-shortener.fixtures.ts"],"names":[],"mappings":";;AAgBA,iDAA+C;AAElC,QAAA,kBAAkB,GAAG,oDAAoD,CAAC;AAC1E,QAAA,gBAAgB,GAAG,IAAI,4BAAY,CAAC,0BAAkB,CAAC,CAAC;AAExD,QAAA,qBAAqB,GAAG,0CAA0C,CAAC;AACnE,QAAA,mBAAmB,GAAG,IAAI,4BAAY,CAAC,6BAAqB,CAAC,CAAC"}

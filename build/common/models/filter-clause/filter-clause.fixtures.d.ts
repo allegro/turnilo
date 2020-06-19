@@ -1,0 +1,10 @@
+import { Booleanish } from "../../../client/components/filter-menu/boolean-filter-menu/boolean-filter-menu";
+import { BooleanFilterClause, FilterClause, FixedTimeFilterClause, NumberFilterClause, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, TimeFilterPeriod } from "./filter-clause";
+export declare function stringWithAction(reference: string, action: StringFilterAction, values: string[], not?: boolean): FilterClause;
+export declare function stringIn(reference: string, values: string[], not?: boolean): StringFilterClause;
+export declare function stringContains(reference: string, value: string, not?: boolean): StringFilterClause;
+export declare function stringMatch(reference: string, value: string, not?: boolean): StringFilterClause;
+export declare function boolean(reference: string, values: Booleanish[], not?: boolean): BooleanFilterClause;
+export declare function numberRange(reference: string, start: number, end: number, bounds?: string, not?: boolean): NumberFilterClause;
+export declare function timeRange(reference: string, start: Date, end: Date): FixedTimeFilterClause;
+export declare function timePeriod(reference: string, duration: string, period: TimeFilterPeriod): RelativeTimeFilterClause;

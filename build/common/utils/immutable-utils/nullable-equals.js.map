@@ -1,0 +1,1 @@
+{"version":3,"file":"nullable-equals.js","sourceRoot":"","sources":["../../../../src/common/utils/immutable-utils/nullable-equals.ts"],"names":[],"mappings":";;AAkBA,SAAwB,cAAc,CAAC,CAAY,EAAE,CAAY;IAC/D,IAAI,CAAC,KAAK,IAAI,EAAE;QACd,OAAO,CAAC,KAAK,CAAC,CAAC;KAChB;IAED,OAAO,CAAC,CAAC,CAAC,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC;AACvB,CAAC;AAND,iCAMC"}
