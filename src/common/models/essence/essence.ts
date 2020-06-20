@@ -27,7 +27,6 @@ import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
 import { FilterClause, FixedTimeFilterClause, isTimeFilter, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
-import { Measure } from "../measure/measure";
 import { SeriesList } from "../series-list/series-list";
 import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
 import createConcreteSeries from "../series/create-concrete-series";
@@ -97,8 +96,8 @@ export interface EffectiveFilterOptions {
   combineWithPrevious?: boolean;
 }
 
-type VisualizationResolverResult = Pick<EssenceValue, "splits" | "visualization"  | "visResolve">;
-type VisualizationResolverParameters = Pick<EssenceValue, "visualization" | "dataCube" | "splits" |  "series">;
+type VisualizationResolverResult = Pick<EssenceValue, "splits" | "visualization" | "visResolve">;
+type VisualizationResolverParameters = Pick<EssenceValue, "visualization" | "dataCube" | "splits" | "series">;
 
 function resolveVisualization({ visualization, dataCube, splits, series }: VisualizationResolverParameters): VisualizationResolverResult {
 
@@ -414,18 +413,39 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public updateDataCube(newDataCube: DataCube): Essence {
     const { dataCube } = this;
     if (dataCube.equals(newDataCube)) return this;
-    const seriesInNewCube = this.series.constrainToMeasures(newDataCube.measures);
-    const newSeriesList = !seriesInNewCube.isEmpty()
-      ? seriesInNewCube
-      : SeriesList.fromMeasureNames(newDataCube.getDefaultSelectedMeasures().toArray());
-    return this
-      .set("dataCube", newDataCube)
-      .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))
-      .set("series", newSeriesList)
-      .update("splits", splits => splits.constrainToDimensionsAndSeries(newDataCube.dimensions, newSeriesList))
-      .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
-      .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort)
-      .resolveVisualizationAndUpdate();
+
+    function setDataCube(essence: Essence): Essence {
+      return essence.set("dataCube", newDataCube);
+    }
+
+    function constrainProps(essence: Essence): Essence {
+      const seriesValidInNewCube = essence.series.constrainToMeasures(newDataCube.measures);
+      const newSeriesList = !seriesValidInNewCube.isEmpty()
+        ? seriesValidInNewCube
+        : SeriesList.fromMeasureNames(newDataCube.getDefaultSelectedMeasures().toArray());
+
+      return essence
+        .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))
+        .set("series", newSeriesList)
+        .update("splits", splits => splits.constrainToDimensionsAndSeries(newDataCube.dimensions, newSeriesList))
+        .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
+        .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort);
+    }
+
+    function adjustVisualization(essence: Essence): Essence {
+      const { dataCube, visualization, splits, series } = essence;
+      const { visualization: newVis } = Essence.getBestVisualization(
+        dataCube, splits, series, visualization);
+      if (newVis === visualization) return essence;
+      return essence.changeVisualization(newVis, newVis.visualizationSettings.defaults);
+    }
+
+    return thread(
+      this,
+      setDataCube,
+      constrainProps,
+      adjustVisualization,
+      (essence: Essence) => essence.resolveVisualizationAndUpdate());
   }
 
   public changeFilter(filter: Filter): Essence {
