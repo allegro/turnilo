@@ -27,6 +27,7 @@ const wikiChannel = DimensionFixtures.wikiChannel();
 const wikiTotals = EssenceFixtures.wikiTotals();
 
 const props = {
+  refreshRequestTimestamp: 42,
   essence: wikiTotals,
   dimension: wikiChannel,
   timekeeper: Timekeeper.EMPTY,
@@ -61,6 +62,11 @@ describe("shouldFetch", () => {
 
   it("should return true if sortOn in props is different", () => {
     const propsWithChangedSortOn = { ...props, sortOn: SortOnFixtures.defaultC() };
+    expect(shouldFetchData(propsWithChangedSortOn, props, state, state)).to.be.true;
+  });
+
+  it("should return true if refreshRequestTimestamp in props is different", () => {
+    const propsWithChangedSortOn = { ...props, refreshRequestTimestamp: 1000 };
     expect(shouldFetchData(propsWithChangedSortOn, props, state, state)).to.be.true;
   });
 

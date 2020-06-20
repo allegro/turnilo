@@ -17,7 +17,7 @@ import { SortOn } from "../../../../common/models/sort-on/sort-on";
 import { PinboardTileProps, PinboardTileState } from "../pinboard-tile";
 
 export function shouldFetchData(
-  { essence, timekeeper, dimension, sortOn }: PinboardTileProps,
+  { essence, timekeeper, dimension, sortOn, refreshRequestTimestamp }: PinboardTileProps,
   previousProps: PinboardTileProps,
   { searchText }: PinboardTileState,
   previousState: PinboardTileState): boolean {
@@ -25,11 +25,13 @@ export function shouldFetchData(
   const previousTimekeeper = previousProps.timekeeper;
   const previousDimension = previousProps.dimension;
   const previousSortOn = previousProps.sortOn;
+  const previousRefreshRequestTimestamp = previousProps.refreshRequestTimestamp;
   const previousSearchText = previousState.searchText;
 
   return essence.differentDataCube(previousEssence) ||
     essence.differentEffectiveFilter(previousEssence, timekeeper, previousTimekeeper, dimension) ||
     !dimension.equals(previousDimension) ||
     previousSearchText !== searchText ||
+    refreshRequestTimestamp !== previousRefreshRequestTimestamp ||
     !SortOn.equals(sortOn, previousSortOn);
 }

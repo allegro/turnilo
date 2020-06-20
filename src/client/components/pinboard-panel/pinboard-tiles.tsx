@@ -31,6 +31,7 @@ interface PinboardTilesProps {
   essence: Essence;
   clicker: Clicker;
   timekeeper: Timekeeper;
+  refreshRequestTimestamp: number;
 }
 
 function pinnedSortOn(essence: Essence): SortOn | null {
@@ -44,7 +45,7 @@ function pinnedDimensions(essence: Essence): Dimension[] {
 }
 
 export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
-  const { essence, timekeeper, clicker, hidePlaceholder } = props;
+  const { essence, timekeeper, clicker, hidePlaceholder, refreshRequestTimestamp } = props;
   const tileDimensions = pinnedDimensions(essence);
   const sortOn = pinnedSortOn(essence);
 
@@ -66,6 +67,7 @@ export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
       clicker={clicker}
       dimension={dimension}
       timekeeper={timekeeper}
+      refreshRequestTimestamp={refreshRequestTimestamp}
       sortOn={sortOn} />)}
 
     {showPlaceholder && <div className="placeholder">
