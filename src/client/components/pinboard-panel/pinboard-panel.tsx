@@ -29,6 +29,7 @@ export interface PinboardPanelProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
+  refreshRequestTimestamp: number;
   style?: React.CSSProperties;
 }
 
@@ -89,7 +90,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   };
 
   render() {
-    const { clicker, essence, timekeeper, style } = this.props;
+    const { clicker, essence, timekeeper, style, refreshRequestTimestamp } = this.props;
     const { dragOver } = this.state;
 
     return <div
@@ -101,7 +102,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         hidePlaceholder={dragOver}
         essence={essence}
         clicker={clicker}
-        timekeeper={timekeeper} />
+        timekeeper={timekeeper}
+        refreshRequestTimestamp={refreshRequestTimestamp} />
       {dragOver && <div className="drop-indicator-tile" />}
       {dragOver && <div
         className="drag-mask"
