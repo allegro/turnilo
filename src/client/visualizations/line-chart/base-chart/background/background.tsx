@@ -17,13 +17,12 @@
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
-import { BottomBorder } from "../../../../components/bottom-border/bottom-border";
+import { BottomBorder } from "../../../../components/grid-border/grid-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
 import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import "./background.scss";
 
 export const TICK_WIDTH = 5;
 
@@ -60,6 +59,6 @@ export const Background: React.SFC<BackgroundProps> = props => {
       ticks={pickTicks(yScale)}
       scale={yScale}
     />
-    <BottomBorder stage={gridStage} />
+    <BottomBorder stage={gridStage} tickLength={TICK_WIDTH} />
   </React.Fragment>;
 };

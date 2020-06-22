@@ -35,11 +35,6 @@
     top: 12px;
   }
 
-  .vis-bottom {
-    pointer-events: none;
-    stroke: $gray;
-  }
-
   .hover-guide {
     @include css-variable(stroke, background-brand-light);
     stroke-width: 1;
