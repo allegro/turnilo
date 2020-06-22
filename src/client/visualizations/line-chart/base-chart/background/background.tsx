@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-import { scale } from "d3";
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
+import { BottomBorder } from "../../../../components/grid-border/grid-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
+import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import { TICK_WIDTH, TICKS_COUNT } from "../y-scale";
-import "./background.scss";
-import { BottomBorder } from "./bottom-border";
+
+export const TICK_WIDTH = 5;
 
 interface BackgroundProps {
   gridStage: Stage;
   axisStage: Stage;
   xScale: ContinuousScale;
   xTicks: ContinuousTicks;
-  yScale: Linear;
+  yScale: LinearScale;
   formatter: Unary<number, string>;
-}
-
-type Linear = scale.Linear<number, number>;
-
-function calculateTicks(scale: Linear) {
-  return scale.ticks(TICKS_COUNT).filter(n => n !== 0);
 }
 
 export const Background: React.SFC<BackgroundProps> = props => {
@@ -48,7 +42,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
     <GridLines
       orientation="horizontal"
       scale={yScale}
-      ticks={calculateTicks(yScale)}
+      ticks={pickTicks(yScale)}
       stage={gridStage}
     />
     {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
@@ -62,9 +56,9 @@ export const Background: React.SFC<BackgroundProps> = props => {
       tickSize={TICK_WIDTH}
       stage={axisStage}
       formatter={formatter}
-      ticks={calculateTicks(yScale)}
+      ticks={pickTicks(yScale)}
       scale={yScale}
     />
-    <BottomBorder stage={gridStage} />
+    <BottomBorder stage={gridStage} tickLength={TICK_WIDTH} />
   </React.Fragment>;
 };

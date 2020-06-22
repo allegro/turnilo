@@ -16,8 +16,8 @@
 
 import { expect, use } from "chai";
 import { NumberRange, StringRange, TimeRange } from "plywood";
-import { numberRange, stringIn, timeRange } from "../../../../common/models/filter-clause/filter-clause.fixtures";
-import equivalent from "../../../utils/test-utils/equivalent";
+import { numberRange, stringIn, timeRange } from "../../../common/models/filter-clause/filter-clause.fixtures";
+import equivalent from "../test-utils/equivalent";
 import { toFilterClause, toPlywoodRange } from "./highlight-clause";
 
 use(equivalent);

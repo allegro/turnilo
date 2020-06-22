@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Stage } from "../../../../../common/models/stage/stage";
-import { roundToHalfPx } from "../../../../utils/dom/dom";
-import { TICK_WIDTH } from "../y-scale";
+@import '../../../../imports';
 
-interface BottomBorderProps {
- stage: Stage;
+.spacer {
+  @include pin-full;
+  background-color: $white;
 }
-
-export const BottomBorder: React.SFC<BottomBorderProps> = ({ stage }) => {
- return <line
-   className="vis-bottom"
-   transform={stage.getTransform()}
-   x1={0}
-   x2={stage.width + TICK_WIDTH}
-   y1={roundToHalfPx(stage.height)}
-   y2={roundToHalfPx(stage.height)}
- />;
-};

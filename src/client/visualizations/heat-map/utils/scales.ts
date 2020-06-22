@@ -19,9 +19,9 @@ import { max, min, scale } from "d3";
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../common/utils/functional/functional";
+import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 import { nestedDataset } from "./nested-dataset";
 
-export type LinearScale = scale.Linear<number, number>;
 export type ColorScale = scale.Linear<string, string>;
 
 const white = "#fff";

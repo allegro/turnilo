@@ -27,6 +27,7 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { clamp } from "../../utils/dom/dom";
+import { LinearScale } from "../../utils/linear-scale/linear-scale";
 import { Highlight } from "../base-visualization/highlight";
 import "./heat-map.scss";
 import { HeatmapCorner } from "./heatmap-corner";
@@ -41,7 +42,7 @@ import getHighlightPosition from "./utils/get-highlight-position";
 import getHoverPosition, { HoverPosition } from "./utils/get-hover-position";
 import { modalTitle } from "./utils/modal-title";
 import { nestedDataset } from "./utils/nested-dataset";
-import { ColorScale, LinearScale } from "./utils/scales";
+import { ColorScale } from "./utils/scales";
 import scrollerLayout from "./utils/scroller-layout";
 
 interface LabelledHeatmapProps {

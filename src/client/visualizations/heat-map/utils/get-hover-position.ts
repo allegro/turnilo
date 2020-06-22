@@ -15,7 +15,7 @@
  */
 
 import { ScrollerLayout, ScrollerPart } from "../../../components/scroller/scroller";
-import { LinearScale } from "./scales";
+import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 
 export interface HoverPosition {
   row: number;

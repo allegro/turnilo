@@ -22,13 +22,13 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../../common/utils/functional/functional";
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
+import { toFilterClause } from "../../../utils/highlight-clause/highlight-clause";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Highlight } from "../../base-visualization/highlight";
 import { ContinuousRange, ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousReference } from "../utils/splits";
 import { constructRange, shiftByOne } from "./continuous-range";
 import { findClosestDatum } from "./find-closest-datum";
-import { toFilterClause } from "./highlight-clause";
 import { createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
 

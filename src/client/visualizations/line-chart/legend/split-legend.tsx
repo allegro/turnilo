@@ -17,7 +17,7 @@
 import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
-import { selectFirstSplitDatums } from "../utils/dataset";
+import { selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
 import { Legend } from "./legend";
 
 interface SplitLegendProps {

@@ -35,18 +35,9 @@
     top: 12px;
   }
 
-  .vis-bottom {
-    pointer-events: none;
-    stroke: $gray;
-  }
-
   .hover-guide {
     @include css-variable(stroke, background-brand-light);
     stroke-width: 1;
-  }
-
-  .highlighter {
-    @include pin-full;
   }
 
   &:nth-child(n+2) { // same as not(first-child)

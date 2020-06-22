@@ -82,6 +82,10 @@ export function complement<T>(p: Predicate<T>): Predicate<T> {
   return (x: T) => !p(x);
 }
 
+export function or<T>(...ps: Array<Predicate<T>>): Predicate<T> {
+  return (value: T) => ps.reduce((acc, p) => p(value) || acc, false);
+}
+
 export function range(from: number, to: number): number[] {
   const result = [];
   let n = from;

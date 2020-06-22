@@ -19,6 +19,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
+import getScale from "../../../utils/linear-scale/linear-scale";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Scale } from "../chart-line/chart-line";
 import { isHover } from "../interactions/interaction";
@@ -29,7 +30,6 @@ import { Background } from "./background/background";
 import "./base-chart.scss";
 import { Foreground } from "./foreground/foreground";
 import { HoverGuide } from "./foreground/hover-guide";
-import getScale from "./y-scale";
 
 interface ChartLinesProps {
   yScale: Scale;
@@ -64,8 +64,8 @@ export class BaseChart extends React.Component<BaseChartProps> {
     const { interaction, dropHighlight, acceptHighlight, mouseLeave, dragStart, handleHover } = interactions;
 
     const [, xRange] = xScale.range();
-    const lineStage = chartStage.within({ top: TEXT_SPACER, right: chartStage.width - xRange, bottom: 1 }); // leave 1 for border
-    const axisStage = chartStage.within({ top: TEXT_SPACER, left: xRange, bottom: 1 });
+    const lineStage = chartStage.within({ top: TEXT_SPACER, right: chartStage.width - xRange });
+    const axisStage = chartStage.within({ top: TEXT_SPACER, left: xRange });
 
     const yScale = getScale(yDomain, lineStage.height);
     const hasInteraction = interaction && interaction.key === chartId;
@@ -79,8 +79,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
             gridStage={lineStage}
             xScale={xScale}
             xTicks={xTicks}
-            yScale={yScale}
-          />
+            yScale={yScale} />
           {children({ yScale, lineStage })}
           {hasInteraction && isHover(interaction) && <HoverGuide
             hover={interaction}

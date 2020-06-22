@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
-import { makeDataset, nominalDataset, nonNominalDataset, scale, sparseNominalDataset, sparseNonNominalDataset } from "../utils/dataset-fixtures";
+import { makeDataset, nominalDataset, nonNominalDataset, scale, sparseNominalDataset, sparseNonNominalDataset } from "../../../utils/dataset/selectors/dataset-fixtures";
 import { findClosestDatum } from "./find-closest-datum";
 
 const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();

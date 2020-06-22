@@ -31,6 +31,7 @@ import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { isLoaded } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
+import { Predicates } from "../../../common/utils/rules/predicates";
 import { BAR_CHART_MANIFEST } from "../../../common/visualization-manifests/bar-chart/bar-chart";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
 import { GridLines } from "../../components/grid-lines/grid-lines";
@@ -45,6 +46,7 @@ import { classNames, roundToPx } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
+import { BarChart as ImprovedBarChart } from "./improved-bar-chart/bar-chart";
 
 const X_AXIS_HEIGHT = 84;
 const Y_AXIS_WIDTH = 60;
@@ -890,6 +892,17 @@ export class BarChart extends BaseVisualization<BarChartState> {
   renderInternals(dataset: Dataset) {
     const { essence, stage } = this.props;
     const { splits } = essence;
+    const newVersionSupports = Predicates.areExactSplitKinds("time");
+    if (newVersionSupports(essence)) {
+      return <ImprovedBarChart
+        highlight={this.getHighlight()}
+        dropHighlight={this.dropHighlight}
+        acceptHighlight={this.acceptHighlight}
+        saveHighlight={this.highlight}
+        dataset={dataset}
+        essence={essence}
+        stage={stage} />;
+    }
 
     let scrollerLayout: ScrollerLayout;
     const measureCharts: JSX.Element[] = [];

@@ -23,8 +23,8 @@ import { Filter } from "../../../../common/models/filter/filter";
 import { numberSplitCombine } from "../../../../common/models/split/split.fixtures";
 import { Splits } from "../../../../common/models/splits/splits";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { createDailyNominalDatasetInJanuary, january, makeDataset } from "../../../utils/dataset/selectors/dataset-fixtures";
 import equivalent from "../../../utils/test-utils/equivalent";
-import { createDailyNominalDatasetInJanuary, january, makeDataset } from "./dataset-fixtures";
 import { calculateXRange } from "./x-scale";
 
 use(equivalent);

@@ -18,12 +18,12 @@
 @import '../../imports';
 
 .highlighter {
+  @include pin-full;
   pointer-events: none;
 
   .frame {
     @include border-css-variable(border, 1px, dashed, highlight-border);
     position: absolute;
-    height: 100%;
     border-radius: 2px;
     z-index: 1; // Put this above the whiteout
 

@@ -87,3 +87,8 @@ export type ImmutableRecord<T> = Record<T> & Readonly<T>;
 export function isEqualable(o: unknown): o is Equalable {
   return typeof o === "object" && typeof (o as Equalable).equals === "function";
 }
+
+export function safeEquals(a: unknown, b: unknown): boolean {
+  if (isEqualable(a)) return a.equals(b);
+  return a === b;
+}

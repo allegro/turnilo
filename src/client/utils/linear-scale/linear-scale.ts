@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as d3 from "d3";
+
+import { scale } from "d3";
+
+export type LinearScale = scale.Linear<number, number>;
 
 export const TICKS_COUNT = 5;
 
-export const TICK_WIDTH = 5;
+export function pickTicks(scale: LinearScale, ticksCount = TICKS_COUNT): number[] {
+  return scale.ticks(ticksCount).filter(n => n !== 0);
+}
 
-export default function getScale([min, max]: number[], height: number): d3.scale.Linear<number, number> {
+export default function getScale([min, max]: number[], height: number): LinearScale | null {
   if (isNaN(min) || isNaN(max)) {
     return null;
   }
 
-  return d3.scale.linear()
+  return scale.linear()
     .domain([Math.min(min, 0), Math.max(max, 0)])
     .nice(TICKS_COUNT)
     .range([height, 0]);
