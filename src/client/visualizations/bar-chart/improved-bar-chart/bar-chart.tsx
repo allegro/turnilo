@@ -71,6 +71,8 @@ export const BarChart: React.SFC<BarChartProps> = props => {
       onScroll={onScroll}
       onMouseMove={onMouseMove}
       leftGutter={<Spacer />}
+      bottomLeftCorner={<Spacer />}
+      bottomRightCorner={<Spacer />}
       body={<BarCharts
         interaction={interaction}
         dataset={dataset}
