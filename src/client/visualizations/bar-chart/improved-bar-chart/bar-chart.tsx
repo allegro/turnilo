@@ -62,7 +62,8 @@ export const BarChart: React.SFC<BarChartProps> = props => {
         onScroll,
         onMouseLeave,
         onMouseMove,
-        interaction
+        interaction,
+        scrollLeft
       }) => <Scroller
       layout={scroller}
       onMouseLeave={onMouseLeave}
@@ -74,6 +75,7 @@ export const BarChart: React.SFC<BarChartProps> = props => {
         interaction={interaction}
         dataset={dataset}
         stage={segment}
+        scrollLeft={scrollLeft}
         essence={essence}
         xScale={xScale}
         acceptHighlight={acceptHighlight}

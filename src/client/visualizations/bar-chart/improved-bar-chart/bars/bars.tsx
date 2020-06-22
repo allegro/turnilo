@@ -42,14 +42,17 @@ interface BarsProps {
   dataset: Dataset;
   xScale: XScale;
   stage: Stage;
+  scrollLeft: number;
 }
+
+const TOTAL_LABEL_OFFSET = 10;
 
 export class Bars extends React.Component<BarsProps> {
 
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const { dropHighlight, acceptHighlight, interaction, stage, series, dataset, essence, xScale } = this.props;
+    const { dropHighlight, acceptHighlight, interaction, stage, scrollLeft, series, dataset, essence, xScale } = this.props;
     const chartStage = calculateChartStage(stage);
     const firstSplitReference = firstSplitRef(essence);
     const getX = xGetter(firstSplitReference);
@@ -64,10 +67,12 @@ export class Bars extends React.Component<BarsProps> {
       ref={this.container}
       className="bar-chart-bars"
       style={stage.getWidthHeight()}>
-      <VisMeasureLabel
-        series={series}
-        datum={selectMainDatum(dataset)}
-        showPrevious={essence.hasComparison()} />
+      <div className="bar-chart-total" style={{ left: scrollLeft + TOTAL_LABEL_OFFSET }}>
+        <VisMeasureLabel
+          series={series}
+          datum={selectMainDatum(dataset)}
+          showPrevious={essence.hasComparison()} />
+      </div>
       {yScale && <React.Fragment>
         <svg viewBox={chartStage.getViewBox()}>
           <Background gridStage={chartStage} yScale={yScale} />

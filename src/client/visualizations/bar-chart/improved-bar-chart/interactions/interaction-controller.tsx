@@ -38,6 +38,8 @@ interface InteractionProps {
   onMouseMove?: (x: number, y: number, part: ScrollerPart) => void;
   onMouseLeave?: () => void;
   onScroll?: (scrollTop: number, scrollLeft: number) => void;
+  scrollLeft: number;
+  scrollTop: number;
   interaction: Interaction | null;
 }
 
@@ -133,8 +135,11 @@ export class InteractionController extends React.Component<InteractionController
 
   render() {
     const { children } = this.props;
+    const { scrollLeft, scrollTop } = this.state;
     return children({
       interaction: this.interaction(),
+      scrollLeft,
+      scrollTop,
       onScroll: this.saveScroll,
       onMouseLeave: this.resetHover,
       onMouseMove: this.saveHover,

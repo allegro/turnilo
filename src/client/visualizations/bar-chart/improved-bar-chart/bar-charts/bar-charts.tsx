@@ -28,13 +28,14 @@ interface BarChartsProps {
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
   stage: Stage;
+  scrollLeft: number;
   essence: Essence;
   dataset: Dataset;
   xScale: XScale;
 }
 
 export const BarCharts: React.SFC<BarChartsProps> = props => {
-  const { dropHighlight, acceptHighlight, interaction, essence, dataset, xScale, stage } = props;
+  const { dropHighlight, acceptHighlight, interaction, essence, dataset, xScale, scrollLeft, stage } = props;
   const seriesList = essence.getConcreteSeries().toArray();
   return <React.Fragment>
     {seriesList.map(series => {
@@ -42,6 +43,7 @@ export const BarCharts: React.SFC<BarChartsProps> = props => {
       return <Bars
         key={series.reactKey()}
         stage={stage}
+        scrollLeft={scrollLeft}
         interaction={hasInteraction && interaction}
         essence={essence}
         series={series}
