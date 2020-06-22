@@ -20,6 +20,8 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
 import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
 
+export const TICK_LENGTH = 10;
+
 interface SingleYAxisProps {
   series: ConcreteSeries;
   scale: LinearScale;
@@ -30,12 +32,14 @@ export const SingleYAxis: React.SFC<SingleYAxisProps> = props => {
   const { scale, series, stage } = props;
   return <div>
     <svg viewBox={stage.getViewBox()}>
-      <VerticalAxis
-        stage={stage}
-        ticks={pickTicks(scale)}
-        tickSize={10}
-        scale={scale}
-        formatter={series.formatter()} />
+      <g transform="translate(-1, 0)">
+        <VerticalAxis
+          stage={stage}
+          ticks={pickTicks(scale)}
+          tickSize={TICK_LENGTH}
+          scale={scale}
+          formatter={series.formatter()} />
+      </g>
     </svg>
   </div>;
 };
