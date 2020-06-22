@@ -19,8 +19,8 @@ context("Bar Chart", () => {
       barChart().should("exist");
     });
 
-    it("should load five ticks", () => {
-      ticks().should("have.length", 5);
+    it("should load three ticks", () => {
+      ticks().should("have.length", 3);
     });
   });
 });
