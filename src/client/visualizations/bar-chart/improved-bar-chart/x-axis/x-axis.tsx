@@ -36,7 +36,7 @@ const TICK_TEXT_OFFSET = 12;
 
 function calculateTicks(domain: XDomain, essence: Essence): DomainValue[] {
   if (Predicates.areExactSplitKinds("time")(essence)) {
-    return domain.filter((_, idx) => idx % 5 === 0);
+    return domain.filter((_, idx) => idx % 8 === 0);
   }
   return domain;
 }
