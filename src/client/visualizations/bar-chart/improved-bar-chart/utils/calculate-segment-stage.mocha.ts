@@ -31,7 +31,7 @@ describe("calculateSegmentStage", () => {
     });
 
     it("should set width domain size * minimal bar width if big enough", () => {
-      const minimalBarWidth = 20;
+      const minimalBarWidth = 30;
       const domainSize = 2000;
       const stage = calculateSegmentStage(bodyStage, domainSize, 1);
       expect(stage.width).to.be.equal(domainSize * minimalBarWidth);
