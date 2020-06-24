@@ -16,7 +16,7 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
@@ -33,10 +33,18 @@ interface HighlightOverlayProps {
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
   stage: Stage;
+  showPrevious: boolean;
+}
+
+function getYValue(datum: Datum, series: ConcreteSeries, includePrevious: boolean): number {
+  if (!includePrevious) {
+    return series.selectValue(datum);
+  }
+  return Math.max(series.selectValue(datum), series.selectValue(datum, SeriesDerivation.PREVIOUS));
 }
 
 export const HighlightOverlay: React.SFC<HighlightOverlayProps> = props => {
-  const { stage, yScale, series, xScale, interaction: { datum }, getX } = props;
+  const { stage, yScale, series, xScale, showPrevious, interaction: { datum }, getX } = props;
   const xValue = getX(datum);
   const left = xScale.calculate(xValue);
   const right = left + xScale.rangeBand();

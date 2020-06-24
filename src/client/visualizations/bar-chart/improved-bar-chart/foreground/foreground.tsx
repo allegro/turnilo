@@ -58,6 +58,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         rect={rect} />
       <HighlightOverlay
         interaction={interaction}
+        showPrevious={essence.hasComparison()}
         stage={stage}
         xScale={xScale}
         yScale={yScale}
