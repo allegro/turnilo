@@ -80,7 +80,8 @@ export class Bars extends React.Component<BarsProps> {
               datum={datum}
               yScale={yScale}
               xScale={xScale}
-              getY={getY}
+              series={series}
+              showPrevious={essence.hasComparison()}
               getX={getX}
               maxHeight={chartStage.height} />)}
           </g>

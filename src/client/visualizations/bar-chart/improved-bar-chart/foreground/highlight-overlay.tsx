@@ -21,7 +21,7 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
-import { BAR_PADDING } from "../bars/bar";
+import { TOP_PADDING } from "../bars/bar";
 import { Highlight } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
@@ -40,7 +40,7 @@ export const HighlightOverlay: React.SFC<HighlightOverlayProps> = props => {
   const xValue = getX(datum);
   const left = xScale.calculate(xValue);
   const right = left + xScale.rangeBand();
-  const yValue = series.selectValue(datum);
-  const top = yScale(yValue) + stage.y - BAR_PADDING;
+  const yValue = getYValue(datum, series, showPrevious);
+  const top = yScale(yValue) + stage.y - TOP_PADDING;
   return <Highlighter left={left} right={right} top={top} />;
 };
