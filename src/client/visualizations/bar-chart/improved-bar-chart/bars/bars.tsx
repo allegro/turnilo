@@ -29,6 +29,7 @@ import { Interaction } from "../interactions/interaction";
 import { calculateChartStage } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { xGetter, XScale } from "../utils/x-scale";
+import { yExtent } from "../utils/y-extent";
 import { Background } from "./background";
 import { Bar } from "./bar";
 import "./bars.scss";
@@ -56,12 +57,9 @@ export class Bars extends React.Component<BarsProps> {
     const chartStage = calculateChartStage(stage);
     const firstSplitReference = firstSplitRef(essence);
     const getX = xGetter(firstSplitReference);
-    const getY = (datum: Datum) => series.selectValue(datum);
-    // TODO: move outside line chart
     const datums = selectFirstSplitDatums(dataset);
-
-    const yExtent = d3.extent(datums, getY);
-    const yScale = getScale(yExtent, chartStage.height);
+    const extent = yExtent(datums, series, essence);
+    const yScale = getScale(extent, chartStage.height);
 
     return <div
       ref={this.container}
@@ -82,7 +80,8 @@ export class Bars extends React.Component<BarsProps> {
               datum={datum}
               yScale={yScale}
               xScale={xScale}
-              getY={getY}
+              series={series}
+              showPrevious={essence.hasComparison()}
               getX={getX}
               maxHeight={chartStage.height} />)}
           </g>

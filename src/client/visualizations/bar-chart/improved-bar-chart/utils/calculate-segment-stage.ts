@@ -16,7 +16,7 @@
 
 import { Stage } from "../../../../../common/models/stage/stage";
 
-const BAR_MIN_WIDTH = 20;
+const BAR_MIN_WIDTH = 30;
 const MIN_CHART_HEIGHT = 200;
 
 export function calculateSegmentStage(bodyStage: Stage, domainSize: number, seriesCount: number): Stage {

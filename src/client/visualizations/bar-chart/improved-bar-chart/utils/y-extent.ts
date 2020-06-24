@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-@import '../../../../imports';
+import { Datum } from "plywood";
+import { Essence } from "../../../../../common/models/essence/essence";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { datumsExtent, Extent, seriesSelectors } from "../../../../utils/extent/extent";
 
-.bar-chart-bars {
-  .bar-chart-bar {
-    @include css-variable(fill, brand);
-  }
-
-  .bar-chart-bar-previous {
-    @include css-variable(fill, main-time-area);
-  }
-
-
-  .bar-chart-total {
-    position: absolute;
-    top: 15px;
-  }
+export function yExtent(datums: Datum[], series: ConcreteSeries, essence: Essence): Extent {
+  return datumsExtent(datums, seriesSelectors(series, essence.hasComparison()));
 }
-
-
