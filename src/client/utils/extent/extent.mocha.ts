@@ -57,7 +57,7 @@ describe("extent", () => {
         expect(selector(datumFixture)).to.be.equal(42);
       });
 
-      it("should return selector which pick current value", () => {
+      it("should return selector which pick previous value", () => {
         const [, selector] = seriesSelectors(seriesFixture, true);
         expect(selector(datumFixture)).to.be.equal(101);
       });
