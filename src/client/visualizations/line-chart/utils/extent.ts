@@ -15,32 +15,13 @@
  */
 
 import * as d3 from "d3";
-import { Dataset, Datum } from "plywood";
+import { Dataset } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
-import { flatMap, Unary } from "../../../../common/utils/functional/functional";
-import { readNumber } from "../../../../common/utils/general/general";
+import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
+import { flatMap } from "../../../../common/utils/functional/functional";
 import { selectSplitDataset } from "../../../utils/dataset/selectors/selectors";
+import { datumsExtent, Extent, seriesSelectors } from "../../../utils/extent/extent";
 import { hasNominalSplit } from "./splits";
-
-type Getter = Unary<Datum, number>;
-type Extent = [number, number];
-
-function seriesSelectors(series: ConcreteSeries, hasComparison: boolean): Getter[] {
-  const get = (d: Datum) => readNumber(series.selectValue(d));
-  if (!hasComparison) return [get];
-  return [
-    get,
-    (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS))
-  ];
-}
-
-function datumsExtent(datums: Datum[], getters: Getter[]): Extent {
-  return getters.reduce((acc, getter) => {
-    const extent =  d3.extent(datums, getter);
-    return d3.extent([...extent, ...acc]);
-  }, [0, 0]) as Extent;
-}
 
 export function extentAcrossSeries(dataset: Dataset, essence: Essence): Extent {
   const hasComparison = essence.hasComparison();
