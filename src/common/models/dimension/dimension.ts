@@ -16,7 +16,7 @@
  */
 
 import { Class, Instance } from "immutable-class";
-import { $, Expression } from "plywood";
+import { $, Expression, FallbackExpression, LookupExpression, RefExpression } from "plywood";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
 import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
 import { Bucket } from "../split/split";
@@ -260,6 +260,27 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
   public changeFormula(newFormula: string): Dimension {
     return this.change("formula", newFormula);
+  }
+
+  public getLookupExpression(): LookupExpression {
+    let lookupExpression: LookupExpression = null;
+    if (this.expression.op === "fallback") {
+      const expression = <FallbackExpression> (this.expression);
+      if (expression.operand.op === "lookup") {
+        lookupExpression = <LookupExpression> (expression.operand);
+      }
+    } else if (this.expression.op === "lookup") {
+      lookupExpression = <LookupExpression> (this.expression);
+    }
+    return lookupExpression;
+  }
+
+  public getLookupExpressionField(): string {
+    const lookupExpression = this.getLookupExpression();
+    if (lookupExpression && lookupExpression.operand instanceof RefExpression) {
+      return (<RefExpression> (lookupExpression.operand)).name;
+    }
+    return null;
   }
 
 }

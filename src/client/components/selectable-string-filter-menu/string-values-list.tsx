@@ -23,10 +23,14 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { StringValue } from "./string-value";
 import "./string-values-list.scss";
 
-function filterRows<T>(rows: T[], searchText: string): T[] {
+function filterRows<T>(rows: T[], searchText: string, labels: {[key: string]: string}): T[] {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
-  return rows.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
+  return rows.filter(d => {
+    const strD = String(d);
+    const label = labels[String(strD)] || strD;
+    return label.toLowerCase().indexOf(searchTextLower) !== -1;
+  });
 }
 
 interface RowsListProps {
@@ -40,7 +44,7 @@ interface RowsListProps {
   onRowSelect: Binary<unknown, boolean, void>;
 }
 
-function sortRows<T>(rows: T[], promoted: Set<T>): T[] {
+function sortRows<T>(rows: T[], promoted: Set<unknown>): T[] {
   return rows.sort((a, b) => {
     if (promoted.has(a) && !promoted.has(b)) return -1;
     if (!promoted.has(a) && promoted.has(b)) return 1;
@@ -50,8 +54,14 @@ function sortRows<T>(rows: T[], promoted: Set<T>): T[] {
 
 export const StringValuesList: React.SFC<RowsListProps> = props => {
   const { onRowSelect, filterMode, dataset, dimension, searchText, limit, promotedValues, selectedValues } = props;
-  const rows = dataset.data.slice(0, limit).map(d => d[dimension.name] as string);
-  const matchingRows = filterRows(rows, searchText);
+  const labels: {[key: string]: string} = {};
+  const rows = dataset.data.slice(0, limit).map(d => {
+    const value = String(d[dimension.name]);
+    const label = d["$label"] as string;
+    labels[value] = label;
+    return value;
+  });
+  const matchingRows = filterRows(rows, searchText, labels);
   if (searchText && matchingRows.length === 0) {
     return <div className="no-string-values">{`No results for "${searchText}"`}</div>;
   }
@@ -62,6 +72,7 @@ export const StringValuesList: React.SFC<RowsListProps> = props => {
       <StringValue
         key={String(value)}
         value={value}
+        labels={labels}
         onRowSelect={onRowSelect}
         selected={selectedValues && selectedValues.contains(value)}
         checkboxStyle={checkboxStyle}

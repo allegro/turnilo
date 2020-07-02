@@ -16,7 +16,8 @@
  */
 
 import { Duration, minute, Timezone } from "chronoshift";
-import { List, Record, Set as ImmutableSet } from "immutable";
+import { List, Map, Record, Set as ImmutableSet } from "immutable";
+import { $, RefExpression } from "plywood";
 import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 import { DateRange } from "../date-range/date-range";
@@ -91,6 +92,7 @@ interface StringFilterDefinition extends FilterDefinition {
   not: boolean;
   action: StringFilterAction;
   values: ImmutableSet<string>;
+  labels: Map<string, string>;
 }
 
 const defaultStringFilter: StringFilterDefinition = {
@@ -98,7 +100,8 @@ const defaultStringFilter: StringFilterDefinition = {
   type: FilterTypes.STRING,
   not: false,
   action: StringFilterAction.CONTAINS,
-  values: ImmutableSet([])
+  values: ImmutableSet([]),
+  labels: Map()
 };
 
 export class StringFilterClause extends Record<StringFilterDefinition>(defaultStringFilter) {
@@ -170,8 +173,9 @@ export function isTimeFilter(clause: FilterClause): clause is TimeFilterClause {
 
 export type FilterClause = BooleanFilterClause | NumberFilterClause | StringFilterClause | FixedTimeFilterClause | RelativeTimeFilterClause;
 
-export function toExpression(clause: FilterClause, { expression }: Dimension): Expression {
+export function toExpression(clause: FilterClause, dimension: Dimension): Expression {
   const { type } = clause;
+  let expression = dimension.expression;
   switch (type) {
     case FilterTypes.BOOLEAN: {
       const { not, values } = clause as BooleanFilterClause;
@@ -193,6 +197,10 @@ export function toExpression(clause: FilterClause, { expression }: Dimension): E
           stringExp = expression.contains(r(values.first()));
           break;
         case StringFilterAction.IN:
+          const lookupField = dimension.getLookupExpressionField();
+          if (lookupField) {
+            expression = $(lookupField);
+          }
           stringExp = expression.overlap(r(values.toArray()));
           break;
         case StringFilterAction.MATCH:

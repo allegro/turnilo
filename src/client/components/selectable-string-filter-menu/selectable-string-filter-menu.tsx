@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Set } from "immutable";
+import { Map, Set } from "immutable";
 import { Dataset } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
@@ -57,6 +57,7 @@ export interface SelectableStringFilterMenuState {
   searchText: string;
   dataset: DatasetLoad;
   selectedValues: Set<string>;
+  selectedValuesLabels: { [key: string]: string };
   pasteModeEnabled: boolean;
 }
 
@@ -78,6 +79,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     pasteModeEnabled: false,
     dataset: loading,
     selectedValues: this.initialSelection(),
+    selectedValuesLabels: {},
     searchText: ""
   };
 
@@ -155,7 +157,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
-    const { selectedValues } = this.state;
+    const { selectedValues, selectedValuesLabels } = this.state;
     const { name } = dimension;
     if (selectedValues.count() === 0) return onClauseChange(null);
 
@@ -163,18 +165,20 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       action: StringFilterAction.IN,
       reference: name,
       values: selectedValues,
+      labels: Map(selectedValuesLabels),
       not: filterMode === FilterMode.EXCLUDE
     });
     return onClauseChange(clause);
   }
 
-  onValueClick = (value: string, withModKey: boolean) => {
-    const { selectedValues } = this.state;
+  onValueClick = ({ value, label }: { value: string, label: string }, withModKey: boolean) => {
+    const { selectedValues, selectedValuesLabels } = this.state;
     if (withModKey) {
       const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
       return this.setState({ selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
-    return this.setState({ selectedValues: toggle(selectedValues, value) });
+    selectedValuesLabels[value] = label;
+    return this.setState({ selectedValues: toggle(selectedValues, value), selectedValuesLabels });
   };
 
   onOkClick = () => {

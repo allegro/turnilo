@@ -23,6 +23,7 @@ import "./string-value.scss";
 
 interface StringValueProps {
   value: unknown;
+  labels: { [key: string]: string };
   selected: boolean;
   checkboxStyle: string;
   highlight: string;
@@ -32,17 +33,21 @@ interface StringValueProps {
 const hasModKey = (e: React.MouseEvent<unknown>) => e.altKey || e.ctrlKey || e.metaKey;
 
 export const StringValue: React.SFC<StringValueProps> = props => {
-  const { value, selected, checkboxStyle, highlight, onRowSelect } = props;
-  const label = String(value);
-
+  const { value, labels, selected, checkboxStyle, highlight, onRowSelect } = props;
+  const stringValue = String(value);
+  const label = labels[stringValue];
+  const title = label && label.length > 0 ? `${label} (${stringValue})` : stringValue;
   return <div
     className={classNames("string-value", { selected })}
-    title={label}
-    onClick={e => onRowSelect(value, hasModKey(e))}
+    title={title}
+    onClick={e => onRowSelect({
+      value,
+      label
+    }, hasModKey(e))}
   >
     <div className="value-wrapper">
       <Checkbox type={checkboxStyle as CheckboxType} selected={selected} />
-      <HighlightString className="label" text={label} highlight={highlight} />
+      <HighlightString className="label" text={title} highlight={highlight} />
     </div>
   </div>;
 };

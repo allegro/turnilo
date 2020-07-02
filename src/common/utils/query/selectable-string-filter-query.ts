@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Expression, r, SortExpression } from "plywood";
+import { $, Expression, r, RefExpression, SortExpression } from "plywood";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
@@ -37,10 +37,14 @@ export function stringFilterOptionsQuery({ essence, timekeeper, limit, dimension
 
   const filterWithSearch = searchText ? filter.and(dimension.expression.contains(r(searchText), "ignoreCase")) : filter;
 
-  return $main
-    .filter(filterWithSearch)
-    .split(dimension.expression, dimension.name)
-    .apply("MEASURE", measureExpression)
+  let exp: Expression = $main.filter(filterWithSearch);
+  const lookupField = dimension.getLookupExpressionField();
+  if (lookupField) {
+    exp = exp.split($(lookupField), lookupField).apply(dimension.name, $(lookupField)).apply("$label", dimension.expression);
+  } else {
+    exp = exp.split(dimension.expression, dimension.name);
+  }
+  return exp.apply("MEASURE", measureExpression)
     .sort($("MEASURE"), SortExpression.DESCENDING)
     .limit(limit);
 }

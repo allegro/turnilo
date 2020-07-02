@@ -61,14 +61,16 @@ export function formatFilterClause(dimension: Dimension, clause: FilterClause, t
   return title ? `${title} ${values}` : values;
 }
 
-function getFormattedStringClauseValues({ values, action }: StringFilterClause): string {
+function getFormattedStringClauseValues({ values, action, labels }: StringFilterClause): string {
+  const firstValue = values.first();
+  const firstValueLabel = labels && labels.get(firstValue) || firstValue;
   switch (action) {
     case StringFilterAction.MATCH:
-      return `/${values.first()}/`;
+      return `/${firstValueLabel}/`;
     case StringFilterAction.CONTAINS:
-      return `"${values.first()}"`;
+      return `"${firstValueLabel}"`;
     case StringFilterAction.IN:
-      return values.count() > 1 ? `(${values.count()})` : values.first();
+      return values.count() > 1 ? `(${values.count()})` : firstValueLabel;
   }
 }
 
