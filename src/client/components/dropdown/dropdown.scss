@@ -63,6 +63,8 @@
     padding: 8px 0;
     width: 100%;
     line-height: 24px;
+    max-height: 50vh;
+    overflow-y: scroll;
   }
 
   &.down .dropdown-menu {
