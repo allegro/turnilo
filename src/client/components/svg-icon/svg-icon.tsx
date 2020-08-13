@@ -40,7 +40,7 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
       svgInsides = svg
         .substr(0, svg.length - 6) // remove trailing "</svg>"
         .replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
-          var vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
+          var vbMatch = svgDec.match(/viewBox="([\d. ]+)"/);
           if (vbMatch) viewBox = vbMatch[1];
           return "";
         });
