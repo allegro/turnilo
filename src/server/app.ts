@@ -37,8 +37,9 @@ let app = express();
 app.disable("x-powered-by");
 
 const isDev = app.get("env") === "development";
+const isTrustedProxy = SERVER_SETTINGS.getTrustProxy() === "always";
 
-if (SERVER_SETTINGS.getTrustProxy() === "always") {
+if (isTrustedProxy) {
   app.set("trust proxy", 1); // trust first proxy
 }
 
@@ -109,7 +110,7 @@ attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 attachRouter("/plywood", plywoodRouter(settingsGetter));
 attachRouter("/plyql", plyqlRouter(settingsGetter));
 attachRouter("/mkurl", mkurlRouter(settingsGetter));
-attachRouter("/shorten", shortenRouter(settingsGetter));
+attachRouter("/shorten", shortenRouter(settingsGetter, isTrustedProxy));
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === "deny") {

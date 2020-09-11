@@ -44,7 +44,7 @@ describe("url shortener", () => {
   describe("with succesful shortener", () => {
     before(done => {
       app = express();
-      app.use(shortenPath, shortenRouter(settingsGetterFactory(SuccessUrlShortenerJS)));
+      app.use(shortenPath, shortenRouter(settingsGetterFactory(SuccessUrlShortenerJS), true));
       server = app.listen(0, done);
     });
 
@@ -63,7 +63,7 @@ describe("url shortener", () => {
   describe("without failing shortener", () => {
     before(done => {
       app = express();
-      app.use(shortenPath, shortenRouter(settingsGetterFactory(FailUrlShortenerJS)));
+      app.use(shortenPath, shortenRouter(settingsGetterFactory(FailUrlShortenerJS), true));
       app.use(bodyParser.json());
       server = app.listen(0, done);
     });
