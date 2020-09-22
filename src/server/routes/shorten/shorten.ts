@@ -16,9 +16,10 @@
 
 import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
+import { UrlShortenerContext } from "../../../common/models/url-shortener/url-shortener";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
-export function shortenRouter(settingsGetter: SettingsGetter) {
+export function shortenRouter(settingsGetter: SettingsGetter, isTrustedProxy: boolean) {
 
   const router = Router();
 
@@ -27,7 +28,11 @@ export function shortenRouter(settingsGetter: SettingsGetter) {
     try {
       const settings = await settingsGetter();
       const shortener = settings.customization.urlShortener;
-      const shortUrl = await shortener.shortenerFunction(url, request);
+      const context: UrlShortenerContext = {
+        // If trust proxy is not enabled, app is understood as directly facing the internet
+        clientIp: isTrustedProxy ? req.ip : req.connection.remoteAddress
+      };
+      const shortUrl = await shortener.shortenerFunction(request, url, context);
       res.json({ shortUrl });
     } catch (error) {
       console.log("error:", error.message);

@@ -737,7 +737,7 @@ customization:
 ### Url Shortener
 
 Turnilo supports url shorteners for generating short links for current view definitions. This is done by defining function body in configuration.
-Function will receive two arguments, `request` - [node request module](https://github.com/request/request-promise-native) and `url` with current hash. Function should return Promise with shortened url as string inside.
+Function will receive three arguments, `request` - [node request module](https://github.com/request/request-promise-native), `url` with current hash, and `context` which includes: `clientIp` (the ip of the original client, considering a possible XFF header). Function should return Promise with shortened url as string inside.
 
 
 
