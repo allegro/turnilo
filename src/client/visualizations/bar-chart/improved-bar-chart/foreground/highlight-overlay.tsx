@@ -21,7 +21,7 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
-import { TOP_PADDING } from "../bars/bar";
+import { TOP_PADDING } from "../bar/padding";
 import { Highlight } from "../interactions/interaction";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";

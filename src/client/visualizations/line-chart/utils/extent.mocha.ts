@@ -13,9 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Essence } from "../../../../../common/models/essence/essence";
-
-export function firstSplitRef(essence: Essence): string {
-  return essence.splits.splits.first().reference;
-}

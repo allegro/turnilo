@@ -15,18 +15,24 @@
  */
 
 import { List } from "immutable";
-import { Dataset } from "plywood";
+import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Binary, Nullary } from "../../../../common/utils/functional/functional";
 import { Scroller } from "../../../components/scroller/scroller";
+import { SPLIT } from "../../../config/constants";
+import { selectMainDatum } from "../../../utils/dataset/selectors/selectors";
 import { Highlight } from "../../base-visualization/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";
+import { create, isStacked, StackedMode } from "./utils/chart-mode";
 import { calculateLayout } from "./utils/layout";
+import { stack } from "./utils/stack-layout";
+import { transposeDataset } from "./utils/transpose-dataset";
 import { getXDomain } from "./utils/x-domain";
 import { createXScale } from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
@@ -42,18 +48,29 @@ interface BarChartProps {
   acceptHighlight: Nullary<void>;
 }
 
+function stackDataset(dataset: Datum[], { series, hasComparison }: StackedMode): Datum[] {
+  const seriesList = series.toArray();
+  return seriesList.reduce((datums: Datum[], series: ConcreteSeries) => {
+    return stack(datums, series, hasComparison);
+  }, dataset);
+}
+
 export const BarChart: React.SFC<BarChartProps> = props => {
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
-  const seriesCount = essence.series.count();
-  const domain = getXDomain(essence, dataset);
+  const { [SPLIT]: split, ...totals } = selectMainDatum(dataset);
+  const mode = create(essence, dataset);
+  const transposedDataset = transposeDataset(dataset, mode);
+  const data = isStacked(mode) ? stackDataset(transposedDataset, mode) : transposedDataset;
+  const seriesCount = mode.series.count();
+  const domain = getXDomain(data, mode);
   const barChartLayout = calculateLayout(stage, domain.length, seriesCount);
   const { scroller, segment } = barChartLayout;
   const xScale = createXScale(domain, segment.width);
 
   return <InteractionController
     xScale={xScale}
-    essence={essence}
-    dataset={dataset}
+    mode={mode}
+    datums={data}
     layout={barChartLayout}
     saveHighlight={saveHighlight}
     highlight={highlight}>
@@ -75,19 +92,20 @@ export const BarChart: React.SFC<BarChartProps> = props => {
       bottomRightCorner={<Spacer />}
       body={<BarCharts
         interaction={interaction}
-        dataset={dataset}
+        datums={data}
+        totals={totals}
         stage={segment}
         scrollLeft={scrollLeft}
-        essence={essence}
+        mode={mode}
         xScale={xScale}
         acceptHighlight={acceptHighlight}
         dropHighlight={dropHighlight} />}
       rightGutter={<YAxis
-        essence={essence}
-        dataset={dataset}
+        mode={mode}
+        datums={data}
         stage={Stage.fromSize(scroller.right, segment.height)} />}
       bottomGutter={<XAxis
-        essence={essence}
+        mode={mode}
         scale={xScale}
         stage={Stage.fromSize(segment.width, scroller.bottom)}
       />} />}

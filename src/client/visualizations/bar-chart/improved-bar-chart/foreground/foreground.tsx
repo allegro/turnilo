@@ -22,6 +22,7 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
+import { BarChartMode } from "../utils/chart-mode";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { HighlightModal } from "./highlight-modal";
@@ -37,12 +38,12 @@ interface ForegroundProps {
   yScale: LinearScale;
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-  essence: Essence;
+  mode: BarChartMode;
   stage: Stage;
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, essence, getX, series, xScale, yScale, interaction } = props;
+  const { stage, dropHighlight, acceptHighlight, container, getX, mode, series, xScale, yScale, interaction } = props;
   const rect = container.current.getBoundingClientRect();
   return <React.Fragment>
     {isHighlight(interaction) && <React.Fragment>
@@ -50,7 +51,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         interaction={interaction}
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
-        timezone={essence.timezone}
+        timezone={mode.timezone}
         xScale={xScale}
         yScale={yScale}
         getX={getX}
@@ -58,7 +59,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         rect={rect} />
       <HighlightOverlay
         interaction={interaction}
-        showPrevious={essence.hasComparison()}
+        showPrevious={mode.hasComparison}
         stage={stage}
         xScale={xScale}
         yScale={yScale}
@@ -72,6 +73,6 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
       yScale={yScale}
       getX={getX}
       series={series}
-      essence={essence} />}
+      mode={mode} />}
   </React.Fragment>;
 };

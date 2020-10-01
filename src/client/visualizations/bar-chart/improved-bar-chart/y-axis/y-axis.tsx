@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
-import { Dataset } from "plywood";
+import { Datum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import getScale from "../../../../utils/linear-scale/linear-scale";
+import { BarChartMode } from "../utils/chart-mode";
 import { calculateYAxisStage } from "../utils/layout";
+import { yExtent } from "../utils/y-extent";
 import { SingleYAxis } from "./single-y-axis";
 
 interface YAxisProps {
   stage: Stage;
-  dataset: Dataset;
-  essence: Essence;
+  datums: Datum[];
+  mode: BarChartMode;
 }
 
 export const YAxis: React.SFC<YAxisProps> = props => {
-  const { essence, stage, dataset } = props;
-  const seriesList = essence.getConcreteSeries().toArray();
-  const datums = selectFirstSplitDatums(dataset);
+  const { mode, stage, datums } = props;
   const axisStage = calculateYAxisStage(stage);
+  const seriesList = mode.series.toArray();
   return <React.Fragment>
     {seriesList.map(series => {
-      const extent = d3.extent(datums, datum => series.selectValue(datum));
+      const extent = yExtent(datums, series, mode.hasComparison);
       const scale = getScale(extent, axisStage.height);
       return <div
         style={stage.getWidthHeight()}

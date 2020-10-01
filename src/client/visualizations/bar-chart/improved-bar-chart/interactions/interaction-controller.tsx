@@ -27,8 +27,9 @@ import { ScrollerPart } from "../../../../components/scroller/scroller";
 import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { toPlywoodRange } from "../../../../utils/highlight-clause/highlight-clause";
 import { Highlight } from "../../../base-visualization/highlight";
+import { getContinuousReference } from "../../../line-chart/utils/splits";
+import { BarChartMode } from "../utils/chart-mode";
 import { BarChartLayout } from "../utils/layout";
-import { firstSplitRef } from "../utils/splits";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { createHighlight, createHover, equalInteractions, Hover, Interaction } from "./interaction";
@@ -45,8 +46,8 @@ interface InteractionProps {
 
 interface InteractionControllerProps {
   xScale: XScale;
-  essence: Essence;
-  dataset: Dataset;
+  mode: BarChartMode;
+  datums: Datum[];
   layout: BarChartLayout;
   children: Unary<InteractionProps, React.ReactNode>;
   highlight?: Highlight;
@@ -96,8 +97,8 @@ export class InteractionController extends React.Component<InteractionController
     if (!TimeRange.isTimeRange(value)) return;
     this.setState({ hover: null });
     const series = this.getSeriesFromEvent(y, part);
-    const { saveHighlight, essence } = this.props;
-    const reference = firstSplitRef(essence);
+    const { saveHighlight, mode } = this.props;
+    const { reference } = mode.continuousSplit;
     const values = List.of(new DateRange(value));
     const clause = new FixedTimeFilterClause({ reference, values });
     saveHighlight(List.of(clause), series.plywoodKey());
@@ -110,17 +111,16 @@ export class InteractionController extends React.Component<InteractionController
   }
 
   findDatumByValue(value: DomainValue): Datum | null {
-    const { essence, dataset } = this.props;
-    const datums = selectFirstSplitDatums(dataset);
-    const reference = firstSplitRef(essence);
+    const { mode, datums } = this.props;
+    const { reference } = mode.continuousSplit;
     return datums.find(datum => safeEquals(value, datum[reference]));
   }
 
   getSeriesFromEvent(y: number, part: ScrollerPart): ConcreteSeries | null {
     if (part !== "body") return null;
-    const { layout: { segment: { height: seriesHeight } }, essence } = this.props;
+    const { layout: { segment: { height: seriesHeight } }, mode: { series } } = this.props;
     const index = Math.floor(y / seriesHeight);
-    return essence.getConcreteSeries().get(index);
+    return series.get(index);
   }
 
   interaction(): Interaction | null {

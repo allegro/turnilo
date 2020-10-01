@@ -14,90 +14,71 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
-import { Dataset, Datum } from "plywood";
+import { Datum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { Nullary } from "../../../../../common/utils/functional/functional";
-import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
-import { selectFirstSplitDatums, selectMainDatum } from "../../../../utils/dataset/selectors/selectors";
-import getScale from "../../../../utils/linear-scale/linear-scale";
-import { Foreground } from "../foreground/foreground";
-import { Interaction } from "../interactions/interaction";
-import { calculateChartStage } from "../utils/layout";
-import { firstSplitRef } from "../utils/splits";
-import { xGetter, XScale } from "../utils/x-scale";
+import { Unary } from "../../../../../common/utils/functional/functional";
+import getScale, { LinearScale } from "../../../../utils/linear-scale/linear-scale";
+import { SingleBar } from "../bar/single-bar";
+import { SingleTimeShiftBar } from "../bar/single-time-shift-bar";
+import { StackedBar } from "../bar/stacked-bar";
+import { StackedTimeShiftBar } from "../bar/stacked-time-shift-bar";
+import { BarChartMode, isStacked, StackedMode } from "../utils/chart-mode";
+import { DomainValue } from "../utils/x-domain";
+import { XScale } from "../utils/x-scale";
 import { yExtent } from "../utils/y-extent";
 import { Background } from "./background";
-import { Bar } from "./bar";
-import "./bars.scss";
+
+interface BarProps {
+  mode: BarChartMode;
+  datum: Datum;
+  yScale: LinearScale;
+  xScale: XScale;
+  series: ConcreteSeries;
+  getX: Unary<Datum, DomainValue>;
+}
+
+const Bar: React.SFC<BarProps> = props => {
+  const { mode, ...rest } = props;
+  const showPrevious = mode.hasComparison;
+  if (isStacked(mode)) {
+    return showPrevious
+      ? <StackedTimeShiftBar {...rest} mode={mode} />
+      : <StackedBar {...rest} mode={mode} />;
+  }
+  return showPrevious
+    ? <SingleTimeShiftBar {...rest} />
+    : <SingleBar {...rest} />;
+};
 
 interface BarsProps {
-  dropHighlight: Nullary<void>;
-  acceptHighlight: Nullary<void>;
-  essence: Essence;
-  interaction?: Interaction;
-  series: ConcreteSeries;
-  dataset: Dataset;
-  xScale: XScale;
+  mode: BarChartMode;
   stage: Stage;
-  scrollLeft: number;
+  xScale: XScale;
+  getX: Unary<Datum, DomainValue>;
+  series: ConcreteSeries;
+  datums: Datum[];
 }
 
-const TOTAL_LABEL_OFFSET = 10;
-
-export class Bars extends React.Component<BarsProps> {
-
-  private container = React.createRef<HTMLDivElement>();
-
-  render() {
-    const { dropHighlight, acceptHighlight, interaction, stage, scrollLeft, series, dataset, essence, xScale } = this.props;
-    const chartStage = calculateChartStage(stage);
-    const firstSplitReference = firstSplitRef(essence);
-    const getX = xGetter(firstSplitReference);
-    const datums = selectFirstSplitDatums(dataset);
-    const extent = yExtent(datums, series, essence);
-    const yScale = getScale(extent, chartStage.height);
-
-    return <div
-      ref={this.container}
-      className="bar-chart-bars"
-      style={stage.getWidthHeight()}>
-      <div className="bar-chart-total" style={{ left: scrollLeft + TOTAL_LABEL_OFFSET }}>
-        <VisMeasureLabel
-          series={series}
-          datum={selectMainDatum(dataset)}
-          showPrevious={essence.hasComparison()} />
-      </div>
-      {yScale && <React.Fragment>
-        <svg viewBox={chartStage.getViewBox()}>
-          <Background gridStage={chartStage} yScale={yScale} />
-          <g transform={chartStage.getTransform()}>
-            {datums.map((datum: Datum, index: number) => <Bar
-              key={index}
-              datum={datum}
-              yScale={yScale}
-              xScale={xScale}
-              series={series}
-              showPrevious={essence.hasComparison()}
-              getX={getX}
-              maxHeight={chartStage.height} />)}
-          </g>
-        </svg>
-        {interaction && <Foreground
-          interaction={interaction}
-          container={this.container}
-          stage={chartStage}
-          dropHighlight={dropHighlight}
-          acceptHighlight={acceptHighlight}
-          essence={essence}
+export const Bars: React.SFC<BarsProps> = props => {
+  const { mode, stage, getX, xScale, series, datums } = props;
+  const extent = yExtent(datums, series, mode.hasComparison);
+  const yScale = getScale(extent, stage.height);
+  if (!yScale) return null;
+  return <React.Fragment>
+    <svg viewBox={stage.getViewBox()}>
+      <Background gridStage={stage} yScale={yScale} />
+      <g transform={stage.getTransform()}>
+        {datums.map((datum: Datum, index: number) => <Bar
+          key={index}
+          datum={datum}
+          mode={mode}
+          yScale={yScale}
           xScale={xScale}
           series={series}
-          getX={getX}
-          yScale={yScale} />}
-      </React.Fragment>}
-    </div>;
-  }
-}
+          getX={getX} />)}
+      </g>
+    </svg>
+  </React.Fragment>;
+};
