@@ -66,8 +66,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.areExactSplitKinds("time"))
   .then(({ splits, isSelectedVisualization }) => {
     const timeSplit = splits.getSplit(0);
-    if (isTimeSplitValid(timeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 5);
-    return Resolve.automatic(8, {
+    if (isTimeSplitValid(timeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6, {
       splits: new Splits({
         splits: List([
           fixTimeSplit(timeSplit)
@@ -81,7 +81,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const timeSplit = splits.getSplit(0);
     const nominalSplit = splits.getSplit(1);
 
-    return Resolve.automatic(8, {
+    return Resolve.automatic(6, {
       // Switch splits in place and conform
       splits: new Splits({
         splits: List([
@@ -92,12 +92,12 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     });
   })
   .when(Predicates.areExactSplitKinds("*", "time"))
-  .then(({ splits }) => {
+  .then(({ splits, isSelectedVisualization }) => {
     const nominalSplit = splits.getSplit(0);
     const timeSplit = splits.getSplit(1);
 
-    if (isTimeSplitValid(timeSplit) && isNominalSplitValid(nominalSplit)) return Resolve.ready(10);
-    return Resolve.automatic(8, {
+    if (isTimeSplitValid(timeSplit) && isNominalSplitValid(nominalSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6, {
       splits: new Splits({
         splits: List([
           clampNominalSplitLimit(nominalSplit),
