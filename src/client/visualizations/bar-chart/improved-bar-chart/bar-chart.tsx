@@ -15,11 +15,10 @@
  */
 
 import { List } from "immutable";
-import { Dataset, Datum } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Binary, Nullary } from "../../../../common/utils/functional/functional";
 import { Scroller } from "../../../components/scroller/scroller";
@@ -29,9 +28,9 @@ import { Highlight } from "../../base-visualization/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";
-import { create, isStacked, StackedMode } from "./utils/chart-mode";
+import { create, isStacked } from "./utils/chart-mode";
 import { calculateLayout } from "./utils/layout";
-import { stack } from "./utils/stack-layout";
+import { stackDataset } from "./utils/stack-dataset";
 import { transposeDataset } from "./utils/transpose-dataset";
 import { getXDomain } from "./utils/x-domain";
 import { createXScale } from "./utils/x-scale";
@@ -46,13 +45,6 @@ interface BarChartProps {
   saveHighlight: Binary<List<FilterClause>, string, void>;
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
-}
-
-function stackDataset(dataset: Datum[], { series, hasComparison }: StackedMode): Datum[] {
-  const seriesList = series.toArray();
-  return seriesList.reduce((datums: Datum[], series: ConcreteSeries) => {
-    return stack(datums, series, hasComparison);
-  }, dataset);
 }
 
 export const BarChart: React.SFC<BarChartProps> = props => {
