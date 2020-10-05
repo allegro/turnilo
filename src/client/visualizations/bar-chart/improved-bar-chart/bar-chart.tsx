@@ -28,7 +28,7 @@ import { Highlight } from "../../base-visualization/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";
-import { create, isStacked } from "./utils/chart-mode";
+import { create, isStacked } from "./utils/bar-chart-model";
 import { calculateLayout } from "./utils/layout";
 import { stackDataset } from "./utils/stack-dataset";
 import { transposeDataset } from "./utils/transpose-dataset";
@@ -50,18 +50,18 @@ interface BarChartProps {
 export const BarChart: React.SFC<BarChartProps> = props => {
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
   const { [SPLIT]: split, ...totals } = selectMainDatum(dataset);
-  const mode = create(essence, dataset);
-  const transposedDataset = transposeDataset(dataset, mode);
-  const data = isStacked(mode) ? stackDataset(transposedDataset, mode) : transposedDataset;
-  const seriesCount = mode.series.count();
-  const domain = getXDomain(data, mode);
+  const model = create(essence, dataset);
+  const transposedDataset = transposeDataset(dataset, model);
+  const data = isStacked(model) ? stackDataset(transposedDataset, model) : transposedDataset;
+  const seriesCount = model.series.count();
+  const domain = getXDomain(data, model);
   const barChartLayout = calculateLayout(stage, domain.length, seriesCount);
   const { scroller, segment } = barChartLayout;
   const xScale = createXScale(domain, segment.width);
 
   return <InteractionController
     xScale={xScale}
-    mode={mode}
+    model={model}
     datums={data}
     layout={barChartLayout}
     saveHighlight={saveHighlight}
@@ -88,16 +88,16 @@ export const BarChart: React.SFC<BarChartProps> = props => {
         totals={totals}
         stage={segment}
         scrollLeft={scrollLeft}
-        mode={mode}
+        model={model}
         xScale={xScale}
         acceptHighlight={acceptHighlight}
         dropHighlight={dropHighlight} />}
       rightGutter={<YAxis
-        mode={mode}
+        model={model}
         datums={data}
         stage={Stage.fromSize(scroller.right, segment.height)} />}
       bottomGutter={<XAxis
-        mode={mode}
+        model={model}
         scale={xScale}
         stage={Stage.fromSize(segment.width, scroller.bottom)}
       />} />}

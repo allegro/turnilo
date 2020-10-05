@@ -20,14 +20,14 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
-import { StackedMode } from "../utils/chart-mode";
+import { StackedBarChartModel } from "../utils/bar-chart-model";
 import { selectBase } from "../utils/stack-layout";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { SIDE_PADDING } from "./padding";
 
 interface StackedBarProps {
-  mode: StackedMode;
+  model: StackedBarChartModel;
   datum: Datum;
   yScale: LinearScale;
   xScale: XScale;
@@ -36,14 +36,14 @@ interface StackedBarProps {
 }
 
 export const StackedBar: React.SFC<StackedBarProps> = props => {
-  const { datum, xScale, yScale, getX, series, mode } = props;
-  const ref = mode.nominalSplit.reference;
+  const { datum, xScale, yScale, getX, series, model } = props;
+  const ref = model.nominalSplit.reference;
   const datums = selectSplitDatums(datum);
 
   const x = getX(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
   const width = xScale.rangeBand() - (2 * SIDE_PADDING);
-  const color = (d: Datum) => mode.colors.get(String(d[ref]));
+  const color = (d: Datum) => model.colors.get(String(d[ref]));
   return <React.Fragment>
     {datums.map(datum => {
       const key = datum[ref];

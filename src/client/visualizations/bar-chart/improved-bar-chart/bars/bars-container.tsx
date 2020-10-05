@@ -23,7 +23,7 @@ import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-me
 import getScale from "../../../../utils/linear-scale/linear-scale";
 import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
-import { BarChartMode } from "../utils/chart-mode";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { calculateChartStage } from "../utils/layout";
 import { xGetter, XScale } from "../utils/x-scale";
 import { yExtent } from "../utils/y-extent";
@@ -35,7 +35,7 @@ interface BarsContainerProps {
   acceptHighlight: Nullary<void>;
   interaction?: Interaction;
   series: ConcreteSeries;
-  mode: BarChartMode;
+  model: BarChartModel;
   datums: Datum[];
   totals: Datum;
   xScale: XScale;
@@ -50,10 +50,10 @@ export class BarsContainer extends React.Component<BarsContainerProps> {
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const { dropHighlight, acceptHighlight, interaction, mode, stage, scrollLeft, series, totals, datums, xScale } = this.props;
-    const hasComparison = mode.hasComparison;
+    const { dropHighlight, acceptHighlight, interaction, model, stage, scrollLeft, series, totals, datums, xScale } = this.props;
+    const hasComparison = model.hasComparison;
     const chartStage = calculateChartStage(stage);
-    const { reference: continuousReference } = mode.continuousSplit;
+    const { reference: continuousReference } = model.continuousSplit;
     const getX = xGetter(continuousReference);
     const extent = yExtent(datums, series, hasComparison);
     const yScale = getScale(extent, chartStage.height);
@@ -70,7 +70,7 @@ export class BarsContainer extends React.Component<BarsContainerProps> {
             showPrevious={hasComparison} />
         </div>
         <Bars
-          mode={mode}
+          model={model}
           stage={chartStage}
           xScale={xScale}
           getX={getX}
@@ -82,7 +82,7 @@ export class BarsContainer extends React.Component<BarsContainerProps> {
           stage={chartStage}
           dropHighlight={dropHighlight}
           acceptHighlight={acceptHighlight}
-          mode={mode}
+          model={model}
           xScale={xScale}
           series={series}
           getX={getX}

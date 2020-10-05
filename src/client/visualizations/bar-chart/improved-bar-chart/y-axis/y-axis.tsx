@@ -18,7 +18,7 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import getScale from "../../../../utils/linear-scale/linear-scale";
-import { BarChartMode } from "../utils/chart-mode";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { calculateYAxisStage } from "../utils/layout";
 import { yExtent } from "../utils/y-extent";
 import { SingleYAxis } from "./single-y-axis";
@@ -26,16 +26,16 @@ import { SingleYAxis } from "./single-y-axis";
 interface YAxisProps {
   stage: Stage;
   datums: Datum[];
-  mode: BarChartMode;
+  model: BarChartModel;
 }
 
 export const YAxis: React.SFC<YAxisProps> = props => {
-  const { mode, stage, datums } = props;
+  const { model, stage, datums } = props;
   const axisStage = calculateYAxisStage(stage);
-  const seriesList = mode.series.toArray();
+  const seriesList = model.series.toArray();
   return <React.Fragment>
     {seriesList.map(series => {
-      const extent = yExtent(datums, series, mode.hasComparison);
+      const extent = yExtent(datums, series, model.hasComparison);
       const scale = getScale(extent, axisStage.height);
       return <div
         style={stage.getWidthHeight()}

@@ -18,7 +18,7 @@ import { Dataset, Datum, TimeRange } from "plywood";
 import { Binary, cons, Unary } from "../../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../../config/constants";
 import { selectFirstSplitDatums, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
-import { BarChartMode, isStacked } from "./chart-mode";
+import { BarChartModel, isStacked } from "./bar-chart-model";
 
 // TODO: test and move to functional.ts
 function replaceAt<T>(collection: T[], index: number, element: T): T[] {
@@ -63,10 +63,10 @@ function mergeDatums(continuousRef: string, datum: Datum, newDatum: Datum): Datu
   return constructDatum(continuousRef, continuousAttr as TimeRange, [...splitData, splitDatum]);
 }
 
-export function transposeDataset(dataset: Dataset, mode: BarChartMode): Datum[] {
-  if (!isStacked(mode)) return selectFirstSplitDatums(dataset);
+export function transposeDataset(dataset: Dataset, model: BarChartModel): Datum[] {
+  if (!isStacked(model)) return selectFirstSplitDatums(dataset);
 
-  const { reference } = mode.continuousSplit;
+  const { reference } = model.continuousSplit;
   const { data } = dataset.flatten();
 
   const result = data.reduce((coll: Datum[], currentDatum: Datum) => {

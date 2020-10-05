@@ -22,7 +22,7 @@ import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel
 import { BarsContainer } from "../bars/bars-container";
 import { Interaction } from "../interactions/interaction";
 import { Legend } from "../legend/Legend";
-import { BarChartMode, isStacked } from "../utils/chart-mode";
+import { BarChartModel, isStacked } from "../utils/bar-chart-model";
 import { XScale } from "../utils/x-scale";
 
 interface BarChartsProps {
@@ -31,18 +31,18 @@ interface BarChartsProps {
   acceptHighlight: Nullary<void>;
   stage: Stage;
   scrollLeft: number;
-  mode: BarChartMode;
+  model: BarChartModel;
   datums: Datum[];
   totals: Datum;
   xScale: XScale;
 }
 
 export const BarCharts: React.SFC<BarChartsProps> = props => {
-  const { dropHighlight, acceptHighlight, interaction, mode, datums, xScale, scrollLeft, stage, totals } = props;
-  const seriesList = mode.series.toArray();
+  const { dropHighlight, acceptHighlight, interaction, model, datums, xScale, scrollLeft, stage, totals } = props;
+  const seriesList = model.series.toArray();
   return <React.Fragment>
-    {isStacked(mode) && <LegendSpot>
-      <Legend mode={mode}/>
+    {isStacked(model) && <LegendSpot>
+      <Legend model={model}/>
     </LegendSpot>}
     {seriesList.map(series => {
       const hasInteraction = !!interaction && interaction.key === series.plywoodKey();
@@ -55,7 +55,7 @@ export const BarCharts: React.SFC<BarChartsProps> = props => {
         xScale={xScale}
         datums={datums}
         totals={totals}
-        mode={mode}
+        model={model}
         acceptHighlight={acceptHighlight}
         dropHighlight={dropHighlight} />;
     })}

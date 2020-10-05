@@ -15,15 +15,15 @@
  */
 
 import * as React from "react";
-import { StackedMode } from "../utils/chart-mode";
+import { StackedBarChartModel } from "../utils/bar-chart-model";
 import "./legend.scss";
 
 interface LegendProps {
-  mode: StackedMode;
+  model: StackedBarChartModel;
 }
 
 interface LegendValuesProps {
-  colors: StackedMode["colors"];
+  colors: StackedBarChartModel["colors"];
 }
 
 const LegendValues: React.SFC<LegendValuesProps> = ({ colors }) => {
@@ -47,7 +47,7 @@ const LegendValues: React.SFC<LegendValuesProps> = ({ colors }) => {
 };
 
 export const Legend: React.SFC<LegendProps> = props => {
-  const { mode: { nominalSplit, nominalDimension, colors } } = props;
+  const { model: { nominalSplit, nominalDimension, colors } } = props;
   const title = nominalSplit.getTitle(nominalDimension);
 
   return <div className="bar-chart-legend">

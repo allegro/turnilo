@@ -22,12 +22,12 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
-import { BarChartMode } from "../utils/chart-mode";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { HighlightModal } from "./highlight-modal";
 import { HighlightOverlay } from "./highlight-overlay";
-import { HoverTooltip } from "./hover-tooltip";
+import { HoverTooltip } from "../hover-tooltip/hover-tooltip";
 
 interface ForegroundProps {
   interaction: Interaction;
@@ -38,12 +38,12 @@ interface ForegroundProps {
   yScale: LinearScale;
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-  mode: BarChartMode;
+  model: BarChartModel;
   stage: Stage;
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, getX, mode, series, xScale, yScale, interaction } = props;
+  const { stage, dropHighlight, acceptHighlight, container, getX, model, series, xScale, yScale, interaction } = props;
   const rect = container.current.getBoundingClientRect();
   return <React.Fragment>
     {isHighlight(interaction) && <React.Fragment>
@@ -51,7 +51,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         interaction={interaction}
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
-        timezone={mode.timezone}
+        timezone={model.timezone}
         xScale={xScale}
         yScale={yScale}
         getX={getX}
@@ -59,7 +59,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         rect={rect} />
       <HighlightOverlay
         interaction={interaction}
-        showPrevious={mode.hasComparison}
+        showPrevious={model.hasComparison}
         stage={stage}
         xScale={xScale}
         yScale={yScale}
@@ -73,6 +73,6 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
       yScale={yScale}
       getX={getX}
       series={series}
-      mode={mode} />}
+      model={model} />}
   </React.Fragment>;
 };

@@ -21,14 +21,14 @@ import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/s
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
-import { StackedMode } from "../utils/chart-mode";
+import { StackedBarChartModel } from "../utils/bar-chart-model";
 import { selectBase } from "../utils/stack-layout";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { SIDE_PADDING } from "./padding";
 
 interface StackedTimeShiftBarProps {
-  mode: StackedMode;
+  model: StackedBarChartModel;
   datum: Datum;
   yScale: LinearScale;
   xScale: XScale;
@@ -37,8 +37,8 @@ interface StackedTimeShiftBarProps {
 }
 
 export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props => {
-  const { datum, xScale, yScale, getX, series, mode } = props;
-  const { reference: nominalReference } = mode.nominalSplit;
+  const { datum, xScale, yScale, getX, series, model } = props;
+  const { reference: nominalReference } = model.nominalSplit;
   const datums = selectSplitDatums(datum);
 
   const x = getX(datum);
@@ -47,7 +47,7 @@ export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props =>
   const rangeBand = xScale.rangeBand();
   const fullWidth = rangeBand - 2 * SIDE_PADDING;
   const barWidth = fullWidth * 2 / 3;
-  const color = (d: Datum) => mode.colors.get(String(d[nominalReference]));
+  const color = (d: Datum) => model.colors.get(String(d[nominalReference]));
   return <React.Fragment>
     {datums.map(datum => {
       const key = `${datum[nominalReference]}--previous`;

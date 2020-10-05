@@ -19,13 +19,13 @@ import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { formatStartOfTimeRange } from "../../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
-import { BarChartMode } from "../utils/chart-mode";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue, XDomain } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import "./x-axis.scss";
 
 interface XAxisProps {
-  mode: BarChartMode;
+  model: BarChartModel;
   stage: Stage;
   scale: XScale;
 }
@@ -33,7 +33,7 @@ interface XAxisProps {
 const TICK_HEIGHT = 10;
 const TICK_TEXT_OFFSET = 12;
 
-function calculateTicks(domain: XDomain, { continuousSplit }: BarChartMode): DomainValue[] {
+function calculateTicks(domain: XDomain, { continuousSplit }: BarChartModel): DomainValue[] {
   if (continuousSplit.type === "time") {
     return domain.filter((_, idx) => idx % 8 === 0);
   }
@@ -41,8 +41,8 @@ function calculateTicks(domain: XDomain, { continuousSplit }: BarChartMode): Dom
 }
 
 export const XAxis: React.SFC<XAxisProps> = props => {
-  const { mode, stage, scale } = props;
-  const ticks = calculateTicks(scale.domain(), mode);
+  const { model, stage, scale } = props;
+  const ticks = calculateTicks(scale.domain(), model);
   return <svg width={stage.width} height={stage.height}>
     <g className="bar-chart-x-axis">
       {ticks.map((value, index) => {
@@ -51,7 +51,7 @@ export const XAxis: React.SFC<XAxisProps> = props => {
         return <g key={String(value)} transform={`translate(${x}, 0)`}>
           <line x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
           <text y={TICK_HEIGHT + TICK_TEXT_OFFSET} style={{ textAnchor }}>
-            {formatStartOfTimeRange(value as TimeRange, mode.timezone)}
+            {formatStartOfTimeRange(value as TimeRange, model.timezone)}
           </text>
         </g>;
       })}

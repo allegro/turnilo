@@ -17,14 +17,14 @@
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { mapSplitDatums } from "../../../../utils/dataset/split/map-split-datums";
-import { StackedMode } from "./chart-mode";
+import { StackedBarChartModel } from "./bar-chart-model";
 import { stack } from "./stack-layout";
 
 const reverse = (datums: Datum[]): Datum[] => datums.slice().reverse();
 
 const reverseSplitDatums = (datum: Datum) => mapSplitDatums(datum, reverse);
 
-export function stackDataset(dataset: Datum[], { series, hasComparison }: StackedMode): Datum[] {
+export function stackDataset(dataset: Datum[], { series, hasComparison }: StackedBarChartModel): Datum[] {
   const seriesList = series.toArray();
   const reversedDatums = dataset.map(reverseSplitDatums);
   return seriesList.reduce((datums: Datum[], series: ConcreteSeries) =>

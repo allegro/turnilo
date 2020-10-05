@@ -17,29 +17,17 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { formatValue } from "../../../../../common/utils/formatter/formatter";
-import { mapTruthy, Unary } from "../../../../../common/utils/functional/functional";
 import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { Delta } from "../../../../components/delta/delta";
 import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
-import { SegmentBubble } from "../../../../components/segment-bubble/segment-bubble";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
-import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
-import { Hover } from "../interactions/interaction";
-import { BarChartMode, isStacked, StackedMode } from "../utils/chart-mode";
-import { DomainValue } from "../utils/x-domain";
-import { XScale } from "../utils/x-scale";
+import { BarChartModel, isStacked, StackedBarChartModel } from "../utils/bar-chart-model";
 
-interface HoverTooltipProps {
-  interaction: Hover;
-  xScale: XScale;
-  yScale: LinearScale;
+interface ContentProps {
+  model: BarChartModel;
+  datum: Datum;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
-  mode: BarChartMode;
-  rect: ClientRect | DOMRect;
 }
-
 interface LabelProps {
   showPrevious: boolean;
   datum: Datum;
@@ -64,25 +52,29 @@ const Label: React.SFC<LabelProps> = props => {
   />;
 };
 
-interface ContentProps {
-  mode: BarChartMode;
-  datum: Datum;
-  series: ConcreteSeries;
-}
-
-function colorEntries(datum: Datum, series: ConcreteSeries, mode: StackedMode) {
-  const { reference } = mode.nominalSplit;
+// TODO: looks similar to SplitHoverContent and SeriesHoverContent.
+function colorEntries(datum: Datum, series: ConcreteSeries, model: StackedBarChartModel) {
+  const { reference } = model.nominalSplit;
   const datums = selectSplitDatums(datum);
-  return mapTruthy(datums, datum => {
-    const segment = String(datum[reference]);
+  const colorEntries = model.colors.entrySeq().toArray();
+  return colorEntries.map(([segment, color]) => {
+    const datum = datums.find(d => String(d[reference]) === segment);
+
+    if (!datum) {
+      return {
+        color,
+        name: segment,
+        value: "-"
+      };
+    }
 
     const currentEntry: ColorEntry = {
-      color: mode.colors.get(segment),
+      color,
       name: segment,
       value: series.formatValue(datum)
     };
 
-    if (!mode.hasComparison) {
+    if (!model.hasComparison) {
       return currentEntry;
     }
 
@@ -99,31 +91,11 @@ function colorEntries(datum: Datum, series: ConcreteSeries, mode: StackedMode) {
   });
 }
 
-const Content: React.SFC<ContentProps> = props => {
-  const { mode, series, datum } = props;
-  if (isStacked(mode)) {
-    const entries = colorEntries(datum, series, mode);
+export const Content: React.SFC<ContentProps> = props => {
+  const { model, series, datum } = props;
+  if (isStacked(model)) {
+    const entries = colorEntries(datum, series, model);
     return <ColorSwabs colorEntries={entries} />;
   }
-  return <Label showPrevious={mode.hasComparison} datum={datum} series={series} />;
-};
-
-export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
-  const {
-    mode,
-    rect: { left, top },
-    interaction: { datum },
-    getX,
-    series,
-    xScale,
-    yScale
-  } = props;
-  const y = yScale(series.selectValue(datum));
-  const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
-  return <SegmentBubble
-    top={top + y}
-    left={left + x}
-    title={formatValue(xValue, mode.timezone)}
-    content={<Content mode={mode} datum={datum} series={series}/>} />;
+  return <Label showPrevious={model.hasComparison} datum={datum} series={series} />;
 };

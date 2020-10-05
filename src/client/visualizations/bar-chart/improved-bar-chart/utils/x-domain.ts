@@ -15,14 +15,13 @@
  */
 
 import { Datum, NumberRange, TimeRange } from "plywood";
-import { BarChartMode } from "./chart-mode";
+import { BarChartModel } from "./bar-chart-model";
 
 export type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;
 
 export type XDomain = DomainValue[];
 
-export function getXDomain(datums: Datum[], mode: BarChartMode): XDomain {
-  const { continuousSplit } = mode;
+export function getXDomain(datums: Datum[], { continuousSplit }: BarChartModel): XDomain {
   const { reference: continuousReference } = continuousSplit;
   return datums.map(datum => datum[continuousReference] as DomainValue);
 }

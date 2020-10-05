@@ -24,14 +24,14 @@ import { SingleBar } from "../bar/single-bar";
 import { SingleTimeShiftBar } from "../bar/single-time-shift-bar";
 import { StackedBar } from "../bar/stacked-bar";
 import { StackedTimeShiftBar } from "../bar/stacked-time-shift-bar";
-import { BarChartMode, isStacked, StackedMode } from "../utils/chart-mode";
+import { BarChartModel, isStacked, StackedBarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { yExtent } from "../utils/y-extent";
 import { Background } from "./background";
 
 interface BarProps {
-  mode: BarChartMode;
+  model: BarChartModel;
   datum: Datum;
   yScale: LinearScale;
   xScale: XScale;
@@ -40,12 +40,12 @@ interface BarProps {
 }
 
 const Bar: React.SFC<BarProps> = props => {
-  const { mode, ...rest } = props;
-  const showPrevious = mode.hasComparison;
-  if (isStacked(mode)) {
+  const { model, ...rest } = props;
+  const showPrevious = model.hasComparison;
+  if (isStacked(model)) {
     return showPrevious
-      ? <StackedTimeShiftBar {...rest} mode={mode} />
-      : <StackedBar {...rest} mode={mode} />;
+      ? <StackedTimeShiftBar {...rest} model={model} />
+      : <StackedBar {...rest} model={model} />;
   }
   return showPrevious
     ? <SingleTimeShiftBar {...rest} />
@@ -53,7 +53,7 @@ const Bar: React.SFC<BarProps> = props => {
 };
 
 interface BarsProps {
-  mode: BarChartMode;
+  model: BarChartModel;
   stage: Stage;
   xScale: XScale;
   getX: Unary<Datum, DomainValue>;
@@ -62,8 +62,8 @@ interface BarsProps {
 }
 
 export const Bars: React.SFC<BarsProps> = props => {
-  const { mode, stage, getX, xScale, series, datums } = props;
-  const extent = yExtent(datums, series, mode.hasComparison);
+  const { model, stage, getX, xScale, series, datums } = props;
+  const extent = yExtent(datums, series, model.hasComparison);
   const yScale = getScale(extent, stage.height);
   if (!yScale) return null;
   return <React.Fragment>
@@ -73,7 +73,7 @@ export const Bars: React.SFC<BarsProps> = props => {
         {datums.map((datum: Datum, index: number) => <Bar
           key={index}
           datum={datum}
-          mode={mode}
+          model={model}
           yScale={yScale}
           xScale={xScale}
           series={series}
