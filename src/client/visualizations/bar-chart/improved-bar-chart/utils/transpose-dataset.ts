@@ -15,19 +15,10 @@
  */
 
 import { Dataset, Datum, TimeRange } from "plywood";
-import { Binary, cons, Unary } from "../../../../../common/utils/functional/functional";
+import { Binary, cons, replaceAt, Unary } from "../../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../../config/constants";
 import { selectFirstSplitDatums, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { BarChartModel, isStacked } from "./bar-chart-model";
-
-// TODO: test and move to functional.ts
-function replaceAt<T>(collection: T[], index: number, element: T): T[] {
-  return [
-    ...collection.slice(0, index),
-    element,
-    ...collection.slice(index + 1)
-  ];
-}
 
 function rangeComparator(continuousRef: string): Binary<Datum, Datum, number> {
   return (a: Datum, b: Datum) => {
