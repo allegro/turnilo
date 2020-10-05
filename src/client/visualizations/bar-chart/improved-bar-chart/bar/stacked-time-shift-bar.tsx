@@ -58,17 +58,15 @@ export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props =>
 
       const previousColor = d3.rgb(color(datum)).darker(0.8);
 
-      return <React.Fragment key={String(key)}>
-
-        <rect
+      return <rect
+          key={String(key)}
           x={xStart + rangeBand - SIDE_PADDING - barWidth}
           y={yPreviousPos}
           width={barWidth}
           height={previousHeight}
           opacity={0.8}
           fill={previousColor.toString()}
-        />
-      </React.Fragment>;
+        />;
     })}
     {datums.map(datum => {
       const key = `${datum[nominalReference]}--current`;
