@@ -16,18 +16,17 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
+import { HoverTooltip } from "../hover-tooltip/hover-tooltip";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
 import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { HighlightModal } from "./highlight-modal";
 import { HighlightOverlay } from "./highlight-overlay";
-import { HoverTooltip } from "../hover-tooltip/hover-tooltip";
 
 interface ForegroundProps {
   interaction: Interaction;

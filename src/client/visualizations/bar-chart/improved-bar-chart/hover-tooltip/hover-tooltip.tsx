@@ -37,8 +37,6 @@ interface HoverTooltipProps {
   rect: ClientRect | DOMRect;
 }
 
-
-
 export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
   const {
     model,
