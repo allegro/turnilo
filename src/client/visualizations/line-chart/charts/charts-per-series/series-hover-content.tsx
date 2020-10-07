@@ -19,11 +19,11 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
-import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { ColorEntry, createColorEntry } from "../../../../components/color-swabs/color-entry";
+import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
+import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { selectSplitDataset } from "../../../../utils/dataset/selectors/selectors";
-import { createColorEntry } from "../../utils/color-entry";
 import { getContinuousDimension, getContinuousReference, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 
 function findSplitDatumByAttribute(d: Datum, dimensionName: string, range: PlywoodRange): Datum {
@@ -36,17 +36,7 @@ function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSer
   const datum = dataset.findDatumByAttribute(continuousDimension.name, range);
   if (!datum) return null;
 
-  if (!essence.hasComparison()) {
-    return series.formatValue(datum);
-  }
-  const currentValue = series.selectValue(datum);
-  const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
-  const formatter = series.formatter();
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    current={currentValue}
-    previous={previousValue}
-    formatter={formatter} />;
+  return <SeriesBubbleContent series={series} datum={datum} showPrevious={essence.hasComparison()}/>;
 }
 
 function colorEntries(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ColorEntry[] {

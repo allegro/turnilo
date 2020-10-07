@@ -18,11 +18,11 @@ import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { createColorEntry } from "../../../../components/color-swabs/color-entry";
 import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
-import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
+import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { Hover } from "../../interactions/interaction";
-import { createColorEntry } from "../../utils/color-entry";
 import { getContinuousReference } from "../../utils/splits";
 
 interface SplitHoverContentProps {
@@ -30,25 +30,6 @@ interface SplitHoverContentProps {
   essence: Essence;
   dataset: Dataset;
 }
-
-interface SingleSeriesProps {
-  series: ConcreteSeries;
-  datum: Datum;
-  hasComparison: boolean;
-}
-
-const SingleSeries: React.SFC<SingleSeriesProps> = props => {
-  const { series, hasComparison, datum } = props;
-  if (!hasComparison) {
-    return <React.Fragment>
-      {series.formatValue(datum)}
-    </React.Fragment>;
-  }
-  const current = series.selectValue(datum);
-  const previous = series.selectValue(datum, SeriesDerivation.PREVIOUS);
-  const formatter = series.formatter();
-  return <MeasureBubbleContent current={current} previous={previous} formatter={formatter} />;
-};
 
 interface ColoredSeriesProps {
   series: ConcreteSeries[];
@@ -73,7 +54,7 @@ export const SplitHoverContent: React.SFC<SplitHoverContentProps> = props => {
   const reference = getContinuousReference(essence);
   const datum = dataset.findDatumByAttribute(reference, range) || {};
   if (series.length === 1) {
-    return <SingleSeries series={series[0]} datum={datum} hasComparison={hasComparison} />;
+    return <SeriesBubbleContent series={series[0]} datum={datum} showPrevious={hasComparison}/>;
   }
   return <ColoredSeries  datum={datum} series={series} hasComparison={hasComparison}/>;
 };

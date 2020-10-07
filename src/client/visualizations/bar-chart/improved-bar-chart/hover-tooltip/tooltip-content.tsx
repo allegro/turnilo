@@ -16,10 +16,10 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
-import { Delta } from "../../../../components/delta/delta";
-import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { createColorEntry } from "../../../../components/color-swabs/color-entry";
+import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
+import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { BarChartModel, isStacked, StackedBarChartModel } from "../utils/bar-chart-model";
 
@@ -28,66 +28,20 @@ interface ContentProps {
   datum: Datum;
   series: ConcreteSeries;
 }
-interface LabelProps {
-  showPrevious: boolean;
-  datum: Datum;
-  series: ConcreteSeries;
-}
 
-const Label: React.SFC<LabelProps> = props => {
-  const { showPrevious, series, datum } = props;
-  if (!showPrevious) {
-    return <React.Fragment>
-      {series.formatValue(datum)}
-    </React.Fragment>;
-  }
-  const currentValue = series.selectValue(datum);
-  const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
-  const formatter = series.formatter();
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    formatter={formatter}
-    current={currentValue}
-    previous={previousValue}
-  />;
-};
-
-// TODO: looks similar to SplitHoverContent and SeriesHoverContent.
 function colorEntries(datum: Datum, series: ConcreteSeries, model: StackedBarChartModel) {
-  const { reference } = model.nominalSplit;
+  const { nominalSplit, colors, hasComparison } = model;
+  const { reference } = nominalSplit;
   const datums = selectSplitDatums(datum);
-  const colorEntries = model.colors.entrySeq().toArray();
-  return colorEntries.map(([segment, color]) => {
-    const datum = datums.find(d => String(d[reference]) === segment);
+  const colorEntries = colors.entrySeq().toArray();
+  return colorEntries.map(([name, color]) => {
+    const datum = datums.find(d => String(d[reference]) === name);
 
     if (!datum) {
-      return {
-        color,
-        name: segment,
-        value: "-"
-      };
+      return { color, name, value: "-" };
     }
 
-    const currentEntry: ColorEntry = {
-      color,
-      name: segment,
-      value: series.formatValue(datum)
-    };
-
-    if (!model.hasComparison) {
-      return currentEntry;
-    }
-
-    return {
-      ...currentEntry,
-      previous: series.formatValue(datum, SeriesDerivation.PREVIOUS),
-      delta: <Delta
-        currentValue={series.selectValue(datum)}
-        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-        formatter={series.formatter()}
-        lowerIsBetter={series.measure.lowerIsBetter}
-      />
-    };
+    return createColorEntry({ color, name, hasComparison, datum, series });
   });
 }
 
@@ -97,5 +51,5 @@ export const Content: React.SFC<ContentProps> = props => {
     const entries = colorEntries(datum, series, model);
     return <ColorSwabs colorEntries={entries} />;
   }
-  return <Label showPrevious={model.hasComparison} datum={datum} series={series} />;
+  return <SeriesBubbleContent series={series} datum={datum} showPrevious={model.hasComparison}/>;
 };

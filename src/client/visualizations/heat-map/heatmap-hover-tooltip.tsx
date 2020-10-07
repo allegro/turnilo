@@ -18,9 +18,8 @@ import { TooltipWithBounds } from "@vx/tooltip";
 import { Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
-import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
+import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
 import datumByPosition from "./utils/datum-by-position";
 import { HoverPosition } from "./utils/get-hover-position";
 import { modalTitle } from "./utils/modal-title";
@@ -31,25 +30,6 @@ interface HeatmapHoverTooltip {
   essence: Essence;
   scroll: { left: number, top: number };
 }
-
-interface ContentProps {
-  datum: Datum;
-  showComparison: boolean;
-  series: ConcreteSeries;
-}
-
-const Content: React.SFC<ContentProps> = props => {
-  const { showComparison, series, datum } = props;
-  if (!showComparison) {
-    return <React.Fragment>{series.formatValue(datum)}</React.Fragment>;
-  }
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    formatter={series.formatter()}
-    current={series.selectValue(datum)}
-    previous={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-  />;
-};
 
 export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
   const { dataset, essence, scroll, position: { column, row, top, left } } = props;
@@ -63,9 +43,9 @@ export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
     left={left - scroll.left}>
     <SegmentBubbleContent
       title={modalTitle({ row, column }, dataset, essence)}
-      content={<Content
+      content={<SeriesBubbleContent
         datum={datum}
-        showComparison={essence.hasComparison()}
+        showPrevious={essence.hasComparison()}
         series={series} />}
     />
   </TooltipWithBounds>;
