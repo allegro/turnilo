@@ -15,52 +15,19 @@
  */
 
 import { expect } from "chai";
-import { Dataset, Datum } from "plywood";
-import * as sinon from "sinon";
-import { Essence } from "../../../../../common/models/essence/essence";
-import * as selectorsModule from "../../../../utils/dataset/selectors/selectors";
-import * as splitsModule from "../../../line-chart/utils/splits";
+import { BarChartModel } from "./bar-chart-model";
 import { getXDomain } from "./x-domain";
 
 describe("getXDomain", () => {
-  // const essence: Essence = "essence" as any as Essence;
-  // const dataset: Datum[] = "dataset" as any as Datum[];
-  //
-  // let firstSplitRefStub: sinon.SinonStub;
-  // let selectFirstSplitDatumsStub: sinon.SinonStub;
-  //
-  // beforeEach(() => {
-  //   firstSplitRefStub = sinon
-  //     .stub(splitsModule, "getContinuousReference")
-  //     .returns("dummy-ref");
-  //
-  //   selectFirstSplitDatumsStub = sinon
-  //     .stub(selectorsModule, "selectFirstSplitDatums")
-  //     .returns([
-  //       { "dummy-ref": "foo" },
-  //       { "dummy-ref": "bar" },
-  //       { "dummy-ref": "bazz" },
-  //       { "dummy-ref": "qvux" }
-  //     ]);
-  // });
-  //
-  // afterEach(() => {
-  //   firstSplitRefStub.restore();
-  //   selectFirstSplitDatumsStub.restore();
-  // });
-  //
-  // it("should call firstSplitRef with passed essence", () => {
-  //   getXDomain(essence, dataset);
-  //   expect(firstSplitRefStub.calledWith(essence)).to.be.true;
-  // });
-  //
-  // it("should call selectFirstSplitDatums with passed dataset", () => {
-  //   getXDomain(essence, dataset);
-  //   expect(selectFirstSplitDatumsStub.calledWith(dataset)).to.be.true;
-  // });
-  //
-  // it("should pick split values from datums", () => {
-  //   const domain = getXDomain(essence, dataset);
-  //   expect(domain).to.be.deep.equal(["foo", "bar", "bazz", "qvux"]);
-  // });
+  const mode = { continuousSplit: { reference: "foobar" } } as any as BarChartModel;
+  const datums = [
+    { foobar: 1, bazz: 42 },
+    { foobar: 65, bazz: 1, qvux: 42 },
+    { foobar: "dummy", qvux: 3 }
+  ];
+
+  it("should pick split values from datums", () => {
+    const domain = getXDomain(datums, mode);
+    expect(domain).to.be.deep.equal([1, 65, "dummy"]);
+  });
 });
