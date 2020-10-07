@@ -19,10 +19,10 @@ import * as React from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
-import { Delta } from "../../../../components/delta/delta";
+import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
 import { Hover } from "../../interactions/interaction";
+import { createColorEntry } from "../../utils/color-entry";
 import { getContinuousReference } from "../../utils/splits";
 
 interface SplitHoverContentProps {
@@ -59,26 +59,9 @@ interface ColoredSeriesProps {
 const ColoredSeries: React.SFC<ColoredSeriesProps> = props => {
   const { datum, hasComparison, series } = props;
   const colorEntries = series.map((series, index) => {
-    const currentEntry: ColorEntry = {
-      color: NORMAL_COLORS[index],
-      name: series.title(),
-      value: series.formatValue(datum)
-    };
-
-    if (!hasComparison) {
-      return currentEntry;
-    }
-
-    return {
-      ...currentEntry,
-      previous: series.formatValue(datum, SeriesDerivation.PREVIOUS),
-      delta: <Delta
-        currentValue={series.selectValue(datum)}
-        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-        formatter={series.formatter()}
-        lowerIsBetter={series.measure.lowerIsBetter}
-      />
-    };
+    const color = NORMAL_COLORS[index];
+    const name = series.title();
+    return createColorEntry({ color, name, hasComparison, datum, series });
   });
   return <ColorSwabs colorEntries={colorEntries} />;
 };
