@@ -16,9 +16,16 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
-import { ColorEntry } from "../../../components/color-swabs/color-swabs";
-import { Delta } from "../../../components/delta/delta";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { Delta } from "../delta/delta";
+
+export interface ColorEntry {
+  color: string;
+  name: string;
+  value: string;
+  previous?: string;
+  delta?: JSX.Element;
+}
 
 interface Parameters {
   color: string;

@@ -16,8 +16,17 @@
 
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { datumsExtent, Extent, seriesSelectors } from "../../../../utils/extent/extent";
+import { mapSplitDatums } from "../../../../utils/dataset/split/map-split-datums";
+import { StackedBarChartModel } from "./bar-chart-model";
+import { stack } from "./stack-layout";
 
-export function yExtent(datums: Datum[], series: ConcreteSeries, hasComparison: boolean): Extent {
-  return datumsExtent(datums, seriesSelectors(series, hasComparison));
+const reverse = (datums: Datum[]): Datum[] => datums.slice().reverse();
+
+const reverseSplitDatums = (datum: Datum) => mapSplitDatums(datum, reverse);
+
+export function stackDataset(dataset: Datum[], { series, hasComparison }: StackedBarChartModel): Datum[] {
+  const seriesList = series.toArray();
+  const reversedDatums = dataset.map(reverseSplitDatums);
+  return seriesList.reduce((datums: Datum[], series: ConcreteSeries) =>
+    stack(datums, series, hasComparison), reversedDatums);
 }

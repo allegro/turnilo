@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Datum } from "plywood";
+import { Unary } from "../../../../common/utils/functional/functional";
+import { SPLIT } from "../../../config/constants";
+import { selectSplitDataset, selectSplitDatums } from "../selectors/selectors";
 
-import { Essence } from "../../../../../common/models/essence/essence";
-
-export function firstSplitRef(essence: Essence): string {
-  return essence.splits.splits.first().reference;
+export function mapSplitDatums(datum: Datum, fn: Unary<Datum[], Datum[]>): Datum {
+  const datums = selectSplitDatums(datum);
+  return {
+    ...datum,
+    [SPLIT]: selectSplitDataset(datum).changeData(fn(datums))
+  };
 }

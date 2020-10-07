@@ -16,17 +16,16 @@
 
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { Predicates } from "../../../../../common/utils/rules/predicates";
 import { formatStartOfTimeRange } from "../../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue, XDomain } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import "./x-axis.scss";
 
 interface XAxisProps {
-  essence: Essence;
+  model: BarChartModel;
   stage: Stage;
   scale: XScale;
 }
@@ -34,16 +33,16 @@ interface XAxisProps {
 const TICK_HEIGHT = 10;
 const TICK_TEXT_OFFSET = 12;
 
-function calculateTicks(domain: XDomain, essence: Essence): DomainValue[] {
-  if (Predicates.areExactSplitKinds("time")(essence)) {
+function calculateTicks(domain: XDomain, { continuousSplit }: BarChartModel): DomainValue[] {
+  if (continuousSplit.type === "time") {
     return domain.filter((_, idx) => idx % 8 === 0);
   }
   return domain;
 }
 
 export const XAxis: React.SFC<XAxisProps> = props => {
-  const { essence, stage, scale } = props;
-  const ticks = calculateTicks(scale.domain(), essence);
+  const { model, stage, scale } = props;
+  const ticks = calculateTicks(scale.domain(), model);
   return <svg width={stage.width} height={stage.height}>
     <g className="bar-chart-x-axis">
       {ticks.map((value, index) => {
@@ -52,7 +51,7 @@ export const XAxis: React.SFC<XAxisProps> = props => {
         return <g key={String(value)} transform={`translate(${x}, 0)`}>
           <line x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
           <text y={TICK_HEIGHT + TICK_TEXT_OFFSET} style={{ textAnchor }}>
-            {formatStartOfTimeRange(value as TimeRange, essence.timezone)}
+            {formatStartOfTimeRange(value as TimeRange, model.timezone)}
           </text>
         </g>;
       })}

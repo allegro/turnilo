@@ -13,11 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Datum } from "plywood";
-import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { datumsExtent, Extent, seriesSelectors } from "../../../../utils/extent/extent";
-
-export function yExtent(datums: Datum[], series: ConcreteSeries, hasComparison: boolean): Extent {
-  return datumsExtent(datums, seriesSelectors(series, hasComparison));
-}

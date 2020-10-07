@@ -16,17 +16,17 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
+import { HoverTooltip } from "../hover-tooltip/hover-tooltip";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { HighlightModal } from "./highlight-modal";
 import { HighlightOverlay } from "./highlight-overlay";
-import { HoverTooltip } from "./hover-tooltip";
 
 interface ForegroundProps {
   interaction: Interaction;
@@ -37,12 +37,12 @@ interface ForegroundProps {
   yScale: LinearScale;
   series: ConcreteSeries;
   getX: Unary<Datum, DomainValue>;
-  essence: Essence;
+  model: BarChartModel;
   stage: Stage;
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, essence, getX, series, xScale, yScale, interaction } = props;
+  const { stage, dropHighlight, acceptHighlight, container, getX, model, series, xScale, yScale, interaction } = props;
   const rect = container.current.getBoundingClientRect();
   return <React.Fragment>
     {isHighlight(interaction) && <React.Fragment>
@@ -50,7 +50,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         interaction={interaction}
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
-        timezone={essence.timezone}
+        timezone={model.timezone}
         xScale={xScale}
         yScale={yScale}
         getX={getX}
@@ -58,7 +58,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         rect={rect} />
       <HighlightOverlay
         interaction={interaction}
-        showPrevious={essence.hasComparison()}
+        showPrevious={model.hasComparison}
         stage={stage}
         xScale={xScale}
         yScale={yScale}
@@ -72,6 +72,6 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
       yScale={yScale}
       getX={getX}
       series={series}
-      essence={essence} />}
+      model={model} />}
   </React.Fragment>;
 };
