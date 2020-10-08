@@ -53,6 +53,7 @@ export const StackedBar: React.SFC<StackedBarProps> = props => {
       const height = yScale(y0) - yScale(y + y0);
 
       return <rect
+        className="bar-chart-bar-segment"
         key={String(key)}
         x={xPos}
         y={yPos}
