@@ -59,6 +59,7 @@ export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props =>
       const previousColor = d3.rgb(color(datum)).darker(0.8);
 
       return <rect
+          className="bar-chart-bar-segment"
           key={String(key)}
           x={xStart + rangeBand - SIDE_PADDING - barWidth}
           y={yPreviousPos}
@@ -77,6 +78,7 @@ export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props =>
       const currentColor = color(datum);
 
       return <rect
+        className="bar-chart-bar-previous-segment"
         key={key}
         x={xStart + SIDE_PADDING}
         y={yCurrentPos}
