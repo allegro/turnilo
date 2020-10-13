@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { IncomingHttpHeaders } from "http";
 import { Instance } from "immutable-class";
 import { Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
 
-export type DynamicSubsetFormulaFn = Unary<Request["headers"], Expression>;
+export type DynamicSubsetFormulaFn = Unary<IncomingHttpHeaders, Expression>;
 export type DynamicSubsetFormulaDef = string;
 
 export class DynamicSubsetFormula implements Instance<DynamicSubsetFormulaDef, DynamicSubsetFormulaDef> {

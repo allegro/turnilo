@@ -17,16 +17,28 @@
 
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
-import { Dataset, Expression } from "plywood";
+import { IncomingHttpHeaders } from "http";
+import { Dataset, Expression, RefExpression } from "plywood";
+import { DynamicSubsetFormula } from "../../../common/models/dynamic-subset-formula/dynamic-subset-formula";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
+
+function applySubset(expression: Expression, dynamicSubsetFormula: DynamicSubsetFormula, headers: IncomingHttpHeaders): Expression {
+  const subsetFilter = dynamicSubsetFormula.fn(headers);
+  return expression.substitute(e => {
+    if (e instanceof RefExpression && e.name === "main") {
+      return e.filter(subsetFilter);
+    }
+    return null;
+  });
+}
 
 export function plywoodRouter(getSettings: SettingsGetter) {
 
   const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
-    const { dataSource, expression, timezone } = req.body;
+    const { dataSource, expression: expressionRaw, timezone } = req.body;
     const dataCube = req.body.dataCube || dataSource; // back compat
 
     if (typeof dataCube !== "string") {
@@ -49,9 +61,9 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       }
     }
 
-    let ex: Expression = null;
+    let parsedExpression: Expression = null;
     try {
-      ex = Expression.fromJS(expression);
+      parsedExpression = Expression.fromJS(expressionRaw);
     } catch (e) {
       res.status(400).send({
         error: "bad expression",
@@ -89,8 +101,9 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       req.setTimeout(myDataCube.cluster.getTimeout(), null);
     }
     const maxQueries = myDataCube.getMaxQueries();
+    const expression = applySubset(parsedExpression, myDataCube.dynamicSubsetFormula, req.headers);
     try {
-      const data = await myDataCube.executor(ex, { maxQueries, timezone: queryTimezone });
+      const data = await myDataCube.executor(expression, { maxQueries, timezone: queryTimezone });
       const reply: any = {
         result: Dataset.isDataset(data) ? data.toJS() : data
       };
