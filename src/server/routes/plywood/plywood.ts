@@ -19,18 +19,34 @@ import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { IncomingHttpHeaders } from "http";
 import { Dataset, Expression, RefExpression } from "plywood";
+import { isFunction } from "util";
 import { DynamicSubsetFormula } from "../../../common/models/dynamic-subset-formula/dynamic-subset-formula";
+import { isNil } from "../../../common/utils/general/general";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
-function applySubset(expression: Expression, dynamicSubsetFormula: DynamicSubsetFormula, headers: IncomingHttpHeaders): Expression {
-  const subsetFilter = dynamicSubsetFormula.fn(headers);
+function filterMain(expression: Expression, filter: Expression): Expression {
   return expression.substitute(e => {
     if (e instanceof RefExpression && e.name === "main") {
-      return e.filter(subsetFilter);
+      return e.filter(filter);
     }
     return null;
   });
+}
+
+function applySubset(expression: Expression, dynamicSubsetFormula: DynamicSubsetFormula, headers: IncomingHttpHeaders): Expression {
+  if (isNil(dynamicSubsetFormula) || !isFunction(dynamicSubsetFormula.fn)) return expression;
+  try {
+    const subsetFilter = dynamicSubsetFormula.fn(headers);
+    if (!(subsetFilter instanceof Expression)) {
+      console.log("DynamicSubsetFormula function should return Expression, instead returned:", subsetFilter);
+      return expression;
+    }
+    return filterMain(expression, subsetFilter);
+  } catch (e) {
+    console.log("DynamicSubsetFormula function threw error:", e.message);
+    return expression;
+  }
 }
 
 export function plywoodRouter(getSettings: SettingsGetter) {
