@@ -277,7 +277,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       maxSplits: parameters.maxSplits,
       maxQueries: parameters.maxQueries,
-      dynamicSubsetFormula: parameters.dynamicSubsetFormula ? new DynamicSubsetFormula(parameters.dynamicSubsetFormula) : null,
+      dynamicSubsetFormula: parameters.dynamicSubsetFormula ? DynamicSubsetFormula.fromJS(parameters.dynamicSubsetFormula) : null,
       refreshRule
     };
     if (cluster) {
