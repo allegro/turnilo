@@ -16,10 +16,10 @@
 
 import { IncomingHttpHeaders } from "http";
 import { Instance } from "immutable-class";
-import { Expression } from "plywood";
-import { Unary } from "../../utils/functional/functional";
+import * as plywood from "plywood";
+import { Binary } from "../../utils/functional/functional";
 
-export type DynamicSubsetFormulaFn = Unary<IncomingHttpHeaders, Expression>;
+export type DynamicSubsetFormulaFn = Binary<IncomingHttpHeaders, typeof plywood, plywood.Expression>;
 export type DynamicSubsetFormulaDef = string;
 
 export class DynamicSubsetFormula implements Instance<DynamicSubsetFormulaDef, DynamicSubsetFormulaDef> {
@@ -28,10 +28,14 @@ export class DynamicSubsetFormula implements Instance<DynamicSubsetFormulaDef, D
     return new DynamicSubsetFormula(def);
   }
 
-  public readonly fn: DynamicSubsetFormulaFn;
+  private readonly subsetFunction: DynamicSubsetFormulaFn;
 
   constructor(private definition: DynamicSubsetFormulaDef) {
-    this.fn = new Function("headers", definition) as DynamicSubsetFormulaFn;
+    this.subsetFunction = new Function("headers", "plywood", definition) as DynamicSubsetFormulaFn;
+  }
+
+  getSubsetExpression(headers: IncomingHttpHeaders): plywood.Expression {
+    return this.subsetFunction(headers, plywood);
   }
 
   valueOf(): DynamicSubsetFormulaDef {
