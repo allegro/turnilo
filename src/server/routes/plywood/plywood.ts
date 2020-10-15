@@ -17,37 +17,10 @@
 
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
-import { IncomingHttpHeaders } from "http";
-import { Dataset, Expression, RefExpression } from "plywood";
-import { isFunction } from "util";
-import { DynamicSubsetFormula } from "../../../common/models/dynamic-subset-formula/dynamic-subset-formula";
-import { isNil } from "../../../common/utils/general/general";
+import { Dataset, Expression } from "plywood";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
-
-function filterMain(expression: Expression, filter: Expression): Expression {
-  return expression.substitute(e => {
-    if (e instanceof RefExpression && e.name === "main") {
-      return e.filter(filter);
-    }
-    return null;
-  });
-}
-
-function applySubset(expression: Expression, dynamicSubsetFormula: DynamicSubsetFormula, headers: IncomingHttpHeaders): Expression {
-  if (isNil(dynamicSubsetFormula) || !isFunction(dynamicSubsetFormula.fn)) return expression;
-  try {
-    const subsetFilter = dynamicSubsetFormula.fn(headers);
-    if (!(subsetFilter instanceof Expression)) {
-      console.log("DynamicSubsetFormula function should return Expression, instead returned:", subsetFilter);
-      return expression;
-    }
-    return filterMain(expression, subsetFilter);
-  } catch (e) {
-    console.log("DynamicSubsetFormula function threw error:", e.message);
-    return expression;
-  }
-}
+import { applySubset } from "./apply-subset";
 
 export function plywoodRouter(getSettings: SettingsGetter) {
 
@@ -120,7 +93,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
     const expression = applySubset(parsedExpression, myDataCube.dynamicSubsetFormula, req.headers);
     try {
       const data = await myDataCube.executor(expression, { maxQueries, timezone: queryTimezone });
-      const reply: any = {
+      const reply = {
         result: Dataset.isDataset(data) ? data.toJS() : data
       };
       res.json(reply);
