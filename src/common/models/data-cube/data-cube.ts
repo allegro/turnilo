@@ -35,19 +35,20 @@ import {
   ExternalValue,
   ply,
   PlyTypeSimple,
-  r,
   RefExpression,
   SimpleFullType
 } from "plywood";
 import { shallowEqualArrays } from "../../utils/array/array";
-import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
+import { isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
+import { safeEquals } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
+import { DynamicSubsetFormula, DynamicSubsetFormulaDef } from "../dynamic-subset-formula/dynamic-subset-formula";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
-import { Measure, MeasureJS } from "../measure/measure";
+import { Measure } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
@@ -105,6 +106,7 @@ export interface DataCubeValue {
   refreshRule?: RefreshRule;
   maxSplits?: number;
   maxQueries?: number;
+  dynamicSubsetFormula?: DynamicSubsetFormula;
 
   cluster?: Cluster;
   executor?: Executor;
@@ -139,6 +141,7 @@ export interface DataCubeJS {
   refreshRule?: RefreshRuleJS;
   maxSplits?: number;
   maxQueries?: number;
+  dynamicSubsetFormula?: DynamicSubsetFormulaDef;
 }
 
 export interface DataCubeOptions {
@@ -150,71 +153,6 @@ export interface DataCubeOptions {
 export interface DataCubeContext {
   cluster?: Cluster;
   executor?: Executor;
-}
-
-export interface LongForm {
-  metricColumn: string;
-  possibleAggregates: Record<string, any>;
-  addSubsetFilter?: boolean;
-  measures: Array<MeasureJS | LongFormMeasure>;
-}
-
-export interface LongFormMeasure {
-  aggregate: string;
-  value: string;
-  title: string;
-  units?: string;
-}
-
-function measuresFromLongForm(longForm: LongForm): Measure[] {
-  const { metricColumn, measures, possibleAggregates } = longForm;
-  let myPossibleAggregates: Record<string, Expression> = {};
-  for (let agg in possibleAggregates) {
-    if (!hasOwnProperty(possibleAggregates, agg)) continue;
-    myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
-  }
-
-  return measures.map(measure => {
-    if (hasOwnProperty(measure, "name")) {
-      return Measure.fromJS(measure as MeasureJS);
-    }
-
-    const title = measure.title;
-    if (!title) {
-      throw new Error("must have title in longForm value");
-    }
-
-    const value = (measure as LongFormMeasure).value;
-    const aggregate = (measure as LongFormMeasure).aggregate;
-    if (!aggregate) {
-      throw new Error("must have aggregates in longForm value");
-    }
-
-    const myExpression = myPossibleAggregates[aggregate];
-    if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value}`);
-
-    const name = makeUrlSafeName(`${aggregate}_${value}`);
-    return new Measure({
-      name,
-      title,
-      units: measure.units,
-      formula: myExpression.substitute(ex => {
-        if (ex instanceof RefExpression && ex.name === "filtered") {
-          return $("main").filter($(metricColumn).is(r(value)));
-        }
-        return null;
-      }).toString()
-    });
-  });
-}
-
-function filterFromLongForm(longForm: LongForm): Expression {
-  const { metricColumn, measures } = longForm;
-  let values: string[] = [];
-  for (let measure of measures) {
-    if (hasOwnProperty(measure, "aggregate")) values.push((measure as LongFormMeasure).value);
-  }
-  return $(metricColumn).in(values).simplify();
 }
 
 let check: Class<DataCubeValue, DataCubeJS>;
@@ -339,6 +277,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       maxSplits: parameters.maxSplits,
       maxQueries: parameters.maxQueries,
+      dynamicSubsetFormula: parameters.dynamicSubsetFormula ? DynamicSubsetFormula.fromJS(parameters.dynamicSubsetFormula) : null,
       refreshRule
     };
     if (cluster) {
@@ -377,6 +316,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public refreshRule: RefreshRule;
   public maxSplits: number;
   public maxQueries: number;
+  public dynamicSubsetFormula?: DynamicSubsetFormula;
 
   public cluster: Cluster;
   public executor: Executor;
@@ -409,6 +349,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
     this.maxSplits = parameters.maxSplits;
     this.maxQueries = parameters.maxQueries;
+    this.dynamicSubsetFormula = parameters.dynamicSubsetFormula;
 
     const { description, extendedDescription } = this.parseDescription(parameters);
     this.description = description;
@@ -457,7 +398,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: this.defaultPinnedDimensions,
       refreshRule: this.refreshRule,
       maxSplits: this.maxSplits,
-      maxQueries: this.maxQueries
+      maxQueries: this.maxQueries,
+      dynamicSubsetFormula: this.dynamicSubsetFormula
     };
     if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
@@ -489,6 +431,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.rollup) js.rollup = true;
     if (this.maxSplits) js.maxSplits = this.maxSplits;
     if (this.maxQueries) js.maxQueries = this.maxQueries;
+    if (this.dynamicSubsetFormula) js.dynamicSubsetFormula = this.dynamicSubsetFormula.toJS();
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
@@ -541,6 +484,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       (!this.defaultPinnedDimensions || this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions)) &&
       this.maxSplits === other.maxSplits &&
       this.maxQueries === other.maxQueries &&
+      safeEquals(this.dynamicSubsetFormula, other.dynamicSubsetFormula) &&
       this.refreshRule.equals(other.refreshRule);
   }
 
@@ -746,11 +690,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.dimensions.filterDimensions(dimension => dimension.kind === kind);
   }
 
-  public getSuggestedDimensions(): Dimension[] {
-    // TODO: actually implement this
-    return [];
-  }
-
   public getTimeDimension() {
     return this.getDimensionByExpression(this.timeAttribute);
   }
@@ -761,11 +700,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   public getMeasure(measureName: string): Measure {
     return this.measures.getMeasureByName(measureName);
-  }
-
-  public getSuggestedMeasures(): Measure[] {
-    // TODO: actually implement this
-    return [];
   }
 
   public changeDimensions(dimensions: Dimensions): DataCube {
