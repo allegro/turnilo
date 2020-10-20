@@ -65,6 +65,9 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
   }));
 }
 
+// TODO: plugins go here
+
+// TODO: after plugins
 // development HMR
 if (app.get("env") === "dev-hmr") {
   // add hot module replacement
@@ -93,12 +96,13 @@ if (app.get("env") === "dev-hmr") {
 attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
 attachRouter("/", express.static(path.join(__dirname, "../../assets")));
 
+// TODO: before plugins
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
 
-// Auth
+// TODO: remove
 if (AUTH) {
   app.use(AUTH);
 }
@@ -112,7 +116,7 @@ attachRouter("/plyql", plyqlRouter(settingsGetter));
 attachRouter("/mkurl", mkurlRouter(settingsGetter));
 attachRouter("/shorten", shortenRouter(settingsGetter, isTrustedProxy));
 
-// View routes
+// TODO: Try to move before routes and/or plugins
 if (SERVER_SETTINGS.getIframe() === "deny") {
   app.use((req: Request, res: Response, next: Function) => {
     res.setHeader("X-Frame-Options", "DENY");
