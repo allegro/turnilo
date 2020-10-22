@@ -24,9 +24,6 @@ describe("ServerSettings", () => {
     testImmutableClass(ServerSettings, [
       {},
       {
-        port: 9090
-      },
-      {
         port: 9091
       },
       {
@@ -50,17 +47,6 @@ describe("ServerSettings", () => {
         serverRoot: "/swivs",
         readinessEndpoint: "/status/readiness",
         pageMustLoadTimeout: 901
-      },
-      {
-        port: 9091,
-        auth: "my_auth.js"
-      },
-      {
-        port: 9091,
-        settingsLocation: {
-          location: "file",
-          uri: "path/to/my/file.yaml"
-        }
       }
     ]);
   });

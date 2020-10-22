@@ -16,7 +16,6 @@
  */
 
 import { BackCompat, BaseImmutable } from "immutable-class";
-import { SettingsLocation } from "../settings-location/settings-location";
 
 export type Iframe = "allow" | "deny";
 export type TrustProxy = "none" | "always";
@@ -30,10 +29,10 @@ export interface ServerSettingsValue {
   livenessEndpoint?: string;
   requestLogFormat?: string;
   pageMustLoadTimeout?: number;
+  verbose?: boolean;
   iframe?: Iframe;
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
-  settingsLocation?: SettingsLocation;
 }
 
 export interface ServerSettingsJS extends ServerSettingsValue {
@@ -69,13 +68,13 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: "requestLogFormat", defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
     { name: "pageMustLoadTimeout", defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
     { name: "iframe", defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
+    { name: "verbose", defaultValue: false, possibleValues: [false, true] },
     { name: "trustProxy", defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
     {
       name: "strictTransportSecurity",
       defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY,
       possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
-    },
-    { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation }
+    }
   ];
 
   static BACK_COMPATS: BackCompat[] = [{
@@ -94,9 +93,9 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public requestLogFormat: string;
   public pageMustLoadTimeout: number;
   public iframe: Iframe;
+  public verbose: boolean;
   public trustProxy: TrustProxy;
   public strictTransportSecurity: StrictTransportSecurity;
-  public settingsLocation: SettingsLocation;
 
   constructor(parameters: ServerSettingsValue) {
     super(parameters);
@@ -111,7 +110,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getIframe: () => Iframe;
   public getTrustProxy: () => TrustProxy;
   public getStrictTransportSecurity: () => StrictTransportSecurity;
-  public getSettingsLocation: () => SettingsLocation;
 }
 
 BaseImmutable.finalize(ServerSettings);
