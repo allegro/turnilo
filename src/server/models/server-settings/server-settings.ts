@@ -33,7 +33,6 @@ export interface ServerSettingsValue {
   iframe?: Iframe;
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
-  auth?: string;
   settingsLocation?: SettingsLocation;
 }
 
@@ -76,7 +75,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
       defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY,
       possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
     },
-    { name: "auth", defaultValue: null },
     { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation }
   ];
 
@@ -98,7 +96,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public iframe: Iframe;
   public trustProxy: TrustProxy;
   public strictTransportSecurity: StrictTransportSecurity;
-  public auth: string;
   public settingsLocation: SettingsLocation;
 
   constructor(parameters: ServerSettingsValue) {

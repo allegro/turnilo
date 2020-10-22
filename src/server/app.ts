@@ -22,7 +22,7 @@ import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import * as path from "path";
 import { LOGGER } from "../common/logger/logger";
-import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
+import { SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -101,11 +101,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
-
-// TODO: remove
-if (AUTH) {
-  app.use(AUTH);
-}
 
 attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);

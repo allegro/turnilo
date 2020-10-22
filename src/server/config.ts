@@ -203,32 +203,6 @@ if (parsedArgs["auth"]) {
 export const VERBOSE = Boolean(parsedArgs["verbose"] || serverSettingsJS.verbose);
 export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 
-// --- Auth -------------------------------
-
-var auth = SERVER_SETTINGS.auth;
-var authMiddleware: any = null;
-if (auth && auth !== "none") {
-  auth = path.resolve(anchorPath, auth);
-  logger.log(`Using auth ${auth}`);
-  try {
-    var authModule = require(auth);
-  } catch (e) {
-    exitWithError(`error loading auth module: ${e.message}`);
-  }
-
-  if (authModule.version !== AUTH_MODULE_VERSION) {
-    exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
-  }
-  if (typeof authModule.auth !== "function") exitWithError("Invalid auth module: must export 'auth' function");
-  authMiddleware = authModule.auth({
-    logger,
-    verbose: VERBOSE,
-    version: VERSION,
-    serverSettings: SERVER_SETTINGS
-  });
-}
-export const AUTH = authMiddleware;
-
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
   logger.log(`Starting Turnilo v${VERSION}`);
