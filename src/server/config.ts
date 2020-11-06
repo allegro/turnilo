@@ -261,7 +261,7 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
 if (PRINT_CONFIG) {
   var withComments = Boolean(parsedArgs["with-comments"]);
 
-  SETTINGS_MANAGER.getSettings({
+  SETTINGS_MANAGER.getFreshSettings({
     timeout: 10000
   }).then(appSettings => {
     const config = appSettingsToYAML(appSettings, withComments, {

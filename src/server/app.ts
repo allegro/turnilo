@@ -120,7 +120,8 @@ if (SERVER_SETTINGS.getIframe() === "deny") {
   });
 }
 
-attachRouter("/", turniloRouter(settingsGetter, VERSION));
+const freshSettingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getFreshSettings(opts);
+attachRouter("/", turniloRouter(freshSettingsGetter, VERSION));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {
