@@ -65,6 +65,17 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
   }));
 }
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+if (SERVER_SETTINGS.getIframe() === "deny") {
+  app.use((req: Request, res: Response, next: Function) => {
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+    next();
+  });
+}
+
 // TODO: plugins go here
 
 // TODO: after plugins
@@ -96,10 +107,6 @@ if (app.get("env") === "dev-hmr") {
 attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
 attachRouter("/", express.static(path.join(__dirname, "../../assets")));
 
-// TODO: before plugins
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
 
 attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
@@ -110,15 +117,6 @@ attachRouter("/plywood", plywoodRouter(settingsGetter));
 attachRouter("/plyql", plyqlRouter(settingsGetter));
 attachRouter("/mkurl", mkurlRouter(settingsGetter));
 attachRouter("/shorten", shortenRouter(settingsGetter, isTrustedProxy));
-
-// TODO: Try to move before routes and/or plugins
-if (SERVER_SETTINGS.getIframe() === "deny") {
-  app.use((req: Request, res: Response, next: Function) => {
-    res.setHeader("X-Frame-Options", "DENY");
-    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
-    next();
-  });
-}
 
 const freshSettingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getFreshSettings(opts);
 attachRouter("/", turniloRouter(freshSettingsGetter, VERSION));
