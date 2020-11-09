@@ -65,9 +65,9 @@ exports.version = 1;
 // options - is an object with the following keys:
 //   * cluster: Cluster - the cluster object
 exports.druidRequestDecoratorFactory = function (logger, params) {
-  var options = params.options;
-  var myUsername = options.myUsername; // pretend we store the username and password
-  var myPassword = options.myPassword; // in the config
+  var options = params.options; // The options will be an array and hence access values with index position
+  var myUsername = options[0].myUsername; // pretend we store the username and password
+  var myPassword = options[0].myPassword; // in the config
 
   if (!myUsername) throw new Error('must have username');
   if (!myPassword) throw new Error('must have password');
