@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
+import { Application } from "express";
 import { Instance } from "immutable-class";
 import { dictEqual } from "plywood";
+import { Logger } from "../../../common/logger/logger";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { isNil } from "../../../common/utils/general/general";
+import { ServerSettings } from "../server-settings/server-settings";
+
+type PluginSettingsObject = object;
+
+export interface PluginModule {
+  plugin: (app: Application, pluginSettings: PluginSettingsObject, serverSettings: ServerSettings, appSettings: () => Promise<AppSettings>, logger: Logger) => void;
+}
 
 interface PluginSettingsValue {
   name: string;
   path: string;
-  settings: object;
+  settings: PluginSettingsObject;
 }
 
 interface PluginSettingsJS {

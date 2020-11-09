@@ -21,8 +21,10 @@ import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import * as path from "path";
+import { isFunction } from "util";
 import { LOGGER } from "../common/logger/logger";
 import { SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
+import { PluginModule, PluginSettings } from "./models/plugin-settings/plugin-settings";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -89,7 +91,14 @@ app.use((req: Request, res: Response, next: Function) => {
 
 const appSettings: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
 
-// TODO: after plugins
+SERVER_SETTINGS.getPlugins().forEach(({ name, path, settings }: PluginSettings) => {
+  const module = require(path) as PluginModule;
+  if (!module || !isFunction(module.plugin)) {
+    LOGGER.warn(`Couldn't load module ${name} from path ${path}`);
+  }
+  module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER);
+});
+
 // development HMR
 if (app.get("env") === "dev-hmr") {
   // add hot module replacement
