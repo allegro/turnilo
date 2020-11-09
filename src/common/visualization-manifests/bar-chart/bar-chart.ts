@@ -15,8 +15,12 @@
  * limitations under the License.
  */
 
+import { List } from "immutable";
+import { clamp } from "../../../client/utils/dom/dom";
+import { AVAILABLE_LIMITS } from "../../limit/limit";
+import { NORMAL_COLORS } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
-import { DimensionSort } from "../../models/sort/sort";
+import { DimensionSort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
@@ -25,9 +29,84 @@ import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
+function isNominalSplitValid(nominalSplit: Split): boolean {
+  return nominalSplit.limit !== null && nominalSplit.limit <= NORMAL_COLORS.length;
+}
+
+function isTimeSplitValid(timeSplit: Split): boolean {
+  const sortByTime = new DimensionSort({
+    reference: timeSplit.reference,
+    direction: SortDirection.ascending
+  });
+
+  const isTimeSortValid = timeSplit.sort.equals(sortByTime);
+  const isTimeLimitValid = timeSplit.limit === null;
+
+  return isTimeSortValid && isTimeLimitValid;
+}
+
+const clampNominalSplitLimit = (split: Split) => split
+  .update("limit", limit =>
+    clamp(limit, AVAILABLE_LIMITS[0], NORMAL_COLORS.length));
+
+const fixTimeSplit = (split: Split) => {
+  const { reference } = split;
+  return split
+    .changeLimit(null)
+    .changeSort(new DimensionSort({
+      reference,
+      direction: SortDirection.ascending
+    }));
+};
+
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Bar Chart requires at least one split"))
+
+  .when(Predicates.areExactSplitKinds("time"))
+  .then(({ splits, isSelectedVisualization }) => {
+    const timeSplit = splits.getSplit(0);
+    if (isTimeSplitValid(timeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6, {
+      splits: new Splits({
+        splits: List([
+          fixTimeSplit(timeSplit)
+        ])
+      })
+    });
+  })
+
+  .when(Predicates.areExactSplitKinds("time", "*"))
+  .then(({ splits }) => {
+    const timeSplit = splits.getSplit(0);
+    const nominalSplit = splits.getSplit(1);
+
+    return Resolve.automatic(6, {
+      // Switch splits in place and conform
+      splits: new Splits({
+        splits: List([
+          clampNominalSplitLimit(nominalSplit),
+          fixTimeSplit(timeSplit)
+        ])
+      })
+    });
+  })
+  .when(Predicates.areExactSplitKinds("*", "time"))
+  .then(({ splits, isSelectedVisualization }) => {
+    const nominalSplit = splits.getSplit(0);
+    const timeSplit = splits.getSplit(1);
+
+    if (isTimeSplitValid(timeSplit) && isNominalSplitValid(nominalSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6, {
+      splits: new Splits({
+        splits: List([
+          clampNominalSplitLimit(nominalSplit),
+          fixTimeSplit(timeSplit)
+        ])
+      })
+    });
+
+  })
 
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))

@@ -69,7 +69,7 @@ Learn more about it on [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/H
 
 **trustProxy** ("none" | "always"), default "none"
 
-Should the server trust the `X-Forwarded-*` headers.
+Should the server trust the `X-Forwarded-*` headers.  If "always", Turnilo will use the left-most entry from the header.
 
 **strictTransportSecurity** ("none" | "always"), default "none"
 

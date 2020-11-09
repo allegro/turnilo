@@ -40,7 +40,7 @@ const isDev = app.get("env") === "development";
 const isTrustedProxy = SERVER_SETTINGS.getTrustProxy() === "always";
 
 if (isTrustedProxy) {
-  app.set("trust proxy", 1); // trust first proxy
+  app.set("trust proxy", true); // trust X-Forwarded-*, use left-most entry as the client
 }
 
 function getRoutePath(route: string): string {

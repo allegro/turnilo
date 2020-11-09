@@ -15,20 +15,18 @@
  */
 
 import { List } from "immutable";
-import { Dataset, Datum, TimeRange } from "plywood";
+import { Datum, TimeRange } from "plywood";
 import * as React from "react";
 import { DateRange } from "../../../../../common/models/date-range/date-range";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { FilterClause, FixedTimeFilterClause } from "../../../../../common/models/filter-clause/filter-clause";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Binary, Unary } from "../../../../../common/utils/functional/functional";
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
-import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { toPlywoodRange } from "../../../../utils/highlight-clause/highlight-clause";
 import { Highlight } from "../../../base-visualization/highlight";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { BarChartLayout } from "../utils/layout";
-import { firstSplitRef } from "../utils/splits";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { createHighlight, createHover, equalInteractions, Hover, Interaction } from "./interaction";
@@ -45,8 +43,8 @@ interface InteractionProps {
 
 interface InteractionControllerProps {
   xScale: XScale;
-  essence: Essence;
-  dataset: Dataset;
+  model: BarChartModel;
+  datums: Datum[];
   layout: BarChartLayout;
   children: Unary<InteractionProps, React.ReactNode>;
   highlight?: Highlight;
@@ -96,8 +94,8 @@ export class InteractionController extends React.Component<InteractionController
     if (!TimeRange.isTimeRange(value)) return;
     this.setState({ hover: null });
     const series = this.getSeriesFromEvent(y, part);
-    const { saveHighlight, essence } = this.props;
-    const reference = firstSplitRef(essence);
+    const { saveHighlight, model } = this.props;
+    const { reference } = model.continuousSplit;
     const values = List.of(new DateRange(value));
     const clause = new FixedTimeFilterClause({ reference, values });
     saveHighlight(List.of(clause), series.plywoodKey());
@@ -110,17 +108,16 @@ export class InteractionController extends React.Component<InteractionController
   }
 
   findDatumByValue(value: DomainValue): Datum | null {
-    const { essence, dataset } = this.props;
-    const datums = selectFirstSplitDatums(dataset);
-    const reference = firstSplitRef(essence);
+    const { model, datums } = this.props;
+    const { reference } = model.continuousSplit;
     return datums.find(datum => safeEquals(value, datum[reference]));
   }
 
   getSeriesFromEvent(y: number, part: ScrollerPart): ConcreteSeries | null {
     if (part !== "body") return null;
-    const { layout: { segment: { height: seriesHeight } }, essence } = this.props;
+    const { layout: { segment: { height: seriesHeight } }, model: { series } } = this.props;
     const index = Math.floor(y / seriesHeight);
-    return essence.getConcreteSeries().get(index);
+    return series.get(index);
   }
 
   interaction(): Interaction | null {

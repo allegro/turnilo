@@ -22,11 +22,16 @@ import { FilterClause } from "../../../../common/models/filter-clause/filter-cla
 import { Stage } from "../../../../common/models/stage/stage";
 import { Binary, Nullary } from "../../../../common/utils/functional/functional";
 import { Scroller } from "../../../components/scroller/scroller";
+import { SPLIT } from "../../../config/constants";
+import { selectMainDatum } from "../../../utils/dataset/selectors/selectors";
 import { Highlight } from "../../base-visualization/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";
+import { create, isStacked } from "./utils/bar-chart-model";
 import { calculateLayout } from "./utils/layout";
+import { stackDataset } from "./utils/stack-dataset";
+import { transposeDataset } from "./utils/transpose-dataset";
 import { getXDomain } from "./utils/x-domain";
 import { createXScale } from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
@@ -44,16 +49,20 @@ interface BarChartProps {
 
 export const BarChart: React.SFC<BarChartProps> = props => {
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
-  const seriesCount = essence.series.count();
-  const domain = getXDomain(essence, dataset);
+  const { [SPLIT]: split, ...totals } = selectMainDatum(dataset);
+  const model = create(essence, dataset);
+  const transposedDataset = transposeDataset(dataset, model);
+  const data = isStacked(model) ? stackDataset(transposedDataset, model) : transposedDataset;
+  const seriesCount = model.series.count();
+  const domain = getXDomain(data, model);
   const barChartLayout = calculateLayout(stage, domain.length, seriesCount);
   const { scroller, segment } = barChartLayout;
   const xScale = createXScale(domain, segment.width);
 
   return <InteractionController
     xScale={xScale}
-    essence={essence}
-    dataset={dataset}
+    model={model}
+    datums={data}
     layout={barChartLayout}
     saveHighlight={saveHighlight}
     highlight={highlight}>
@@ -75,19 +84,20 @@ export const BarChart: React.SFC<BarChartProps> = props => {
       bottomRightCorner={<Spacer />}
       body={<BarCharts
         interaction={interaction}
-        dataset={dataset}
+        datums={data}
+        totals={totals}
         stage={segment}
         scrollLeft={scrollLeft}
-        essence={essence}
+        model={model}
         xScale={xScale}
         acceptHighlight={acceptHighlight}
         dropHighlight={dropHighlight} />}
       rightGutter={<YAxis
-        essence={essence}
-        dataset={dataset}
+        model={model}
+        datums={data}
         stage={Stage.fromSize(scroller.right, segment.height)} />}
       bottomGutter={<XAxis
-        essence={essence}
+        model={model}
         scale={xScale}
         stage={Stage.fromSize(segment.width, scroller.bottom)}
       />} />}

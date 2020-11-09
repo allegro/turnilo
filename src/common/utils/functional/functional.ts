@@ -41,6 +41,14 @@ export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
 }
 
+export function replaceAt<T>(collection: T[], index: number, element: T): T[] {
+  return [
+    ...collection.slice(0, index),
+    element,
+    ...collection.slice(index + 1)
+  ];
+}
+
 export function zip<T, U>(xs: T[], ys: U[]): Array<[T, U]> {
   const length = Math.min(xs.length, ys.length);
   return xs.slice(0, length).map((x, idx) => {
