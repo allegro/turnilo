@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { BackCompat, BaseImmutable } from "immutable-class";
+import { BackCompat, BaseImmutable, Property, PropertyType } from "immutable-class";
+import { PluginSettings } from "../plugin-settings/plugin-settings";
 
 export type Iframe = "allow" | "deny";
 export type TrustProxy = "none" | "always";
@@ -33,6 +34,7 @@ export interface ServerSettingsValue {
   iframe?: Iframe;
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
+  plugins?: PluginSettings[];
 }
 
 export interface ServerSettingsJS extends ServerSettingsValue {
@@ -59,7 +61,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   }
 
   // TODO, back to: static PROPERTIES: Property[] = [
-  static PROPERTIES: any[] = [
+  static PROPERTIES: Property[] = [
     { name: "port", defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
     { name: "serverHost", defaultValue: null },
     { name: "serverRoot", defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
@@ -74,7 +76,8 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
       name: "strictTransportSecurity",
       defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY,
       possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
-    }
+    },
+    { name: "plugins", defaultValue: [], type: PropertyType.ARRAY, immutableClassArray: PluginSettings }
   ];
 
   static BACK_COMPATS: BackCompat[] = [{
@@ -96,6 +99,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public verbose: boolean;
   public trustProxy: TrustProxy;
   public strictTransportSecurity: StrictTransportSecurity;
+  public plugins: PluginSettings[];
 
   constructor(parameters: ServerSettingsValue) {
     super(parameters);
@@ -110,6 +114,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getIframe: () => Iframe;
   public getTrustProxy: () => TrustProxy;
   public getStrictTransportSecurity: () => StrictTransportSecurity;
+  public getPlugins: () => PluginSettings[];
 }
 
 BaseImmutable.finalize(ServerSettings);
