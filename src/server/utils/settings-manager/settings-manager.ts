@@ -133,7 +133,7 @@ export class SettingsManager {
     }
     return Promise.race([task, timeout(timeoutMs)])
       .catch(() => {
-        this.logger.error("Settings load timeout hit, continuing");
+        this.logger.warn(`Settings load timeout (${timeoutMs}ms) hit, continuing`);
       })
       .then(() => this.appSettings);
   }
