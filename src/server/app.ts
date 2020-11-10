@@ -144,7 +144,7 @@ app.use((req: Request, res: Response) => {
   res.redirect(getRoutePath("/"));
 });
 
-app.use((err: any, req: Request, res: Response) => {
+app.use((err: any, req: Request, res: Response, next: Function) => {
   LOGGER.error(`Server Error: ${err.message}`);
   LOGGER.error(err.stack);
   res.status(err.status || 500);
