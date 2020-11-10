@@ -79,7 +79,7 @@ export function plyqlRouter(settingsGetter: SettingsGetter) {
     });
 
     try {
-      const settings = await settingsGetter(<GetSettingsOptions> { dataCubeOfInterest: dataCube });
+      const settings = await settingsGetter();
       const myDataCube = settings.getDataCube(dataCube);
 
       if (!myDataCube) {

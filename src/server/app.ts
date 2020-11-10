@@ -22,7 +22,7 @@ import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import * as path from "path";
 import { LOGGER } from "../common/logger/logger";
-import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
+import { SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -65,6 +65,20 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
   }));
 }
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+if (SERVER_SETTINGS.getIframe() === "deny") {
+  app.use((req: Request, res: Response, next: Function) => {
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+    next();
+  });
+}
+
+// TODO: plugins go here
+
+// TODO: after plugins
 // development HMR
 if (app.get("env") === "dev-hmr") {
   // add hot module replacement
@@ -93,15 +107,7 @@ if (app.get("env") === "dev-hmr") {
 attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
 attachRouter("/", express.static(path.join(__dirname, "../../assets")));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
-
-// Auth
-if (AUTH) {
-  app.use(AUTH);
-}
 
 attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
@@ -112,16 +118,8 @@ attachRouter("/plyql", plyqlRouter(settingsGetter));
 attachRouter("/mkurl", mkurlRouter(settingsGetter));
 attachRouter("/shorten", shortenRouter(settingsGetter, isTrustedProxy));
 
-// View routes
-if (SERVER_SETTINGS.getIframe() === "deny") {
-  app.use((req: Request, res: Response, next: Function) => {
-    res.setHeader("X-Frame-Options", "DENY");
-    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
-    next();
-  });
-}
-
-attachRouter("/", turniloRouter(settingsGetter, VERSION));
+const freshSettingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getFreshSettings(opts);
+attachRouter("/", turniloRouter(freshSettingsGetter, VERSION));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {

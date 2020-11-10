@@ -55,7 +55,7 @@ export function mkurlRouter(settingsGetter: SettingsGetter) {
 
     let settings: AppSettings;
     try {
-      settings = await settingsGetter(<GetSettingsOptions> { dataCubeOfInterest: dataCubeName });
+      settings = await settingsGetter();
     } catch (e) {
       res.status(400).send({ error: "Couldn't load settings" });
       return;
