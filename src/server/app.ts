@@ -92,11 +92,24 @@ app.use((req: Request, res: Response, next: Function) => {
 const appSettings: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
 
 SERVER_SETTINGS.getPlugins().forEach(({ name, path, settings }: PluginSettings) => {
-  const module = require(path) as PluginModule;
-  if (!module || !isFunction(module.plugin)) {
+  let module;
+  try {
+    LOGGER.log(`Loading module ${name}`);
+    module = require(path) as PluginModule;
+  } catch (e) {
     LOGGER.warn(`Couldn't load module ${name} from path ${path}`);
+    return;
   }
-  module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER);
+  if (!module || !isFunction(module.plugin)) {
+    LOGGER.warn(`Module ${name} has no plugin function defined`);
+    return;
+  }
+  try {
+    LOGGER.log(`Invoking module ${name}`);
+    module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER);
+  } catch (e) {
+    LOGGER.warn(`Module ${name} threw an error: ${e.message}`);
+  }
 });
 
 // development HMR
