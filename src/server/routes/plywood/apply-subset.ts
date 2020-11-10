@@ -15,7 +15,7 @@
  */
 
 import { IncomingHttpHeaders } from "http";
-import { Expression, RefExpression } from "plywood";
+import { Expression, LiteralExpression, RefExpression } from "plywood";
 import { DynamicSubsetFormula } from "../../../common/models/dynamic-subset-formula/dynamic-subset-formula";
 import { isNil } from "../../../common/utils/general/general";
 
@@ -34,6 +34,9 @@ export function applySubset(expression: Expression, dynamicSubsetFormula: Dynami
     const subsetFilter = dynamicSubsetFormula.getSubsetExpression(headers);
     if (!(subsetFilter instanceof Expression)) {
       console.log("DynamicSubsetFormula should return Expression, instead returned:", subsetFilter);
+      return expression;
+    }
+    if (subsetFilter instanceof LiteralExpression && Expression.TRUE.equals(subsetFilter)) {
       return expression;
     }
     return filterMain(expression, subsetFilter);
