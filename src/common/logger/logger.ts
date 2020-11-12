@@ -14,22 +14,41 @@
  * limitations under the License.
  */
 
-import { noop } from "../utils/functional/functional";
+import { noop, Unary } from "../utils/functional/functional";
 
 export interface Logger {
   log: Function;
   warn: Function;
   error: Function;
+  addPrefix: Unary<String, Logger>;
 }
 
-export const LOGGER: Logger = {
-  error: console.error.bind(console),
-  warn: console.warn.bind(console),
-  log: console.log.bind(console)
-};
+class ConsoleLogger implements Logger {
+  constructor(private prefixes: string[] = []) {
+  }
+
+  error(...args: any[]) {
+    console.error(...this.prefixes, ...args);
+  }
+
+  warn(...args: any[]) {
+    console.warn(...this.prefixes, ...args);
+  }
+
+  log(...args: any[]) {
+    console.log(...this.prefixes, ...args);
+  }
+
+  addPrefix(prefix: string): Logger {
+    return new ConsoleLogger([...this.prefixes, prefix]);
+  }
+}
+
+export const LOGGER: Logger = new ConsoleLogger();
 
 export const NULL_LOGGER: Logger = {
   error: noop,
   warn: noop,
-  log: noop
+  log: noop,
+  addPrefix: noop
 };

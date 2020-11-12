@@ -106,7 +106,7 @@ SERVER_SETTINGS.getPlugins().forEach(({ name, path, settings }: PluginSettings) 
   }
   try {
     LOGGER.log(`Invoking module ${name}`);
-    module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER);
+    module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER.addPrefix(name));
   } catch (e) {
     LOGGER.warn(`Module ${name} threw an error: ${e.message}`);
   }
