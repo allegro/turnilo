@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.28.1-beta.1",
+  "version": "1.28.1-beta.2",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
