@@ -84,8 +84,6 @@ ${cssOverrides}`
 }
 
 export function errorLayout(options: ViewOptions, message: string, error: any = {}): string {
-  return layout(options, `<h1>{{message}}</h1>
-<h2>{{error.status}}</h2>
-<pre>{{error.stack}}</pre>`
-  );
+  const template = `<h1>${message}</h1>${error && `<h2>${error.status}</h2><pre>${error.stack}</pre>`}`;
+  return layout(options, template);
 }

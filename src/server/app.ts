@@ -21,8 +21,10 @@ import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import * as path from "path";
+import { isFunction } from "util";
 import { LOGGER } from "../common/logger/logger";
 import { SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
+import { PluginModule, PluginSettings } from "./models/plugin-settings/plugin-settings";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -32,6 +34,12 @@ import { shortenRouter } from "./routes/shorten/shorten";
 import { turniloRouter } from "./routes/turnilo/turnilo";
 import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
+
+declare module "express" {
+  export interface Request {
+    turniloMetadata: object;
+  }
+}
 
 let app = express();
 app.disable("x-powered-by");
@@ -76,9 +84,34 @@ if (SERVER_SETTINGS.getIframe() === "deny") {
   });
 }
 
-// TODO: plugins go here
+app.use((req: Request, res: Response, next: Function) => {
+  req.turniloMetadata = {};
+  next();
+});
 
-// TODO: after plugins
+const appSettings: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
+
+SERVER_SETTINGS.getPlugins().forEach(({ name, path, settings }: PluginSettings) => {
+  let module;
+  try {
+    LOGGER.log(`Loading module ${name}`);
+    module = require(path) as PluginModule;
+  } catch (e) {
+    LOGGER.warn(`Couldn't load module ${name} from path ${path}`);
+    return;
+  }
+  if (!module || !isFunction(module.plugin)) {
+    LOGGER.warn(`Module ${name} has no plugin function defined`);
+    return;
+  }
+  try {
+    LOGGER.log(`Invoking module ${name}`);
+    module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER.addPrefix(name));
+  } catch (e) {
+    LOGGER.warn(`Module ${name} threw an error: ${e.message}`);
+  }
+});
+
 // development HMR
 if (app.get("env") === "dev-hmr") {
   // add hot module replacement
@@ -107,16 +140,14 @@ if (app.get("env") === "dev-hmr") {
 attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
 attachRouter("/", express.static(path.join(__dirname, "../../assets")));
 
-const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
-
-attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
+attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(appSettings));
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-attachRouter("/plywood", plywoodRouter(settingsGetter));
-attachRouter("/plyql", plyqlRouter(settingsGetter));
-attachRouter("/mkurl", mkurlRouter(settingsGetter));
-attachRouter("/shorten", shortenRouter(settingsGetter, isTrustedProxy));
+attachRouter("/plywood", plywoodRouter(appSettings));
+attachRouter("/plyql", plyqlRouter(appSettings));
+attachRouter("/mkurl", mkurlRouter(appSettings));
+attachRouter("/shorten", shortenRouter(appSettings, isTrustedProxy));
 
 const freshSettingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getFreshSettings(opts);
 attachRouter("/", turniloRouter(freshSettingsGetter, VERSION));
@@ -126,7 +157,7 @@ app.use((req: Request, res: Response) => {
   res.redirect(getRoutePath("/"));
 });
 
-app.use((err: any, req: Request, res: Response) => {
+app.use((err: any, req: Request, res: Response, next: Function) => {
   LOGGER.error(`Server Error: ${err.message}`);
   LOGGER.error(err.stack);
   res.status(err.status || 500);
