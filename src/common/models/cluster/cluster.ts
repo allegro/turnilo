@@ -18,7 +18,8 @@
 import { BackCompat, BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
 import { URL } from "url";
-import { isTruthy, verifyUrlSafeName } from "../../utils/general/general";
+import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
+import { isNil, isTruthy, verifyUrlSafeName } from "../../utils/general/general";
 
 export type SourceListScan = "disable" | "auto";
 
@@ -37,8 +38,7 @@ export interface ClusterValue {
   guardDataCubes?: boolean;
 
   introspectionStrategy?: string;
-  requestDecorator?: string;
-  decoratorOptions?: any;
+  requestDecorator?: RequestDecorator;
 }
 
 export interface ClusterJS {
@@ -56,8 +56,7 @@ export interface ClusterJS {
   guardDataCubes?: boolean;
 
   introspectionStrategy?: string;
-  requestDecorator?: string;
-  decoratorOptions?: any;
+  requestDecorator?: RequestDecoratorJS;
 }
 
 function ensureNotNative(name: string): void {
@@ -131,8 +130,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
       validate: [BaseImmutable.ensure.number, ensureNotTiny]
     },
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
-    { name: "requestDecorator", defaultValue: null },
-    { name: "decoratorOptions", defaultValue: null },
+    { name: "requestDecorator", defaultValue: null, immutableClass: RequestDecorator },
     { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
   ];
 
@@ -143,6 +141,15 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     action: cluster => {
       const oldHost = oldHostParameter(cluster);
       cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+    }
+  }, {
+    condition: cluster => typeof cluster.requestDecorator === "string" || !isNil(cluster.decoratorOptions),
+    action: cluster => {
+      console.warn(`Cluster ${cluster.name} : requestDecorator as string decoratorOptions field are deprecated. Use object with path and options fields`);
+      cluster.requestDecorator = {
+        path: cluster.requestDecorator,
+        options: cluster.decoratorOptions
+      };
     }
   }];
 
@@ -163,8 +170,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
 
   // Druid
   public introspectionStrategy: string;
-  public requestDecorator: string;
-  public decoratorOptions: any;
+  public requestDecorator: RequestDecorator;
 
   public getTimeout: () => number;
   public getSourceListScan: () => SourceListScan;

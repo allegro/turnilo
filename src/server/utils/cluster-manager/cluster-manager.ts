@@ -22,20 +22,11 @@ import { DruidRequestDecorator } from "plywood-druid-requester";
 import { Logger } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { noop } from "../../../common/utils/functional/functional";
+import { DruidRequestDecoratorModule } from "../request-decorator/request-decorator";
 import { properRequesterFactory } from "../requester/requester";
 
 const CONNECTION_RETRY_TIMEOUT = 20000;
 const DRUID_REQUEST_DECORATOR_MODULE_VERSION = 1;
-
-export interface RequestDecoratorFactoryParams {
-  options: any;
-  cluster: Cluster;
-}
-
-export interface DruidRequestDecoratorModule {
-  version: number;
-  druidRequestDecoratorFactory: (logger: Logger, params: RequestDecoratorFactoryParams) => DruidRequestDecorator;
-}
 
 // For each external we want to maintain its source and whether it should introspect at all
 export interface ManagedExternal {
@@ -163,7 +154,7 @@ export class ClusterManager {
     const { cluster, logger, anchorPath } = this;
     if (!cluster.requestDecorator) return;
 
-    var requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator);
+    var requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator.path);
     logger.log(`Loading requestDecorator from '${requestDecoratorPath}'`);
     try {
       this.requestDecoratorModule = require(requestDecoratorPath);
@@ -176,17 +167,22 @@ export class ClusterManager {
     }
   }
 
-  private updateRequester() {
+  private getDruidRequestDecorator(): DruidRequestDecorator {
     const { cluster, logger, requestDecoratorModule } = this;
-
-    var druidRequestDecorator: DruidRequestDecorator = null;
-    if (cluster.type === "druid" && requestDecoratorModule) {
-      logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
-      druidRequestDecorator = requestDecoratorModule.druidRequestDecoratorFactory(logger, {
-        options: cluster.decoratorOptions,
-        cluster
-      });
+    if (cluster.type !== "druid" || !requestDecoratorModule) {
+      return null;
     }
+    logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
+    return requestDecoratorModule.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
+      options: cluster.requestDecorator.options,
+      cluster
+    });
+  }
+
+  private updateRequester() {
+    const { cluster } = this;
+
+    let druidRequestDecorator = this.getDruidRequestDecorator();
 
     this.requester = properRequesterFactory({
       cluster,
