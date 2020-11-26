@@ -44,7 +44,7 @@ this is how Turnilo emerged.
 
 ## Pre-requisites
 
-* [Node.js](https://nodejs.org/) - 12.x or 10.x version.
+* [Node.js](https://nodejs.org/) - 12.x or 14.x version.
 
 :warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.
@@ -80,22 +80,46 @@ turnilo --druid http[s]://druid-broker-hostname[:port]
 
 ## Development
 
-Install project dependencies.
+### Install project dependencies.
 
 ```
 npm install
 ```
 
-Build the project.
+### Build the project.
 
 ```
-npm run build:dev
+npm run build
 ```
+
+### Run project
 
 Run Wikipedia examples.
 
 ```
-npm run start:dev -- --examples
+npm run start:examples
+```
+
+Connect to the existing Druid broker.
+
+```
+npm run start -- --druid http[s]://druid-broker-hostname[:port]
+```
+
+Connect to the existing Druid broker using your config file.
+
+```
+npm run start -- --config path/to/config.yml
+```
+
+### Run project in developer mode
+
+Every change in frontend code would recompile project and reload page.
+
+Run Wikipedia examples.
+
+```
+npm run start:dev:examples
 ```
 
 Connect to the existing Druid broker.
@@ -104,7 +128,15 @@ Connect to the existing Druid broker.
 npm run start:dev -- --druid http[s]://druid-broker-hostname[:port]
 ```
 
-### Testing
+Connect to the existing Druid broker using your config file.
+
+```
+npm run start:dev -- --config path/to/config.yml
+```
+
+## Testing
+
+### Unit tests
 
 Run all unit tests.
 
@@ -120,14 +152,30 @@ npm run test:client
 npm run test:server
 ```
 
+### End to end tests
+
+Run all e2e tests. It will start turnilo with wikipedia dataset in background.
+
+```
+npm run e2e
+```
+
+### End to end tests development
+
+Run server
+
+```
+npm start:dev:examples
+```
+
+Run cypress interactive tools for e2e testing
+
+```
+npm run e2e:dev
+```
+
+
 ## Debugging 
-
-### Client module
-
-In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
-Next choose "JavaScript Debug" and set URL property to "localhost:9090".
-
-You can find more information [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
 
 ### Server module
 
