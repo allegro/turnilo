@@ -6,10 +6,9 @@ clusters:
     type: druid
     host: the.druid.host:8082 # This happens to be my Docker machine
 
-    requestDecorator: './druid-request-decorator.js'
-
-    # The are being read by the druidRequestDecorator
-    decoratorOptions:
-      myUsername: Aladdin
-      myPassword: OpenSesame
+    requestDecorator:
+      path: './druid-request-decorator.js'
+      options:
+        username: Aladdin
+        password: OpenSesame
 

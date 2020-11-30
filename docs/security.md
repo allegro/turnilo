@@ -47,9 +47,25 @@ For example if you wanted your users to only see the data for "United States" yo
 
 Turnilo can authenticate to a Druid server via request decoration. You can utilize it as follows:
 
-In the config add a key of `druidRequestDecorator` that point to a relative js file.
+In the config add a key of `druidRequestDecorator` with property `path` that point to a relative js file.
 
-`druidRequestDecorator: './druid-request-decorator.js'`
+```yaml
+druidRequestDecorator: 
+    path: './druid-request-decorator.js'
+```
+
+You can also pass parameters to your decorator using `options` field. Content of this field will be read as json and passed
+to your `druidRequestDecoratorFactory` under `options` key in second parameter.
+
+```yaml
+druidRequestDecorator: 
+    path: './druid-request-decorator.js'
+    options:
+        keyA: valueA
+        keyB:
+          - firstElement
+          - secondElement
+```
 
 Then the contract is that your module should export a function `druidRequestDecorator` that has to return a decorator.
  
@@ -61,41 +77,24 @@ Here is an example decorator:
 ```javascript
 exports.version = 1;
 
-// logger - is just a collection of functions that you should use instead of console to have your logs included with the Turnilo logs
-// options - is an object with the following keys:
-//   * cluster: Cluster - the cluster object
 exports.druidRequestDecoratorFactory = function (logger, params) {
-  var options = params.options; // The options will be an array and hence access values with index position
-  var myUsername = options[0].myUsername; // pretend we store the username and password
-  var myPassword = options[0].myPassword; // in the config
+  const options = params.options;
+  const username = options.username;
+  const password = options.password;
 
-  if (!myUsername) throw new Error('must have username');
-  if (!myPassword) throw new Error('must have password');
+  const auth = "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
 
-  logger.log("Decorator init for username: " + myUsername);
-
-  var auth = "Basic " + Buffer(myUsername + ":" + myPassword).toString('base64');
-
-  // decoratorRequest: DecoratorRequest - is an object that has the following keys:
-  //   * method: string - the method that is used (POST or GET)
-  //   * url: string -
-  //   * query: Druid.Query -
-  return function (decoratorRequest) {
-
-    var decoration = {
+  return function () {
+    return {
       headers: {
-        "Authorization": auth,
-        "X-I-Like": "Koalas"
-      }
+        "Authorization": auth
+      },
     };
-
-    // This can also be async if instead of a value of a promise is returned.
-    return decoration;
   };
 };
 ```
 
-You can find this example, with an example config, in the [./example](./example/request-decoration) folder.
+You can find this example with additional comments and example config in the [./example](./example/request-decoration) folder.
 
 This would result in all Druid requests being tagged as:
 
