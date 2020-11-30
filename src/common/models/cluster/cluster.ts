@@ -145,7 +145,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   }, {
     condition: cluster => typeof cluster.requestDecorator === "string" || !isNil(cluster.decoratorOptions),
     action: cluster => {
-      console.warn(`Cluster ${cluster.name} : requestDecorator as string decoratorOptions field are deprecated. Use object with path and options fields`);
+      console.warn(`Cluster ${cluster.name} : requestDecorator as string and decoratorOptions fields are deprecated. Use object with path and options fields`);
       cluster.requestDecorator = {
         path: cluster.requestDecorator,
         options: cluster.decoratorOptions
