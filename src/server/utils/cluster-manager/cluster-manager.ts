@@ -66,13 +66,12 @@ export class ClusterManager {
   public initialConnectionEstablished: boolean;
   public introspectedSources: Record<string, boolean>;
   public version: string;
-  public requester: PlywoodRequester<any>;
   public managedExternals: ManagedExternal[] = [];
   public onExternalChange: (name: string, external: External) => Promise<void>;
   public onExternalRemoved: (name: string, external: External) => Promise<void>;
   public generateExternalName: (external: External) => string;
-  public requestDecoratorModule: DruidRequestDecoratorModule;
 
+  private requester: PlywoodRequester<any>;
   private sourceListRefreshInterval = 0;
   private sourceListRefreshTimer: NodeJS.Timer = null;
   private sourceReintrospectInterval = 0;
@@ -93,9 +92,7 @@ export class ClusterManager {
     this.onExternalChange = options.onExternalChange || emptyResolve;
     this.onExternalRemoved = options.onExternalRemoved || emptyResolve;
     this.generateExternalName = options.generateExternalName || getSourceFromExternal;
-
-    this.updateRequestDecorator();
-    this.updateRequester();
+    this.requester = this.initRequester();
 
     this.managedExternals.forEach(managedExternal => {
       managedExternal.external = managedExternal.external.attachRequester(this.requester);
@@ -150,45 +147,41 @@ export class ClusterManager {
     return this.onExternalRemoved(managedExternal.name, managedExternal.external);
   }
 
-  private updateRequestDecorator(): void {
-    const { cluster, logger, anchorPath } = this;
-    if (!cluster.requestDecorator) return;
-
-    var requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator.path);
-    logger.log(`Loading requestDecorator from '${requestDecoratorPath}'`);
-    try {
-      this.requestDecoratorModule = require(requestDecoratorPath);
-    } catch (e) {
-      throw new Error(`error loading druidRequestDecorator module from '${requestDecoratorPath}': ${e.message}`);
-    }
-
-    if (this.requestDecoratorModule.version !== DRUID_REQUEST_DECORATOR_MODULE_VERSION) {
-      throw new Error(`druidRequestDecorator module '${requestDecoratorPath}' has incorrect version`);
-    }
-  }
-
-  private getDruidRequestDecorator(): DruidRequestDecorator {
-    const { cluster, logger, requestDecoratorModule } = this;
-    if (cluster.type !== "druid" || !requestDecoratorModule) {
-      return null;
-    }
-    logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
-    return requestDecoratorModule.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
-      options: cluster.requestDecorator.options,
-      cluster
-    });
-  }
-
-  private updateRequester() {
+  private initRequester(): PlywoodRequester<any> {
     const { cluster } = this;
+    const druidRequestDecorator = this.loadRequestDecorator();
 
-    let druidRequestDecorator = this.getDruidRequestDecorator();
-
-    this.requester = properRequesterFactory({
+    return properRequesterFactory({
       cluster,
       verbose: this.verbose,
       concurrentLimit: 5,
       druidRequestDecorator
+    });
+  }
+
+  private loadRequestDecorator(): DruidRequestDecorator | undefined {
+    const { cluster, logger, anchorPath } = this;
+    if (!cluster.requestDecorator) return undefined;
+    let module: DruidRequestDecoratorModule;
+
+    const requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator.path);
+    logger.log(`Loading requestDecorator from '${requestDecoratorPath}'`);
+    try {
+      module = require(requestDecoratorPath) as DruidRequestDecoratorModule;
+    } catch (e) {
+      logger.error(`error loading druidRequestDecorator module from '${requestDecoratorPath}': ${e.message}`);
+      return undefined;
+    }
+
+    if (module.version !== DRUID_REQUEST_DECORATOR_MODULE_VERSION) {
+      logger.error(`druidRequestDecorator module '${requestDecoratorPath}' has incorrect version`);
+      return undefined;
+    }
+
+    logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
+    return module.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
+      options: cluster.requestDecorator.options,
+      cluster
     });
   }
 
