@@ -20,11 +20,10 @@ import * as compress from "compression";
 import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
-import * as path from "path";
-import { isFunction } from "util";
+import { join } from "path";
 import { LOGGER } from "../common/logger/logger";
 import { SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
-import { PluginModule, PluginSettings } from "./models/plugin-settings/plugin-settings";
+import { PluginSettings } from "./models/plugin-settings/plugin-settings";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -32,6 +31,7 @@ import { plywoodRouter } from "./routes/plywood/plywood";
 import { readinessRouter } from "./routes/readiness/readiness";
 import { shortenRouter } from "./routes/shorten/shorten";
 import { turniloRouter } from "./routes/turnilo/turnilo";
+import { loadPlugin } from "./utils/plugin-loader/load-plugin";
 import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
 
@@ -91,24 +91,14 @@ app.use((req: Request, res: Response, next: Function) => {
 
 const appSettings: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
 
-SERVER_SETTINGS.getPlugins().forEach(({ name, path, settings }: PluginSettings) => {
-  let module;
+SERVER_SETTINGS.getPlugins().forEach(({ path, name, settings }: PluginSettings) => {
   try {
-    LOGGER.log(`Loading module ${name}`);
-    module = require(path) as PluginModule;
+    LOGGER.log(`Loading plugin ${name} module`);
+    const module = loadPlugin(path, SETTINGS_MANAGER.anchorPath);
+    LOGGER.log(`Invoking plugin ${name}`);
+    module.plugin(app, settings, SERVER_SETTINGS, appSettings, LOGGER.addPrefix(name));
   } catch (e) {
-    LOGGER.warn(`Couldn't load module ${name} from path ${path}`);
-    return;
-  }
-  if (!module || !isFunction(module.plugin)) {
-    LOGGER.warn(`Module ${name} has no plugin function defined`);
-    return;
-  }
-  try {
-    LOGGER.log(`Invoking module ${name}`);
-    module.plugin(app,  settings, SERVER_SETTINGS, appSettings, LOGGER.addPrefix(name));
-  } catch (e) {
-    LOGGER.warn(`Module ${name} threw an error: ${e.message}`);
+    LOGGER.warn(`Plugin ${name} threw an error: ${e.message}`);
   }
 });
 
@@ -137,8 +127,8 @@ if (app.get("env") === "dev-hmr") {
   }
 }
 
-attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
-attachRouter("/", express.static(path.join(__dirname, "../../assets")));
+attachRouter("/", express.static(join(__dirname, "../../build/public")));
+attachRouter("/", express.static(join(__dirname, "../../assets")));
 
 attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(appSettings));
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
