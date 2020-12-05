@@ -45,12 +45,12 @@ import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
-import { DynamicSubsetFormula, DynamicSubsetFormulaDef } from "../dynamic-subset-formula/dynamic-subset-formula";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
 import { Measure } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
+import { QueryDecoratorDefinition, QueryDecoratorDefinitionJS } from "../query-decorator/query-decorator";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
@@ -106,7 +106,7 @@ export interface DataCubeValue {
   refreshRule?: RefreshRule;
   maxSplits?: number;
   maxQueries?: number;
-  dynamicSubsetFormula?: DynamicSubsetFormula;
+  queryDecoratorDefinition?: QueryDecoratorDefinition;
 
   cluster?: Cluster;
   executor?: Executor;
@@ -141,7 +141,7 @@ export interface DataCubeJS {
   refreshRule?: RefreshRuleJS;
   maxSplits?: number;
   maxQueries?: number;
-  dynamicSubsetFormula?: DynamicSubsetFormulaDef;
+  queryDecoratorDefinition?: QueryDecoratorDefinitionJS;
 }
 
 export interface DataCubeOptions {
@@ -277,7 +277,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       maxSplits: parameters.maxSplits,
       maxQueries: parameters.maxQueries,
-      dynamicSubsetFormula: parameters.dynamicSubsetFormula ? DynamicSubsetFormula.fromJS(parameters.dynamicSubsetFormula) : null,
+      queryDecoratorDefinition: parameters.queryDecoratorDefinition ? QueryDecoratorDefinition.fromJS(parameters.queryDecoratorDefinition) : null,
       refreshRule
     };
     if (cluster) {
@@ -316,7 +316,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public refreshRule: RefreshRule;
   public maxSplits: number;
   public maxQueries: number;
-  public dynamicSubsetFormula?: DynamicSubsetFormula;
+  public queryDecoratorDefinition?: QueryDecoratorDefinition;
 
   public cluster: Cluster;
   public executor: Executor;
@@ -349,7 +349,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
     this.maxSplits = parameters.maxSplits;
     this.maxQueries = parameters.maxQueries;
-    this.dynamicSubsetFormula = parameters.dynamicSubsetFormula;
+    this.queryDecoratorDefinition = parameters.queryDecoratorDefinition;
 
     const { description, extendedDescription } = this.parseDescription(parameters);
     this.description = description;
@@ -399,7 +399,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       refreshRule: this.refreshRule,
       maxSplits: this.maxSplits,
       maxQueries: this.maxQueries,
-      dynamicSubsetFormula: this.dynamicSubsetFormula
+      queryDecoratorDefinition: this.queryDecoratorDefinition
     };
     if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
@@ -431,7 +431,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.rollup) js.rollup = true;
     if (this.maxSplits) js.maxSplits = this.maxSplits;
     if (this.maxQueries) js.maxQueries = this.maxQueries;
-    if (this.dynamicSubsetFormula) js.dynamicSubsetFormula = this.dynamicSubsetFormula.toJS();
+    if (this.queryDecoratorDefinition) js.queryDecoratorDefinition = this.queryDecoratorDefinition.toJS();
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
@@ -484,7 +484,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       (!this.defaultPinnedDimensions || this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions)) &&
       this.maxSplits === other.maxSplits &&
       this.maxQueries === other.maxQueries &&
-      safeEquals(this.dynamicSubsetFormula, other.dynamicSubsetFormula) &&
+      safeEquals(this.queryDecoratorDefinition, other.queryDecoratorDefinition) &&
       this.refreshRule.equals(other.refreshRule);
   }
 
@@ -649,6 +649,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     // Do not reveal the subset filter to the client
     value.subsetFormula = null;
+
+    // Do not reveal query decorator to the client
+    value.queryDecoratorDefinition = null;
 
     // No need for any introspection information on the client
     value.introspection = null;
