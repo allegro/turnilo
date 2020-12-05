@@ -34,6 +34,6 @@ export function loadModule(modulePath: string, anchorPath: string): unknown {
   try {
     return require(path);
   } catch (e) {
-    throw new Error(`Couldn't load module from path ${path}`);
+    throw new Error(`Couldn't load module from path ${path}. Error: ${e.message}`);
   }
 }
