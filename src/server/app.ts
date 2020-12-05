@@ -134,7 +134,7 @@ attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(appSettings
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-attachRouter("/plywood", plywoodRouter(appSettings));
+attachRouter("/plywood", plywoodRouter(SETTINGS_MANAGER));
 attachRouter("/plyql", plyqlRouter(appSettings));
 attachRouter("/mkurl", mkurlRouter(appSettings));
 attachRouter("/shorten", shortenRouter(appSettings, isTrustedProxy));
