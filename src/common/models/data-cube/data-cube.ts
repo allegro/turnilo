@@ -106,7 +106,7 @@ export interface DataCubeValue {
   refreshRule?: RefreshRule;
   maxSplits?: number;
   maxQueries?: number;
-  queryDecoratorDefinition?: QueryDecoratorDefinition;
+  queryDecorator?: QueryDecoratorDefinition;
 
   cluster?: Cluster;
   executor?: Executor;
@@ -141,7 +141,7 @@ export interface DataCubeJS {
   refreshRule?: RefreshRuleJS;
   maxSplits?: number;
   maxQueries?: number;
-  queryDecoratorDefinition?: QueryDecoratorDefinitionJS;
+  queryDecorator?: QueryDecoratorDefinitionJS;
 }
 
 export interface DataCubeOptions {
@@ -277,7 +277,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       maxSplits: parameters.maxSplits,
       maxQueries: parameters.maxQueries,
-      queryDecoratorDefinition: parameters.queryDecoratorDefinition ? QueryDecoratorDefinition.fromJS(parameters.queryDecoratorDefinition) : null,
+      queryDecorator: parameters.queryDecorator ? QueryDecoratorDefinition.fromJS(parameters.queryDecorator) : null,
       refreshRule
     };
     if (cluster) {
@@ -316,7 +316,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public refreshRule: RefreshRule;
   public maxSplits: number;
   public maxQueries: number;
-  public queryDecoratorDefinition?: QueryDecoratorDefinition;
+  public queryDecorator?: QueryDecoratorDefinition;
 
   public cluster: Cluster;
   public executor: Executor;
@@ -349,7 +349,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
     this.maxSplits = parameters.maxSplits;
     this.maxQueries = parameters.maxQueries;
-    this.queryDecoratorDefinition = parameters.queryDecoratorDefinition;
+    this.queryDecorator = parameters.queryDecorator;
 
     const { description, extendedDescription } = this.parseDescription(parameters);
     this.description = description;
@@ -399,7 +399,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       refreshRule: this.refreshRule,
       maxSplits: this.maxSplits,
       maxQueries: this.maxQueries,
-      queryDecoratorDefinition: this.queryDecoratorDefinition
+      queryDecorator: this.queryDecorator
     };
     if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
@@ -431,7 +431,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.rollup) js.rollup = true;
     if (this.maxSplits) js.maxSplits = this.maxSplits;
     if (this.maxQueries) js.maxQueries = this.maxQueries;
-    if (this.queryDecoratorDefinition) js.queryDecoratorDefinition = this.queryDecoratorDefinition.toJS();
+    if (this.queryDecorator) js.queryDecorator = this.queryDecorator.toJS();
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
@@ -484,7 +484,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       (!this.defaultPinnedDimensions || this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions)) &&
       this.maxSplits === other.maxSplits &&
       this.maxQueries === other.maxQueries &&
-      safeEquals(this.queryDecoratorDefinition, other.queryDecoratorDefinition) &&
+      safeEquals(this.queryDecorator, other.queryDecorator) &&
       this.refreshRule.equals(other.refreshRule);
   }
 
@@ -651,7 +651,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     value.subsetFormula = null;
 
     // Do not reveal query decorator to the client
-    value.queryDecoratorDefinition = null;
+    value.queryDecorator = null;
 
     // No need for any introspection information on the client
     value.introspection = null;

@@ -31,18 +31,18 @@ export interface QueryDecoratorModule {
 const id = (expression: Expression) => expression;
 
 export function loadQueryDecorator(dataCube: DataCube, anchorPath: string, logger: Logger): QueryDecorator {
-  if (!dataCube.queryDecoratorDefinition) return id;
-  const path = dataCube.queryDecoratorDefinition.path;
+  if (!dataCube.queryDecorator) return id;
+  const path = dataCube.queryDecorator.path;
   try {
     logger.log(`Loading query decorator module for ${dataCube.name}`);
     const module = loadModule(path, anchorPath) as QueryDecoratorModule;
     if (!module || !isFunction(module.decorator)) {
-      logger.log(`${dataCube.name} query decorator module has no decorator function defined`);
+      logger.warn(`${dataCube.name} query decorator module has no decorator function defined`);
       return id;
     }
     return module.decorator;
   } catch (e) {
-    logger.log(`Couldn't load query decorator module for ${dataCube.name} from ${path}`);
+    logger.warn(`Couldn't load query decorator for ${dataCube.name}. ${e.message}`);
     return id;
   }
 }
