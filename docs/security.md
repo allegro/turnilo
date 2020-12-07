@@ -42,60 +42,10 @@ Any query asking for a column that was not explicitly defined in the dimensions 
 A Turnilo dataSource can define a `subsetFormula` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data cube.
 For example if you wanted your users to only see the data for "United States" you could add `subsetFormula: $country == "United States"` to the data cube definition.
 
+Turnilo dataSource can also define `queryDecorator` - function that can decorate Plywood query. In this case it could additional filter clause that will be silently applied to all queries made to that cube.
+This function is called at every query and have access to Request object. Read more ine ![query decorator](./extending-turnilo.md).
 
 ## Authentication
 
-Turnilo can authenticate to a Druid server via request decoration. You can utilize it as follows:
+Turnilo can authenticate to a Druid server via ![request decoration](./extending-turnilo.md). 
 
-In the config add a key of `druidRequestDecorator` with property `path` that point to a relative js file.
-
-```yaml
-druidRequestDecorator: 
-    path: './druid-request-decorator.js'
-```
-
-You can also pass parameters to your decorator using `options` field. Content of this field will be read as json and passed
-to your `druidRequestDecoratorFactory` under `options` key in second parameter.
-
-```yaml
-druidRequestDecorator: 
-    path: './druid-request-decorator.js'
-    options:
-        keyA: valueA
-        keyB:
-          - firstElement
-          - secondElement
-```
-
-Then the contract is that your module should export a function `druidRequestDecorator` that has to return a decorator.
- 
-A decorator is a function that gets called on every request and receives a Druid query and may return an object with the
-key `headers` where you can set whatever headers you want.
-
-Here is an example decorator:
-
-```javascript
-exports.version = 1;
-
-exports.druidRequestDecoratorFactory = function (logger, params) {
-  const options = params.options;
-  const username = options.username;
-  const password = options.password;
-
-  const auth = "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
-
-  return function () {
-    return {
-      headers: {
-        "Authorization": auth
-      },
-    };
-  };
-};
-```
-
-You can find this example with additional comments and example config in the [./example](./example/request-decoration) folder.
-
-This would result in all Druid requests being tagged as:
-
-![decoration example](./example/request-decoration/result.png)
