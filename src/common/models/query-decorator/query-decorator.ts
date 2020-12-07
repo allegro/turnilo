@@ -17,7 +17,7 @@
 import { Instance } from "immutable-class";
 import { dictEqual } from "plywood";
 
-type QueryDecoratorOptions = object;
+export type QueryDecoratorOptions = object;
 
 interface QueryDecoratorDefinitionValue {
   path: string;

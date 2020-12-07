@@ -19,10 +19,12 @@ import { Expression } from "plywood";
 import { isFunction } from "util";
 import { Logger } from "../../../common/logger/logger";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { Binary } from "../../../common/utils/functional/functional";
+import { QueryDecoratorOptions } from "../../../common/models/query-decorator/query-decorator";
+import { Binary, Ternary } from "../../../common/utils/functional/functional";
 import { loadModule } from "../module-loader/module-loader";
 
 export type QueryDecorator = Binary<Expression, Request, Expression>;
+type QueryDecoratorWithOptions = Ternary<Expression, Request, QueryDecoratorOptions, Expression>;
 
 export interface QueryDecoratorModule {
   decorator: QueryDecorator;
@@ -31,16 +33,17 @@ export interface QueryDecoratorModule {
 const id = (expression: Expression) => expression;
 
 export function loadQueryDecorator(dataCube: DataCube, anchorPath: string, logger: Logger): QueryDecorator {
-  if (!dataCube.queryDecorator) return id;
-  const path = dataCube.queryDecorator.path;
+  const definition = dataCube.queryDecorator;
+  if (!definition) return id;
   try {
     logger.log(`Loading query decorator module for ${dataCube.name}`);
-    const module = loadModule(path, anchorPath) as QueryDecoratorModule;
+    const module = loadModule(definition.path, anchorPath) as QueryDecoratorModule;
     if (!module || !isFunction(module.decorator)) {
       logger.warn(`${dataCube.name} query decorator module has no decorator function defined`);
       return id;
     }
-    return module.decorator;
+    const decorator = module.decorator as QueryDecoratorWithOptions;
+    return (e: Expression, req: Request) => decorator(e, req, definition.options);
   } catch (e) {
     logger.warn(`Couldn't load query decorator for ${dataCube.name}. ${e.message}`);
     return id;
