@@ -66,12 +66,16 @@ This would result in all Druid requests being tagged as:
 In the data cube config add `queryDecorator` field with key `path` pointing to javascript file. 
 This file should export function named `decorator`. 
 This function will be called before every Plywood query is sent to Druid from Turnilo.
-Function is called with three arguments - Plywood query, Request object and decorator options and should return valid Plywood expression.
+Function is called with four arguments:
+* Plywood query
+* Request object
+* Decorator options
+* Plywood library instance
+
+Decorator function should return valid Plywood expression.
 
 ```javascript
-const plywood = require("plywood"); // require Plywood
-
-exports.decorator = function (expression, request, options) {
+exports.decorator = function (expression, request, options, plywood) {
   const userId = request.headers["x-user-id"]; // get userId from header, you need to set this value before Turnilo
   const userColumnName = options.userColumnName; // get value from options, defined in config
   const filterClause = plywood.$(userColumnName).in([userId]); // show only rows where `userColumnName` is equal to current user id.
