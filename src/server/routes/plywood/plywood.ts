@@ -18,11 +18,12 @@
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
+import { LOGGER } from "../../../common/logger/logger";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
-import { applySubset } from "./apply-subset";
+import { loadQueryDecorator } from "../../utils/query-decorator-loader/load-query-decorator";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-export function plywoodRouter(getSettings: SettingsGetter) {
+export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath" | "getSettings">) {
 
   const router = Router();
 
@@ -63,7 +64,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
 
     let settings;
     try {
-      settings = await getSettings();
+      settings = await settingsManager.getSettings();
     } catch (e) {
       res.status(400).send({ error: "failed to get settings" });
       return;
@@ -90,7 +91,8 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       req.setTimeout(myDataCube.cluster.getTimeout(), null);
     }
     const maxQueries = myDataCube.getMaxQueries();
-    const expression = applySubset(parsedExpression, myDataCube.dynamicSubsetFormula, req.headers);
+    const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, LOGGER);
+    const expression = decorator(parsedExpression, req);
     try {
       const data = await myDataCube.executor(expression, { maxQueries, timezone: queryTimezone });
       const reply = {

@@ -13,30 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolve } from "path";
 import { isFunction } from "util";
 import { PluginModule } from "../../models/plugin-settings/plugin-settings";
-
-function isFilePath(path: string): boolean {
-  return path.startsWith(".") || path.startsWith("/");
-}
-
-/*
-  Node's require accepts file paths and module names.
-  We need to resolve paths but left module names intact.
-  Module name is anything that don't start with slash or dot.
- */
-function normalizePluginPath(pluginPath: string, anchorPath: string): string {
-  return isFilePath(pluginPath) ? resolve(anchorPath, pluginPath) : pluginPath;
-}
+import { loadModule } from "../module-loader/module-loader";
 
 export function loadPlugin(pluginPath: string, anchorPath: string): PluginModule {
-  let module;
-  try {
-    module = require(normalizePluginPath(pluginPath, anchorPath)) as PluginModule;
-  } catch (e) {
-    throw new Error(`Couldn't load module from path ${pluginPath}`);
-  }
+  const module = loadModule(pluginPath, anchorPath) as PluginModule;
   if (!module || !isFunction(module.plugin)) {
     throw new Error("Module has no plugin function defined");
   }

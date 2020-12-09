@@ -24,6 +24,7 @@ export type Nullary<R> = () => R;
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
 export type Ternary<T, T2, T3, R> = (arg: T, arg2: T2, arg3: T3) => R;
+export type Quaternary<T, T2, T3, T4, R> = (arg: T, arg2: T2, arg3: T3, arg4: T4) => R;
 
 export type Predicate<T> = Unary<T, boolean>;
 
