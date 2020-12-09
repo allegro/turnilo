@@ -8,7 +8,7 @@ Turnilo lets you extend its behaviour in three ways:
 
 ## Request decorator
 
-In the cluster config add a key `druidRequestDecorator` with property `path` that point to a relative js file.
+In the cluster config add a key `druidRequestDecorator` with property `path` that points to a relative js file.
 
 ```yaml
 druidRequestDecorator: 
@@ -28,9 +28,9 @@ druidRequestDecorator:
           - secondElement
 ```
 
-Then the contract is that your module should export a function `druidRequestDecorator` that has to return a decorator.
+The contract is that your module should export a function `druidRequestDecoratorFactory` that has to return a decorator.
  
-A decorator is a function that gets called on every request and receives a Druid query and may return an object with the
+A decorator is a function that gets called on every request. It receives a Druid query and may return an object with the
 key `headers` where you can set whatever headers you want.
 
 Here is an example decorator:
@@ -107,7 +107,7 @@ You need to add your plugin as entry under `plugins` field.
 Plugin need to have two fields:
     - `name` - name for debug purposes
     - `path` - path to the js file
-And can have additional field `settings`. Content of this field would be passed to plugin so it is good place to plugin parameters.
+It can define additional field `settings`. Content of this field would be passed to plugin so it is good place for additional parameters.
 
 ```yaml
 plugins:
@@ -130,4 +130,3 @@ Use `get`, `post` etc. to define new endpoints. Use `use` to define middleware.
 
 Additionally, Turnilo defines empty object on Request object under `turniloMetadata` key. 
 Here you can pass values between your plugins and not pollute headers.
-

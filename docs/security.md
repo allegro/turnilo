@@ -43,9 +43,8 @@ A Turnilo dataSource can define a `subsetFormula` that is a boolean Plywood filt
 For example if you wanted your users to only see the data for "United States" you could add `subsetFormula: $country == "United States"` to the data cube definition.
 
 Turnilo dataSource can also define `queryDecorator` - function that can decorate Plywood query. In this case it could additional filter clause that will be silently applied to all queries made to that cube.
-This function is called at every query and have access to Request object. Read more ine ![query decorator](./extending-turnilo.md).
+This function is called at every query and have access to Request object. Read more about ![query decorator](./extending-turnilo.md).
 
 ## Authentication
 
 Turnilo can authenticate to a Druid server via ![request decoration](./extending-turnilo.md). 
-
