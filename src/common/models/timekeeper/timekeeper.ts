@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, NamedArray, Property, PropertyType } from "immutable-class";
+import { Map } from "immutable";
+import { immutableLookupsEqual, Instance } from "immutable-class";
+import { mapValues } from "../../utils/object/object";
+import { datesEqual } from "../../utils/time/time";
 import { TimeTag, TimeTagJS } from "../time-tag/time-tag";
 
-// I am: export * from './timekeeper/timekeeper';
-
 export interface TimekeeperValue {
-  timeTags: TimeTag[];
+  timeTags: Map<string, TimeTag>;
   nowOverride?: Date;
 }
 
 export interface TimekeeperJS {
-  timeTags: TimeTagJS[];
+  timeTags: Record<string, TimeTagJS>;
   nowOverride?: Date | string;
 }
 
-export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
+export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   static EMPTY: Timekeeper;
 
   static isTimekeeper(candidate: any): candidate is Timekeeper {
@@ -41,20 +42,20 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
     return new Date();
   }
 
-  static fromJS(parameters: TimekeeperJS): Timekeeper {
-    return new Timekeeper(BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters));
+  static fromJS({ timeTags, nowOverride = null }: TimekeeperJS): Timekeeper {
+    const tags = mapValues(timeTags, (tag: TimeTagJS) => TimeTag.fromJS(tag));
+    return new Timekeeper({
+      timeTags: Map(tags),
+      nowOverride: nowOverride && new Date(nowOverride)
+    });
   }
 
-  static PROPERTIES: Property[] = [
-    { name: "timeTags", type: PropertyType.ARRAY, immutableClassArray: TimeTag },
-    { name: "nowOverride", type: PropertyType.DATE, defaultValue: null }
-  ];
+  public timeTags: Map<string, TimeTag>;
+  public nowOverride: Date = null;
 
-  public timeTags: TimeTag[];
-  public nowOverride: Date;
-
-  constructor(parameters: TimekeeperValue) {
-    super(parameters);
+  constructor({ timeTags, nowOverride = null }: TimekeeperValue) {
+    this.timeTags = timeTags;
+    this.nowOverride = nowOverride;
   }
 
   now(): Date {
@@ -62,32 +63,64 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   getTime(name: string): Date {
-    var timeTag = NamedArray.findByName(this.timeTags, name);
+    const timeTag = this.timeTags.get(name);
     if (!timeTag || timeTag.special === "realtime") return this.now();
     return timeTag.time || this.now();
   }
 
+  private changeTimeTags(timeTags: Map<string, TimeTag>): Timekeeper {
+    return new Timekeeper({
+      ...this.valueOf(),
+      timeTags
+    });
+  }
+
   updateTime(name: string, time: Date): Timekeeper {
-    var value = this.valueOf();
-    var tag = NamedArray.findByName(value.timeTags, name);
+    const tag = this.timeTags.get(name);
     if (!tag) return this;
-    value.timeTags = NamedArray.overrideByName(value.timeTags, tag.changeTime(time, this.now()));
-    return new Timekeeper(value);
+    const timeTags = this.timeTags.set(name, tag.changeTime(time, this.now()));
+    return this.changeTimeTags(timeTags);
   }
 
   addTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
-    value.timeTags = value.timeTags.concat(new TimeTag({ name }));
-    return new Timekeeper(value);
+    const timeTags = this.timeTags.set(name, new TimeTag({ name }));
+    return this.changeTimeTags(timeTags);
   }
 
   removeTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
-    value.timeTags = value.timeTags.filter(tag => tag.name !== name);
-    return new Timekeeper(value);
+    const timeTags = this.timeTags.remove(name);
+    return this.changeTimeTags(timeTags);
+  }
+
+  equals(other: Instance<TimekeeperValue, TimekeeperJS> | undefined): boolean {
+    return Timekeeper.isTimekeeper(other)
+      && datesEqual(this.nowOverride, other.nowOverride)
+      && immutableLookupsEqual(this.timeTags.toObject(), other.timeTags.toObject());
+  }
+
+  toJS(): TimekeeperJS {
+    const tags = this.timeTags.toObject();
+    return {
+      nowOverride: this.nowOverride,
+      timeTags: mapValues(tags, tag => tag.toJS())
+    };
+  }
+
+  toJSON(): TimekeeperJS {
+    return this.toJS();
+  }
+
+  toString(): string {
+    return `[Timekeeper: ${this.timeTags.keySeq().join(", ")}]`;
+  }
+
+  valueOf(): TimekeeperValue {
+    return {
+      timeTags: this.timeTags,
+      nowOverride: this.nowOverride
+    };
   }
 
 }
 
-BaseImmutable.finalize(Timekeeper);
-Timekeeper.EMPTY = new Timekeeper({ timeTags: [] });
+Timekeeper.EMPTY = new Timekeeper({ timeTags: Map() });
