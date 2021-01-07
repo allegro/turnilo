@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Unary } from "../functional/functional";
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
@@ -32,4 +33,13 @@ export function omitFalsyValues<T>(obj: T): Partial<T> {
     }
     return res;
   }, {});
+}
+
+type Key = string;
+
+export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Unary<S, T>): Record<K, T> {
+  return Object.keys(obj).reduce((result: Record<K, T>, key: K) => {
+    result[key] = fn(obj[key]);
+    return result;
+  }, {} as Record<K, T>);
 }

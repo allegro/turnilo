@@ -23,14 +23,14 @@ export interface TimeTagValue {
   name: string;
   time?: Date;
   updated?: Date;
-  spacial?: Special;
+  special?: Special;
 }
 
 export interface TimeTagJS {
   name: string;
   time?: Date | string;
   updated?: Date | string;
-  spacial?: Special;
+  special?: Special;
 }
 
 export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
@@ -43,7 +43,7 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
     { name: "name" },
     { name: "time", type: PropertyType.DATE, defaultValue: null },
     { name: "updated", type: PropertyType.DATE, defaultValue: null },
-    { name: "spacial", defaultValue: null }
+    { name: "special", defaultValue: null }
   ];
 
   static fromJS(parameters: TimeTagJS): TimeTag {

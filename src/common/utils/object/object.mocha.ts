@@ -15,7 +15,8 @@
  */
 
 import { expect } from "chai";
-import { omitFalsyValues } from "./object";
+import { noop } from "../functional/functional";
+import { mapValues, omitFalsyValues } from "./object";
 
 describe("Object utils", () => {
   describe("omitFalsyValues", () => {
@@ -51,6 +52,43 @@ describe("Object utils", () => {
       const inputCopy = Object.assign({}, input);
 
       omitFalsyValues(input);
+
+      expect(input).to.deep.equal(inputCopy);
+    });
+  });
+
+  describe("mapValues", () => {
+    function addAndStringify(num: number): string {
+      return String(num + 1);
+    }
+
+    it("should apply function to all values", () => {
+      const input = {
+        a: 1,
+        b: 2
+      };
+
+      const expected = {
+        a: "2",
+        b: "3"
+      };
+
+      expect(mapValues(input, addAndStringify)).to.be.deep.equal(expected);
+    });
+
+    it("should handle empty object", () => {
+      expect(mapValues({}, addAndStringify)).to.be.deep.equal({});
+    });
+
+    it("should not modify input object", () => {
+      const input: any = {
+        a: 1,
+        b: 2
+      };
+
+      const inputCopy = Object.assign({}, input);
+
+      mapValues(input, addAndStringify);
 
       expect(input).to.deep.equal(inputCopy);
     });
