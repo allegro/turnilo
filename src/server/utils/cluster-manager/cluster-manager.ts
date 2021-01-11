@@ -22,6 +22,7 @@ import { DruidRequestDecorator } from "plywood-druid-requester";
 import { Logger } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { noop } from "../../../common/utils/functional/functional";
+import { loadModule } from "../module-loader/module-loader";
 import { DruidRequestDecoratorModule } from "../request-decorator/request-decorator";
 import { properRequesterFactory } from "../requester/requester";
 
@@ -162,27 +163,24 @@ export class ClusterManager {
   private loadRequestDecorator(): DruidRequestDecorator | undefined {
     const { cluster, logger, anchorPath } = this;
     if (!cluster.requestDecorator) return undefined;
-    let module: DruidRequestDecoratorModule;
-
-    const requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator.path);
-    logger.log(`Loading requestDecorator from '${requestDecoratorPath}'`);
     try {
-      module = require(requestDecoratorPath) as DruidRequestDecoratorModule;
+      logger.log(`Cluster ${cluster.name}: Loading requestDecorator`);
+      const module = loadModule(cluster.requestDecorator.path, anchorPath) as DruidRequestDecoratorModule;
+
+      if (module.version !== DRUID_REQUEST_DECORATOR_MODULE_VERSION) {
+        logger.error(`Cluster ${cluster.name}: druidRequestDecorator module has incorrect version`);
+        return undefined;
+      }
+
+      logger.log(`Cluster ${cluster.name} creating requestDecorator`);
+      return module.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
+        options: cluster.requestDecorator.options,
+        cluster
+      });
     } catch (e) {
-      logger.error(`error loading druidRequestDecorator module from '${requestDecoratorPath}': ${e.message}`);
+      logger.error(`Cluster ${cluster.name}: Couldn't load druidRequestDecorator module: ${e.message}`);
       return undefined;
     }
-
-    if (module.version !== DRUID_REQUEST_DECORATOR_MODULE_VERSION) {
-      logger.error(`druidRequestDecorator module '${requestDecoratorPath}' has incorrect version`);
-      return undefined;
-    }
-
-    logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
-    return module.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
-      options: cluster.requestDecorator.options,
-      cluster
-    });
   }
 
   private updateSourceListRefreshTimer() {
