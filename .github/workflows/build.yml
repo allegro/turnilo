@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Install Linux Dependencies
-        run: apt-get install libgconf-2-4
+        run: sudo apt-get install libgconf-2-4
 
       - uses: actions/checkout@v2
 
