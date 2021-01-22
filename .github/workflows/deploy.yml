@@ -20,13 +20,13 @@ jobs:
       - name: Authenticate on GCP
         uses: google-github-actions/setup-gcloud@master
         with:
+          version: '306.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
       - name: Use gcloud CLI
         run: gcloud info
-
 
 #
 #      - name: Configure Docker
