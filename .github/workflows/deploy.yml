@@ -14,17 +14,18 @@ jobs:
       IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
 
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-
       - name: Authenticate on GCP
         uses: google-github-actions/setup-gcloud@master
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: aaaa
+          service_account_key: bbbb
           export_default_credentials: true
 
       - name: Use gcloud CLI
         run: gcloud info
+
+#      - name: Checkout the repository
+#        uses: actions/checkout@v2
 
 #
 #      - name: Configure Docker
