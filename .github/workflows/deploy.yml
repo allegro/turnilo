@@ -27,6 +27,7 @@ jobs:
       - name: Use gcloud CLI
         run: gcloud info
 
+
 #
 #      - name: Configure Docker
 #        run: gcloud auth configure-docker --quiet
