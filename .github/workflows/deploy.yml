@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    name: Deploy on GCP
 
     runs-on: ubuntu-latest
 
@@ -18,30 +17,30 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
 
-      - name: Authenticate on GCP
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-
-      - name: Configure Docker
-        run: gcloud auth configure-docker --quiet
-
-      - name: Build Docker image
-        run: docker build . -t $IMAGE_NAME
-
-      - name: Push Docker image
-        run: docker push $IMAGE_NAME
-
-      - name: Deploy Docker image
-        run: |
-          gcloud run deploy turnilo \
-            --image $IMAGE_NAME \
-            --region europe-west1 \
-            --platform managed \
-            --allow-unauthenticated \
-            --quiet \
-            --port 9090 \
-            --cpu 1 --memory 512M --max-instances 1 --concurrency 80 \
-            --args="--examples"
+#      - name: Authenticate on GCP
+#        uses: google-github-actions/setup-gcloud@master
+#        with:
+#          project_id: ${{ secrets.GCP_PROJECT_ID }}
+#          service_account_key: ${{ secrets.GCP_SA_KEY }}
+#          export_default_credentials: true
+#
+#      - name: Configure Docker
+#        run: gcloud auth configure-docker --quiet
+#
+#      - name: Build Docker image
+#        run: docker build . -t $IMAGE_NAME
+#
+#      - name: Push Docker image
+#        run: docker push $IMAGE_NAME
+#
+#      - name: Deploy Docker image
+#        run: |
+#          gcloud run deploy turnilo \
+#            --image $IMAGE_NAME \
+#            --region europe-west1 \
+#            --platform managed \
+#            --allow-unauthenticated \
+#            --quiet \
+#            --port 9090 \
+#            --cpu 1 --memory 512M --max-instances 1 --concurrency 80 \
+#            --args="--examples"
