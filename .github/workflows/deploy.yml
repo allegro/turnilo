@@ -1,8 +1,9 @@
 name: Deploy
 
-push:
-  branches:
-    - demo_on_gcp
+on:
+  push:
+    branches:
+      - demo_on_gcp
 
 jobs:
   deploy:
