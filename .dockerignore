@@ -1,0 +1,12 @@
+/.git/
+/.idea/
+/build/
+/docs/
+/node_modules/
+/resources/
+.dockerignore
+.gitignore
+.npmignore
+LICENSE
+NOTICE
+README.md
