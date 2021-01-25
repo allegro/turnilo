@@ -66,7 +66,7 @@
     "@vx/heatmap": "0.0.183",
     "@vx/scale": "0.0.182",
     "@vx/tooltip": "0.0.184",
-    "axios": "0.19.0",
+    "axios": "0.21.1",
     "body-parser": "1.18.2",
     "chronoshift": "0.9.6",
     "compression": "1.7.1",
