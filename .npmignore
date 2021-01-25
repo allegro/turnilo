@@ -1,3 +1,4 @@
+/.git/
 /.github/
 /.idea/
 /config/
@@ -13,7 +14,9 @@
 *.ts
 *.tgz
 *.iml
+.dockerignore
 .release-it.json
 .sass-lint.yml
+Dockerfile
 tsconfig*.json
 tslint.json
