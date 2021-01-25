@@ -1,3 +1,4 @@
+/.github/
 /.idea/
 /config/
 /docs/
@@ -14,6 +15,5 @@
 *.iml
 .release-it.json
 .sass-lint.yml
-.travis.yml
 tsconfig*.json
 tslint.json
