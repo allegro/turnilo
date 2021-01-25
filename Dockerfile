@@ -9,8 +9,10 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy sources and build (see .dockerignore)
+# Copy sources (see .dockerignore)
 COPY . ./
+
+# Build and test
 RUN npm run build
 
 # Prune dev dependencies from node_modules
@@ -23,7 +25,7 @@ FROM gcr.io/distroless/nodejs:14 as runtime
 
 WORKDIR /app
 
-# Example config and packages.json
+# Example configuration and packages.json
 COPY --from=build /usr/src/app/config-examples.yaml /usr/src/app/package.json /usr/src/app/package-lock.json ./
 
 # Wikiticker dataset
