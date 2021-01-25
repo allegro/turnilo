@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
+import { testImmutableClass } from "immutable-class-tester";
+import { TimeTag, TimeTagJS } from "./time-tag";
+
 describe("TimeTag", () => {
   it("is an immutable class", () => {
-    /* TODO: check the correctness of the test */
-    /*    testImmutableClass<TimeTagJS>(TimeTag, [
-          {
-            name: 'dodo',
-            time: new Date("2015-10-15T19:20:00Z"),
-            updated: new Date("2015-10-15T19:20:13Z")
-          },
-          {
-            name: 'wikipedia',
-            time: new Date("2015-10-15T19:21:00Z"),
-            updated: new Date("2015-10-15T19:21:13Z")
-          }
-        ]);*/
+    testImmutableClass<TimeTagJS>(TimeTag, [
+      {
+        name: "dodo",
+        time: new Date("2015-10-15T19:20:00Z"),
+        updated: new Date("2015-10-15T19:20:13Z")
+      },
+      {
+        name: "wikipedia",
+        time: new Date("2015-10-15T19:21:00Z"),
+        updated: new Date("2015-10-15T19:21:13Z")
+      }
+    ]);
   });
 
 });

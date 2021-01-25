@@ -24,6 +24,7 @@ export type Nullary<R> = () => R;
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
 export type Ternary<T, T2, T3, R> = (arg: T, arg2: T2, arg3: T3) => R;
+export type Quaternary<T, T2, T3, T4, R> = (arg: T, arg2: T2, arg3: T3, arg4: T4) => R;
 
 export type Predicate<T> = Unary<T, boolean>;
 
@@ -39,6 +40,14 @@ export const compose = <A, B, C>(f: Unary<A, B>, g: Unary<B, C>): Unary<A, C> =>
 
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
+}
+
+export function replaceAt<T>(collection: T[], index: number, element: T): T[] {
+  return [
+    ...collection.slice(0, index),
+    element,
+    ...collection.slice(index + 1)
+  ];
 }
 
 export function zip<T, U>(xs: T[], ys: U[]): Array<[T, U]> {

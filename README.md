@@ -1,9 +1,9 @@
 # Turnilo
 
 [![npm version](https://img.shields.io/npm/v/turnilo.svg)](https://www.npmjs.org/package/turnilo)
-[![build status](https://travis-ci.org/allegro/turnilo.svg?branch=master)](https://travis-ci.org/allegro/turnilo)
+[![build status](https://github.com/allegro/turnilo/workflows/Build/badge.svg)](https://github.com/allegro/turnilo/actions)
 
-Turnilo is a business intelligence, data exploration and visualization web application for [Druid](http://druid.io/).
+Turnilo is a business intelligence, data exploration and visualization web application for [Apache Druid](https://druid.apache.org).
 Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
 This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv) 
 with the latest version of Pivot under Apache license.
@@ -30,9 +30,9 @@ this is how Turnilo emerged.
 
 * Intuitive, drag and drop, gorgeous user interface to visualize Druid datasets
 * Fully dedicated to low latency Druid 
-[Timeseries](http://druid.io/docs/latest/querying/timeseriesquery.html), 
-[TopN](http://druid.io/docs/latest/querying/topnquery.html) and 
-[GroupBy](http://druid.io/docs/latest/querying/groupbyquery.html) queries.
+[Timeseries](https://druid.apache.org/docs/latest/querying/timeseriesquery.html), 
+[TopN](https://druid.apache.org/docs/latest/querying/topnquery.html) and 
+[GroupBy](https://druid.apache.org/docs/latest/querying/groupbyquery.html) queries.
 * Unified view for historical and real-time data
 * Blazingly fast
 
@@ -44,7 +44,7 @@ this is how Turnilo emerged.
 
 ## Pre-requisites
 
-* [Node.js](https://nodejs.org/) - 12.x or 10.x version.
+* [Node.js](https://nodejs.org/) - 12.x or 14.x version.
 
 :warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.
@@ -80,22 +80,46 @@ turnilo --druid http[s]://druid-broker-hostname[:port]
 
 ## Development
 
-Install project dependencies.
+### Install project dependencies.
 
 ```
 npm install
 ```
 
-Build the project.
+### Build the project.
 
 ```
-npm run build:dev
+npm run build
 ```
+
+### Run project
 
 Run Wikipedia examples.
 
 ```
-npm run start:dev -- --examples
+npm run start:examples
+```
+
+Connect to the existing Druid broker.
+
+```
+npm run start -- --druid http[s]://druid-broker-hostname[:port]
+```
+
+Connect to the existing Druid broker using your config file.
+
+```
+npm run start -- --config path/to/config.yml
+```
+
+### Run project in developer mode
+
+Every change in frontend code would recompile project and reload page.
+
+Run Wikipedia examples.
+
+```
+npm run start:dev:examples
 ```
 
 Connect to the existing Druid broker.
@@ -104,7 +128,15 @@ Connect to the existing Druid broker.
 npm run start:dev -- --druid http[s]://druid-broker-hostname[:port]
 ```
 
-### Testing
+Connect to the existing Druid broker using your config file.
+
+```
+npm run start:dev -- --config path/to/config.yml
+```
+
+## Testing
+
+### Unit tests
 
 Run all unit tests.
 
@@ -120,14 +152,30 @@ npm run test:client
 npm run test:server
 ```
 
+### End to end tests
+
+Run all e2e tests. It will start turnilo with wikipedia dataset in background.
+
+```
+npm run e2e
+```
+
+### End to end tests development
+
+Run server
+
+```
+npm start:dev:examples
+```
+
+Run cypress interactive tools for e2e testing
+
+```
+npm run e2e:dev
+```
+
+
 ## Debugging 
-
-### Client module
-
-In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
-Next choose "JavaScript Debug" and set URL property to "localhost:9090".
-
-You can find more information [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
 
 ### Server module
 

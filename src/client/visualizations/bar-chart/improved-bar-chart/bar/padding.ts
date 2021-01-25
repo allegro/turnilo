@@ -14,15 +14,5 @@
  * limitations under the License.
  */
 
-import { expect } from "chai";
-import { EssenceFixtures } from "../../../../../common/models/essence/essence.fixtures";
-import { firstSplitRef } from "./splits";
-
-describe("Splits", () => {
-  describe("firstSplitRef", () => {
-    it("should pick first split reference", () => {
-      const essence = EssenceFixtures.wikiTable();
-      expect(firstSplitRef(essence)).to.be.equal("channel");
-    });
-  });
-});
+export const SIDE_PADDING = 5;
+export const TOP_PADDING = 5;

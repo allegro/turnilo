@@ -15,47 +15,16 @@
  * limitations under the License.
  */
 
-import * as fs from "fs-promise";
-import * as yaml from "js-yaml";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { inlineVars } from "../../../common/utils/general/general";
-import { Format } from "../../models/settings-location/settings-location";
+import { Nullary } from "../../../common/utils/functional/functional";
 
-function readSettingsFactory(filepath: string, format: Format, inline = false): () => Promise<AppSettings> {
-  return () => fs.readFile(filepath, "utf-8")
-    .then(fileData => {
-      switch (format) {
-        case "json":
-          return JSON.parse(fileData);
-        case "yaml":
-          return yaml.safeLoad(fileData);
-        default:
-          throw new Error(`unsupported format '${format}'`);
-      }
-    })
-    .then(appSettingsJS => {
-      if (inline) appSettingsJS = inlineVars(appSettingsJS, process.env);
-      const appSettings = AppSettings.fromJS(appSettingsJS, {  });
-      appSettings.validate();
-      return appSettings;
-    });
-}
+type SettingsPromise = Nullary<Promise<AppSettings>>;
 
 export class SettingsStore {
-  static fromTransient(initAppSettings: AppSettings): SettingsStore {
-    let settingsStore = new SettingsStore();
-    settingsStore.readSettings = () => Promise.resolve(initAppSettings);
-    return settingsStore;
+  static create(appSettings: AppSettings): SettingsStore {
+    return new SettingsStore(() => Promise.resolve(appSettings));
   }
 
-  static fromReadOnlyFile(filepath: string, format: Format): SettingsStore {
-    let settingsStore = new SettingsStore();
-    settingsStore.readSettings = readSettingsFactory(filepath, format, true);
-    return settingsStore;
-  }
-
-  public readSettings: () => Promise<AppSettings>;
-
-  constructor() {
+  constructor(public readSettings: SettingsPromise) {
   }
 }

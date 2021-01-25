@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { isFunction } from "util";
+import { PluginModule } from "../../models/plugin-settings/plugin-settings";
+import { loadModule } from "../module-loader/module-loader";
 
-import { Essence } from "../../../../../common/models/essence/essence";
-
-export function firstSplitRef(essence: Essence): string {
-  return essence.splits.splits.first().reference;
+export function loadPlugin(pluginPath: string, anchorPath: string): PluginModule {
+  const module = loadModule(pluginPath, anchorPath) as PluginModule;
+  if (!module || !isFunction(module.plugin)) {
+    throw new Error("Module has no plugin function defined");
+  }
+  return module;
 }

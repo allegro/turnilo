@@ -19,19 +19,16 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { mapTruthy } from "../../../../../common/utils/functional/functional";
-import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
-import { Delta } from "../../../../components/delta/delta";
-import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { ColorEntry, createColorEntry } from "../../../../components/color-swabs/color-entry";
+import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
+import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { selectSplitDataset } from "../../../../utils/dataset/selectors/selectors";
 import { getContinuousDimension, getContinuousReference, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 
-function findNestedDatumByAttribute(dimensionName: string, range: PlywoodRange): (d: Datum) => Datum {
-  return (d: Datum): Datum => {
-    const dataset = selectSplitDataset(d);
-    return dataset != null ? dataset.findDatumByAttribute(dimensionName, range) : null;
-  };
+function findSplitDatumByAttribute(d: Datum, dimensionName: string, range: PlywoodRange): Datum {
+  const dataset = selectSplitDataset(d);
+  return dataset != null ? dataset.findDatumByAttribute(dimensionName, range) : null;
 }
 
 function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ReactNode {
@@ -39,50 +36,34 @@ function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSer
   const datum = dataset.findDatumByAttribute(continuousDimension.name, range);
   if (!datum) return null;
 
-  if (!essence.hasComparison()) {
-    return series.formatValue(datum);
-  }
-  const currentValue = series.selectValue(datum);
-  const previousValue = series.selectValue(datum, SeriesDerivation.PREVIOUS);
-  const formatter = series.formatter();
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    current={currentValue}
-    previous={previousValue}
-    formatter={formatter} />;
+  return <SeriesBubbleContent series={series} datum={datum} showPrevious={essence.hasComparison()}/>;
 }
 
 function colorEntries(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ColorEntry[] {
-  const categorySplit = getNominalSplit(essence);
+  const { data } = dataset;
+  const { reference: nominalRef } = getNominalSplit(essence);
   const continuousRef = getContinuousReference(essence);
-  const hoverDatums = dataset.data.map(findNestedDatumByAttribute(continuousRef, range));
-  const colorValues = NORMAL_COLORS;
   const hasComparison = essence.hasComparison();
-  return mapTruthy(dataset.data, (d, i) => {
-    const segment = d[categorySplit.reference];
-    const hoverDatum = hoverDatums[i];
-    if (!hoverDatum) return null;
+  return data.map((datum, i) => {
+    const name = String(datum[nominalRef]);
+    const color = NORMAL_COLORS[i];
+    const hoverDatum = findSplitDatumByAttribute(datum, continuousRef, range);
 
-    const currentEntry: ColorEntry = {
-      color: colorValues[i],
-      name: String(segment),
-      value: series.formatValue(hoverDatum)
-    };
-
-    if (!hasComparison) {
-      return currentEntry;
+    if (!hoverDatum) {
+      return {
+        color,
+        name,
+        value: "-"
+      };
     }
 
-    return {
-      ...currentEntry,
-      previous: series.formatValue(hoverDatum, SeriesDerivation.PREVIOUS),
-      delta: <Delta
-        currentValue={series.selectValue(hoverDatum)}
-        previousValue={series.selectValue(hoverDatum, SeriesDerivation.PREVIOUS)}
-        formatter={series.formatter()}
-        lowerIsBetter={series.measure.lowerIsBetter}
-      />
-    };
+    return createColorEntry({
+      color,
+      name,
+      series,
+      datum: hoverDatum,
+      hasComparison
+    });
   });
 }
 

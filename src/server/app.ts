@@ -20,9 +20,10 @@ import * as compress from "compression";
 import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
-import * as path from "path";
+import { join } from "path";
 import { LOGGER } from "../common/logger/logger";
-import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
+import { SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
+import { PluginSettings } from "./models/plugin-settings/plugin-settings";
 import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
@@ -30,8 +31,15 @@ import { plywoodRouter } from "./routes/plywood/plywood";
 import { readinessRouter } from "./routes/readiness/readiness";
 import { shortenRouter } from "./routes/shorten/shorten";
 import { turniloRouter } from "./routes/turnilo/turnilo";
+import { loadPlugin } from "./utils/plugin-loader/load-plugin";
 import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
+
+declare module "express" {
+  export interface Request {
+    turniloMetadata: object;
+  }
+}
 
 let app = express();
 app.disable("x-powered-by");
@@ -40,7 +48,7 @@ const isDev = app.get("env") === "development";
 const isTrustedProxy = SERVER_SETTINGS.getTrustProxy() === "always";
 
 if (isTrustedProxy) {
-  app.set("trust proxy", 1); // trust first proxy
+  app.set("trust proxy", true); // trust X-Forwarded-*, use left-most entry as the client
 }
 
 function getRoutePath(route: string): string {
@@ -64,6 +72,35 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
     preload: true
   }));
 }
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+if (SERVER_SETTINGS.getIframe() === "deny") {
+  app.use((req: Request, res: Response, next: Function) => {
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+    next();
+  });
+}
+
+app.use((req: Request, res: Response, next: Function) => {
+  req.turniloMetadata = {};
+  next();
+});
+
+const appSettings: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
+
+SERVER_SETTINGS.getPlugins().forEach(({ path, name, settings }: PluginSettings) => {
+  try {
+    LOGGER.log(`Loading plugin ${name} module`);
+    const module = loadPlugin(path, SETTINGS_MANAGER.anchorPath);
+    LOGGER.log(`Invoking plugin ${name}`);
+    module.plugin(app, settings, SERVER_SETTINGS, appSettings, LOGGER.addPrefix(name));
+  } catch (e) {
+    LOGGER.warn(`Plugin ${name} threw an error: ${e.message}`);
+  }
+});
 
 // development HMR
 if (app.get("env") === "dev-hmr") {
@@ -90,45 +127,27 @@ if (app.get("env") === "dev-hmr") {
   }
 }
 
-attachRouter("/", express.static(path.join(__dirname, "../../build/public")));
-attachRouter("/", express.static(path.join(__dirname, "../../assets")));
+attachRouter("/", express.static(join(__dirname, "../../build/public")));
+attachRouter("/", express.static(join(__dirname, "../../assets")));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-const settingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
-
-// Auth
-if (AUTH) {
-  app.use(AUTH);
-}
-
-attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(settingsGetter));
+attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(appSettings));
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-attachRouter("/plywood", plywoodRouter(settingsGetter));
-attachRouter("/plyql", plyqlRouter(settingsGetter));
-attachRouter("/mkurl", mkurlRouter(settingsGetter));
-attachRouter("/shorten", shortenRouter(settingsGetter, isTrustedProxy));
+attachRouter("/plywood", plywoodRouter(SETTINGS_MANAGER));
+attachRouter("/plyql", plyqlRouter(appSettings));
+attachRouter("/mkurl", mkurlRouter(appSettings));
+attachRouter("/shorten", shortenRouter(appSettings, isTrustedProxy));
 
-// View routes
-if (SERVER_SETTINGS.getIframe() === "deny") {
-  app.use((req: Request, res: Response, next: Function) => {
-    res.setHeader("X-Frame-Options", "DENY");
-    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
-    next();
-  });
-}
-
-attachRouter("/", turniloRouter(settingsGetter, VERSION));
+const freshSettingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getFreshSettings(opts);
+attachRouter("/", turniloRouter(freshSettingsGetter, VERSION));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {
   res.redirect(getRoutePath("/"));
 });
 
-app.use((err: any, req: Request, res: Response) => {
+app.use((err: any, req: Request, res: Response, next: Function) => {
   LOGGER.error(`Server Error: ${err.message}`);
   LOGGER.error(err.stack);
   res.status(err.status || 500);

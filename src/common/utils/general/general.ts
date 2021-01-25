@@ -27,11 +27,15 @@ export function hasOwnProperty(obj: any, key: string | number): boolean {
   return objectHasOwnProperty.call(obj, key);
 }
 
-export function isNil(obj: any): boolean {
+export function isNil(obj: unknown): boolean {
   return obj === undefined || obj === null;
 }
 
-export function isTruthy(element: any): boolean {
+export function isObject(obj: unknown): obj is object {
+  return obj !== null && typeof obj === "object";
+}
+
+export function isTruthy(element: unknown): boolean {
   return element !== null && element !== undefined && element !== false;
 }
 
@@ -44,7 +48,7 @@ export function isNumber(n: unknown): n is number {
 }
 
 export function isFiniteNumber(n: number): boolean {
-  return isFinite(n) && !isNaN(n);
+  return isNumber(n) && isFinite(n) && !isNaN(n);
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {

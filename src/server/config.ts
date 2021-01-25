@@ -23,7 +23,7 @@ import { Cluster } from "../common/models/cluster/cluster";
 import { DataCube } from "../common/models/data-cube/data-cube";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
-import { ServerSettings } from "./models/server-settings/server-settings";
+import { ServerSettings, ServerSettingsJS } from "./models/server-settings/server-settings";
 import { loadFileSync } from "./utils/file/file";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
 import { SettingsStore } from "./utils/settings-store/settings-store";
@@ -166,24 +166,26 @@ export const START_SERVER = !PRINT_CONFIG;
 const logger = START_SERVER ? LOGGER : NULL_LOGGER;
 
 // Load server settings
-var serverSettingsFilePath = parsedArgs["config"];
+let configPath = parsedArgs["config"];
 
 if (parsedArgs["examples"]) {
-  serverSettingsFilePath = path.join(__dirname, "../../config-examples.yaml");
+  configPath = path.join(__dirname, "../../config-examples.yaml");
 }
 
-var anchorPath: string;
-var serverSettingsJS: any;
-if (serverSettingsFilePath) {
-  anchorPath = path.dirname(serverSettingsFilePath);
+let serverSettingsJS: ServerSettingsJS;
+let configDirPath;
+let configContent;
+if (configPath) {
+  configDirPath = path.dirname(configPath);
   try {
-    serverSettingsJS = loadFileSync(serverSettingsFilePath, "yaml");
-    logger.log(`Using config ${serverSettingsFilePath}`);
+    configContent = loadFileSync(configPath, "yaml");
+    serverSettingsJS = configContent;
+    logger.log(`Using config ${configPath}`);
   } catch (e) {
-    exitWithError(`Could not load config from '${serverSettingsFilePath}': ${e.message}`);
+    exitWithError(`Could not load config from '${configPath}': ${e.message}`);
   }
 } else {
-  anchorPath = process.cwd();
+  configDirPath = process.cwd();
   serverSettingsJS = {};
 }
 
@@ -196,38 +198,13 @@ if (parsedArgs["server-host"]) {
 if (parsedArgs["server-root"]) {
   serverSettingsJS.serverRoot = parsedArgs["server-root"];
 }
-if (parsedArgs["auth"]) {
-  serverSettingsJS.auth = parsedArgs["auth"];
+if (parsedArgs["verbose"]) {
+  serverSettingsJS.verbose = parsedArgs["verbose"];
 }
 
-export const VERBOSE = Boolean(parsedArgs["verbose"] || serverSettingsJS.verbose);
+// TODO: Remove this export
+export const VERBOSE = Boolean(serverSettingsJS.verbose);
 export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
-
-// --- Auth -------------------------------
-
-var auth = SERVER_SETTINGS.auth;
-var authMiddleware: any = null;
-if (auth && auth !== "none") {
-  auth = path.resolve(anchorPath, auth);
-  logger.log(`Using auth ${auth}`);
-  try {
-    var authModule = require(auth);
-  } catch (e) {
-    exitWithError(`error loading auth module: ${e.message}`);
-  }
-
-  if (authModule.version !== AUTH_MODULE_VERSION) {
-    exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
-  }
-  if (typeof authModule.auth !== "function") exitWithError("Invalid auth module: must export 'auth' function");
-  authMiddleware = authModule.auth({
-    logger,
-    verbose: VERBOSE,
-    version: VERSION,
-    serverSettings: SERVER_SETTINGS
-  });
-}
-export const AUTH = authMiddleware;
 
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
@@ -236,28 +213,18 @@ if (START_SERVER) {
 
 // --- Location -------------------------------
 
-var settingsStore: SettingsStore = null;
+let settingsStore: SettingsStore;
 
-if (serverSettingsFilePath) {
-  var settingsLocation = SERVER_SETTINGS.getSettingsLocation();
-  if (settingsLocation) {
-    switch (settingsLocation.getLocation()) {
-      case "file":
-        var settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
-        settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
-        break;
-      default:
-        exitWithError(`unknown location '${settingsLocation.location}'`);
-    }
-
-  } else {
-    settingsStore = SettingsStore.fromReadOnlyFile(serverSettingsFilePath, "yaml");
-  }
+if (configContent) {
+  const appSettings = AppSettings.fromJS(configContent, {});
+  // TODO: this validation should be done via #365
+  appSettings.validate();
+  settingsStore = SettingsStore.create(appSettings);
 } else {
-  var initAppSettings = AppSettings.BLANK;
+  let initAppSettings = AppSettings.BLANK;
 
   // If a file is specified add it as a dataCube
-  var fileToLoad = parsedArgs["file"];
+  const fileToLoad = parsedArgs["file"];
   if (fileToLoad) {
     initAppSettings = initAppSettings.addDataCube(new DataCube({
       name: path.basename(fileToLoad, path.extname(fileToLoad)),
@@ -279,13 +246,13 @@ if (serverSettingsFilePath) {
     }));
   }
 
-  settingsStore = SettingsStore.fromTransient(initAppSettings);
+  settingsStore = SettingsStore.create(initAppSettings);
 }
 
 export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
   logger,
   verbose: VERBOSE,
-  anchorPath,
+  anchorPath: configDirPath,
   initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
 });
 
@@ -294,7 +261,7 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
 if (PRINT_CONFIG) {
   var withComments = Boolean(parsedArgs["with-comments"]);
 
-  SETTINGS_MANAGER.getSettings({
+  SETTINGS_MANAGER.getFreshSettings({
     timeout: 10000
   }).then(appSettings => {
     const config = appSettingsToYAML(appSettings, withComments, {

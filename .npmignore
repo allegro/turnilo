@@ -15,7 +15,6 @@
 .dockerignore
 .release-it.json
 .sass-lint.yml
-.travis.yml
 Dockerfile
 tsconfig*.json
 tslint.json

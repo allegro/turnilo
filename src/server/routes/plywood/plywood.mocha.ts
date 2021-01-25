@@ -22,11 +22,16 @@ import * as supertest from "supertest";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { plywoodRouter } from "./plywood";
 
+const settingsManagerFixture = {
+  getSettings: () => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor()),
+  anchorPath: "."
+};
+
 let app = express();
 
 app.use(bodyParser.json());
 
-app.use("/", plywoodRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
+app.use("/", plywoodRouter(settingsManagerFixture));
 
 describe("plywood router", () => {
   it("must have dataCube", (testComplete: any) => {

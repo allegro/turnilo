@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
+import { Datum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
-import { Bars } from "../bars/bars";
+import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
+import { BarsContainer } from "../bars/bars-container";
 import { Interaction } from "../interactions/interaction";
+import { Legend } from "../legend/Legend";
+import { BarChartModel, isStacked } from "../utils/bar-chart-model";
 import { XScale } from "../utils/x-scale";
 
 interface BarChartsProps {
@@ -29,26 +31,31 @@ interface BarChartsProps {
   acceptHighlight: Nullary<void>;
   stage: Stage;
   scrollLeft: number;
-  essence: Essence;
-  dataset: Dataset;
+  model: BarChartModel;
+  datums: Datum[];
+  totals: Datum;
   xScale: XScale;
 }
 
 export const BarCharts: React.SFC<BarChartsProps> = props => {
-  const { dropHighlight, acceptHighlight, interaction, essence, dataset, xScale, scrollLeft, stage } = props;
-  const seriesList = essence.getConcreteSeries().toArray();
+  const { dropHighlight, acceptHighlight, interaction, model, datums, xScale, scrollLeft, stage, totals } = props;
+  const seriesList = model.series.toArray();
   return <React.Fragment>
+    {isStacked(model) && <LegendSpot>
+      <Legend model={model}/>
+    </LegendSpot>}
     {seriesList.map(series => {
       const hasInteraction = !!interaction && interaction.key === series.plywoodKey();
-      return <Bars
+      return <BarsContainer
         key={series.reactKey()}
         stage={stage}
         scrollLeft={scrollLeft}
         interaction={hasInteraction && interaction}
-        essence={essence}
         series={series}
         xScale={xScale}
-        dataset={dataset}
+        datums={datums}
+        totals={totals}
+        model={model}
         acceptHighlight={acceptHighlight}
         dropHighlight={dropHighlight} />;
     })}

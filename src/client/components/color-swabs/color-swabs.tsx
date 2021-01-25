@@ -15,15 +15,8 @@
  */
 
 import * as React from "react";
+import { ColorEntry } from "./color-entry";
 import "./color-swabs.scss";
-
-export interface ColorEntry {
-  color: string;
-  name: string;
-  value: string;
-  previous?: string;
-  delta?: JSX.Element;
-}
 
 interface ColorSwabsProps {
   colorEntries: ColorEntry[];

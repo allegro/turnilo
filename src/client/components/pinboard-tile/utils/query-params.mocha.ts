@@ -47,7 +47,7 @@ describe("QueryParams", () => {
 
     it("should return false if timekeeper is different", () => {
       const params = mockQueryParams();
-      const timekeeper = Timekeeper.fromJS({ timeTags: [] });
+      const timekeeper = Timekeeper.fromJS({ timeTags: {} });
       const changedTimekeeper = { ...params, timekeeper };
       expect(equalParams(params, changedTimekeeper)).to.be.false;
     });

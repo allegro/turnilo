@@ -18,7 +18,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { sleep } from "../../../client/utils/test-utils";
-import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable, zip } from "./functional";
+import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, replaceAt, thread, threadConditionally, threadNullable, zip } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -41,6 +41,16 @@ describe("Functional utilities", () => {
 
     it("should keep nested arrays", () => {
       expect(cons([], [1])).to.deep.eq([[1]]);
+    });
+  });
+
+  describe("replaceAt", () => {
+    it("should replace element at index 1", () => {
+      expect(replaceAt([1, 2, 3], 1, 42)).to.deep.eq([1, 42, 3]);
+    });
+
+    it("should append if index is out of bounds", () => {
+      expect(replaceAt([1, 2, 3], 100, 42)).to.deep.eq([1, 2, 3, 42]);
     });
   });
 

@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import { Dataset, NumberRange, TimeRange } from "plywood";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
-import { firstSplitRef } from "./splits";
+import { Datum, NumberRange, TimeRange } from "plywood";
+import { BarChartModel } from "./bar-chart-model";
 
 export type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;
 
 export type XDomain = DomainValue[];
 
-export function getXDomain(essence: Essence, dataset: Dataset): XDomain {
-  const ref = firstSplitRef(essence);
-  const firstSplitDatums = selectFirstSplitDatums(dataset);
-
-  return firstSplitDatums.map(datum => datum[ref] as DomainValue);
+export function getXDomain(datums: Datum[], { continuousSplit }: BarChartModel): XDomain {
+  const { reference: continuousReference } = continuousSplit;
+  return datums.map(datum => datum[continuousReference] as DomainValue);
 }

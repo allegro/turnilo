@@ -51,7 +51,7 @@ export class SettingsManager {
   public timeMonitor: TimeMonitor;
   public fileManagers: FileManager[];
   public clusterManagers: ClusterManager[];
-  public currentWork: Promise<void>;
+  public settingsLoaded: Promise<void>;
   public initialLoadTimeout: number;
 
   constructor(settingsStore: SettingsStore, options: SettingsManagerOptions) {
@@ -68,7 +68,7 @@ export class SettingsManager {
     this.initialLoadTimeout = options.initialLoadTimeout || 30000;
     this.appSettings = AppSettings.BLANK;
 
-    this.currentWork = settingsStore.readSettings()
+    this.settingsLoaded = settingsStore.readSettings()
       .then(appSettings => this.reviseSettings(appSettings))
       .catch(e => {
         logger.error(`Fatal settings load error: ${e.message}`);
@@ -126,23 +126,27 @@ export class SettingsManager {
     return this.timeMonitor.timekeeper;
   }
 
-  getSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
-    let currentWork = this.currentWork;
+  handleSettingsTask(task: Promise<void>, opts: GetSettingsOptions = {}): Promise<AppSettings> {
+    const timeoutMs = opts.timeout || this.initialLoadTimeout;
+    if (timeoutMs === 0) {
+      return task.then(() => this.appSettings);
+    }
+    return Promise.race([task, timeout(timeoutMs)])
+      .catch(() => {
+        this.logger.warn(`Settings load timeout (${timeoutMs}ms) hit, continuing`);
+      })
+      .then(() => this.appSettings);
+  }
 
-    // Refresh all clusters
-    currentWork = currentWork.then(() => {
+  getFreshSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
+    const task = this.settingsLoaded.then(() => {
       return Promise.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
     });
+    return this.handleSettingsTask(task, opts);
+  }
 
-    const timeoutPeriod = opts.timeout || this.initialLoadTimeout;
-    if (timeoutPeriod !== 0) {
-      currentWork = Promise.race([currentWork, timeout(timeoutPeriod)])
-        .catch(e => {
-          this.logger.error("Settings load timeout hit, continuing");
-        });
-    }
-
-    return currentWork.then(() => this.appSettings);
+  getSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
+    return this.handleSettingsTask(this.settingsLoaded, opts);
   }
 
   reviseSettings(newSettings: AppSettings): Promise<void> {
@@ -178,7 +182,7 @@ export class SettingsManager {
       candidateName = source + i;
     }
     return candidateName;
-  }
+  };
 
   onDatasetChange = (dataCubeName: string, changedDataset: Dataset): void => {
     const { logger } = this;
@@ -196,9 +200,9 @@ export class SettingsManager {
     }
 
     this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
-  }
+  };
 
-  onExternalChange = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void>  => {
+  onExternalChange = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
     if (!changedExternal.attributes || !changedExternal.requester) return Promise.resolve(null);
     const { logger } = this;
 
@@ -218,9 +222,9 @@ export class SettingsManager {
 
     this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
     return Promise.resolve(null);
-  }
+  };
 
-  onExternalRemoved = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void>  => {
+  onExternalRemoved = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
     if (!changedExternal.attributes || !changedExternal.requester) return Promise.resolve(null);
     const { logger } = this;
 
@@ -232,5 +236,5 @@ export class SettingsManager {
       this.timeMonitor.removeCheck(dataCube.name);
     }
     return Promise.resolve(null);
-  }
+  };
 }

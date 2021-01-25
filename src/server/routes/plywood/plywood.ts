@@ -18,15 +18,17 @@
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
+import { LOGGER } from "../../../common/logger/logger";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { loadQueryDecorator } from "../../utils/query-decorator-loader/load-query-decorator";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-export function plywoodRouter(getSettings: SettingsGetter) {
+export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath" | "getSettings">) {
 
   const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
-    const { dataSource, expression, timezone } = req.body;
+    const { dataSource, expression: expressionRaw, timezone } = req.body;
     const dataCube = req.body.dataCube || dataSource; // back compat
 
     if (typeof dataCube !== "string") {
@@ -49,9 +51,9 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       }
     }
 
-    let ex: Expression = null;
+    let parsedExpression: Expression = null;
     try {
-      ex = Expression.fromJS(expression);
+      parsedExpression = Expression.fromJS(expressionRaw);
     } catch (e) {
       res.status(400).send({
         error: "bad expression",
@@ -62,7 +64,7 @@ export function plywoodRouter(getSettings: SettingsGetter) {
 
     let settings;
     try {
-      settings = await getSettings();
+      settings = await settingsManager.getSettings();
     } catch (e) {
       res.status(400).send({ error: "failed to get settings" });
       return;
@@ -89,9 +91,11 @@ export function plywoodRouter(getSettings: SettingsGetter) {
       req.setTimeout(myDataCube.cluster.getTimeout(), null);
     }
     const maxQueries = myDataCube.getMaxQueries();
+    const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, LOGGER);
+    const expression = decorator(parsedExpression, req);
     try {
-      const data = await myDataCube.executor(ex, { maxQueries, timezone: queryTimezone });
-      const reply: any = {
+      const data = await myDataCube.executor(expression, { maxQueries, timezone: queryTimezone });
+      const reply = {
         result: Dataset.isDataset(data) ? data.toJS() : data
       };
       res.json(reply);

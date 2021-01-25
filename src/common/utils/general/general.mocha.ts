@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { List } from "immutable";
-import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
+import { ensureOneOf, inlineVars, isBlank, isDecimalInteger, isFiniteNumber, isNil, isNumber, isObject, isTruthy, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
 
 describe("General", () => {
   describe("moveInList", () => {
@@ -177,6 +177,126 @@ describe("General", () => {
       expect(readNumber("NaN"), "NaN").to.be.NaN;
       expect(readNumber(null), "<null>").to.be.NaN;
       expect(readNumber(undefined), "<undefined>").to.be.NaN;
+    });
+  });
+
+  describe("isNil", () => {
+    it("should return true for null", () => {
+      expect(isNil(null)).to.be.true;
+    });
+
+    it("should return true for undefined", () => {
+      expect(isNil(undefined)).to.be.true;
+    });
+
+    it("should return false for 0", () => {
+      expect(isNil(0)).to.be.false;
+    });
+
+    it("should return false for empty string", () => {
+      expect(isNil("")).to.be.false;
+    });
+  });
+
+  describe("isObject", () => {
+    it("should return true for empty object", () => {
+      expect(isObject({})).to.be.true;
+    });
+
+    it("should return true for non-empty object", () => {
+      expect(isObject({ foo: "bar" })).to.be.true;
+    });
+
+    it("should return false for null", () => {
+      expect(isObject(null)).to.be.false;
+    });
+
+    it("should return false for string", () => {
+      expect(isObject("foobar")).to.be.false;
+    });
+  });
+
+  describe("isTruthy", () => {
+    it("should return false for null", () => {
+      expect(isTruthy(null)).to.be.false;
+    });
+
+    it("should return false for undefined", () => {
+      expect(isTruthy(undefined)).to.be.false;
+    });
+
+    it("should return false for false", () => {
+      expect(isTruthy(false)).to.be.false;
+    });
+
+    it("should return true for 0", () => {
+      expect(isTruthy(0)).to.be.true;
+    });
+
+    it("should return true for empty string", () => {
+      expect(isTruthy("")).to.be.true;
+    });
+  });
+
+  describe("isBlank", () => {
+    it("should return false for non-empty string", () => {
+      expect(isBlank("foobar")).to.be.false;
+    });
+
+    it("should return true for empty string", () => {
+      expect(isBlank("")).to.be.true;
+    });
+  });
+
+  describe("isNumber", () => {
+    it("should return false for string", () => {
+      expect(isNumber("foobar")).to.be.false;
+    });
+
+    it("should return false for null", () => {
+      expect(isNumber(null)).to.be.false;
+    });
+
+    it("should return false for undefined", () => {
+      expect(isNumber(undefined)).to.be.false;
+    });
+
+    it("should return true for integer", () => {
+      expect(isNumber(42)).to.be.true;
+    });
+
+    it("should return true for float", () => {
+      expect(isNumber(0.000000003)).to.be.true;
+    });
+  });
+
+  describe("isFiniteNumber", () => {
+    it("should return false for NaN", () => {
+      expect(isFiniteNumber(NaN)).to.be.false;
+    });
+
+    it("should return false for +Infinity", () => {
+      expect(isFiniteNumber(+Infinity)).to.be.false;
+    });
+
+    it("should return false for -Infinity", () => {
+      expect(isFiniteNumber(-Infinity)).to.be.false;
+    });
+
+    it("should return false for null", () => {
+      expect(isFiniteNumber(null)).to.be.false;
+    });
+
+    it("should return false for undefined", () => {
+      expect(isFiniteNumber(undefined)).to.be.false;
+    });
+
+    it("should return true for integer", () => {
+      expect(isFiniteNumber(42)).to.be.true;
+    });
+
+    it("should return true for float", () => {
+      expect(isFiniteNumber(0.0000003)).to.be.true;
     });
   });
 });

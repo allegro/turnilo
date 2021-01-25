@@ -57,7 +57,7 @@ function getHostAndProtocol(url: URL): { host: string, protocol: PlywoodProtocol
   };
 }
 
-function createDruidRequester(cluster: Cluster, requestDecorator: DruidRequestDecorator): PlywoodRequester<any> {
+function createDruidRequester(cluster: Cluster, requestDecorator?: DruidRequestDecorator): PlywoodRequester<any> {
   const { host, protocol } = getHostAndProtocol(new URL(cluster.url));
   const timeout = cluster.getTimeout();
   return druidRequesterFactory({ host, timeout, requestDecorator, protocol });

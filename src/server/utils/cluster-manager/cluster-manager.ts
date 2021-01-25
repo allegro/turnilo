@@ -22,20 +22,12 @@ import { DruidRequestDecorator } from "plywood-druid-requester";
 import { Logger } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { noop } from "../../../common/utils/functional/functional";
+import { loadModule } from "../module-loader/module-loader";
+import { DruidRequestDecoratorModule } from "../request-decorator/request-decorator";
 import { properRequesterFactory } from "../requester/requester";
 
 const CONNECTION_RETRY_TIMEOUT = 20000;
 const DRUID_REQUEST_DECORATOR_MODULE_VERSION = 1;
-
-export interface RequestDecoratorFactoryParams {
-  options: any;
-  cluster: Cluster;
-}
-
-export interface DruidRequestDecoratorModule {
-  version: number;
-  druidRequestDecoratorFactory: (logger: Logger, params: RequestDecoratorFactoryParams) => DruidRequestDecorator;
-}
 
 // For each external we want to maintain its source and whether it should introspect at all
 export interface ManagedExternal {
@@ -75,13 +67,12 @@ export class ClusterManager {
   public initialConnectionEstablished: boolean;
   public introspectedSources: Record<string, boolean>;
   public version: string;
-  public requester: PlywoodRequester<any>;
   public managedExternals: ManagedExternal[] = [];
   public onExternalChange: (name: string, external: External) => Promise<void>;
   public onExternalRemoved: (name: string, external: External) => Promise<void>;
   public generateExternalName: (external: External) => string;
-  public requestDecoratorModule: DruidRequestDecoratorModule;
 
+  private requester: PlywoodRequester<any>;
   private sourceListRefreshInterval = 0;
   private sourceListRefreshTimer: NodeJS.Timer = null;
   private sourceReintrospectInterval = 0;
@@ -102,9 +93,7 @@ export class ClusterManager {
     this.onExternalChange = options.onExternalChange || emptyResolve;
     this.onExternalRemoved = options.onExternalRemoved || emptyResolve;
     this.generateExternalName = options.generateExternalName || getSourceFromExternal;
-
-    this.updateRequestDecorator();
-    this.updateRequester();
+    this.requester = this.initRequester();
 
     this.managedExternals.forEach(managedExternal => {
       managedExternal.external = managedExternal.external.attachRequester(this.requester);
@@ -159,41 +148,39 @@ export class ClusterManager {
     return this.onExternalRemoved(managedExternal.name, managedExternal.external);
   }
 
-  private updateRequestDecorator(): void {
-    const { cluster, logger, anchorPath } = this;
-    if (!cluster.requestDecorator) return;
+  private initRequester(): PlywoodRequester<any> {
+    const { cluster } = this;
+    const druidRequestDecorator = this.loadRequestDecorator();
 
-    var requestDecoratorPath = path.resolve(anchorPath, cluster.requestDecorator);
-    logger.log(`Loading requestDecorator from '${requestDecoratorPath}'`);
-    try {
-      this.requestDecoratorModule = require(requestDecoratorPath);
-    } catch (e) {
-      throw new Error(`error loading druidRequestDecorator module from '${requestDecoratorPath}': ${e.message}`);
-    }
-
-    if (this.requestDecoratorModule.version !== DRUID_REQUEST_DECORATOR_MODULE_VERSION) {
-      throw new Error(`druidRequestDecorator module '${requestDecoratorPath}' has incorrect version`);
-    }
-  }
-
-  private updateRequester() {
-    const { cluster, logger, requestDecoratorModule } = this;
-
-    var druidRequestDecorator: DruidRequestDecorator = null;
-    if (cluster.type === "druid" && requestDecoratorModule) {
-      logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
-      druidRequestDecorator = requestDecoratorModule.druidRequestDecoratorFactory(logger, {
-        options: cluster.decoratorOptions,
-        cluster
-      });
-    }
-
-    this.requester = properRequesterFactory({
+    return properRequesterFactory({
       cluster,
       verbose: this.verbose,
       concurrentLimit: 5,
       druidRequestDecorator
     });
+  }
+
+  private loadRequestDecorator(): DruidRequestDecorator | undefined {
+    const { cluster, logger, anchorPath } = this;
+    if (!cluster.requestDecorator) return undefined;
+    try {
+      logger.log(`Cluster ${cluster.name}: Loading requestDecorator`);
+      const module = loadModule(cluster.requestDecorator.path, anchorPath) as DruidRequestDecoratorModule;
+
+      if (module.version !== DRUID_REQUEST_DECORATOR_MODULE_VERSION) {
+        logger.error(`Cluster ${cluster.name}: druidRequestDecorator module has incorrect version`);
+        return undefined;
+      }
+
+      logger.log(`Cluster ${cluster.name} creating requestDecorator`);
+      return module.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
+        options: cluster.requestDecorator.options,
+        cluster
+      });
+    } catch (e) {
+      logger.error(`Cluster ${cluster.name}: Couldn't load druidRequestDecorator module: ${e.message}`);
+      return undefined;
+    }
   }
 
   private updateSourceListRefreshTimer() {
