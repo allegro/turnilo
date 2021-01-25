@@ -28,15 +28,15 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Docker image
-        run: docker build . -t $IMAGE_NAME
+        run: docker build . -t $IMAGE_NAME:latest
 
       - name: Push Docker image
-        run: docker push $IMAGE_NAME
+        run: docker push $IMAGE_NAME:latest
 
       - name: Deploy on GCP
         run: |
           gcloud run deploy turnilo \
-            --image $IMAGE_NAME \
+            --image $IMAGE_NAME:latest \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
@@ -44,3 +44,8 @@ jobs:
             --port 9090 \
             --cpu 1 --memory 512M --max-instances 1 --concurrency 80 \
             --args="--examples"
+
+      - name: Delete previous Docker image
+        run: |
+          gcloud container images list-tags $IMAGE_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
+          xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
