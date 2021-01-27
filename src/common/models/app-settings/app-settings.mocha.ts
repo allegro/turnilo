@@ -22,7 +22,7 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings } from "./app-settings";
 import { AppSettingsFixtures } from "./app-settings.fixtures";
 
-describe("AppSettings", () => {
+describe.only("AppSettings", () => {
   var context = AppSettingsFixtures.getContext();
 
   it("is an immutable class", () => {
@@ -110,7 +110,8 @@ describe("AppSettings", () => {
       expect(AppSettings.BLANK.toJS()).to.deep.equal({
         clusters: [],
         customization: {},
-        dataCubes: []
+        dataCubes: [],
+        clientTimeout: 0
       });
     });
 
@@ -124,6 +125,7 @@ describe("AppSettings", () => {
             timeout: 30000
           }
         ],
+        clientTimeout: 100,
         customization: {
           customLogoSvg: "ansvgstring",
           headerBackground: "brown",

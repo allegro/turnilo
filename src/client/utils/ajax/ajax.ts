@@ -45,7 +45,7 @@ function reload() {
 export interface AjaxOptions {
   method: "GET" | "POST";
   url: string;
-  timeout?: number;
+  timeout: number;
   data?: any;
 }
 
@@ -84,14 +84,13 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory({ name }: DataCube): Executor {
-    // TODO: read client timeout from AppSettings and pass to Ajax.query
+  static queryUrlExecutorFactory({ name }: DataCube, timeout: number): Executor {
     return (ex: Expression, env: Environment = {}) => {
       const method = "POST";
       const url = `plywood?by=${getSplitsDescription(ex)}`;
       const timezone = env ? env.timezone : null;
       const data = { dataCube: name, expression: ex.toJS(), timezone };
-      return Ajax.query<{result: DatasetJS}>({ method, url, data })
+      return Ajax.query<{result: DatasetJS}>({ method, url, timeout, data })
         .then(res => Dataset.fromJS(res.result));
     };
   }
