@@ -20,6 +20,7 @@ import { Executor } from "plywood";
 import { hasOwnProperty } from "../../utils/general/general";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster, ClusterJS } from "../cluster/cluster";
+import { findCluster } from "../cluster/find-cluster";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
 
@@ -75,12 +76,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
     const executorFactory = context.executorFactory;
     const dataCubes = (parameters.dataCubes || (parameters as any).dataSources || []).map((dataCubeJS: DataCubeJS) => {
-      const dataCubeClusterName = dataCubeJS.clusterName || (dataCubeJS as any).engine;
-      if (dataCubeClusterName === "native") {
-        return DataCube.fromJS(dataCubeJS);
-      }
-      const cluster = NamedArray.findByName(clusters, dataCubeClusterName);
-      if (!cluster) throw new Error(`Can not find cluster '${dataCubeClusterName}' for data cube '${dataCubeJS.name}'`);
+      const cluster = findCluster(dataCubeJS, clusters);
 
       let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
