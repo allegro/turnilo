@@ -86,11 +86,6 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       return null;
     }
 
-    /* TODO:
-    - get server timeout from ServerSettings
-    - apply timeout on the whole request-response
-    - if timeout is 0 - no timeout should be set
-     */
     const maxQueries = myDataCube.getMaxQueries();
     const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, LOGGER);
     const expression = decorator(parsedExpression, req);
