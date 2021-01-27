@@ -42,7 +42,7 @@ export interface AppSettingsJS {
 }
 
 export interface AppSettingsContext {
-  executorFactory?: (dataCube: DataCube, timeout: number) => Executor;
+  executorFactory?: (dataCubeName: string, timeout: number) => Executor;
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
@@ -81,7 +81,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
       let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        const executor = executorFactory(dataCubeObject, clientTimeout);
+        const executor = executorFactory(dataCubeObject.name, clientTimeout);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
