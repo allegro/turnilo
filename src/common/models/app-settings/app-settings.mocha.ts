@@ -22,7 +22,7 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings } from "./app-settings";
 import { AppSettingsFixtures } from "./app-settings.fixtures";
 
-describe.only("AppSettings", () => {
+describe("AppSettings", () => {
   var context = AppSettingsFixtures.getContext();
 
   it("is an immutable class", () => {
