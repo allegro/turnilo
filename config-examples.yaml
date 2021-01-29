@@ -2,7 +2,7 @@ dataCubes:
   - name: covid19
     title: COVID-19
     description: |
-      Data on COVID-19 (coronavirus) by [Our World in Data](https://github.com/owid/covid-19-data/tree/master/public/data)
+      Data on COVID-19 (coronavirus) by [Our World in Data](https://github.com/owid/covid-19-data/tree/master/public/data).
       ---
       Hasell, J., Mathieu, E., Beltekian, D. et al. A cross-country database of COVID-19 testing. Sci Data 7, 345 (2020).
       [https://doi.org/10.1038/s41597-020-00688-8](https://doi.org/10.1038/s41597-020-00688-8)
@@ -13,89 +13,90 @@ dataCubes:
 
     refreshRule:
       rule: fixed
-      time: 2021-01-30T00:00:00.000Z
+      time: 2021-01-29T00:00:00.000Z
 
     introspection: no-autofill
 
-    defaultDuration: P1M
-    defaultSelectedMeasures: [ "total_cases", "total_deaths", "total_tests" ]
+    defaultDuration: P1Y
+    defaultSelectedMeasures: [ "cases", "deaths", "tests", "vaccinations" ]
     defaultPinnedDimensions: [ "location" ]
 
     defaultFilter:
       clauses:
-        - type: string
-          reference: location
+        - type: boolean
+          reference: is_world
           action: in
-          not: true
-          values: ['World']
+          values: [ false ]
 
     dimensions:
       - name: time
         title: Time
         formula: $time
         kind: time
-        granularity: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
+        granularities: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
+      - name: is_world
+        title: Is World
+        description: Statistics are reported by location, enable for world statistics.
+        formula: $location == 'World'
+        kind: boolean
       - name: location
         title: Location
+        description: Geographical location, typially country name.
         formula: $location
       - name: continent
         title: Continent
+        description: Continent of the geographical location.
         formula: $continent
-      - name: median_age
-        title: Median Age
-        formula: $median_age
-        kind: number
 
     measures:
-      - name: cases
+      - name: cases_group
         title: Cases
         measures:
-          - name: new_cases
-            title: New Cases
+          - name: cases
+            title: Cases
             formula: $main.sum($new_cases)
-          - name: new_cases_per_million
-            title: New Cases Per Million
+          - name: cases_per_million
+            title: Cases Per Million
             formula: $main.sum($new_cases_per_million)
-          - name: total_cases
-            title: Total Cases
-            formula: $main.sum($total_cases)
-          - name: total_cases_per_million
-            title: Total Cases Per Million
-            formula: $main.sum($total_cases_per_million)
 
-      - name: deaths
+      - name: deaths_group
         title: Deaths
         measures:
-          - name: new_deaths
-            title: New Deaths
+          - name: deaths
+            title: Deaths
             formula: $main.sum($new_deaths)
-          - name: new_deaths_per_million
-            title: New Deaths Per Million
+          - name: deaths_per_million
+            title: Deaths Per Million
             formula: $main.sum($new_deaths_per_million)
-          - name: total_deaths
-            title: Total Deaths
-            formula: $main.sum($total_deaths)
-          - name: total_deaths_per_million
-            title: Total Deaths Per Million
-            formula: $main.sum($total_deaths_per_million)
 
-      - name: tests
+      - name: tests_group
         title: Tests
         measures:
-          - name: new_tests
-            title: New Tests
+          - name: tests
+            title: Tests
             formula: $main.sum($new_tests)
-          - name: new_tests_per_thousand
-            title: New Tests Per Thousand
+          - name: tests_per_thousand
+            title: Tests Per Thousand
             formula: $main.sum($new_tests_per_thousand)
-          - name: total_tests
-            title: Total Tests
-            formula: $main.sum($total_tests)
-          - name: total_tests_per_thousand
-            title: Total Tests Per Thousand
-            formula: $main.sum($total_tests_per_thousand)
+          - name: tests_per_case
+            title: Tests Per Case
+            formula: $main.average($tests_per_case)
+          - name: positive_rate
+            title: Positive Rate
+            formula: $main.average($positive_rate)
+            format: '0.00%'
 
-      - name: patients
+      - name: vaccinations_group
+        title: Vaccinations
+        measures:
+          - name: vaccinations
+            title: Vaccinations
+            formula: $main.sum($new_vaccinations)
+          - name: vaccinations_per_million
+            title: Vaccinations Per Million
+            formula: $main.sum($new_vaccinations_smoothed_per_million)
+
+      - name: patients_group
         title: Patients
         measures:
           - name: hosp_patients
@@ -111,18 +112,33 @@ dataCubes:
             title: ICU Patients Per Million
             formula: $main.sum($icu_patients_per_million)
 
-      - name: population
+      - name: population_group
         title: Population
-        formula: $main.sum($population)
+        measures:
+          - name: population
+            title: Population
+            formula: $main.average($population)
 
-      - name: reproduction_rate
-        title: Reproduction Rate
-        formula: $main.average($reproduction_rate)
-        format: '0%'
+          - name: population_density
+            title: Population Density
+            formula: $main.average($population_density)
 
-      - name: count
-        title: Records
-        formula: $main.count()
+          - name: reproduction_rate
+            title: Reproduction Rate
+            description: |
+              Estimate of the effective reproduction rate (R) of COVID-19
+              [https://doi.org/10.2139/ssrn.3581633](https://doi.org/10.2139/ssrn.3581633).
+            formula: $main.average($reproduction_rate)
+            format: '0.00%'
+
+      - name: stringency_index
+        title: Stringency Index
+        description: |
+          Government Response Stringency Index: composite measure based on 9 response indicators including
+          school closures, workplace closures, and travel bans,
+          rescaled to a value from 0 to 100 (100 = strictest response)
+        formula: $main.average($stringency_index)
+
 
   - name: wiki
     title: Wikipedia Example
