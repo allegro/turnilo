@@ -19,6 +19,7 @@ import { BackCompat, BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
 import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
+import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
 import { isNil, isTruthy, verifyUrlSafeName } from "../../utils/general/general";
 
 export type SourceListScan = "disable" | "auto";
@@ -131,6 +132,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     },
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
     { name: "requestDecorator", defaultValue: null, immutableClass: RequestDecorator },
+    { name: "retry", defaultValue: null, immutableClass: RetryOptions },
     { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
   ];
 
@@ -171,6 +173,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   // Druid
   public introspectionStrategy: string;
   public requestDecorator: RequestDecorator;
+  public retry: RetryOptions;
 
   public getTimeout: () => number;
   public getSourceListScan: () => SourceListScan;
