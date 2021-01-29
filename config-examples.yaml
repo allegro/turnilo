@@ -1,8 +1,129 @@
-customization:
-  urlShortener: |
-    // also available: context.clientIp
-    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
 dataCubes:
+  - name: covid19
+    title: COVID-19
+    description: |
+      Data on COVID-19 (coronavirus) by [Our World in Data](https://github.com/owid/covid-19-data/tree/master/public/data)
+      ---
+      Hasell, J., Mathieu, E., Beltekian, D. et al. A cross-country database of COVID-19 testing. Sci Data 7, 345 (2020).
+      [https://doi.org/10.1038/s41597-020-00688-8](https://doi.org/10.1038/s41597-020-00688-8)
+
+    clusterName: native
+    source: assets/data/owid-covid-data-2021-01-29.json
+    timeAttribute: time
+
+    refreshRule:
+      rule: fixed
+      time: 2021-01-30T00:00:00.000Z
+
+    introspection: no-autofill
+
+    defaultDuration: P1M
+    defaultSelectedMeasures: [ "total_cases", "total_deaths", "total_tests" ]
+    defaultPinnedDimensions: [ "location" ]
+
+    defaultFilter:
+      clauses:
+        - type: string
+          reference: location
+          action: in
+          not: true
+          values: ['World']
+
+    dimensions:
+      - name: time
+        title: Time
+        formula: $time
+        kind: time
+        granularity: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
+      - name: location
+        title: Location
+        formula: $location
+      - name: continent
+        title: Continent
+        formula: $continent
+      - name: median_age
+        title: Median Age
+        formula: $median_age
+        kind: number
+
+    measures:
+      - name: cases
+        title: Cases
+        measures:
+          - name: new_cases
+            title: New Cases
+            formula: $main.sum($new_cases)
+          - name: new_cases_per_million
+            title: New Cases Per Million
+            formula: $main.sum($new_cases_per_million)
+          - name: total_cases
+            title: Total Cases
+            formula: $main.sum($total_cases)
+          - name: total_cases_per_million
+            title: Total Cases Per Million
+            formula: $main.sum($total_cases_per_million)
+
+      - name: deaths
+        title: Deaths
+        measures:
+          - name: new_deaths
+            title: New Deaths
+            formula: $main.sum($new_deaths)
+          - name: new_deaths_per_million
+            title: New Deaths Per Million
+            formula: $main.sum($new_deaths_per_million)
+          - name: total_deaths
+            title: Total Deaths
+            formula: $main.sum($total_deaths)
+          - name: total_deaths_per_million
+            title: Total Deaths Per Million
+            formula: $main.sum($total_deaths_per_million)
+
+      - name: tests
+        title: Tests
+        measures:
+          - name: new_tests
+            title: New Tests
+            formula: $main.sum($new_tests)
+          - name: new_tests_per_thousand
+            title: New Tests Per Thousand
+            formula: $main.sum($new_tests_per_thousand)
+          - name: total_tests
+            title: Total Tests
+            formula: $main.sum($total_tests)
+          - name: total_tests_per_thousand
+            title: Total Tests Per Thousand
+            formula: $main.sum($total_tests_per_thousand)
+
+      - name: patients
+        title: Patients
+        measures:
+          - name: hosp_patients
+            title: Hospital Patients
+            formula: $main.sum($hosp_patients)
+          - name: hosp_patients_per_million
+            title: Hospital Patients Per Million
+            formula: $main.sum($hosp_patients_per_million)
+          - name: icu_patients
+            title: ICU Patients
+            formula: $main.sum($icu_patients)
+          - name: icu_patients_per_million
+            title: ICU Patients Per Million
+            formula: $main.sum($icu_patients_per_million)
+
+      - name: population
+        title: Population
+        formula: $main.sum($population)
+
+      - name: reproduction_rate
+        title: Reproduction Rate
+        formula: $main.average($reproduction_rate)
+        format: '0%'
+
+      - name: count
+        title: Records
+        formula: $main.count()
+
   - name: wiki
     title: Wikipedia Example
     description: |
@@ -12,7 +133,7 @@ dataCubes:
 
       *Based on wikiticker from 2015-09-12*
     clusterName: native
-    source: assets/data/wikiticker-2015-09-12-sampled.json
+    source: assets/data/wikiticker-2015-09-12.json
     timeAttribute: time
 
     refreshRule:
@@ -21,9 +142,9 @@ dataCubes:
 
     defaultDuration: P1D
     defaultSortMeasure: added
-    defaultSelectedMeasures: ["added"]
+    defaultSelectedMeasures: [ "added" ]
 
-    defaultPinnedDimensions: ["channel","namespace","isRobot"]
+    defaultPinnedDimensions: [ "channel","namespace","isRobot" ]
     introspection: no-autofill
     attributeOverrides:
       - name: sometimeLater
@@ -185,3 +306,8 @@ dataCubes:
       - name: unique_users
         title: Unique Users
         formula: $main.countDistinct($user)
+
+customization:
+  urlShortener: |
+    // also available: context.clientIp
+    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
