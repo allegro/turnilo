@@ -28,15 +28,15 @@ interface RetryOptionsJS {
 
 export class RetryOptions extends BaseImmutable<RetryOptionsValue, RetryOptionsJS> {
 
-  public maxAttempts: number;
-  public delay: number;
-
   static PROPERTIES: Property[] = [
     { name: "maxAttempts", defaultValue: 5 },
-    { name: "delay", defaultValue: 5000 },
+    { name: "delay", defaultValue: 5000 }
   ];
 
   static fromJS(options: RetryOptionsJS): RetryOptions {
     return new RetryOptions(BaseImmutable.jsToValue(RetryOptions.PROPERTIES, options));
   }
+
+  public maxAttempts: number;
+  public delay: number;
 }
