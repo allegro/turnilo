@@ -34,19 +34,110 @@ dataCubes:
         formula: $time
         kind: time
         granularities: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
-      - name: is_world
-        title: Is World
-        description: Statistics are reported by location, enable for world statistics.
-        formula: $location == 'World'
-        kind: boolean
-      - name: location
-        title: Location
-        description: Geographical location, typially country name.
-        formula: $location
-      - name: continent
-        title: Continent
-        description: Continent of the geographical location.
-        formula: $continent
+
+      - name: geography_group
+        title: Geography
+        dimensions:
+          - name: location
+            title: Location
+            description: Geographical location, typically country name.
+            formula: $location
+          - name: continent
+            title: Continent
+            description: Continent of the geographical location.
+            formula: $continent
+          - name: is_world
+            title: Is World
+            description: Statistics are reported by location, enable for world statistics.
+            formula: $location == 'World'
+            kind: boolean
+
+      - name: population_group
+        title: Population
+        dimensions:
+          - name: population
+            title: Population
+            description: Population in 2020
+            formula: $population
+            kind: number
+          - name: population_density
+            title: Population Density
+            description: Number of people divided by land area, measured in square kilometers, most recent year available
+            formula: $population_density
+            kind: number
+          - name: reproduction_rate
+            title: Reproduction Rate
+            description: |
+              Estimate of the effective reproduction rate (R) of COVID-19
+              [https://doi.org/10.2139/ssrn.3581633](https://doi.org/10.2139/ssrn.3581633).
+            formula: $reproduction_rate
+            kind: number
+          - name: life_expectancy
+            title: Life Expectancy
+            description: Life expectancy at birth in 2019
+            formula: $life_expectancy
+            kind: number
+          - name: median_age
+            title: Median Age
+            description: Median age of the population.
+            formula: $median_age
+            kind: number
+          - name: aged_65_older
+            title: Aged 65 Or Older
+            description: Share of the population that is 65 years and older.
+            formula: $aged_65_older
+            kind: number
+          - name: male_smokers
+            title: Male Smokers
+            description: Share of men who smoke, most recent year available
+            formula: $male_smokers
+            kind: number
+          - name: female_smokers
+            title: Female Smokers
+            description: Share of women who smoke, most recent year available
+            formula: $female_smokers
+            kind: number
+          - name: diabetes_prevalence
+            title: Diabetes Prevalence
+            description: Diabetes prevalence (% of population aged 20 to 79) in 2017
+            formula: $diabetes_prevalence
+            kind: number
+          - name: cardiovasc_death_rate
+            title: Cardiovasc Death Rate
+            description: Death rate from cardiovascular disease in 2017 (annual number of deaths per 100,000 people)
+            formula: $cardiovasc_death_rate
+            kind: number
+
+      - name: development_indicators_group
+        title: Development Indicators
+        dimensions:
+        - name: gdp_per_capita
+          title: GDP Per Capita
+          description: Gross domestic product at purchasing power parity
+          formula: $gdp_per_capita
+          kind: number
+        - name: extreme_poverty
+          title: Extreme Poverty
+          description: Share of the population living in extreme poverty
+          formula: $extreme_poverty
+          kind: number
+
+        - name: human_development_index
+          title: Human Development Index
+          description: |
+            Summary measure of average achievement in key dimensions of human development: a long and healthy life,
+            being knowledgeable and have a decent standard of living.
+          formula: $human_development_index
+          kind: number
+
+        - name: stringency_index
+          title: Stringency Index
+          description: |
+            Government Response Stringency Index: composite measure based on 9 response indicators including
+            school closures, workplace closures, and travel bans,
+            rescaled to a value from 0 to 100 (100 = strictest response)
+          formula: $stringency_index
+          kind: number
 
     measures:
       - name: cases_group
@@ -111,34 +202,6 @@ dataCubes:
           - name: icu_patients_per_million
             title: ICU Patients Per Million
             formula: $main.sum($icu_patients_per_million)
-
-      - name: population_group
-        title: Population
-        measures:
-          - name: population
-            title: Population
-            formula: $main.average($population)
-
-          - name: population_density
-            title: Population Density
-            formula: $main.average($population_density)
-
-          - name: reproduction_rate
-            title: Reproduction Rate
-            description: |
-              Estimate of the effective reproduction rate (R) of COVID-19
-              [https://doi.org/10.2139/ssrn.3581633](https://doi.org/10.2139/ssrn.3581633).
-            formula: $main.average($reproduction_rate)
-            format: '0.00%'
-
-      - name: stringency_index
-        title: Stringency Index
-        description: |
-          Government Response Stringency Index: composite measure based on 9 response indicators including
-          school closures, workplace closures, and travel bans,
-          rescaled to a value from 0 to 100 (100 = strictest response)
-        formula: $main.average($stringency_index)
-
 
   - name: wiki
     title: Wikipedia Example
