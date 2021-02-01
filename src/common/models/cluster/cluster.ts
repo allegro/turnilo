@@ -116,6 +116,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "title", defaultValue: "" },
     { name: "version", defaultValue: null },
     { name: "timeout", defaultValue: Cluster.DEFAULT_TIMEOUT },
+    { name: "retry", defaultValue: null, immutableClass: RetryOptions },
     { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
     { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
     { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
@@ -132,7 +133,6 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     },
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
     { name: "requestDecorator", defaultValue: null, immutableClass: RequestDecorator },
-    { name: "retry", defaultValue: null, immutableClass: RetryOptions },
     { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
   ];
 
@@ -162,6 +162,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public title: string;
   public version: string;
   public timeout: number;
+  public retry: RetryOptions;
   public healthCheckTimeout: number;
   public sourceListScan: SourceListScan;
   public sourceListRefreshOnLoad: boolean;
@@ -173,7 +174,6 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   // Druid
   public introspectionStrategy: string;
   public requestDecorator: RequestDecorator;
-  public retry: RetryOptions;
 
   public getTimeout: () => number;
   public getSourceListScan: () => SourceListScan;
