@@ -123,6 +123,20 @@ Define this to override the automatic version detection.
 
 The timeout to set on the Druid queries in ms. See [documentation](https://druid.apache.org/docs/latest/querying/query-context.html)
 
+**retry** (object)
+
+Options for retries on Druid native queries. If no object is provided Turnilo will not retry failed queries.
+Object should have following structure:
+
+```yaml
+retry:
+    maxAttempts: 10
+    delay: 1000
+``` 
+
+* `maxAttempts` is count of maximum attempts for retry. Default values is 5
+* `delay` is time in ms between each attempt.
+
 **healthCheckTimeout** (number), default: 1000
 
 The timeout for the cluster health checking request in ms. See [Checking health of Turnilo instance](health-checking.md)

@@ -19,6 +19,7 @@ import { BackCompat, BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
 import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
+import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
 import { isNil, isTruthy, verifyUrlSafeName } from "../../utils/general/general";
 
 export type SourceListScan = "disable" | "auto";
@@ -114,6 +115,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "title", defaultValue: "" },
     { name: "version", defaultValue: null },
     { name: "timeout", defaultValue: undefined },
+    { name: "retry", defaultValue: null, immutableClass: RetryOptions },
     { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
     { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
     { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
@@ -159,6 +161,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public title: string;
   public version: string;
   public timeout: number;
+  public retry: RetryOptions;
   public healthCheckTimeout: number;
   public sourceListScan: SourceListScan;
   public sourceListRefreshOnLoad: boolean;

@@ -21,10 +21,10 @@ import { DruidRequestDecorator, druidRequesterFactory } from "plywood-druid-requ
 import { URL } from "url";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { threadConditionally } from "../../../common/utils/functional/functional";
+import { RetryOptions } from "../retry-options/retry-options";
 
 export interface ProperRequesterOptions {
   cluster: Cluster;
-  retry?: number;
   verbose?: boolean;
   concurrentLimit?: number;
   druidRequestDecorator?: DruidRequestDecorator;
@@ -62,8 +62,12 @@ function createDruidRequester(cluster: Cluster, requestDecorator?: DruidRequestD
   return druidRequesterFactory({ host, requestDecorator, protocol });
 }
 
-function setRetryOptions(retry: number) {
-  return (requester: PlywoodRequester<any>) => retryRequesterFactory({ requester, retry, delay: 500, retryOnTimeout: false });
+function setRetryOptions({ maxAttempts, delay }: RetryOptions) {
+  return (requester: PlywoodRequester<any>) => retryRequesterFactory({
+    requester,
+    retry: maxAttempts,
+    delay,
+    retryOnTimeout: true });
 }
 
 function setVerbose(requester: PlywoodRequester<any>) {
@@ -75,10 +79,10 @@ function setConcurrencyLimit(concurrentLimit: number) {
 }
 
 export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
-  const { cluster, druidRequestDecorator, retry, verbose, concurrentLimit } = options;
+  const { cluster, druidRequestDecorator, verbose, concurrentLimit } = options;
   return threadConditionally(
     createDruidRequester(cluster, druidRequestDecorator),
-    retry && setRetryOptions(retry),
+    cluster.retry && setRetryOptions(cluster.retry),
     verbose && setVerbose,
     concurrentLimit && setConcurrencyLimit(concurrentLimit)
   );
