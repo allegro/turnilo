@@ -26,6 +26,7 @@ export interface ServerSettingsValue {
   port?: number;
   serverHost?: string;
   serverRoot?: string;
+  serverTimeout?: number;
   readinessEndpoint?: string;
   livenessEndpoint?: string;
   requestLogFormat?: string;
@@ -46,6 +47,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   static DEFAULT_SERVER_ROOT = "";
   static DEFAULT_READINESS_ENDPOINT = "/health/ready";
   static DEFAULT_LIVENESS_ENDPOINT = "/health/alive";
+  static DEFAULT_SERVER_TIMEOUT = 0;
   static DEFAULT_REQUEST_LOG_FORMAT = "common";
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
   static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
@@ -65,6 +67,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: "port", defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
     { name: "serverHost", defaultValue: null },
     { name: "serverRoot", defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
+    { name: "serverTimeout", defaultValue: ServerSettings.DEFAULT_SERVER_TIMEOUT },
     { name: "readinessEndpoint", defaultValue: ServerSettings.DEFAULT_READINESS_ENDPOINT },
     { name: "livenessEndpoint", defaultValue: ServerSettings.DEFAULT_LIVENESS_ENDPOINT },
     { name: "requestLogFormat", defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
@@ -91,6 +94,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public port: number;
   public serverHost: string;
   public serverRoot: string;
+  public serverTimeout: string;
   public readinessEndpoint: string;
   public livenessEndpoint: string;
   public requestLogFormat: string;
@@ -108,6 +112,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getPort: () => number;
   public getServerHost: () => string;
   public getServerRoot: () => string;
+  public getServerTimeout: () => number;
   public getReadinessEndpoint: () => string;
   public getLivenessEndpoint: () => string;
   public getPageMustLoadTimeout: () => number;
