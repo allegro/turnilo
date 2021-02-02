@@ -51,6 +51,12 @@ if (isTrustedProxy) {
   app.set("trust proxy", true); // trust X-Forwarded-*, use left-most entry as the client
 }
 
+const timeout = SERVER_SETTINGS.getServerTimeout();
+app.use((req, res, next) => {
+  res.setTimeout(timeout);
+  next();
+});
+
 function getRoutePath(route: string): string {
   const serverRoot = SERVER_SETTINGS.getServerRoot();
   const prefix = serverRoot.length > 0 ? `/${serverRoot}` : "";

@@ -19,7 +19,7 @@ import { basicExecutorFactory, Dataset } from "plywood";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
-import { DataCube, DataCubeJS, DataCubeValue } from "./data-cube";
+import { DataCube, DataCubeJS } from "./data-cube";
 
 var executor = basicExecutorFactory({
   datasets: {

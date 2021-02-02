@@ -110,7 +110,8 @@ describe("AppSettings", () => {
       expect(AppSettings.BLANK.toJS()).to.deep.equal({
         clusters: [],
         customization: {},
-        dataCubes: []
+        dataCubes: [],
+        clientTimeout: 0
       });
     });
 
@@ -124,6 +125,7 @@ describe("AppSettings", () => {
             timeout: 30000
           }
         ],
+        clientTimeout: 100,
         customization: {
           customLogoSvg: "ansvgstring",
           headerBackground: "brown",

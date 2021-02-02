@@ -147,7 +147,7 @@ export interface DataCubeJS {
 export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
   customTransforms?: CustomDruidTransforms;
-  druidContext?: Record<string, any>;
+  druidContext?: Record<string, unknown>;
 }
 
 export interface DataCubeContext {
@@ -537,8 +537,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
 
-      let externalContext: Record<string, any> = options.druidContext || {};
-      externalContext["timeout"] = cluster.getTimeout();
+      const externalContext: Record<string, unknown> = {
+        timeout: cluster.getTimeout(),
+        ...options.druidContext
+      };
       externalValue.context = externalContext;
     }
 
