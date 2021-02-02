@@ -287,6 +287,7 @@ const SMALL_WIKI_DATA = [
 export class AppSettingsFixtures {
   public static wikiOnlyJS(): AppSettingsJS {
     return {
+      clientTimeout: 100,
       customization: {
         title: "Hello World",
         headerBackground: "brown",
@@ -303,6 +304,7 @@ export class AppSettingsFixtures {
 
   public static wikiTwitterJS(): AppSettingsJS {
     return {
+      clientTimeout: 0,
       customization: {
         title: "Hello World"
       },

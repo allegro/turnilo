@@ -42,6 +42,16 @@ A custom path to act as the server string.
 
 The Turnilo UI will be served from `http://turnilo-host:$port/$serverRoot`
 
+**serverTimeout** (number), default: 0
+
+Timeout on all server request handlers in ms. Default value is 0 which means no timeout. 
+Turnilo sets timeout on Response object for every incoming request. If response is not send before timeout, Turnilo closes connection.
+
+**clientTimeout** (number), default: 0
+
+Timeout on client requests in ms. Default value is 0 which means no timeout. 
+Timeout is set in browser on every request to Turnilo server.
+
 **readinessEndpoint** (string), default "/health/ready"
 
 Readiness endpoint location. Checks readiness of druid clusters. See [Checking health of Turnilo instance](health-checking.md)
@@ -109,9 +119,23 @@ The host (hostname:port) of the cluster, http protocol is assumed. Deprecated, u
 The explicit version to use for this cluster.
 Define this to override the automatic version detection.
 
-**timeout** (number), default: 40000
+**timeout** (number)
 
-The timeout to set on the queries in ms.
+The timeout to set on the Druid queries in ms. See [documentation](https://druid.apache.org/docs/latest/querying/query-context.html)
+
+**retry** (object)
+
+Options for retries on Druid native queries. If no object is provided Turnilo will not retry failed queries.
+Object should have following structure:
+
+```yaml
+retry:
+    maxAttempts: 10
+    delay: 1000
+``` 
+
+* `maxAttempts` is count of maximum attempts for retry. Default values is 5
+* `delay` is time in ms between each attempt.
 
 **healthCheckTimeout** (number), default: 1000
 

@@ -86,10 +86,6 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       return null;
     }
 
-    // "native" clusters are not defined, maybe they should be defined as some stub object
-    if (myDataCube.cluster) {
-      req.setTimeout(myDataCube.cluster.getTimeout(), null);
-    }
     const maxQueries = myDataCube.getMaxQueries();
     const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, LOGGER);
     const expression = decorator(parsedExpression, req);

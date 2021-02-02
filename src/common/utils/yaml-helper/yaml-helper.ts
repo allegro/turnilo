@@ -156,7 +156,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   props
     .add("url")
     .add("version")
-    .add("timeout", { defaultValue: Cluster.DEFAULT_TIMEOUT })
+    .add("timeout", { defaultValue: undefined })
     .add("sourceListScan", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN })
     .add("sourceListRefreshOnLoad", { defaultValue: false })
     .add("sourceListRefreshInterval", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })

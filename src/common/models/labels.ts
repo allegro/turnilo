@@ -170,7 +170,7 @@ export const CLUSTER = {
   },
   timeout: {
     label: "Timeout",
-    description: `The timeout to set on the queries in ms. Default is <code>${Cluster.DEFAULT_TIMEOUT}</code>`
+    description: "The timeout to set on the queries in ms. Default is no timeout"
   },
   sourceListScan: {
     label: "Source List Scan",
