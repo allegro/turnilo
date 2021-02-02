@@ -204,7 +204,7 @@ dataCubes:
             formula: $main.sum($icu_patients_per_million)
 
   - name: wiki
-    title: Wikipedia Example
+    title: Wikipedia
     description: |
       Data cube with *Wikipedia* data.
       ---
