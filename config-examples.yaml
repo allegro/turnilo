@@ -21,12 +21,7 @@ dataCubes:
     defaultSelectedMeasures: [ "cases", "deaths", "tests", "vaccinations" ]
     defaultPinnedDimensions: [ "location" ]
 
-    defaultFilter:
-      clauses:
-        - type: boolean
-          reference: is_world
-          action: in
-          values: [ false ]
+    subsetFormula: $location.in(["World"]).not()
 
     dimensions:
       - name: time
@@ -46,66 +41,61 @@ dataCubes:
             title: Continent
             description: Continent of the geographical location.
             formula: $continent
-          - name: is_world
-            title: Is World
-            description: Statistics are reported by location, enable for world statistics.
-            formula: $location == 'World'
-            kind: boolean
 
       - name: population_group
         title: Population
         dimensions:
           - name: population
             title: Population
-            description: Population in 2020
-            formula: $population
+            description: Population in 2020 (millions)
+            formula: $population.divide(1000000).fallback(-1)
             kind: number
           - name: population_density
             title: Population Density
-            description: Number of people divided by land area, measured in square kilometers, most recent year available
-            formula: $population_density
+            description: Number of people divided by land area, measured in square kilometers, most recent year available.
+            formula: $population_density.fallback(-1)
             kind: number
           - name: reproduction_rate
             title: Reproduction Rate
             description: |
-              Estimate of the effective reproduction rate (R) of COVID-19
+              Estimate of the effective reproduction rate (R) of COVID-19 (percent)
               [https://doi.org/10.2139/ssrn.3581633](https://doi.org/10.2139/ssrn.3581633).
-            formula: $reproduction_rate
+            formula: $reproduction_rate.multiply(100).fallback(-1)
             kind: number
           - name: life_expectancy
             title: Life Expectancy
-            description: Life expectancy at birth in 2019
-            formula: $life_expectancy
+            description: Life expectancy at birth in 2019 (years).
+            formula: $life_expectancy.fallback(-1)
             kind: number
           - name: median_age
             title: Median Age
-            description: Median age of the population.
-            formula: $median_age
+            description: Median age of the population (years).
+            formula: $median_age.fallback(-1)
             kind: number
           - name: aged_65_older
             title: Aged 65 Or Older
-            description: Share of the population that is 65 years and older.
-            formula: $aged_65_older
+            description: Share of the population that is 65 years and older (% of population).
+            formula: $aged_65_older.fallback(-1)
             kind: number
           - name: male_smokers
             title: Male Smokers
-            description: Share of men who smoke, most recent year available
-            formula: $male_smokers
+            description: Share of men who smoke, most recent year available (% of population).
+            formula: $male_smokers.fallback(-1)
             kind: number
           - name: female_smokers
             title: Female Smokers
-            description: Share of women who smoke, most recent year available
-            formula: $female_smokers
+            description: Share of women who smoke, most recent year available (% of population).
+            formula: $female_smokers.fallback(-1)
             kind: number
           - name: diabetes_prevalence
             title: Diabetes Prevalence
             description: Diabetes prevalence (% of population aged 20 to 79) in 2017
-            formula: $diabetes_prevalence
+            formula: $diabetes_prevalence.fallback(-1)
             kind: number
           - name: cardiovasc_death_rate
             title: Cardiovasc Death Rate
             description: Death rate from cardiovascular disease in 2017 (annual number of deaths per 100,000 people)
-            formula: $cardiovasc_death_rate
+            formula: $cardiovasc_death_rate.fallback(-1)
             kind: number
 
       - name: development_indicators_group
@@ -113,21 +103,21 @@ dataCubes:
         dimensions:
         - name: gdp_per_capita
           title: GDP Per Capita
-          description: Gross domestic product at purchasing power parity
-          formula: $gdp_per_capita
+          description: Gross domestic product at purchasing power parity (thousands).
+          formula: $gdp_per_capita.divide(1000).fallback(-1)
           kind: number
         - name: extreme_poverty
           title: Extreme Poverty
-          description: Share of the population living in extreme poverty
-          formula: $extreme_poverty
+          description: Share of the population living in extreme poverty (% of population).
+          formula: $extreme_poverty.fallback(-1)
           kind: number
 
         - name: human_development_index
           title: Human Development Index
           description: |
             Summary measure of average achievement in key dimensions of human development: a long and healthy life,
-            being knowledgeable and have a decent standard of living.
-          formula: $human_development_index
+            being knowledgeable and have a decent standard of living (scale 0-100).
+          formula: $human_development_index.multiply(100).fallback(-1)
           kind: number
 
         - name: stringency_index
@@ -135,8 +125,8 @@ dataCubes:
           description: |
             Government Response Stringency Index: composite measure based on 9 response indicators including
             school closures, workplace closures, and travel bans,
-            rescaled to a value from 0 to 100 (100 = strictest response)
-          formula: $stringency_index
+            rescaled to a value from 0 to 100 (100 = strictest response).
+          formula: $stringency_index.fallback(-1)
           kind: number
 
     measures:
