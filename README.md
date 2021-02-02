@@ -40,7 +40,7 @@ this is how Turnilo emerged.
 
 ## Try it!
 
-You can try an online demo with Wikipedia page editions dataset at [https://turnilo.app](https://turnilo.app).
+You can try an online demo with example datasets (Covid-19 and Wikipedia) at [https://turnilo.app](https://turnilo.app).
 
 ## Join us!
 
@@ -63,7 +63,7 @@ Install Turnilo distribution using [npm](https://www.npmjs.com/).
 npm install -g turnilo
 ```
 
-Start off by running an example with Wikipedia page editions dataset 
+Start off by running an example with Covid-19 and Wikipedia datasets
 and open [http://localhost:9090/](http://localhost:9090/).
 
 ```
@@ -99,7 +99,7 @@ npm run build
 
 ### Run project
 
-Run Wikipedia examples.
+Run Covid-19 and Wikipedia examples.
 
 ```
 npm run start:examples
@@ -121,7 +121,7 @@ npm run start -- --config path/to/config.yml
 
 Every change in frontend code would recompile project and reload page.
 
-Run Wikipedia examples.
+Run Covid-19 and Wikipedia examples.
 
 ```
 npm run start:dev:examples
@@ -159,7 +159,7 @@ npm run test:server
 
 ### End to end tests
 
-Run all e2e tests. It will start turnilo with wikipedia dataset in background.
+Run all e2e tests. It will start Turnilo with example datasets in background.
 
 ```
 npm run e2e
