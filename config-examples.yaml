@@ -193,6 +193,10 @@ dataCubes:
             title: ICU Patients Per Million
             formula: $main.sum($icu_patients_per_million)
 
+      - name: count
+        title: Records count
+        formula: $main.count()
+
   - name: wiki
     title: Wikipedia
     description: |
