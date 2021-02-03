@@ -1,10 +1,200 @@
-customization:
-  urlShortener: |
-    // also available: context.clientIp
-    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
 dataCubes:
+  - name: covid19
+    title: COVID-19
+    description: |
+      Data on COVID-19 (coronavirus) by [Our World in Data](https://github.com/owid/covid-19-data/tree/master/public/data).
+      ---
+      Hasell, J., Mathieu, E., Beltekian, D. et al. A cross-country database of COVID-19 testing. Sci Data 7, 345 (2020).
+      [https://doi.org/10.1038/s41597-020-00688-8](https://doi.org/10.1038/s41597-020-00688-8)
+
+    clusterName: native
+    source: assets/data/owid-covid-data-2021-01-29.json
+    timeAttribute: time
+
+    refreshRule:
+      rule: fixed
+      time: 2021-01-29T00:00:00.000Z
+
+    introspection: no-autofill
+
+    defaultDuration: P1Y
+    defaultSelectedMeasures: [ "cases", "deaths", "tests", "vaccinations" ]
+    defaultPinnedDimensions: [ "location" ]
+
+    subsetFormula: $location.in(["World"]).not()
+
+    dimensions:
+      - name: time
+        title: Time
+        formula: $time
+        kind: time
+        granularities: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
+
+      - name: geography_group
+        title: Geography
+        dimensions:
+          - name: location
+            title: Location
+            description: Geographical location, typically country name.
+            formula: $location
+          - name: continent
+            title: Continent
+            description: Continent of the geographical location.
+            formula: $continent
+
+      - name: population_group
+        title: Population
+        dimensions:
+          - name: population
+            title: Population
+            description: Population in 2020 (millions)
+            formula: $population.divide(1000000).fallback(-1)
+            kind: number
+          - name: population_density
+            title: Population Density
+            description: Number of people divided by land area, measured in square kilometers, most recent year available.
+            formula: $population_density.fallback(-1)
+            kind: number
+          - name: reproduction_rate
+            title: Reproduction Rate
+            description: |
+              Estimate of the effective reproduction rate (R) of COVID-19 (percent)
+              [https://doi.org/10.2139/ssrn.3581633](https://doi.org/10.2139/ssrn.3581633).
+            formula: $reproduction_rate.multiply(100).fallback(-1)
+            kind: number
+          - name: life_expectancy
+            title: Life Expectancy
+            description: Life expectancy at birth in 2019 (years).
+            formula: $life_expectancy.fallback(-1)
+            kind: number
+          - name: median_age
+            title: Median Age
+            description: Median age of the population (years).
+            formula: $median_age.fallback(-1)
+            kind: number
+          - name: aged_65_older
+            title: Aged 65 Or Older
+            description: Share of the population that is 65 years and older (% of population).
+            formula: $aged_65_older.fallback(-1)
+            kind: number
+          - name: male_smokers
+            title: Male Smokers
+            description: Share of men who smoke, most recent year available (% of population).
+            formula: $male_smokers.fallback(-1)
+            kind: number
+          - name: female_smokers
+            title: Female Smokers
+            description: Share of women who smoke, most recent year available (% of population).
+            formula: $female_smokers.fallback(-1)
+            kind: number
+          - name: diabetes_prevalence
+            title: Diabetes Prevalence
+            description: Diabetes prevalence (% of population aged 20 to 79) in 2017
+            formula: $diabetes_prevalence.fallback(-1)
+            kind: number
+          - name: cardiovasc_death_rate
+            title: Cardiovasc Death Rate
+            description: Death rate from cardiovascular disease in 2017 (annual number of deaths per 100,000 people)
+            formula: $cardiovasc_death_rate.fallback(-1)
+            kind: number
+
+      - name: development_indicators_group
+        title: Development Indicators
+        dimensions:
+        - name: gdp_per_capita
+          title: GDP Per Capita
+          description: Gross domestic product at purchasing power parity (thousands).
+          formula: $gdp_per_capita.divide(1000).fallback(-1)
+          kind: number
+        - name: extreme_poverty
+          title: Extreme Poverty
+          description: Share of the population living in extreme poverty (% of population).
+          formula: $extreme_poverty.fallback(-1)
+          kind: number
+
+        - name: human_development_index
+          title: Human Development Index
+          description: |
+            Summary measure of average achievement in key dimensions of human development: a long and healthy life,
+            being knowledgeable and have a decent standard of living (scale 0-100).
+          formula: $human_development_index.multiply(100).fallback(-1)
+          kind: number
+
+        - name: stringency_index
+          title: Stringency Index
+          description: |
+            Government Response Stringency Index: composite measure based on 9 response indicators including
+            school closures, workplace closures, and travel bans,
+            rescaled to a value from 0 to 100 (100 = strictest response).
+          formula: $stringency_index.fallback(-1)
+          kind: number
+
+    measures:
+      - name: cases_group
+        title: Cases
+        measures:
+          - name: cases
+            title: Cases
+            formula: $main.sum($new_cases)
+          - name: cases_per_million
+            title: Cases Per Million
+            formula: $main.sum($new_cases_per_million)
+
+      - name: deaths_group
+        title: Deaths
+        measures:
+          - name: deaths
+            title: Deaths
+            formula: $main.sum($new_deaths)
+          - name: deaths_per_million
+            title: Deaths Per Million
+            formula: $main.sum($new_deaths_per_million)
+
+      - name: tests_group
+        title: Tests
+        measures:
+          - name: tests
+            title: Tests
+            formula: $main.sum($new_tests)
+          - name: tests_per_thousand
+            title: Tests Per Thousand
+            formula: $main.sum($new_tests_per_thousand)
+          - name: tests_per_case
+            title: Tests Per Case
+            formula: $main.average($tests_per_case)
+          - name: positive_rate
+            title: Positive Rate
+            formula: $main.average($positive_rate)
+            format: '0.00%'
+
+      - name: vaccinations_group
+        title: Vaccinations
+        measures:
+          - name: vaccinations
+            title: Vaccinations
+            formula: $main.sum($new_vaccinations)
+          - name: vaccinations_per_million
+            title: Vaccinations Per Million
+            formula: $main.sum($new_vaccinations_smoothed_per_million)
+
+      - name: patients_group
+        title: Patients
+        measures:
+          - name: hosp_patients
+            title: Hospital Patients
+            formula: $main.sum($hosp_patients)
+          - name: hosp_patients_per_million
+            title: Hospital Patients Per Million
+            formula: $main.sum($hosp_patients_per_million)
+          - name: icu_patients
+            title: ICU Patients
+            formula: $main.sum($icu_patients)
+          - name: icu_patients_per_million
+            title: ICU Patients Per Million
+            formula: $main.sum($icu_patients_per_million)
+
   - name: wiki
-    title: Wikipedia Example
+    title: Wikipedia
     description: |
       Data cube with *Wikipedia* data.
       ---
@@ -12,7 +202,7 @@ dataCubes:
 
       *Based on wikiticker from 2015-09-12*
     clusterName: native
-    source: assets/data/wikiticker-2015-09-12-sampled.json
+    source: assets/data/wikiticker-2015-09-12.json
     timeAttribute: time
 
     refreshRule:
@@ -21,9 +211,9 @@ dataCubes:
 
     defaultDuration: P1D
     defaultSortMeasure: added
-    defaultSelectedMeasures: ["added"]
+    defaultSelectedMeasures: [ "added" ]
 
-    defaultPinnedDimensions: ["channel","namespace","isRobot"]
+    defaultPinnedDimensions: [ "channel","namespace","isRobot" ]
     introspection: no-autofill
     attributeOverrides:
       - name: sometimeLater
@@ -185,3 +375,8 @@ dataCubes:
       - name: unique_users
         title: Unique Users
         formula: $main.countDistinct($user)
+
+customization:
+  urlShortener: |
+    // also available: context.clientIp
+    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
