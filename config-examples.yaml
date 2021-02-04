@@ -380,7 +380,7 @@ dataCubes:
         title: Unique Users
         formula: $main.countDistinct($user)
 
-pageMustLoadTimeout: 2000
+pageMustLoadTimeout: 5000
 
 customization:
   urlShortener: |
