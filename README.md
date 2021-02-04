@@ -28,23 +28,28 @@ this is how Turnilo emerged.
 
 ## Features
 
-* Intuitive, drag and drop, gorgeous user interface to visualize Druid datasets
+* Intuitive, drag and drop, gorgeous user interface to visualize Druid datasets.
 * Fully dedicated to low latency Druid 
 [Timeseries](https://druid.apache.org/docs/latest/querying/timeseriesquery.html), 
 [TopN](https://druid.apache.org/docs/latest/querying/topnquery.html) and 
 [GroupBy](https://druid.apache.org/docs/latest/querying/groupbyquery.html) queries.
-* Unified view for historical and real-time data
-* Blazingly fast
+* Unified view for historical and real-time data.
+* Blazingly fast.
 
 ![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/showcase.gif)
 
+## Try it!
+
+You can try an online demo with example datasets (Covid-19 and Wikipedia) at [https://turnilo.app](https://turnilo.app).
+
 ## Join us!
 
-[Join the chat on Slack](https://join.slack.com/t/turnilo/shared_invite/enQtOTI4ODcxMjcyNjU2LTFlOTk5YWZlOGMyZDZhZWU3MGNjNDRhZmI1Y2UzNDlkZmY3YzYxYTJhYzIzMzc0MTc3MzA3OTE1NmQ5NDI1M2I)
+Feel free to ask on [GitHub Discussions](https://github.com/allegro/turnilo/discussions)
+or join the chat on [Slack](https://join.slack.com/t/turnilo/shared_invite/enQtOTI4ODcxMjcyNjU2LTFlOTk5YWZlOGMyZDZhZWU3MGNjNDRhZmI1Y2UzNDlkZmY3YzYxYTJhYzIzMzc0MTc3MzA3OTE1NmQ5NDI1M2I).
 
 ## Pre-requisites
 
-* [Node.js](https://nodejs.org/) - 12.x or 14.x version.
+* [Node.js](https://nodejs.org/) - 12.x or 14.x version
 
 :warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.
@@ -58,7 +63,7 @@ Install Turnilo distribution using [npm](https://www.npmjs.com/).
 npm install -g turnilo
 ```
 
-Start off by running an example with Wikipedia page editions dataset 
+Start off by running an example with Covid-19 and Wikipedia datasets
 and open [http://localhost:9090/](http://localhost:9090/).
 
 ```
@@ -94,7 +99,7 @@ npm run build
 
 ### Run project
 
-Run Wikipedia examples.
+Run Covid-19 and Wikipedia examples.
 
 ```
 npm run start:examples
@@ -116,7 +121,7 @@ npm run start -- --config path/to/config.yml
 
 Every change in frontend code would recompile project and reload page.
 
-Run Wikipedia examples.
+Run Covid-19 and Wikipedia examples.
 
 ```
 npm run start:dev:examples
@@ -154,7 +159,7 @@ npm run test:server
 
 ### End to end tests
 
-Run all e2e tests. It will start turnilo with wikipedia dataset in background.
+Run all e2e tests. It will start Turnilo with example datasets in background.
 
 ```
 npm run e2e
