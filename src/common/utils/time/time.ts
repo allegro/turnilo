@@ -22,6 +22,7 @@ import { Unary } from "../functional/functional";
 
 const ISO_FORMAT_DATE = "YYYY-MM-DD";
 const ISO_FORMAT_TIME = "HH:mm";
+const ISO_FORMAT_DATE_TIME = "YYYY-MM-DDTHH:mm:ss.sssZ";
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
 export function getMoment(date: Date, timezone: Timezone): Moment {
@@ -164,6 +165,10 @@ export function formatTimeElapsed(date: Date, timezone: Timezone): string {
 
 export function formatDateTime(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(FULL_FORMAT);
+}
+
+export function formatISODateTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(ISO_FORMAT_DATE_TIME);
 }
 
 export function formatISODate(date: Date, timezone: Timezone): string {
