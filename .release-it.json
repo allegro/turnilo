@@ -1,4 +1,7 @@
 {
+  "github": {
+    "release": true
+  },
   "pkgFiles": [
     "package.json",
     "package-lock.json"
