@@ -1,0 +1,62 @@
+name: Release
+
+  on:
+    workflow_dispatch:
+      inputs:
+        preRelease:
+          description: 'Defines whether a release is final or a pre-release for internal testing, e.g "beta", "alpha" or "rc".'
+          required: false
+        releaseVersion:
+          description: 'Defines which part of a SemVer should be increased during the release process, e.g "minor", "major" or "patch".'
+          required: false
+          default: 'minor'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Linux Dependencies
+        run: sudo apt-get install libgconf-2-4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      #
+      # TODO: commented out for testing purposes only, tests are a little bit slow
+      #
+      #      - name: Unit Test
+      #        run: npm run test
+      #
+      #      - name: E2E Test
+      #        run: npm run e2e
+      #
+
+      - name: Install release-it
+        run: npm install -g npm-cli-login release-it@13.7.1
+
+      - name: Release
+        run: |
+          release-it "${bamboo.releaseVersion}" \
+            --non-interactive \
+            --preRelease="${bamboo.preReleaseTag}" \
+            --github.release \
+            --dry-run
