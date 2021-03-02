@@ -19,7 +19,8 @@ import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
-import makeQuery from "../../../common/utils/query/visualization-query";
+import standardQuery from "../../../common/utils/query/visualization-query";
+import gridQuery from "../../visualizations/grid/make-query";
 import { SourceModal } from "../source-modal/source-modal";
 
 interface DruidQueryModalProps {
@@ -29,8 +30,9 @@ interface DruidQueryModalProps {
 }
 
 export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({ onClose, timekeeper, essence }) => {
-  const { dataCube: { attributes, source, options: { customAggregations, customTransforms } } } = essence;
-  const query = makeQuery(essence, timekeeper);
+  const { visualization, dataCube: { attributes, source, options: { customAggregations, customTransforms } } } = essence;
+  const queryFn = visualization.name === "grid" ? gridQuery : standardQuery;
+  const query = queryFn(essence, timekeeper);
   const external = External.fromJS({ engine: "druid", attributes, source, customAggregations, customTransforms });
   const plan = query.simulateQueryPlan({ main: external });
   const planSource = JSON.stringify(plan, null, 2);
