@@ -24,13 +24,13 @@ import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visual
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Grid requires at least one split"))
-  .when(Predicates.supportedSplitsCount())
-  .then(Actions.removeExcessiveSplits("Grid"))
 
   .otherwise(({ isSelectedVisualization, splits, series }) => {
     const firstSeries = series.series.first();
     const { sort: firstSort } = splits.getSplit(0);
-    const sort = firstSort instanceof SeriesSort ? firstSort : new SeriesSort({ reference: firstSeries.reference });
+    const sort = firstSort instanceof SeriesSort
+      ? firstSort
+      : new SeriesSort({ reference: firstSeries.reference });
     const newSplits = splits.update("splits", splits =>
       splits.map(split =>
         split.changeLimit(100).changeSort(sort)));
