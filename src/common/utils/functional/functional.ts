@@ -42,6 +42,10 @@ export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
 }
 
+export function assoc<T, K extends string | number | symbol = string>(coll: Record<K, T>, key: K, element: T): Record<K, T> {
+  return Object.assign({}, coll, { [key]: element });
+}
+
 export function replaceAt<T>(collection: T[], index: number, element: T): T[] {
   return [
     ...collection.slice(0, index),
