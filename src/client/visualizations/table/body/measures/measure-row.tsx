@@ -36,7 +36,6 @@ export const MeasureRow: React.SFC<MeasureRowProps> = props => {
   const { datum, scales, cellWidth, highlight, dimmed, style, essence } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();
-  const splitLength = essence.splits.length();
 
   return <div
     className={classNames("measure-row", { highlight, dimmed })}
@@ -50,7 +49,6 @@ export const MeasureRow: React.SFC<MeasureRowProps> = props => {
         highlight={highlight}
         scale={scales[i]}
         cellWidth={cellWidth}
-        lastLevel={datum["__nest"] === splitLength}
         showPrevious={essence.hasComparison()} />;
     })}
   </div>;

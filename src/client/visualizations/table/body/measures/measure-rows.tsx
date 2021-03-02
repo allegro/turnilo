@@ -35,6 +35,8 @@ interface MeasureRowsProps {
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
   const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex } = props;
 
+  const lastLevel = essence.splits.length();
+
   return <VisibleRows
     visibleRowsIndexRange={visibleRowsIndexRange}
     highlightedRowIndex={highlightedRowIndex}
@@ -43,6 +45,7 @@ export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
     renderRow={props => {
       const { index, top, datum, highlight, dimmed } = props;
       const rowStyle: React.CSSProperties = { top, width: rowWidth };
+      const showScales = datum["__nest"] === lastLevel;
 
       return <MeasureRow
         key={`row_${index}`}
@@ -52,6 +55,6 @@ export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
         style={rowStyle}
         datum={datum}
         cellWidth={cellWidth}
-        scales={scales} />;
+        scales={showScales && scales} />;
     }} />;
 };
