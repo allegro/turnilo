@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { formatISODateTime } from "../../../common/utils/time/time";
 
 interface SeriesWithDerivation {
   series: ConcreteSeries;
@@ -37,7 +38,7 @@ function findSeriesAndDerivation(name: string, concreteSeriesList: List<Concrete
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
     formatter: {
-      TIME_RANGE: (range: TimeRange) => range.start.toISOString()
+      TIME_RANGE: (range: TimeRange, timezone: Timezone) => formatISODateTime(range.start, timezone)
     },
     attributeFilter: ({ name }: AttributeInfo) => {
       return findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null
