@@ -16,7 +16,7 @@
  */
 
 import { List } from "immutable";
-import { Dataset } from "plywood";
+import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
@@ -109,8 +109,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return this.debouncedCallExecutor(essence, timekeeper);
   }
 
+  protected getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+    return makeQuery(essence, timekeeper);
+  }
+
   private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
-    essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
+    essence.dataCube.executor(this.getQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
