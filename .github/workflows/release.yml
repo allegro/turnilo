@@ -55,8 +55,8 @@ jobs:
 
       - name: Release
         run: |
-          release-it "${bamboo.releaseVersion}" \
+          release-it '${{ github.event.inputs.releaseVersion }}' \
             --non-interactive \
-            --preRelease="${bamboo.preReleaseTag}" \
+            --preRelease='${{ github.event.inputs.preRelease }}' \
             --github.release \
             --dry-run
