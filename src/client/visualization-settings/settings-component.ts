@@ -23,6 +23,7 @@ interface SettingsComponents {
   "bar-chart": null;
   "line-chart": typeof LineChartSettingsComponent;
   "heatmap": null;
+  "grid": null;
   "totals": null;
 }
 
@@ -30,6 +31,7 @@ const Components: SettingsComponents = {
   "bar-chart": null,
   "line-chart": LineChartSettingsComponent,
   "heatmap": null,
+  "grid": null,
   "totals": null,
   "table": TableSettingsComponent
 };

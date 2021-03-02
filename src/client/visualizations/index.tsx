@@ -19,6 +19,7 @@ import { Visualization, VisualizationManifest } from "../../common/models/visual
 import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
 import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
+import { Grid } from "./grid/grid";
 import { HeatMap } from "./heat-map/heat-map";
 import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
@@ -31,7 +32,8 @@ const VIS_COMPONENTS: Record<Visualization, VisualizationComponent> = {
   "table": Table,
   "line-chart": LineChart,
   "bar-chart": BarChart,
-  "heatmap": HeatMap
+  "heatmap": HeatMap,
+  "grid": Grid
 };
 
 export function getVisualizationComponent({ name }: VisualizationManifest): VisualizationComponent {
