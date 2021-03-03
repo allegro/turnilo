@@ -139,23 +139,53 @@ describe("EssenceProps", () => {
   describe("vis picking", () => {
 
     describe("#getBestVisualization", () => {
+      const series = ["count"];
       const tests = [
-        { splits: [], current: null, expected: TOTALS_MANIFEST },
-        { splits: [new Split({ reference: "tweetLength", type: SplitType.number, sort: new DimensionSort({ reference: "tweetLength" }) })], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST },
-        { splits: [new Split({ reference: "twitterHandle", type: SplitType.string, sort: new DimensionSort({ reference: "twitterHandle" }) })], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST },
         {
-          splits: [new Split({ reference: "time", type: SplitType.time, sort: new DimensionSort({ reference: "time", direction: SortDirection.ascending }) })],
+          splits: [],
+          series,
+          current: null,
+          expected: TOTALS_MANIFEST
+        },
+        {
+          splits: [new Split({
+            reference: "tweetLength",
+            type: SplitType.number,
+            sort: new DimensionSort({
+              reference: "tweetLength"
+            })
+          })],
+          series,
+          current: TOTALS_MANIFEST,
+          expected: BAR_CHART_MANIFEST
+        },
+        {
+          splits: [new Split({
+            reference: "twitterHandle",
+            type: SplitType.string,
+            sort: new DimensionSort({ reference: "twitterHandle" })
+          })],
+          series, current: TOTALS_MANIFEST,
+          expected: TABLE_MANIFEST
+        },
+        {
+          splits: [new Split({
+            reference: "time",
+            type: SplitType.time,
+            sort: new DimensionSort({ reference: "time", direction: SortDirection.ascending })
+          })],
+          series,
           current: null,
           expected: LINE_CHART_MANIFEST
         }
       ];
 
-      tests.forEach(({ splits, current, expected }) => {
+      tests.forEach(({ splits, current, series, expected }) => {
         it(`chooses ${expected.name} given splits: [${splits}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
             DataCubeFixtures.twitter(),
             Splits.fromSplits(splits),
-            SeriesList.fromMeasureNames([]),
+            SeriesList.fromMeasureNames(series),
             current);
 
           expect(visualization).to.deep.equal(expected);
@@ -164,9 +194,21 @@ describe("EssenceProps", () => {
     });
 
     describe("#changeSplits", () => {
-      const timeSplit = new Split({ type: SplitType.time, reference: "time", sort: new DimensionSort({ reference: "time" }) });
-      const tweetLengthSplit = new Split({ type: SplitType.number, reference: "tweetLength", sort: new DimensionSort({ reference: "tweetLength" }) });
-      const twitterHandleSplit = new Split({ type: SplitType.string, reference: "twitterHandle", sort: new DimensionSort({ reference: "twitterHandle" }) });
+      const timeSplit = new Split({
+        type: SplitType.time,
+        reference: "time",
+        sort: new DimensionSort({ reference: "time" })
+      });
+      const tweetLengthSplit = new Split({
+        type: SplitType.number,
+        reference: "tweetLength",
+        sort: new DimensionSort({ reference: "tweetLength" })
+      });
+      const twitterHandleSplit = new Split({
+        type: SplitType.string,
+        reference: "twitterHandle",
+        sort: new DimensionSort({ reference: "twitterHandle" })
+      });
 
       it("defaults to bar chart with numeric dimension and is sorted on self", () => {
         const essence = EssenceFixtures.twitterNoVisualisation().addSplit(tweetLengthSplit, VisStrategy.FairGame);

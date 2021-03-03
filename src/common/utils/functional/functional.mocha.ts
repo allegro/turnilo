@@ -18,7 +18,22 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { sleep } from "../../../client/utils/test-utils";
-import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, replaceAt, thread, threadConditionally, threadNullable, zip } from "./functional";
+import {
+  assoc,
+  complement,
+  concatTruthy,
+  cons,
+  constant,
+  debounceWithPromise,
+  flatMap,
+  mapTruthy,
+  range,
+  replaceAt,
+  thread,
+  threadConditionally,
+  threadNullable,
+  zip
+} from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -41,6 +56,26 @@ describe("Functional utilities", () => {
 
     it("should keep nested arrays", () => {
       expect(cons([], [1])).to.deep.eq([[1]]);
+    });
+  });
+
+  describe("assoc", () => {
+    it("should add to object", () => {
+      expect(assoc<number>({ a: 2 }, "b", 3)).to.deep.eq({ a: 2, b: 3 });
+    });
+
+    it("should add to empty object", () => {
+      expect(assoc<number>({}, "a", 1)).to.deep.eq({ a: 1 });
+    });
+
+    it("should override key", () => {
+      expect(assoc<number>({ a: 1 }, "a", 2)).to.deep.eq({ a: 2 });
+    });
+
+    it("should not change source object", () => {
+      const source = { a: 1 };
+      assoc(source, "a", 3);
+      expect(source).to.deep.eq({ a: 1 });
     });
   });
 

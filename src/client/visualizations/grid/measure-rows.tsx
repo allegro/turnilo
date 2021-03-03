@@ -17,9 +17,9 @@
 import * as d3 from "d3";
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { VisibleRows } from "../../utils/visible-rows";
-import { MeasureRow } from "./measure-row";
+import { Essence } from "../../../common/models/essence/essence";
+import { MeasureRow } from "../table/body/measures/measure-row";
+import { VisibleRows } from "../table/utils/visible-rows";
 
 interface MeasureRowsProps {
   visibleRowsIndexRange: [number, number];
@@ -35,8 +35,6 @@ interface MeasureRowsProps {
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
   const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex } = props;
 
-  const lastLevel = essence.splits.length();
-
   return <VisibleRows
     visibleRowsIndexRange={visibleRowsIndexRange}
     highlightedRowIndex={highlightedRowIndex}
@@ -45,7 +43,6 @@ export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
     renderRow={props => {
       const { index, top, datum, highlight, dimmed } = props;
       const rowStyle: React.CSSProperties = { top, width: rowWidth };
-      const showScales = datum["__nest"] === lastLevel;
 
       return <MeasureRow
         key={`row_${index}`}
@@ -55,6 +52,6 @@ export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
         style={rowStyle}
         datum={datum}
         cellWidth={cellWidth}
-        scales={showScales && scales} />;
+        scales={scales} />;
     }} />;
 };

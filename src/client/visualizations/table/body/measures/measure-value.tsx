@@ -27,13 +27,12 @@ interface MeasureValueProps {
   datum: Datum;
   scale: d3.scale.Linear<number, number>;
   cellWidth: number;
-  lastLevel: boolean;
   showPrevious: boolean;
   highlight: boolean;
 }
 
 export const MeasureValue: React.SFC<MeasureValueProps> = props => {
-  const { series, datum, scale, highlight, showPrevious, cellWidth, lastLevel } = props;
+  const { series, datum, scale, highlight, showPrevious, cellWidth } = props;
 
   const currentValue = series.selectValue(datum);
 
@@ -42,7 +41,7 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
     width={cellWidth}
     value={series.formatValue(datum)}
   >
-    {lastLevel && <MeasureBackground highlight={highlight} width={scale(currentValue)} />}
+    {scale && <MeasureBackground highlight={highlight} width={scale(currentValue)} />}
   </MeasureCell>;
 
   if (!showPrevious) {
@@ -57,7 +56,7 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
       key={series.reactKey(SeriesDerivation.PREVIOUS)}
       width={cellWidth}
       value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}>
-      {lastLevel && <MeasureBackground highlight={highlight} width={scale(previousValue)} />}
+      {scale && <MeasureBackground highlight={highlight} width={scale(previousValue)} />}
     </MeasureCell>
     <MeasureCell
       width={cellWidth}

@@ -85,6 +85,8 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
       case "table":
         const TableSettingsComponent = settingsComponent(visualization.name);
         return <TableSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<TableSettings>} />;
+      case "grid":
+        return null;
       case "heatmap":
         return null;
       case "totals":
