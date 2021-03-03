@@ -2,6 +2,9 @@
   "github": {
     "release": true
   },
+  "npm": {
+    "skipChecks": true
+  },
   "pkgFiles": [
     "package.json",
     "package-lock.json"
