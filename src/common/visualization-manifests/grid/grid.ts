@@ -36,7 +36,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
         split.changeLimit(100).changeSort(sort)));
 
     if (splits.equals(newSplits)) {
-        return Resolve.ready(isSelectedVisualization ? 10 : 6);
+        return Resolve.ready(isSelectedVisualization ? 10 : 4);
     }
     return Resolve.automatic(6, { splits: newSplits });
   })
