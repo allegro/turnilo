@@ -17,7 +17,7 @@ jobs:
 
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
 
     steps:
       - name: Checkout
@@ -57,8 +57,8 @@ jobs:
 
       - name: Fill github author
         run: |
-          git config --global user.email "adrianmroz@allegro.pl"
-          git config --global user.name "Adrian Mroz"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Install release-it
         run: npm install -g release-it@13.7.1
