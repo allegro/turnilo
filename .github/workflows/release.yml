@@ -55,6 +55,11 @@ jobs:
 #      - name: E2E Test
 #        run: npm run e2e
 
+      - name: Fill github author
+        run: |
+          git config --global user.email "adrianmroz@allegro.pl"
+          git config --global user.name "Adrian Mroz"
+
       - name: Install release-it
         run: npm install -g release-it@13.7.1
 
