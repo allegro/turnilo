@@ -64,6 +64,9 @@ jobs:
         run: npm install -g release-it@13.7.1
 
       - name: Release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
         run: |
           release-it \
             --increment='${{ github.event.inputs.increment }}' \
