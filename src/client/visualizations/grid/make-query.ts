@@ -40,7 +40,9 @@ function applySeries(series: List<ConcreteSeries>, timeShiftEnv: TimeShiftEnv, n
 }
 
 function applyLimit({ limit }: Split) {
-  const limitExpression = new LimitExpression({ value: limit });
+  // TODO: this calculation is for evaluation purpose. We should add custom split values for Grid and remove this multiplication!
+  const value = limit * 10;
+  const limitExpression = new LimitExpression({ value });
   return (query: Expression) => query.performAction(limitExpression);
 }
 
