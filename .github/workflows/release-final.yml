@@ -22,7 +22,7 @@ jobs:
           # release must bypass branch protection rules, built-in GITHUB_TOKEN doesn't work
           token: ${{ secrets.RELEASE_GH_TOKEN }}
 
-      - name: Check that branch is master
+      - name: Check if branch is not master
         if: github.ref != 'refs/heads/master'
         run: exit 1
 
@@ -63,9 +63,11 @@ jobs:
       - name: Install release-it
         run: npm install -g release-it@13.7.1
 
+      - name: Configure NPM auth token
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+
       - name: Final Release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
         run: |
           release-it ${{ github.event.inputs.increment }} --ci -VV
