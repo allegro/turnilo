@@ -1,14 +1,10 @@
-name: Release
+name: Release Beta
 
 on:
   workflow_dispatch:
     inputs:
       increment:
-        description: 'Defines which part of a SemVer should be increased during the release process, e.g "major", "minor" or "patch".'
-        default: 'minor'
-      preRelease:
-        description: 'Defines whether a release is final or a pre-release for internal testing, e.g "beta", "alpha" or "rc".'
-
+        description: 'Defines which part of a SemVer should be increased during the release process, e.g "major", "minor", "patch" or empty for consecutive release'
 
 jobs:
   build:
@@ -61,13 +57,9 @@ jobs:
       - name: Install release-it
         run: npm install -g release-it@13.7.1
 
-      - name: Release
+      - name: Beta Release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           RELEASE_GH_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
         run: |
-          release-it \
-            --increment='${{ github.event.inputs.increment }}' \
-            --preRelease='${{ github.event.inputs.preRelease }}' \
-            --ci \
-            -VV
+          release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci -VV
