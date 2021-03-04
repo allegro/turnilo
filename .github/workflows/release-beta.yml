@@ -60,6 +60,6 @@ jobs:
       - name: Beta Release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          RELEASE_GH_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
         run: |
           release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci -VV
