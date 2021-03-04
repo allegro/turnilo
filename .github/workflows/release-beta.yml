@@ -37,17 +37,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      #      - name: Lint
-      #        run: npm run lint
+      - name: Lint
+        run: npm run lint
 
       - name: Build
         run: npm run build
 
-      #      - name: Unit Test
-      #        run: npm run test
+      - name: Unit Test
+        run: npm run test
 
-      #      - name: E2E Test
-      #        run: npm run e2e
+      - name: E2E Test
+        run: npm run e2e
 
       - name: Configure GIT
         run: |
