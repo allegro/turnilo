@@ -64,4 +64,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
         run: |
-          release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci -VV
+          release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci
