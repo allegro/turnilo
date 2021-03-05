@@ -82,6 +82,7 @@ turnilo --druid http[s]://druid-broker-hostname[:port]
 * [Configuration](docs/configuration.md)
 * [Generating Links](docs/generating-links.md)
 * [Health checking](docs/health-checking.md)
+* [Release management](docs/release-management.md)
 
 ## Development
 
