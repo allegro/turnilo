@@ -1,30 +1,30 @@
-name: Release
+name: Release Final
 
 on:
   workflow_dispatch:
     inputs:
       increment:
-        description: 'Defines which part of a SemVer should be increased during the release process, e.g "major", "minor" or "patch".'
+        description: 'Defines which part of a SemVer should be increased during the release process, e.g "major", "minor" or "patch"'
         default: 'minor'
-      preRelease:
-        description: 'Defines whether a release is final or a pre-release for internal testing, e.g "beta", "alpha" or "rc".'
-
+        required: true
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          # changelog is generated from git log
+          fetch-depth: 0
+          # release must bypass branch protection rules, built-in GITHUB_TOKEN doesn't work
+          token: ${{ secrets.RELEASE_GH_TOKEN }}
 
-      - name: Install Linux Dependencies
-        run: sudo apt-get install libgconf-2-4
+      - name: Check if branch is not master
+        if: github.ref != 'refs/heads/master'
+        run: exit 1
 
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -43,19 +43,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-#      - name: Lint
-#        run: npm run lint
+      - name: Lint
+        run: npm run lint
 
       - name: Build
         run: npm run build
 
-#      - name: Unit Test
-#        run: npm run test
+      - name: Unit Test
+        run: npm run test
 
-#      - name: E2E Test
-#        run: npm run e2e
+      - name: E2E Test
+        run: npm run e2e
 
-      - name: Fill github author
+      - name: Configure GIT
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
@@ -63,13 +63,11 @@ jobs:
       - name: Install release-it
         run: npm install -g release-it@13.7.1
 
-      - name: Release
+      - name: Configure NPM auth token
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+
+      - name: Final Release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
         run: |
-          release-it \
-            --increment='${{ github.event.inputs.increment }}' \
-            --preRelease='${{ github.event.inputs.preRelease }}' \
-            --ci \
-            -VV
+          release-it ${{ github.event.inputs.increment }} --ci

@@ -1,0 +1,67 @@
+name: Release Beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment:
+        description: 'Defines which part of a SemVer should be increased during the release process, e.g "major", "minor", "patch" or empty for consecutive release'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # changelog is generated from git log
+          fetch-depth: 0
+          # release must bypass branch protection rules, built-in GITHUB_TOKEN doesn't work
+          token: ${{ secrets.RELEASE_GH_TOKEN }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit Test
+        run: npm run test
+
+      - name: E2E Test
+        run: npm run e2e
+
+      - name: Configure GIT
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Install release-it
+        run: npm install -g release-it@13.7.1
+
+      - name: Configure NPM auth token
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+
+      - name: Beta Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
+        run: |
+          release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci
