@@ -1,3 +1,5 @@
+{:toc}
+
 # Turnilo Release Management
 
 Turnilo is released with the following manually triggered Github actions:
