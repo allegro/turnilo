@@ -17,6 +17,7 @@
 import { SeriesSort } from "../../models/sort/sort";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
+import { isFiniteNumber } from "../../utils/general/general";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -27,16 +28,17 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .otherwise(({ isSelectedVisualization, splits, series }) => {
     const firstSeries = series.series.first();
-    const { sort: firstSort } = splits.getSplit(0);
+    const { limit: firstLimit, sort: firstSort } = splits.getSplit(0);
+    const safeFirstLimit = isFiniteNumber(firstLimit) ? firstLimit : 50;
     const sort = firstSort instanceof SeriesSort
       ? firstSort
       : new SeriesSort({ reference: firstSeries.reference });
     const newSplits = splits.update("splits", splits =>
       splits.map(split =>
-        split.changeLimit(100).changeSort(sort)));
+        split.changeLimit(safeFirstLimit).changeSort(sort)));
 
     if (splits.equals(newSplits)) {
-        return Resolve.ready(isSelectedVisualization ? 10 : 4);
+      return Resolve.ready(isSelectedVisualization ? 10 : 4);
     }
     return Resolve.automatic(6, { splits: newSplits });
   })
