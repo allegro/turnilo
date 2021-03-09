@@ -1,9 +1,9 @@
 # Turnilo Release Management
 
-Table of Content
-
 * TOC 
 {:toc}
+
+## Overview
   
 Release management is automated by [Release It](https://github.com/release-it/release-it) with the following steps:
 
