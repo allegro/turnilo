@@ -1,13 +1,10 @@
-1. TOC
-{:toc}
-
 # Turnilo Release Management
 
-Turnilo is released with the following manually triggered Github actions:
+Table of Content
 
-* [Beta Release](https://github.com/allegro/turnilo/actions/workflows/release-beta.yml)
-* [Final Release](https://github.com/allegro/turnilo/actions/workflows/release-final.yml)
-
+* TOC 
+{:toc}
+  
 Release management is automated by [Release It](https://github.com/release-it/release-it) with the following steps:
 
 * Build & Test
