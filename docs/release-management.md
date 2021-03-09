@@ -1,4 +1,4 @@
-* Unordered TOC
+1. TOC
 {:toc}
 
 # Turnilo Release Management
