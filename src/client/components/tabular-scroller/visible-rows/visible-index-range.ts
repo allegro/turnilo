@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ROW_HEIGHT } from "../../../visualizations/table/table";
 
-import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { Corner } from "../../../../components/tabular-scroller/corner/corner";
-
-interface CombinedSplitsTitle {
-  essence: Essence;
+export function visibleIndexRange(rowCount: number, height: number, scrollTopOffset: number): [number, number] {
+  return [
+    Math.max(0, Math.floor(scrollTopOffset / ROW_HEIGHT)),
+    Math.min(rowCount, Math.ceil((scrollTopOffset + height) / ROW_HEIGHT))
+  ];
 }
-
-export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ essence }) => {
-  const { splits, dataCube } = essence;
-  const title = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
-  return <Corner>{title}</Corner>;
-};

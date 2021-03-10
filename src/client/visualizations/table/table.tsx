@@ -28,18 +28,18 @@ import { TABLE_MANIFEST } from "../../../common/visualization-manifests/table/ta
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
+import { MeasuresHeader } from "../../components/tabular-scroller/header/measures/measures-header";
+import { MeasureRows } from "../../components/tabular-scroller/measures/measure-rows";
+import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
+import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
-import { MeasureRows } from "./body/measures/measure-rows";
 import { nestedSplitName } from "./body/splits/nested-split-name";
 import { SplitRows } from "./body/splits/split-rows";
-import { MeasuresHeader } from "./header/measures/measures-header";
 import { SplitsHeader } from "./header/splits/splits-header";
 import { Highlighter } from "./highlight/highlight";
 import "./table.scss";
 import { HoverElement, PositionHover, rowPosition, seriesPosition } from "./utils/calculate-hover-position";
 import { getFilterFromDatum } from "./utils/filter-for-datum";
-import { measureColumnsCount } from "./utils/measure-columns-count";
-import { visibleIndexRange } from "./utils/visible-index-range";
 
 export const HEADER_HEIGHT = 38;
 export const INDENT_WIDTH = 25;
@@ -241,7 +241,7 @@ export class Table extends BaseVisualization<TableState> {
       left: this.getSegmentWidth()
     };
 
-    return <div className="internals table-inner" ref={this.innerTableRef}>
+    return <div className="internals" ref={this.innerTableRef}>
       <ResizeHandle
         direction={Direction.LEFT}
         onResize={this.setSegmentWidth}

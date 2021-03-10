@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import * as React from "react";
+import { SortDirection } from "../../../../../common/models/sort/sort";
 import { classNames } from "../../../../utils/dom/dom";
-import "./split-value.scss";
+import { SortIcon } from "../../sort-icon/sort-icon";
+import "./measure-header-cell.scss";
 
-interface SplitValueProps {
-  highlight: boolean;
-  dimmed: boolean;
+interface MeasureHeaderCellProps {
+  width: number;
+  title: string;
+  sort: SortDirection | null;
   className?: string;
-  style: React.CSSProperties;
 }
 
-export const SplitValue: React.SFC<SplitValueProps> = ({ className, highlight, dimmed, children, style }) =>
-  <div
-    className={classNames("split-value", className, { dimmed, highlight })}
-    style={style}
-  >{children}</div>;
+export const MeasureHeaderCell: React.SFC<MeasureHeaderCellProps> = ({ sort, width, title, className }) => {
+  const sorted = sort !== null;
+  return <div
+    className={classNames("measure-header-cell", className, { sorted })}
+    style={{ width }}>
+    <div className="title-wrap">{title}</div>
+    {sort && <SortIcon direction={sort} />}
+  </div>;
+};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-@import '../../utils/dimensions';
-@import '../../../../imports';
-@import '../../utils/row-style';
+@import '../../components/tabular-scroller/tabular-scroller';
 
-.flattened-splits-rows {
-  margin-left: $space-left;
+.grid {
+  @include tabular-scroller;
 }
 
-.split-value.flattened-splits-row {
-  display: flex;
-
-  padding-left: 0;
-}
