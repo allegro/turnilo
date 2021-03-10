@@ -15,8 +15,7 @@ Release management is automated by [Release It](https://github.com/release-it/re
 
 ## Final Release
 
-| :point_up: Final release must be done on the master branch |
-|------------------------------------------------------------|
+:point_up: Final release must be done on the master branch
 
 Use [Final Release](https://github.com/allegro/turnilo/actions/workflows/release-final.yml) action and select "Run Workflow"
 
