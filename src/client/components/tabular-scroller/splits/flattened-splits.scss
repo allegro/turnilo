@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ROW_HEIGHT } from "../table";
 
-export function visibleIndexRange(rowCount: number, height: number, scrollTopOffset: number): [number, number] {
-  return [
-    Math.max(0, Math.floor(scrollTopOffset / ROW_HEIGHT)),
-    Math.min(rowCount, Math.ceil((scrollTopOffset + height) / ROW_HEIGHT))
-  ];
+@import '../../../imports';
+@import '../dimensions';
+@import '../row-style';
+
+.flattened-splits-rows {
+  margin-left: $space-left;
+}
+
+.split-value.flattened-splits-row {
+  display: flex;
+
+  padding-left: 0;
 }

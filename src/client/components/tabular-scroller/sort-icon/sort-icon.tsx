@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-@import '../../../../imports';
-@import '../../utils/row-style';
+import * as React from "react";
+import { SortDirection } from "../../../../common/models/sort/sort";
+import { classNames } from "../../../utils/dom/dom";
+import { SvgIcon } from "../../svg-icon/svg-icon";
+import "./sort-arrow.scss";
 
-.split-value {
-  @include row-style;
+const sortArrow = require("../../../icons/sort-arrow.svg");
 
-  background-color: $white;
-
-  white-space: nowrap;
-  padding-left: 6px;
-
-  overflow: hidden;
-  padding-top: 8px;
+interface SortIconProps {
+  direction: SortDirection;
 }
+
+export const SortIcon: React.SFC<SortIconProps> = ({ direction }) =>
+  <SvgIcon svg={sortArrow} className={classNames("sort-arrow", direction)} />;

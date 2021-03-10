@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-@import '../../../../imports';
+@import '../../../imports';
+@import '../row-style';
 
-.flattened-split-value {
-  @include ellipsis;
-  flex: 1;
+.split-value {
+  @include row-style;
+
+  background-color: $white;
+
+  white-space: nowrap;
   padding-left: 6px;
+
+  overflow: hidden;
+  padding-top: 8px;
 }

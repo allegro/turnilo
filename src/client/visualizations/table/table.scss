@@ -16,30 +16,9 @@
  */
 
 @import '../../imports';
-@import 'utils/dimensions';
+@import '../../components/tabular-scroller/tabular-scroller';
 
 .table {
-  .scroller {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &.has-top-shadow {
-
-      .measure-name,
-      .corner {
-        border-bottom: 0;
-      }
-    }
-
-    .left-gutter, .top-left-corner {
-      @include border-css-variable('border-right', 1px, solid, 'border-super-light');
-      background-color: $white;
-      border-top-left-radius: $corner;
-      border-bottom-left-radius: $corner;
-    }
-  }
+  @include tabular-scroller;
 }
 

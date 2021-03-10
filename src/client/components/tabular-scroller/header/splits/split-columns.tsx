@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { Corner } from "../../utils/corner";
+import { Corner } from "../../corner/corner";
 import "./split-columns.scss";
 
 interface SplitColumnsHeader {

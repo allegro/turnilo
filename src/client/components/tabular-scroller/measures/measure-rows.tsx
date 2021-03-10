@@ -17,8 +17,8 @@
 import * as d3 from "d3";
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { VisibleRows } from "../../utils/visible-rows";
+import { Essence } from "../../../../common/models/essence/essence";
+import { VisibleRows } from "../visible-rows/visible-rows";
 import { MeasureRow } from "./measure-row";
 
 interface MeasureRowsProps {

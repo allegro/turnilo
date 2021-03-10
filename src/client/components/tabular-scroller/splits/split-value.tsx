@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
-@import 'dimensions';
+import * as React from "react";
+import { classNames } from "../../../utils/dom/dom";
+import "./split-value.scss";
 
-@mixin row-style {
-  @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
-  position: absolute;
-  height: $row-height;
-  left: 0;
-
-  &.highlight {
-    @include css-variable(background-color, hover);
-  }
-
-  &.dimmed {
-    color: #a6a6a6;
-  }
+interface SplitValueProps {
+  highlight: boolean;
+  dimmed: boolean;
+  className?: string;
+  style: React.CSSProperties;
 }
+
+export const SplitValue: React.SFC<SplitValueProps> = ({ className, highlight, dimmed, children, style }) =>
+  <div
+    className={classNames("split-value", className, { dimmed, highlight })}
+    style={style}
+  >{children}</div>;

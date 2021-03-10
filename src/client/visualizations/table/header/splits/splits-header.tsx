@@ -16,8 +16,8 @@
 
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
+import { SplitColumnsHeader } from "../../../../components/tabular-scroller/header/splits/split-columns";
 import { CombinedSplitsTitle } from "./combined-splits-title";
-import { SplitColumnsHeader } from "./split-columns";
 
 interface SplitHeaderProps {
   essence: Essence;
