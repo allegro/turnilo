@@ -17,7 +17,7 @@
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Unary } from "../../../../common/utils/functional/functional";
-import { ROW_HEIGHT } from "../../../visualizations/table/table";
+import { ROW_HEIGHT } from "../dimensions";
 
 interface RowProps {
   highlight: boolean;

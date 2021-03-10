@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ROW_HEIGHT } from "../dimensions";
+export const HEADER_HEIGHT = 38;
+export const INDENT_WIDTH = 25;
+export const ROW_HEIGHT = 30;
+export const SPACE_LEFT = 10;
 
-export function visibleIndexRange(rowCount: number, height: number, scrollTopOffset: number): [number, number] {
-  return [
-    Math.max(0, Math.floor(scrollTopOffset / ROW_HEIGHT)),
-    Math.min(rowCount, Math.ceil((scrollTopOffset + height) / ROW_HEIGHT))
-  ];
-}
+export const MIN_DIMENSION_WIDTH = 100;
+export const SEGMENT_WIDTH = 300;
+export const MEASURE_WIDTH = 130;
+export const SPACE_RIGHT = 10;

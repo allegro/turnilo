@@ -19,7 +19,7 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import { SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { TimeShift } from "../../../../common/models/time-shift/time-shift";
-import { HEADER_HEIGHT, ROW_HEIGHT } from "../table";
+import { HEADER_HEIGHT, ROW_HEIGHT } from "../../../components/tabular-scroller/dimensions";
 import { HoverElement, rowPosition, seriesPosition as uncurriedSeriesPosition } from "./calculate-hover-position";
 
 describe("Calculate Hover Position", () => {

@@ -19,7 +19,7 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { Series } from "../../../../common/models/series/series";
 import { integerDivision } from "../../../../common/utils/general/general";
-import { HEADER_HEIGHT, ROW_HEIGHT } from "../table";
+import { HEADER_HEIGHT, ROW_HEIGHT } from "../../../components/tabular-scroller/dimensions";
 
 function indexToPeriod(index: number): SeriesDerivation {
   return [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA][index % 3];

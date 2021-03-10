@@ -28,6 +28,13 @@ import { TABLE_MANIFEST } from "../../../common/visualization-manifests/table/ta
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
+import {
+  HEADER_HEIGHT, MEASURE_WIDTH,
+  ROW_HEIGHT,
+  SEGMENT_WIDTH,
+  SPACE_LEFT,
+  SPACE_RIGHT
+} from "../../components/tabular-scroller/dimensions";
 import { MeasuresHeader } from "../../components/tabular-scroller/header/measures/measures-header";
 import { MeasureRows } from "../../components/tabular-scroller/measures/measure-rows";
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
@@ -41,15 +48,7 @@ import "./table.scss";
 import { HoverElement, PositionHover, rowPosition, seriesPosition } from "./utils/calculate-hover-position";
 import { getFilterFromDatum } from "./utils/filter-for-datum";
 
-export const HEADER_HEIGHT = 38;
-export const INDENT_WIDTH = 25;
-export const ROW_HEIGHT = 30;
-export const SPACE_LEFT = 10;
-
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
-const SEGMENT_WIDTH = 300;
-const MEASURE_WIDTH = 130;
-const SPACE_RIGHT = 10;
 const MIN_DIMENSION_WIDTH = 100;
 
 export interface TableState extends BaseVisualizationState {

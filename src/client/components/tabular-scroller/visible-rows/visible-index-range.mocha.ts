@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { ROW_HEIGHT } from "../../../visualizations/table/table";
+import { ROW_HEIGHT } from "../dimensions";
 import { visibleIndexRange } from "./visible-index-range";
 
 const tenRowsHeight = 10 * ROW_HEIGHT;

@@ -17,9 +17,9 @@
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
+import { INDENT_WIDTH } from "../../../../components/tabular-scroller/dimensions";
 import { SplitValue } from "../../../../components/tabular-scroller/splits/split-value";
 import { VisibleRows } from "../../../../components/tabular-scroller/visible-rows/visible-rows";
-import { INDENT_WIDTH } from "../../table";
 import { nestedSplitName } from "./nested-split-name";
 import "./nested-splits.scss";
 

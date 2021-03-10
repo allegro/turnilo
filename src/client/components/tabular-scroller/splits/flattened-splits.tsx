@@ -17,7 +17,7 @@
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
-import { SPACE_LEFT } from "../../../visualizations/table/table";
+import { SPACE_LEFT } from "../dimensions";
 import { VisibleRows } from "../visible-rows/visible-rows";
 import { FlattenedSplitColumns } from "./flattened-split-columns";
 import "./flattened-splits.scss";
