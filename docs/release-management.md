@@ -1,10 +1,10 @@
 # Turnilo Release Management
 
-Turnilo is released with the following manually triggered Github actions:
+* TOC 
+{:toc}
 
-* [Beta Release](https://github.com/allegro/turnilo/actions/workflows/release-beta.yml)
-* [Final Release](https://github.com/allegro/turnilo/actions/workflows/release-final.yml)
-
+## Overview
+  
 Release management is automated by [Release It](https://github.com/release-it/release-it) with the following steps:
 
 * Build & Test
@@ -15,8 +15,7 @@ Release management is automated by [Release It](https://github.com/release-it/re
 
 ## Final Release
 
-| :point_up: Final release must be done on the master branch |
-|------------------------------------------------------------|
+:point_up: Final release must be done on the master branch
 
 Use [Final Release](https://github.com/allegro/turnilo/actions/workflows/release-final.yml) action and select "Run Workflow"
 

@@ -1,5 +1,10 @@
 # Extending Turnilo
 
+* TOC
+{:toc}
+
+## Overview
+
 Turnilo lets you extend its behaviour in three ways:
 
 * Request decorator for all Druid queries sent to Druid cluster

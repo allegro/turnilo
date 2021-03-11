@@ -79,10 +79,8 @@ turnilo --druid http[s]://druid-broker-hostname[:port]
 
 ## Documentation
 
-* [Configuration](docs/configuration.md)
-* [Generating Links](docs/generating-links.md)
-* [Health checking](docs/health-checking.md)
-* [Release management](docs/release-management.md)
+Learn how to configure and customize Turnilo:
+[https://allegro.github.io/turnilo/](https://allegro.github.io/turnilo/)
 
 ## Development
 
