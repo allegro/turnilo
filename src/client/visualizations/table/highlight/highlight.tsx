@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { INDENT_WIDTH, ROW_HEIGHT } from "../table";
+import { INDENT_WIDTH, ROW_HEIGHT } from "../../../components/tabular-scroller/dimensions";
 import "./highlight.scss";
 
 interface HighlighterProps {

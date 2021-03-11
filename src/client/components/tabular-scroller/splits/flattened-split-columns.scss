@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +14,10 @@
  * limitations under the License.
  */
 
-@import '../../utils/row-style';
+@import '../../../imports';
 
-.measure-row {
-  @include row-style;
-  white-space: nowrap;
+.flattened-split-value {
+  @include ellipsis;
+  flex: 1;
+  padding-left: 6px;
 }

@@ -18,8 +18,8 @@ import * as d3 from "d3";
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { MeasureRow } from "../table/body/measures/measure-row";
-import { VisibleRows } from "../table/utils/visible-rows";
+import { MeasureRow } from "../../components/tabular-scroller/measures/measure-row";
+import { VisibleRows } from "../../components/tabular-scroller/visible-rows/visible-rows";
 
 interface MeasureRowsProps {
   visibleRowsIndexRange: [number, number];

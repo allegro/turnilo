@@ -17,8 +17,8 @@
 import * as d3 from "d3";
 import { Datum } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { classNames } from "../../../../utils/dom/dom";
+import { Essence } from "../../../../common/models/essence/essence";
+import { classNames } from "../../../utils/dom/dom";
 import "./measure-row.scss";
 import { MeasureValue } from "./measure-value";
 

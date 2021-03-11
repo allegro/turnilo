@@ -17,7 +17,7 @@
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { FlattenedSplits } from "./flattened-splits";
+import { FlattenedSplits } from "../../../../components/tabular-scroller/splits/flattened-splits";
 import { NestedSplits } from "./nested-splits";
 
 interface SplitRowsProps {

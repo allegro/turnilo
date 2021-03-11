@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../utils/dimensions';
+import * as React from "react";
+import { classNames } from "../../../utils/dom/dom";
+import "./measure-background.scss";
 
-.measure-cell {
-  white-space: nowrap;
-  padding-left: $measure-column-padding-left;
-
-  overflow: hidden;
-  padding-top: 8px;
-
-  display: inline-block;
-  width: $measure-width;
-  height: calc(100% + 2px);
-  margin-top: -1px;
-
-  &.all-alone {
-    width: 100%;
-  }
-
-  .measure-label {
-    padding-left: 4px;
-  }
+interface MeasureBackgroundProps {
+  width: number;
+  highlight: boolean;
 }
+
+export const MeasureBackground: React.SFC<MeasureBackgroundProps> = ({ highlight, width }) =>
+  <div className="measure-background-container">
+    <div className={classNames("measure-background", { highlight })} style={{ width: width + "%" }} />
+  </div>;
