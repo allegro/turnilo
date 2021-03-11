@@ -75,9 +75,9 @@ function applySplits(essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   return thread(
     $main.split(splitsMap),
     applyCanonicalLength(splits, dataCube),
+    applySeries(essence.getConcreteSeries(), timeShiftEnv),
     applySort(firstSplit.sort),
-    applyLimit(firstSplit),
-    applySeries(essence.getConcreteSeries(), timeShiftEnv)
+    applyLimit(firstSplit)
   );
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { Corner } from "../../../../components/tabular-scroller/corner/corner";
+@import '../../imports';
+@import './dimensions';
 
-interface CombinedSplitsTitle {
-  essence: Essence;
+@mixin row-style {
+  @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
+  position: absolute;
+  height: $row-height;
+  left: 0;
+
+  &.highlight {
+    @include css-variable(background-color, hover);
+  }
+
+  &.dimmed {
+    color: #a6a6a6;
+  }
 }
-
-export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ essence }) => {
-  const { splits, dataCube } = essence;
-  const title = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
-  return <Corner>{title}</Corner>;
-};

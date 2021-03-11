@@ -17,11 +17,11 @@
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { INDENT_WIDTH } from "../../table";
-import { VisibleRows } from "../../utils/visible-rows";
+import { INDENT_WIDTH } from "../../../../components/tabular-scroller/dimensions";
+import { SplitValue } from "../../../../components/tabular-scroller/splits/split-value";
+import { VisibleRows } from "../../../../components/tabular-scroller/visible-rows/visible-rows";
 import { nestedSplitName } from "./nested-split-name";
 import "./nested-splits.scss";
-import { SplitValue } from "./split-value";
 
 interface NestedSplitsProps {
   visibleRowsIndexRange: [number, number];
