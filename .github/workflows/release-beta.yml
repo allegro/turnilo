@@ -57,11 +57,9 @@ jobs:
       - name: Install release-it
         run: npm install -g release-it@13.7.1
 
-      - name: Configure NPM auth token
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-
       - name: Beta Release
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci
