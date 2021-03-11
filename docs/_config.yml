@@ -1,5 +1,5 @@
 # theme: jekyll-theme-cayman
-remote_theme: tufte-jekyll
+remote_theme: clayh53/tufte-jekyll
 markdown: kramdown
 
 kramdown:
