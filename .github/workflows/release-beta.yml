@@ -61,5 +61,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_USERCONFIG: .npmrc-publish
         run: |
           release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci
