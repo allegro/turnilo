@@ -69,7 +69,7 @@ Liveness endpoint location. Reports liveness status of turnilo app.
 
 Old value that will be used as readinessEndpoint.
 
-**iframe** ("allow" | "deny"), default "allow"
+**iframe** ("allow" \| "deny"), default "allow"
 
 Specify whether Turnilo will be allowed to run in an iFrame.
 If set to "deny" Turnilo will set the following headers:
@@ -82,11 +82,11 @@ Content-Security-Policy: "frame-ancestors 'none'"
 This is used to prevent [Clickjacking](http://en.wikipedia.org/wiki/clickjacking).
 Learn more about it on [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options).
 
-**trustProxy** ("none" | "always"), default "none"
+**trustProxy** ("none" \| "always"), default "none"
 
 Should the server trust the `X-Forwarded-*` headers.  If "always", Turnilo will use the left-most entry from the header.
 
-**strictTransportSecurity** ("none" | "always"), default "none"
+**strictTransportSecurity** ("none" \| "always"), default "none"
 
 Specify that Turnilo should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
 
@@ -146,7 +146,7 @@ retry:
 
 The timeout for the cluster health checking request in ms. See [Checking health of Turnilo instance](health-checking.md)
 
-**sourceListScan** ("auto" | "disable"), default: "auto"
+**sourceListScan** ("auto" \| "disable"), default: "auto"
 
 Should the sources of this cluster be automatically scanned and new sources added as data cubes.
 
@@ -171,7 +171,7 @@ How often should source schema be reloaded in ms. Default value of 0 disables pe
 
 ### Druid specific properties
 
-**introspectionStrategy** ("segment-metadata-fallback" | "segment-metadata-only" | "datasource-get"), default: "segment-metadata-fallback"
+**introspectionStrategy** ("segment-metadata-fallback" \| "segment-metadata-only" \| "datasource-get"), default: "segment-metadata-fallback"
 
 The introspection strategy for Druid cluster.
 

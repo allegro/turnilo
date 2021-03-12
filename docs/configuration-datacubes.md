@@ -60,7 +60,7 @@ The names of the measures that will be selected by default.
 
 The names of the dimensions (in order) that will appear *pinned* by default on the right panel.
 
-**introspection** ("none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all")
+**introspection** ("none" \| "no-autofill" \| "autofill-dimensions-only" \| "autofill-measures-only" \| "autofill-all")
 
 Data cube introspection strategy.
 
@@ -84,7 +84,7 @@ Number of queries that can be issued to druid. Defaults to 500.
 
 The `refreshRule:` section of the data cube allows the customisation of latest data discovery mechanism.
 
-**rule** ("query" | "realtime" | "fixed" ), default: "query"
+**rule** ("query" \| "realtime" \| "fixed" ), default: "query"
 
 The name of the rule which will be used to obtain information about the latest data. Following rules are available:
 
@@ -185,15 +185,15 @@ Alternatively, if you mainly care about large intervals, you might want to try: 
 
 For number dimensions you can just provide 5 bucket sizes as integers.
 
-**bucketingStrategy** ("defaultBucket" | "defaultNoBucket")
+**bucketingStrategy** ("defaultBucket" \| "defaultNoBucket")
 
 Specify whether or not the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
 
-**sortStrategy** ("self" | `someMeasureName`)
+**sortStrategy** ("self" \| `someMeasureName`)
 
 Specify a specific sort strategy for this dimension in visualizations. If unspecified defaults to best sort strategy based on the visualization.
 
-**kind** ("string" | "boolean" | "number" | "time")
+**kind** ("string" \| "boolean" \| "number" \| "time")
 
 Specify kind of data inside dimension. It defaults to "string".
 
@@ -321,7 +321,7 @@ The title for this dimension group in the UI. Can be anything and is safe to cha
 
 The description of the dimension group in the UI. Accepts Markdown format.
 
-**dimensions** (Dimension | DimensionGroup)[]
+**dimensions** (Dimension \| DimensionGroup)[]
 
 An array of nested dimensions or dimension groups. It cannot be empty.
 
@@ -526,7 +526,7 @@ The title for this measure group in the UI. Can be anything and is safe to chang
 
 The description of the measure group in the UI. Accepts Markdown format.
 
-**measures** (Measure | MeasureGroup)[]
+**measures** (Measure \| MeasureGroup)[]
 
 An array of nested measures or measure groups. It cannot be empty.
 

@@ -1,4 +1,5 @@
-theme: minima
+theme: jekyll-theme-minimal
+
 markdown: kramdown
 
 kramdown:
@@ -7,3 +8,7 @@ kramdown:
 
 plugins:
   - jemoji
+
+title: Turnilo
+logo: images/turnilo-logo.png
+show_downloads: false

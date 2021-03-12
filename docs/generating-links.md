@@ -16,7 +16,7 @@ The dataCube name to be used in the link.
 
 The version of the view definition passed for url generation. Currently supported versions: "2", "3", "4".
 
-**viewDefinition** (ViewDefinition3 | Essence)
+**viewDefinition** (ViewDefinition3 \| Essence)
 
 The JSON view definition that describes the state of the Turnilo view. Currently the latest and greatest view definition
 structure is "ViewDefinition4". Be aware that older versions are kept for backwards compatibility only and will be

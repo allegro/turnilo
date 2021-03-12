@@ -138,6 +138,7 @@ Connect to the existing Druid broker using your config file.
 npm run start:dev -- --config path/to/config.yml
 ```
 
+
 ## Testing
 
 ### Unit tests
@@ -188,7 +189,33 @@ Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo"
 and "Application parameters" to "--examples".
 
 You can find more infrmation [here](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html)
- 
+
+## Generating documentation locally
+
+### Prerequisites
+
+* [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
+* [Bundler](https://bundler.io)
+
+Go to docs directory.
+
+```
+cd docs
+```
+
+Install dependencies.
+
+```
+bundle install 
+```
+
+Run your Jekyll site locally and open [http://localhost:4000/](http://localhost:4000/)
+
+```
+bundle exec jekyll serve
+```
+
+
 ## License
 
 **Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
