@@ -16,10 +16,8 @@
  */
 
 import { basicExecutorFactory, Dataset } from "plywood";
-import { MANIFESTS } from "../../visualization-manifests/index";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
-import { AppSettings, AppSettingsContext, AppSettingsJS } from "./app-settings";
 
 const SMALL_WIKI_DATA = [
   {

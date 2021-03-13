@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { ServerAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Nullary } from "../../../common/utils/functional/functional";
 
-type SettingsPromise = Nullary<Promise<AppSettings>>;
+type SettingsPromise = Nullary<Promise<ServerAppSettings>>;
 
 export class SettingsStore {
-  static create(appSettings: AppSettings): SettingsStore {
+  static create(appSettings: ServerAppSettings): SettingsStore {
     return new SettingsStore(() => Promise.resolve(appSettings));
   }
 

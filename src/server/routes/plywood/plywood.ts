@@ -19,6 +19,7 @@ import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
 import { LOGGER } from "../../../common/logger/logger";
+import { getDataCube } from "../../../common/models/app-settings/app-settings";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { loadQueryDecorator } from "../../utils/query-decorator-loader/load-query-decorator";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
@@ -70,7 +71,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       return;
     }
 
-    const myDataCube = settings.getDataCube(dataCube);
+    const myDataCube = getDataCube(settings, dataCube);
     if (!myDataCube) {
       res.status(400).send({ error: "unknown data cube" });
       return;

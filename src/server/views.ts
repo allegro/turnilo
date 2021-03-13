@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { AppSettings } from "../common/models/app-settings/app-settings";
+import { SerializedClientAppSettings } from "../common/models/app-settings/app-settings";
 import { Timekeeper } from "../common/models/timekeeper/timekeeper";
 
 export interface ViewOptions {
   version: string;
   title: string;
-  appSettings?: AppSettings;
+  appSettings?: SerializedClientAppSettings;
   timekeeper?: Timekeeper;
 }
 

@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Customization } from "../../../common/models/customization/customization";
 import { Fn } from "../../../common/utils/general/general";
 import { HeaderBar } from "../../components/header-bar/header-bar";
@@ -25,19 +25,19 @@ import { STRINGS } from "../../config/constants";
 import "./no-data-view.scss";
 
 export interface NoDataViewProps {
-  appSettings?: AppSettings;
+  appSettings?: ClientAppSettings;
   onOpenAbout: Fn;
   customization?: Customization;
 }
 
-function label(appSettings: AppSettings): string {
+function label(appSettings: ClientAppSettings): string {
   const { clusters } = appSettings;
 
   const hasClusters = clusters && clusters.length > 0;
   return !hasClusters ? STRINGS.noConnectedData : STRINGS.noQueryableDataCubes;
 }
 
-const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = props => {
+const NoDataTitle: React.SFC<{ appSettings: ClientAppSettings }> = props => {
   return <div className="title">
     <div className="icon">
       <SvgIcon svg={require("../../icons/data-cubes.svg")} />

@@ -17,7 +17,13 @@
 
 import { Dataset, External } from "plywood";
 import { Logger } from "../../../common/logger/logger";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import {
+  addOrUpdateDataCube,
+  BLANK_SETTINGS, deleteDataCube,
+  fromConfig, getDataCube,
+  getDataCubesForCluster,
+  ServerAppSettings
+} from "../../../common/models/app-settings/app-settings";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -40,14 +46,14 @@ export interface GetSettingsOptions {
   timeout?: number;
 }
 
-export type SettingsGetter = (opts?: GetSettingsOptions) => Promise<AppSettings>;
+export type SettingsGetter = (opts?: GetSettingsOptions) => Promise<ServerAppSettings>;
 
 export class SettingsManager {
   public logger: Logger;
   public verbose: boolean;
   public anchorPath: string;
   public settingsStore: SettingsStore;
-  public appSettings: AppSettings;
+  public appSettings: ServerAppSettings;
   public timeMonitor: TimeMonitor;
   public fileManagers: FileManager[];
   public clusterManagers: ClusterManager[];
@@ -66,7 +72,7 @@ export class SettingsManager {
     this.clusterManagers = [];
 
     this.initialLoadTimeout = options.initialLoadTimeout || 30000;
-    this.appSettings = AppSettings.BLANK;
+    this.appSettings = BLANK_SETTINGS;
 
     this.settingsLoaded = settingsStore.readSettings()
       .then(appSettings => this.reviseSettings(appSettings))
@@ -126,7 +132,7 @@ export class SettingsManager {
     return this.timeMonitor.timekeeper;
   }
 
-  handleSettingsTask(task: Promise<void>, opts: GetSettingsOptions = {}): Promise<AppSettings> {
+  handleSettingsTask(task: Promise<void>, opts: GetSettingsOptions = {}): Promise<ServerAppSettings> {
     const timeoutMs = opts.timeout || this.initialLoadTimeout;
     if (timeoutMs === 0) {
       return task.then(() => this.appSettings);
@@ -138,18 +144,18 @@ export class SettingsManager {
       .then(() => this.appSettings);
   }
 
-  getFreshSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
+  getFreshSettings(opts: GetSettingsOptions = {}): Promise<ServerAppSettings> {
     const task = this.settingsLoaded.then(() => {
       return Promise.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
     });
     return this.handleSettingsTask(task, opts);
   }
 
-  getSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
+  getSettings(opts: GetSettingsOptions = {}): Promise<ServerAppSettings> {
     return this.handleSettingsTask(this.settingsLoaded, opts);
   }
 
-  reviseSettings(newSettings: AppSettings): Promise<void> {
+  reviseSettings(newSettings: ServerAppSettings): Promise<void> {
     const tasks = [
       this.reviseClusters(newSettings),
       this.reviseDataCubes(newSettings)
@@ -159,14 +165,15 @@ export class SettingsManager {
     return Promise.all(tasks).then(noop);
   }
 
-  reviseClusters(settings: AppSettings): Promise<void> {
+  reviseClusters(settings: ServerAppSettings): Promise<void> {
     const { clusters } = settings;
-    const tasks: Array<Promise<void>> = clusters.map(cluster => this.addClusterManager(cluster, settings.getDataCubesForCluster(cluster.name)));
+    const tasks: Array<Promise<void>> = clusters.map(cluster =>
+      this.addClusterManager(cluster, getDataCubesForCluster(settings, cluster.name)));
     return Promise.all(tasks).then(noop);
   }
 
-  reviseDataCubes(settings: AppSettings): Promise<void> {
-    const nativeDataCubes = settings.getDataCubesForCluster("native");
+  reviseDataCubes(settings: ServerAppSettings): Promise<void> {
+    const nativeDataCubes = getDataCubesForCluster(settings, "native");
     const tasks: Array<Promise<void>> = nativeDataCubes.map(dc => this.addFileManager(dc));
     return Promise.all(tasks).then(noop);
   }
@@ -177,7 +184,7 @@ export class SettingsManager {
 
     let candidateName = source;
     let i = 0;
-    while (appSettings.getDataCube(candidateName)) {
+    while (getDataCube(appSettings, candidateName)) {
       i++;
       candidateName = source + i;
     }
@@ -189,7 +196,7 @@ export class SettingsManager {
 
     logger.log(`Got native dataset update for ${dataCubeName}`);
 
-    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    let dataCube = getDataCube(this.appSettings, dataCubeName);
     if (!dataCube) throw new Error(`Unknown dataset ${dataCubeName}`);
     dataCube = dataCube.updateWithDataset(changedDataset);
 
@@ -199,7 +206,7 @@ export class SettingsManager {
       });
     }
 
-    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
+    this.appSettings = addOrUpdateDataCube(this.appSettings, dataCube);
   };
 
   onExternalChange = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
@@ -208,7 +215,7 @@ export class SettingsManager {
 
     logger.log(`Got queryable external dataset update for ${dataCubeName} in cluster ${cluster.name}`);
 
-    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    let dataCube = getDataCube(this.appSettings, dataCubeName);
     if (!dataCube) {
       dataCube = DataCube.fromClusterAndExternal(dataCubeName, cluster, changedExternal);
     }
@@ -220,7 +227,7 @@ export class SettingsManager {
       });
     }
 
-    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
+    this.appSettings = addOrUpdateDataCube(this.appSettings, dataCube);
     return Promise.resolve(null);
   };
 
@@ -230,9 +237,9 @@ export class SettingsManager {
 
     logger.log(`Got external dataset removal for ${dataCubeName} in cluster ${cluster.name}`);
 
-    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    let dataCube = getDataCube(this.appSettings, dataCubeName);
     if (dataCube) {
-      this.appSettings = this.appSettings.deleteDataCube(dataCube);
+      this.appSettings = deleteDataCube(this.appSettings, dataCube);
       this.timeMonitor.removeCheck(dataCube.name);
     }
     return Promise.resolve(null);

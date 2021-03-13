@@ -18,7 +18,7 @@
 import * as nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
-import { AppSettings } from "../common/models/app-settings/app-settings";
+import { BLANK_SETTINGS, fromConfig } from "../common/models/app-settings/app-settings";
 import { Cluster } from "../common/models/cluster/cluster";
 import { DataCube } from "../common/models/data-cube/data-cube";
 import { arraySum } from "../common/utils/general/general";
@@ -220,37 +220,36 @@ if (START_SERVER) {
 let settingsStore: SettingsStore;
 
 if (configContent) {
-  const appSettings = AppSettings.fromJS(configContent, {});
-  // TODO: this validation should be done via #365
-  appSettings.validate();
+  const appSettings = fromConfig(configContent);
   settingsStore = SettingsStore.create(appSettings);
 } else {
-  let initAppSettings = AppSettings.BLANK;
 
   // If a file is specified add it as a dataCube
   const fileToLoad = parsedArgs["file"];
-  if (fileToLoad) {
-    initAppSettings = initAppSettings.addDataCube(new DataCube({
-      name: path.basename(fileToLoad, path.extname(fileToLoad)),
-      clusterName: "native",
-      source: fileToLoad
-    }));
-  }
+  const dataCubes = !fileToLoad ? [] : [new DataCube({
+    name: path.basename(fileToLoad, path.extname(fileToLoad)),
+    clusterName: "native",
+    source: fileToLoad
+  })];
 
   const url = parsedArgs.druid;
-  if (url) {
-    initAppSettings = initAppSettings.addCluster(new Cluster({
-      name: "druid",
-      url,
-      sourceListScan: "auto",
-      sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-      sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
-      sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-      sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
-    }));
-  }
+  const clusters = !url ? [] : [new Cluster({
+    name: "druid",
+    url,
+    sourceListScan: "auto",
+    sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
+    sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+    sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
+    sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
+  })];
 
-  settingsStore = SettingsStore.create(initAppSettings);
+  const settings = {
+    ...BLANK_SETTINGS,
+    dataCubes,
+    clusters
+  };
+
+  settingsStore = SettingsStore.create(settings);
 }
 
 export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {

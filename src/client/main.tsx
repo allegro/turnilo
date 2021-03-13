@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AppSettings, AppSettingsJS } from "../common/models/app-settings/app-settings";
+import { fromJS, SerializedClientAppSettings } from "../common/models/app-settings/app-settings";
 import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
@@ -38,7 +38,7 @@ ReactDOM.render(
 
 interface Config {
   version: string;
-  appSettings: AppSettingsJS;
+  appSettings: SerializedClientAppSettings;
   timekeeper: TimekeeperJS;
 }
 
@@ -55,9 +55,7 @@ const version = config.version;
 
 Ajax.version = version;
 
-const appSettings = AppSettings.fromJS(config.appSettings, {
-  executorFactory: Ajax.queryUrlExecutorFactory
-});
+const appSettings = fromJS(config.appSettings);
 
 const app =
   <TurniloApplication

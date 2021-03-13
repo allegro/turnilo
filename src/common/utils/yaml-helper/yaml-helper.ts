@@ -16,12 +16,12 @@
  */
 
 import { AttributeInfo } from "plywood";
-import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../../common/models/labels";
-import { AppSettings } from "../../models/app-settings/app-settings";
+import { ServerAppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
 import { DataCube, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
+import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../models/labels";
 import { Measure } from "../../models/measure/measure";
 
 function spaces(n: number) {
@@ -435,7 +435,7 @@ interface Extra {
   port?: number;
 }
 
-export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
+export function appSettingsToYAML(appSettings: ServerAppSettings, withComments: boolean, extra: Extra = {}): string {
   const { dataCubes, clusters, customization } = appSettings;
 
   if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");

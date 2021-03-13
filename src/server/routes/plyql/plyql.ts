@@ -17,7 +17,8 @@
 
 import { Request, Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
-import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { getDataCube } from "../../../common/models/app-settings/app-settings";
+import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;
@@ -80,7 +81,7 @@ export function plyqlRouter(settingsGetter: SettingsGetter) {
 
     try {
       const settings = await settingsGetter();
-      const myDataCube = settings.getDataCube(dataCube);
+      const myDataCube = getDataCube(settings, dataCube);
 
       if (!myDataCube) {
         res.status(400).send({ error: "unknown data cube" });
