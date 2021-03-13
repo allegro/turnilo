@@ -23,7 +23,11 @@ import { Cluster } from "../common/models/cluster/cluster";
 import { DataCube } from "../common/models/data-cube/data-cube";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
-import { ServerSettings, ServerSettingsJS } from "./models/server-settings/server-settings";
+import {
+  DEFAULT_PORT, DEFAULT_SERVER_ROOT,
+  readServerSettings,
+  ServerSettingsBase
+} from "./models/server-settings/server-settings";
 import { loadFileSync } from "./utils/file/file";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
 import { SettingsStore } from "./utils/settings-store/settings-store";
@@ -76,9 +80,9 @@ General arguments:
 
 Server arguments:
 
-  -p, --port <port-number>     The port turnilo will run on (default: ${ServerSettings.DEFAULT_PORT})
+  -p, --port <port-number>     The port turnilo will run on (default: ${DEFAULT_PORT})
       --server-host <host>     The host on which to listen on (default: all hosts)
-      --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT})
+      --server-root <root>     A custom server root to listen on (default ${DEFAULT_SERVER_ROOT})
 
 Data connection options:
 
@@ -172,7 +176,7 @@ if (parsedArgs["examples"]) {
   configPath = path.join(__dirname, "../../config-examples.yaml");
 }
 
-let serverSettingsJS: ServerSettingsJS;
+let serverSettingsJS: Partial<ServerSettingsBase>;
 let configDirPath;
 let configContent;
 if (configPath) {
@@ -204,7 +208,7 @@ if (parsedArgs["verbose"]) {
 
 // TODO: Remove this export
 export const VERBOSE = Boolean(serverSettingsJS.verbose);
-export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
+export const SERVER_SETTINGS = readServerSettings(serverSettingsJS);
 
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
@@ -253,7 +257,7 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
   logger,
   verbose: VERBOSE,
   anchorPath: configDirPath,
-  initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
+  initialLoadTimeout: SERVER_SETTINGS.pageMustLoadTimeout
 });
 
 // --- Printing -------------------------------
@@ -268,7 +272,7 @@ if (PRINT_CONFIG) {
       header: true,
       version: VERSION,
       verbose: VERBOSE,
-      port: SERVER_SETTINGS.getPort()
+      port: SERVER_SETTINGS.port
     });
     process.stdout.write(config, () => process.exit());
   }).catch((e: Error) => {

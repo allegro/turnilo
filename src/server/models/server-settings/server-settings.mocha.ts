@@ -16,57 +16,56 @@
  */
 
 import { expect } from "chai";
-import { testImmutableClass } from "immutable-class-tester";
-import { ServerSettings } from "./server-settings";
+import { readServerSettings, ServerSettings } from "./server-settings";
 
 describe("ServerSettings", () => {
-  it("is an immutable class", () => {
-    testImmutableClass(ServerSettings, [
-      {},
-      {
-        port: 9091
-      },
-      {
-        port: 9091,
-        trustProxy: "always"
-      },
-      {
-        port: 9090,
-        serverRoot: "/swivs",
-        pageMustLoadTimeout: 900,
-        iframe: "deny"
-      },
-      {
-        port: 9091,
-        serverRoot: "/swivs",
-        pageMustLoadTimeout: 901
-      },
-      {
-        port: 9091,
-        serverHost: "10.20.30.40",
-        serverRoot: "/swivs",
-        readinessEndpoint: "/status/readiness",
-        pageMustLoadTimeout: 901
-      }
-    ]);
-  });
+  // it("is an immutable class", () => {
+  //   testImmutableClass(ServerSettings, [
+  //     {},
+  //     {
+  //       port: 9091
+  //     },
+  //     {
+  //       port: 9091,
+  //       trustProxy: "always"
+  //     },
+  //     {
+  //       port: 9090,
+  //       serverRoot: "/swivs",
+  //       pageMustLoadTimeout: 900,
+  //       iframe: "deny"
+  //     },
+  //     {
+  //       port: 9091,
+  //       serverRoot: "/swivs",
+  //       pageMustLoadTimeout: 901
+  //     },
+  //     {
+  //       port: 9091,
+  //       serverHost: "10.20.30.40",
+  //       serverRoot: "/swivs",
+  //       readinessEndpoint: "/status/readiness",
+  //       pageMustLoadTimeout: 901
+  //     }
+  //   ]);
+  // });
 
   describe("healthEndpoint backward compatibility", () => {
     it("should interpret healthEndpoint as readinessEndpoint", () => {
       const healthEndpoint = "/health";
-      const settings = ServerSettings.fromJS({ healthEndpoint });
-      expect(settings.getReadinessEndpoint()).to.be.eq(healthEndpoint);
+      const settings = readServerSettings({ healthEndpoint });
+      expect(settings.readinessEndpoint).to.be.eq(healthEndpoint);
     });
   });
 
   describe("upgrades", () => {
     it("port", () => {
-      expect(ServerSettings.fromJS({
+      expect(readServerSettings({
         port: ("9090" as any),
         serverRoot: "/swivs",
         pageMustLoadTimeout: 900,
         iframe: "deny"
-      }).toJS()).to.deep.equal({
+      })).to.contains({
         port: 9090,
         serverRoot: "/swivs",
         pageMustLoadTimeout: 900,
