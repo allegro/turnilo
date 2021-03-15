@@ -1,191 +1,15 @@
-# Configuring Turnilo
+# Configuring Data Cubes
 
-It is easy to start using Turnilo with Druid by pointing it at your Druid cluster: `turnilo --druid broker_host:broker_port`
-Turnilo will automatically introspect your Druid cluster and figure out available datasets.
+* TOC
+{:toc}
 
-Turnilo can be configured with a *config* YAML file. While you could write one from scratch it is recommended to let
-Turnilo give you a head start by using it to generate a config file for you using the default introspection.
-
-Run:
-
-```bash
-turnilo --druid broker_host:broker_port --print-config --with-comments > config.yaml
-```
-
-This will cause Turnilo to go through its normal startup and introspection routine and then dump the internally generated
-config (complete with comments) into the provided file.
-
-You can now run `turnilo --config config.yaml` to run Turnilo with your config.
-
-The next step is to open the generated config file in your favourite text editor and configure Turnilo to your liking.
-Below we will go through a typical configuration flow. At any point you can save the config and re-launch Turnilo to load
-that config in.
-
-
-## Configuring the Turnilo server
-
-**port** (number), default: 9090
-
-The port that Turnilo should run on.
-
-**verbose** (boolean), default: false
-
-Indicates that Turnilo should run in verbose mode. This will log all the queries done by Turnilo.
-
-**serverHost** (string), default: bind to all hosts
-
-The host that Turnilo will bind to.
-
-**serverRoot** (string), default: ""
-
-A custom path to act as the server string.
-
-The Turnilo UI will be served from `http://turnilo-host:$port/$serverRoot`
-
-**serverTimeout** (number), default: 0
-
-Timeout on all server request handlers in ms. Default value is 0 which means no timeout. 
-Turnilo sets timeout on Response object for every incoming request. If response is not send before timeout, Turnilo closes connection.
-
-**clientTimeout** (number), default: 0
-
-Timeout on client requests in ms. Default value is 0 which means no timeout. 
-Timeout is set in browser on every request to Turnilo server.
-
-**readinessEndpoint** (string), default "/health/ready"
-
-Readiness endpoint location. Checks readiness of druid clusters. See [Checking health of Turnilo instance](health-checking.md)
-
-**livenessEndpoint** (string), default "/health/alive"
-
-Liveness endpoint location. Reports liveness status of turnilo app.
-
-**healthEndpoint** (string), deprecated
-
-Old value that will be used as readinessEndpoint.
-
-**iframe** ("allow" | "deny"), default "allow"
-
-Specify whether Turnilo will be allowed to run in an iFrame.
-If set to "deny" Turnilo will set the following headers:
-
-```
-X-Frame-Options: "DENY"
-Content-Security-Policy: "frame-ancestors 'none'"
-```
-
-This is used to prevent [Clickjacking](http://en.wikipedia.org/wiki/clickjacking).
-Learn more about it on [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options).
-
-**trustProxy** ("none" | "always"), default "none"
-
-Should the server trust the `X-Forwarded-*` headers.  If "always", Turnilo will use the left-most entry from the header.
-
-**strictTransportSecurity** ("none" | "always"), default "none"
-
-Specify that Turnilo should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
-
-Note that Turnilo can itself only run an http server.
-This option is intended to be used when when Turnilo is running behind a HTTPS terminator like AWS ELB.
-
-
-## Configuring the Clusters
-
-The top level `clusters:` key that holds the clusters that Turnilo will connect to.
-
-
-### General properties
-
-Each cluster has the following properties:
-
-**name** (string)
-
-The name of the cluster (to be referenced later from the data cube).
-
-**type** ('druid')
-
-The database type of the cluster. Currently only Druid is supported.
-
-**url** (string)
-
-The url address (http[s]://hostname[:port]) of the cluster. If no port, 80 is assumed for plain http, and 443 for secure https.
-
-**host** deprecated (string)
-
-The host (hostname:port) of the cluster, http protocol is assumed. Deprecated, use **url** field
-
-**version** (string)
-
-The explicit version to use for this cluster.
-Define this to override the automatic version detection.
-
-**timeout** (number)
-
-The timeout to set on the Druid queries in ms. See [documentation](https://druid.apache.org/docs/latest/querying/query-context.html)
-
-**retry** (object)
-
-Options for retries on Druid native queries. If no object is provided Turnilo will not retry failed queries.
-Object should have following structure:
-
-```yaml
-retry:
-    maxAttempts: 10
-    delay: 1000
-``` 
-
-* `maxAttempts` is count of maximum attempts for retry. Default values is 5
-* `delay` is time in ms between each attempt.
-
-**healthCheckTimeout** (number), default: 1000
-
-The timeout for the cluster health checking request in ms. See [Checking health of Turnilo instance](health-checking.md)
-
-**sourceListScan** ("auto" | "disable"), default: "auto"
-
-Should the sources of this cluster be automatically scanned and new sources added as data cubes.
-
-**sourceListRefreshOnLoad** (boolean), default: false
-
-Should the list of sources be reloaded every time that Turnilo is loaded.
-This will put additional load on the data store but will ensure that sources are visible in the UI as soon as they are created.
-
-**sourceListRefreshInterval** (number), minimum: 1000, default: 0
-
-How often should sources be reloaded in ms. Default value of 0 disables periodical source refresh.
-
-**sourceReintrospectOnLoad** (boolean), default: false
-
-Should sources be scanned for additional dimensions every time that Turnilo is loaded.
-This will put additional load on the data store but will ensure that dimension are visible in the UI as soon as they are created.
-
-**sourceReintrospectInterval** (number), minimum: 1000, default: 0
-
-How often should source schema be reloaded in ms. Default value of 0 disables periodical source refresh.
-
-
-### Druid specific properties
-
-**introspectionStrategy** ("segment-metadata-fallback" | "segment-metadata-only" | "datasource-get"), default: "segment-metadata-fallback"
-
-The introspection strategy for Druid cluster.
-
-**requestDecorator** (string)
-
-The request decorator module filepath to load.
-
-**decoratorOptions** (any)
-
-Options passed to the request decorator module
-
-
-## Configuring Data Cubes
+## Overview
 
 The top level `dataCubes:` key that holds the data cubes that will be loaded into Turnilo.
 The order of the data cubes in the config will define the ordering seen in the UI.
 
 
-### Basic data cube properties
+## Basic data cube properties
 
 Described here are only the properties which you might want to change.
 
@@ -236,7 +60,7 @@ The names of the measures that will be selected by default.
 
 The names of the dimensions (in order) that will appear *pinned* by default on the right panel.
 
-**introspection** ("none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all")
+**introspection** ("none" \| "no-autofill" \| "autofill-dimensions-only" \| "autofill-measures-only" \| "autofill-all")
 
 Data cube introspection strategy.
 
@@ -256,11 +80,11 @@ Number of splits data cube supports. Defaults to 3.
 
 Number of queries that can be issued to druid. Defaults to 500.
 
-### Refresh rules
+## Refresh rules
 
 The `refreshRule:` section of the data cube allows the customisation of latest data discovery mechanism.
 
-**rule** ("query" | "realtime" | "fixed" ), default: "query"
+**rule** ("query" \| "realtime" \| "fixed" ), default: "query"
 
 The name of the rule which will be used to obtain information about the latest data. Following rules are available:
 
@@ -273,7 +97,7 @@ The name of the rule which will be used to obtain information about the latest d
 Latest date time of a data source, expressed as [ISO 8601 Instant](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations).
 Applicable only if `refreshRule.rule` is set to `fixed`.
 
-### Attribute Overrides
+## Attribute Overrides
 
 While Turnilo tries to learn as much as it can from your data cube from Druid directly.
 It can not (yet) do a perfect job. The `attributeOverrides:` section of the data cube is there for you to fix that.
@@ -284,7 +108,7 @@ The name of the attribute (column) in Druid. This must match the Druid name.
 
 Here are some common scenarios where you should add an attribute override:
 
-#### Override native Druid type
+### Override native Druid type
 
 If Turnilo is not able to discover column type, it could be overridden with Druid native column type. 
 
@@ -295,7 +119,7 @@ If Turnilo is not able to discover column type, it could be overridden with Drui
 
 Supported native types: "hyperUnique", "thetaSketch" and "approximateHistogram".
 
-#### Override numeric dimension
+### Override numeric dimension
 
 Turnilo could not correctly detect numeric dimensions as Druid reports all dimensions to be strings.
 When a numeric dimension is incorrectly classified as a string its sorting will appear wrong in the UI.
@@ -314,7 +138,7 @@ You can now use `$age` in numeric expressions. For example you could create a di
 `$age / 2 + 7`.
 
 
-### Dimensions
+## Dimensions
 
 In this section you can define the dimensions that users can *split* and *filter* on in the UI.
 Dimensions may be organized as list or tree where each item of list can be either a dimension
@@ -323,7 +147,7 @@ The order of the dimension list in the top of the left panel is determined by th
 in this section.
 
 
-#### Dimension
+### Dimension
 
 Dimensions are defined with following attributes:
 
@@ -361,15 +185,15 @@ Alternatively, if you mainly care about large intervals, you might want to try: 
 
 For number dimensions you can just provide 5 bucket sizes as integers.
 
-**bucketingStrategy** ("defaultBucket" | "defaultNoBucket")
+**bucketingStrategy** ("defaultBucket" \| "defaultNoBucket")
 
 Specify whether or not the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
 
-**sortStrategy** ("self" | `someMeasureName`)
+**sortStrategy** ("self" \| `someMeasureName`)
 
 Specify a specific sort strategy for this dimension in visualizations. If unspecified defaults to best sort strategy based on the visualization.
 
-**kind** ("string" | "boolean" | "number" | "time")
+**kind** ("string" \| "boolean" \| "number" \| "time")
 
 Specify kind of data inside dimension. It defaults to "string".
 
@@ -385,7 +209,7 @@ You can create derived dimensions by using non-trivial formulas.
 
 Here are some common use cases for derived dimensions:
 
-##### Lookup formula
+#### Lookup formula
 
 If you have a dimension that represents an ID that is a key into some other table. You may have set up a
 [Druid Query Time Lookup](http://druid.io/docs/latest/querying/lookups.html) in which case you could
@@ -402,7 +226,7 @@ You can also apply the `.fallback()` action as ether:
 - `$lookupKey.lookup('my_awesome_lookup').fallback($lookupKey)` to keep values that were not found as they are.
 - `$lookupKey.lookup('my_awesome_lookup').fallback('missing')` to map missing values to the word 'missing'.
 
-##### Extraction formula
+#### Extraction formula
 
 Imagine you have an attribute `resourceName` which has values:
 
@@ -423,7 +247,7 @@ Which would have values:
 ["0.8.2", "0.8.1", "0.7.0", null]
 ```
 
-##### Boolean formula
+#### Boolean formula
 
 It is often useful to create dimensions that are the result of some boolean expression.
 Let's say that you are responsible for all accounts in the United States as well as some specific account you could create a dimension like:
@@ -435,7 +259,7 @@ Let's say that you are responsible for all accounts in the United States as well
 
 Now my account would represent a custom filter boolean dimension.
 
-##### Quantiles
+#### Quantiles
 
 If you have dimension defined as histogram, you can add quantile measure. Use plywood method quantile on desired histogram and provide required parameters.
 Percentile parameter would be used as default percentile and could be adjusted on UI. Tunning parameters will be passed as is to Druid. 
@@ -454,7 +278,7 @@ Turnilo can handle percentiles only as top level operation in expression so it i
 
 If turnilo encounters such formula, it would assume it is simple measure. User would be able to use this measure as is, but won't be able to picking percentile. 
 
-##### Custom transformations
+#### Custom transformations
 
 If no existing plywood function meets your needs, you could also define your own custom transformation.
 The transformation could be any supported [Druid extraction function](http://druid.io/docs/latest/querying/dimensionspecs.html).
@@ -480,7 +304,7 @@ Then in the dimensions simply reference `stringFun` like so:
   formula: $countryURL.customTransform('stringFun')
 ```
 
-#### Dimension Group
+### Dimension Group
 
 Dimension groups are defined with following attributes:
 
@@ -497,11 +321,11 @@ The title for this dimension group in the UI. Can be anything and is safe to cha
 
 The description of the dimension group in the UI. Accepts Markdown format.
 
-**dimensions** (Dimension | DimensionGroup)[]
+**dimensions** (Dimension \| DimensionGroup)[]
 
 An array of nested dimensions or dimension groups. It cannot be empty.
 
-### Measures
+## Measures
 
 In this section you can define the measures that users can *aggregate* on (*apply*) on in the UI.
 Measures may be organized as list or tree where each item of list can be either a measure
@@ -509,7 +333,7 @@ or [measure group](#measure-group) having its own measures list or tree.
 The order of the measure list in the bottom of the left panel is determined by the order of the measure definitions
 in this section.
 
-#### Measure
+### Measure
 
 Measures are defined with following attributes:
 
@@ -557,7 +381,7 @@ Predefined transformation that can be applied to a measure formula. Currently su
 One can also create derived measures by using non-trivial expressions in **formula**. Here are some common use cases for derived dimensions:
 
 
-##### Ratio formula
+#### Ratio formula
 
 Ratios are generally considered fun.
 
@@ -568,7 +392,7 @@ Ratios are generally considered fun.
 ```
 
 
-##### Filtered aggregations formula
+#### Filtered aggregations formula
 
 A very powerful tool is to use a filtered aggregate.
 If, for example, your revenue in the US is a very important measure you could express it as:
@@ -587,7 +411,7 @@ It is also common to express a ratio of something filtered vs unfiltered.
 ```
 
 
-##### Custom aggregations
+#### Custom aggregations
 
 Within the measures you have access to the full power of the [Plywood expressions](http://plywood.imply.io/expressions).
 If you ever find yourself needing to go beyond the expressive potential of Plywood you could define your own custom aggregation.
@@ -621,7 +445,7 @@ Then in the measures simply reference `addedMod1337` like so:
 This functionality can be used to access any custom aggregations that might be loaded via extensions.
 
 
-##### Switching metric columns
+#### Switching metric columns
 
 If you switch how you ingest you underlying metric and can't (or do not want to) recalculate all of the previous data,
 you could use a derived measure to seemly merge these two metrics in the UI.
@@ -685,7 +509,7 @@ Then in the measure definitions:
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.
 
 
-#### Measure Group
+### Measure Group
 
 Measure groups are defined with following attributes:
 
@@ -702,12 +526,12 @@ The title for this measure group in the UI. Can be anything and is safe to chang
 
 The description of the measure group in the UI. Accepts Markdown format.
 
-**measures** (Measure | MeasureGroup)[]
+**measures** (Measure \| MeasureGroup)[]
 
 An array of nested measures or measure groups. It cannot be empty.
 
 
-### Advanced data cube options
+## Advanced data cube options
 
 One can set advanced options for every data cube configured in Turnilo with the following properties
 defined in `options` property of a date cube:
@@ -736,104 +560,4 @@ Advanced options example:
     druidContext:
       priority: 100
       useCache: false
-```
-
-## Customization
-
-You can define a `customization:` section in the config to configure some aspects of the look and feel of Turnilo.
-
-### Visual
-
-Can customize the header background color and logo icon by supplying a color string and SVG string respectively.
-
-```yaml
-customization:
-    customLogoSvg: >
-      <svg width="300" height="200"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink">
-        <rect width="100%" height="100%" fill="green" />
-      </svg>
-
-    headerBackground: '#2D95CA'
-```
-
-### Url Shortener
-
-Turnilo supports url shorteners for generating short links for current view definitions. This is done by defining function body in configuration.
-Function will receive three arguments, `request` - [node request module](https://github.com/request/request-promise-native), `url` with current hash, and `context` which includes: `clientIp` (the ip of the original client, considering a possible XFF header). Function should return Promise with shortened url as string inside.
-
-
-
-For example:
-
-```yaml
-customization:
-  urlShortener: |
-    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
-```
-
-### CSS Variables
-
-Turnilo allows you to override CSS variables to apply your own theming
-
-For example:
-
-```yaml
-customization:
-  cssVariables:
-    brand: '#829aa3;'
-    item-dimension: '#f2cee0;'
-    item-dimension-text: white;
-    item-measure: '#cef2e0;'
-    item-measure-text: white;
-    background-brand: white;
-    background-brand-text: '#999;'
-    background-base: '#fbfbfb;'
-```
-
-### External links
-
-Turnilo supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.
-This is done by defining a function body in the configuration file.
-
-For example:
-
-```yaml
-customization:
-    externalViews:
-      - title: Timezone Info
-        linkGenerator: >
-          {
-            return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');
-          }
-```
-
-These custom links will appear in the share menu.
-
-By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
-
-### Timezones
-
-You can customize the timezones that appear in the header bar dropdown by providing an array of timezone strings.
-
-For example:
-
-```yaml
-customization:
-  timezones: ['Pacific/Niue', 'Pacific/Marquesas', 'America/Tijuana']
-```
-
-These timezones will appear in the dropdown instead of the default, which are
-
-`['America/Juneau', 'America/Los_Angeles', 'America/Yellowknife', 'America/Phoenix', 'America/Denver', 'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Argentina/Buenos_Aires', 'Etc/UTC',
-'Asia/Jerusalem', 'Europe/Paris', 'Asia/Kathmandu', 'Asia/Hong_Kong', 'Asia/Seoul', 'Pacific/Guam']`
-
-### Sentry DSN
-
-Add Sentry DSN to report errors to Sentry. [Sentry documentation](https://docs.sentry.io/platforms/javascript/?platform=browsernpm)
-
-```yaml
-customization:
-  sentryDSN: https://<key>@sentry.io/<project>
 ```

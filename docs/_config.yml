@@ -1,1 +1,14 @@
-theme: jekyll-theme-cayman
+theme: jekyll-theme-minimal
+
+markdown: kramdown
+
+kramdown:
+  toc_levels: 2..6
+  input: GFM
+
+plugins:
+  - jemoji
+
+title: Turnilo
+logo: images/turnilo-logo.png
+show_downloads: false
