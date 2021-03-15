@@ -3,10 +3,11 @@
 
 @import "{{ site.theme }}";
 
-.wrapper {
-  width: 1280px;
-}
-
-.wrapper section {
-  width: 960px;
+@media screen and (min-width: 1350px) {
+  .wrapper {
+    width: 1280px;
+  }
+  .wrapper section {
+    width: 960px;
+  }
 }
