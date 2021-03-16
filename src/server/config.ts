@@ -18,7 +18,7 @@
 import * as nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
-import { BLANK_SETTINGS, fromConfig } from "../common/models/app-settings/app-settings";
+import { BLANK_SETTINGS, fromConfig, ServerAppSettings } from "../common/models/app-settings/app-settings";
 import { Cluster } from "../common/models/cluster/cluster";
 import { DataCube } from "../common/models/data-cube/data-cube";
 import { arraySum } from "../common/utils/general/general";
@@ -30,7 +30,6 @@ import {
 } from "./models/server-settings/server-settings";
 import { loadFileSync } from "./utils/file/file";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
-import { SettingsStore } from "./utils/settings-store/settings-store";
 
 const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, "../../package.json");
@@ -217,11 +216,10 @@ if (START_SERVER) {
 
 // --- Location -------------------------------
 
-let settingsStore: SettingsStore;
+let settings: ServerAppSettings;
 
 if (configContent) {
-  const appSettings = fromConfig(configContent);
-  settingsStore = SettingsStore.create(appSettings);
+  settings = fromConfig(configContent);
 } else {
 
   // If a file is specified add it as a dataCube
@@ -243,16 +241,15 @@ if (configContent) {
     sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
   })];
 
-  const settings = {
+  settings = {
     ...BLANK_SETTINGS,
     dataCubes,
     clusters
   };
 
-  settingsStore = SettingsStore.create(settings);
 }
 
-export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
+export const SETTINGS_MANAGER = new SettingsManager(settings, {
   logger,
   verbose: VERBOSE,
   anchorPath: configDirPath,

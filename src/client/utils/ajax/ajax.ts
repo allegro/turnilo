@@ -17,8 +17,6 @@
 
 import axios from "axios";
 import { ChainableExpression, Dataset, DatasetJS, Environment, Executor, Expression, SplitExpression } from "plywood";
-import { Cluster } from "../../../common/models/cluster/cluster";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];

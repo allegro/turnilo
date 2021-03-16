@@ -178,4 +178,3 @@ export function deleteDataCube(settings: ServerAppSettings, dataCube: DataCube):
     dataCubes: settings.dataCubes.filter(dc => dc.equals(dataCube))
   };
 }
-

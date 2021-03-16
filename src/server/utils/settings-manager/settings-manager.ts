@@ -19,8 +19,9 @@ import { Dataset, External } from "plywood";
 import { Logger } from "../../../common/logger/logger";
 import {
   addOrUpdateDataCube,
-  BLANK_SETTINGS, deleteDataCube,
-  fromConfig, getDataCube,
+  BLANK_SETTINGS,
+  deleteDataCube,
+  getDataCube,
   getDataCubesForCluster,
   ServerAppSettings
 } from "../../../common/models/app-settings/app-settings";
@@ -33,7 +34,6 @@ import { timeout } from "../../../common/utils/promise/promise";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
 import { ClusterManager } from "../cluster-manager/cluster-manager";
 import { FileManager } from "../file-manager/file-manager";
-import { SettingsStore } from "../settings-store/settings-store";
 
 export interface SettingsManagerOptions {
   logger: Logger;
@@ -52,7 +52,6 @@ export class SettingsManager {
   public logger: Logger;
   public verbose: boolean;
   public anchorPath: string;
-  public settingsStore: SettingsStore;
   public appSettings: ServerAppSettings;
   public timeMonitor: TimeMonitor;
   public fileManagers: FileManager[];
@@ -60,22 +59,20 @@ export class SettingsManager {
   public settingsLoaded: Promise<void>;
   public initialLoadTimeout: number;
 
-  constructor(settingsStore: SettingsStore, options: SettingsManagerOptions) {
+  constructor(initialSettings: ServerAppSettings, options: SettingsManagerOptions) {
     const logger = options.logger;
     this.logger = logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
 
     this.timeMonitor = new TimeMonitor(logger);
-    this.settingsStore = settingsStore;
     this.fileManagers = [];
     this.clusterManagers = [];
 
     this.initialLoadTimeout = options.initialLoadTimeout || 30000;
     this.appSettings = BLANK_SETTINGS;
 
-    this.settingsLoaded = settingsStore.readSettings()
-      .then(appSettings => this.reviseSettings(appSettings))
+    this.settingsLoaded = this.reviseSettings(initialSettings)
       .catch(e => {
         logger.error(`Fatal settings load error: ${e.message}`);
         logger.error(e.stack);
@@ -155,12 +152,12 @@ export class SettingsManager {
     return this.handleSettingsTask(this.settingsLoaded, opts);
   }
 
-  reviseSettings(newSettings: ServerAppSettings): Promise<void> {
+  reviseSettings(initialSettings: ServerAppSettings): Promise<void> {
     const tasks = [
-      this.reviseClusters(newSettings),
-      this.reviseDataCubes(newSettings)
+      this.reviseClusters(initialSettings),
+      this.reviseDataCubes(initialSettings)
     ];
-    this.appSettings = newSettings;
+    this.appSettings = initialSettings;
 
     return Promise.all(tasks).then(noop);
   }
