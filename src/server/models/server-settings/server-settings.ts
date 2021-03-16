@@ -58,10 +58,6 @@ const DEFAULT_TRUST_PROXY: TrustProxy = "none";
 const STRICT_TRANSPORT_SECURITY_VALUES: Set<StrictTransportSecurity> = new Set(["none", "always"] as StrictTransportSecurity[]);
 const DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 
-function oneOf<T>(value: T, values: Set<T>): value is T {
-  return values.has(value);
-}
-
 export function readServerSettings(parameters: Partial<ServerSettingsBase> & LegacyServerSettings): ServerSettings {
   const port = typeof parameters.port === "string" ? parseInt(parameters.port, 10) : (parameters.port || DEFAULT_PORT);
   const serverHost = parameters.serverHost;
@@ -72,9 +68,9 @@ export function readServerSettings(parameters: Partial<ServerSettingsBase> & Leg
   const requestLogFormat = parameters.requestLogFormat || DEFAULT_REQUEST_LOG_FORMAT;
   const pageMustLoadTimeout = parameters.pageMustLoadTimeout === undefined ?  DEFAULT_PAGE_MUST_LOAD_TIMEOUT : parameters.pageMustLoadTimeout;
   const verbose = !!parameters.verbose;
-  const iframe = oneOf(parameters.iframe, IFRAME_VALUES) ? parameters.iframe : DEFAULT_IFRAME;
-  const trustProxy = oneOf(parameters.trustProxy, TRUST_PROXY_VALUES) ? parameters.trustProxy : DEFAULT_TRUST_PROXY;
-  const strictTransportSecurity = oneOf(parameters.strictTransportSecurity, STRICT_TRANSPORT_SECURITY_VALUES) ? parameters.strictTransportSecurity : DEFAULT_STRICT_TRANSPORT_SECURITY;
+  const iframe = IFRAME_VALUES.has(parameters.iframe) ? parameters.iframe : DEFAULT_IFRAME;
+  const trustProxy = TRUST_PROXY_VALUES.has(parameters.trustProxy) ? parameters.trustProxy : DEFAULT_TRUST_PROXY;
+  const strictTransportSecurity = STRICT_TRANSPORT_SECURITY_VALUES.has(parameters.strictTransportSecurity) ? parameters.strictTransportSecurity : DEFAULT_STRICT_TRANSPORT_SECURITY;
   const plugins = Array.isArray(parameters.plugins) ? parameters.plugins.map(p => PluginSettings.fromJS(p)) : [];
 
   return {
