@@ -43,7 +43,7 @@ describe("readiness router", () => {
   describe("single druid cluster", () => {
     before(done => {
       app = express();
-      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnly())));
+      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.serverWiki())));
       server = app.listen(0, done);
     });
 
@@ -71,7 +71,7 @@ describe("readiness router", () => {
   describe("multiple druid clusters", () => {
     before(done => {
       app = express();
-      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.wikiTwitter())));
+      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.serverTwitter())));
       server = app.listen(0, done);
     });
 

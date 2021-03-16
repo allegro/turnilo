@@ -29,7 +29,7 @@ let app = express();
 
 app.use(bodyParser.json());
 
-app.use(mkurlPath, mkurlRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
+app.use(mkurlPath, mkurlRouter(() => Promise.resolve(AppSettingsFixtures.serverWiki())));
 
 describe("mkurl router", () => {
   it("gets a simple url back", (testComplete: any) => {

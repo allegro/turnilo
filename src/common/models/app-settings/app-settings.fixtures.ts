@@ -16,8 +16,11 @@
  */
 
 import { basicExecutorFactory, Dataset } from "plywood";
+import { Cluster } from "../cluster/cluster";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
+import { Customization } from "../customization/customization";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { ClientAppSettings, ServerAppSettings } from "./app-settings";
 
 const SMALL_WIKI_DATA = [
   {
@@ -282,60 +285,58 @@ const SMALL_WIKI_DATA = [
   }
 ];
 
+// TODO: After refactoring Customization, make CustomizationFixtures and use here
+const customization = Customization.fromJS({
+  title: "Hello World",
+  headerBackground: "brown"
+});
+
 export class AppSettingsFixtures {
-  public static wikiOnlyJS(): AppSettingsJS {
+  static clientWiki(): ClientAppSettings {
     return {
       clientTimeout: 100,
-      customization: {
-        title: "Hello World",
-        headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
-      },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS()
-      ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS
-      ]
+      clusters: [Cluster.fromJS(ClusterFixtures.druidWikiClusterJS())],
+      customization,
+      dataCubes: [DataCubeFixtures.wiki()],
+      version: 1
     };
   }
 
-  public static wikiTwitterJS(): AppSettingsJS {
+  static serverWiki(): ServerAppSettings {
     return {
-      clientTimeout: 0,
-      customization: {
-        title: "Hello World"
-      },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS(),
-        ClusterFixtures.druidTwitterClusterJS()
-      ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS,
-        DataCubeFixtures.TWITTER_JS
-      ]
+      version: 1,
+      clientTimeout: 100,
+      customization,
+      clusters: [Cluster.fromJS(ClusterFixtures.druidWikiClusterJS())],
+      dataCubes: [DataCubeFixtures.wiki()]
     };
   }
 
-  static getContext(): AppSettingsContext {
-    return {};
-  }
-
-  static wikiOnly() {
-    return AppSettings.fromJS(AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.getContext());
-  }
-
-  static wikiOnlyWithExecutor() {
-    return AppSettingsFixtures.wikiOnly().attachExecutors(() => {
-      return basicExecutorFactory({
-        datasets: {
-          main: Dataset.fromJS(SMALL_WIKI_DATA)
-        }
-      });
+  static serverWikiWithExecutor(): ServerAppSettings {
+    const executor = basicExecutorFactory({
+      datasets: {
+        main: Dataset.fromJS(SMALL_WIKI_DATA)
+      }
     });
+    return {
+      version: 1,
+      clientTimeout: 100,
+      customization,
+      clusters: [Cluster.fromJS(ClusterFixtures.druidWikiClusterJS())],
+      dataCubes: [DataCubeFixtures.wiki().attachExecutor(executor)]
+    };
   }
 
-  static wikiTwitter() {
-    return AppSettings.fromJS(AppSettingsFixtures.wikiTwitterJS(), AppSettingsFixtures.getContext());
+  static serverTwitter(): ServerAppSettings {
+    return {
+      version: 1,
+      clientTimeout: 0,
+      customization,
+      clusters: [
+        Cluster.fromJS(ClusterFixtures.druidWikiClusterJS()),
+        Cluster.fromJS(ClusterFixtures.druidTwitterClusterJS())
+      ],
+      dataCubes: [DataCubeFixtures.wiki(), DataCubeFixtures.twitter()]
+    };
   }
 }

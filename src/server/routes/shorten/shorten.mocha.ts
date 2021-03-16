@@ -27,15 +27,15 @@ import { shortenRouter } from "./shorten";
 
 const shortenPath = "/shorten";
 
-const settingsGetterFactory = (urlShortener: UrlShortenerDef) => () => Promise.resolve(
-  AppSettingsFixtures.wikiOnly().changeCustomization(Customization.fromJS({
-    urlShortener
-  })));
+const settingsGetterFactory = (urlShortener: UrlShortenerDef) => () => Promise.resolve({
+    ...AppSettingsFixtures.serverWiki(),
+    customization: Customization.fromJS({ urlShortener })
+  });
 
 const callShortener = (app: Express) => supertest(app)
-        .get(shortenPath)
-        .set("Content-Type", "application/json")
-        .send({ url: "http://foobar.com?bazz=quvx" });
+  .get(shortenPath)
+  .set("Content-Type", "application/json")
+  .send({ url: "http://foobar.com?bazz=quvx" });
 
 describe("url shortener", () => {
   let app: Express;

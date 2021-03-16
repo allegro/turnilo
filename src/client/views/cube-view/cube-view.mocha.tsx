@@ -32,7 +32,7 @@ describe.skip("CubeView", () => {
     const cubeView = mount(
       <CubeView
         openAboutModal={noop}
-        appSettings={AppSettingsFixtures.wikiOnly()}
+        appSettings={AppSettingsFixtures.clientWiki()}
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
         dataCube={DataCubeFixtures.wiki()}

@@ -23,7 +23,7 @@ import { AppSettingsFixtures } from "../../../common/models/app-settings/app-set
 import { plywoodRouter } from "./plywood";
 
 const settingsManagerFixture = {
-  getSettings: () => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor()),
+  getSettings: () => Promise.resolve(AppSettingsFixtures.serverWikiWithExecutor()),
   anchorPath: "."
 };
 
