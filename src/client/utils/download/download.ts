@@ -38,12 +38,23 @@ export function getMIMEType(fileType: string) {
   }
 }
 
-export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string): void {
-  const type = `${getMIMEType(fileFormat)};charset=utf-8`;
-  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], { type });
-  if (!fileName) fileName = `${new Date()}-data`;
-  fileName += `.${fileFormat}`;
-  filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
+export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string, encoding = "utf-8"): void {
+  function save(part: string | Buffer) {
+    const type = `${getMIMEType(fileFormat)};charset=${encoding}`;
+    const blob = new Blob([part], { type });
+    if (!fileName) fileName = `${new Date()}-data`;
+    fileName += `.${fileFormat}`;
+    filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
+  }
+
+  const result = datasetToFileString(dataset, fileFormat, options);
+  if (encoding !== "utf-8") {
+    import("iconv-lite").then(function(iconv) {
+      save(iconv.encode(result, encoding));
+    });
+  } else {
+    save(result);
+  }
 }
 
 export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, options?: TabulatorOptions): string {

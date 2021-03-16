@@ -90,6 +90,7 @@ export interface CustomizationValue {
   urlShortener?: UrlShortener;
   sentryDSN?: string;
   cssVariables?: Record<string, string>;
+  exportEncoding?: string;
 }
 
 export interface CustomizationJS {
@@ -102,6 +103,7 @@ export interface CustomizationJS {
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
   cssVariables?: Record<string, string>;
+  exportEncoding?: string;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -141,7 +143,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       customLogoSvg: parameters.customLogoSvg,
       logoutHref: parameters.logoutHref,
       sentryDSN: parameters.sentryDSN,
-      cssVariables: parameters.cssVariables
+      cssVariables: parameters.cssVariables,
+      exportEncoding: parameters.exportEncoding
     };
 
     var paramViewsJS = parameters.externalViews;
@@ -174,6 +177,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public urlShortener: UrlShortener;
   public sentryDSN: string;
   public cssVariables?: Record<string, string>;
+  public exportEncoding: string;
 
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
@@ -185,6 +189,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
     if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
     if (parameters.cssVariables) this.cssVariables = parameters.cssVariables;
+    if (parameters.exportEncoding) this.exportEncoding = parameters.exportEncoding;
   }
 
   public valueOf(): CustomizationValue {
@@ -197,7 +202,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       urlShortener: this.urlShortener,
       logoutHref: this.logoutHref,
       sentryDSN: this.sentryDSN,
-      cssVariables: this.cssVariables
+      cssVariables: this.cssVariables,
+      exportEncoding: this.exportEncoding
     };
   }
 
@@ -218,6 +224,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     }
     if (this.logoutHref) js.logoutHref = this.logoutHref;
     if (this.cssVariables) js.cssVariables = this.cssVariables;
+    if (this.exportEncoding) js.exportEncoding = this.exportEncoding;
 
     return js;
   }
@@ -241,7 +248,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.sentryDSN === other.sentryDSN &&
       this.logoutHref === other.logoutHref &&
-      this.cssVariables === other.cssVariables;
+      this.cssVariables === other.cssVariables &&
+      this.exportEncoding === other.exportEncoding;
   }
 
   public getTitle(version: string): string {

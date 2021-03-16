@@ -102,3 +102,12 @@ Add Sentry DSN to report errors to Sentry. [Sentry documentation](https://docs.s
 customization:
   sentryDSN: https://<key>@sentry.io/<project>
 ```
+
+## Export Encoding
+
+Customize file encoding when export to csv or tsv
+
+```yaml
+customization:
+  exportEncoding: gbk
+```

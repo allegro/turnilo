@@ -40,10 +40,10 @@ export interface ShareMenuProps {
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "getDownloadableDataset">;
+type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "customization" | "timekeeper" | "getDownloadableDataset">;
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
-  const { onClose, getDownloadableDataset, essence, timekeeper } = props;
+  const { onClose, getDownloadableDataset, essence, customization, timekeeper } = props;
   const dataSetWithTabOptions = getDownloadableDataset();
   if (!dataSetWithTabOptions.dataset) return;
 
@@ -51,7 +51,7 @@ function onExport(fileFormat: FileFormat, props: ExportProps) {
   const effectiveFilter = essence.getEffectiveFilter(timekeeper);
 
   const fileName = makeFileName(dataCube.name, dateFromFilter(effectiveFilter));
-  download(dataSetWithTabOptions, fileFormat, fileName);
+  download(dataSetWithTabOptions, fileFormat, fileName, customization.exportEncoding);
   onClose();
 }
 
