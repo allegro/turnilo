@@ -28,7 +28,7 @@ export interface MeasureValue {
   title?: string;
   units?: string;
   formula?: string;
-  format?: string;
+  format?: {} | string;
   transformation?: string;
   description?: string;
   lowerIsBetter?: boolean;
@@ -39,7 +39,7 @@ export interface MeasureJS {
   title?: string;
   units?: string;
   formula?: string;
-  format?: string;
+  format?: {} | string;
   transformation?: string;
   description?: string;
   lowerIsBetter?: boolean;
@@ -150,7 +150,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   public units: string;
   public formula: string;
   public expression: Expression;
-  public format: string;
+  public format: {} | string;
   public formatFn: (n: number) => string;
   public transformation: string;
   public lowerIsBetter: boolean;
@@ -189,7 +189,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   // Default getter from ImmutableValue
-  public getFormat: () => string;
+  public getFormat: () => {} | string;
 
 }
 

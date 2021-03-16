@@ -29,7 +29,7 @@ interface FormatPickerProps {
   formatChange: Unary<SeriesFormat, void>;
 }
 
-function readFormat(format: string, measureFormat: string): SeriesFormat {
+function readFormat(format: string, measureFormat: {} | string): SeriesFormat {
   switch (format) {
     case measureFormat:
       return DEFAULT_FORMAT;
@@ -42,16 +42,16 @@ function readFormat(format: string, measureFormat: string): SeriesFormat {
   }
 }
 
-function printFormat(format: SeriesFormat, measureFormat: string): string {
+function printFormat(format: SeriesFormat, measureFormat: {} | string): string {
   switch (format.type) {
     case SeriesFormatType.DEFAULT:
-      return measureFormat;
+      return typeof measureFormat === "string" ? measureFormat : JSON.stringify(measureFormat);
     case SeriesFormatType.EXACT:
       return exactFormat;
     case SeriesFormatType.PERCENT:
       return percentFormat;
     case SeriesFormatType.CUSTOM:
-      return format.value;
+      return typeof format.value === "string" ? format.value : JSON.stringify(format.value);
   }
 }
 
@@ -59,7 +59,7 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, fo
   const measureFormat = measure.getFormat();
 
   const formatPresets = concatTruthy(
-    { name: "Default", identity: measureFormat },
+    { name: "Default", identity: typeof measureFormat === "string" ? measureFormat : JSON.stringify(measureFormat) },
     measureFormat !== exactFormat && { name: "Exact", identity: exactFormat },
     { name: "Percent", identity: percentFormat }
   );
@@ -77,7 +77,7 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, fo
       onChange={onFormatChange} />
     {format.type === SeriesFormatType.CUSTOM && <div className="format-hint">
       You can use custom numbro format to present measure values.
-      Please refer to the <a target="_blank" className="documentation-link" href="http://numbrojs.com/old-format.html">numbro documentation</a>
+      Please refer to the <a target="_blank" className="documentation-link" href="http://numbrojs.com">numbro documentation</a>
     </div>}
     <div className="preview">
       <span className="value">{PREVIEW_VALUE} → </span>

@@ -22,7 +22,7 @@ import { Measure } from "../measure/measure";
 
 export enum SeriesFormatType { DEFAULT = "default", EXACT = "exact", PERCENT = "percent", CUSTOM = "custom" }
 
-type FormatString = string;
+type FormatString = {} | string;
 
 interface SeriesFormatValue {
   type: SeriesFormatType;
@@ -43,7 +43,7 @@ export const PERCENT_FORMAT = new SeriesFormat({ type: SeriesFormatType.PERCENT 
 
 export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
 
-export function formatFnFactory(format: string): (n: number) => string {
+export function formatFnFactory(format: {} | string): (n: number) => string {
   return (n: number) => {
     if (!isNumber(n) || !isFiniteNumber(n)) return "-";
     return numbro(n).format(format);
