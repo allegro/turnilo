@@ -21,6 +21,7 @@ import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Fn } from "../../../common/utils/general/general";
 import { ClearableInput } from "../../components/clearable-input/clearable-input";
 import { HeaderBar } from "../../components/header-bar/header-bar";
+import { EmptyDataCubeList } from "../../components/no-data/empty-data-cube-list";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { DataCubeCard } from "./data-cube-card/data-cube-card";
@@ -72,8 +73,9 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   }
 
   render() {
-    const { onOpenAbout, customization } = this.props;
+    const { onOpenAbout, dataCubes, customization } = this.props;
     const { query } = this.state;
+    const hasDataCubes = dataCubes.length > 0;
 
     return <div className="home-view">
       <HeaderBar
@@ -86,16 +88,18 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
       </HeaderBar>
 
       <div className="container">
-        <div className="data-cubes">
-          <div className="data-cubes__search-box">
-            <ClearableInput
-              onChange={this.queryChange}
-              value={query}
-              placeholder="Search data cubes..."
-              focusOnMount={true} />
-          </div>
-          {this.renderDataCubes()}
-        </div>
+        {!hasDataCubes
+          ? <EmptyDataCubeList />
+          : <div className="data-cubes">
+            <div className="data-cubes__search-box">
+              <ClearableInput
+                onChange={this.queryChange}
+                value={query}
+                placeholder="Search data cubes..."
+                focusOnMount={true}/>
+            </div>
+            {this.renderDataCubes()}
+          </div>}
       </div>
     </div>;
   }

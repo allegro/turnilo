@@ -43,28 +43,26 @@ interface Config {
 }
 
 const config: Config = (window as any)["__CONFIG__"];
-if (!config || !config.version || !config.appSettings || !config.appSettings.dataCubes) {
+if (!config) {
   throw new Error("config not found");
-}
-
-if (config.appSettings.customization.sentryDSN) {
-  errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
 }
 
 const version = config.version;
 
 Ajax.version = version;
 
-const appSettings = AppSettings.fromJS(config.appSettings, {
-  executorFactory: Ajax.queryUrlExecutorFactory
-});
+// No context because we don't have cubes here yet Maybe we can create just customization here?!
+const appSettings = AppSettings.fromJS(config.appSettings, {});
 
-const app =
-  <TurniloApplication
-    version={version}
-    appSettings={appSettings}
-    initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
-  />;
+if (config.appSettings.customization.sentryDSN) {
+  errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+}
+
+const app = <TurniloApplication
+  version={version}
+  appSettings={appSettings}
+  initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+/>;
 
 ReactDOM.render(app, container);
 

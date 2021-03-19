@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,20 @@
  */
 
 import * as React from "react";
-import "./error-view.scss";
-
-interface ErrorViewProps {
-  errorId: string | null;
-}
+import { MessagePanel, MessagePanelAction } from "../../components/message-panel/message-panel";
 
 const reload = () => window.location.reload();
 
 const recordedErrorMsg = (errorId: string) => `Unexpected error occurred. We recorded it and assigned code: ${errorId}.`;
 const defaultErrorMsg = "Unexpected error occurred";
 
-export const ErrorView: React.SFC<ErrorViewProps> = ({ errorId }) => {
+interface GeneralErrorProps {
+  errorId: string | null;
+}
+
+export const GeneralError: React.SFC<GeneralErrorProps> = ({ errorId }) => {
   const message = errorId !== null ? recordedErrorMsg(errorId) : defaultErrorMsg;
-  return <div className="error-view">
-    <div className="error-view__container">
-      <div className="error-view__title">General error</div>
-      <div className="error-view__message">{message}</div>
-      <div className="error-view__reload" onClick={reload}>Reload view</div>
-    </div>
-  </div>;
+  return <MessagePanel message={message} title="General error">
+    <MessagePanelAction action={reload} label="Reload View" />
+  </MessagePanel>;
 };

@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { STRINGS } from "../../config/constants";
-import { isOauthError } from "../../oauth/oauth";
-import { Message } from "../message/message";
+@import '../../imports';
 
-export interface QueryErrorProps {
-  error: Error;
-}
+.empty-data-cube-list {
+  margin-top: 60px;
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  if (isOauthError(error)) {
-    throw error;
+  .icon {
+    display: inline-block;
+    margin-bottom: 6px;
+    width: 42px;
+
+    path {
+      @include css-variable(fill, text-light);
+    }
   }
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError}/>;
-};
+
+  .label {
+    @include css-variable(color, text-light);
+    display: inline-block;
+    height: 46px;
+    padding-top: 13px;
+    font-size: 20px;
+  }
+}

@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +15,32 @@
  */
 
 import { Request, Response, Router } from "express";
-import { SETTINGS_MANAGER } from "../../config";
+import { LOGGER } from "../../../common/logger/logger";
+import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
-import { mainLayout } from "../../views";
 
-export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
+export function settingsRouter(settingsGetter: SettingsGetter) {
+
+  const logger = LOGGER.addPrefix("Settings Endpoint: ");
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
+
     try {
       const settings = await settingsGetter();
-      const clientSettings = settings.withoutSources();
-      res.send(mainLayout({
-        version,
-        title: settings.customization.getTitle(version),
-        appSettings: clientSettings,
-        timekeeper: SETTINGS_MANAGER.getTimekeeper()
-      }));
-    } catch (e) {
-      res.status(400).send({ error: "Couldn't load Turnilo Application" });
+      const clientSettings = settings.toClientSettings();
+      clientSettings.dataCubes = clientSettings.dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) );
+      res.json(clientSettings);
+    } catch (error) {
+      logger.error(error.message);
+      if (error.hasOwnProperty("stack")) {
+        logger.error(error.stack);
+      }
+      res.status(500).send({
+        error: "Can't fetch settings",
+        message: error.message
+      });
     }
   });
 

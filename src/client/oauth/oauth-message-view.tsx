@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +15,17 @@
  */
 
 import * as React from "react";
-import { STRINGS } from "../../config/constants";
-import { isOauthError } from "../../oauth/oauth";
-import { Message } from "../message/message";
+import { Oauth } from "../../common/models/oauth/oauth";
+import { MessagePanel, MessagePanelAction } from "../components/message-panel/message-panel";
+import { login } from "./oauth";
 
-export interface QueryErrorProps {
-  error: Error;
+interface OauthMessageViewProps {
+  oauth: Oauth;
 }
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  if (isOauthError(error)) {
-    throw error;
-  }
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError}/>;
+export const OauthMessageView: React.SFC<OauthMessageViewProps> = ({ oauth }) => {
+  return <MessagePanel
+    title="You are not logged in">
+    <MessagePanelAction action={() => login(oauth)} label={"Login"} />
+  </MessagePanel> ;
 };

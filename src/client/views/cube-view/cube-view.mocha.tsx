@@ -36,10 +36,9 @@ describe.skip("CubeView", () => {
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
         dataCube={DataCubeFixtures.wiki()}
-        changeDataCubeAndEssence={null}
         getEssenceFromHash={null}
-        changeEssence={noop}
-        urlForEssence={null}
+        changeCubeAndEssence={noop}
+        urlForCubeAndEssence={null}
       />
     );
 

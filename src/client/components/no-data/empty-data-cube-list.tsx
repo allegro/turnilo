@@ -17,19 +17,14 @@
 
 import * as React from "react";
 import { STRINGS } from "../../config/constants";
-import { isOauthError } from "../../oauth/oauth";
-import { Message } from "../message/message";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./empty-data-cube-list.scss";
 
-export interface QueryErrorProps {
-  error: Error;
-}
-
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  if (isOauthError(error)) {
-    throw error;
-  }
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError}/>;
+export const EmptyDataCubeList = () => {
+  return <div className="empty-data-cube-list">
+    <div className="icon">
+      <SvgIcon svg={require("../../icons/data-cubes.svg")} />
+    </div>
+    <div className="label">{STRINGS.noQueryableDataCubes}</div>
+  </div>;
 };

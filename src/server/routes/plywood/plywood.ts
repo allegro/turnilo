@@ -83,7 +83,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
 
     if (!(checkAccess(myDataCube, req.headers))) {
       res.status(403).send({ error: "access denied" });
-      return null;
+      return;
     }
 
     const maxQueries = myDataCube.getMaxQueries();

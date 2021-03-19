@@ -20,8 +20,9 @@ import * as ReactDOM from "react-dom";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
-import { Binary } from "../../../common/utils/functional/functional";
+import { Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { navigateToHome } from "../../applications/turnilo-application/view";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
@@ -37,11 +38,7 @@ export interface SideDrawerProps {
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
-}
-
-function openHome() {
-  window.location.hash = "#";
+  changeDataCubeAndEssence: Ternary<DataCube, Essence, boolean, void>;
 }
 
 export interface SideDrawerState {
@@ -89,7 +86,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return <div className="home-container">
       <div
         className={classNames("home-link")}
-        onClick={openHome}
+        onClick={navigateToHome}
       >
         <SvgIcon svg={require("../../icons/home.svg")} />
         <span>Home</span>
@@ -99,7 +96,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   navigateToCube = (dataCube: DataCube) => {
     const { onClose, essence, changeDataCubeAndEssence } = this.props;
-    changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube));
+    changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube), true);
     onClose();
   };
 

@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +15,12 @@
  */
 
 import * as React from "react";
-import { STRINGS } from "../../config/constants";
-import { isOauthError } from "../../oauth/oauth";
-import { Message } from "../message/message";
+import { navigateToHome } from "../../applications/turnilo-application/view";
+import { MessagePanel, MessagePanelAction } from "../message-panel/message-panel";
 
-export interface QueryErrorProps {
-  error: Error;
-}
-
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  if (isOauthError(error)) {
-    throw error;
-  }
-  return <Message
-    level="error"
-    content={error.message}
-    title={STRINGS.queryError}/>;
+export const DataCubeNotFound: React.SFC<{}> = () => {
+  return <MessagePanel title="DataCube not found">
+    <MessagePanelAction action={navigateToHome}
+                        label="Go back to data cubes list"/>
+  </MessagePanel>;
 };
