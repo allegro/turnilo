@@ -77,7 +77,7 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, fo
       onChange={onFormatChange} />
     {format.type === SeriesFormatType.CUSTOM && <div className="format-hint">
       You can use custom numbro format to present measure values.
-      Please refer to the <a target="_blank" className="documentation-link" href="http://numbrojs.com/old-format.html">numbro documentation</a>
+      Please refer to the <a target="_blank" className="documentation-link" href="https://numbrojs.com/old-format.html">numbro documentation</a>
     </div>}
     <div className="preview">
       <span className="value">{PREVIEW_VALUE} → </span>
