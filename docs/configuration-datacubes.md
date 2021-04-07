@@ -35,7 +35,7 @@ The cluster that the data cube belongs to (or "native" if this is a file based d
 
 **source** (string or string[])
 
-Druid data source name or names. Multiple names result in [Union Data Source](http://druid.io/docs/latest/querying/datasource.html)
+Druid data source name or names. Multiple names result in [Union Data Source](https://druid.apache.org/docs/latest/querying/datasource.html)
 
 **defaultTimezone** (string - timezone)
 
@@ -66,7 +66,7 @@ Data cube introspection strategy.
 
 **subsetFormula** (string - plywood expression)
 
-A filter defined as [Plywood expression](http://plywood.imply.io/expressions) that is applied to data cube. This expression is not shown in the filter area, so Turnilo user is not aware of subset formula filter clause.
+A filter defined as [Plywood expression](https://plywood.imply.io/expressions) that is applied to data cube. This expression is not shown in the filter area, so Turnilo user is not aware of subset formula filter clause.
 
 **refreshRule**
 
@@ -203,7 +203,7 @@ Set to true if dimension holds multiple values. [Druid Multi-Value Dimensions](h
 
 **formula** (string - plywood expression)
 
-The [Plywood expression](http://plywood.imply.io/expressions) for this dimension.
+The [Plywood expression](https://plywood.imply.io/expressions) for this dimension.
 By default it is `$name` where *name* is the name of the dimension.
 You can create derived dimensions by using non-trivial formulas.
 
@@ -212,7 +212,7 @@ Here are some common use cases for derived dimensions:
 #### Lookup formula
 
 If you have a dimension that represents an ID that is a key into some other table. You may have set up a
-[Druid Query Time Lookup](http://druid.io/docs/latest/querying/lookups.html) in which case you could
+[Druid Query Time Lookup](https://druid.apache.org/docs/latest/querying/lookups.html) in which case you could
 
 ```yaml
 - name: correctValue
@@ -281,7 +281,7 @@ If turnilo encounters such formula, it would assume it is simple measure. User w
 #### Custom transformations
 
 If no existing plywood function meets your needs, you could also define your own custom transformation.
-The transformation could be any supported [Druid extraction function](http://druid.io/docs/latest/querying/dimensionspecs.html).
+The transformation could be any supported [Druid extraction function](https://druid.apache.org/docs/latest/querying/dimensionspecs.html).
 
 For example you could apply any number of javascript functions to a string.
 
@@ -361,11 +361,11 @@ If set to true measure will be interpreted in UI as "better" when value is lower
 
 **format** (string)  default: "0,0.0 a"
 
-Default format for measure as string in [numbro format](http://numbrojs.com/old-format.html).
+Default format for measure as string in [numbro format](https://numbrojs.com/old-format.html).
 
 **formula** (string - plywood expression)
 
-The [Plywood expression](http://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.
+The [Plywood expression](https://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.
 
 The `$main` part of the measure expressions serves as a placeholder for the data segment.
 In Plywood every aggregate is a function that acts on a data segment.
@@ -413,12 +413,12 @@ It is also common to express a ratio of something filtered vs unfiltered.
 
 #### Custom aggregations
 
-Within the measures you have access to the full power of the [Plywood expressions](http://plywood.imply.io/expressions).
+Within the measures you have access to the full power of the [Plywood expressions](https://plywood.imply.io/expressions).
 If you ever find yourself needing to go beyond the expressive potential of Plywood you could define your own custom aggregation.
 The aggregation could be any supported Druid aggregation.
 
 For example Plywood currently does not support the modulo operator.
-While Druid has no native modulo support ether it is possible to modulo a measure by using a [javascript aggregator](http://druid.io/docs/latest/querying/aggregations.html#javascript-aggregator).
+While Druid has no native modulo support ether it is possible to modulo a measure by using a [javascript aggregator](https://druid.apache.org/docs/latest/querying/aggregations.html#javascript-aggregator).
 
 To use that in Turnilo define following `options` at data cube level:
 
@@ -547,7 +547,7 @@ Custom dimension transformations definition. See [custom transformations](#custo
 **druidContext**
 
 Context to be send to Druid with every query executed on the data cube defined as yaml key / value mappings.
-See [Druid context](http://druid.io/docs/latest/querying/query-context.html).
+See [Druid context](https://druid.apache.org/docs/latest/querying/query-context.html).
 
 Advanced options example:
 ```yaml
