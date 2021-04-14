@@ -61,7 +61,7 @@ jobs:
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Install release-it
-        run: npm install -g release-it@13.7.1
+        run: npm install -g release-it@14.6.1
 
       - name: Final Release
         env:
