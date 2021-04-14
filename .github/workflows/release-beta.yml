@@ -34,20 +34,20 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
 
-      - name: Install dependencies
-        run: npm ci
+      #- name: Install dependencies
+      #  run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      #- name: Lint
+      #  run: npm run lint
 
-      - name: Build
-        run: npm run build
+      #- name: Build
+      #  run: npm run build
 
-      - name: Unit Test
-        run: npm run test
+      #- name: Unit Test
+      #  run: npm run test
 
-      - name: E2E Test
-        run: npm run e2e
+      #- name: E2E Test
+      #  run: npm run e2e
 
       - name: Configure GIT
         run: |
@@ -63,4 +63,4 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_USERCONFIG: .npmrc-publish
         run: |
-          release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci
+          release-it ${{ github.event.inputs.increment }} --preRelease=beta --ci --dry-run
