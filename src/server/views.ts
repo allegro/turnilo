@@ -77,9 +77,9 @@ export function mainLayout(options: ViewOptions): string {
   }
 
   return layout(options, `<div class="app-container"></div>
-<script>var __CONFIG__ = ${JSON.stringify({ version, appSettings, timekeeper })};</script>
+<script>var __CONFIG__ = ${JSON.stringify({ version, timekeeper, appSettings })};</script>
 <script charset="UTF-8" src="main.js?v=${version}"></script>
-${cssOverrides}`
+${cssOverrides || ""}`
   );
 }
 

@@ -16,31 +16,10 @@
  */
 
 import axios from "axios";
-import { ChainableExpression, Dataset, DatasetJS, Environment, Executor, Expression, SplitExpression } from "plywood";
-import { Cluster } from "../../../common/models/cluster/cluster";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
-
-function getSplitsDescription(ex: Expression): string {
-  var splits: string[] = [];
-  ex.forEach(ex => {
-    if (ex instanceof ChainableExpression) {
-      ex.getArgumentExpressions().forEach(action => {
-        if (action instanceof SplitExpression) {
-          splits.push(action.firstSplitExpression().toString());
-        }
-      });
-    }
-  });
-  return splits.join(";");
-}
-
-var reloadRequested = false;
-
-function reload() {
-  if (reloadRequested) return;
-  reloadRequested = true;
-  window.location.reload(true);
-}
+import { Dataset, DatasetJS, Environment, Executor, Expression } from "plywood";
+import { AppSettings, AppSettingsJS } from "../../../common/models/app-settings/app-settings";
+import { Oauth } from "../../../common/models/oauth/oauth";
+import { getToken, mapOauthError } from "../../oauth/oauth";
 
 export interface AjaxOptions {
   method: "GET" | "POST";
@@ -55,43 +34,56 @@ export class Ajax {
   static version: string;
 
   static settingsVersionGetter: () => number;
-  static onUpdate: () => void;
 
-  static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
+  static headers(oauth: Oauth) {
+    if (!oauth) return {};
+    const headerName = oauth.tokenHeaderName;
+    const token = getToken();
+    return !token ? {} : {
+      [headerName]: getToken()
+    };
+  }
+
+  // NOTE: in argument we pass AppSettings without Sources/Clusters
+  static query<T>({ data, url, timeout, method }: AjaxOptions, oauth?: Oauth): Promise<T> {
     if (data) {
       if (Ajax.version) data.version = Ajax.version;
       if (Ajax.settingsVersionGetter) data.settingsVersion = Ajax.settingsVersionGetter();
     }
 
-    return axios({ method, url, data, timeout, validateStatus })
+    const headers = Ajax.headers(oauth);
+    return axios({ method, url, data, timeout, validateStatus, headers })
       .then(res => {
-        if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
         return res.data;
       })
       .catch(error => {
-        if (error.response && error.response.data) {
-          if (error.response.data.action === "reload") {
-            reload();
-          } else if (error.response.data.action === "update" && Ajax.onUpdate) {
-            Ajax.onUpdate();
-          }
-          throw new Error("error with response: " + error.response.status + ", " + error.message);
-        } else if (error.request) {
-          throw new Error("no response received, " + error.message);
-        } else {
-          throw new Error(error.message);
-        }
+        throw mapOauthError(oauth, error);
       });
   }
 
-  static queryUrlExecutorFactory(dataCubeName: string, timeout: number): Executor {
+  // NOTE: in argument we pass AppSettings without Sources/Clusters
+  static queryUrlExecutorFactory(dataCubeName: string, { oauth, clientTimeout: timeout }: AppSettings): Executor {
     return (ex: Expression, env: Environment = {}) => {
       const method = "POST";
-      const url = `plywood?by=${getSplitsDescription(ex)}`;
+      const url = "plywood";
       const timezone = env ? env.timezone : null;
       const data = { dataCube: dataCubeName, expression: ex.toJS(), timezone };
-      return Ajax.query<{result: DatasetJS}>({ method, url, timeout, data })
+      return Ajax.query<{ result: DatasetJS }>({ method, url, timeout, data }, oauth)
         .then(res => Dataset.fromJS(res.result));
     };
+  }
+
+  // NOTE: in argument we pass AppSettings without Sources/Clusters
+  static settings(clientAppSettings: AppSettings): Promise<AppSettings> {
+    const headers = Ajax.headers(clientAppSettings.oauth);
+    return axios.get<AppSettingsJS>("/settings", { headers })
+      .then(resp => resp.data)
+      .catch(error => {
+        throw mapOauthError(clientAppSettings.oauth, error);
+      })
+      // TODO: type assertion should not be needed there!
+      .then(appSettingsJS => AppSettings.fromJS(appSettingsJS as AppSettingsJS, {
+        executorFactory: (cubeName: string) => Ajax.queryUrlExecutorFactory(cubeName, clientAppSettings)
+      }));
   }
 }

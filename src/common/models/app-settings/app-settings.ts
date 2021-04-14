@@ -23,6 +23,7 @@ import { Cluster, ClusterJS } from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
+import { Oauth, OauthJS } from "../oauth/oauth";
 
 const DEFAULT_CLIENT_TIMEOUT = 0;
 
@@ -32,6 +33,7 @@ export interface AppSettingsValue {
   clusters?: Cluster[];
   customization?: Customization;
   dataCubes?: DataCube[];
+  oauth?: Oauth;
 }
 
 export interface AppSettingsJS {
@@ -40,10 +42,11 @@ export interface AppSettingsJS {
   clusters?: ClusterJS[];
   customization?: CustomizationJS;
   dataCubes?: DataCubeJS[];
+  oauth?: OauthJS;
 }
 
 export interface AppSettingsContext {
-  executorFactory?: (dataCubeName: string, timeout: number) => Executor;
+  executorFactory?: (dataCubeName: string) => Executor;
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
@@ -80,16 +83,19 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
       let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        const executor = executorFactory(dataCubeObject.name, clientTimeout);
+        const executor = executorFactory(dataCubeObject.name);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
     });
 
+    const oauth = parameters.oauth ? Oauth.fromJS(parameters.oauth) : undefined;
+
     const value: AppSettingsValue = {
       version: parameters.version,
       clientTimeout,
       clusters,
+      oauth,
       customization: Customization.fromJS(parameters.customization || {}),
       dataCubes
     };
@@ -101,6 +107,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   public clientTimeout: number;
   public clusters: Cluster[];
   public customization: Customization;
+  public oauth?: Oauth;
   public dataCubes: DataCube[];
 
   constructor(parameters: AppSettingsValue) {
@@ -109,7 +116,8 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clientTimeout,
       clusters,
       customization,
-      dataCubes
+      dataCubes,
+      oauth
     } = parameters;
 
     for (const dataCube of dataCubes) {
@@ -124,6 +132,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     this.clusters = clusters;
     this.customization = customization;
     this.dataCubes = dataCubes;
+    this.oauth = oauth;
   }
 
   public valueOf(): AppSettingsValue {
@@ -132,6 +141,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clientTimeout: this.clientTimeout,
       clusters: this.clusters,
       customization: this.customization,
+      oauth: this.oauth,
       dataCubes: this.dataCubes
     };
   }
@@ -142,6 +152,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     js.clientTimeout = this.clientTimeout;
     js.clusters = this.clusters.map(cluster => cluster.toJS());
     js.customization = this.customization.toJS();
+    if (this.oauth) js.oauth = this.oauth.toJS();
     js.dataCubes = this.dataCubes.map(dataCube => dataCube.toJS());
     return js;
   }
@@ -160,6 +171,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       this.clientTimeout === other.clientTimeout &&
       immutableArraysEqual(this.clusters, other.clusters) &&
       immutableEqual(this.customization, other.customization) &&
+      immutableEqual(this.oauth, other.oauth) &&
       immutableArraysEqual(this.dataCubes, other.dataCubes);
   }
 
@@ -171,6 +183,16 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     value.dataCubes = value.dataCubes
       .filter(ds => ds.isQueryable())
       .map(ds => ds.toClientDataCube());
+
+    return new AppSettings(value);
+  }
+
+  public withoutSources(): AppSettings {
+    let value = this.valueOf();
+
+    value.clusters = [];
+
+    value.dataCubes = [];
 
     return new AppSettings(value);
   }

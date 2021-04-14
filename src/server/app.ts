@@ -29,6 +29,7 @@ import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
 import { plywoodRouter } from "./routes/plywood/plywood";
 import { readinessRouter } from "./routes/readiness/readiness";
+import { settingsRouter } from "./routes/settings/settings";
 import { shortenRouter } from "./routes/shorten/shorten";
 import { turniloRouter } from "./routes/turnilo/turnilo";
 import { loadPlugin } from "./utils/plugin-loader/load-plugin";
@@ -140,6 +141,7 @@ attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(appSettings
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
+attachRouter("/settings", settingsRouter(appSettings));
 attachRouter("/plywood", plywoodRouter(SETTINGS_MANAGER));
 attachRouter("/plyql", plyqlRouter(appSettings));
 attachRouter("/mkurl", mkurlRouter(appSettings));

@@ -16,7 +16,7 @@
 
 @import '../../imports';
 
-.error-view {
+.message-panel {
   @include pin-full;
   background: $white;
   display: flex;
@@ -24,23 +24,23 @@
   justify-content: center;
 }
 
-.error-view__container {
+.message-panel__container {
   max-width: 500px;
 }
 
-.error-view__title {
+.message-panel__title {
   @include css-variable(color, brand);
   margin-bottom: 12px;
   font-size: 20px;
   text-align: center;
 }
 
-.error-view__message {
+.message-panel__message {
   @include css-variable(color, text-medium);
   font-size: 14px;
 }
 
-.error-view__reload {
+.message-panel__action {
   @include css-variable(color, brand);
   margin-top: 24px;
   font-size: 18px;
