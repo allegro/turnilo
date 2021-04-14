@@ -49,7 +49,7 @@ export class OauthCodeHandler extends React.Component<OauthCodeHandlerProps, Oau
 
   state: OauthCodeHandlerState = { request: pending };
 
-  private authorize() {
+  private authorize = () => {
     const { code, oauth } = this.props;
     this.setState({ request: pending });
     exchangeCodeForToken(code, oauth)
