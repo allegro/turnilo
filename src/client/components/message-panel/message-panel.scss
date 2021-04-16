@@ -40,14 +40,8 @@
   font-size: 14px;
 }
 
-.message-panel__action {
-  @include css-variable(color, brand);
-  margin-top: 24px;
-  font-size: 18px;
-  cursor: pointer;
-  text-align: center;
-
-  &:hover {
-    text-decoration: underline;
-  }
+.message-panel__children {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
 }
