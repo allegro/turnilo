@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import { Nullary } from "../../../common/utils/functional/functional";
+import { Button } from "../button/button";
 import "./message-panel.scss";
 
 interface ErrorViewActionProps {
@@ -24,7 +25,7 @@ interface ErrorViewActionProps {
 }
 
 export const MessagePanelAction: React.SFC<ErrorViewActionProps> = ({ action, label }) =>
-  <div className="message-panel__action" onClick={action}>{label}</div>;
+    <Button type="primary" onClick={action} title={label} />;
 
 interface ErrorViewProps {
   message?: string;
@@ -36,7 +37,9 @@ export const MessagePanel: React.SFC<ErrorViewProps> = ({ message, title, childr
     <div className="message-panel__container">
       <div className="message-panel__title">{title}</div>
       {message && <div className="message-panel__message">{message}</div>}
-      {children}
+      {React.Children.count(children) > 0 && <div className="message-panel__children">
+        {children}
+      </div>}
     </div>
   </div>;
 };
