@@ -18,6 +18,7 @@ import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Loader } from "../../components/loader/loader";
+import { MessagePanel } from "../../components/message-panel/message-panel";
 import { Ajax } from "../../utils/ajax/ajax";
 
 enum SettingsResourceStatus { LOADED, LOADING, ERROR }
@@ -83,7 +84,9 @@ export class AppSettingsProvider extends React.Component<AppSettingsProviderProp
     const { appSettings } = this.state;
     switch (appSettings.status) {
       case SettingsResourceStatus.LOADING:
-        return <Loader/>;
+        return <MessagePanel title="Loading data sources...">
+          <Loader/>
+        </MessagePanel>;
       case SettingsResourceStatus.ERROR:
         throw appSettings.error;
       case SettingsResourceStatus.LOADED:
