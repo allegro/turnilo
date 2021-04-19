@@ -58,10 +58,10 @@ export const isOauthError = (error: Error): error is OauthError =>
   error.hasOwnProperty("isOauthError");
 
 export function mapOauthError(oauth: Oauth, error: AxiosError): Error {
-  if (!!oauth) {
+  if (!!oauth && !!error.response) {
     const { response: { status } } = error;
-    if (status === 401) return new OauthAuthenticationError();
-    if (status === 403) return new OauthAuthorizationError();
+    if (status === 401) return new OauthAuthenticationError(error.message);
+    if (status === 403) return new OauthAuthorizationError(error.message);
   }
   return error;
 }
