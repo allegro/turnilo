@@ -139,7 +139,7 @@ describe("EssenceProps", () => {
   describe("vis picking", () => {
 
     describe("#getBestVisualization", () => {
-      const series = ["count"];
+      const series = [new MeasureSeries({ reference: "count" })];
       const tests = [
         {
           splits: [],
@@ -185,7 +185,7 @@ describe("EssenceProps", () => {
           const { visualization } = Essence.getBestVisualization(
             DataCubeFixtures.twitter(),
             Splits.fromSplits(splits),
-            SeriesList.fromMeasureNames(series),
+            SeriesList.fromSeries(series),
             current);
 
           expect(visualization).to.deep.equal(expected);

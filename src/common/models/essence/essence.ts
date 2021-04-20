@@ -155,7 +155,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       filter: dataCube.getDefaultFilter(),
       timeShift: TimeShift.empty(),
       splits: dataCube.getDefaultSplits(),
-      series: SeriesList.fromMeasureNames(dataCube.getDefaultSelectedMeasures().toArray()),
+      series: dataCube.getDefaultSeries(),
       pinnedDimensions: dataCube.getDefaultPinnedDimensions(),
       pinnedSort: dataCube.getDefaultSortMeasure()
     });
@@ -422,7 +422,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       const seriesValidInNewCube = essence.series.constrainToMeasures(newDataCube.measures);
       const newSeriesList = !seriesValidInNewCube.isEmpty()
         ? seriesValidInNewCube
-        : SeriesList.fromMeasureNames(newDataCube.getDefaultSelectedMeasures().toArray());
+        : newDataCube.getDefaultSeries();
 
       return essence
         .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))

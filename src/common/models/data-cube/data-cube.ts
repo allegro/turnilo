@@ -52,6 +52,7 @@ import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { QueryDecoratorDefinition, QueryDecoratorDefinitionJS } from "../query-decorator/query-decorator";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
+import { SeriesList } from "../series-list/series-list";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -904,8 +905,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return isTruthy(this.maxQueries) ? this.maxQueries : DataCube.DEFAULT_MAX_QUERIES;
   }
 
-  public getDefaultSelectedMeasures(): OrderedSet<string> {
-    return this.defaultSelectedMeasures || this.measures.getFirstNMeasureNames(4);
+  public getDefaultSeries(): SeriesList {
+    const measureNames = this.defaultSelectedMeasures || this.measures.getFirstNMeasureNames(4);
+    const measures = measureNames.toArray().map(name => this.getMeasure(name));
+    return SeriesList.fromMeasures(measures);
   }
 
   public getDefaultPinnedDimensions(): OrderedSet<string> {

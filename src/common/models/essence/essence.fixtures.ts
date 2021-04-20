@@ -26,6 +26,7 @@ import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPe
 import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
+import { measureSeries } from "../series/series.fixtures";
 import { SortDirection } from "../sort/sort";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
@@ -55,7 +56,7 @@ export class EssenceFixtures {
     return {
       ...defaultEssence,
       visualization: TOTALS_MANIFEST,
-      series: SeriesList.fromMeasureNames(["count"])
+      series: SeriesList.fromSeries([measureSeries("count")])
     };
   }
 
@@ -101,7 +102,7 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      series: SeriesList.fromMeasureNames(["added"]),
+      series: SeriesList.fromSeries([measureSeries("added")]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       pinnedSort: "delta"
     });
@@ -122,6 +123,11 @@ export class EssenceFixtures {
       numberSplitCombine("commentLength", 10, { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
       timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
     ];
+    const series = [
+      measureSeries("delta"),
+      measureSeries("count"),
+      measureSeries("added")
+    ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: TABLE_MANIFEST,
@@ -130,7 +136,7 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
+      series: SeriesList.fromSeries(series),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       pinnedSort: "delta"
     });
@@ -145,6 +151,11 @@ export class EssenceFixtures {
       stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
       timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
     ];
+    const series = [
+      measureSeries("delta"),
+      measureSeries("count"),
+      measureSeries("added")
+    ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
       visualization: LINE_CHART_MANIFEST,
@@ -153,7 +164,7 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits({ splits: List(splitCombines) }),
-      series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
+      series: SeriesList.fromSeries(series),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       pinnedSort: "delta"
     });
