@@ -17,6 +17,8 @@
 import { Record } from "immutable";
 import { $, ApplyExpression, Expression } from "plywood";
 import { Measures } from "../measure/measures";
+import { ExpressionEnv } from "../series/concrete-series";
+import { applyPeriodFilter } from "../time-shift/time-shift-env";
 import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
 export type PercentOperation = ExpressionSeriesOperation.PERCENT_OF_PARENT | ExpressionSeriesOperation.PERCENT_OF_TOTAL;
@@ -58,10 +60,11 @@ export class ConcretePercentExpression implements ConcreteExpression {
     }
   }
 
-  public toExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
+  public toExpression(exp: Expression, name: string, { periodFilter, nestingLevel }: ExpressionEnv): ApplyExpression {
     const relativeNesting = this.relativeNesting(nestingLevel);
-    const formulaName = `__formula_${name}`;
     if (relativeNesting < 0) throw new Error(`wrong nesting level: ${relativeNesting}`);
+    const expression = applyPeriodFilter(exp, periodFilter);
+    const formulaName = `__formula_${name}`;
     return new ApplyExpression({
       name,
       operand: new ApplyExpression({ expression, name: formulaName }),

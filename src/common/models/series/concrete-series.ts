@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, ApplyExpression, Datum, Expression, RefExpression } from "plywood";
+import { $, ApplyExpression, Datum, Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
@@ -22,6 +22,11 @@ import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
 
 export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
+
+export interface ExpressionEnv {
+  nestingLevel: number;
+  periodFilter?: Expression;
+}
 
 export abstract class ConcreteSeries<T extends Series = Series> {
 
@@ -43,7 +48,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     }
   }
 
-  protected abstract applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression;
+  protected abstract applyExpression(expression: Expression, name: string, env: ExpressionEnv): ApplyExpression;
 
   public plywoodKey(period = SeriesDerivation.CURRENT): string {
     return this.definition.plywoodKey(period);
@@ -53,12 +58,19 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     const { expression } = this.measure;
     switch (timeShiftEnv.type) {
       case TimeShiftEnvType.CURRENT:
-        return this.applyExpression(expression, this.definition.plywoodKey(), nestingLevel);
+        return this.applyExpression(expression, this.definition.plywoodKey(), { nestingLevel });
       case TimeShiftEnvType.WITH_PREVIOUS: {
         const currentName = this.plywoodKey();
         const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
-        const current = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.currentFilter), currentName, nestingLevel);
-        const previous = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.previousFilter), previousName, nestingLevel);
+        // NOTE: here we filter only first measure ...
+        const current = this.applyExpression(expression, currentName, {
+            nestingLevel,
+            periodFilter: timeShiftEnv.currentFilter
+          });
+        const previous = this.applyExpression(expression, previousName, {
+            nestingLevel,
+            periodFilter: timeShiftEnv.previousFilter
+          });
         const delta = new ApplyExpression({
           name: this.plywoodKey(SeriesDerivation.DELTA),
           expression: $(currentName).subtract($(previousName))
@@ -66,15 +78,6 @@ export abstract class ConcreteSeries<T extends Series = Series> {
         return current.performAction(previous).performAction(delta);
       }
     }
-  }
-
-  private filterMainRefs(exp: Expression, filter: Expression): Expression {
-    return exp.substitute(e => {
-      if (e instanceof RefExpression && e.name === "main") {
-        return $("main").filter(filter);
-      }
-      return null;
-    });
   }
 
   public selectValue(datum: Datum, period = SeriesDerivation.CURRENT): number {

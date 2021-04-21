@@ -16,7 +16,8 @@
 
 import { ApplyExpression, Expression as PlywoodExpression, QuantileExpression } from "plywood";
 import { Measure } from "../measure/measure";
-import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
+import { applyPeriodFilter } from "../time-shift/time-shift-env";
+import { ConcreteSeries, ExpressionEnv, SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
 export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
@@ -29,9 +30,10 @@ export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
     return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;
   }
 
-  protected applyExpression(quantileExpression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression {
+  protected applyExpression(quantileExpression: PlywoodExpression, name: string, { periodFilter }: ExpressionEnv): ApplyExpression {
     if (!(quantileExpression instanceof QuantileExpression)) throw new Error(`Expected QuantileExpression, got ${quantileExpression}`);
-    const expression = new QuantileExpression({ ...quantileExpression.valueOf(), value: this.definition.percentile / 100 });
+    const exp = applyPeriodFilter(quantileExpression, periodFilter);
+    const expression = new QuantileExpression({ ...exp.valueOf(), value: this.definition.percentile / 100 });
     return new ApplyExpression({ name, expression });
   }
 }

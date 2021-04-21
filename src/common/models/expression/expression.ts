@@ -15,6 +15,7 @@
  */
 
 import { ApplyExpression, Expression as PlywoodExpression } from "plywood";
+import { ExpressionEnv } from "../series/concrete-series";
 import { ArithmeticExpression } from "./concreteArithmeticOperation";
 import { PercentExpression } from "./percent";
 
@@ -34,7 +35,7 @@ export interface ExpressionValue {
 }
 
 export interface ConcreteExpression {
-  toExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression;
+  toExpression(expression: PlywoodExpression, name: string, env: ExpressionEnv): ApplyExpression;
   title(): string;
 }
 

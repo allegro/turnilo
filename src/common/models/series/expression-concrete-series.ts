@@ -18,7 +18,7 @@ import { ApplyExpression, Expression as PlywoodExpression } from "plywood";
 import { ConcreteExpression } from "../expression/expression";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
-import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
+import { ConcreteSeries, ExpressionEnv, SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries } from "./expression-series";
 
 export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
@@ -38,7 +38,7 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     return `${super.title(derivation)} ${this.expression.title()}`;
   }
 
-  protected applyExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression {
-    return this.expression.toExpression(expression, name, nestingLevel);
+  protected applyExpression(expression: PlywoodExpression, name: string, env: ExpressionEnv): ApplyExpression {
+    return this.expression.toExpression(expression, name, env);
   }
 }

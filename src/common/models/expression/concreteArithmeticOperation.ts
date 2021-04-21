@@ -18,6 +18,8 @@ import { Record } from "immutable";
 import { ApplyExpression, Expression } from "plywood";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
+import { ExpressionEnv } from "../series/concrete-series";
+import { applyPeriodFilter } from "../time-shift/time-shift-env";
 import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
 export type ArithmeticOperation = ExpressionSeriesOperation.ADD
@@ -72,24 +74,25 @@ export class ConcreteArithmeticOperation implements ConcreteExpression {
     return ` ${this.operationName()} ${this.measure.title}`;
   }
 
-  private calculate(a: Expression): Expression {
-    const operand = this.measure.expression;
+  private calculate(expression: Expression, { periodFilter }: ExpressionEnv): Expression {
+    const a = applyPeriodFilter(expression, periodFilter);
+    const b = applyPeriodFilter(this.measure.expression, periodFilter);
     switch (this.operation) {
       case ExpressionSeriesOperation.SUBTRACT:
-        return a.subtract(operand);
+        return a.subtract(b);
       case ExpressionSeriesOperation.MULTIPLY:
-        return a.multiply(operand);
+        return a.multiply(b);
       case ExpressionSeriesOperation.DIVIDE:
-        return a.divide(operand);
+        return a.divide(b);
       case ExpressionSeriesOperation.ADD:
-        return a.add(operand);
+        return a.add(b);
     }
   }
 
-  toExpression(expression: Expression, name: string, _nestingLevel: number): ApplyExpression {
+  toExpression(expression: Expression, name: string, env: ExpressionEnv): ApplyExpression {
     return new ApplyExpression({
       name,
-      expression: this.calculate(expression)
+      expression: this.calculate(expression, env)
     });
   }
 }

@@ -15,7 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
-import { Expression } from "plywood";
+import { $, Expression, RefExpression } from "plywood";
 
 type FilterExpression = Expression;
 
@@ -37,3 +37,13 @@ export interface TimeShiftEnvWithPrevious extends TimeShiftEnvBase {
 }
 
 export type TimeShiftEnv = TimeShiftEnvCurrent | TimeShiftEnvWithPrevious;
+
+export function applyPeriodFilter(exp: Expression, filter?: FilterExpression): Expression {
+  if (!(filter instanceof Expression)) return exp;
+  return exp.substitute(e => {
+    if (e instanceof RefExpression && e.name === "main") {
+      return $("main").filter(filter);
+    }
+    return null;
+  });
+}
