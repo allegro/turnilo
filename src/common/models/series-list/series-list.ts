@@ -32,10 +32,6 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
-  static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new MeasureSeries({ reference }))) });
-  }
-
   static fromMeasures(measures: Measure[]): SeriesList {
     const series = List(measures.map(fromMeasure));
     return new SeriesList({ series });
