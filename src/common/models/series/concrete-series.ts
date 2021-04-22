@@ -57,8 +57,12 @@ export abstract class ConcreteSeries<T extends Series = Series> {
       case TimeShiftEnvType.WITH_PREVIOUS: {
         const currentName = this.plywoodKey();
         const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
-        const current = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.currentFilter), currentName, nestingLevel);
-        const previous = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.previousFilter), previousName, nestingLevel);
+        const current = this.filterMainRefs(
+          this.applyExpression(expression, currentName, nestingLevel),
+          timeShiftEnv.currentFilter);
+        const previous = this.filterMainRefs(
+          this.applyExpression(expression, previousName, nestingLevel),
+            timeShiftEnv.previousFilter);
         const delta = new ApplyExpression({
           name: this.plywoodKey(SeriesDerivation.DELTA),
           expression: $(currentName).subtract($(previousName))
