@@ -38,9 +38,9 @@
   "scripts": {
     "test": "npm-run-all -s test:*",
     "watch:test": "npm-run-all -p watch:test:*",
-    "test:common": "mocha --require ./test/setup/mocha.js src/common/**/*.mocha.{ts,tsx}",
-    "test:client": "mocha --require ./test/setup/mocha.js src/client/**/*.mocha.{ts,tsx}",
-    "test:server": "mocha --require ./test/setup/mocha.js src/server/**/*.mocha.ts",
+    "test:common": "mocha --exit --require ./test/setup/mocha.js src/common/**/*.mocha.{ts,tsx}",
+    "test:client": "mocha --exit --require ./test/setup/mocha.js src/client/**/*.mocha.{ts,tsx}",
+    "test:server": "mocha --exit --require ./test/setup/mocha.js src/server/**/*.mocha.ts",
     "watch:test:common": "npm run test:common -- --watch --watch-extensions ts,tsx",
     "watch:test:client": "npm run test:client -- --watch --watch-extensions ts,tsx",
     "watch:test:server": "npm run test:server -- --watch --watch-extensions ts,tsx",
