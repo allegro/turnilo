@@ -17,8 +17,9 @@
 
 import axios from "axios";
 import { Dataset, DatasetJS, Environment, Executor, Expression } from "plywood";
-import { AppSettings, AppSettingsJS } from "../../../common/models/app-settings/app-settings";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Oauth } from "../../../common/models/oauth/oauth";
+import { deserialize, SerializedSources, Sources } from "../../../common/models/sources/sources";
 import { getToken, mapOauthError } from "../../oauth/oauth";
 
 export interface AjaxOptions {
@@ -74,16 +75,14 @@ export class Ajax {
   }
 
   // NOTE: in argument we pass AppSettings without Sources/Clusters
-  static settings(clientAppSettings: AppSettings): Promise<AppSettings> {
-    const headers = Ajax.headers(clientAppSettings.oauth);
-    return axios.get<AppSettingsJS>("/settings", { headers })
+  static sources(appSettings: AppSettings): Promise<Sources> {
+    const headers = Ajax.headers(appSettings.oauth);
+    return axios.get<SerializedSources>("/settings", { headers })
       .then(resp => resp.data)
       .catch(error => {
-        throw mapOauthError(clientAppSettings.oauth, error);
+        throw mapOauthError(appSettings.oauth, error);
       })
       // TODO: type assertion should not be needed there!
-      .then(appSettingsJS => AppSettings.fromJS(appSettingsJS as AppSettingsJS, {
-        executorFactory: (cubeName: string) => Ajax.queryUrlExecutorFactory(cubeName, clientAppSettings)
-      }));
+      .then(sourcesJS => deserialize(sourcesJS, appSettings));
   }
 }

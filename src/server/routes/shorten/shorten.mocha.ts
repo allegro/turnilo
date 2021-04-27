@@ -19,7 +19,6 @@ import * as express from "express";
 import { Express } from "express";
 import * as http from "http";
 import * as supertest from "supertest";
-import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { Customization } from "../../../common/models/customization/customization";
 import { UrlShortenerDef } from "../../../common/models/url-shortener/url-shortener";
 import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "../../../common/models/url-shortener/url-shortener.fixtures";
@@ -27,10 +26,11 @@ import { shortenRouter } from "./shorten";
 
 const shortenPath = "/shorten";
 
-const settingsGetterFactory = (urlShortener: UrlShortenerDef) => () => Promise.resolve(
-  AppSettingsFixtures.wikiOnly().changeCustomization(Customization.fromJS({
+const settingsFactory = (urlShortener: UrlShortenerDef) => ({
+  customization: Customization.fromJS({
     urlShortener
-  })));
+  })
+});
 
 const callShortener = (app: Express) => supertest(app)
         .get(shortenPath)
@@ -44,7 +44,7 @@ describe("url shortener", () => {
   describe("with succesful shortener", () => {
     before(done => {
       app = express();
-      app.use(shortenPath, shortenRouter(settingsGetterFactory(SuccessUrlShortenerJS), true));
+      app.use(shortenPath, shortenRouter(settingsFactory(SuccessUrlShortenerJS), true));
       server = app.listen(0, done);
     });
 
@@ -63,7 +63,7 @@ describe("url shortener", () => {
   describe("without failing shortener", () => {
     before(done => {
       app = express();
-      app.use(shortenPath, shortenRouter(settingsGetterFactory(FailUrlShortenerJS), true));
+      app.use(shortenPath, shortenRouter(settingsFactory(FailUrlShortenerJS), true));
       app.use(bodyParser.json());
       server = app.listen(0, done);
     });

@@ -19,11 +19,11 @@ import * as bodyParser from "body-parser";
 import * as express from "express";
 import { $ } from "plywood";
 import * as supertest from "supertest";
-import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
+import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { plywoodRouter } from "./plywood";
 
 const settingsManagerFixture = {
-  getSettings: () => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor()),
+  getSources: () => Promise.resolve(wikiSourcesWithExecutor),
   anchorPath: "."
 };
 

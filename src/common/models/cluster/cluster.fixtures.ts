@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Cluster, ClusterJS, ClusterValue } from "./cluster";
+import { Cluster, ClusterJS } from "./cluster";
 
 export class ClusterFixtures {
   static druidWikiClusterJS(): ClusterJS {
@@ -32,6 +32,10 @@ export class ClusterFixtures {
     };
   }
 
+  static druidWikiCluster(): Cluster {
+    return Cluster.fromJS(ClusterFixtures.druidWikiClusterJS());
+  }
+
   static druidTwitterClusterJS(): ClusterJS {
     return {
       name: "druid-twitter",
@@ -46,7 +50,12 @@ export class ClusterFixtures {
       introspectionStrategy: "segment-metadata-fallback"
     };
   }
-    static druidTwitterClusterJSWithGuard(): Cluster {
+
+  static druidTwitterCluster(): Cluster {
+    return Cluster.fromJS(ClusterFixtures.druidTwitterClusterJS());
+  }
+
+  static druidTwitterClusterJSWithGuard(): Cluster {
     return Cluster.fromJS({
       name: "druid-custom",
       url: "http://192.168.99.101",

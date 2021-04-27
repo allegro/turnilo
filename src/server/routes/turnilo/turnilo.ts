@@ -16,22 +16,20 @@
  */
 
 import { Request, Response, Router } from "express";
+import { AppSettings, serialize } from "../../../common/models/app-settings/app-settings";
 import { SETTINGS_MANAGER } from "../../config";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 import { mainLayout } from "../../views";
 
-export function turniloRouter(settingsGetter: SettingsGetter, version: string) {
+export function turniloRouter(settings: AppSettings, version: string) {
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     try {
-      const settings = await settingsGetter();
-      const clientSettings = settings.withoutSources();
       res.send(mainLayout({
         version,
         title: settings.customization.getTitle(version),
-        appSettings: clientSettings,
+        appSettings: serialize(settings),
         timekeeper: SETTINGS_MANAGER.getTimekeeper()
       }));
     } catch (e) {

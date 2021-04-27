@@ -20,8 +20,8 @@ import { Express } from "express";
 import * as http from "http";
 import * as nock from "nock";
 import * as supertest from "supertest";
-import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
+import { wikiSources, wikiTwitterSources } from "../../../common/models/sources/sources.fixtures";
 import { readinessRouter } from "./readiness";
 
 const loadStatusPath = "/druid/broker/v1/loadstatus";
@@ -43,7 +43,7 @@ describe("readiness router", () => {
   describe("single druid cluster", () => {
     before(done => {
       app = express();
-      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnly())));
+      app.use("/", readinessRouter(() => Promise.resolve(wikiSources)));
       server = app.listen(0, done);
     });
 
@@ -71,7 +71,7 @@ describe("readiness router", () => {
   describe("multiple druid clusters", () => {
     before(done => {
       app = express();
-      app.use("/", readinessRouter(() => Promise.resolve(AppSettingsFixtures.wikiTwitter())));
+      app.use("/", readinessRouter(() => Promise.resolve(wikiTwitterSources)));
       server = app.listen(0, done);
     });
 

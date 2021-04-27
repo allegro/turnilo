@@ -16,13 +16,14 @@
  */
 
 import { AttributeInfo } from "plywood";
-import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../../common/models/labels";
 import { AppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
 import { DataCube, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
+import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../models/labels";
 import { Measure } from "../../models/measure/measure";
+import { Sources } from "../../models/sources/sources";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");
@@ -435,12 +436,8 @@ interface Extra {
   port?: number;
 }
 
-export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
-  const { dataCubes, clusters, customization } = appSettings;
-
-  if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
-
-  let lines: string[] = [];
+export function printExtra(extra: Extra, withComments: boolean): string {
+  const lines = [];
 
   if (extra.header && extra.version) {
     lines.push(
@@ -452,30 +449,49 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   if (extra.verbose) {
     if (withComments) {
-      lines.push("# Run Swiv in verbose mode so it prints out the queries that it issues");
+      lines.push("# Run Turnilo in verbose mode so it prints out the queries that it issues");
     }
     lines.push("verbose: true", "");
   }
 
   if (extra.port) {
     if (withComments) {
-      lines.push("# The port on which the Swiv server will listen on");
+      lines.push("# The port on which the Turnilo server will listen on");
     }
     lines.push(`port: ${extra.port}`, "");
   }
+
+  return lines.join("\n");
+}
+
+export function sourcesToYaml(sources: Sources, withComments: boolean): string {
+  const { dataCubes, clusters } = sources;
+
+  if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
+
+  let lines: string[] = [];
 
   if (clusters.length) {
     lines.push("clusters:");
     lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
   }
 
+  lines.push("dataCubes:");
+  lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
+
+  return lines.join("\n");
+}
+
+export function appSettingsToYaml(settings: AppSettings, withComments: boolean): string {
+  // TODO: shouldn't we print oauth and clientTimeout?
+  const { customization, oauth, clientTimeout } = settings;
+
+  const lines = [];
+
   if (customization) {
     lines.push("customization:");
     lines.push(...customizationToYAML(customization, withComments));
   }
-
-  lines.push("dataCubes:");
-  lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
 
   return lines.join("\n");
 }

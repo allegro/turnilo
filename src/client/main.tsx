@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AppSettings, AppSettingsJS } from "../common/models/app-settings/app-settings";
+import { deserialize, SerializedAppSettings } from "../common/models/app-settings/app-settings";
 import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
@@ -38,7 +38,7 @@ ReactDOM.render(
 
 interface Config {
   version: string;
-  appSettings: AppSettingsJS;
+  appSettings: SerializedAppSettings;
   timekeeper: TimekeeperJS;
 }
 
@@ -51,8 +51,7 @@ const version = config.version;
 
 Ajax.version = version;
 
-// No context because we don't have cubes here yet Maybe we can create just customization here?!
-const appSettings = AppSettings.fromJS(config.appSettings, {});
+const appSettings = deserialize(config.appSettings);
 
 if (config.appSettings.customization.sentryDSN) {
   errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
