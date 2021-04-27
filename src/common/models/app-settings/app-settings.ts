@@ -17,7 +17,7 @@
 
 import { Executor } from "plywood";
 import { Customization, CustomizationJS } from "../customization/customization";
-import { Oauth, OauthJS } from "../oauth/oauth";
+import { deserialize as oauthDeserialize, fromConfig as oauthFromConfig, Oauth, OauthJS, serialize as oauthSerialize, SerializedOauth } from "../oauth/oauth";
 
 const DEFAULT_CLIENT_TIMEOUT = 0;
 
@@ -39,14 +39,14 @@ export interface SerializedAppSettings {
   readonly version: number;
   readonly clientTimeout: number;
   readonly customization: CustomizationJS; // SerializedCustomization
-  readonly oauth?: OauthJS; // Maybe<SerializedOauth>
+  readonly oauth: SerializedOauth;
 }
 
 export function fromConfig(config: AppSettingsJS): AppSettings {
   const clientTimeout = config.clientTimeout === undefined ? DEFAULT_CLIENT_TIMEOUT : config.clientTimeout;
   const version = config.version || 0;
   const customization = Customization.fromJS(config.customization || {});
-  const oauth = config.oauth && Oauth.fromJS(config.oauth);
+  const oauth = oauthFromConfig(config.oauth);
 
   // make part of Customization server side smart constructor
   customization.validate();
@@ -66,7 +66,7 @@ export function serialize({ oauth, clientTimeout, customization, version }: AppS
     clientTimeout,
     version,
     customization: customization.toJS(),
-    oauth: oauth && oauth.toJS()
+    oauth: oauthSerialize(oauth)
   };
 }
 
@@ -75,7 +75,7 @@ export function deserialize({ oauth, clientTimeout, customization, version }: Se
     clientTimeout,
     version,
     customization: Customization.fromJS(customization),
-    oauth: oauth && Oauth.fromJS(oauth)
+    oauth: oauthDeserialize(oauth)
   };
 }
 
