@@ -7,9 +7,12 @@ context("Home Page", () => {
     cy.visit("http://localhost:9090");
   });
 
-
   it("should load Covid datacube", () => {
     getCubeCard("COVID").should("exist");
+  });
+
+  it("should load Unemployment datacube", () => {
+    getCubeCard("Unemployment").should("exist");
   });
 
   it("should load Wikipedia datacube", () => {

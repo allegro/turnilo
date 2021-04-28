@@ -1,0 +1,1709 @@
+date,count,industry
+2000-01-01T08:00:00.000Z,430,Government
+2000-02-01T08:00:00.000Z,409,Government
+2000-03-01T08:00:00.000Z,311,Government
+2000-04-01T08:00:00.000Z,269,Government
+2000-05-01T07:00:00.000Z,370,Government
+2000-06-01T07:00:00.000Z,603,Government
+2000-07-01T07:00:00.000Z,545,Government
+2000-08-01T07:00:00.000Z,583,Government
+2000-09-01T07:00:00.000Z,408,Government
+2000-10-01T07:00:00.000Z,391,Government
+2000-11-01T08:00:00.000Z,384,Government
+2000-12-01T08:00:00.000Z,365,Government
+2001-01-01T08:00:00.000Z,463,Government
+2001-02-01T08:00:00.000Z,298,Government
+2001-03-01T08:00:00.000Z,355,Government
+2001-04-01T08:00:00.000Z,369,Government
+2001-05-01T07:00:00.000Z,361,Government
+2001-06-01T07:00:00.000Z,525,Government
+2001-07-01T07:00:00.000Z,548,Government
+2001-08-01T07:00:00.000Z,540,Government
+2001-09-01T07:00:00.000Z,438,Government
+2001-10-01T07:00:00.000Z,429,Government
+2001-11-01T08:00:00.000Z,420,Government
+2001-12-01T08:00:00.000Z,419,Government
+2002-01-01T08:00:00.000Z,486,Government
+2002-02-01T08:00:00.000Z,508,Government
+2002-03-01T08:00:00.000Z,477,Government
+2002-04-01T08:00:00.000Z,447,Government
+2002-05-01T07:00:00.000Z,484,Government
+2002-06-01T07:00:00.000Z,561,Government
+2002-07-01T07:00:00.000Z,645,Government
+2002-08-01T07:00:00.000Z,596,Government
+2002-09-01T07:00:00.000Z,530,Government
+2002-10-01T07:00:00.000Z,499,Government
+2002-11-01T08:00:00.000Z,468,Government
+2002-12-01T08:00:00.000Z,446,Government
+2003-01-01T08:00:00.000Z,571,Government
+2003-02-01T08:00:00.000Z,483,Government
+2003-03-01T08:00:00.000Z,526,Government
+2003-04-01T08:00:00.000Z,440,Government
+2003-05-01T07:00:00.000Z,478,Government
+2003-06-01T07:00:00.000Z,704,Government
+2003-07-01T07:00:00.000Z,749,Government
+2003-08-01T07:00:00.000Z,745,Government
+2003-09-01T07:00:00.000Z,556,Government
+2003-10-01T07:00:00.000Z,500,Government
+2003-11-01T08:00:00.000Z,542,Government
+2003-12-01T08:00:00.000Z,516,Government
+2004-01-01T08:00:00.000Z,511,Government
+2004-02-01T08:00:00.000Z,490,Government
+2004-03-01T08:00:00.000Z,530,Government
+2004-04-01T08:00:00.000Z,433,Government
+2004-05-01T07:00:00.000Z,468,Government
+2004-06-01T07:00:00.000Z,580,Government
+2004-07-01T07:00:00.000Z,741,Government
+2004-08-01T07:00:00.000Z,676,Government
+2004-09-01T07:00:00.000Z,568,Government
+2004-10-01T07:00:00.000Z,561,Government
+2004-11-01T08:00:00.000Z,514,Government
+2004-12-01T08:00:00.000Z,499,Government
+2005-01-01T08:00:00.000Z,555,Government
+2005-02-01T08:00:00.000Z,472,Government
+2005-03-01T08:00:00.000Z,468,Government
+2005-04-01T08:00:00.000Z,478,Government
+2005-05-01T07:00:00.000Z,453,Government
+2005-06-01T07:00:00.000Z,681,Government
+2005-07-01T07:00:00.000Z,683,Government
+2005-08-01T07:00:00.000Z,664,Government
+2005-09-01T07:00:00.000Z,568,Government
+2005-10-01T07:00:00.000Z,502,Government
+2005-11-01T08:00:00.000Z,494,Government
+2005-12-01T08:00:00.000Z,393,Government
+2006-01-01T08:00:00.000Z,457,Government
+2006-02-01T08:00:00.000Z,472,Government
+2006-03-01T08:00:00.000Z,461,Government
+2006-04-01T08:00:00.000Z,414,Government
+2006-05-01T07:00:00.000Z,429,Government
+2006-06-01T07:00:00.000Z,578,Government
+2006-07-01T07:00:00.000Z,659,Government
+2006-08-01T07:00:00.000Z,595,Government
+2006-09-01T07:00:00.000Z,396,Government
+2006-10-01T07:00:00.000Z,424,Government
+2006-11-01T08:00:00.000Z,400,Government
+2006-12-01T08:00:00.000Z,395,Government
+2007-01-01T08:00:00.000Z,476,Government
+2007-02-01T08:00:00.000Z,405,Government
+2007-03-01T08:00:00.000Z,419,Government
+2007-04-01T07:00:00.000Z,408,Government
+2007-05-01T07:00:00.000Z,428,Government
+2007-06-01T07:00:00.000Z,572,Government
+2007-07-01T07:00:00.000Z,704,Government
+2007-08-01T07:00:00.000Z,695,Government
+2007-09-01T07:00:00.000Z,525,Government
+2007-10-01T07:00:00.000Z,492,Government
+2007-11-01T07:00:00.000Z,482,Government
+2007-12-01T08:00:00.000Z,451,Government
+2008-01-01T08:00:00.000Z,471,Government
+2008-02-01T08:00:00.000Z,372,Government
+2008-03-01T08:00:00.000Z,425,Government
+2008-04-01T07:00:00.000Z,373,Government
+2008-05-01T07:00:00.000Z,461,Government
+2008-06-01T07:00:00.000Z,654,Government
+2008-07-01T07:00:00.000Z,770,Government
+2008-08-01T07:00:00.000Z,721,Government
+2008-09-01T07:00:00.000Z,573,Government
+2008-10-01T07:00:00.000Z,552,Government
+2008-11-01T07:00:00.000Z,527,Government
+2008-12-01T08:00:00.000Z,511,Government
+2009-01-01T08:00:00.000Z,652,Government
+2009-02-01T08:00:00.000Z,563,Government
+2009-03-01T08:00:00.000Z,598,Government
+2009-04-01T07:00:00.000Z,575,Government
+2009-05-01T07:00:00.000Z,702,Government
+2009-06-01T07:00:00.000Z,991,Government
+2009-07-01T07:00:00.000Z,1129,Government
+2009-08-01T07:00:00.000Z,1118,Government
+2009-09-01T07:00:00.000Z,928,Government
+2009-10-01T07:00:00.000Z,785,Government
+2009-11-01T07:00:00.000Z,748,Government
+2009-12-01T08:00:00.000Z,797,Government
+2010-01-01T08:00:00.000Z,948,Government
+2010-02-01T08:00:00.000Z,880,Government
+2000-01-01T08:00:00.000Z,19,Mining and Extraction
+2000-02-01T08:00:00.000Z,25,Mining and Extraction
+2000-03-01T08:00:00.000Z,17,Mining and Extraction
+2000-04-01T08:00:00.000Z,20,Mining and Extraction
+2000-05-01T07:00:00.000Z,27,Mining and Extraction
+2000-06-01T07:00:00.000Z,13,Mining and Extraction
+2000-07-01T07:00:00.000Z,16,Mining and Extraction
+2000-08-01T07:00:00.000Z,23,Mining and Extraction
+2000-09-01T07:00:00.000Z,25,Mining and Extraction
+2000-10-01T07:00:00.000Z,39,Mining and Extraction
+2000-11-01T08:00:00.000Z,11,Mining and Extraction
+2000-12-01T08:00:00.000Z,20,Mining and Extraction
+2001-01-01T08:00:00.000Z,11,Mining and Extraction
+2001-02-01T08:00:00.000Z,27,Mining and Extraction
+2001-03-01T08:00:00.000Z,14,Mining and Extraction
+2001-04-01T08:00:00.000Z,24,Mining and Extraction
+2001-05-01T07:00:00.000Z,34,Mining and Extraction
+2001-06-01T07:00:00.000Z,26,Mining and Extraction
+2001-07-01T07:00:00.000Z,17,Mining and Extraction
+2001-08-01T07:00:00.000Z,18,Mining and Extraction
+2001-09-01T07:00:00.000Z,23,Mining and Extraction
+2001-10-01T07:00:00.000Z,32,Mining and Extraction
+2001-11-01T08:00:00.000Z,20,Mining and Extraction
+2001-12-01T08:00:00.000Z,27,Mining and Extraction
+2002-01-01T08:00:00.000Z,33,Mining and Extraction
+2002-02-01T08:00:00.000Z,35,Mining and Extraction
+2002-03-01T08:00:00.000Z,28,Mining and Extraction
+2002-04-01T08:00:00.000Z,33,Mining and Extraction
+2002-05-01T07:00:00.000Z,25,Mining and Extraction
+2002-06-01T07:00:00.000Z,35,Mining and Extraction
+2002-07-01T07:00:00.000Z,19,Mining and Extraction
+2002-08-01T07:00:00.000Z,32,Mining and Extraction
+2002-09-01T07:00:00.000Z,42,Mining and Extraction
+2002-10-01T07:00:00.000Z,36,Mining and Extraction
+2002-11-01T08:00:00.000Z,32,Mining and Extraction
+2002-12-01T08:00:00.000Z,45,Mining and Extraction
+2003-01-01T08:00:00.000Z,54,Mining and Extraction
+2003-02-01T08:00:00.000Z,41,Mining and Extraction
+2003-03-01T08:00:00.000Z,46,Mining and Extraction
+2003-04-01T08:00:00.000Z,41,Mining and Extraction
+2003-05-01T07:00:00.000Z,40,Mining and Extraction
+2003-06-01T07:00:00.000Z,36,Mining and Extraction
+2003-07-01T07:00:00.000Z,43,Mining and Extraction
+2003-08-01T07:00:00.000Z,20,Mining and Extraction
+2003-09-01T07:00:00.000Z,25,Mining and Extraction
+2003-10-01T07:00:00.000Z,31,Mining and Extraction
+2003-11-01T08:00:00.000Z,34,Mining and Extraction
+2003-12-01T08:00:00.000Z,32,Mining and Extraction
+2004-01-01T08:00:00.000Z,31,Mining and Extraction
+2004-02-01T08:00:00.000Z,24,Mining and Extraction
+2004-03-01T08:00:00.000Z,22,Mining and Extraction
+2004-04-01T08:00:00.000Z,34,Mining and Extraction
+2004-05-01T07:00:00.000Z,22,Mining and Extraction
+2004-06-01T07:00:00.000Z,27,Mining and Extraction
+2004-07-01T07:00:00.000Z,28,Mining and Extraction
+2004-08-01T07:00:00.000Z,10,Mining and Extraction
+2004-09-01T07:00:00.000Z,8,Mining and Extraction
+2004-10-01T07:00:00.000Z,15,Mining and Extraction
+2004-11-01T08:00:00.000Z,20,Mining and Extraction
+2004-12-01T08:00:00.000Z,16,Mining and Extraction
+2005-01-01T08:00:00.000Z,29,Mining and Extraction
+2005-02-01T08:00:00.000Z,25,Mining and Extraction
+2005-03-01T08:00:00.000Z,32,Mining and Extraction
+2005-04-01T08:00:00.000Z,19,Mining and Extraction
+2005-05-01T07:00:00.000Z,16,Mining and Extraction
+2005-06-01T07:00:00.000Z,25,Mining and Extraction
+2005-07-01T07:00:00.000Z,22,Mining and Extraction
+2005-08-01T07:00:00.000Z,12,Mining and Extraction
+2005-09-01T07:00:00.000Z,12,Mining and Extraction
+2005-10-01T07:00:00.000Z,2,Mining and Extraction
+2005-11-01T08:00:00.000Z,18,Mining and Extraction
+2005-12-01T08:00:00.000Z,23,Mining and Extraction
+2006-01-01T08:00:00.000Z,26,Mining and Extraction
+2006-02-01T08:00:00.000Z,25,Mining and Extraction
+2006-03-01T08:00:00.000Z,14,Mining and Extraction
+2006-04-01T08:00:00.000Z,17,Mining and Extraction
+2006-05-01T07:00:00.000Z,20,Mining and Extraction
+2006-06-01T07:00:00.000Z,31,Mining and Extraction
+2006-07-01T07:00:00.000Z,25,Mining and Extraction
+2006-08-01T07:00:00.000Z,32,Mining and Extraction
+2006-09-01T07:00:00.000Z,14,Mining and Extraction
+2006-10-01T07:00:00.000Z,15,Mining and Extraction
+2006-11-01T08:00:00.000Z,22,Mining and Extraction
+2006-12-01T08:00:00.000Z,25,Mining and Extraction
+2007-01-01T08:00:00.000Z,35,Mining and Extraction
+2007-02-01T08:00:00.000Z,33,Mining and Extraction
+2007-03-01T08:00:00.000Z,24,Mining and Extraction
+2007-04-01T07:00:00.000Z,17,Mining and Extraction
+2007-05-01T07:00:00.000Z,22,Mining and Extraction
+2007-06-01T07:00:00.000Z,33,Mining and Extraction
+2007-07-01T07:00:00.000Z,33,Mining and Extraction
+2007-08-01T07:00:00.000Z,33,Mining and Extraction
+2007-09-01T07:00:00.000Z,25,Mining and Extraction
+2007-10-01T07:00:00.000Z,9,Mining and Extraction
+2007-11-01T07:00:00.000Z,16,Mining and Extraction
+2007-12-01T08:00:00.000Z,24,Mining and Extraction
+2008-01-01T08:00:00.000Z,28,Mining and Extraction
+2008-02-01T08:00:00.000Z,16,Mining and Extraction
+2008-03-01T08:00:00.000Z,28,Mining and Extraction
+2008-04-01T07:00:00.000Z,28,Mining and Extraction
+2008-05-01T07:00:00.000Z,28,Mining and Extraction
+2008-06-01T07:00:00.000Z,28,Mining and Extraction
+2008-07-01T07:00:00.000Z,13,Mining and Extraction
+2008-08-01T07:00:00.000Z,17,Mining and Extraction
+2008-09-01T07:00:00.000Z,25,Mining and Extraction
+2008-10-01T07:00:00.000Z,15,Mining and Extraction
+2008-11-01T07:00:00.000Z,32,Mining and Extraction
+2008-12-01T08:00:00.000Z,46,Mining and Extraction
+2009-01-01T08:00:00.000Z,59,Mining and Extraction
+2009-02-01T08:00:00.000Z,63,Mining and Extraction
+2009-03-01T08:00:00.000Z,105,Mining and Extraction
+2009-04-01T07:00:00.000Z,125,Mining and Extraction
+2009-05-01T07:00:00.000Z,98,Mining and Extraction
+2009-06-01T07:00:00.000Z,100,Mining and Extraction
+2009-07-01T07:00:00.000Z,95,Mining and Extraction
+2009-08-01T07:00:00.000Z,93,Mining and Extraction
+2009-09-01T07:00:00.000Z,76,Mining and Extraction
+2009-10-01T07:00:00.000Z,84,Mining and Extraction
+2009-11-01T07:00:00.000Z,96,Mining and Extraction
+2009-12-01T08:00:00.000Z,89,Mining and Extraction
+2010-01-01T08:00:00.000Z,68,Mining and Extraction
+2010-02-01T08:00:00.000Z,79,Mining and Extraction
+2000-01-01T08:00:00.000Z,745,Construction
+2000-02-01T08:00:00.000Z,812,Construction
+2000-03-01T08:00:00.000Z,669,Construction
+2000-04-01T08:00:00.000Z,447,Construction
+2000-05-01T07:00:00.000Z,397,Construction
+2000-06-01T07:00:00.000Z,389,Construction
+2000-07-01T07:00:00.000Z,384,Construction
+2000-08-01T07:00:00.000Z,446,Construction
+2000-09-01T07:00:00.000Z,386,Construction
+2000-10-01T07:00:00.000Z,417,Construction
+2000-11-01T08:00:00.000Z,482,Construction
+2000-12-01T08:00:00.000Z,580,Construction
+2001-01-01T08:00:00.000Z,836,Construction
+2001-02-01T08:00:00.000Z,826,Construction
+2001-03-01T08:00:00.000Z,683,Construction
+2001-04-01T08:00:00.000Z,596,Construction
+2001-05-01T07:00:00.000Z,478,Construction
+2001-06-01T07:00:00.000Z,443,Construction
+2001-07-01T07:00:00.000Z,447,Construction
+2001-08-01T07:00:00.000Z,522,Construction
+2001-09-01T07:00:00.000Z,489,Construction
+2001-10-01T07:00:00.000Z,535,Construction
+2001-11-01T08:00:00.000Z,670,Construction
+2001-12-01T08:00:00.000Z,785,Construction
+2002-01-01T08:00:00.000Z,1211,Construction
+2002-02-01T08:00:00.000Z,1060,Construction
+2002-03-01T08:00:00.000Z,1009,Construction
+2002-04-01T08:00:00.000Z,855,Construction
+2002-05-01T07:00:00.000Z,626,Construction
+2002-06-01T07:00:00.000Z,593,Construction
+2002-07-01T07:00:00.000Z,594,Construction
+2002-08-01T07:00:00.000Z,654,Construction
+2002-09-01T07:00:00.000Z,615,Construction
+2002-10-01T07:00:00.000Z,680,Construction
+2002-11-01T08:00:00.000Z,758,Construction
+2002-12-01T08:00:00.000Z,941,Construction
+2003-01-01T08:00:00.000Z,1196,Construction
+2003-02-01T08:00:00.000Z,1173,Construction
+2003-03-01T08:00:00.000Z,987,Construction
+2003-04-01T08:00:00.000Z,772,Construction
+2003-05-01T07:00:00.000Z,715,Construction
+2003-06-01T07:00:00.000Z,710,Construction
+2003-07-01T07:00:00.000Z,677,Construction
+2003-08-01T07:00:00.000Z,650,Construction
+2003-09-01T07:00:00.000Z,681,Construction
+2003-10-01T07:00:00.000Z,651,Construction
+2003-11-01T08:00:00.000Z,690,Construction
+2003-12-01T08:00:00.000Z,813,Construction
+2004-01-01T08:00:00.000Z,994,Construction
+2004-02-01T08:00:00.000Z,1039,Construction
+2004-03-01T08:00:00.000Z,1011,Construction
+2004-04-01T08:00:00.000Z,849,Construction
+2004-05-01T07:00:00.000Z,665,Construction
+2004-06-01T07:00:00.000Z,668,Construction
+2004-07-01T07:00:00.000Z,610,Construction
+2004-08-01T07:00:00.000Z,563,Construction
+2004-09-01T07:00:00.000Z,629,Construction
+2004-10-01T07:00:00.000Z,635,Construction
+2004-11-01T08:00:00.000Z,695,Construction
+2004-12-01T08:00:00.000Z,870,Construction
+2005-01-01T08:00:00.000Z,1079,Construction
+2005-02-01T08:00:00.000Z,1150,Construction
+2005-03-01T08:00:00.000Z,961,Construction
+2005-04-01T08:00:00.000Z,693,Construction
+2005-05-01T07:00:00.000Z,567,Construction
+2005-06-01T07:00:00.000Z,559,Construction
+2005-07-01T07:00:00.000Z,509,Construction
+2005-08-01T07:00:00.000Z,561,Construction
+2005-09-01T07:00:00.000Z,572,Construction
+2005-10-01T07:00:00.000Z,519,Construction
+2005-11-01T08:00:00.000Z,564,Construction
+2005-12-01T08:00:00.000Z,813,Construction
+2006-01-01T08:00:00.000Z,868,Construction
+2006-02-01T08:00:00.000Z,836,Construction
+2006-03-01T08:00:00.000Z,820,Construction
+2006-04-01T08:00:00.000Z,674,Construction
+2006-05-01T07:00:00.000Z,647,Construction
+2006-06-01T07:00:00.000Z,569,Construction
+2006-07-01T07:00:00.000Z,633,Construction
+2006-08-01T07:00:00.000Z,618,Construction
+2006-09-01T07:00:00.000Z,586,Construction
+2006-10-01T07:00:00.000Z,456,Construction
+2006-11-01T08:00:00.000Z,618,Construction
+2006-12-01T08:00:00.000Z,725,Construction
+2007-01-01T08:00:00.000Z,922,Construction
+2007-02-01T08:00:00.000Z,1086,Construction
+2007-03-01T08:00:00.000Z,924,Construction
+2007-04-01T07:00:00.000Z,853,Construction
+2007-05-01T07:00:00.000Z,676,Construction
+2007-06-01T07:00:00.000Z,600,Construction
+2007-07-01T07:00:00.000Z,617,Construction
+2007-08-01T07:00:00.000Z,558,Construction
+2007-09-01T07:00:00.000Z,596,Construction
+2007-10-01T07:00:00.000Z,641,Construction
+2007-11-01T07:00:00.000Z,645,Construction
+2007-12-01T08:00:00.000Z,968,Construction
+2008-01-01T08:00:00.000Z,1099,Construction
+2008-02-01T08:00:00.000Z,1118,Construction
+2008-03-01T08:00:00.000Z,1170,Construction
+2008-04-01T07:00:00.000Z,1057,Construction
+2008-05-01T07:00:00.000Z,809,Construction
+2008-06-01T07:00:00.000Z,785,Construction
+2008-07-01T07:00:00.000Z,783,Construction
+2008-08-01T07:00:00.000Z,814,Construction
+2008-09-01T07:00:00.000Z,970,Construction
+2008-10-01T07:00:00.000Z,1078,Construction
+2008-11-01T07:00:00.000Z,1237,Construction
+2008-12-01T08:00:00.000Z,1438,Construction
+2009-01-01T08:00:00.000Z,1744,Construction
+2009-02-01T08:00:00.000Z,2025,Construction
+2009-03-01T08:00:00.000Z,1979,Construction
+2009-04-01T07:00:00.000Z,1737,Construction
+2009-05-01T07:00:00.000Z,1768,Construction
+2009-06-01T07:00:00.000Z,1601,Construction
+2009-07-01T07:00:00.000Z,1687,Construction
+2009-08-01T07:00:00.000Z,1542,Construction
+2009-09-01T07:00:00.000Z,1594,Construction
+2009-10-01T07:00:00.000Z,1744,Construction
+2009-11-01T07:00:00.000Z,1780,Construction
+2009-12-01T08:00:00.000Z,2044,Construction
+2010-01-01T08:00:00.000Z,2194,Construction
+2010-02-01T08:00:00.000Z,2440,Construction
+2000-01-01T08:00:00.000Z,734,Manufacturing
+2000-02-01T08:00:00.000Z,694,Manufacturing
+2000-03-01T08:00:00.000Z,739,Manufacturing
+2000-04-01T08:00:00.000Z,736,Manufacturing
+2000-05-01T07:00:00.000Z,685,Manufacturing
+2000-06-01T07:00:00.000Z,621,Manufacturing
+2000-07-01T07:00:00.000Z,708,Manufacturing
+2000-08-01T07:00:00.000Z,685,Manufacturing
+2000-09-01T07:00:00.000Z,667,Manufacturing
+2000-10-01T07:00:00.000Z,693,Manufacturing
+2000-11-01T08:00:00.000Z,672,Manufacturing
+2000-12-01T08:00:00.000Z,653,Manufacturing
+2001-01-01T08:00:00.000Z,911,Manufacturing
+2001-02-01T08:00:00.000Z,902,Manufacturing
+2001-03-01T08:00:00.000Z,954,Manufacturing
+2001-04-01T08:00:00.000Z,855,Manufacturing
+2001-05-01T07:00:00.000Z,903,Manufacturing
+2001-06-01T07:00:00.000Z,956,Manufacturing
+2001-07-01T07:00:00.000Z,1054,Manufacturing
+2001-08-01T07:00:00.000Z,1023,Manufacturing
+2001-09-01T07:00:00.000Z,996,Manufacturing
+2001-10-01T07:00:00.000Z,1065,Manufacturing
+2001-11-01T08:00:00.000Z,1108,Manufacturing
+2001-12-01T08:00:00.000Z,1172,Manufacturing
+2002-01-01T08:00:00.000Z,1377,Manufacturing
+2002-02-01T08:00:00.000Z,1296,Manufacturing
+2002-03-01T08:00:00.000Z,1367,Manufacturing
+2002-04-01T08:00:00.000Z,1322,Manufacturing
+2002-05-01T07:00:00.000Z,1194,Manufacturing
+2002-06-01T07:00:00.000Z,1187,Manufacturing
+2002-07-01T07:00:00.000Z,1185,Manufacturing
+2002-08-01T07:00:00.000Z,1108,Manufacturing
+2002-09-01T07:00:00.000Z,1076,Manufacturing
+2002-10-01T07:00:00.000Z,1046,Manufacturing
+2002-11-01T08:00:00.000Z,1115,Manufacturing
+2002-12-01T08:00:00.000Z,1188,Manufacturing
+2003-01-01T08:00:00.000Z,1302,Manufacturing
+2003-02-01T08:00:00.000Z,1229,Manufacturing
+2003-03-01T08:00:00.000Z,1222,Manufacturing
+2003-04-01T08:00:00.000Z,1199,Manufacturing
+2003-05-01T07:00:00.000Z,1150,Manufacturing
+2003-06-01T07:00:00.000Z,1232,Manufacturing
+2003-07-01T07:00:00.000Z,1193,Manufacturing
+2003-08-01T07:00:00.000Z,1186,Manufacturing
+2003-09-01T07:00:00.000Z,1175,Manufacturing
+2003-10-01T07:00:00.000Z,1041,Manufacturing
+2003-11-01T08:00:00.000Z,1034,Manufacturing
+2003-12-01T08:00:00.000Z,1025,Manufacturing
+2004-01-01T08:00:00.000Z,1110,Manufacturing
+2004-02-01T08:00:00.000Z,1094,Manufacturing
+2004-03-01T08:00:00.000Z,1083,Manufacturing
+2004-04-01T08:00:00.000Z,1004,Manufacturing
+2004-05-01T07:00:00.000Z,966,Manufacturing
+2004-06-01T07:00:00.000Z,957,Manufacturing
+2004-07-01T07:00:00.000Z,1019,Manufacturing
+2004-08-01T07:00:00.000Z,840,Manufacturing
+2004-09-01T07:00:00.000Z,852,Manufacturing
+2004-10-01T07:00:00.000Z,884,Manufacturing
+2004-11-01T08:00:00.000Z,905,Manufacturing
+2004-12-01T08:00:00.000Z,872,Manufacturing
+2005-01-01T08:00:00.000Z,889,Manufacturing
+2005-02-01T08:00:00.000Z,889,Manufacturing
+2005-03-01T08:00:00.000Z,879,Manufacturing
+2005-04-01T08:00:00.000Z,793,Manufacturing
+2005-05-01T07:00:00.000Z,743,Manufacturing
+2005-06-01T07:00:00.000Z,743,Manufacturing
+2005-07-01T07:00:00.000Z,883,Manufacturing
+2005-08-01T07:00:00.000Z,767,Manufacturing
+2005-09-01T07:00:00.000Z,775,Manufacturing
+2005-10-01T07:00:00.000Z,800,Manufacturing
+2005-11-01T08:00:00.000Z,823,Manufacturing
+2005-12-01T08:00:00.000Z,757,Manufacturing
+2006-01-01T08:00:00.000Z,778,Manufacturing
+2006-02-01T08:00:00.000Z,821,Manufacturing
+2006-03-01T08:00:00.000Z,701,Manufacturing
+2006-04-01T08:00:00.000Z,745,Manufacturing
+2006-05-01T07:00:00.000Z,680,Manufacturing
+2006-06-01T07:00:00.000Z,635,Manufacturing
+2006-07-01T07:00:00.000Z,736,Manufacturing
+2006-08-01T07:00:00.000Z,680,Manufacturing
+2006-09-01T07:00:00.000Z,632,Manufacturing
+2006-10-01T07:00:00.000Z,618,Manufacturing
+2006-11-01T08:00:00.000Z,702,Manufacturing
+2006-12-01T08:00:00.000Z,660,Manufacturing
+2007-01-01T08:00:00.000Z,752,Manufacturing
+2007-02-01T08:00:00.000Z,774,Manufacturing
+2007-03-01T08:00:00.000Z,742,Manufacturing
+2007-04-01T07:00:00.000Z,749,Manufacturing
+2007-05-01T07:00:00.000Z,651,Manufacturing
+2007-06-01T07:00:00.000Z,653,Manufacturing
+2007-07-01T07:00:00.000Z,621,Manufacturing
+2007-08-01T07:00:00.000Z,596,Manufacturing
+2007-09-01T07:00:00.000Z,673,Manufacturing
+2007-10-01T07:00:00.000Z,729,Manufacturing
+2007-11-01T07:00:00.000Z,762,Manufacturing
+2007-12-01T08:00:00.000Z,772,Manufacturing
+2008-01-01T08:00:00.000Z,837,Manufacturing
+2008-02-01T08:00:00.000Z,820,Manufacturing
+2008-03-01T08:00:00.000Z,831,Manufacturing
+2008-04-01T07:00:00.000Z,796,Manufacturing
+2008-05-01T07:00:00.000Z,879,Manufacturing
+2008-06-01T07:00:00.000Z,862,Manufacturing
+2008-07-01T07:00:00.000Z,908,Manufacturing
+2008-08-01T07:00:00.000Z,960,Manufacturing
+2008-09-01T07:00:00.000Z,984,Manufacturing
+2008-10-01T07:00:00.000Z,1007,Manufacturing
+2008-11-01T07:00:00.000Z,1144,Manufacturing
+2008-12-01T08:00:00.000Z,1315,Manufacturing
+2009-01-01T08:00:00.000Z,1711,Manufacturing
+2009-02-01T08:00:00.000Z,1822,Manufacturing
+2009-03-01T08:00:00.000Z,1912,Manufacturing
+2009-04-01T07:00:00.000Z,1968,Manufacturing
+2009-05-01T07:00:00.000Z,2010,Manufacturing
+2009-06-01T07:00:00.000Z,2010,Manufacturing
+2009-07-01T07:00:00.000Z,1988,Manufacturing
+2009-08-01T07:00:00.000Z,1866,Manufacturing
+2009-09-01T07:00:00.000Z,1876,Manufacturing
+2009-10-01T07:00:00.000Z,1884,Manufacturing
+2009-11-01T07:00:00.000Z,1882,Manufacturing
+2009-12-01T08:00:00.000Z,1747,Manufacturing
+2010-01-01T08:00:00.000Z,1918,Manufacturing
+2010-02-01T08:00:00.000Z,1814,Manufacturing
+2000-01-01T08:00:00.000Z,1000,Wholesale and Retail Trade
+2000-02-01T08:00:00.000Z,1023,Wholesale and Retail Trade
+2000-03-01T08:00:00.000Z,983,Wholesale and Retail Trade
+2000-04-01T08:00:00.000Z,793,Wholesale and Retail Trade
+2000-05-01T07:00:00.000Z,821,Wholesale and Retail Trade
+2000-06-01T07:00:00.000Z,837,Wholesale and Retail Trade
+2000-07-01T07:00:00.000Z,792,Wholesale and Retail Trade
+2000-08-01T07:00:00.000Z,853,Wholesale and Retail Trade
+2000-09-01T07:00:00.000Z,791,Wholesale and Retail Trade
+2000-10-01T07:00:00.000Z,739,Wholesale and Retail Trade
+2000-11-01T08:00:00.000Z,701,Wholesale and Retail Trade
+2000-12-01T08:00:00.000Z,715,Wholesale and Retail Trade
+2001-01-01T08:00:00.000Z,908,Wholesale and Retail Trade
+2001-02-01T08:00:00.000Z,990,Wholesale and Retail Trade
+2001-03-01T08:00:00.000Z,1037,Wholesale and Retail Trade
+2001-04-01T08:00:00.000Z,820,Wholesale and Retail Trade
+2001-05-01T07:00:00.000Z,875,Wholesale and Retail Trade
+2001-06-01T07:00:00.000Z,955,Wholesale and Retail Trade
+2001-07-01T07:00:00.000Z,833,Wholesale and Retail Trade
+2001-08-01T07:00:00.000Z,928,Wholesale and Retail Trade
+2001-09-01T07:00:00.000Z,936,Wholesale and Retail Trade
+2001-10-01T07:00:00.000Z,941,Wholesale and Retail Trade
+2001-11-01T08:00:00.000Z,1046,Wholesale and Retail Trade
+2001-12-01T08:00:00.000Z,1074,Wholesale and Retail Trade
+2002-01-01T08:00:00.000Z,1212,Wholesale and Retail Trade
+2002-02-01T08:00:00.000Z,1264,Wholesale and Retail Trade
+2002-03-01T08:00:00.000Z,1269,Wholesale and Retail Trade
+2002-04-01T08:00:00.000Z,1222,Wholesale and Retail Trade
+2002-05-01T07:00:00.000Z,1138,Wholesale and Retail Trade
+2002-06-01T07:00:00.000Z,1240,Wholesale and Retail Trade
+2002-07-01T07:00:00.000Z,1132,Wholesale and Retail Trade
+2002-08-01T07:00:00.000Z,1170,Wholesale and Retail Trade
+2002-09-01T07:00:00.000Z,1171,Wholesale and Retail Trade
+2002-10-01T07:00:00.000Z,1212,Wholesale and Retail Trade
+2002-11-01T08:00:00.000Z,1242,Wholesale and Retail Trade
+2002-12-01T08:00:00.000Z,1150,Wholesale and Retail Trade
+2003-01-01T08:00:00.000Z,1342,Wholesale and Retail Trade
+2003-02-01T08:00:00.000Z,1238,Wholesale and Retail Trade
+2003-03-01T08:00:00.000Z,1179,Wholesale and Retail Trade
+2003-04-01T08:00:00.000Z,1201,Wholesale and Retail Trade
+2003-05-01T07:00:00.000Z,1247,Wholesale and Retail Trade
+2003-06-01T07:00:00.000Z,1434,Wholesale and Retail Trade
+2003-07-01T07:00:00.000Z,1387,Wholesale and Retail Trade
+2003-08-01T07:00:00.000Z,1161,Wholesale and Retail Trade
+2003-09-01T07:00:00.000Z,1229,Wholesale and Retail Trade
+2003-10-01T07:00:00.000Z,1189,Wholesale and Retail Trade
+2003-11-01T08:00:00.000Z,1156,Wholesale and Retail Trade
+2003-12-01T08:00:00.000Z,1081,Wholesale and Retail Trade
+2004-01-01T08:00:00.000Z,1389,Wholesale and Retail Trade
+2004-02-01T08:00:00.000Z,1369,Wholesale and Retail Trade
+2004-03-01T08:00:00.000Z,1386,Wholesale and Retail Trade
+2004-04-01T08:00:00.000Z,1248,Wholesale and Retail Trade
+2004-05-01T07:00:00.000Z,1183,Wholesale and Retail Trade
+2004-06-01T07:00:00.000Z,1182,Wholesale and Retail Trade
+2004-07-01T07:00:00.000Z,1163,Wholesale and Retail Trade
+2004-08-01T07:00:00.000Z,1079,Wholesale and Retail Trade
+2004-09-01T07:00:00.000Z,1127,Wholesale and Retail Trade
+2004-10-01T07:00:00.000Z,1138,Wholesale and Retail Trade
+2004-11-01T08:00:00.000Z,1045,Wholesale and Retail Trade
+2004-12-01T08:00:00.000Z,1058,Wholesale and Retail Trade
+2005-01-01T08:00:00.000Z,1302,Wholesale and Retail Trade
+2005-02-01T08:00:00.000Z,1301,Wholesale and Retail Trade
+2005-03-01T08:00:00.000Z,1173,Wholesale and Retail Trade
+2005-04-01T08:00:00.000Z,1131,Wholesale and Retail Trade
+2005-05-01T07:00:00.000Z,1145,Wholesale and Retail Trade
+2005-06-01T07:00:00.000Z,1197,Wholesale and Retail Trade
+2005-07-01T07:00:00.000Z,1194,Wholesale and Retail Trade
+2005-08-01T07:00:00.000Z,1130,Wholesale and Retail Trade
+2005-09-01T07:00:00.000Z,1038,Wholesale and Retail Trade
+2005-10-01T07:00:00.000Z,1050,Wholesale and Retail Trade
+2005-11-01T08:00:00.000Z,1013,Wholesale and Retail Trade
+2005-12-01T08:00:00.000Z,968,Wholesale and Retail Trade
+2006-01-01T08:00:00.000Z,1203,Wholesale and Retail Trade
+2006-02-01T08:00:00.000Z,1141,Wholesale and Retail Trade
+2006-03-01T08:00:00.000Z,1022,Wholesale and Retail Trade
+2006-04-01T08:00:00.000Z,972,Wholesale and Retail Trade
+2006-05-01T07:00:00.000Z,1025,Wholesale and Retail Trade
+2006-06-01T07:00:00.000Z,1085,Wholesale and Retail Trade
+2006-07-01T07:00:00.000Z,1083,Wholesale and Retail Trade
+2006-08-01T07:00:00.000Z,977,Wholesale and Retail Trade
+2006-09-01T07:00:00.000Z,1008,Wholesale and Retail Trade
+2006-10-01T07:00:00.000Z,972,Wholesale and Retail Trade
+2006-11-01T08:00:00.000Z,1018,Wholesale and Retail Trade
+2006-12-01T08:00:00.000Z,965,Wholesale and Retail Trade
+2007-01-01T08:00:00.000Z,1166,Wholesale and Retail Trade
+2007-02-01T08:00:00.000Z,1045,Wholesale and Retail Trade
+2007-03-01T08:00:00.000Z,896,Wholesale and Retail Trade
+2007-04-01T07:00:00.000Z,872,Wholesale and Retail Trade
+2007-05-01T07:00:00.000Z,795,Wholesale and Retail Trade
+2007-06-01T07:00:00.000Z,979,Wholesale and Retail Trade
+2007-07-01T07:00:00.000Z,1089,Wholesale and Retail Trade
+2007-08-01T07:00:00.000Z,1028,Wholesale and Retail Trade
+2007-09-01T07:00:00.000Z,1027,Wholesale and Retail Trade
+2007-10-01T07:00:00.000Z,907,Wholesale and Retail Trade
+2007-11-01T07:00:00.000Z,893,Wholesale and Retail Trade
+2007-12-01T08:00:00.000Z,1009,Wholesale and Retail Trade
+2008-01-01T08:00:00.000Z,1120,Wholesale and Retail Trade
+2008-02-01T08:00:00.000Z,1007,Wholesale and Retail Trade
+2008-03-01T08:00:00.000Z,992,Wholesale and Retail Trade
+2008-04-01T07:00:00.000Z,919,Wholesale and Retail Trade
+2008-05-01T07:00:00.000Z,1049,Wholesale and Retail Trade
+2008-06-01T07:00:00.000Z,1160,Wholesale and Retail Trade
+2008-07-01T07:00:00.000Z,1329,Wholesale and Retail Trade
+2008-08-01T07:00:00.000Z,1366,Wholesale and Retail Trade
+2008-09-01T07:00:00.000Z,1277,Wholesale and Retail Trade
+2008-10-01T07:00:00.000Z,1313,Wholesale and Retail Trade
+2008-11-01T07:00:00.000Z,1397,Wholesale and Retail Trade
+2008-12-01T08:00:00.000Z,1535,Wholesale and Retail Trade
+2009-01-01T08:00:00.000Z,1794,Wholesale and Retail Trade
+2009-02-01T08:00:00.000Z,1847,Wholesale and Retail Trade
+2009-03-01T08:00:00.000Z,1852,Wholesale and Retail Trade
+2009-04-01T07:00:00.000Z,1833,Wholesale and Retail Trade
+2009-05-01T07:00:00.000Z,1835,Wholesale and Retail Trade
+2009-06-01T07:00:00.000Z,1863,Wholesale and Retail Trade
+2009-07-01T07:00:00.000Z,1854,Wholesale and Retail Trade
+2009-08-01T07:00:00.000Z,1794,Wholesale and Retail Trade
+2009-09-01T07:00:00.000Z,1809,Wholesale and Retail Trade
+2009-10-01T07:00:00.000Z,1919,Wholesale and Retail Trade
+2009-11-01T07:00:00.000Z,1879,Wholesale and Retail Trade
+2009-12-01T08:00:00.000Z,1851,Wholesale and Retail Trade
+2010-01-01T08:00:00.000Z,2154,Wholesale and Retail Trade
+2010-02-01T08:00:00.000Z,2071,Wholesale and Retail Trade
+2000-01-01T08:00:00.000Z,236,Transportation and Utilities
+2000-02-01T08:00:00.000Z,223,Transportation and Utilities
+2000-03-01T08:00:00.000Z,192,Transportation and Utilities
+2000-04-01T08:00:00.000Z,191,Transportation and Utilities
+2000-05-01T07:00:00.000Z,190,Transportation and Utilities
+2000-06-01T07:00:00.000Z,183,Transportation and Utilities
+2000-07-01T07:00:00.000Z,228,Transportation and Utilities
+2000-08-01T07:00:00.000Z,198,Transportation and Utilities
+2000-09-01T07:00:00.000Z,231,Transportation and Utilities
+2000-10-01T07:00:00.000Z,153,Transportation and Utilities
+2000-11-01T08:00:00.000Z,129,Transportation and Utilities
+2000-12-01T08:00:00.000Z,168,Transportation and Utilities
+2001-01-01T08:00:00.000Z,194,Transportation and Utilities
+2001-02-01T08:00:00.000Z,189,Transportation and Utilities
+2001-03-01T08:00:00.000Z,193,Transportation and Utilities
+2001-04-01T08:00:00.000Z,232,Transportation and Utilities
+2001-05-01T07:00:00.000Z,178,Transportation and Utilities
+2001-06-01T07:00:00.000Z,242,Transportation and Utilities
+2001-07-01T07:00:00.000Z,236,Transportation and Utilities
+2001-08-01T07:00:00.000Z,226,Transportation and Utilities
+2001-09-01T07:00:00.000Z,214,Transportation and Utilities
+2001-10-01T07:00:00.000Z,321,Transportation and Utilities
+2001-11-01T08:00:00.000Z,302,Transportation and Utilities
+2001-12-01T08:00:00.000Z,310,Transportation and Utilities
+2002-01-01T08:00:00.000Z,368,Transportation and Utilities
+2002-02-01T08:00:00.000Z,331,Transportation and Utilities
+2002-03-01T08:00:00.000Z,313,Transportation and Utilities
+2002-04-01T08:00:00.000Z,280,Transportation and Utilities
+2002-05-01T07:00:00.000Z,257,Transportation and Utilities
+2002-06-01T07:00:00.000Z,274,Transportation and Utilities
+2002-07-01T07:00:00.000Z,270,Transportation and Utilities
+2002-08-01T07:00:00.000Z,221,Transportation and Utilities
+2002-09-01T07:00:00.000Z,235,Transportation and Utilities
+2002-10-01T07:00:00.000Z,262,Transportation and Utilities
+2002-11-01T08:00:00.000Z,233,Transportation and Utilities
+2002-12-01T08:00:00.000Z,243,Transportation and Utilities
+2003-01-01T08:00:00.000Z,331,Transportation and Utilities
+2003-02-01T08:00:00.000Z,316,Transportation and Utilities
+2003-03-01T08:00:00.000Z,319,Transportation and Utilities
+2003-04-01T08:00:00.000Z,274,Transportation and Utilities
+2003-05-01T07:00:00.000Z,260,Transportation and Utilities
+2003-06-01T07:00:00.000Z,300,Transportation and Utilities
+2003-07-01T07:00:00.000Z,289,Transportation and Utilities
+2003-08-01T07:00:00.000Z,255,Transportation and Utilities
+2003-09-01T07:00:00.000Z,255,Transportation and Utilities
+2003-10-01T07:00:00.000Z,260,Transportation and Utilities
+2003-11-01T08:00:00.000Z,275,Transportation and Utilities
+2003-12-01T08:00:00.000Z,267,Transportation and Utilities
+2004-01-01T08:00:00.000Z,243,Transportation and Utilities
+2004-02-01T08:00:00.000Z,291,Transportation and Utilities
+2004-03-01T08:00:00.000Z,284,Transportation and Utilities
+2004-04-01T08:00:00.000Z,239,Transportation and Utilities
+2004-05-01T07:00:00.000Z,230,Transportation and Utilities
+2004-06-01T07:00:00.000Z,227,Transportation and Utilities
+2004-07-01T07:00:00.000Z,231,Transportation and Utilities
+2004-08-01T07:00:00.000Z,236,Transportation and Utilities
+2004-09-01T07:00:00.000Z,208,Transportation and Utilities
+2004-10-01T07:00:00.000Z,219,Transportation and Utilities
+2004-11-01T08:00:00.000Z,217,Transportation and Utilities
+2004-12-01T08:00:00.000Z,204,Transportation and Utilities
+2005-01-01T08:00:00.000Z,276,Transportation and Utilities
+2005-02-01T08:00:00.000Z,245,Transportation and Utilities
+2005-03-01T08:00:00.000Z,267,Transportation and Utilities
+2005-04-01T08:00:00.000Z,257,Transportation and Utilities
+2005-05-01T07:00:00.000Z,223,Transportation and Utilities
+2005-06-01T07:00:00.000Z,247,Transportation and Utilities
+2005-07-01T07:00:00.000Z,222,Transportation and Utilities
+2005-08-01T07:00:00.000Z,187,Transportation and Utilities
+2005-09-01T07:00:00.000Z,211,Transportation and Utilities
+2005-10-01T07:00:00.000Z,251,Transportation and Utilities
+2005-11-01T08:00:00.000Z,199,Transportation and Utilities
+2005-12-01T08:00:00.000Z,202,Transportation and Utilities
+2006-01-01T08:00:00.000Z,287,Transportation and Utilities
+2006-02-01T08:00:00.000Z,260,Transportation and Utilities
+2006-03-01T08:00:00.000Z,263,Transportation and Utilities
+2006-04-01T08:00:00.000Z,272,Transportation and Utilities
+2006-05-01T07:00:00.000Z,226,Transportation and Utilities
+2006-06-01T07:00:00.000Z,225,Transportation and Utilities
+2006-07-01T07:00:00.000Z,237,Transportation and Utilities
+2006-08-01T07:00:00.000Z,217,Transportation and Utilities
+2006-09-01T07:00:00.000Z,183,Transportation and Utilities
+2006-10-01T07:00:00.000Z,206,Transportation and Utilities
+2006-11-01T08:00:00.000Z,183,Transportation and Utilities
+2006-12-01T08:00:00.000Z,190,Transportation and Utilities
+2007-01-01T08:00:00.000Z,248,Transportation and Utilities
+2007-02-01T08:00:00.000Z,251,Transportation and Utilities
+2007-03-01T08:00:00.000Z,249,Transportation and Utilities
+2007-04-01T07:00:00.000Z,188,Transportation and Utilities
+2007-05-01T07:00:00.000Z,216,Transportation and Utilities
+2007-06-01T07:00:00.000Z,242,Transportation and Utilities
+2007-07-01T07:00:00.000Z,309,Transportation and Utilities
+2007-08-01T07:00:00.000Z,205,Transportation and Utilities
+2007-09-01T07:00:00.000Z,224,Transportation and Utilities
+2007-10-01T07:00:00.000Z,218,Transportation and Utilities
+2007-11-01T07:00:00.000Z,242,Transportation and Utilities
+2007-12-01T08:00:00.000Z,210,Transportation and Utilities
+2008-01-01T08:00:00.000Z,271,Transportation and Utilities
+2008-02-01T08:00:00.000Z,289,Transportation and Utilities
+2008-03-01T08:00:00.000Z,267,Transportation and Utilities
+2008-04-01T07:00:00.000Z,245,Transportation and Utilities
+2008-05-01T07:00:00.000Z,269,Transportation and Utilities
+2008-06-01T07:00:00.000Z,329,Transportation and Utilities
+2008-07-01T07:00:00.000Z,359,Transportation and Utilities
+2008-08-01T07:00:00.000Z,309,Transportation and Utilities
+2008-09-01T07:00:00.000Z,337,Transportation and Utilities
+2008-10-01T07:00:00.000Z,316,Transportation and Utilities
+2008-11-01T07:00:00.000Z,331,Transportation and Utilities
+2008-12-01T08:00:00.000Z,421,Transportation and Utilities
+2009-01-01T08:00:00.000Z,522,Transportation and Utilities
+2009-02-01T08:00:00.000Z,563,Transportation and Utilities
+2009-03-01T08:00:00.000Z,558,Transportation and Utilities
+2009-04-01T07:00:00.000Z,541,Transportation and Utilities
+2009-05-01T07:00:00.000Z,506,Transportation and Utilities
+2009-06-01T07:00:00.000Z,499,Transportation and Utilities
+2009-07-01T07:00:00.000Z,511,Transportation and Utilities
+2009-08-01T07:00:00.000Z,547,Transportation and Utilities
+2009-09-01T07:00:00.000Z,538,Transportation and Utilities
+2009-10-01T07:00:00.000Z,480,Transportation and Utilities
+2009-11-01T07:00:00.000Z,493,Transportation and Utilities
+2009-12-01T08:00:00.000Z,539,Transportation and Utilities
+2010-01-01T08:00:00.000Z,657,Transportation and Utilities
+2010-02-01T08:00:00.000Z,591,Transportation and Utilities
+2000-01-01T08:00:00.000Z,125,Information
+2000-02-01T08:00:00.000Z,112,Information
+2000-03-01T08:00:00.000Z,140,Information
+2000-04-01T08:00:00.000Z,95,Information
+2000-05-01T07:00:00.000Z,131,Information
+2000-06-01T07:00:00.000Z,102,Information
+2000-07-01T07:00:00.000Z,144,Information
+2000-08-01T07:00:00.000Z,143,Information
+2000-09-01T07:00:00.000Z,130,Information
+2000-10-01T07:00:00.000Z,96,Information
+2000-11-01T08:00:00.000Z,117,Information
+2000-12-01T08:00:00.000Z,151,Information
+2001-01-01T08:00:00.000Z,161,Information
+2001-02-01T08:00:00.000Z,109,Information
+2001-03-01T08:00:00.000Z,148,Information
+2001-04-01T08:00:00.000Z,148,Information
+2001-05-01T07:00:00.000Z,164,Information
+2001-06-01T07:00:00.000Z,163,Information
+2001-07-01T07:00:00.000Z,206,Information
+2001-08-01T07:00:00.000Z,210,Information
+2001-09-01T07:00:00.000Z,219,Information
+2001-10-01T07:00:00.000Z,233,Information
+2001-11-01T08:00:00.000Z,241,Information
+2001-12-01T08:00:00.000Z,275,Information
+2002-01-01T08:00:00.000Z,263,Information
+2002-02-01T08:00:00.000Z,279,Information
+2002-03-01T08:00:00.000Z,266,Information
+2002-04-01T08:00:00.000Z,257,Information
+2002-05-01T07:00:00.000Z,260,Information
+2002-06-01T07:00:00.000Z,255,Information
+2002-07-01T07:00:00.000Z,264,Information
+2002-08-01T07:00:00.000Z,270,Information
+2002-09-01T07:00:00.000Z,231,Information
+2002-10-01T07:00:00.000Z,211,Information
+2002-11-01T08:00:00.000Z,220,Information
+2002-12-01T08:00:00.000Z,255,Information
+2003-01-01T08:00:00.000Z,243,Information
+2003-02-01T08:00:00.000Z,321,Information
+2003-03-01T08:00:00.000Z,267,Information
+2003-04-01T08:00:00.000Z,268,Information
+2003-05-01T07:00:00.000Z,251,Information
+2003-06-01T07:00:00.000Z,239,Information
+2003-07-01T07:00:00.000Z,224,Information
+2003-08-01T07:00:00.000Z,224,Information
+2003-09-01T07:00:00.000Z,248,Information
+2003-10-01T07:00:00.000Z,182,Information
+2003-11-01T08:00:00.000Z,257,Information
+2003-12-01T08:00:00.000Z,224,Information
+2004-01-01T08:00:00.000Z,236,Information
+2004-02-01T08:00:00.000Z,194,Information
+2004-03-01T08:00:00.000Z,216,Information
+2004-04-01T08:00:00.000Z,168,Information
+2004-05-01T07:00:00.000Z,190,Information
+2004-06-01T07:00:00.000Z,172,Information
+2004-07-01T07:00:00.000Z,174,Information
+2004-08-01T07:00:00.000Z,191,Information
+2004-09-01T07:00:00.000Z,178,Information
+2004-10-01T07:00:00.000Z,185,Information
+2004-11-01T08:00:00.000Z,187,Information
+2004-12-01T08:00:00.000Z,173,Information
+2005-01-01T08:00:00.000Z,168,Information
+2005-02-01T08:00:00.000Z,204,Information
+2005-03-01T08:00:00.000Z,177,Information
+2005-04-01T08:00:00.000Z,178,Information
+2005-05-01T07:00:00.000Z,145,Information
+2005-06-01T07:00:00.000Z,160,Information
+2005-07-01T07:00:00.000Z,142,Information
+2005-08-01T07:00:00.000Z,156,Information
+2005-09-01T07:00:00.000Z,168,Information
+2005-10-01T07:00:00.000Z,162,Information
+2005-11-01T08:00:00.000Z,172,Information
+2005-12-01T08:00:00.000Z,128,Information
+2006-01-01T08:00:00.000Z,105,Information
+2006-02-01T08:00:00.000Z,119,Information
+2006-03-01T08:00:00.000Z,116,Information
+2006-04-01T08:00:00.000Z,132,Information
+2006-05-01T07:00:00.000Z,158,Information
+2006-06-01T07:00:00.000Z,114,Information
+2006-07-01T07:00:00.000Z,103,Information
+2006-08-01T07:00:00.000Z,132,Information
+2006-09-01T07:00:00.000Z,170,Information
+2006-10-01T07:00:00.000Z,116,Information
+2006-11-01T08:00:00.000Z,137,Information
+2006-12-01T08:00:00.000Z,108,Information
+2007-01-01T08:00:00.000Z,143,Information
+2007-02-01T08:00:00.000Z,139,Information
+2007-03-01T08:00:00.000Z,109,Information
+2007-04-01T07:00:00.000Z,77,Information
+2007-05-01T07:00:00.000Z,110,Information
+2007-06-01T07:00:00.000Z,114,Information
+2007-07-01T07:00:00.000Z,112,Information
+2007-08-01T07:00:00.000Z,140,Information
+2007-09-01T07:00:00.000Z,124,Information
+2007-10-01T07:00:00.000Z,120,Information
+2007-11-01T07:00:00.000Z,132,Information
+2007-12-01T08:00:00.000Z,125,Information
+2008-01-01T08:00:00.000Z,169,Information
+2008-02-01T08:00:00.000Z,193,Information
+2008-03-01T08:00:00.000Z,155,Information
+2008-04-01T07:00:00.000Z,143,Information
+2008-05-01T07:00:00.000Z,170,Information
+2008-06-01T07:00:00.000Z,157,Information
+2008-07-01T07:00:00.000Z,141,Information
+2008-08-01T07:00:00.000Z,144,Information
+2008-09-01T07:00:00.000Z,166,Information
+2008-10-01T07:00:00.000Z,168,Information
+2008-11-01T07:00:00.000Z,173,Information
+2008-12-01T08:00:00.000Z,219,Information
+2009-01-01T08:00:00.000Z,232,Information
+2009-02-01T08:00:00.000Z,224,Information
+2009-03-01T08:00:00.000Z,252,Information
+2009-04-01T07:00:00.000Z,320,Information
+2009-05-01T07:00:00.000Z,303,Information
+2009-06-01T07:00:00.000Z,347,Information
+2009-07-01T07:00:00.000Z,373,Information
+2009-08-01T07:00:00.000Z,358,Information
+2009-09-01T07:00:00.000Z,362,Information
+2009-10-01T07:00:00.000Z,261,Information
+2009-11-01T07:00:00.000Z,243,Information
+2009-12-01T08:00:00.000Z,256,Information
+2010-01-01T08:00:00.000Z,313,Information
+2010-02-01T08:00:00.000Z,300,Information
+2000-01-01T08:00:00.000Z,228,Finance
+2000-02-01T08:00:00.000Z,240,Finance
+2000-03-01T08:00:00.000Z,226,Finance
+2000-04-01T08:00:00.000Z,197,Finance
+2000-05-01T07:00:00.000Z,195,Finance
+2000-06-01T07:00:00.000Z,216,Finance
+2000-07-01T07:00:00.000Z,190,Finance
+2000-08-01T07:00:00.000Z,213,Finance
+2000-09-01T07:00:00.000Z,187,Finance
+2000-10-01T07:00:00.000Z,224,Finance
+2000-11-01T08:00:00.000Z,184,Finance
+2000-12-01T08:00:00.000Z,200,Finance
+2001-01-01T08:00:00.000Z,232,Finance
+2001-02-01T08:00:00.000Z,235,Finance
+2001-03-01T08:00:00.000Z,211,Finance
+2001-04-01T08:00:00.000Z,232,Finance
+2001-05-01T07:00:00.000Z,191,Finance
+2001-06-01T07:00:00.000Z,249,Finance
+2001-07-01T07:00:00.000Z,289,Finance
+2001-08-01T07:00:00.000Z,256,Finance
+2001-09-01T07:00:00.000Z,268,Finance
+2001-10-01T07:00:00.000Z,281,Finance
+2001-11-01T08:00:00.000Z,320,Finance
+2001-12-01T08:00:00.000Z,258,Finance
+2002-01-01T08:00:00.000Z,267,Finance
+2002-02-01T08:00:00.000Z,318,Finance
+2002-03-01T08:00:00.000Z,287,Finance
+2002-04-01T08:00:00.000Z,292,Finance
+2002-05-01T07:00:00.000Z,340,Finance
+2002-06-01T07:00:00.000Z,373,Finance
+2002-07-01T07:00:00.000Z,345,Finance
+2002-08-01T07:00:00.000Z,343,Finance
+2002-09-01T07:00:00.000Z,299,Finance
+2002-10-01T07:00:00.000Z,312,Finance
+2002-11-01T08:00:00.000Z,337,Finance
+2002-12-01T08:00:00.000Z,322,Finance
+2003-01-01T08:00:00.000Z,327,Finance
+2003-02-01T08:00:00.000Z,310,Finance
+2003-03-01T08:00:00.000Z,357,Finance
+2003-04-01T08:00:00.000Z,323,Finance
+2003-05-01T07:00:00.000Z,320,Finance
+2003-06-01T07:00:00.000Z,358,Finance
+2003-07-01T07:00:00.000Z,284,Finance
+2003-08-01T07:00:00.000Z,342,Finance
+2003-09-01T07:00:00.000Z,305,Finance
+2003-10-01T07:00:00.000Z,303,Finance
+2003-11-01T08:00:00.000Z,311,Finance
+2003-12-01T08:00:00.000Z,283,Finance
+2004-01-01T08:00:00.000Z,403,Finance
+2004-02-01T08:00:00.000Z,363,Finance
+2004-03-01T08:00:00.000Z,343,Finance
+2004-04-01T08:00:00.000Z,312,Finance
+2004-05-01T07:00:00.000Z,302,Finance
+2004-06-01T07:00:00.000Z,335,Finance
+2004-07-01T07:00:00.000Z,307,Finance
+2004-08-01T07:00:00.000Z,312,Finance
+2004-09-01T07:00:00.000Z,374,Finance
+2004-10-01T07:00:00.000Z,358,Finance
+2004-11-01T08:00:00.000Z,290,Finance
+2004-12-01T08:00:00.000Z,290,Finance
+2005-01-01T08:00:00.000Z,252,Finance
+2005-02-01T08:00:00.000Z,301,Finance
+2005-03-01T08:00:00.000Z,261,Finance
+2005-04-01T08:00:00.000Z,255,Finance
+2005-05-01T07:00:00.000Z,288,Finance
+2005-06-01T07:00:00.000Z,307,Finance
+2005-07-01T07:00:00.000Z,309,Finance
+2005-08-01T07:00:00.000Z,300,Finance
+2005-09-01T07:00:00.000Z,260,Finance
+2005-10-01T07:00:00.000Z,255,Finance
+2005-11-01T08:00:00.000Z,268,Finance
+2005-12-01T08:00:00.000Z,204,Finance
+2006-01-01T08:00:00.000Z,233,Finance
+2006-02-01T08:00:00.000Z,268,Finance
+2006-03-01T08:00:00.000Z,298,Finance
+2006-04-01T08:00:00.000Z,293,Finance
+2006-05-01T07:00:00.000Z,289,Finance
+2006-06-01T07:00:00.000Z,299,Finance
+2006-07-01T07:00:00.000Z,329,Finance
+2006-08-01T07:00:00.000Z,263,Finance
+2006-09-01T07:00:00.000Z,235,Finance
+2006-10-01T07:00:00.000Z,211,Finance
+2006-11-01T08:00:00.000Z,229,Finance
+2006-12-01T08:00:00.000Z,227,Finance
+2007-01-01T08:00:00.000Z,233,Finance
+2007-02-01T08:00:00.000Z,295,Finance
+2007-03-01T08:00:00.000Z,252,Finance
+2007-04-01T07:00:00.000Z,231,Finance
+2007-05-01T07:00:00.000Z,281,Finance
+2007-06-01T07:00:00.000Z,303,Finance
+2007-07-01T07:00:00.000Z,307,Finance
+2007-08-01T07:00:00.000Z,371,Finance
+2007-09-01T07:00:00.000Z,316,Finance
+2007-10-01T07:00:00.000Z,307,Finance
+2007-11-01T07:00:00.000Z,261,Finance
+2007-12-01T08:00:00.000Z,315,Finance
+2008-01-01T08:00:00.000Z,285,Finance
+2008-02-01T08:00:00.000Z,323,Finance
+2008-03-01T08:00:00.000Z,323,Finance
+2008-04-01T07:00:00.000Z,324,Finance
+2008-05-01T07:00:00.000Z,361,Finance
+2008-06-01T07:00:00.000Z,337,Finance
+2008-07-01T07:00:00.000Z,350,Finance
+2008-08-01T07:00:00.000Z,409,Finance
+2008-09-01T07:00:00.000Z,380,Finance
+2008-10-01T07:00:00.000Z,434,Finance
+2008-11-01T07:00:00.000Z,494,Finance
+2008-12-01T08:00:00.000Z,540,Finance
+2009-01-01T08:00:00.000Z,571,Finance
+2009-02-01T08:00:00.000Z,637,Finance
+2009-03-01T08:00:00.000Z,639,Finance
+2009-04-01T07:00:00.000Z,561,Finance
+2009-05-01T07:00:00.000Z,536,Finance
+2009-06-01T07:00:00.000Z,513,Finance
+2009-07-01T07:00:00.000Z,570,Finance
+2009-08-01T07:00:00.000Z,566,Finance
+2009-09-01T07:00:00.000Z,657,Finance
+2009-10-01T07:00:00.000Z,646,Finance
+2009-11-01T07:00:00.000Z,619,Finance
+2009-12-01T08:00:00.000Z,665,Finance
+2010-01-01T08:00:00.000Z,623,Finance
+2010-02-01T08:00:00.000Z,708,Finance
+2000-01-01T08:00:00.000Z,655,Business services
+2000-02-01T08:00:00.000Z,587,Business services
+2000-03-01T08:00:00.000Z,623,Business services
+2000-04-01T08:00:00.000Z,517,Business services
+2000-05-01T07:00:00.000Z,561,Business services
+2000-06-01T07:00:00.000Z,545,Business services
+2000-07-01T07:00:00.000Z,636,Business services
+2000-08-01T07:00:00.000Z,584,Business services
+2000-09-01T07:00:00.000Z,559,Business services
+2000-10-01T07:00:00.000Z,504,Business services
+2000-11-01T08:00:00.000Z,547,Business services
+2000-12-01T08:00:00.000Z,564,Business services
+2001-01-01T08:00:00.000Z,734,Business services
+2001-02-01T08:00:00.000Z,724,Business services
+2001-03-01T08:00:00.000Z,652,Business services
+2001-04-01T08:00:00.000Z,655,Business services
+2001-05-01T07:00:00.000Z,652,Business services
+2001-06-01T07:00:00.000Z,694,Business services
+2001-07-01T07:00:00.000Z,731,Business services
+2001-08-01T07:00:00.000Z,790,Business services
+2001-09-01T07:00:00.000Z,810,Business services
+2001-10-01T07:00:00.000Z,910,Business services
+2001-11-01T08:00:00.000Z,946,Business services
+2001-12-01T08:00:00.000Z,921,Business services
+2002-01-01T08:00:00.000Z,1120,Business services
+2002-02-01T08:00:00.000Z,973,Business services
+2002-03-01T08:00:00.000Z,964,Business services
+2002-04-01T08:00:00.000Z,951,Business services
+2002-05-01T07:00:00.000Z,983,Business services
+2002-06-01T07:00:00.000Z,1079,Business services
+2002-07-01T07:00:00.000Z,1075,Business services
+2002-08-01T07:00:00.000Z,926,Business services
+2002-09-01T07:00:00.000Z,1007,Business services
+2002-10-01T07:00:00.000Z,962,Business services
+2002-11-01T08:00:00.000Z,1029,Business services
+2002-12-01T08:00:00.000Z,1038,Business services
+2003-01-01T08:00:00.000Z,1112,Business services
+2003-02-01T08:00:00.000Z,1140,Business services
+2003-03-01T08:00:00.000Z,1190,Business services
+2003-04-01T08:00:00.000Z,1076,Business services
+2003-05-01T07:00:00.000Z,1105,Business services
+2003-06-01T07:00:00.000Z,1092,Business services
+2003-07-01T07:00:00.000Z,1021,Business services
+2003-08-01T07:00:00.000Z,881,Business services
+2003-09-01T07:00:00.000Z,975,Business services
+2003-10-01T07:00:00.000Z,1014,Business services
+2003-11-01T08:00:00.000Z,948,Business services
+2003-12-01T08:00:00.000Z,948,Business services
+2004-01-01T08:00:00.000Z,1070,Business services
+2004-02-01T08:00:00.000Z,964,Business services
+2004-03-01T08:00:00.000Z,999,Business services
+2004-04-01T08:00:00.000Z,752,Business services
+2004-05-01T07:00:00.000Z,819,Business services
+2004-06-01T07:00:00.000Z,814,Business services
+2004-07-01T07:00:00.000Z,790,Business services
+2004-08-01T07:00:00.000Z,845,Business services
+2004-09-01T07:00:00.000Z,750,Business services
+2004-10-01T07:00:00.000Z,781,Business services
+2004-11-01T08:00:00.000Z,872,Business services
+2004-12-01T08:00:00.000Z,875,Business services
+2005-01-01T08:00:00.000Z,958,Business services
+2005-02-01T08:00:00.000Z,916,Business services
+2005-03-01T08:00:00.000Z,807,Business services
+2005-04-01T08:00:00.000Z,714,Business services
+2005-05-01T07:00:00.000Z,730,Business services
+2005-06-01T07:00:00.000Z,743,Business services
+2005-07-01T07:00:00.000Z,804,Business services
+2005-08-01T07:00:00.000Z,728,Business services
+2005-09-01T07:00:00.000Z,862,Business services
+2005-10-01T07:00:00.000Z,748,Business services
+2005-11-01T08:00:00.000Z,711,Business services
+2005-12-01T08:00:00.000Z,788,Business services
+2006-01-01T08:00:00.000Z,825,Business services
+2006-02-01T08:00:00.000Z,841,Business services
+2006-03-01T08:00:00.000Z,824,Business services
+2006-04-01T08:00:00.000Z,644,Business services
+2006-05-01T07:00:00.000Z,695,Business services
+2006-06-01T07:00:00.000Z,753,Business services
+2006-07-01T07:00:00.000Z,735,Business services
+2006-08-01T07:00:00.000Z,681,Business services
+2006-09-01T07:00:00.000Z,736,Business services
+2006-10-01T07:00:00.000Z,768,Business services
+2006-11-01T08:00:00.000Z,658,Business services
+2006-12-01T08:00:00.000Z,791,Business services
+2007-01-01T08:00:00.000Z,885,Business services
+2007-02-01T08:00:00.000Z,825,Business services
+2007-03-01T08:00:00.000Z,775,Business services
+2007-04-01T07:00:00.000Z,689,Business services
+2007-05-01T07:00:00.000Z,743,Business services
+2007-06-01T07:00:00.000Z,722,Business services
+2007-07-01T07:00:00.000Z,743,Business services
+2007-08-01T07:00:00.000Z,683,Business services
+2007-09-01T07:00:00.000Z,655,Business services
+2007-10-01T07:00:00.000Z,675,Business services
+2007-11-01T07:00:00.000Z,679,Business services
+2007-12-01T08:00:00.000Z,803,Business services
+2008-01-01T08:00:00.000Z,893,Business services
+2008-02-01T08:00:00.000Z,866,Business services
+2008-03-01T08:00:00.000Z,876,Business services
+2008-04-01T07:00:00.000Z,736,Business services
+2008-05-01T07:00:00.000Z,829,Business services
+2008-06-01T07:00:00.000Z,890,Business services
+2008-07-01T07:00:00.000Z,866,Business services
+2008-08-01T07:00:00.000Z,961,Business services
+2008-09-01T07:00:00.000Z,951,Business services
+2008-10-01T07:00:00.000Z,1052,Business services
+2008-11-01T07:00:00.000Z,992,Business services
+2008-12-01T08:00:00.000Z,1147,Business services
+2009-01-01T08:00:00.000Z,1445,Business services
+2009-02-01T08:00:00.000Z,1512,Business services
+2009-03-01T08:00:00.000Z,1597,Business services
+2009-04-01T07:00:00.000Z,1448,Business services
+2009-05-01T07:00:00.000Z,1514,Business services
+2009-06-01T07:00:00.000Z,1580,Business services
+2009-07-01T07:00:00.000Z,1531,Business services
+2009-08-01T07:00:00.000Z,1560,Business services
+2009-09-01T07:00:00.000Z,1596,Business services
+2009-10-01T07:00:00.000Z,1488,Business services
+2009-11-01T07:00:00.000Z,1514,Business services
+2009-12-01T08:00:00.000Z,1486,Business services
+2010-01-01T08:00:00.000Z,1614,Business services
+2010-02-01T08:00:00.000Z,1740,Business services
+2000-01-01T08:00:00.000Z,353,Education and Health
+2000-02-01T08:00:00.000Z,349,Education and Health
+2000-03-01T08:00:00.000Z,381,Education and Health
+2000-04-01T08:00:00.000Z,329,Education and Health
+2000-05-01T07:00:00.000Z,423,Education and Health
+2000-06-01T07:00:00.000Z,452,Education and Health
+2000-07-01T07:00:00.000Z,478,Education and Health
+2000-08-01T07:00:00.000Z,450,Education and Health
+2000-09-01T07:00:00.000Z,398,Education and Health
+2000-10-01T07:00:00.000Z,339,Education and Health
+2000-11-01T08:00:00.000Z,351,Education and Health
+2000-12-01T08:00:00.000Z,293,Education and Health
+2001-01-01T08:00:00.000Z,428,Education and Health
+2001-02-01T08:00:00.000Z,423,Education and Health
+2001-03-01T08:00:00.000Z,456,Education and Health
+2001-04-01T08:00:00.000Z,341,Education and Health
+2001-05-01T07:00:00.000Z,390,Education and Health
+2001-06-01T07:00:00.000Z,476,Education and Health
+2001-07-01T07:00:00.000Z,513,Education and Health
+2001-08-01T07:00:00.000Z,595,Education and Health
+2001-09-01T07:00:00.000Z,455,Education and Health
+2001-10-01T07:00:00.000Z,486,Education and Health
+2001-11-01T08:00:00.000Z,516,Education and Health
+2001-12-01T08:00:00.000Z,483,Education and Health
+2002-01-01T08:00:00.000Z,586,Education and Health
+2002-02-01T08:00:00.000Z,590,Education and Health
+2002-03-01T08:00:00.000Z,540,Education and Health
+2002-04-01T08:00:00.000Z,493,Education and Health
+2002-05-01T07:00:00.000Z,533,Education and Health
+2002-06-01T07:00:00.000Z,638,Education and Health
+2002-07-01T07:00:00.000Z,671,Education and Health
+2002-08-01T07:00:00.000Z,660,Education and Health
+2002-09-01T07:00:00.000Z,562,Education and Health
+2002-10-01T07:00:00.000Z,517,Education and Health
+2002-11-01T08:00:00.000Z,493,Education and Health
+2002-12-01T08:00:00.000Z,558,Education and Health
+2003-01-01T08:00:00.000Z,559,Education and Health
+2003-02-01T08:00:00.000Z,576,Education and Health
+2003-03-01T08:00:00.000Z,518,Education and Health
+2003-04-01T08:00:00.000Z,611,Education and Health
+2003-05-01T07:00:00.000Z,618,Education and Health
+2003-06-01T07:00:00.000Z,769,Education and Health
+2003-07-01T07:00:00.000Z,697,Education and Health
+2003-08-01T07:00:00.000Z,760,Education and Health
+2003-09-01T07:00:00.000Z,649,Education and Health
+2003-10-01T07:00:00.000Z,639,Education and Health
+2003-11-01T08:00:00.000Z,662,Education and Health
+2003-12-01T08:00:00.000Z,620,Education and Health
+2004-01-01T08:00:00.000Z,662,Education and Health
+2004-02-01T08:00:00.000Z,608,Education and Health
+2004-03-01T08:00:00.000Z,584,Education and Health
+2004-04-01T08:00:00.000Z,589,Education and Health
+2004-05-01T07:00:00.000Z,570,Education and Health
+2004-06-01T07:00:00.000Z,769,Education and Health
+2004-07-01T07:00:00.000Z,725,Education and Health
+2004-08-01T07:00:00.000Z,647,Education and Health
+2004-09-01T07:00:00.000Z,593,Education and Health
+2004-10-01T07:00:00.000Z,526,Education and Health
+2004-11-01T08:00:00.000Z,570,Education and Health
+2004-12-01T08:00:00.000Z,562,Education and Health
+2005-01-01T08:00:00.000Z,613,Education and Health
+2005-02-01T08:00:00.000Z,619,Education and Health
+2005-03-01T08:00:00.000Z,614,Education and Health
+2005-04-01T08:00:00.000Z,591,Education and Health
+2005-05-01T07:00:00.000Z,648,Education and Health
+2005-06-01T07:00:00.000Z,667,Education and Health
+2005-07-01T07:00:00.000Z,635,Education and Health
+2005-08-01T07:00:00.000Z,644,Education and Health
+2005-09-01T07:00:00.000Z,658,Education and Health
+2005-10-01T07:00:00.000Z,628,Education and Health
+2005-11-01T08:00:00.000Z,677,Education and Health
+2005-12-01T08:00:00.000Z,529,Education and Health
+2006-01-01T08:00:00.000Z,593,Education and Health
+2006-02-01T08:00:00.000Z,528,Education and Health
+2006-03-01T08:00:00.000Z,563,Education and Health
+2006-04-01T08:00:00.000Z,558,Education and Health
+2006-05-01T07:00:00.000Z,543,Education and Health
+2006-06-01T07:00:00.000Z,617,Education and Health
+2006-07-01T07:00:00.000Z,659,Education and Health
+2006-08-01T07:00:00.000Z,611,Education and Health
+2006-09-01T07:00:00.000Z,576,Education and Health
+2006-10-01T07:00:00.000Z,531,Education and Health
+2006-11-01T08:00:00.000Z,536,Education and Health
+2006-12-01T08:00:00.000Z,502,Education and Health
+2007-01-01T08:00:00.000Z,563,Education and Health
+2007-02-01T08:00:00.000Z,489,Education and Health
+2007-03-01T08:00:00.000Z,495,Education and Health
+2007-04-01T07:00:00.000Z,555,Education and Health
+2007-05-01T07:00:00.000Z,622,Education and Health
+2007-06-01T07:00:00.000Z,653,Education and Health
+2007-07-01T07:00:00.000Z,665,Education and Health
+2007-08-01T07:00:00.000Z,648,Education and Health
+2007-09-01T07:00:00.000Z,630,Education and Health
+2007-10-01T07:00:00.000Z,534,Education and Health
+2007-11-01T07:00:00.000Z,526,Education and Health
+2007-12-01T08:00:00.000Z,521,Education and Health
+2008-01-01T08:00:00.000Z,576,Education and Health
+2008-02-01T08:00:00.000Z,562,Education and Health
+2008-03-01T08:00:00.000Z,609,Education and Health
+2008-04-01T07:00:00.000Z,551,Education and Health
+2008-05-01T07:00:00.000Z,619,Education and Health
+2008-06-01T07:00:00.000Z,669,Education and Health
+2008-07-01T07:00:00.000Z,776,Education and Health
+2008-08-01T07:00:00.000Z,844,Education and Health
+2008-09-01T07:00:00.000Z,835,Education and Health
+2008-10-01T07:00:00.000Z,797,Education and Health
+2008-11-01T07:00:00.000Z,748,Education and Health
+2008-12-01T08:00:00.000Z,791,Education and Health
+2009-01-01T08:00:00.000Z,792,Education and Health
+2009-02-01T08:00:00.000Z,847,Education and Health
+2009-03-01T08:00:00.000Z,931,Education and Health
+2009-04-01T07:00:00.000Z,964,Education and Health
+2009-05-01T07:00:00.000Z,1005,Education and Health
+2009-06-01T07:00:00.000Z,1267,Education and Health
+2009-07-01T07:00:00.000Z,1269,Education and Health
+2009-08-01T07:00:00.000Z,1239,Education and Health
+2009-09-01T07:00:00.000Z,1257,Education and Health
+2009-10-01T07:00:00.000Z,1280,Education and Health
+2009-11-01T07:00:00.000Z,1168,Education and Health
+2009-12-01T08:00:00.000Z,1183,Education and Health
+2010-01-01T08:00:00.000Z,1175,Education and Health
+2010-02-01T08:00:00.000Z,1200,Education and Health
+2000-01-01T08:00:00.000Z,782,Leisure and hospitality
+2000-02-01T08:00:00.000Z,779,Leisure and hospitality
+2000-03-01T08:00:00.000Z,789,Leisure and hospitality
+2000-04-01T08:00:00.000Z,658,Leisure and hospitality
+2000-05-01T07:00:00.000Z,675,Leisure and hospitality
+2000-06-01T07:00:00.000Z,833,Leisure and hospitality
+2000-07-01T07:00:00.000Z,786,Leisure and hospitality
+2000-08-01T07:00:00.000Z,675,Leisure and hospitality
+2000-09-01T07:00:00.000Z,636,Leisure and hospitality
+2000-10-01T07:00:00.000Z,691,Leisure and hospitality
+2000-11-01T08:00:00.000Z,694,Leisure and hospitality
+2000-12-01T08:00:00.000Z,639,Leisure and hospitality
+2001-01-01T08:00:00.000Z,806,Leisure and hospitality
+2001-02-01T08:00:00.000Z,821,Leisure and hospitality
+2001-03-01T08:00:00.000Z,817,Leisure and hospitality
+2001-04-01T08:00:00.000Z,744,Leisure and hospitality
+2001-05-01T07:00:00.000Z,731,Leisure and hospitality
+2001-06-01T07:00:00.000Z,821,Leisure and hospitality
+2001-07-01T07:00:00.000Z,813,Leisure and hospitality
+2001-08-01T07:00:00.000Z,767,Leisure and hospitality
+2001-09-01T07:00:00.000Z,900,Leisure and hospitality
+2001-10-01T07:00:00.000Z,903,Leisure and hospitality
+2001-11-01T08:00:00.000Z,935,Leisure and hospitality
+2001-12-01T08:00:00.000Z,938,Leisure and hospitality
+2002-01-01T08:00:00.000Z,947,Leisure and hospitality
+2002-02-01T08:00:00.000Z,973,Leisure and hospitality
+2002-03-01T08:00:00.000Z,976,Leisure and hospitality
+2002-04-01T08:00:00.000Z,953,Leisure and hospitality
+2002-05-01T07:00:00.000Z,1022,Leisure and hospitality
+2002-06-01T07:00:00.000Z,1034,Leisure and hospitality
+2002-07-01T07:00:00.000Z,999,Leisure and hospitality
+2002-08-01T07:00:00.000Z,884,Leisure and hospitality
+2002-09-01T07:00:00.000Z,885,Leisure and hospitality
+2002-10-01T07:00:00.000Z,956,Leisure and hospitality
+2002-11-01T08:00:00.000Z,978,Leisure and hospitality
+2002-12-01T08:00:00.000Z,922,Leisure and hospitality
+2003-01-01T08:00:00.000Z,1049,Leisure and hospitality
+2003-02-01T08:00:00.000Z,1145,Leisure and hospitality
+2003-03-01T08:00:00.000Z,1035,Leisure and hospitality
+2003-04-01T08:00:00.000Z,986,Leisure and hospitality
+2003-05-01T07:00:00.000Z,955,Leisure and hospitality
+2003-06-01T07:00:00.000Z,1048,Leisure and hospitality
+2003-07-01T07:00:00.000Z,1020,Leisure and hospitality
+2003-08-01T07:00:00.000Z,1050,Leisure and hospitality
+2003-09-01T07:00:00.000Z,978,Leisure and hospitality
+2003-10-01T07:00:00.000Z,933,Leisure and hospitality
+2003-11-01T08:00:00.000Z,990,Leisure and hospitality
+2003-12-01T08:00:00.000Z,885,Leisure and hospitality
+2004-01-01T08:00:00.000Z,1097,Leisure and hospitality
+2004-02-01T08:00:00.000Z,987,Leisure and hospitality
+2004-03-01T08:00:00.000Z,1039,Leisure and hospitality
+2004-04-01T08:00:00.000Z,925,Leisure and hospitality
+2004-05-01T07:00:00.000Z,977,Leisure and hospitality
+2004-06-01T07:00:00.000Z,1189,Leisure and hospitality
+2004-07-01T07:00:00.000Z,965,Leisure and hospitality
+2004-08-01T07:00:00.000Z,1010,Leisure and hospitality
+2004-09-01T07:00:00.000Z,854,Leisure and hospitality
+2004-10-01T07:00:00.000Z,853,Leisure and hospitality
+2004-11-01T08:00:00.000Z,916,Leisure and hospitality
+2004-12-01T08:00:00.000Z,850,Leisure and hospitality
+2005-01-01T08:00:00.000Z,993,Leisure and hospitality
+2005-02-01T08:00:00.000Z,1008,Leisure and hospitality
+2005-03-01T08:00:00.000Z,967,Leisure and hospitality
+2005-04-01T08:00:00.000Z,882,Leisure and hospitality
+2005-05-01T07:00:00.000Z,944,Leisure and hospitality
+2005-06-01T07:00:00.000Z,950,Leisure and hospitality
+2005-07-01T07:00:00.000Z,929,Leisure and hospitality
+2005-08-01T07:00:00.000Z,844,Leisure and hospitality
+2005-09-01T07:00:00.000Z,842,Leisure and hospitality
+2005-10-01T07:00:00.000Z,796,Leisure and hospitality
+2005-11-01T08:00:00.000Z,966,Leisure and hospitality
+2005-12-01T08:00:00.000Z,930,Leisure and hospitality
+2006-01-01T08:00:00.000Z,910,Leisure and hospitality
+2006-02-01T08:00:00.000Z,1040,Leisure and hospitality
+2006-03-01T08:00:00.000Z,917,Leisure and hospitality
+2006-04-01T08:00:00.000Z,882,Leisure and hospitality
+2006-05-01T07:00:00.000Z,830,Leisure and hospitality
+2006-06-01T07:00:00.000Z,942,Leisure and hospitality
+2006-07-01T07:00:00.000Z,867,Leisure and hospitality
+2006-08-01T07:00:00.000Z,855,Leisure and hospitality
+2006-09-01T07:00:00.000Z,810,Leisure and hospitality
+2006-10-01T07:00:00.000Z,795,Leisure and hospitality
+2006-11-01T08:00:00.000Z,836,Leisure and hospitality
+2006-12-01T08:00:00.000Z,701,Leisure and hospitality
+2007-01-01T08:00:00.000Z,911,Leisure and hospitality
+2007-02-01T08:00:00.000Z,879,Leisure and hospitality
+2007-03-01T08:00:00.000Z,845,Leisure and hospitality
+2007-04-01T07:00:00.000Z,822,Leisure and hospitality
+2007-05-01T07:00:00.000Z,831,Leisure and hospitality
+2007-06-01T07:00:00.000Z,917,Leisure and hospitality
+2007-07-01T07:00:00.000Z,920,Leisure and hospitality
+2007-08-01T07:00:00.000Z,877,Leisure and hospitality
+2007-09-01T07:00:00.000Z,892,Leisure and hospitality
+2007-10-01T07:00:00.000Z,911,Leisure and hospitality
+2007-11-01T07:00:00.000Z,986,Leisure and hospitality
+2007-12-01T08:00:00.000Z,961,Leisure and hospitality
+2008-01-01T08:00:00.000Z,1176,Leisure and hospitality
+2008-02-01T08:00:00.000Z,1056,Leisure and hospitality
+2008-03-01T08:00:00.000Z,944,Leisure and hospitality
+2008-04-01T07:00:00.000Z,874,Leisure and hospitality
+2008-05-01T07:00:00.000Z,1074,Leisure and hospitality
+2008-06-01T07:00:00.000Z,1154,Leisure and hospitality
+2008-07-01T07:00:00.000Z,1172,Leisure and hospitality
+2008-08-01T07:00:00.000Z,1122,Leisure and hospitality
+2008-09-01T07:00:00.000Z,1029,Leisure and hospitality
+2008-10-01T07:00:00.000Z,1126,Leisure and hospitality
+2008-11-01T07:00:00.000Z,1283,Leisure and hospitality
+2008-12-01T08:00:00.000Z,1210,Leisure and hospitality
+2009-01-01T08:00:00.000Z,1487,Leisure and hospitality
+2009-02-01T08:00:00.000Z,1477,Leisure and hospitality
+2009-03-01T08:00:00.000Z,1484,Leisure and hospitality
+2009-04-01T07:00:00.000Z,1322,Leisure and hospitality
+2009-05-01T07:00:00.000Z,1599,Leisure and hospitality
+2009-06-01T07:00:00.000Z,1688,Leisure and hospitality
+2009-07-01T07:00:00.000Z,1600,Leisure and hospitality
+2009-08-01T07:00:00.000Z,1636,Leisure and hospitality
+2009-09-01T07:00:00.000Z,1469,Leisure and hospitality
+2009-10-01T07:00:00.000Z,1604,Leisure and hospitality
+2009-11-01T07:00:00.000Z,1524,Leisure and hospitality
+2009-12-01T08:00:00.000Z,1624,Leisure and hospitality
+2010-01-01T08:00:00.000Z,1804,Leisure and hospitality
+2010-02-01T08:00:00.000Z,1597,Leisure and hospitality
+2000-01-01T08:00:00.000Z,274,Other
+2000-02-01T08:00:00.000Z,232,Other
+2000-03-01T08:00:00.000Z,247,Other
+2000-04-01T08:00:00.000Z,240,Other
+2000-05-01T07:00:00.000Z,254,Other
+2000-06-01T07:00:00.000Z,225,Other
+2000-07-01T07:00:00.000Z,202,Other
+2000-08-01T07:00:00.000Z,187,Other
+2000-09-01T07:00:00.000Z,220,Other
+2000-10-01T07:00:00.000Z,161,Other
+2000-11-01T08:00:00.000Z,217,Other
+2000-12-01T08:00:00.000Z,167,Other
+2001-01-01T08:00:00.000Z,197,Other
+2001-02-01T08:00:00.000Z,243,Other
+2001-03-01T08:00:00.000Z,200,Other
+2001-04-01T08:00:00.000Z,220,Other
+2001-05-01T07:00:00.000Z,172,Other
+2001-06-01T07:00:00.000Z,246,Other
+2001-07-01T07:00:00.000Z,228,Other
+2001-08-01T07:00:00.000Z,241,Other
+2001-09-01T07:00:00.000Z,225,Other
+2001-10-01T07:00:00.000Z,239,Other
+2001-11-01T08:00:00.000Z,256,Other
+2001-12-01T08:00:00.000Z,277,Other
+2002-01-01T08:00:00.000Z,304,Other
+2002-02-01T08:00:00.000Z,339,Other
+2002-03-01T08:00:00.000Z,314,Other
+2002-04-01T08:00:00.000Z,268,Other
+2002-05-01T07:00:00.000Z,264,Other
+2002-06-01T07:00:00.000Z,335,Other
+2002-07-01T07:00:00.000Z,356,Other
+2002-08-01T07:00:00.000Z,353,Other
+2002-09-01T07:00:00.000Z,281,Other
+2002-10-01T07:00:00.000Z,272,Other
+2002-11-01T08:00:00.000Z,284,Other
+2002-12-01T08:00:00.000Z,241,Other
+2003-01-01T08:00:00.000Z,304,Other
+2003-02-01T08:00:00.000Z,331,Other
+2003-03-01T08:00:00.000Z,370,Other
+2003-04-01T08:00:00.000Z,331,Other
+2003-05-01T07:00:00.000Z,339,Other
+2003-06-01T07:00:00.000Z,359,Other
+2003-07-01T07:00:00.000Z,405,Other
+2003-08-01T07:00:00.000Z,373,Other
+2003-09-01T07:00:00.000Z,338,Other
+2003-10-01T07:00:00.000Z,378,Other
+2003-11-01T08:00:00.000Z,357,Other
+2003-12-01T08:00:00.000Z,278,Other
+2004-01-01T08:00:00.000Z,322,Other
+2004-02-01T08:00:00.000Z,366,Other
+2004-03-01T08:00:00.000Z,366,Other
+2004-04-01T08:00:00.000Z,347,Other
+2004-05-01T07:00:00.000Z,310,Other
+2004-06-01T07:00:00.000Z,326,Other
+2004-07-01T07:00:00.000Z,346,Other
+2004-08-01T07:00:00.000Z,341,Other
+2004-09-01T07:00:00.000Z,301,Other
+2004-10-01T07:00:00.000Z,300,Other
+2004-11-01T08:00:00.000Z,294,Other
+2004-12-01T08:00:00.000Z,276,Other
+2005-01-01T08:00:00.000Z,290,Other
+2005-02-01T08:00:00.000Z,325,Other
+2005-03-01T08:00:00.000Z,308,Other
+2005-04-01T08:00:00.000Z,306,Other
+2005-05-01T07:00:00.000Z,314,Other
+2005-06-01T07:00:00.000Z,291,Other
+2005-07-01T07:00:00.000Z,274,Other
+2005-08-01T07:00:00.000Z,306,Other
+2005-09-01T07:00:00.000Z,307,Other
+2005-10-01T07:00:00.000Z,319,Other
+2005-11-01T08:00:00.000Z,300,Other
+2005-12-01T08:00:00.000Z,269,Other
+2006-01-01T08:00:00.000Z,308,Other
+2006-02-01T08:00:00.000Z,281,Other
+2006-03-01T08:00:00.000Z,292,Other
+2006-04-01T08:00:00.000Z,266,Other
+2006-05-01T07:00:00.000Z,265,Other
+2006-06-01T07:00:00.000Z,265,Other
+2006-07-01T07:00:00.000Z,305,Other
+2006-08-01T07:00:00.000Z,341,Other
+2006-09-01T07:00:00.000Z,310,Other
+2006-10-01T07:00:00.000Z,268,Other
+2006-11-01T08:00:00.000Z,306,Other
+2006-12-01T08:00:00.000Z,306,Other
+2007-01-01T08:00:00.000Z,275,Other
+2007-02-01T08:00:00.000Z,257,Other
+2007-03-01T08:00:00.000Z,222,Other
+2007-04-01T07:00:00.000Z,224,Other
+2007-05-01T07:00:00.000Z,242,Other
+2007-06-01T07:00:00.000Z,256,Other
+2007-07-01T07:00:00.000Z,243,Other
+2007-08-01T07:00:00.000Z,239,Other
+2007-09-01T07:00:00.000Z,257,Other
+2007-10-01T07:00:00.000Z,182,Other
+2007-11-01T07:00:00.000Z,255,Other
+2007-12-01T08:00:00.000Z,235,Other
+2008-01-01T08:00:00.000Z,264,Other
+2008-02-01T08:00:00.000Z,313,Other
+2008-03-01T08:00:00.000Z,283,Other
+2008-04-01T07:00:00.000Z,251,Other
+2008-05-01T07:00:00.000Z,275,Other
+2008-06-01T07:00:00.000Z,322,Other
+2008-07-01T07:00:00.000Z,352,Other
+2008-08-01T07:00:00.000Z,412,Other
+2008-09-01T07:00:00.000Z,374,Other
+2008-10-01T07:00:00.000Z,334,Other
+2008-11-01T07:00:00.000Z,434,Other
+2008-12-01T08:00:00.000Z,367,Other
+2009-01-01T08:00:00.000Z,431,Other
+2009-02-01T08:00:00.000Z,453,Other
+2009-03-01T08:00:00.000Z,377,Other
+2009-04-01T07:00:00.000Z,403,Other
+2009-05-01T07:00:00.000Z,476,Other
+2009-06-01T07:00:00.000Z,557,Other
+2009-07-01T07:00:00.000Z,490,Other
+2009-08-01T07:00:00.000Z,528,Other
+2009-09-01T07:00:00.000Z,462,Other
+2009-10-01T07:00:00.000Z,541,Other
+2009-11-01T07:00:00.000Z,491,Other
+2009-12-01T08:00:00.000Z,513,Other
+2010-01-01T08:00:00.000Z,609,Other
+2010-02-01T08:00:00.000Z,603,Other
+2000-01-01T08:00:00.000Z,154,Agriculture
+2000-02-01T08:00:00.000Z,173,Agriculture
+2000-03-01T08:00:00.000Z,152,Agriculture
+2000-04-01T08:00:00.000Z,135,Agriculture
+2000-05-01T07:00:00.000Z,73,Agriculture
+2000-06-01T07:00:00.000Z,109,Agriculture
+2000-07-01T07:00:00.000Z,77,Agriculture
+2000-08-01T07:00:00.000Z,110,Agriculture
+2000-09-01T07:00:00.000Z,124,Agriculture
+2000-10-01T07:00:00.000Z,113,Agriculture
+2000-11-01T08:00:00.000Z,192,Agriculture
+2000-12-01T08:00:00.000Z,196,Agriculture
+2001-01-01T08:00:00.000Z,188,Agriculture
+2001-02-01T08:00:00.000Z,193,Agriculture
+2001-03-01T08:00:00.000Z,267,Agriculture
+2001-04-01T08:00:00.000Z,140,Agriculture
+2001-05-01T07:00:00.000Z,109,Agriculture
+2001-06-01T07:00:00.000Z,130,Agriculture
+2001-07-01T07:00:00.000Z,113,Agriculture
+2001-08-01T07:00:00.000Z,141,Agriculture
+2001-09-01T07:00:00.000Z,101,Agriculture
+2001-10-01T07:00:00.000Z,118,Agriculture
+2001-11-01T08:00:00.000Z,145,Agriculture
+2001-12-01T08:00:00.000Z,192,Agriculture
+2002-01-01T08:00:00.000Z,195,Agriculture
+2002-02-01T08:00:00.000Z,187,Agriculture
+2002-03-01T08:00:00.000Z,269,Agriculture
+2002-04-01T08:00:00.000Z,151,Agriculture
+2002-05-01T07:00:00.000Z,89,Agriculture
+2002-06-01T07:00:00.000Z,89,Agriculture
+2002-07-01T07:00:00.000Z,114,Agriculture
+2002-08-01T07:00:00.000Z,125,Agriculture
+2002-09-01T07:00:00.000Z,92,Agriculture
+2002-10-01T07:00:00.000Z,97,Agriculture
+2002-11-01T08:00:00.000Z,137,Agriculture
+2002-12-01T08:00:00.000Z,120,Agriculture
+2003-01-01T08:00:00.000Z,159,Agriculture
+2003-02-01T08:00:00.000Z,172,Agriculture
+2003-03-01T08:00:00.000Z,161,Agriculture
+2003-04-01T08:00:00.000Z,154,Agriculture
+2003-05-01T07:00:00.000Z,133,Agriculture
+2003-06-01T07:00:00.000Z,94,Agriculture
+2003-07-01T07:00:00.000Z,113,Agriculture
+2003-08-01T07:00:00.000Z,173,Agriculture
+2003-09-01T07:00:00.000Z,98,Agriculture
+2003-10-01T07:00:00.000Z,136,Agriculture
+2003-11-01T08:00:00.000Z,148,Agriculture
+2003-12-01T08:00:00.000Z,137,Agriculture
+2004-01-01T08:00:00.000Z,184,Agriculture
+2004-02-01T08:00:00.000Z,168,Agriculture
+2004-03-01T08:00:00.000Z,153,Agriculture
+2004-04-01T08:00:00.000Z,107,Agriculture
+2004-05-01T07:00:00.000Z,99,Agriculture
+2004-06-01T07:00:00.000Z,106,Agriculture
+2004-07-01T07:00:00.000Z,140,Agriculture
+2004-08-01T07:00:00.000Z,103,Agriculture
+2004-09-01T07:00:00.000Z,88,Agriculture
+2004-10-01T07:00:00.000Z,102,Agriculture
+2004-11-01T08:00:00.000Z,131,Agriculture
+2004-12-01T08:00:00.000Z,165,Agriculture
+2005-01-01T08:00:00.000Z,153,Agriculture
+2005-02-01T08:00:00.000Z,107,Agriculture
+2005-03-01T08:00:00.000Z,139,Agriculture
+2005-04-01T08:00:00.000Z,84,Agriculture
+2005-05-01T07:00:00.000Z,66,Agriculture
+2005-06-01T07:00:00.000Z,76,Agriculture
+2005-07-01T07:00:00.000Z,69,Agriculture
+2005-08-01T07:00:00.000Z,100,Agriculture
+2005-09-01T07:00:00.000Z,127,Agriculture
+2005-10-01T07:00:00.000Z,85,Agriculture
+2005-11-01T08:00:00.000Z,118,Agriculture
+2005-12-01T08:00:00.000Z,127,Agriculture
+2006-01-01T08:00:00.000Z,140,Agriculture
+2006-02-01T08:00:00.000Z,139,Agriculture
+2006-03-01T08:00:00.000Z,117,Agriculture
+2006-04-01T08:00:00.000Z,81,Agriculture
+2006-05-01T07:00:00.000Z,79,Agriculture
+2006-06-01T07:00:00.000Z,35,Agriculture
+2006-07-01T07:00:00.000Z,55,Agriculture
+2006-08-01T07:00:00.000Z,76,Agriculture
+2006-09-01T07:00:00.000Z,78,Agriculture
+2006-10-01T07:00:00.000Z,77,Agriculture
+2006-11-01T08:00:00.000Z,125,Agriculture
+2006-12-01T08:00:00.000Z,139,Agriculture
+2007-01-01T08:00:00.000Z,128,Agriculture
+2007-02-01T08:00:00.000Z,127,Agriculture
+2007-03-01T08:00:00.000Z,123,Agriculture
+2007-04-01T07:00:00.000Z,67,Agriculture
+2007-05-01T07:00:00.000Z,64,Agriculture
+2007-06-01T07:00:00.000Z,59,Agriculture
+2007-07-01T07:00:00.000Z,40,Agriculture
+2007-08-01T07:00:00.000Z,54,Agriculture
+2007-09-01T07:00:00.000Z,53,Agriculture
+2007-10-01T07:00:00.000Z,47,Agriculture
+2007-11-01T07:00:00.000Z,80,Agriculture
+2007-12-01T08:00:00.000Z,96,Agriculture
+2008-01-01T08:00:00.000Z,113,Agriculture
+2008-02-01T08:00:00.000Z,135,Agriculture
+2008-03-01T08:00:00.000Z,175,Agriculture
+2008-04-01T07:00:00.000Z,108,Agriculture
+2008-05-01T07:00:00.000Z,94,Agriculture
+2008-06-01T07:00:00.000Z,86,Agriculture
+2008-07-01T07:00:00.000Z,125,Agriculture
+2008-08-01T07:00:00.000Z,111,Agriculture
+2008-09-01T07:00:00.000Z,84,Agriculture
+2008-10-01T07:00:00.000Z,97,Agriculture
+2008-11-01T07:00:00.000Z,119,Agriculture
+2008-12-01T08:00:00.000Z,229,Agriculture
+2009-01-01T08:00:00.000Z,245,Agriculture
+2009-02-01T08:00:00.000Z,251,Agriculture
+2009-03-01T08:00:00.000Z,241,Agriculture
+2009-04-01T07:00:00.000Z,176,Agriculture
+2009-05-01T07:00:00.000Z,136,Agriculture
+2009-06-01T07:00:00.000Z,182,Agriculture
+2009-07-01T07:00:00.000Z,180,Agriculture
+2009-08-01T07:00:00.000Z,195,Agriculture
+2009-09-01T07:00:00.000Z,150,Agriculture
+2009-10-01T07:00:00.000Z,166,Agriculture
+2009-11-01T07:00:00.000Z,180,Agriculture
+2009-12-01T08:00:00.000Z,292,Agriculture
+2010-01-01T08:00:00.000Z,318,Agriculture
+2010-02-01T08:00:00.000Z,285,Agriculture
+2000-01-01T08:00:00.000Z,239,Self-employed
+2000-02-01T08:00:00.000Z,262,Self-employed
+2000-03-01T08:00:00.000Z,213,Self-employed
+2000-04-01T08:00:00.000Z,218,Self-employed
+2000-05-01T07:00:00.000Z,206,Self-employed
+2000-06-01T07:00:00.000Z,188,Self-employed
+2000-07-01T07:00:00.000Z,222,Self-employed
+2000-08-01T07:00:00.000Z,186,Self-employed
+2000-09-01T07:00:00.000Z,213,Self-employed
+2000-10-01T07:00:00.000Z,226,Self-employed
+2000-11-01T08:00:00.000Z,273,Self-employed
+2000-12-01T08:00:00.000Z,178,Self-employed
+2001-01-01T08:00:00.000Z,194,Self-employed
+2001-02-01T08:00:00.000Z,209,Self-employed
+2001-03-01T08:00:00.000Z,181,Self-employed
+2001-04-01T08:00:00.000Z,216,Self-employed
+2001-05-01T07:00:00.000Z,206,Self-employed
+2001-06-01T07:00:00.000Z,187,Self-employed
+2001-07-01T07:00:00.000Z,191,Self-employed
+2001-08-01T07:00:00.000Z,243,Self-employed
+2001-09-01T07:00:00.000Z,256,Self-employed
+2001-10-01T07:00:00.000Z,247,Self-employed
+2001-11-01T08:00:00.000Z,234,Self-employed
+2001-12-01T08:00:00.000Z,249,Self-employed
+2002-01-01T08:00:00.000Z,263,Self-employed
+2002-02-01T08:00:00.000Z,250,Self-employed
+2002-03-01T08:00:00.000Z,217,Self-employed
+2002-04-01T08:00:00.000Z,255,Self-employed
+2002-05-01T07:00:00.000Z,264,Self-employed
+2002-06-01T07:00:00.000Z,246,Self-employed
+2002-07-01T07:00:00.000Z,249,Self-employed
+2002-08-01T07:00:00.000Z,271,Self-employed
+2002-09-01T07:00:00.000Z,266,Self-employed
+2002-10-01T07:00:00.000Z,275,Self-employed
+2002-11-01T08:00:00.000Z,297,Self-employed
+2002-12-01T08:00:00.000Z,327,Self-employed
+2003-01-01T08:00:00.000Z,324,Self-employed
+2003-02-01T08:00:00.000Z,304,Self-employed
+2003-03-01T08:00:00.000Z,279,Self-employed
+2003-04-01T08:00:00.000Z,248,Self-employed
+2003-05-01T07:00:00.000Z,271,Self-employed
+2003-06-01T07:00:00.000Z,295,Self-employed
+2003-07-01T07:00:00.000Z,270,Self-employed
+2003-08-01T07:00:00.000Z,302,Self-employed
+2003-09-01T07:00:00.000Z,287,Self-employed
+2003-10-01T07:00:00.000Z,338,Self-employed
+2003-11-01T08:00:00.000Z,308,Self-employed
+2003-12-01T08:00:00.000Z,299,Self-employed
+2004-01-01T08:00:00.000Z,302,Self-employed
+2004-02-01T08:00:00.000Z,260,Self-employed
+2004-03-01T08:00:00.000Z,260,Self-employed
+2004-04-01T08:00:00.000Z,242,Self-employed
+2004-05-01T07:00:00.000Z,287,Self-employed
+2004-06-01T07:00:00.000Z,306,Self-employed
+2004-07-01T07:00:00.000Z,291,Self-employed
+2004-08-01T07:00:00.000Z,324,Self-employed
+2004-09-01T07:00:00.000Z,362,Self-employed
+2004-10-01T07:00:00.000Z,301,Self-employed
+2004-11-01T08:00:00.000Z,353,Self-employed
+2004-12-01T08:00:00.000Z,341,Self-employed
+2005-01-01T08:00:00.000Z,346,Self-employed
+2005-02-01T08:00:00.000Z,363,Self-employed
+2005-03-01T08:00:00.000Z,312,Self-employed
+2005-04-01T08:00:00.000Z,273,Self-employed
+2005-05-01T07:00:00.000Z,299,Self-employed
+2005-06-01T07:00:00.000Z,268,Self-employed
+2005-07-01T07:00:00.000Z,282,Self-employed
+2005-08-01T07:00:00.000Z,249,Self-employed
+2005-09-01T07:00:00.000Z,282,Self-employed
+2005-10-01T07:00:00.000Z,255,Self-employed
+2005-11-01T08:00:00.000Z,319,Self-employed
+2005-12-01T08:00:00.000Z,327,Self-employed
+2006-01-01T08:00:00.000Z,341,Self-employed
+2006-02-01T08:00:00.000Z,332,Self-employed
+2006-03-01T08:00:00.000Z,300,Self-employed
+2006-04-01T08:00:00.000Z,334,Self-employed
+2006-05-01T07:00:00.000Z,251,Self-employed
+2006-06-01T07:00:00.000Z,245,Self-employed
+2006-07-01T07:00:00.000Z,291,Self-employed
+2006-08-01T07:00:00.000Z,306,Self-employed
+2006-09-01T07:00:00.000Z,299,Self-employed
+2006-10-01T07:00:00.000Z,275,Self-employed
+2006-11-01T08:00:00.000Z,257,Self-employed
+2006-12-01T08:00:00.000Z,287,Self-employed
+2007-01-01T08:00:00.000Z,376,Self-employed
+2007-02-01T08:00:00.000Z,300,Self-employed
+2007-03-01T08:00:00.000Z,311,Self-employed
+2007-04-01T07:00:00.000Z,240,Self-employed
+2007-05-01T07:00:00.000Z,276,Self-employed
+2007-06-01T07:00:00.000Z,258,Self-employed
+2007-07-01T07:00:00.000Z,324,Self-employed
+2007-08-01T07:00:00.000Z,315,Self-employed
+2007-09-01T07:00:00.000Z,304,Self-employed
+2007-10-01T07:00:00.000Z,338,Self-employed
+2007-11-01T07:00:00.000Z,336,Self-employed
+2007-12-01T08:00:00.000Z,326,Self-employed
+2008-01-01T08:00:00.000Z,338,Self-employed
+2008-02-01T08:00:00.000Z,340,Self-employed
+2008-03-01T08:00:00.000Z,346,Self-employed
+2008-04-01T07:00:00.000Z,338,Self-employed
+2008-05-01T07:00:00.000Z,366,Self-employed
+2008-06-01T07:00:00.000Z,364,Self-employed
+2008-07-01T07:00:00.000Z,345,Self-employed
+2008-08-01T07:00:00.000Z,378,Self-employed
+2008-09-01T07:00:00.000Z,414,Self-employed
+2008-10-01T07:00:00.000Z,396,Self-employed
+2008-11-01T07:00:00.000Z,411,Self-employed
+2008-12-01T08:00:00.000Z,559,Self-employed
+2009-01-01T08:00:00.000Z,659,Self-employed
+2009-02-01T08:00:00.000Z,586,Self-employed
+2009-03-01T08:00:00.000Z,625,Self-employed
+2009-04-01T07:00:00.000Z,488,Self-employed
+2009-05-01T07:00:00.000Z,530,Self-employed
+2009-06-01T07:00:00.000Z,472,Self-employed
+2009-07-01T07:00:00.000Z,552,Self-employed
+2009-08-01T07:00:00.000Z,569,Self-employed
+2009-09-01T07:00:00.000Z,636,Self-employed
+2009-10-01T07:00:00.000Z,610,Self-employed
+2009-11-01T07:00:00.000Z,592,Self-employed
+2009-12-01T08:00:00.000Z,609,Self-employed
+2010-01-01T08:00:00.000Z,730,Self-employed
+2010-02-01T08:00:00.000Z,680,Self-employed
