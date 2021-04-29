@@ -23,6 +23,7 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
+import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
@@ -39,7 +40,6 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 import "./filter-tile.scss";
 
 const FILTER_CLASS_NAME = "filter";
-const ANIMATION_DURATION = 400;
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -55,6 +55,7 @@ export interface FilterTileProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
+  locale: Locale;
   menuStage: Stage;
 }
 
@@ -350,7 +351,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   };
 
   renderMenu(): JSX.Element {
-    const { essence, timekeeper, clicker, menuStage } = this.props;
+    const { locale, essence, timekeeper, clicker, menuStage } = this.props;
     const { menuOpenOn, menuDimension, menuInside, maxItems, overflowMenuOpenOn } = this.state;
     let { possiblePosition } = this.state;
     if (!menuDimension) return null;
@@ -363,6 +364,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       clicker={clicker}
       essence={essence}
       timekeeper={timekeeper}
+      locale={locale}
       containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}
@@ -439,7 +441,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
-    const { essence: { timezone }, clicker } = this.props;
+    const { essence: { timezone } } = this.props;
     const { menuDimension } = this.state;
 
     const { dimension, clause, source } = itemBlank;

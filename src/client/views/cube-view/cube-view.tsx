@@ -596,6 +596,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
               </div>
               <div className="filter-split-section">
                 <FilterTile
+                  locale={customization.locale}
                   ref={this.filterTile}
                   clicker={clicker}
                   essence={essence}
