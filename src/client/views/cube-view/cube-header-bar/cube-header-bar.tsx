@@ -19,7 +19,7 @@ import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
-import { Customization } from "../../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../../common/models/customization/customization";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../../common/utils/functional/functional";
@@ -46,7 +46,7 @@ export interface CubeHeaderBarProps {
   openViewDefinitionModal?: Fn;
   openDruidQueryModal?: Fn;
   openUrlShortenerModal?: Binary<string, string, void>;
-  customization?: Customization;
+  customization?: ClientCustomization;
   getDownloadableDataset?: () => DataSetWithTabOptions;
   changeTimezone?: (timezone: Timezone) => void;
 }
@@ -186,7 +186,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
 
     return <TimezoneMenu
       timezone={timezone}
-      timezones={customization.getTimezones()}
+      timezones={customization.timezones}
       changeTimezone={changeTimezone}
       openOn={timezoneMenuAnchor}
       onClose={this.closeTimezoneMenu}

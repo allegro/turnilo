@@ -14,45 +14,15 @@
  * limitations under the License.
  */
 
-import { Instance } from "immutable-class";
 import { Ternary } from "../../utils/functional/functional";
 
 export interface UrlShortenerContext {
   clientIp: string;
 }
 
-export type UrlShortenerFn = Ternary<any, string, UrlShortenerContext, Promise<string>>;
+export type UrlShortener = Ternary<any, string, UrlShortenerContext, Promise<string>>;
 export type UrlShortenerDef = string;
 
-export class UrlShortener implements Instance<UrlShortenerDef, UrlShortenerDef> {
-
-  static fromJS(definition: UrlShortenerDef): UrlShortener {
-    return new UrlShortener(definition);
-  }
-
-  public readonly shortenerFunction: UrlShortenerFn;
-
-  constructor(private shortenerDefinition: string) {
-    this.shortenerFunction = new Function("request", "url", "context", shortenerDefinition) as UrlShortenerFn;
-  }
-
-  public toJS(): UrlShortenerDef {
-    return this.shortenerDefinition;
-  }
-
-  public valueOf(): UrlShortenerDef {
-    return this.shortenerDefinition;
-  }
-
-  public toJSON(): UrlShortenerDef {
-    return this.toJS();
-  }
-
-  public equals(other: UrlShortener): boolean {
-    return other instanceof UrlShortener && this.valueOf() === other.valueOf();
-  }
-
-  public toString(): string {
-    return this.shortenerDefinition;
-  }
+export function fromConfig(definition?: UrlShortenerDef): UrlShortener | undefined {
+  return definition && Function("request", "url", "context", definition) as UrlShortener;
 }

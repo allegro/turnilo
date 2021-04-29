@@ -17,7 +17,7 @@
 
 import { NamedArray } from "immutable-class";
 import * as React from "react";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
@@ -42,7 +42,7 @@ import { cube, generalError, home, oauthCodeHandler, oauthMessageView, View } fr
 export interface TurniloApplicationProps {
   version: string;
   maxFilters?: number;
-  appSettings: AppSettings;
+  appSettings: ClientAppSettings;
   initTimekeeper?: Timekeeper;
 }
 

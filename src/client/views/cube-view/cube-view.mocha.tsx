@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
-import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
+import { clientAppSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { noop } from "../../../common/utils/functional/functional";
@@ -32,7 +32,7 @@ describe.skip("CubeView", () => {
     const cubeView = mount(
       <CubeView
         openAboutModal={noop}
-        appSettings={AppSettingsFixtures.wikiOnly()}
+        appSettings={clientAppSettings}
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
         dataCube={DataCubeFixtures.wiki()}

@@ -20,9 +20,9 @@ import memoizeOne from "memoize-one";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { Customization } from "../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
@@ -96,8 +96,8 @@ export interface CubeViewProps {
   dataCube: DataCube;
   dataCubes: DataCube[];
   openAboutModal: Fn;
-  customization?: Customization;
-  appSettings: AppSettings;
+  customization?: ClientCustomization;
+  appSettings: ClientAppSettings;
 }
 
 export interface CubeViewState {

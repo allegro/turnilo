@@ -16,11 +16,31 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Class, immutableArraysEqual, Instance } from "immutable-class";
 import { LOGGER } from "../../logger/logger";
-import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
+import { isTruthy } from "../../utils/general/general";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
-import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
+import { fromConfig as urlShortenerFromConfig, UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
+
+const DEFAULT_TITLE = "Turnilo (%v)";
+
+const DEFAULT_TIMEZONES: Timezone[] = [
+  new Timezone("America/Juneau"), // -9.0
+  new Timezone("America/Los_Angeles"), // -8.0
+  new Timezone("America/Yellowknife"), // -7.0
+  new Timezone("America/Phoenix"), // -7.0
+  new Timezone("America/Denver"), // -7.0
+  new Timezone("America/Mexico_City"), // -6.0
+  new Timezone("America/Chicago"), // -6.0
+  new Timezone("America/New_York"), // -5.0
+  new Timezone("America/Argentina/Buenos_Aires"), // -4.0
+  Timezone.UTC,
+  new Timezone("Asia/Jerusalem"), // +2.0
+  new Timezone("Europe/Paris"), // +1.0
+  new Timezone("Asia/Kathmandu"), // +5.8
+  new Timezone("Asia/Hong_Kong"), // +8.0
+  new Timezone("Asia/Seoul"), // +9.0
+  new Timezone("Pacific/Guam") // +10.0
+];
 
 const availableCssVariables = [
   "background-base",
@@ -80,16 +100,15 @@ const availableCssVariables = [
   "text-standard"
 ];
 
-export interface CustomizationValue {
+export interface Customization {
   title?: string;
   headerBackground?: string;
   customLogoSvg?: string;
-  externalViews?: ExternalView[];
-  timezones?: Timezone[];
-  logoutHref?: string;
+  externalViews: ExternalView[];
+  timezones: Timezone[];
   urlShortener?: UrlShortener;
   sentryDSN?: string;
-  cssVariables?: Record<string, string>;
+  cssVariables: Record<string, string>;
 }
 
 export interface CustomizationJS {
@@ -98,187 +117,103 @@ export interface CustomizationJS {
   customLogoSvg?: string;
   externalViews?: ExternalViewValue[];
   timezones?: string[];
-  logoutHref?: string;
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
   cssVariables?: Record<string, string>;
 }
 
-var check: Class<CustomizationValue, CustomizationJS>;
-
-export class Customization implements Instance<CustomizationValue, CustomizationJS> {
-  static DEFAULT_TITLE = "Turnilo (%v)";
-
-  static DEFAULT_TIMEZONES: Timezone[] = [
-    new Timezone("America/Juneau"), // -9.0
-    new Timezone("America/Los_Angeles"), // -8.0
-    new Timezone("America/Yellowknife"), // -7.0
-    new Timezone("America/Phoenix"), // -7.0
-    new Timezone("America/Denver"), // -7.0
-    new Timezone("America/Mexico_City"), // -6.0
-    new Timezone("America/Chicago"), // -6.0
-    new Timezone("America/New_York"), // -5.0
-    new Timezone("America/Argentina/Buenos_Aires"), // -4.0
-    Timezone.UTC,
-    new Timezone("Asia/Jerusalem"), // +2.0
-    new Timezone("Europe/Paris"), // +1.0
-    new Timezone("Asia/Kathmandu"), // +5.8
-    new Timezone("Asia/Hong_Kong"), // +8.0
-    new Timezone("Asia/Seoul"), // +9.0
-    new Timezone("Pacific/Guam") // +10.0
-  ];
-
-  static DEFAULT_LOGOUT_HREF = "logout";
-
-  static isCustomization(candidate: any): candidate is Customization {
-    return candidate instanceof Customization;
-  }
-
-  static fromJS(parameters: CustomizationJS): Customization {
-    var value: CustomizationValue = {
-      title: parameters.title,
-      headerBackground: parameters.headerBackground,
-      customLogoSvg: parameters.customLogoSvg,
-      logoutHref: parameters.logoutHref,
-      sentryDSN: parameters.sentryDSN,
-      cssVariables: parameters.cssVariables
-    };
-
-    var paramViewsJS = parameters.externalViews;
-    var externalViews: ExternalView[] = null;
-    if (Array.isArray(paramViewsJS)) {
-      externalViews = paramViewsJS.map((view, i) => ExternalView.fromJS(view));
-      value.externalViews = externalViews;
-    }
-
-    var timezonesJS = parameters.timezones;
-    var timezones: Timezone[] = null;
-    if (Array.isArray(timezonesJS)) {
-      timezones = timezonesJS.map(Timezone.fromJS);
-      value.timezones = timezones;
-    }
-
-    if (parameters.urlShortener) {
-      value.urlShortener = UrlShortener.fromJS(parameters.urlShortener);
-    }
-
-    return new Customization(value);
-  }
-
-  public headerBackground: string;
-  public customLogoSvg: string;
-  public externalViews: ExternalView[];
-  public timezones: Timezone[];
-  public title: string;
-  public logoutHref: string;
-  public urlShortener: UrlShortener;
-  public sentryDSN: string;
-  public cssVariables?: Record<string, string>;
-
-  constructor(parameters: CustomizationValue) {
-    this.title = parameters.title || null;
-    this.headerBackground = parameters.headerBackground || null;
-    this.customLogoSvg = parameters.customLogoSvg || null;
-    if (parameters.externalViews) this.externalViews = parameters.externalViews;
-    if (parameters.timezones) this.timezones = parameters.timezones;
-    this.logoutHref = parameters.logoutHref;
-    if (parameters.urlShortener) this.urlShortener = parameters.urlShortener;
-    if (parameters.sentryDSN) this.sentryDSN = parameters.sentryDSN;
-    if (parameters.cssVariables) this.cssVariables = parameters.cssVariables;
-  }
-
-  public valueOf(): CustomizationValue {
-    return {
-      title: this.title,
-      headerBackground: this.headerBackground,
-      customLogoSvg: this.customLogoSvg,
-      externalViews: this.externalViews,
-      timezones: this.timezones,
-      urlShortener: this.urlShortener,
-      logoutHref: this.logoutHref,
-      sentryDSN: this.sentryDSN,
-      cssVariables: this.cssVariables
-    };
-  }
-
-  public toJS(): CustomizationJS {
-    var js: CustomizationJS = {};
-    if (this.title) js.title = this.title;
-    if (this.sentryDSN) js.sentryDSN = this.sentryDSN;
-    if (this.headerBackground) js.headerBackground = this.headerBackground;
-    if (this.customLogoSvg) js.customLogoSvg = this.customLogoSvg;
-    if (this.externalViews) {
-      js.externalViews = this.externalViews.map(view => view.toJS());
-    }
-    if (this.timezones) {
-      js.timezones = this.timezones.map(tz => tz.toJS());
-    }
-    if (this.urlShortener) {
-      js.urlShortener = this.urlShortener.toJS();
-    }
-    if (this.logoutHref) js.logoutHref = this.logoutHref;
-    if (this.cssVariables) js.cssVariables = this.cssVariables;
-
-    return js;
-  }
-
-  public toJSON(): CustomizationJS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
-      this.timezones)}]`;
-  }
-
-  public equals(other: Customization): boolean {
-    return Customization.isCustomization(other) &&
-      this.title === other.title &&
-      this.headerBackground === other.headerBackground &&
-      this.customLogoSvg === other.customLogoSvg &&
-      (!this.urlShortener || this.urlShortener.equals(other.urlShortener)) &&
-      immutableArraysEqual(this.externalViews, other.externalViews) &&
-      immutableArraysEqual(this.timezones, other.timezones) &&
-      this.sentryDSN === other.sentryDSN &&
-      this.logoutHref === other.logoutHref &&
-      this.cssVariables === other.cssVariables;
-  }
-
-  public getTitle(version: string): string {
-    var title = this.title || Customization.DEFAULT_TITLE;
-    return title.replace(/%v/g, version);
-  }
-
-  change(propertyName: string, newValue: any): Customization {
-    return ImmutableUtils.change(this, propertyName, newValue);
-  }
-
-  public changeTitle(title: string): Customization {
-    return this.change("title", title);
-  }
-
-  public getTimezones() {
-    return this.timezones || Customization.DEFAULT_TIMEZONES;
-  }
-
-  public getLogoutHref() {
-    return this.logoutHref || Customization.DEFAULT_LOGOUT_HREF;
-  }
-
-  validate(): boolean {
-    let valid = true;
-
-    if (this.cssVariables) {
-      Object.keys(this.cssVariables).forEach(variableName => {
-        if (availableCssVariables.indexOf(variableName) < 0) {
-          valid = false;
-          LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
-        }
-      });
-    }
-
-    return valid;
-  }
+export interface SerializedCustomization {
+  headerBackground?: string;
+  customLogoSvg?: string;
+  timezones: string[];
+  externalViews: ExternalViewValue[];
+  hasUrlShortener: boolean;
+  sentryDSN?: string;
 }
 
-check = Customization;
+export interface ClientCustomization {
+  headerBackground?: string;
+  customLogoSvg?: string;
+  timezones: Timezone[];
+  externalViews: ExternalViewValue[];
+  hasUrlShortener: boolean;
+  sentryDSN?: string;
+}
+
+function validate({ cssVariables }: Customization): boolean {
+  let valid = true;
+
+  Object.keys(cssVariables).forEach(variableName => {
+    if (availableCssVariables.indexOf(variableName) < 0) {
+      valid = false;
+      LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
+    }
+  });
+
+  return valid;
+}
+
+export function fromConfig(config: CustomizationJS = {}): Customization {
+  const {
+    title = DEFAULT_TITLE,
+    headerBackground,
+    customLogoSvg,
+    externalViews: configExternalViews,
+    timezones: configTimezones,
+    urlShortener,
+    sentryDSN,
+    cssVariables = {}
+  } = config;
+
+  const timezones = Array.isArray(configTimezones)
+    ? configTimezones.map(Timezone.fromJS)
+    : DEFAULT_TIMEZONES;
+
+  const externalViews = Array.isArray(configExternalViews)
+    ? configExternalViews.map(ExternalView.fromJS)
+    : [];
+
+  const customization = {
+    title,
+    headerBackground,
+    customLogoSvg,
+    sentryDSN,
+    cssVariables,
+    urlShortener: urlShortenerFromConfig(urlShortener),
+    timezones,
+    externalViews
+  };
+
+  // TODO: Fallthrough, because we don't have any mechanism for handling incorrect configs
+  validate(customization);
+
+  return customization;
+}
+
+export function serialize(customization: Customization): SerializedCustomization {
+  const { customLogoSvg, timezones, headerBackground, externalViews, sentryDSN, urlShortener } = customization;
+  return {
+    customLogoSvg,
+    externalViews,
+    hasUrlShortener: isTruthy(urlShortener),
+    headerBackground,
+    sentryDSN,
+    timezones: timezones.map(t => t.toJS())
+  };
+}
+
+export function deserialize(customization: SerializedCustomization): ClientCustomization {
+  const { headerBackground, customLogoSvg, timezones, externalViews, hasUrlShortener, sentryDSN } = customization;
+  return {
+    headerBackground,
+    customLogoSvg,
+    externalViews,
+    hasUrlShortener,
+    sentryDSN,
+    timezones: timezones.map(Timezone.fromJS)
+  };
+}
+
+export function getTitle({ title }: Customization, version: string): string {
+  return title.replace(/%v/g, version);
+}

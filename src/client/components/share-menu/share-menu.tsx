@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Customization } from "../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
@@ -35,7 +35,7 @@ export interface ShareMenuProps {
   openOn: Element;
   onClose: Fn;
   openUrlShortenerModal: Binary<string, string, void>;
-  customization: Customization;
+  customization: ClientCustomization;
   urlForEssence: (essence: Essence) => string;
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
@@ -87,7 +87,7 @@ function linkItems({ essence, customization, timekeeper, onClose, urlForEssence,
       </li>
     </SafeCopyToClipboard>}
 
-    {customization.urlShortener && <React.Fragment>
+    {customization.hasUrlShortener && <React.Fragment>
       <li
         key="short-url"
         onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>
