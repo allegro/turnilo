@@ -16,17 +16,16 @@
 
 import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { UrlShortenerContext } from "../../../common/models/url-shortener/url-shortener";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
 
-export function shortenRouter(settingsGetter: SettingsGetter, isTrustedProxy: boolean) {
+export function shortenRouter(settings: Pick<AppSettings, "customization">, isTrustedProxy: boolean) {
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     const { url } = req.query;
     try {
-      const settings = await settingsGetter();
       const shortener = settings.customization.urlShortener;
       const context: UrlShortenerContext = {
         // If trust proxy is not enabled, app is understood as directly facing the internet

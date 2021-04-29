@@ -29,11 +29,10 @@ import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
 import { plywoodRouter } from "./routes/plywood/plywood";
 import { readinessRouter } from "./routes/readiness/readiness";
-import { settingsRouter } from "./routes/settings/settings";
 import { shortenRouter } from "./routes/shorten/shorten";
+import { sourcesRouter } from "./routes/sources/sources";
 import { turniloRouter } from "./routes/turnilo/turnilo";
 import { loadPlugin } from "./utils/plugin-loader/load-plugin";
-import { SettingsGetter } from "./utils/settings-manager/settings-manager";
 import { errorLayout } from "./views";
 
 declare module "express" {
@@ -96,14 +95,17 @@ app.use((req: Request, res: Response, next: Function) => {
   next();
 });
 
-const appSettings: SettingsGetter = opts => SETTINGS_MANAGER.getSettings(opts);
-
 SERVER_SETTINGS.getPlugins().forEach(({ path, name, settings }: PluginSettings) => {
   try {
     LOGGER.log(`Loading plugin ${name} module`);
     const module = loadPlugin(path, SETTINGS_MANAGER.anchorPath);
     LOGGER.log(`Invoking plugin ${name}`);
-    module.plugin(app, settings, SERVER_SETTINGS, appSettings, LOGGER.addPrefix(name));
+    module.plugin(app,
+      settings,
+      SERVER_SETTINGS,
+      SETTINGS_MANAGER.appSettings,
+      SETTINGS_MANAGER.sourcesGetter,
+      LOGGER.addPrefix(name));
   } catch (e) {
     LOGGER.warn(`Plugin ${name} threw an error: ${e.message}`);
   }
@@ -137,18 +139,17 @@ if (app.get("env") === "dev-hmr") {
 attachRouter("/", express.static(join(__dirname, "../../build/public")));
 attachRouter("/", express.static(join(__dirname, "../../assets")));
 
-attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(appSettings));
+attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(SETTINGS_MANAGER.sourcesGetter));
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-attachRouter("/settings", settingsRouter(appSettings));
+attachRouter("/settings", sourcesRouter(SETTINGS_MANAGER.sourcesGetter));
 attachRouter("/plywood", plywoodRouter(SETTINGS_MANAGER));
-attachRouter("/plyql", plyqlRouter(appSettings));
-attachRouter("/mkurl", mkurlRouter(appSettings));
-attachRouter("/shorten", shortenRouter(appSettings, isTrustedProxy));
+attachRouter("/plyql", plyqlRouter(SETTINGS_MANAGER.sourcesGetter));
+attachRouter("/mkurl", mkurlRouter(SETTINGS_MANAGER.sourcesGetter));
+attachRouter("/shorten", shortenRouter(SETTINGS_MANAGER.appSettings, isTrustedProxy));
 
-const freshSettingsGetter: SettingsGetter = opts => SETTINGS_MANAGER.getFreshSettings(opts);
-attachRouter("/", turniloRouter(freshSettingsGetter, VERSION));
+attachRouter("/", turniloRouter(SETTINGS_MANAGER.appSettings, VERSION));
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response) => {

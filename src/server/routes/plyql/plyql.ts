@@ -17,7 +17,8 @@
 
 import { Request, Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
-import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { getDataCube } from "../../../common/models/sources/sources";
+import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;
@@ -33,7 +34,7 @@ const outputFunctions: PlyqlOutputFunctions = {
   tsv: (data: Dataset): string => data.toTSV()
 };
 
-export function plyqlRouter(settingsGetter: SettingsGetter) {
+export function plyqlRouter(sourcesGetter: SourcesGetter) {
 
   const router = Router();
 
@@ -79,8 +80,8 @@ export function plyqlRouter(settingsGetter: SettingsGetter) {
     });
 
     try {
-      const settings = await settingsGetter();
-      const myDataCube = settings.getDataCube(dataCube);
+      const sources = await sourcesGetter();
+      const myDataCube = getDataCube(sources, dataCube);
 
       if (!myDataCube) {
         res.status(400).send({ error: "unknown data cube" });

@@ -19,7 +19,7 @@ import * as bodyParser from "body-parser";
 import * as express from "express";
 import { $ } from "plywood";
 import * as supertest from "supertest";
-import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
+import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
 import { mkurlRouter } from "./mkurl";
 
@@ -29,7 +29,7 @@ let app = express();
 
 app.use(bodyParser.json());
 
-app.use(mkurlPath, mkurlRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
+app.use(mkurlPath, mkurlRouter(() => Promise.resolve(wikiSourcesWithExecutor)));
 
 describe("mkurl router", () => {
   it("gets a simple url back", (testComplete: any) => {

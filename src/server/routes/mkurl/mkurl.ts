@@ -16,14 +16,13 @@
  */
 
 import { Request, Response, Router } from "express";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Essence } from "../../../common/models/essence/essence";
+import { getDataCube, Sources } from "../../../common/models/sources/sources";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { MANIFESTS } from "../../../common/visualization-manifests";
-import { GetSettingsOptions, SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
-export function mkurlRouter(settingsGetter: SettingsGetter) {
+export function mkurlRouter(sourcesGetter: SourcesGetter) {
 
   const router = Router();
 
@@ -53,14 +52,14 @@ export function mkurlRouter(settingsGetter: SettingsGetter) {
       return;
     }
 
-    let settings: AppSettings;
+    let sources: Sources;
     try {
-      settings = await settingsGetter();
+      sources = await sourcesGetter();
     } catch (e) {
       res.status(400).send({ error: "Couldn't load settings" });
       return;
     }
-    const myDataCube = settings.getDataCube(dataCubeName);
+    const myDataCube = getDataCube(sources, dataCubeName);
     if (!myDataCube) {
       res.status(400).send({ error: "unknown data cube" });
       return;
