@@ -20,7 +20,7 @@ import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
-import { isEnabled } from "../../../common/models/oauth/oauth";
+import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { DataCubeNotFound } from "../../components/no-data/data-cube-not-found";
@@ -178,7 +178,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     switch (view.viewType) {
       case "oauth-message": {
         const oauth = appSettings.oauth;
-        if (!isEnabled(oauth)) throw new Error("OAuth configuration error");
+        if (!isOAuthEnabled(oauth)) throw new Error("OAuth configuration error");
         return <OauthMessageView oauth={oauth}/>;
       }
 
@@ -220,7 +220,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
       case "oauth-code-handler": {
         const oauth = appSettings.oauth;
-        if (!isEnabled(oauth)) throw new Error("OAuth configuration error");
+        if (!isOAuthEnabled(oauth)) throw new Error("OAuth configuration error");
         return <OauthCodeHandler oauth={oauth} code={view.code}/>;
       }
     }
