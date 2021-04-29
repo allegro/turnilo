@@ -66,6 +66,11 @@ export function flatMap<T, S>(coll: T[], mapper: Binary<T, number, S[]>): S[] {
   return [].concat(...coll.map(mapper));
 }
 
+export function cyclicShift<T>(coll: T[], count: number): T[] {
+  const n = count % coll.length;
+  return coll.slice(n, coll.length).concat(coll.slice(0, n));
+}
+
 export function concatTruthy<T>(...elements: T[]): T[] {
   return elements.reduce((result: T[], element: T) => isTruthy(element) ? cons(result, element) : result, []);
 }
