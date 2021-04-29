@@ -20,14 +20,20 @@ import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
+import {
+  addOrUpdateDataCube,
+  deleteDataCube,
+  getDataCube,
+  getDataCubesForCluster,
+  Sources
+} from "../../../common/models/sources/sources";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { noop } from "../../../common/utils/functional/functional";
+import { noop, Unary } from "../../../common/utils/functional/functional";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { timeout } from "../../../common/utils/promise/promise";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
 import { ClusterManager } from "../cluster-manager/cluster-manager";
 import { FileManager } from "../file-manager/file-manager";
-import { SettingsStore } from "../settings-store/settings-store";
 
 export interface SettingsManagerOptions {
   logger: Logger;
@@ -36,40 +42,41 @@ export interface SettingsManagerOptions {
   anchorPath: string;
 }
 
-export interface GetSettingsOptions {
+export interface GetSourcesOptions {
   timeout?: number;
 }
 
-export type SettingsGetter = (opts?: GetSettingsOptions) => Promise<AppSettings>;
+export type SourcesGetter = (opts?: GetSourcesOptions) => Promise<Sources>;
 
 export class SettingsManager {
   public logger: Logger;
   public verbose: boolean;
   public anchorPath: string;
-  public settingsStore: SettingsStore;
   public appSettings: AppSettings;
+  public sources: Sources;
   public timeMonitor: TimeMonitor;
   public fileManagers: FileManager[];
   public clusterManagers: ClusterManager[];
   public settingsLoaded: Promise<void>;
   public initialLoadTimeout: number;
 
-  constructor(settingsStore: SettingsStore, options: SettingsManagerOptions) {
+  constructor(appSettings: AppSettings,
+              sources: Sources,
+              options: SettingsManagerOptions) {
     const logger = options.logger;
     this.logger = logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
 
     this.timeMonitor = new TimeMonitor(logger);
-    this.settingsStore = settingsStore;
+    this.appSettings = appSettings;
     this.fileManagers = [];
     this.clusterManagers = [];
 
     this.initialLoadTimeout = options.initialLoadTimeout || 30000;
-    this.appSettings = AppSettings.BLANK;
+    this.sources = sources;
 
-    this.settingsLoaded = settingsStore.readSettings()
-      .then(appSettings => this.reviseSettings(appSettings))
+    this.settingsLoaded = this.reviseSources()
       .catch(e => {
         logger.error(`Fatal settings load error: ${e.message}`);
         logger.error(e.stack);
@@ -109,7 +116,7 @@ export class SettingsManager {
     if (Array.isArray(dataCube.source)) throw new Error(`native data cube can't have multiple sources: ${dataCube.source.join(", ")}`);
     const { verbose, logger, anchorPath } = this;
 
-    var fileManager = new FileManager({
+    const fileManager = new FileManager({
       logger,
       verbose,
       anchorPath,
@@ -126,58 +133,60 @@ export class SettingsManager {
     return this.timeMonitor.timekeeper;
   }
 
-  handleSettingsTask(task: Promise<void>, opts: GetSettingsOptions = {}): Promise<AppSettings> {
+  handleSourcesTask(task: Promise<void>, opts: GetSourcesOptions = {}): Promise<Sources> {
     const timeoutMs = opts.timeout || this.initialLoadTimeout;
     if (timeoutMs === 0) {
-      return task.then(() => this.appSettings);
+      return task.then(() => this.sources);
     }
     return Promise.race([task, timeout(timeoutMs)])
       .catch(() => {
         this.logger.warn(`Settings load timeout (${timeoutMs}ms) hit, continuing`);
       })
-      .then(() => this.appSettings);
+      .then(() => this.sources);
   }
 
-  getFreshSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
+  getFreshSources(opts: GetSourcesOptions = {}): Promise<Sources> {
     const task = this.settingsLoaded.then(() => {
       return Promise.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
     });
-    return this.handleSettingsTask(task, opts);
+    return this.handleSourcesTask(task, opts);
   }
 
-  getSettings(opts: GetSettingsOptions = {}): Promise<AppSettings> {
-    return this.handleSettingsTask(this.settingsLoaded, opts);
+  getSources(opts: GetSourcesOptions = {}): Promise<Sources> {
+    return this.handleSourcesTask(this.settingsLoaded, opts);
   }
 
-  reviseSettings(newSettings: AppSettings): Promise<void> {
+  sourcesGetter: Unary<GetSourcesOptions, Promise<Sources>> = opts => this.getSources(opts);
+
+  reviseSources(): Promise<void> {
+    const { sources } = this;
     const tasks = [
-      this.reviseClusters(newSettings),
-      this.reviseDataCubes(newSettings)
+      this.reviseClusters(sources),
+      this.reviseDataCubes(sources)
     ];
-    this.appSettings = newSettings;
 
     return Promise.all(tasks).then(noop);
   }
 
-  reviseClusters(settings: AppSettings): Promise<void> {
-    const { clusters } = settings;
-    const tasks: Array<Promise<void>> = clusters.map(cluster => this.addClusterManager(cluster, settings.getDataCubesForCluster(cluster.name)));
+  reviseClusters(sources: Sources): Promise<void> {
+    const { clusters } = sources;
+    const tasks: Array<Promise<void>> = clusters.map(cluster => this.addClusterManager(cluster, getDataCubesForCluster(sources, cluster.name)));
     return Promise.all(tasks).then(noop);
   }
 
-  reviseDataCubes(settings: AppSettings): Promise<void> {
-    const nativeDataCubes = settings.getDataCubesForCluster("native");
+  reviseDataCubes(sources: Sources): Promise<void> {
+    const nativeDataCubes = getDataCubesForCluster(sources, "native");
     const tasks: Array<Promise<void>> = nativeDataCubes.map(dc => this.addFileManager(dc));
     return Promise.all(tasks).then(noop);
   }
 
   generateDataCubeName = (external: External): string => {
-    const { appSettings } = this;
+    const { sources } = this;
     const source = String(external.source);
 
     let candidateName = source;
     let i = 0;
-    while (appSettings.getDataCube(candidateName)) {
+    while (getDataCube(sources, candidateName)) {
       i++;
       candidateName = source + i;
     }
@@ -185,11 +194,11 @@ export class SettingsManager {
   };
 
   onDatasetChange = (dataCubeName: string, changedDataset: Dataset): void => {
-    const { logger } = this;
+    const { logger, sources } = this;
 
     logger.log(`Got native dataset update for ${dataCubeName}`);
 
-    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) throw new Error(`Unknown dataset ${dataCubeName}`);
     dataCube = dataCube.updateWithDataset(changedDataset);
 
@@ -199,16 +208,16 @@ export class SettingsManager {
       });
     }
 
-    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
+    this.sources = addOrUpdateDataCube(sources, dataCube);
   };
 
   onExternalChange = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
     if (!changedExternal.attributes || !changedExternal.requester) return Promise.resolve(null);
-    const { logger } = this;
+    const { sources, logger } = this;
 
     logger.log(`Got queryable external dataset update for ${dataCubeName} in cluster ${cluster.name}`);
 
-    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) {
       dataCube = DataCube.fromClusterAndExternal(dataCubeName, cluster, changedExternal);
     }
@@ -220,19 +229,19 @@ export class SettingsManager {
       });
     }
 
-    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
+    this.sources = addOrUpdateDataCube(sources, dataCube);
     return Promise.resolve(null);
   };
 
   onExternalRemoved = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
     if (!changedExternal.attributes || !changedExternal.requester) return Promise.resolve(null);
-    const { logger } = this;
+    const { sources, logger } = this;
 
     logger.log(`Got external dataset removal for ${dataCubeName} in cluster ${cluster.name}`);
 
-    let dataCube = this.appSettings.getDataCube(dataCubeName);
+    let dataCube = getDataCube(sources, dataCubeName);
     if (dataCube) {
-      this.appSettings = this.appSettings.deleteDataCube(dataCube);
+      this.sources = deleteDataCube(sources, dataCube);
       this.timeMonitor.removeCheck(dataCube.name);
     }
     return Promise.resolve(null);

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import * as path from "path";
 import { External } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator } from "plywood-druid-requester";

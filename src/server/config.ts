@@ -18,17 +18,20 @@
 import * as nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
-import { AppSettings } from "../common/models/app-settings/app-settings";
+import {
+  AppSettingsJS,
+  EMPTY_APP_SETTINGS,
+  fromConfig as appSettingsFromConfig
+} from "../common/models/app-settings/app-settings";
 import { Cluster } from "../common/models/cluster/cluster";
 import { DataCube } from "../common/models/data-cube/data-cube";
-import { arraySum } from "../common/utils/general/general";
-import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
+import { fromConfig as sourcesFromConfig, SourcesJS } from "../common/models/sources/sources";
+import { arraySum, isTruthy } from "../common/utils/general/general";
+import { appSettingsToYaml, printExtra, sourcesToYaml } from "../common/utils/yaml-helper/yaml-helper";
 import { ServerSettings, ServerSettingsJS } from "./models/server-settings/server-settings";
 import { loadFileSync } from "./utils/file/file";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
-import { SettingsStore } from "./utils/settings-store/settings-store";
 
-const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, "../../package.json");
 
 function exitWithMessage(message: string): void {
@@ -211,31 +214,16 @@ if (START_SERVER) {
   logger.log(`Starting Turnilo v${VERSION}`);
 }
 
-// --- Location -------------------------------
+function readConfig(config: AppSettingsJS & SourcesJS) {
+    return {
+      appSettings: appSettingsFromConfig(config),
+      sources: sourcesFromConfig(config)
+    };
+}
 
-let settingsStore: SettingsStore;
-
-if (configContent) {
-  const appSettings = AppSettings.fromJS(configContent, {});
-  // TODO: this validation should be done via #365
-  appSettings.validate();
-  settingsStore = SettingsStore.create(appSettings);
-} else {
-  let initAppSettings = AppSettings.BLANK;
-
-  // If a file is specified add it as a dataCube
-  const fileToLoad = parsedArgs["file"];
-  if (fileToLoad) {
-    initAppSettings = initAppSettings.addDataCube(new DataCube({
-      name: path.basename(fileToLoad, path.extname(fileToLoad)),
-      clusterName: "native",
-      source: fileToLoad
-    }));
-  }
-
-  const url = parsedArgs.druid;
-  if (url) {
-    initAppSettings = initAppSettings.addCluster(new Cluster({
+function readArgs(file: string | undefined, url: string | undefined) {
+  const sources = {
+    clusters: !isTruthy(url) ? [] : [new Cluster({
       name: "druid",
       url,
       sourceListScan: "auto",
@@ -243,13 +231,26 @@ if (configContent) {
       sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
       sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
       sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
-    }));
-  }
+    })],
+    dataCubes: !isTruthy(file) ? [] : [new DataCube({
+      name: path.basename(file, path.extname(file)),
+      clusterName: "native",
+      source: file
+    })
+    ]
+  };
 
-  settingsStore = SettingsStore.create(initAppSettings);
+  return {
+    appSettings: EMPTY_APP_SETTINGS,
+    sources
+  };
 }
 
-export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
+const { appSettings, sources } = configContent
+  ? readConfig(configContent)
+  : readArgs(parsedArgs.file, parsedArgs.druid);
+
+export const SETTINGS_MANAGER = new SettingsManager(appSettings, sources, {
   logger,
   verbose: VERBOSE,
   anchorPath: configDirPath,
@@ -259,17 +260,22 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
 // --- Printing -------------------------------
 
 if (PRINT_CONFIG) {
-  var withComments = Boolean(parsedArgs["with-comments"]);
+  const withComments = Boolean(parsedArgs["with-comments"]);
 
-  SETTINGS_MANAGER.getFreshSettings({
+  SETTINGS_MANAGER.getFreshSources({
     timeout: 10000
-  }).then(appSettings => {
-    const config = appSettingsToYAML(appSettings, withComments, {
+  }).then(sources => {
+    const extra = {
       header: true,
       version: VERSION,
       verbose: VERBOSE,
       port: SERVER_SETTINGS.getPort()
-    });
+    };
+    const config = [
+      printExtra(extra, withComments),
+      appSettingsToYaml(appSettings, withComments),
+      sourcesToYaml(sources, withComments)
+    ].join("\n");
     process.stdout.write(config, () => process.exit());
   }).catch((e: Error) => {
     exitWithError("There was an error generating a config: " + e.message);

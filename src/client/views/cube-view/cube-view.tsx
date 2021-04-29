@@ -94,6 +94,7 @@ export interface CubeViewProps {
   urlForCubeAndEssence: Binary<DataCube, Essence, string>;
   getEssenceFromHash: Binary<string, DataCube, Essence>;
   dataCube: DataCube;
+  dataCubes: DataCube[];
   openAboutModal: Fn;
   customization?: Customization;
   appSettings: AppSettings;
@@ -667,9 +668,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   };
 
   renderSideDrawer() {
-    const { changeCubeAndEssence, openAboutModal, appSettings } = this.props;
+    const { dataCubes, changeCubeAndEssence, openAboutModal, appSettings } = this.props;
     const { showSideBar, essence } = this.state;
-    const { dataCubes, customization } = appSettings;
+    const { customization } = appSettings;
     const transitionTimeout = { enter: 500, exit: 300 };
     return <CSSTransition
       in={showSideBar}

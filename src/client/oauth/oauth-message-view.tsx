@@ -15,12 +15,12 @@
  */
 
 import * as React from "react";
-import { Oauth } from "../../common/models/oauth/oauth";
+import { OauthEnabled } from "../../common/models/oauth/oauth";
 import { MessagePanel, MessagePanelAction } from "../components/message-panel/message-panel";
 import { login } from "./oauth";
 
 interface OauthMessageViewProps {
-  oauth: Oauth;
+  oauth: OauthEnabled;
 }
 
 export const OauthMessageView: React.SFC<OauthMessageViewProps> = ({ oauth }) => {

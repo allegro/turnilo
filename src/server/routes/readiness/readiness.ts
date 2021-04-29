@@ -19,7 +19,7 @@ import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
 import { LOGGER } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
 const unhealthyHttpStatus = 503;
 const healthyHttpStatus = 200;
@@ -82,14 +82,14 @@ function logUnhealthy(clusterHealths: ClusterHealth[]): void {
   });
 }
 
-export function readinessRouter(getSettings: SettingsGetter) {
+export function readinessRouter(getSources: SourcesGetter) {
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     try {
-      const settings = await getSettings();
-      const clusterHealths = await checkClusters(settings.clusters);
+      const sources = await getSources();
+      const clusterHealths = await checkClusters(sources.clusters);
       logUnhealthy(clusterHealths);
       const overallHealthStatus = aggregateHealthStatus(clusterHealths);
       const httpState = statusToHttpStatus(overallHealthStatus);

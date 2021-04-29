@@ -16,10 +16,11 @@
 
 import { Request, Response, Router } from "express";
 import { LOGGER } from "../../../common/logger/logger";
+import { serialize } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
-import { SettingsGetter } from "../../utils/settings-manager/settings-manager";
+import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
-export function settingsRouter(settingsGetter: SettingsGetter) {
+export function sourcesRouter(sourcesGetter: SourcesGetter) {
 
   const logger = LOGGER.addPrefix("Settings Endpoint: ");
 
@@ -28,10 +29,11 @@ export function settingsRouter(settingsGetter: SettingsGetter) {
   router.get("/", async (req: Request, res: Response) => {
 
     try {
-      const settings = await settingsGetter();
-      const clientSettings = settings.toClientSettings();
-      clientSettings.dataCubes = clientSettings.dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) );
-      res.json(clientSettings);
+      const { clusters, dataCubes } = await sourcesGetter();
+      res.json(serialize({
+        clusters,
+        dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )
+      }));
     } catch (error) {
       logger.error(error.message);
       if (error.hasOwnProperty("stack")) {

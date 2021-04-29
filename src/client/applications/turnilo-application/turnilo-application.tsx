@@ -20,10 +20,12 @@ import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
+import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { DataCubeNotFound } from "../../components/no-data/data-cube-not-found";
 import { Notifications, Questions } from "../../components/notifications/notifications";
+import { SourcesProvider } from "../../components/sources-provider/sources-provider";
 import { AboutModal } from "../../modals/about-modal/about-modal";
 import { getCode, hasCode, isOauthError, resetToken } from "../../oauth/oauth";
 import { OauthCodeHandler } from "../../oauth/oauth-code-handler";
@@ -34,7 +36,6 @@ import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { GeneralError } from "../../views/error-view/general-error";
 import { HomeView } from "../../views/home-view/home-view";
-import { AppSettingsProvider } from "./app-settings-provider";
 import "./turnilo-application.scss";
 import { cube, generalError, home, oauthCodeHandler, oauthMessageView, View } from "./view";
 
@@ -175,43 +176,53 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     const { view, timekeeper } = this.state;
 
     switch (view.viewType) {
-      case "oauth-message":
-        return <OauthMessageView oauth={appSettings.oauth}/>;
-
-      case "home":
-        return <AppSettingsProvider clientAppSettings={appSettings}>{({ appSettings }) => <HomeView
-          dataCubes={appSettings.dataCubes}
-          onOpenAbout={this.openAboutModal}
-          customization={customization}
-        />}</AppSettingsProvider>;
-
-      case "cube": {
-        return <AppSettingsProvider clientAppSettings={appSettings}>{({ appSettings }) => {
-          const dataCube = NamedArray.findByName(appSettings.dataCubes, view.cubeName);
-          if (dataCube === undefined) {
-            return <DataCubeNotFound />;
-          }
-          return <CubeView
-            key={view.cubeName}
-            dataCube={dataCube}
-            appSettings={appSettings}
-            initTimekeeper={timekeeper}
-            hash={view.hash}
-            changeCubeAndEssence={this.updateCubeAndEssenceInHash}
-            urlForCubeAndEssence={this.urlForEssence}
-            getEssenceFromHash={urlHashConverter.essenceFromHash}
-            openAboutModal={this.openAboutModal}
-            maxFilters={maxFilters}
-            customization={customization}
-          />;
-        }}</AppSettingsProvider>;
+      case "oauth-message": {
+        const oauth = appSettings.oauth;
+        if (!isOAuthEnabled(oauth)) throw new Error("Expected OAuth to be enabled in configuration.");
+        return <OauthMessageView oauth={oauth}/>;
       }
 
-      case "general-error":
-        return <GeneralError errorId={view.errorId} />;
+      case "home":
+        return <SourcesProvider
+          appSettings={appSettings}>
+          {({ sources }) =>
+            <HomeView onOpenAbout={this.openAboutModal}
+                      customization={customization}
+                      dataCubes={sources.dataCubes}/>}
+        </SourcesProvider>;
 
-      case "oauth-code-handler":
-        return <OauthCodeHandler oauth={appSettings.oauth} code={view.code}/>;
+      case "cube":
+        return <SourcesProvider appSettings={appSettings}>
+          {({ sources }) => {
+            const dataCube = NamedArray.findByName(sources.dataCubes, view.cubeName);
+            if (dataCube === undefined) {
+              return <DataCubeNotFound/>;
+            }
+            return <CubeView
+              key={view.cubeName}
+              dataCube={dataCube}
+              dataCubes={sources.dataCubes}
+              appSettings={appSettings}
+              initTimekeeper={timekeeper}
+              hash={view.hash}
+              changeCubeAndEssence={this.updateCubeAndEssenceInHash}
+              urlForCubeAndEssence={this.urlForEssence}
+              getEssenceFromHash={urlHashConverter.essenceFromHash}
+              openAboutModal={this.openAboutModal}
+              maxFilters={maxFilters}
+              customization={customization}
+            />;
+          }}
+        </SourcesProvider>;
+
+      case "general-error":
+        return <GeneralError errorId={view.errorId}/>;
+
+      case "oauth-code-handler": {
+        const oauth = appSettings.oauth;
+        if (!isOAuthEnabled(oauth)) throw new Error("Expected OAuth to be enabled in configuration.");
+        return <OauthCodeHandler oauth={oauth} code={view.code}/>;
+      }
     }
   }
 

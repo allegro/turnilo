@@ -19,14 +19,14 @@ import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as mime from "mime";
 import * as supertest from "supertest";
-import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
+import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { plyqlRouter } from "./plyql";
 
 let app = express();
 
 app.use(bodyParser.json());
 
-app.use("/", plyqlRouter(() => Promise.resolve(AppSettingsFixtures.wikiOnlyWithExecutor())));
+app.use("/", plyqlRouter(() => Promise.resolve(wikiSourcesWithExecutor)));
 
 const pageQuery = "SELECT SUM(added) as Added FROM `wiki` GROUP BY page ORDER BY Added DESC LIMIT 10;";
 const timeQuery = "SELECT TIME_BUCKET(time, 'PT1H', 'Etc/UTC') as TimeByHour, SUM(added) as Added FROM `wiki` GROUP BY 1 ORDER BY TimeByHour ASC";

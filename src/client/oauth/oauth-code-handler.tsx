@@ -15,13 +15,13 @@
  */
 
 import * as React from "react";
-import { Oauth } from "../../common/models/oauth/oauth";
+import { OauthEnabled } from "../../common/models/oauth/oauth";
 import { Loader } from "../components/loader/loader";
 import { MessagePanel, MessagePanelAction } from "../components/message-panel/message-panel";
 import { exchangeCodeForToken, redirectToSavedUrl } from "./oauth";
 
 interface OauthCodeHandlerProps {
-  oauth: Oauth;
+  oauth: OauthEnabled;
   code: string;
 }
 

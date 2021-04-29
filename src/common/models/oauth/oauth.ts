@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property } from "immutable-class";
-
-interface OauthValue {
-  clientId: string;
-  tokenEndpoint: string;
-  authorizationEndpoint: string;
-  tokenHeaderName: string;
-  redirectUri: string;
-}
-
 export interface OauthJS {
   clientId: string;
   tokenEndpoint: string;
@@ -32,23 +22,39 @@ export interface OauthJS {
   redirectUri: string;
 }
 
-export class Oauth extends BaseImmutable<OauthValue, OauthJS> {
+interface OauthDisabled {
+  status: "disabled";
+}
 
-  static PROPERTIES: Property[] = [
-    { name: "clientId" },
-    { name: "tokenEndpoint" },
-    { name: "authorizationEndpoint" },
-    { name: "tokenHeaderName" },
-    { name: "redirectUri" }
-  ];
+export interface OauthEnabled {
+  status: "enabled";
+  clientId: string;
+  tokenEndpoint: string;
+  authorizationEndpoint: string;
+  tokenHeaderName: string;
+  redirectUri: string;
+}
 
-  static fromJS(params: OauthJS): Oauth {
-    return new Oauth(BaseImmutable.jsToValue(Oauth.PROPERTIES, params));
-  }
+export function isEnabled(oauth: Oauth): oauth is OauthEnabled {
+  return oauth.status === "enabled";
+}
 
-  public clientId: string;
-  public tokenEndpoint: string;
-  public authorizationEndpoint: string;
-  public tokenHeaderName: string;
-  public redirectUri: string;
+export type Oauth = OauthDisabled | OauthEnabled;
+
+export function fromConfig(config?: OauthJS): Oauth {
+  if (!config) return { status: "disabled" };
+  return {
+    status: "enabled",
+    ...config
+  };
+}
+
+export type SerializedOauth = Oauth;
+
+export function serialize(oauth: Oauth): SerializedOauth {
+  return oauth;
+}
+
+export function deserialize(oauth: SerializedOauth): Oauth {
+  return oauth;
 }
