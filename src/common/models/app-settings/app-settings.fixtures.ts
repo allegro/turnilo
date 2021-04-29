@@ -15,34 +15,15 @@
  * limitations under the License.
  */
 
-import { AppSettingsJS, fromConfig } from "./app-settings";
+import { ClientAppSettings } from "./app-settings";
 
-export class AppSettingsFixtures {
-  public static wikiOnlyJS(): AppSettingsJS {
-    return {
-      clientTimeout: 100,
-      customization: {
-        title: "Hello World",
-        headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
-      }
-    };
-  }
-
-  public static wikiTwitterJS(): AppSettingsJS {
-    return {
-      clientTimeout: 0,
-      customization: {
-        title: "Hello World"
-      }
-    };
-  }
-
-  static wikiOnly() {
-    return fromConfig(AppSettingsFixtures.wikiOnlyJS());
-  }
-
-  static wikiTwitter() {
-    return fromConfig(AppSettingsFixtures.wikiTwitterJS());
-  }
-}
+export const clientAppSettings: ClientAppSettings = {
+  version: 1,
+  customization: {
+    hasUrlShortener: false,
+    externalViews: [],
+    timezones: []
+  },
+  oauth: { status: "disabled" },
+  clientTimeout: 1000
+};

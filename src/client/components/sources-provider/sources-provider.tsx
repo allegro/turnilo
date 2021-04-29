@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Sources } from "../../../common/models/sources/sources";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Ajax } from "../../utils/ajax/ajax";
@@ -55,7 +55,7 @@ const errored = (error: Error): SourcesRequest => ({
 });
 
 interface SourcesProviderProps {
-  appSettings: AppSettings;
+  appSettings: ClientAppSettings;
   children: Unary<{ sources: Sources }, React.ReactNode>;
 }
 

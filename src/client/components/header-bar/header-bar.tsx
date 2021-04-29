@@ -16,11 +16,11 @@
  */
 
 import * as React from "react";
-import { Customization } from "../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import "./header-bar.scss";
 
 export interface HeaderBarProps {
-  customization?: Customization;
+  customization?: ClientCustomization;
   title?: string;
 }
 

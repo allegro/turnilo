@@ -17,7 +17,7 @@
 import { NamedArray } from "immutable-class";
 import { Ajax } from "../../../client/utils/ajax/ajax";
 import { isTruthy } from "../../utils/general/general";
-import { AppSettings } from "../app-settings/app-settings";
+import { ClientAppSettings } from "../app-settings/app-settings";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
@@ -93,7 +93,7 @@ export function serialize({
   };
 }
 
-export function deserialize(settings: SerializedSources, appSettings: AppSettings): Sources {
+export function deserialize(settings: SerializedSources, appSettings: ClientAppSettings): Sources {
   const clusters = settings.clusters.map(cluster => Cluster.fromJS(cluster));
 
   const dataCubes = settings.dataCubes.map((dataCubeJS: DataCubeJS) => {

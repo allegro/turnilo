@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Customization } from "../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Ternary } from "../../../common/utils/functional/functional";
@@ -37,7 +37,7 @@ export interface SideDrawerProps {
   dataCubes: DataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
-  customization?: Customization;
+  customization?: ClientCustomization;
   changeDataCubeAndEssence: Ternary<DataCube, Essence, boolean, void>;
 }
 
