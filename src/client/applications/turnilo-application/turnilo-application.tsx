@@ -178,7 +178,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     switch (view.viewType) {
       case "oauth-message": {
         const oauth = appSettings.oauth;
-        if (!isOAuthEnabled(oauth)) throw new Error("OAuth configuration error");
+        if (!isOAuthEnabled(oauth)) throw new Error("Expected OAuth to be enabled in configuration.");
         return <OauthMessageView oauth={oauth}/>;
       }
 
@@ -220,7 +220,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
       case "oauth-code-handler": {
         const oauth = appSettings.oauth;
-        if (!isOAuthEnabled(oauth)) throw new Error("OAuth configuration error");
+        if (!isOAuthEnabled(oauth)) throw new Error("Expected OAuth to be enabled in configuration.");
         return <OauthCodeHandler oauth={oauth} code={view.code}/>;
       }
     }
