@@ -20,6 +20,7 @@ import * as React from "react";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
+import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { DataCubeNotFound } from "../../components/no-data/data-cube-not-found";
@@ -175,8 +176,11 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     const { view, timekeeper } = this.state;
 
     switch (view.viewType) {
-      case "oauth-message":
-        return <OauthMessageView oauth={appSettings.oauth}/>;
+      case "oauth-message": {
+        const oauth = appSettings.oauth;
+        if (!isOAuthEnabled(oauth)) throw new Error("Expected OAuth to be enabled in configuration.");
+        return <OauthMessageView oauth={oauth}/>;
+      }
 
       case "home":
         return <SourcesProvider
@@ -214,8 +218,11 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       case "general-error":
         return <GeneralError errorId={view.errorId}/>;
 
-      case "oauth-code-handler":
-        return <OauthCodeHandler oauth={appSettings.oauth} code={view.code}/>;
+      case "oauth-code-handler": {
+        const oauth = appSettings.oauth;
+        if (!isOAuthEnabled(oauth)) throw new Error("Expected OAuth to be enabled in configuration.");
+        return <OauthCodeHandler oauth={oauth} code={view.code}/>;
+      }
     }
   }
 

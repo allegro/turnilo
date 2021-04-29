@@ -18,7 +18,7 @@ import axios, { AxiosError } from "axios";
 import { encode as base64encode } from "base64-arraybuffer";
 import { stringify } from "querystring";
 import { generate } from "randomstring";
-import { Oauth } from "../../common/models/oauth/oauth";
+import { isEnabled, Oauth, OauthEnabled } from "../../common/models/oauth/oauth";
 import { get, remove, set } from "../utils/local-storage/local-storage";
 
 const TOKEN_KEY = "turnilo-oauth-access-token";
@@ -58,7 +58,7 @@ export const isOauthError = (error: Error): error is OauthError =>
   error.hasOwnProperty("isOauthError");
 
 export function mapOauthError(oauth: Oauth, error: AxiosError): Error {
-  if (!!oauth && !!error.response) {
+  if (isEnabled(oauth) && !!error.response) {
     const { response: { status } } = error;
     if (status === 401) return new OauthAuthenticationError(error.message);
     if (status === 403) return new OauthAuthorizationError(error.message);
@@ -66,7 +66,7 @@ export function mapOauthError(oauth: Oauth, error: AxiosError): Error {
   return error;
 }
 
-export function exchangeCodeForToken(code: string, oauth: Oauth) {
+export function exchangeCodeForToken(code: string, oauth: OauthEnabled) {
   const codeVerifier = getVerifier();
   return axios.post(oauth.tokenEndpoint, stringify({
     client_id: oauth.clientId,
@@ -108,7 +108,7 @@ function getCodeChallenge(): PromiseLike<string> {
   return generateCodeChallenge(codeVerifier);
 }
 
-export function login(oauth: Oauth) {
+export function login(oauth: OauthEnabled) {
   function redirectToAuthorization(codeChallenge: string) {
     saveUrl(window.location.href);
     const queryParams = `?client_id=${oauth.clientId}&redirect_uri=${encodeURIComponent(oauth.redirectUri)}&response_type=code&code_challenge_method=S256&code_challenge=${codeChallenge}`;
