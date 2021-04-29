@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { Locale } from "../../common/utils/time/time";
 import { FileFormat } from "../utils/download/download";
 
 export const TITLE_HEIGHT = 36;
@@ -176,16 +175,6 @@ export const DATA_CUBES_STRATEGIES_LABELS = {
   "autofill-measures-only": "Autofill measures only",
   "autofill-all": "Autofill all"
 };
-
-const EN_US: Locale = {
-  shortDays: ["S", "M", "T", "W", "T", "F", "S"],
-  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
-  weekStart: 0
-};
-
-export function getLocale(): Locale {
-  return EN_US;
-}
 
 export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },

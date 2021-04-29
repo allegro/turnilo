@@ -19,6 +19,7 @@ import { Timezone } from "chronoshift";
 import { LOGGER } from "../../logger/logger";
 import { isTruthy } from "../../utils/general/general";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
+import { deserialize as localeDeserialize, fromConfig as localeFromConfig, Locale, LocaleJS, serialize as localeSerialize } from "../locale/locale";
 import { fromConfig as urlShortenerFromConfig, UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 const DEFAULT_TITLE = "Turnilo (%v)";
@@ -109,10 +110,12 @@ export interface Customization {
   urlShortener?: UrlShortener;
   sentryDSN?: string;
   cssVariables: Record<string, string>;
+  locale: Locale;
 }
 
 export interface CustomizationJS {
   title?: string;
+  locale?: LocaleJS;
   headerBackground?: string;
   customLogoSvg?: string;
   externalViews?: ExternalViewValue[];
@@ -129,6 +132,7 @@ export interface SerializedCustomization {
   externalViews: ExternalViewValue[];
   hasUrlShortener: boolean;
   sentryDSN?: string;
+  locale: Locale;
 }
 
 export interface ClientCustomization {
@@ -138,6 +142,7 @@ export interface ClientCustomization {
   externalViews: ExternalViewValue[];
   hasUrlShortener: boolean;
   sentryDSN?: string;
+  locale: Locale;
 }
 
 function validate({ cssVariables }: Customization): boolean {
@@ -162,7 +167,8 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     timezones: configTimezones,
     urlShortener,
     sentryDSN,
-    cssVariables = {}
+    cssVariables = {},
+    locale
   } = config;
 
   const timezones = Array.isArray(configTimezones)
@@ -181,6 +187,7 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     cssVariables,
     urlShortener: urlShortenerFromConfig(urlShortener),
     timezones,
+    locale: localeFromConfig(locale),
     externalViews
   };
 
@@ -191,13 +198,14 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
 }
 
 export function serialize(customization: Customization): SerializedCustomization {
-  const { customLogoSvg, timezones, headerBackground, externalViews, sentryDSN, urlShortener } = customization;
+  const { customLogoSvg, timezones, headerBackground, locale, externalViews, sentryDSN, urlShortener } = customization;
   return {
     customLogoSvg,
     externalViews,
     hasUrlShortener: isTruthy(urlShortener),
     headerBackground,
     sentryDSN,
+    locale: localeSerialize(locale),
     timezones: timezones.map(t => t.toJS())
   };
 }
