@@ -20,7 +20,7 @@ import * as path from "path";
 import { Dataset, Expression, PseudoDatum } from "plywood";
 import { Logger } from "../../../common/logger/logger";
 import { noop } from "../../../common/utils/functional/functional";
-import { parseData } from "../../../common/utils/parser/parser";
+import { parseData } from "../parser/parser";
 
 export function getFileData(filePath: string): Promise<any[]> {
   return fs.readFile(filePath, "utf-8")

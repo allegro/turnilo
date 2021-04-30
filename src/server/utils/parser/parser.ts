@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
+import { autoType, csvParse, tsvParse } from "d3-dsv";
 
 export function parseCSV(text: string): any[] {
-  return d3.csv.parse(text);
+  return csvParse(text, autoType);
 }
 
 export function parseTSV(text: string): any[] {
-  return d3.tsv.parse(text);
+  return tsvParse(text, autoType);
 }
 
 export function parseJSON(text: string): any[] {

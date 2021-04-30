@@ -197,6 +197,39 @@ dataCubes:
         title: Records count
         formula: $main.count()
 
+  - name: unemployment
+    title: Unemployment Across Industries
+    description: |
+      Data cube with unemployment count across industriess in 2000-2010.
+      ---
+      *Based on vega-datasets*. [Source repository](https://github.com/vega/vega-datasets/blob/master/data/unemployment-across-industries.json)
+    clusterName: native
+    source: assets/data/unemployment-2016-02-18.csv
+    timeAttribute: date
+
+    refreshRule:
+      rule: fixed
+      time: 2010-02-01T08:00:00.000Z
+
+    defaultDuration: P1M
+    defaultSortMeasure: count
+    defaultSelectedMeasures: [ "count" ]
+    introspection: no-autofill
+    dimensions:
+      - name: date
+        title: Date
+        kind: time
+        formula: $date
+
+      - name: industry
+        title: Industry
+        formula: $industry
+
+    measures:
+      - name: count
+        title: Count
+        formula: $main.sum($count)
+
   - name: wiki
     title: Wikipedia
     description: |
