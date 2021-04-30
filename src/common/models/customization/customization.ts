@@ -202,18 +202,6 @@ export function serialize(customization: Customization): SerializedCustomization
   };
 }
 
-export function deserialize(customization: SerializedCustomization): ClientCustomization {
-  const { headerBackground, customLogoSvg, timezones, externalViews, hasUrlShortener, sentryDSN } = customization;
-  return {
-    headerBackground,
-    customLogoSvg,
-    externalViews,
-    hasUrlShortener,
-    sentryDSN,
-    timezones: timezones.map(Timezone.fromJS)
-  };
-}
-
 export function getTitle({ title }: Customization, version: string): string {
   return title.replace(/%v/g, version);
 }
