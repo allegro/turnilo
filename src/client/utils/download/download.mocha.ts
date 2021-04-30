@@ -36,9 +36,6 @@ describe("Download", () => {
     it("works as expected", () => {
       expect(getMIMEType("csv"), "csv").to.equal("text/csv");
       expect(getMIMEType("tsv"), "tsv").to.equal("text/tsv");
-      expect(getMIMEType(""), "csv").to.equal("application/json");
-      expect(getMIMEType("json"), "csv").to.equal("application/json");
-      expect(getMIMEType("invalid"), "csv").to.equal("application/json");
     });
   });
 });

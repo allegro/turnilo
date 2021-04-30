@@ -21,6 +21,7 @@ import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
 import * as React from "react";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
+import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatFilterClause } from "../../../common/utils/formatter/formatter";
@@ -32,7 +33,7 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
+import { download, FileFormat } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
@@ -49,6 +50,7 @@ export interface RawDataModalProps {
   onClose: Fn;
   essence: Essence;
   timekeeper: Timekeeper;
+  locale: Locale;
 }
 
 export interface RawDataModalState {
@@ -290,12 +292,10 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   download(fileFormat: FileFormat) {
     const { dataset } = this.state;
-    const { essence, timekeeper } = this.props;
-    const { dataCube } = essence;
+    const { essence, locale } = this.props;
 
     const options = tabularOptions(essence);
-    const filtersString = dateFromFilter(essence.getEffectiveFilter(timekeeper));
-    download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
+    download({ dataset, options }, fileFormat, "turnilo-raw-data", locale.exportEncoding);
   }
 
   render() {
