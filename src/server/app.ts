@@ -143,7 +143,7 @@ attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(SETTINGS_MA
 attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
 
 // Data routes
-attachRouter("/settings", sourcesRouter(SETTINGS_MANAGER.sourcesGetter));
+attachRouter("/sources", sourcesRouter(SETTINGS_MANAGER.sourcesGetter));
 attachRouter("/plywood", plywoodRouter(SETTINGS_MANAGER));
 attachRouter("/plyql", plyqlRouter(SETTINGS_MANAGER.sourcesGetter));
 attachRouter("/mkurl", mkurlRouter(SETTINGS_MANAGER.sourcesGetter));

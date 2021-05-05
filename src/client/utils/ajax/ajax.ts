@@ -75,7 +75,7 @@ export class Ajax {
 
   static sources(appSettings: ClientAppSettings): Promise<Sources> {
     const headers = Ajax.headers(appSettings.oauth);
-    return axios.get<SerializedSources>("/settings", { headers })
+    return axios.get<SerializedSources>("/sources", { headers })
       .then(resp => resp.data)
       .catch(error => {
         throw mapOauthError(appSettings.oauth, error);
