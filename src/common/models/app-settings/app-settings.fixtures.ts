@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { LOCALES } from "../locale/locale";
 import { ClientAppSettings } from "./app-settings";
 
 export const clientAppSettings: ClientAppSettings = {
@@ -22,7 +23,8 @@ export const clientAppSettings: ClientAppSettings = {
   customization: {
     hasUrlShortener: false,
     externalViews: [],
-    timezones: []
+    timezones: [],
+    locale: LOCALES.EN_US
   },
   oauth: { status: "disabled" },
   clientTimeout: 1000

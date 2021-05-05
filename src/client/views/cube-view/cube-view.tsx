@@ -366,11 +366,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   renderRawDataModal() {
     const { showRawDataModal, essence, timekeeper } = this.state;
+    const { customization } = this.props;
     if (!showRawDataModal) return null;
 
     return <RawDataModal
       essence={essence}
       timekeeper={timekeeper}
+      locale={customization.locale}
       onClose={this.onRawDataModalClose}
     />;
   }
@@ -596,6 +598,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
               </div>
               <div className="filter-split-section">
                 <FilterTile
+                  locale={customization.locale}
                   ref={this.filterTile}
                   clicker={clicker}
                   essence={essence}

@@ -23,7 +23,7 @@ import {
   complement,
   concatTruthy,
   cons,
-  constant,
+  constant, cyclicShift,
   debounceWithPromise,
   flatMap,
   mapTruthy,
@@ -86,6 +86,12 @@ describe("Functional utilities", () => {
 
     it("should append if index is out of bounds", () => {
       expect(replaceAt([1, 2, 3], 100, 42)).to.deep.eq([1, 2, 3, 42]);
+    });
+  });
+
+  describe("cyclicShift", () => {
+    it("should rotate array by one element", () => {
+      expect(cyclicShift([1, 2, 3, 4], 1)).to.deep.eq([2, 3, 4, 1]);
     });
   });
 

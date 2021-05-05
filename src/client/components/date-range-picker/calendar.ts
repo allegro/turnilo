@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { day, Timezone } from "chronoshift";
-import { Moment } from "moment-timezone/moment-timezone";
+import { Locale } from "../../../common/models/locale/locale";
 import { range } from "../../../common/utils/functional/functional";
-import { getMoment, Locale } from "../../../common/utils/time/time";
+import { getMoment } from "../../../common/utils/time/time";
 
 export function calendarDays(startDay: Date, timezone: Timezone, locale: Locale): Date[][] {
   const monthWeeks = monthToWeeks(startDay, timezone, locale);

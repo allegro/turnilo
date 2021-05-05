@@ -17,7 +17,7 @@ import { expect, use } from "chai";
 import * as chaiDatetime from "chai-datetime";
 import { Timezone } from "chronoshift";
 import { tz as getMomentWithTimezone } from "moment-timezone";
-import { getLocale } from "../../config/constants";
+import { LOCALES } from "../../../common/models/locale/locale";
 import { calendarDays, monthToWeeks, nextNDates, previousNDates } from "./calendar";
 
 use(chaiDatetime);
@@ -39,6 +39,7 @@ function assertEqualCalendarMatrix(a: Date[][], b: Date[][]) {
 }
 
 const utc = Timezone.UTC;
+const en_us = LOCALES.EN_US;
 const warsawTZ = Timezone.fromJS("Europe/Warsaw");
 
 const getDateInTimezone = (day: string, timezone: Timezone) => getMomentWithTimezone(day, timezone.toString()).toDate();
@@ -59,13 +60,13 @@ describe("monthToWeeks", () => {
     it("should calculate for UTC (no DST)", () => {
       const firstMarch2010 = getDateInTimezone("2010-03-01", utc);
       const utcMarch2010 = convertDatesToTimezone(march2010Weeks, utc);
-      assertEqualCalendarMatrix(monthToWeeks(firstMarch2010, utc, getLocale()), utcMarch2010);
+      assertEqualCalendarMatrix(monthToWeeks(firstMarch2010, utc, en_us), utcMarch2010);
     });
 
     it("should calculate for Warsaw (DST)", () => {
       const firstMarch2010 = getDateInTimezone("2010-03-01", warsawTZ);
       const warsawMarch2010 = convertDatesToTimezone(march2010Weeks, warsawTZ);
-      assertEqualCalendarMatrix(monthToWeeks(firstMarch2010, warsawTZ, getLocale()), warsawMarch2010);
+      assertEqualCalendarMatrix(monthToWeeks(firstMarch2010, warsawTZ, en_us), warsawMarch2010);
     });
   });
 
@@ -81,13 +82,13 @@ describe("monthToWeeks", () => {
     it("should calculate for UTC october (no DST)", () => {
       const firstOctober2019 = getDateInTimezone("2019-10-01", utc);
       const utcOctober2019 = convertDatesToTimezone(october2019Weeks, utc);
-      assertEqualCalendarMatrix(monthToWeeks(firstOctober2019, utc, getLocale()), utcOctober2019);
+      assertEqualCalendarMatrix(monthToWeeks(firstOctober2019, utc, en_us), utcOctober2019);
     });
 
     it("should calculate for Warsaw october (DST)", () => {
       const firstOctober2019 = getDateInTimezone("2019-10-01", warsawTZ);
       const warsawOctober2019 = convertDatesToTimezone(october2019Weeks, warsawTZ);
-      assertEqualCalendarMatrix(monthToWeeks(firstOctober2019, warsawTZ, getLocale()), warsawOctober2019);
+      assertEqualCalendarMatrix(monthToWeeks(firstOctober2019, warsawTZ, en_us), warsawOctober2019);
     });
   });
 });
@@ -103,7 +104,7 @@ describe("calendarDays", () => {
       ["2010-03-28", "2010-03-29", "2010-03-30", "2010-03-31", "2010-04-01", "2010-04-02", "2010-04-03"]
     ];
     const utcMarch2010CalendarPage = convertDatesToTimezone(march2010, utc);
-    assertEqualCalendarMatrix(calendarDays(firstMarch2010, utc, getLocale()), utcMarch2010CalendarPage);
+    assertEqualCalendarMatrix(calendarDays(firstMarch2010, utc, en_us), utcMarch2010CalendarPage);
   });
 });
 
