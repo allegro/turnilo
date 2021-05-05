@@ -19,7 +19,7 @@ import { Timezone } from "chronoshift";
 import { LOGGER } from "../../logger/logger";
 import { isTruthy } from "../../utils/general/general";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
-import { deserialize as localeDeserialize, fromConfig as localeFromConfig, Locale, LocaleJS, serialize as localeSerialize } from "../locale/locale";
+import { fromConfig as localeFromConfig, Locale, LocaleJS, serialize as localeSerialize } from "../locale/locale";
 import { fromConfig as urlShortenerFromConfig, UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 const DEFAULT_TITLE = "Turnilo (%v)";

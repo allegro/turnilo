@@ -16,7 +16,7 @@
  */
 
 import { LOCALES } from "../locale/locale";
-import { ClientAppSettings } from "./app-settings";
+import { AppSettings, ClientAppSettings } from "./app-settings";
 
 export const clientAppSettings: ClientAppSettings = {
   version: 1,
@@ -28,4 +28,16 @@ export const clientAppSettings: ClientAppSettings = {
   },
   oauth: { status: "disabled" },
   clientTimeout: 1000
+};
+
+export const appSettings: AppSettings = {
+  clientTimeout: 1000,
+  customization: {
+    timezones: [],
+    locale: LOCALES.EN_US,
+    externalViews: [],
+    cssVariables: {}
+  },
+  oauth: { status: "disabled" },
+  version: 0
 };
