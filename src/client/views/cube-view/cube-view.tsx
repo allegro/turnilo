@@ -366,11 +366,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   renderRawDataModal() {
     const { showRawDataModal, essence, timekeeper } = this.state;
+    const { customization } = this.props;
     if (!showRawDataModal) return null;
 
     return <RawDataModal
       essence={essence}
       timekeeper={timekeeper}
+      locale={customization.locale}
       onClose={this.onRawDataModalClose}
     />;
   }
