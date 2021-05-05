@@ -54,7 +54,3 @@ export type SerializedOauth = Oauth;
 export function serialize(oauth: Oauth): SerializedOauth {
   return oauth;
 }
-
-export function deserialize(oauth: SerializedOauth): Oauth {
-  return oauth;
-}

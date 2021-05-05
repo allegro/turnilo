@@ -17,10 +17,11 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { deserialize, SerializedAppSettings } from "../common/models/app-settings/app-settings";
+import { SerializedAppSettings } from "../common/models/app-settings/app-settings";
 import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
+import { deserialize as deserializeAppSettings } from "./deserializers/app-settings";
 import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";
 import "./main.scss";
 import "./polyfills";
@@ -51,7 +52,7 @@ const version = config.version;
 
 Ajax.version = version;
 
-const appSettings = deserialize(config.appSettings);
+const appSettings = deserializeAppSettings(config.appSettings);
 
 if (config.appSettings.customization.sentryDSN) {
   errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
