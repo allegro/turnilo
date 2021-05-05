@@ -20,13 +20,11 @@ import {
   ClientCustomization,
   Customization,
   CustomizationJS,
-  deserialize as customizationDeserialize,
   fromConfig as customizationFromConfig,
   serialize as customizationSerialize,
   SerializedCustomization
 } from "../customization/customization";
 import {
-  deserialize as oauthDeserialize,
   fromConfig as oauthFromConfig,
   Oauth,
   OauthJS,
@@ -86,15 +84,6 @@ export function serialize({ oauth, clientTimeout, customization, version }: AppS
     version,
     customization: customizationSerialize(customization),
     oauth: oauthSerialize(oauth)
-  };
-}
-
-export function deserialize({ oauth, clientTimeout, customization, version }: SerializedAppSettings): ClientAppSettings {
-  return {
-    clientTimeout,
-    version,
-    customization: customizationDeserialize(customization),
-    oauth: oauthDeserialize(oauth)
   };
 }
 
