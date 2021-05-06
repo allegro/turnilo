@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { testImmutableClass } from "immutable-class-tester";
-import { UrlShortener, UrlShortenerDef } from "./url-shortener";
-import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "./url-shortener.fixtures";
+import { ClientAppSettings, SerializedAppSettings } from "../../common/models/app-settings/app-settings";
+import { deserialize as customizationDeserialize } from "./customization";
+import { deserialize as oauthDeserialize } from "./oauth";
 
-describe("UrlShortener", () => {
-  it("is an immutable class", () => {
-    testImmutableClass<UrlShortenerDef>(UrlShortener, [
-      SuccessUrlShortenerJS,
-      FailUrlShortenerJS
-    ]);
-  });
-});
+export function deserialize({ oauth, clientTimeout, customization, version }: SerializedAppSettings): ClientAppSettings {
+  return {
+    clientTimeout,
+    version,
+    customization: customizationDeserialize(customization),
+    oauth: oauthDeserialize(oauth)
+  };
+}

@@ -18,8 +18,9 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
+import { Locale } from "../../../common/models/locale/locale";
+import { cyclicShift } from "../../../common/utils/functional/functional";
 import { datesEqual, formatYearMonth, getDayInMonth } from "../../../common/utils/time/time";
-import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -33,6 +34,7 @@ export interface DateRangePickerProps {
   timezone: Timezone;
   onStartChange: (t: Date) => void;
   onEndChange: (t: Date) => void;
+  locale: Locale;
 }
 
 export interface DateRangePickerState {
@@ -154,8 +156,8 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
   }
 
   renderCalendar(startDate: Date): JSX.Element[] {
-    const { timezone } = this.props;
-    const weeks: Date[][] = calendarDays(startDate, timezone, getLocale());
+    const { timezone, locale } = this.props;
+    const weeks: Date[][] = calendarDays(startDate, timezone, locale);
     return this.renderDays(weeks, startDate);
   }
 
@@ -180,10 +182,11 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
   }
 
   render() {
-    const { startTime, endTime, timezone, onStartChange, onEndChange } = this.props;
+    const { locale, startTime, endTime, timezone, onStartChange, onEndChange } = this.props;
     const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
+    const days = cyclicShift(locale.shortDays, locale.weekStart);
     return <div className="date-range-picker">
       <div>
         <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange} />
@@ -195,7 +198,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
       >
         {this.renderCalendarNav(activeMonthStartDate)}
         <div className="week">
-          {getLocale().shortDays.map((day, i) => {
+          {days.map((day, i) => {
             return <div className="day label" key={day + i}><span className="space" />{day}</div>;
           })
           }

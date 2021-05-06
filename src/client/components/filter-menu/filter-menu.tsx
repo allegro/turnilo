@@ -20,6 +20,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
+import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
@@ -32,6 +33,7 @@ import { TimeFilterMenu } from "./time-filter-menu/time-filter-menu";
 export interface FilterMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
+  locale: Locale;
   clicker: Clicker;
   containerStage?: Stage;
   openOn: Element;

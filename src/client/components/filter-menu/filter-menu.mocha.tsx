@@ -19,6 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { LOCALES } from "../../../common/models/locale/locale";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { FilterMenu } from "./filter-menu";
@@ -28,6 +29,7 @@ class Wrap extends React.Component {
     return <FilterMenu
       clicker={null}
       containerStage={null}
+      locale={LOCALES.EN_US}
       dimension={DimensionFixtures.wikiCommentLength()}
       essence={EssenceFixtures.wikiTotals()}
       timekeeper={TimekeeperFixtures.fixed()}

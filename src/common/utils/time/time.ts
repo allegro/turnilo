@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { day, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { Moment, tz } from "moment-timezone";
 import { Unary } from "../functional/functional";
@@ -27,12 +27,6 @@ const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
 export function getMoment(date: Date, timezone: Timezone): Moment {
   return tz(date, timezone.toString());
-}
-
-export interface Locale {
-  shortDays: string[];
-  shortMonths: string[];
-  weekStart: number;
 }
 
 const FULL_FORMAT = "D MMM YYYY H:mm";

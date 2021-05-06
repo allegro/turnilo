@@ -16,8 +16,21 @@
  */
 
 import { Executor } from "plywood";
-import { Customization, CustomizationJS } from "../customization/customization";
-import { deserialize as oauthDeserialize, fromConfig as oauthFromConfig, Oauth, OauthJS, serialize as oauthSerialize, SerializedOauth } from "../oauth/oauth";
+import {
+  ClientCustomization,
+  Customization,
+  CustomizationJS,
+  fromConfig as customizationFromConfig,
+  serialize as customizationSerialize,
+  SerializedCustomization
+} from "../customization/customization";
+import {
+  fromConfig as oauthFromConfig,
+  Oauth,
+  OauthJS,
+  serialize as oauthSerialize,
+  SerializedOauth
+} from "../oauth/oauth";
 
 const DEFAULT_CLIENT_TIMEOUT = 0;
 
@@ -25,7 +38,7 @@ export interface AppSettings {
   readonly version: number;
   readonly clientTimeout: number;
   readonly customization: Customization;
-  readonly oauth?: Oauth;
+  readonly oauth: Oauth;
 }
 
 export interface AppSettingsJS {
@@ -38,18 +51,22 @@ export interface AppSettingsJS {
 export interface SerializedAppSettings {
   readonly version: number;
   readonly clientTimeout: number;
-  readonly customization: CustomizationJS; // SerializedCustomization
+  readonly customization: SerializedCustomization;
   readonly oauth: SerializedOauth;
+}
+
+export interface ClientAppSettings {
+  readonly version: number;
+  readonly clientTimeout: number;
+  readonly customization: ClientCustomization;
+  readonly oauth: Oauth;
 }
 
 export function fromConfig(config: AppSettingsJS): AppSettings {
   const clientTimeout = config.clientTimeout === undefined ? DEFAULT_CLIENT_TIMEOUT : config.clientTimeout;
   const version = config.version || 0;
-  const customization = Customization.fromJS(config.customization || {});
+  const customization = customizationFromConfig(config.customization);
   const oauth = oauthFromConfig(config.oauth);
-
-  // make part of Customization server side smart constructor
-  customization.validate();
 
   return {
     clientTimeout,
@@ -65,17 +82,8 @@ export function serialize({ oauth, clientTimeout, customization, version }: AppS
   return {
     clientTimeout,
     version,
-    customization: customization.toJS(),
+    customization: customizationSerialize(customization),
     oauth: oauthSerialize(oauth)
-  };
-}
-
-export function deserialize({ oauth, clientTimeout, customization, version }: SerializedAppSettings): AppSettings {
-  return {
-    clientTimeout,
-    version,
-    customization: Customization.fromJS(customization),
-    oauth: oauthDeserialize(oauth)
   };
 }
 

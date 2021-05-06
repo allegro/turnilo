@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Customization } from "../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
@@ -24,7 +24,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
-import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
+import { download, FileFormat } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
@@ -35,23 +35,19 @@ export interface ShareMenuProps {
   openOn: Element;
   onClose: Fn;
   openUrlShortenerModal: Binary<string, string, void>;
-  customization: Customization;
+  customization: ClientCustomization;
   urlForEssence: (essence: Essence) => string;
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "getDownloadableDataset">;
+type ExportProps = Pick<ShareMenuProps, "onClose" | "getDownloadableDataset" | "customization">;
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
-  const { onClose, getDownloadableDataset, essence, timekeeper } = props;
+  const { onClose, getDownloadableDataset, customization: { locale: { exportEncoding } } } = props;
   const dataSetWithTabOptions = getDownloadableDataset();
   if (!dataSetWithTabOptions.dataset) return;
 
-  const { dataCube } = essence;
-  const effectiveFilter = essence.getEffectiveFilter(timekeeper);
-
-  const fileName = makeFileName(dataCube.name, dateFromFilter(effectiveFilter));
-  download(dataSetWithTabOptions, fileFormat, fileName);
+  download(dataSetWithTabOptions, fileFormat, "turnilo-export", exportEncoding);
   onClose();
 }
 
@@ -87,7 +83,7 @@ function linkItems({ essence, customization, timekeeper, onClose, urlForEssence,
       </li>
     </SafeCopyToClipboard>}
 
-    {customization.urlShortener && <React.Fragment>
+    {customization.hasUrlShortener && <React.Fragment>
       <li
         key="short-url"
         onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>

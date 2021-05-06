@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export const FailUrlShortenerJS = "return Promise.reject(new Error('error message'));";
+import { Oauth, SerializedOauth } from "../../common/models/oauth/oauth";
 
-export const SuccessUrlShortenerJS = "return Promise.resolve('http://foobar');";
+export function deserialize(oauth: SerializedOauth): Oauth {
+  return oauth;
+}

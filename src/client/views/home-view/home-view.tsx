@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Customization } from "../../../common/models/customization/customization";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Fn } from "../../../common/utils/general/general";
 import { ClearableInput } from "../../components/clearable-input/clearable-input";
@@ -30,7 +30,7 @@ import "./home-view.scss";
 export interface HomeViewProps {
   dataCubes?: DataCube[];
   onOpenAbout: Fn;
-  customization?: Customization;
+  customization?: ClientCustomization;
 }
 
 export interface HomeViewState {

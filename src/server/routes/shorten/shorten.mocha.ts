@@ -19,7 +19,7 @@ import * as express from "express";
 import { Express } from "express";
 import * as http from "http";
 import * as supertest from "supertest";
-import { Customization } from "../../../common/models/customization/customization";
+import { fromConfig } from "../../../common/models/customization/customization";
 import { UrlShortenerDef } from "../../../common/models/url-shortener/url-shortener";
 import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "../../../common/models/url-shortener/url-shortener.fixtures";
 import { shortenRouter } from "./shorten";
@@ -27,7 +27,7 @@ import { shortenRouter } from "./shorten";
 const shortenPath = "/shorten";
 
 const settingsFactory = (urlShortener: UrlShortenerDef) => ({
-  customization: Customization.fromJS({
+  customization: fromConfig({
     urlShortener
   })
 });

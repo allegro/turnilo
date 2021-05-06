@@ -15,34 +15,29 @@
  * limitations under the License.
  */
 
-import { AppSettingsJS, fromConfig } from "./app-settings";
+import { LOCALES } from "../locale/locale";
+import { AppSettings, ClientAppSettings } from "./app-settings";
 
-export class AppSettingsFixtures {
-  public static wikiOnlyJS(): AppSettingsJS {
-    return {
-      clientTimeout: 100,
-      customization: {
-        title: "Hello World",
-        headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
-      }
-    };
-  }
+export const clientAppSettings: ClientAppSettings = {
+  version: 1,
+  customization: {
+    hasUrlShortener: false,
+    externalViews: [],
+    timezones: [],
+    locale: LOCALES.EN_US
+  },
+  oauth: { status: "disabled" },
+  clientTimeout: 1000
+};
 
-  public static wikiTwitterJS(): AppSettingsJS {
-    return {
-      clientTimeout: 0,
-      customization: {
-        title: "Hello World"
-      }
-    };
-  }
-
-  static wikiOnly() {
-    return fromConfig(AppSettingsFixtures.wikiOnlyJS());
-  }
-
-  static wikiTwitter() {
-    return fromConfig(AppSettingsFixtures.wikiTwitterJS());
-  }
-}
+export const appSettings: AppSettings = {
+  clientTimeout: 1000,
+  customization: {
+    timezones: [],
+    locale: LOCALES.EN_US,
+    externalViews: [],
+    cssVariables: {}
+  },
+  oauth: { status: "disabled" },
+  version: 0
+};

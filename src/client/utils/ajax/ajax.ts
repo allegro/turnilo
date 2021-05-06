@@ -17,9 +17,10 @@
 
 import axios from "axios";
 import { Dataset, DatasetJS, Environment, Executor, Expression } from "plywood";
-import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { isEnabled, Oauth } from "../../../common/models/oauth/oauth";
-import { deserialize, SerializedSources, Sources } from "../../../common/models/sources/sources";
+import { SerializedSources, Sources } from "../../../common/models/sources/sources";
+import { deserialize } from "../../deserializers/sources";
 import { getToken, mapOauthError } from "../../oauth/oauth";
 
 export interface AjaxOptions {
@@ -61,7 +62,7 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory(dataCubeName: string, { oauth, clientTimeout: timeout }: AppSettings): Executor {
+  static queryUrlExecutorFactory(dataCubeName: string, { oauth, clientTimeout: timeout }: ClientAppSettings): Executor {
     return (ex: Expression, env: Environment = {}) => {
       const method = "POST";
       const url = "plywood";
@@ -72,9 +73,9 @@ export class Ajax {
     };
   }
 
-  static sources(appSettings: AppSettings): Promise<Sources> {
+  static sources(appSettings: ClientAppSettings): Promise<Sources> {
     const headers = Ajax.headers(appSettings.oauth);
-    return axios.get<SerializedSources>("/settings", { headers })
+    return axios.get<SerializedSources>("/sources", { headers })
       .then(resp => resp.data)
       .catch(error => {
         throw mapOauthError(appSettings.oauth, error);

@@ -15,9 +15,7 @@
  */
 
 import { NamedArray } from "immutable-class";
-import { Ajax } from "../../../client/utils/ajax/ajax";
 import { isTruthy } from "../../utils/general/general";
-import { AppSettings } from "../app-settings/app-settings";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
@@ -86,23 +84,6 @@ export function serialize({
   const dataCubes = serverDataCubes
     .filter(ds => ds.isQueryable())
     .map(ds => ds.toClientDataCube().toJS());
-
-  return {
-    clusters,
-    dataCubes
-  };
-}
-
-export function deserialize(settings: SerializedSources, appSettings: AppSettings): Sources {
-  const clusters = settings.clusters.map(cluster => Cluster.fromJS(cluster));
-
-  const dataCubes = settings.dataCubes.map((dataCubeJS: DataCubeJS) => {
-    const cluster = findCluster(dataCubeJS, clusters);
-    let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
-    const executor = Ajax.queryUrlExecutorFactory(dataCubeObject.name, appSettings);
-    dataCubeObject = dataCubeObject.attachExecutor(executor);
-    return dataCubeObject;
-  });
 
   return {
     clusters,

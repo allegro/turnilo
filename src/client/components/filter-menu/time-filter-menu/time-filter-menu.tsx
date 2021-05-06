@@ -20,6 +20,7 @@ import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Locale } from "../../../../common/models/locale/locale";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../../common/utils/functional/functional";
@@ -59,6 +60,7 @@ export interface TimeFilterMenuProps {
   clicker: Clicker;
   timekeeper: Timekeeper;
   essence: Essence;
+  locale: Locale;
   dimension: Dimension;
   onClose: Fn;
   containerStage?: Stage;
@@ -84,12 +86,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   selectTab = (tab: TimeFilterTab) => this.setState({ tab });
 
   render() {
-    const { essence, timekeeper, clicker, dimension, onClose, containerStage, openOn, inside } = this.props;
+    const { essence, timekeeper, clicker, dimension, onClose, containerStage, locale, openOn, inside } = this.props;
     if (!dimension) return null;
     const { tab } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
     const isRelativeTab = tab === TimeFilterTab.RELATIVE;
-    const tabProps = { essence, dimension, timekeeper, onClose, clicker };
+    const tabProps = { essence, dimension, timekeeper, onClose, clicker, locale };
 
     return <BubbleMenu
       className="time-filter-menu"

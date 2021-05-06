@@ -20,6 +20,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { LOCALES } from "../../../common/models/locale/locale";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { FilterTile } from "./filter-tile";
@@ -32,7 +33,7 @@ describe("FilterTile", () => {
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
         menuStage={null}
-      />
+        locale={LOCALES.EN_US}/>
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);

@@ -16,11 +16,12 @@
  */
 
 import { Request, Response, Router } from "express";
-import { AppSettings, serialize } from "../../../common/models/app-settings/app-settings";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { getTitle } from "../../../common/models/customization/customization";
 import { SETTINGS_MANAGER } from "../../config";
 import { mainLayout } from "../../views";
 
-export function turniloRouter(settings: AppSettings, version: string) {
+export function turniloRouter(appSettings: AppSettings, version: string) {
 
   const router = Router();
 
@@ -28,8 +29,8 @@ export function turniloRouter(settings: AppSettings, version: string) {
     try {
       res.send(mainLayout({
         version,
-        title: settings.customization.getTitle(version),
-        appSettings: serialize(settings),
+        title: getTitle(appSettings.customization, version),
+        appSettings,
         timekeeper: SETTINGS_MANAGER.getTimekeeper()
       }));
     } catch (e) {

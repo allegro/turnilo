@@ -23,6 +23,7 @@ import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
+import { Locale } from "../../../../common/models/locale/locale";
 import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
@@ -34,6 +35,7 @@ import { TimeShiftSelector } from "./time-shift-selector";
 export interface FixedTimeTabProps {
   essence: Essence;
   timekeeper: Timekeeper;
+  locale: Locale;
   dimension: Dimension;
   onClose: Fn;
   clicker: Clicker;
@@ -134,13 +136,14 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   };
 
   render() {
-    const { essence: { timezone, dataCube }, timekeeper, dimension, onClose } = this.props;
+    const { locale, essence: { timezone, dataCube }, timekeeper, dimension, onClose } = this.props;
     if (!dimension) return null;
     const { shift, start, end } = this.state;
     const overlapError = this.validateOverlap();
 
     return <div>
       <DateRangePicker
+        locale={locale}
         startTime={start}
         endTime={end}
         maxTime={dataCube.getMaxTime(timekeeper)}

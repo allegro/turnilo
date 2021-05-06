@@ -148,6 +148,7 @@
     "d3-dsv": "2.0.0",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.7.1",
+    "iconv-lite": "0.4.19",
     "ignore-styles": "5.0.1",
     "immutable-class-tester": "0.5.12",
     "jsdom": "9.4.2",
