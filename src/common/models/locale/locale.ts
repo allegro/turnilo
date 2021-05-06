@@ -33,7 +33,7 @@ const DEFAULT_LOCALE = EN_US;
 
 export interface LocaleJS {
   base: LocaleName;
-  overrides: Locale;
+  overrides: Partial<Locale>;
 }
 
 export type LocaleSerialized = Locale;

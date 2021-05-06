@@ -130,7 +130,7 @@ describe("AppSettings", () => {
         expect(oauthSerialize.calledWith({ input: 42 })).to.be.true;
       });
 
-      it("should use result of customization serialize", () => {
+      it("should use result of oauth serialize", () => {
         const serialized = serialize({ ...appSettings, oauth: { input: 42 } } as any);
 
         expect(serialized).to.deep.contain({

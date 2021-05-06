@@ -17,14 +17,15 @@
 
 import { Timezone } from "chronoshift";
 import { LOGGER } from "../../logger/logger";
+import { assoc } from "../../utils/functional/functional";
 import { isTruthy } from "../../utils/general/general";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 import { fromConfig as localeFromConfig, Locale, LocaleJS, serialize as localeSerialize } from "../locale/locale";
 import { fromConfig as urlShortenerFromConfig, UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
-const DEFAULT_TITLE = "Turnilo (%v)";
+export const DEFAULT_TITLE = "Turnilo (%v)";
 
-const DEFAULT_TIMEZONES: Timezone[] = [
+export const DEFAULT_TIMEZONES: Timezone[] = [
   new Timezone("America/Juneau"), // -9.0
   new Timezone("America/Los_Angeles"), // -8.0
   new Timezone("America/Yellowknife"), // -7.0
@@ -101,6 +102,9 @@ const availableCssVariables = [
   "text-standard"
 ];
 
+// Note: We could use some TS magick to link this type to availableCssVariables
+type CssVariables = Record<string, string>;
+
 export interface Customization {
   title?: string;
   headerBackground?: string;
@@ -109,7 +113,7 @@ export interface Customization {
   timezones: Timezone[];
   urlShortener?: UrlShortener;
   sentryDSN?: string;
-  cssVariables: Record<string, string>;
+  cssVariables: CssVariables;
   locale: Locale;
 }
 
@@ -145,17 +149,18 @@ export interface ClientCustomization {
   locale: Locale;
 }
 
-function validate({ cssVariables }: Customization): boolean {
-  let valid = true;
-
-  Object.keys(cssVariables).forEach(variableName => {
-    if (availableCssVariables.indexOf(variableName) < 0) {
-      valid = false;
-      LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
-    }
-  });
-
-  return valid;
+function verifyCssVariables(cssVariables: Record<string, string>): CssVariables {
+  return Object.keys(cssVariables)
+    .filter(variableName => {
+      const valid = availableCssVariables.indexOf(variableName) > -1;
+      if (!valid) {
+        LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
+      }
+      return valid;
+    })
+    .reduce((variables: CssVariables, key: string) => {
+      return assoc(variables, key, cssVariables[key]);
+    }, {});
 }
 
 export function fromConfig(config: CustomizationJS = {}): Customization {
@@ -184,15 +189,12 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     headerBackground,
     customLogoSvg,
     sentryDSN,
-    cssVariables,
+    cssVariables: verifyCssVariables(cssVariables),
     urlShortener: urlShortenerFromConfig(urlShortener),
     timezones,
     locale: localeFromConfig(locale),
     externalViews
   };
-
-  // TODO: Fallthrough, because we don't have any mechanism for handling incorrect configs
-  validate(customization);
 
   return customization;
 }
