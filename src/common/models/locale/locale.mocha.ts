@@ -17,7 +17,7 @@
 import { expect } from "chai";
 import { fromConfig, LOCALES } from "./locale";
 
-const en_us = LOCALES.EN_US;
+const en_us = LOCALES["en-US"];
 
 describe("locale", () => {
   describe("fromConfig", () => {
@@ -28,13 +28,13 @@ describe("locale", () => {
     });
 
     it("should use base locale", () => {
-      const locale = fromConfig({ base: "EN_US", overrides: {} });
+      const locale = fromConfig({ base: "en-US", overrides: {} });
 
       expect(locale).to.deep.equal(en_us);
     });
 
     it("should use base locale and override desired fields", () => {
-      const locale = fromConfig({ base: "EN_US", overrides: { weekStart: 42 } });
+      const locale = fromConfig({ base: "en-US", overrides: { weekStart: 42 } });
 
       expect(locale).to.deep.equal({
         ...en_us,

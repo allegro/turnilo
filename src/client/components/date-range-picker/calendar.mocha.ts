@@ -39,7 +39,7 @@ function assertEqualCalendarMatrix(a: Date[][], b: Date[][]) {
 }
 
 const utc = Timezone.UTC;
-const en_us = LOCALES.EN_US;
+const en_us = LOCALES["en-US"];
 const warsawTZ = Timezone.fromJS("Europe/Warsaw");
 
 const getDateInTimezone = (day: string, timezone: Timezone) => getMomentWithTimezone(day, timezone.toString()).toDate();

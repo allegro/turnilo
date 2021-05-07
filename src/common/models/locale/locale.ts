@@ -16,20 +16,20 @@
 
 import { isObject } from "../../utils/general/general";
 
-const EN_US: Locale = {
+const enUS: Locale = {
   shortDays: ["S", "M", "T", "W", "T", "F", "S"],
   shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
   weekStart: 0,
   exportEncoding: "utf-8"
 };
 
-type LocaleName = "EN_US";
+type LocaleName = "en-US";
 
 export const LOCALES: Record<LocaleName, Locale> = {
-  EN_US
+  "en-US": enUS
 };
 
-const DEFAULT_LOCALE = EN_US;
+const DEFAULT_LOCALE = enUS;
 
 export interface LocaleJS {
   base: LocaleName;

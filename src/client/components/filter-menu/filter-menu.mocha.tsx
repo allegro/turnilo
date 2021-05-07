@@ -29,7 +29,7 @@ class Wrap extends React.Component {
     return <FilterMenu
       clicker={null}
       containerStage={null}
-      locale={LOCALES.EN_US}
+      locale={LOCALES["en-US"]}
       dimension={DimensionFixtures.wikiCommentLength()}
       essence={EssenceFixtures.wikiTotals()}
       timekeeper={TimekeeperFixtures.fixed()}

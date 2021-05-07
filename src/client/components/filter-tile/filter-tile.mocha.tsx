@@ -33,7 +33,7 @@ describe("FilterTile", () => {
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
         menuStage={null}
-        locale={LOCALES.EN_US}/>
+        locale={LOCALES["en-US"]}/>
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
