@@ -94,6 +94,40 @@ These timezones will appear in the dropdown instead of the default, which are
 `['America/Juneau', 'America/Los_Angeles', 'America/Yellowknife', 'America/Phoenix', 'America/Denver', 'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Argentina/Buenos_Aires', 'Etc/UTC',
 'Asia/Jerusalem', 'Europe/Paris', 'Asia/Kathmandu', 'Asia/Hong_Kong', 'Asia/Seoul', 'Pacific/Guam']`
 
+## Locale
+
+Note: Turnilo has very basic support of locale. Right now we are working on finding places in application which should be configurable.
+
+You can set Turnilo locale and override some settings
+
+```yaml
+locale:
+  base: en-US
+  overrides:
+    shortMonths:
+      - [J, F, M, A, M, J, J, A, S, O, N, D]
+```
+
+You need to select base locale using POSIX locale identifier. (Right now Turnilo supports only `en-US` value).
+You can override following settings:
+
+* `shortDays` - array of strings, default: `["S", "M", "T", "W", "T", "F", "S"]`
+
+Short day names used in date picker component
+
+* `shortMonths` - array of strings, default:  `["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]`
+
+Short month names used in date picker component
+  
+* `weekStart` - number, default: 0
+
+Index of day at which week starts. 0 is Sunday. Please note that is purely visual and does not influence #709.
+  
+* `exportEncoding` - string, default: `utf-8`
+
+Encoding of files created by export function.
+
+
 ## Sentry DSN
 
 Add Sentry DSN to report errors to Sentry. [Sentry documentation](https://docs.sentry.io/platforms/javascript/?platform=browsernpm)
