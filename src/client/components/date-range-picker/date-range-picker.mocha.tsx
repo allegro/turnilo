@@ -28,7 +28,7 @@ describe("DateRangePicker", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <DateRangePicker
-        locale={LOCALES.EN_US}
+        locale={LOCALES["en-US"]}
         startTime={new Date(Date.UTC(2003, 11, 2))}
         endTime={new Date(Date.UTC(2004, 11, 2))}
         maxTime={new Date(Date.UTC(2004, 11, 2))}
@@ -78,7 +78,7 @@ describe("DateRangePicker", () => {
     expect(() => {
       renderIntoDocument(
         <DateRangePicker
-          locale={LOCALES.EN_US}
+          locale={LOCALES["en-US"]}
           startTime={new Date(Date.UTC(2003, 11, 2))}
           endTime={null}
           maxTime={new Date(Date.UTC(2004, 11, 2))}
