@@ -23,42 +23,40 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { StringValue } from "./string-value";
 import "./string-values-list.scss";
 
-function filterRows<T>(rows: T[], searchText: string): T[] {
+function filterRows(rows: string[], searchText: string): string[] {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
-  return rows.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
+  return rows.filter(d => d.toLowerCase().indexOf(searchTextLower) !== -1);
+}
+
+function prependPromotedValues(rows: string[], promoted: Set<string>): string[] {
+  return [
+    ...promoted,
+    ...rows.filter(value => !promoted.contains(value))
+    ];
 }
 
 interface RowsListProps {
   dimension: Dimension;
   dataset: Dataset;
   searchText: string;
-  limit: number;
-  selectedValues: Set<unknown>;
-  promotedValues: Set<unknown>;
+  selectedValues: Set<string>;
+  promotedValues: Set<string>;
   filterMode: FilterMode;
   onRowSelect: Binary<unknown, boolean, void>;
 }
 
-function sortRows<T>(rows: T[], promoted: Set<T>): T[] {
-  return rows.sort((a, b) => {
-    if (promoted.has(a) && !promoted.has(b)) return -1;
-    if (!promoted.has(a) && promoted.has(b)) return 1;
-    return 0;
-  });
-}
-
 export const StringValuesList: React.SFC<RowsListProps> = props => {
-  const { onRowSelect, filterMode, dataset, dimension, searchText, limit, promotedValues, selectedValues } = props;
-  const rows = dataset.data.slice(0, limit).map(d => d[dimension.name] as string);
-  const matchingRows = filterRows(rows, searchText);
-  if (searchText && matchingRows.length === 0) {
+  const { onRowSelect, filterMode, dataset, dimension, searchText, promotedValues, selectedValues } = props;
+  const rowValues = dataset.data.map(d => String(d[dimension.name]));
+  const values = prependPromotedValues(rowValues, promotedValues);
+  const matchingValues = filterRows(values, searchText);
+  if (searchText && matchingValues.length === 0) {
     return <div className="no-string-values">{`No results for "${searchText}"`}</div>;
   }
-  const sortedRows = sortRows(matchingRows, promotedValues);
   const checkboxStyle = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
   return <React.Fragment>
-    {sortedRows.map(value => (
+    {matchingValues.map(value => (
       <StringValue
         key={String(value)}
         value={value}

@@ -199,7 +199,6 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   renderSelectMode(): JSX.Element {
     const { filterMode, onClose, dimension } = this.props;
     const { dataset, selectedValues, searchText } = this.state;
-    const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
 
     return <React.Fragment>
       <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
@@ -214,14 +213,13 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         />
       </div>
       <div className={classNames("selectable-string-filter-menu", filterMode)}>
-        <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
+        <div className="menu-table">
           <div className="rows">
             {isLoaded(dataset) && <StringValuesList
               onRowSelect={this.onValueClick}
               dimension={dimension}
               dataset={dataset.dataset}
               searchText={searchText}
-              limit={TOP_N}
               selectedValues={selectedValues}
               promotedValues={this.initialSelection()}
               filterMode={filterMode} />}
