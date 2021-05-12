@@ -6,7 +6,10 @@
 ## Overview
 
 Turnilo can integrate with your OAuth provider. 
-Wurnilo will redirect your users to authentication page, handle token exchange and will decorate all requests with access token. 
+Turnilo will:
+* Redirect your users to authentication page, 
+* Handle authorization code flow with PKCE (Proof Key for Code Exchange )
+* Will decorate all data requests with access token. 
 
 ## Configuration
 
