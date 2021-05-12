@@ -50,7 +50,7 @@ export function fromConfig(locale?: LocaleJS): Locale {
   if (!isObject(locale)) return DEFAULT_LOCALE;
   const { base, overrides } = locale;
   if (!isTruthy(LOCALES[base])) {
-    LOGGER.warn(`Unsupported locale identifier: ${base}`);
+    LOGGER.warn(`Unsupported locale identifier: ${base}. Fallback to en-US.`);
     return DEFAULT_LOCALE;
   }
   return {
