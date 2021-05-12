@@ -17,6 +17,7 @@ require("ts-node").register({
   compilerOptions: {
     module: "commonjs",
     target: "es5",
+    downlevelIteration: true
   },
   typeCheck: true,
 });
