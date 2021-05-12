@@ -33,6 +33,12 @@ describe("locale", () => {
       expect(locale).to.deep.equal(en_us);
     });
 
+    it("should return default locale if passed unrecognized base identifier", () => {
+      const locale = fromConfig({ base: "foobar" } as any);
+
+      expect(locale).to.deep.equal(en_us);
+    });
+
     it("should use base locale and override desired fields", () => {
       const locale = fromConfig({ base: "en-US", overrides: { weekStart: 42 } });
 

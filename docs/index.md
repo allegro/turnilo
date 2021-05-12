@@ -29,3 +29,7 @@ How to release Turnilo in semi-automatic way using Github actions.
 ## [Custom Extensions](extending-turnilo.md)
 
 How to customize Turnilo, plugins, query and request decorators.
+
+## [OAuth integration](oauth.md)
+
+How to integrate Turnilo with OAuth provider
