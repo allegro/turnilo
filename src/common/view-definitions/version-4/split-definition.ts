@@ -15,7 +15,9 @@
  */
 
 import { Duration } from "chronoshift";
-import { DEFAULT_LIMITS } from "../../limit/limit";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
+import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
@@ -52,7 +54,7 @@ export interface TimeSplitDefinition extends BaseSplitDefinition {
 export type SplitDefinition = NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
 
 interface SplitDefinitionConversion<In extends SplitDefinition> {
-  toSplitCombine(split: In): Split;
+  toSplitCombine(split: In, dimension: Dimension): Split;
 
   fromSplitCombine(splitCombine: Split): In;
 }
@@ -95,21 +97,21 @@ function fromSort(sort: Sort): SplitSortDefinition {
   return { ref, ...rest };
 }
 
-function toLimit(limit: unknown): number | null {
+function toLimit(limit: unknown, dimension: Dimension): number | null {
   if (limit === null) return null;
   if (isNumber(limit) && isFiniteNumber(limit)) return limit;
-  return DEFAULT_LIMITS[0];
+  return dimension.limits[0];
 }
 
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
-  toSplitCombine(split: NumberSplitDefinition): Split {
-    const { dimension, limit, sort, granularity } = split;
+  toSplitCombine(split: NumberSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort, granularity } = split;
     return new Split({
       type: SplitType.number,
-      reference: dimension,
+      reference: dimension.name,
       bucket: granularity,
-      sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      sort: sort && toSort(sort, dimension.name),
+      limit: toLimit(limit, dimension)
     });
   },
 
@@ -129,14 +131,14 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
 };
 
 const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
-  toSplitCombine(split: TimeSplitDefinition): Split {
-    const { dimension, limit, sort, granularity } = split;
+  toSplitCombine(split: TimeSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort, granularity } = split;
     return new Split({
       type: SplitType.time,
-      reference: dimension,
+      reference: dimension.name,
       bucket: Duration.fromJS(granularity),
-      sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      sort: sort && toSort(sort, dimension.name),
+      limit: toLimit(limit, dimension)
     });
   },
 
@@ -157,12 +159,12 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
 };
 
 const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = {
-  toSplitCombine(split: StringSplitDefinition): Split {
-    const { dimension, limit, sort } = split;
+  toSplitCombine(split: StringSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort } = split;
     return new Split({
-      reference: dimension,
-      sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      reference: dimension.name,
+      sort: sort && toSort(sort, dimension.name),
+      limit: toLimit(limit, dimension)
     });
   },
 
@@ -183,14 +185,15 @@ const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDe
 };
 
 export interface SplitDefinitionConverter {
-  toSplitCombine(split: SplitDefinition): Split;
+  toSplitCombine(split: SplitDefinition, dataCube: ClientDataCube): Split;
 
   fromSplitCombine(splitCombine: Split): SplitDefinition;
 }
 
 export const splitConverter: SplitDefinitionConverter = {
-  toSplitCombine(split: SplitDefinition): Split {
-    return splitConversions[split.type].toSplitCombine(split);
+  toSplitCombine(split: SplitDefinition, dataCube: ClientDataCube): Split {
+    const dimension = findDimensionByName(dataCube.dimensions, split.dimension);
+    return splitConversions[split.type].toSplitCombine(split, dimension);
   },
 
   fromSplitCombine(splitCombine: Split): SplitDefinition {
