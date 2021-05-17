@@ -17,7 +17,6 @@
 
 import { List } from "immutable";
 import { clamp } from "../../../client/utils/dom/dom";
-import { DEFAULT_LIMITS } from "../../limit/limit";
 import { NORMAL_COLORS } from "../../models/colors/colors";
 import { getDimensionsByKind } from "../../models/data-cube/data-cube";
 import { findDimensionByName } from "../../models/dimension/dimensions";
@@ -112,7 +111,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       timeSplit = timeSplit.changeLimit(null);
     }
 
-    const colorSplit = splits.getSplit(1).update("limit", limit => clamp(limit, DEFAULT_LIMITS[0], COLORS_COUNT));
+    // TODO: This magic 5 will disappear in #756
+    const colorSplit = splits.getSplit(1).update("limit", limit => clamp(limit, 5, COLORS_COUNT));
 
     return Resolve.automatic(8, {
       splits: new Splits({ splits: List([colorSplit, timeSplit]) })
