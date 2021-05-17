@@ -20,7 +20,7 @@ import { bucketingStrategies, ClientDimension, SerializedDimension } from "../..
 import { TimeShift } from "../../common/models/time-shift/time-shift";
 
 export function deserialize(dimension: SerializedDimension): ClientDimension {
-  const { description, url, name, title, expression, sortStrategy } = dimension;
+  const { description, url, name, title, expression, limits, sortStrategy } = dimension;
 
   switch (dimension.kind) {
     case "string": {
@@ -30,6 +30,7 @@ export function deserialize(dimension: SerializedDimension): ClientDimension {
         url,
         name,
         title,
+        limits,
         sortStrategy,
         expression: Expression.fromJS(expression),
         multiValue: dimension.multiValue
@@ -42,6 +43,7 @@ export function deserialize(dimension: SerializedDimension): ClientDimension {
         url,
         name,
         title,
+        limits,
         sortStrategy,
         expression: Expression.fromJS(expression)
       };
@@ -53,6 +55,7 @@ export function deserialize(dimension: SerializedDimension): ClientDimension {
         url,
         name,
         title,
+        limits,
         sortStrategy,
         expression: Expression.fromJS(expression),
         granularities,
@@ -68,6 +71,7 @@ export function deserialize(dimension: SerializedDimension): ClientDimension {
         url,
         name,
         title,
+        limits,
         sortStrategy,
         expression: Expression.fromJS(expression),
         bucketedBy: bucketedBy && Duration.fromJS(bucketedBy),

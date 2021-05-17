@@ -17,7 +17,7 @@
 
 import { List } from "immutable";
 import { clamp } from "../../../client/utils/dom/dom";
-import { AVAILABLE_LIMITS } from "../../limit/limit";
+import { DEFAULT_LIMITS } from "../../limit/limit";
 import { NORMAL_COLORS } from "../../models/colors/colors";
 import { canBucketByDefault, Dimension } from "../../models/dimension/dimension";
 import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
@@ -48,7 +48,7 @@ function isTimeSplitValid(timeSplit: Split): boolean {
 
 const clampNominalSplitLimit = (split: Split) => split
   .update("limit", limit =>
-    clamp(limit, AVAILABLE_LIMITS[0], NORMAL_COLORS.length));
+    clamp(limit, DEFAULT_LIMITS[0], NORMAL_COLORS.length));
 
 const fixTimeSplit = (split: Split) => {
   const { reference } = split;
