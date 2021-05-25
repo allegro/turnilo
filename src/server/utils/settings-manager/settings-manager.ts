@@ -200,13 +200,13 @@ export class SettingsManager {
 
     logger.log(`Got native dataset update for ${dataCubeName}`);
 
-    let dataCube = getDataCube(sources, dataCubeName);
+    const dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) throw new Error(`Unknown dataset ${dataCubeName}`);
-    dataCube = attachDatasetExecutor(dataCube, changedDataset);
+    const queryableDataCube = attachDatasetExecutor(dataCube, changedDataset);
 
-    if (dataCube.refreshRule.isQuery()) {
+    if (queryableDataCube.refreshRule.isQuery()) {
       this.timeMonitor.addCheck(dataCube.name, () => {
-        return queryMaxTime(dataCube);
+        return queryMaxTime(queryableDataCube.timeAttribute, queryableDataCube.executor);
       });
     }
 
@@ -223,11 +223,11 @@ export class SettingsManager {
     if (!dataCube) {
       dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal);
     }
-    dataCube = attachExternalExecutor(dataCube, changedExternal);
+    const queryableDataCube = attachExternalExecutor(dataCube, changedExternal);
 
-    if (dataCube.refreshRule.isQuery()) {
-      this.timeMonitor.addCheck(dataCube.name, () => {
-        return queryMaxTime(dataCube);
+    if (queryableDataCube.refreshRule.isQuery()) {
+      this.timeMonitor.addCheck(queryableDataCube.name, () => {
+        return queryMaxTime(queryableDataCube.timeAttribute, queryableDataCube.executor);
       });
     }
 

@@ -16,6 +16,7 @@
  */
 
 import { Request, Response, Router } from "express";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { getDataCube, Sources } from "../../../common/models/sources/sources";
@@ -72,9 +73,13 @@ export function mkurlRouter(sourcesGetter: SourcesGetter) {
     }
 
     let essence: Essence;
+    const clientDataCube: ClientDataCube = {
+      ...myDataCube,
+      timeAttribute: myDataCube.timeAttribute && myDataCube.timeAttribute.name
+    };
 
     try {
-      essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube);
+      essence = definitionConverter.fromViewDefinition(viewDefinition, clientDataCube);
     } catch ({ message }) {
       res.status(400).send({ error: "invalid viewDefinition object", message });
       return;

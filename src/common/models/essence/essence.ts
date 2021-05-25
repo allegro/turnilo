@@ -189,7 +189,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   static timeFilter(filter: Filter, dataCube: ClientDataCube): TimeFilterClause {
-    const timeFilter = filter.clauseForReference(dataCube.timeAttribute.name);
+    const timeFilter = filter.clauseForReference(dataCube.timeAttribute);
     if (!isTimeFilter(timeFilter)) throw new Error(`Unknown time filter: ${timeFilter}`);
     return timeFilter;
   }
@@ -258,13 +258,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     };
   }
 
-  // getters
-  public getTimeAttribute(): RefExpression {
-    return this.dataCube.timeAttribute;
-  }
-
   public getTimeDimension(): Dimension {
-    return this.dataCube.dimensions.getDimensionByExpression(this.dataCube.timeAttribute);
+    return this.dataCube.dimensions.getDimensionByName(this.dataCube.timeAttribute);
   }
 
   public evaluateSelection(filter: TimeFilterClause, timekeeper: Timekeeper): FixedTimeFilterClause {

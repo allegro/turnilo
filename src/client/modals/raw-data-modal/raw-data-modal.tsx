@@ -156,11 +156,9 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   getSortedAttributes(dataCube: ClientDataCube): AttributeInfo[] {
-    const timeAttributeName = dataCube.timeAttribute ? dataCube.timeAttribute.name : null;
-
     const attributeRank = (attribute: AttributeInfo) => {
       const name = attribute.name;
-      if (name === timeAttributeName) {
+      if (name === dataCube.timeAttribute) {
         return 1;
       } else if (attribute.unsplitable) {
         return 3;

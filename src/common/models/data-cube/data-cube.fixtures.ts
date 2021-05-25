@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { OrderedSet } from "immutable";
+import { List, OrderedSet } from "immutable";
 import { $, AttributeInfo, basicExecutorFactory, Dataset, Expression } from "plywood";
 import { Omit } from "../../utils/functional/functional";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
@@ -50,13 +50,14 @@ export const wikiDataCube: DataCube = {
   ]),
   cluster: ClusterFixtures.druidWikiCluster(),
   defaultDuration: Duration.fromJS("P3D"),
+  defaultSplitDimensions: List([]),
+  maxQueries: DEFAULT_MAX_QUERIES,
   defaultPinnedDimensions: OrderedSet(["articleName"]),
   defaultSelectedMeasures: OrderedSet(["count"]),
   defaultSortMeasure: "count",
   defaultTimezone: Timezone.fromJS("Etc/UTC"),
   extendedDescription: "",
   group: "",
-  maxQueries: DEFAULT_MAX_QUERIES,
   maxSplits: 4,
   name: "wiki",
   refreshRule: RefreshRule.fromJS({
@@ -118,7 +119,7 @@ function pickClientProperties(dc: DataCube): Omit<ClientDataCube, "executor"> {
     refreshRule,
     rollup,
     source,
-    timeAttribute,
+    timeAttribute: timeAttribute && timeAttribute.name,
     title
   };
 }
@@ -129,6 +130,8 @@ export const wikiClientDataCube: ClientDataCube = {
 };
 
 export const twitterDataCube: DataCube = {
+  defaultSplitDimensions: List([]),
+  maxQueries: DEFAULT_MAX_QUERIES,
   cluster: ClusterFixtures.druidTwitterCluster(),
   defaultSelectedMeasures: OrderedSet([]),
   attributeOverrides: [],
@@ -166,6 +169,8 @@ export function customCube(title: string, description: string, extendedDescripti
     clusterName: "druid-custom",
     source: "custom",
     introspection: "none",
+    defaultSplitDimensions: List([]),
+    maxQueries: DEFAULT_MAX_QUERIES,
     dimensions: Dimensions.fromDimensions([]),
     measures: Measures.fromMeasures([]),
     timeAttribute: $("time"),
@@ -203,6 +208,8 @@ export function customCubeWithGuard(): DataCube {
     cluster: ClusterFixtures.druidTwitterClusterJSWithGuard(),
     source: "custom",
     introspection: "none",
+    defaultSplitDimensions: List([]),
+    maxQueries: DEFAULT_MAX_QUERIES,
     dimensions: Dimensions.fromDimensions([]),
     measures: Measures.fromMeasures([]),
     timeAttribute: $("time"),

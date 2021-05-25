@@ -21,7 +21,7 @@ import { stringSplitCombine, timeSplitCombine } from "../../models/split/split.f
 import splitCanonicalLength from "./split-canonical-length";
 
 const dataCube = wikiClientDataCube;
-const timeSplitName = dataCube.timeAttribute.name;
+const timeSplitName = dataCube.timeAttribute;
 
 describe("Split canonical length", () => {
   it("returns null for non-time split", () => {

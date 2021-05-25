@@ -49,7 +49,7 @@ import { Timekeeper } from "../timekeeper/timekeeper";
 import { attachExternalExecutor, QueryableDataCube } from "./queryable-data-cube";
 
 export const DEFAULT_INTROSPECTION: Introspection = "autofill-all";
-const INTROSPECTION_VALUES: Introspection[] = ["none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all"];
+const INTROSPECTION_VALUES = new Set(["none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all"]);
 export const DEFAULT_DEFAULT_TIMEZONE = Timezone.UTC;
 const DEFAULT_DEFAULT_FILTER = EMPTY_FILTER;
 const DEFAULT_DEFAULT_SPLITS = EMPTY_SPLITS;
@@ -105,14 +105,14 @@ export interface DataCube {
   timeAttribute?: RefExpression;
   defaultTimezone: Timezone;
   defaultFilter?: Filter;
-  defaultSplitDimensions?: List<string>;
+  defaultSplitDimensions: List<string>;
   defaultDuration: Duration;
   defaultSortMeasure?: string;
   defaultSelectedMeasures: OrderedSet<string>;
   defaultPinnedDimensions: OrderedSet<string>;
   refreshRule: RefreshRule;
   maxSplits: number;
-  maxQueries?: number;
+  maxQueries: number;
   queryDecorator?: QueryDecoratorDefinition;
   cluster?: Cluster;
 }
@@ -189,7 +189,7 @@ export interface ClientDataCube {
 
   dimensions: Dimensions;
   measures: Measures;
-  timeAttribute?: RefExpression;
+  timeAttribute?: string;
   defaultTimezone: Timezone;
   defaultFilter?: Filter;
   defaultSplitDimensions?: List<string>;
@@ -202,10 +202,10 @@ export interface ClientDataCube {
   executor: Executor;
 }
 
-function parseDescription({
-                            description,
-                            extendedDescription
-                          }: DataCubeJS): { description: string, extendedDescription?: string } {
+function readDescription({
+                           description,
+                           extendedDescription
+                         }: DataCubeJS): { description: string, extendedDescription?: string } {
   if (!description) {
     return { description: "" };
   }
@@ -226,76 +226,105 @@ interface LegacyDataCubeJS {
   subsetFilter?: string;
 }
 
-// TODO: cluster here can be undefined, because "native" cubes do not have cluster!
-export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster: Cluster): DataCube {
-  if (!config.name) throw new Error("DataCube must have a name");
-  verifyUrlSafeName(config.name);
-
+function readIntrospection(config: DataCubeJS): Introspection {
   const introspection = config.introspection || DEFAULT_INTROSPECTION;
-  if (introspection && INTROSPECTION_VALUES.indexOf(introspection) === -1) {
-    throw new Error(`invalid introspection value ${introspection}, must be one of ${INTROSPECTION_VALUES.join(", ")}`);
+  if (!INTROSPECTION_VALUES.has(introspection)) {
+    throw new Error(`invalid introspection value ${introspection}, must be one of ${[...INTROSPECTION_VALUES].join(", ")}`);
   }
-  if (cluster) {
-    if (config.clusterName !== cluster.name) throw new Error(`Cluster name '${config.clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
+  return introspection;
+}
+
+function readName(config: DataCubeJS): string {
+  const name = config.name;
+  if (!name) throw new Error("DataCube must have a name");
+  verifyUrlSafeName(name);
+  return name;
+}
+
+function verifyCluster(config: DataCubeJS, cluster?: Cluster) {
+  if (cluster === undefined) return;
+  if (config.clusterName !== cluster.name) {
+    throw new Error(`Cluster name '${config.clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
   }
+}
 
-  const refreshRule = config.refreshRule ? RefreshRule.fromJS(config.refreshRule) : RefreshRule.query();
-
-  let timeAttributeName = config.timeAttribute;
-  if (cluster && cluster.type === "druid" && !timeAttributeName) {
-    timeAttributeName = "__time";
-  }
-  // TODO: maybe we could keep only name in DataCube?
-  const timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
-
+function readAttributes(config: DataCubeJS): Pick<DataCube, "attributes" | "attributeOverrides" | "derivedAttributes"> {
   const attributeOverrides = AttributeInfo.fromJSs(config.attributeOverrides || []);
   const attributes = AttributeInfo.fromJSs(config.attributes || []);
-  let derivedAttributes: Record<string, Expression> = {};
-  if (config.derivedAttributes) {
-    derivedAttributes = Expression.expressionLookupFromJS(config.derivedAttributes);
-  }
+  const derivedAttributes = config.derivedAttributes ? Expression.expressionLookupFromJS(config.derivedAttributes) : {};
+  return {
+    attributes,
+    attributeOverrides,
+    derivedAttributes
+  };
+}
 
-  let dimensions: Dimensions;
-  let measures: Measures;
+function readTimeAttribute(config: DataCubeJS, cluster?: Cluster): RefExpression | undefined {
+  const timeAttributeName = config.timeAttribute;
+  if (timeAttributeName) return $(timeAttributeName);
+  if (cluster && cluster.type === "druid" && !timeAttributeName) {
+    return $("__time");
+  }
+  return undefined;
+}
+
+function readColumns(config: DataCubeJS, timeAttribute: RefExpression): { dimensions: Dimensions, measures: Measures } {
+  const name = config.name;
   try {
-    dimensions = Dimensions.fromJS(config.dimensions || []);
-    measures = Measures.fromJS(config.measures || []);
+    let dimensions = Dimensions.fromJS(config.dimensions || []);
+    const measures = Measures.fromJS(config.measures || []);
 
     if (timeAttribute && !dimensions.getDimensionByExpression(timeAttribute)) {
       dimensions = dimensions.prepend(new Dimension({
-        name: timeAttributeName,
+        name: timeAttribute.name,
         kind: "time",
         formula: timeAttribute.toString()
       }));
     }
+    checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
+    return {
+      dimensions,
+      measures
+    };
   } catch (e) {
-    e.message = `data cube: '${config.name}', ${e.message}`;
-    throw e;
+    throw new Error(`data cube: '${name}', ${e.message}`);
   }
-  checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, config.name);
+}
 
+function verifyDefaultSortMeasure(config: DataCubeJS, measures: Measures) {
   if (config.defaultSortMeasure) {
     if (!measures.containsMeasureWithName(config.defaultSortMeasure)) {
-      throw new Error(`can not find defaultSortMeasure '${config.defaultSortMeasure}' in data cube '${config.name}'`);
+      throw new Error(`Can not find defaultSortMeasure '${config.defaultSortMeasure}' in data cube '${config.name}'`);
     }
   }
+}
 
-  // TODO: add subsetFilter to "LegacyDataCubeJS"
+function readDefaultFilter(config: DataCubeJS): Filter | undefined {
+  if (!config.defaultFilter) return undefined;
+  try {
+    return Filter.fromJS(config.defaultFilter);
+  } catch {
+    throw new Error(`Incorrect format of default filter for ${config.name}. Ignoring field`);
+  }
+}
+
+export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Cluster): DataCube {
+  const name = readName(config);
+  const introspection = readIntrospection(config);
+  verifyCluster(config, cluster);
+  const { attributes, attributeOverrides, derivedAttributes } = readAttributes(config);
+
+  const refreshRule = config.refreshRule ? RefreshRule.fromJS(config.refreshRule) : RefreshRule.query();
+  const timeAttribute = readTimeAttribute(config, cluster);
+  const { dimensions, measures } = readColumns(config, timeAttribute);
+  verifyDefaultSortMeasure(config, measures);
   const subsetFormula = config.subsetFormula || config.subsetFilter;
+  const defaultFilter = readDefaultFilter(config);
 
-  let defaultFilter: Filter = null;
-  if (config.defaultFilter) {
-    try {
-      defaultFilter = Filter.fromJS(config.defaultFilter);
-    } catch {
-      console.warn(`Incorrect format of default filter for ${config.name}. Ignoring field`);
-    }
-  }
-
-  const { description, extendedDescription } = parseDescription(config);
+  const { description, extendedDescription } = readDescription(config);
 
   return {
-    name: config.name,
+    name,
     title: config.title || config.name,
     description,
     extendedDescription,
@@ -313,12 +342,12 @@ export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster: Clust
     measures,
     timeAttribute,
     // TODO: provide some better defaults, instead of nulls?
-    defaultTimezone: config.defaultTimezone ? Timezone.fromJS(config.defaultTimezone) : DEFAULT_DEFAULT_TIMEZONE,
     defaultFilter,
-    defaultSplitDimensions: config.defaultSplitDimensions ? List(config.defaultSplitDimensions) : null,
+    defaultTimezone: config.defaultTimezone ? Timezone.fromJS(config.defaultTimezone) : DEFAULT_DEFAULT_TIMEZONE,
+    defaultSplitDimensions: List(config.defaultSplitDimensions || []),
     defaultDuration: config.defaultDuration ? Duration.fromJS(config.defaultDuration) : DEFAULT_DEFAULT_DURATION,
     defaultSortMeasure: config.defaultSortMeasure || (measures.size() ? measures.first().name : null),
-    defaultSelectedMeasures: config.defaultSelectedMeasures ? OrderedSet(config.defaultSelectedMeasures) : null,
+    defaultSelectedMeasures: OrderedSet(config.defaultSelectedMeasures || []),
     defaultPinnedDimensions: OrderedSet(config.defaultPinnedDimensions || []),
     maxSplits: config.maxSplits || DEFAULT_MAX_SPLITS,
     maxQueries: config.maxQueries || DEFAULT_MAX_QUERIES,
@@ -379,59 +408,6 @@ export function serialize(dataCube: DataCube): SerializedDataCube {
   };
 }
 
-// TODO: move to client/deserializers
-export function deserialize(dataCube: SerializedDataCube, executor: Executor): ClientDataCube {
-  const {
-    attributes,
-    clusterName,
-    defaultDuration,
-    defaultFilter,
-    defaultPinnedDimensions,
-    defaultSelectedMeasures,
-    defaultSortMeasure,
-    defaultSplitDimensions,
-    defaultTimezone,
-    description,
-    dimensions,
-    extendedDescription,
-    group,
-    maxSplits,
-    measures,
-    name,
-    options,
-    refreshRule,
-    rollup,
-    source,
-    timeAttribute,
-    title
-  } = dataCube;
-  return {
-    attributes: AttributeInfo.fromJSs(attributes),
-    clusterName,
-    defaultDuration: Duration.fromJS(defaultDuration),
-    defaultFilter: defaultFilter && Filter.fromJS(defaultFilter),
-    defaultPinnedDimensions: OrderedSet(defaultPinnedDimensions),
-    defaultSelectedMeasures: OrderedSet(defaultSelectedMeasures),
-    defaultSortMeasure,
-    defaultSplitDimensions: defaultSplitDimensions && List(defaultSplitDimensions),
-    defaultTimezone: Timezone.fromJS(defaultTimezone),
-    description,
-    dimensions: Dimensions.fromJS(dimensions),
-    executor,
-    extendedDescription,
-    group,
-    maxSplits,
-    measures: Measures.fromJS(measures),
-    name,
-    options,
-    refreshRule: RefreshRule.fromJS(refreshRule),
-    rollup,
-    source,
-    timeAttribute: timeAttribute && $(timeAttribute),
-    title
-  };
-}
-
 export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
   customTransforms?: CustomDruidTransforms;
@@ -449,14 +425,15 @@ export function fromClusterAndExternal(name: string, cluster: Cluster, external:
   return attachExternalExecutor(dataCube, external);
 }
 
-export function queryMaxTime(dataCube: { executor?: Executor, timeAttribute?: RefExpression }): Promise<Date> {
-  if (!dataCube.executor) {
+// TODO: move out?
+export function queryMaxTime(timeAttribute?: RefExpression, executor?: Executor): Promise<Date> {
+  if (!executor) {
     return Promise.reject(new Error("dataCube not ready"));
   }
 
-  const ex = ply().apply("maxTime", $("main").max(dataCube.timeAttribute));
+  const ex = ply().apply("maxTime", $("main").max(timeAttribute));
 
-  return dataCube.executor(ex).then((dataset: Dataset) => {
+  return executor(ex).then((dataset: Dataset) => {
     const maxTimeDate = dataset.data[0]["maxTime"] as Date;
     if (isNaN(maxTimeDate as any)) return null;
     return maxTimeDate;
@@ -477,8 +454,8 @@ export function getDimensionsByKind(dataCube: { dimensions: Dimensions }, kind: 
   return dataCube.dimensions.filterDimensions(dimension => dimension.kind === kind);
 }
 
-export function isTimeAttribute(dataCube: { timeAttribute?: RefExpression }, ex: Expression) {
-  return ex.equals(dataCube.timeAttribute);
+export function isTimeAttribute(dataCube: ClientDataCube, ex: Expression) {
+  return ex instanceof RefExpression && ex.name === dataCube.timeAttribute;
 }
 
 export function getDefaultFilter(dataCube: ClientDataCube): Filter {
@@ -487,7 +464,7 @@ export function getDefaultFilter(dataCube: ClientDataCube): Filter {
   return filter.insertByIndex(0, new RelativeTimeFilterClause({
     period: TimeFilterPeriod.LATEST,
     duration: dataCube.defaultDuration,
-    reference: dataCube.timeAttribute.name
+    reference: dataCube.timeAttribute
   }));
 }
 

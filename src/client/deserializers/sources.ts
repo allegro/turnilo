@@ -16,9 +16,10 @@
 
 import { ClientAppSettings } from "../../common/models/app-settings/app-settings";
 import { Cluster } from "../../common/models/cluster/cluster";
-import { deserialize as dataCubeDeserialize, SerializedDataCube } from "../../common/models/data-cube/data-cube";
+import { SerializedDataCube } from "../../common/models/data-cube/data-cube";
 import { ClientSources, SerializedSources } from "../../common/models/sources/sources";
 import { Ajax } from "../utils/ajax/ajax";
+import { deserialize as dataCubeDeserialize } from "./data-cube";
 
 export function deserialize(settings: SerializedSources, appSettings: ClientAppSettings): ClientSources {
   const clusters = settings.clusters.map(cluster => Cluster.fromJS(cluster));

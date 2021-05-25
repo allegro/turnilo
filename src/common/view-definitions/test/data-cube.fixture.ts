@@ -15,7 +15,6 @@
  */
 
 import { OrderedSet } from "immutable";
-import { RefExpression } from "plywood";
 import { ClientDataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE } from "../../models/data-cube/data-cube";
 import { Dimensions } from "../../models/dimension/dimensions";
 import { dimensions, timeDimension } from "./dimension";
@@ -39,5 +38,5 @@ export const dataCube: ClientDataCube = {
   rollup: false,
   source: "custom",
   title: "fixture",
-  timeAttribute: timeDimension.expression as RefExpression
+  timeAttribute: timeDimension.name
 };

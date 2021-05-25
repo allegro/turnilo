@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
-import { Dataset, TabulatorOptions } from "plywood";
+import { $, Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
@@ -213,14 +213,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   refreshMaxTime = () => {
     const { essence, timekeeper } = this.state;
-    const { dataCube } = essence;
+    const { dataCube: { name, executor, timeAttribute, refreshRule } } = essence;
     this.setState({ updatingMaxTime: true });
 
-    queryMaxTime(dataCube)
+    queryMaxTime($(timeAttribute), executor)
       .then(maxTime => {
         if (!this.mounted) return;
-        const timeName = dataCube.name;
-        const isBatchCube = !dataCube.refreshRule.isRealtime();
+        const timeName = name;
+        const isBatchCube = !refreshRule.isRealtime();
         const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
         if (isBatchCube && isCubeUpToDate) {
           this.setState({ updatingMaxTime: false });
