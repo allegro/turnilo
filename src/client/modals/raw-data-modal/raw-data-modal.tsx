@@ -19,7 +19,7 @@ import { isDate } from "chronoshift";
 import { List } from "immutable";
 import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
 import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
@@ -149,13 +149,13 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimension(clause.reference);
+      const dimension = dataCube.dimensions.getDimensionByName(clause.reference);
       if (!dimension) return null;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();
   }
 
-  getSortedAttributes(dataCube: DataCube): AttributeInfo[] {
+  getSortedAttributes(dataCube: ClientDataCube): AttributeInfo[] {
     const timeAttributeName = dataCube.timeAttribute ? dataCube.timeAttribute.name : null;
 
     const attributeRank = (attribute: AttributeInfo) => {

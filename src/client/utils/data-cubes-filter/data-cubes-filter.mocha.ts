@@ -15,12 +15,16 @@
  */
 
 import { expect } from "chai";
-import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
+import {
+  customClientCube,
+  twitterClientDataCube,
+  wikiClientDataCube
+} from "../../../common/models/data-cube/data-cube.fixtures";
 import filterDataCubes from "./data-cubes-filter";
 
-const wiki = DataCubeFixtures.wiki();
-const twitter = DataCubeFixtures.twitter();
-const custom = DataCubeFixtures.customCube;
+const wiki = wikiClientDataCube;
+const twitter = twitterClientDataCube;
+const custom = customClientCube;
 
 describe("DataCubes Filter", () => {
 

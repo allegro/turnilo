@@ -117,7 +117,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let autoChanged = false;
 
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+      const splitDimension = dataCube.dimensions.getDimensionByName(split.reference);
       if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
         split = split.changeSort(new DimensionSort({
           reference: splitDimension.name,

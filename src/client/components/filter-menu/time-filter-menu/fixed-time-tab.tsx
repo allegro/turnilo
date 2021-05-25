@@ -18,6 +18,7 @@ import { day } from "chronoshift";
 import { List } from "immutable";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
+import { getMaxTime } from "../../../../common/models/data-cube/data-cube";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -146,7 +147,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
         locale={locale}
         startTime={start}
         endTime={end}
-        maxTime={dataCube.getMaxTime(timekeeper)}
+        maxTime={getMaxTime(dataCube, timekeeper)}
         timezone={timezone}
         onStartChange={this.onStartChange}
         onEndChange={this.onEndChange}

@@ -16,6 +16,7 @@
  */
 
 import { Request, Response, Router } from "express";
+import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { getDataCube, Sources } from "../../../common/models/sources/sources";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
@@ -62,6 +63,11 @@ export function mkurlRouter(sourcesGetter: SourcesGetter) {
     const myDataCube = getDataCube(sources, dataCubeName);
     if (!myDataCube) {
       res.status(400).send({ error: "unknown data cube" });
+      return;
+    }
+
+    if (!isQueryable(myDataCube)) {
+      res.status(400).send({ error: "un queryable data cube" });
       return;
     }
 

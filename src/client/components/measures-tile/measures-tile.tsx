@@ -95,7 +95,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
   dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
     const { essence: { dataCube } } = this.props;
-    const measure = dataCube.getMeasure(measureName);
+    const measure = dataCube.measures.getMeasureByName(measureName);
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";

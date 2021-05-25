@@ -23,7 +23,7 @@ import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../common/models/customization/customization";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube, queryMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -90,11 +90,11 @@ export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
   hash: string;
-  changeCubeAndEssence: Ternary<DataCube, Essence, boolean, void>;
-  urlForCubeAndEssence: Binary<DataCube, Essence, string>;
-  getEssenceFromHash: Binary<string, DataCube, Essence>;
-  dataCube: DataCube;
-  dataCubes: DataCube[];
+  changeCubeAndEssence: Ternary<ClientDataCube, Essence, boolean, void>;
+  urlForCubeAndEssence: Binary<ClientDataCube, Essence, string>;
+  getEssenceFromHash: Binary<string, ClientDataCube, Essence>;
+  dataCube: ClientDataCube;
+  dataCubes: ClientDataCube[];
   openAboutModal: Fn;
   customization?: ClientCustomization;
   appSettings: ClientAppSettings;
@@ -216,7 +216,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
 
-    DataCube.queryMaxTime(dataCube)
+    queryMaxTime(dataCube)
       .then(maxTime => {
         if (!this.mounted) return;
         const timeName = dataCube.name;
@@ -282,7 +282,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.mounted = false;
   }
 
-  updateEssenceFromHashOrDataCube(hash: string, dataCube: DataCube) {
+  updateEssenceFromHashOrDataCube(hash: string, dataCube: ClientDataCube) {
     let essence: Essence;
     try {
       essence = this.getEssenceFromHash(hash, dataCube);
@@ -294,11 +294,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ essence });
   }
 
-  getEssenceFromDataCube(dataCube: DataCube): Essence {
+  getEssenceFromDataCube(dataCube: ClientDataCube): Essence {
     return Essence.fromDataCube(dataCube);
   }
 
-  getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
+  getEssenceFromHash(hash: string, dataCube: ClientDataCube): Essence {
     if (!dataCube) {
       throw new Error("Data cube is required.");
     }

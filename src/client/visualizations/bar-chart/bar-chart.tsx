@@ -478,7 +478,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     let bars: JSX.Element[] = [];
     let highlight: JSX.Element;
 
-    const dimension = essence.dataCube.getDimension(essence.splits.splits.get(splitIndex).reference);
+    const dimension = essence.dataCube.dimensions.getDimensionByName(essence.splits.splits.get(splitIndex).reference);
     const splitLength = essence.splits.length();
 
     data.forEach((d, i) => {
@@ -568,7 +568,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xTicks = xScale.domain();
 
     const split = essence.splits.splits.first();
-    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimension = essence.dataCube.dimensions.getDimensionByName(split.reference);
 
     const labels: JSX.Element[] = [];
     if (dimension.canBucketByDefault()) {
@@ -720,7 +720,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     this.coordinatesCache = [];
     if (!splits.length()) return {};
     const split = splits.splits.first();
-    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimension = essence.dataCube.dimensions.getDimensionByName(split.reference);
     const dimensionKind = dimension.kind;
     const series = essence.getConcreteSeries().toArray();
     // TODO: very suspicious
@@ -756,7 +756,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence } = this.props;
     const { splits, dataCube } = essence;
     const firstSplit = splits.splits.first();
-    const dimension = dataCube.getDimension(firstSplit.reference);
+    const dimension = dataCube.dimensions.getDimensionByName(firstSplit.reference);
 
     const getX = (d: Datum) => d[dimension.name] as string;
 
@@ -812,7 +812,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const series = essence.getConcreteSeries().get(chartIndex);
     const firstSplit = splits.splits.first();
-    const dimension = dataCube.getDimension(firstSplit.reference);
+    const dimension = dataCube.dimensions.getDimensionByName(firstSplit.reference);
 
     const chartStage = this.getSingleChartStage();
     const yScale = this.getYScale(series, this.getAxisStages(chartStage).yAxisStage);

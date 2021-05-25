@@ -16,20 +16,16 @@
 
 import { ClientAppSettings } from "../../common/models/app-settings/app-settings";
 import { Cluster } from "../../common/models/cluster/cluster";
-import { findCluster } from "../../common/models/cluster/find-cluster";
-import { DataCube, DataCubeJS } from "../../common/models/data-cube/data-cube";
-import { SerializedSources, Sources } from "../../common/models/sources/sources";
+import { deserialize as dataCubeDeserialize, SerializedDataCube } from "../../common/models/data-cube/data-cube";
+import { ClientSources, SerializedSources } from "../../common/models/sources/sources";
 import { Ajax } from "../utils/ajax/ajax";
 
-export function deserialize(settings: SerializedSources, appSettings: ClientAppSettings): Sources {
+export function deserialize(settings: SerializedSources, appSettings: ClientAppSettings): ClientSources {
   const clusters = settings.clusters.map(cluster => Cluster.fromJS(cluster));
 
-  const dataCubes = settings.dataCubes.map((dataCubeJS: DataCubeJS) => {
-    const cluster = findCluster(dataCubeJS, clusters);
-    let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
-    const executor = Ajax.queryUrlExecutorFactory(dataCubeObject.name, appSettings);
-    dataCubeObject = dataCubeObject.attachExecutor(executor);
-    return dataCubeObject;
+  const dataCubes = settings.dataCubes.map((dataCube: SerializedDataCube) => {
+    const executor = Ajax.queryUrlExecutorFactory(dataCube.name, appSettings);
+    return dataCubeDeserialize(dataCube, executor);
   });
 
   return {

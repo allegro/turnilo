@@ -34,11 +34,11 @@ export class Actions {
 
   static removeExcessiveSplits(visualizationName = "Visualization"): VisualizationDependentAction {
     return ({ splits, dataCube }) => {
-      const newSplits = splits.splits.take(dataCube.getMaxSplits());
+      const newSplits = splits.splits.take(dataCube.maxSplits);
       const excessiveSplits = splits.splits
-        .skip(dataCube.getMaxSplits())
-        .map(split => dataCube.getDimension(split.reference).title);
-      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
+        .skip(dataCube.maxSplits)
+        .map(split => dataCube.dimensions.getDimensionByName(split.reference).title);
+      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.maxSplits} splits`, [
         {
           description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,
           adjustment: {

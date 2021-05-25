@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
 import { clientAppSettings } from "../../../common/models/app-settings/app-settings.fixtures";
-import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
+import { wikiClientDataCube } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { noop } from "../../../common/utils/functional/functional";
 import { Totals } from "../../visualizations/totals/totals";
@@ -35,7 +35,7 @@ describe.skip("CubeView", () => {
         appSettings={clientAppSettings}
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
-        dataCube={DataCubeFixtures.wiki()}
+        dataCube={wikiClientDataCube}
         getEssenceFromHash={null}
         changeCubeAndEssence={noop}
         urlForCubeAndEssence={null}

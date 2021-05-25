@@ -48,7 +48,7 @@ function filterExpression(params: QueryParams): Expression {
 export function previewStringFilterQuery(params: QueryParams) {
   const { dimension, essence, limit } = params;
   const { dataCube } = essence;
-  const nativeCount = dataCube.getMeasure("count");
+  const nativeCount = dataCube.dimensions.getDimensionByName("count");
   const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
   return $("main")

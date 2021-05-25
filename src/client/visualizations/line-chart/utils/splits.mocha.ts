@@ -24,7 +24,7 @@ use(equivalent);
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
 const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const timeDimension = essenceWithNominalSplit.getTimeDimension();
-const channelDimension = essenceWithNominalSplit.dataCube.getDimension("channel");
+const channelDimension = essenceWithNominalSplit.dataCube.dimensions.getDimensionByName("channel");
 const timeSplit = essenceWithNominalSplit.splits.findSplitForDimension(timeDimension);
 const channelSplit = essenceWithNominalSplit.splits.findSplitForDimension(channelDimension);
 

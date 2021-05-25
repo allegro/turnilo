@@ -19,7 +19,7 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { Split } from "../../../../common/models/split/split";
 
 function dimensionForSplit(essence: Essence, split: Split): Dimension {
-   return essence.dataCube.getDimension(split.reference);
+   return essence.dataCube.dimensions.getDimensionByName(split.reference);
 }
 
 export function getContinuousSplit({ splits: { splits } }: Essence): Split {

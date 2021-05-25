@@ -16,7 +16,11 @@
  */
 
 import { Cluster } from "./cluster/cluster";
-import { DataCube } from "./data-cube/data-cube";
+import {
+  DEFAULT_DEFAULT_DURATION,
+  DEFAULT_DEFAULT_TIMEZONE,
+  DEFAULT_INTROSPECTION
+} from "./data-cube/data-cube";
 
 export const DIMENSION = {
   name: {
@@ -255,7 +259,7 @@ export const DATA_CUBE = {
   },
   introspection: {
     label: "Introspection",
-    description: `How will this cube be introspected. Default: <code>${DataCube.DEFAULT_INTROSPECTION}</code>`
+    description: `How will this cube be introspected. Default: <code>${DEFAULT_INTROSPECTION}</code>`
   },
   clusterName: {
     label: "Cluster",
@@ -275,14 +279,14 @@ export const DATA_CUBE = {
     description: `The time period, expressed as an
       <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations" target="_blank">
       ISO 8601 Duration</a>, that will be shown when the user first opens this
-      cube. Default: <code>${DataCube.DEFAULT_DEFAULT_DURATION}</code>.`
+      cube. Default: <code>${DEFAULT_DEFAULT_DURATION}</code>.`
   },
   defaultTimezone: {
     label: "Default timezone",
     description: `The default timezone, expressed as an
       <a href="https://en.wikipedia.org/wiki/Tz_database" target="_blank">
       Olsen Timezone</a>, that will be selected when the user first opens this
-      cube. Default: <code>${DataCube.DEFAULT_DEFAULT_TIMEZONE}</code>.`
+      cube. Default: <code>${DEFAULT_DEFAULT_TIMEZONE}</code>.`
   },
   defaultSortMeasure: {
     label: "Default sort measure",

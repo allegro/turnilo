@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { complement } from "../../../common/utils/functional/functional";
 import { isNil } from "../../../common/utils/general/general";
 
@@ -25,7 +25,7 @@ function escapeRegExp(input: string): string {
 }
 
 interface RankedDataCube {
-  dataCube: DataCube;
+  dataCube: ClientDataCube;
   rank: number;
 }
 
@@ -44,12 +44,12 @@ function titleRank(title: string, query: string): number {
   return 0;
 }
 
-export default function filterDataCubes(dataCubes: DataCube[], query: string, searchInContent = true): DataCube[] {
+export default function filterDataCubes(dataCubes: ClientDataCube[], query: string, searchInContent = true): ClientDataCube[] {
   if (query.trim().length === 0) {
     return dataCubes;
   }
   return dataCubes
-    .map((dataCube: DataCube) => {
+    .map(dataCube => {
       const { title, description } = dataCube;
       const rank = titleRank(title, query) + (searchInContent ? contentRank(description, query) : 0);
       return rank > 0 ? { dataCube, rank } : null;

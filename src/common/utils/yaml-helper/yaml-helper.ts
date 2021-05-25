@@ -19,7 +19,7 @@ import { AttributeInfo } from "plywood";
 import { AppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
-import { DataCube, Source } from "../../models/data-cube/data-cube";
+import { DataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../models/labels";
 import { Measure } from "../../models/measure/measure";
@@ -279,9 +279,9 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
   addProps
-    .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
-    .add("defaultDuration", { defaultValue: DataCube.DEFAULT_DEFAULT_DURATION })
-    .add("defaultSortMeasure", { defaultValue: dataCube.getDefaultSortMeasure() })
+    .add("defaultTimezone", { defaultValue: DEFAULT_DEFAULT_TIMEZONE })
+    .add("defaultDuration", { defaultValue: DEFAULT_DEFAULT_DURATION })
+    .add("defaultSortMeasure", { defaultValue: dataCube.defaultSortMeasure })
   ;
 
   const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
@@ -304,7 +304,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     lines.push("", "#defaultPinnedDimensions: []");
   }
 
-  const introspection = dataCube.getIntrospection();
+  const introspection = dataCube.introspection;
   if (withComments) {
     lines.push(
       "",

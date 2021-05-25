@@ -29,7 +29,7 @@ export const SplitLegend: React.SFC<SplitLegendProps> = props => {
   const { essence, dataset } = props;
   const legendSplit = essence.splits.splits.first();
 
-  const legendDimension = essence.dataCube.getDimension(legendSplit.reference);
+  const legendDimension = essence.dataCube.dimensions.getDimensionByName(legendSplit.reference);
   const title = legendSplit.getTitle(legendDimension);
 
   const nestedDataset = selectFirstSplitDatums(dataset);

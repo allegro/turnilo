@@ -30,7 +30,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(({ splits, dataCube, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+      const splitDimension = dataCube.dimensions.getDimensionByName(split.reference);
 
       // ToDo: review this
       if (!split.limit && splitDimension.kind !== "time") {

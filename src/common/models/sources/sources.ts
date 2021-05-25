@@ -18,7 +18,15 @@ import { NamedArray } from "immutable-class";
 import { isTruthy } from "../../utils/general/general";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
-import { DataCube, DataCubeJS } from "../data-cube/data-cube";
+import {
+  ClientDataCube,
+  DataCube,
+  DataCubeJS,
+  fromConfig as dataCubeFromConfig,
+  serialize as dataCubeSerialize,
+  SerializedDataCube
+} from "../data-cube/data-cube";
+import { isQueryable } from "../data-cube/queryable-data-cube";
 
 export interface SourcesJS {
   clusters?: ClusterJS[];
@@ -32,7 +40,12 @@ export interface Sources {
 
 export interface SerializedSources {
   clusters: ClusterJS[]; // SerializedCluster[]
-  dataCubes: DataCubeJS[]; // SerializedDataCube[]
+  dataCubes: SerializedDataCube[];
+}
+
+export interface ClientSources {
+  readonly clusters: Cluster[];
+  readonly dataCubes: ClientDataCube[];
 }
 
 interface ClustersConfig {
@@ -61,7 +74,7 @@ function readDataCubes({ dataCubes, dataSources }: DataCubesConfig, clusters: Cl
   const cubes = dataCubes || dataSources || [];
   return cubes.map(cube => {
     const cluster = findCluster(cube, clusters);
-    return DataCube.fromJS(cube, { cluster });
+    return dataCubeFromConfig(cube, cluster);
   });
 }
 
@@ -82,8 +95,8 @@ export function serialize({
   const clusters = serverClusters.map(c => c.toClientCluster().toJS());
 
   const dataCubes = serverDataCubes
-    .filter(ds => ds.isQueryable())
-    .map(ds => ds.toClientDataCube().toJS());
+    .filter(dc => isQueryable(dc))
+    .map(dataCubeSerialize);
 
   return {
     clusters,
@@ -110,6 +123,6 @@ export function addOrUpdateDataCube(sources: Sources, dataCube: DataCube): Sourc
 export function deleteDataCube(sources: Sources, dataCube: DataCube): Sources {
   return {
     ...sources,
-    dataCubes: sources.dataCubes.filter(dc => dc.equals(dataCube))
+    dataCubes: sources.dataCubes.filter(dc => dc.name === dataCube.name)
   };
 }

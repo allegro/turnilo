@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { Duration } from "chronoshift";
-import { DataCubeFixtures } from "../../../models/data-cube/data-cube.fixtures";
+import { wikiClientDataCube } from "../../../models/data-cube/data-cube.fixtures";
 import { StringFilterAction, TimeFilterPeriod } from "../../../models/filter-clause/filter-clause";
 import { boolean, numberRange, stringWithAction, timePeriod, timeRange } from "../../../models/filter-clause/filter-clause.fixtures";
 import { filterDefinitionConverter } from "../filter-definition";
@@ -40,7 +40,7 @@ describe("FilterDefinition v3", () => {
     booleanFilterTests.forEach(({ dimension, exclude, values }) => {
       it(`converts filter clause with values: "${values}"`, () => {
         const filterClauseDefinition = booleanFilterDefinition(dimension, values, exclude);
-        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, wikiClientDataCube);
         const expected = boolean(dimension, values, exclude);
 
         expect(filterClause).to.deep.equal(expected);
@@ -71,7 +71,7 @@ describe("FilterDefinition v3", () => {
     stringFilterTests.forEach(({ dimension, action, exclude, values }) => {
       it(`converts definition with "${action}" action`, () => {
         const filterClauseDefinition = stringFilterDefinition(dimension, action, values, exclude);
-        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, wikiClientDataCube);
         const expected = stringWithAction(dimension, action, values, exclude);
 
         expect(filterClause).to.deep.equal(expected);
@@ -102,7 +102,7 @@ describe("FilterDefinition v3", () => {
     numberFilterTests.forEach(({ dimension, exclude, start, end, bounds }) => {
       it(`converts range: ${start} - ${end} with bounds "${bounds}"`, () => {
         const filterClauseDefinition = numberRangeFilterDefinition(dimension, start, end, bounds, exclude);
-        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, wikiClientDataCube);
         const expected = numberRange(dimension, start, end, bounds, exclude);
 
         expect(filterClause).to.deep.equal(expected);
@@ -150,7 +150,7 @@ describe("FilterDefinition v3", () => {
           it(`converts ${-multiple} of ${duration}`, () => {
             const filterClauseDefinition = latestTimeFilterDefinition("time", multiple, duration);
 
-            const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+            const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, wikiClientDataCube);
             const expected = timePeriod("time", multipliedDuration, TimeFilterPeriod.LATEST);
 
             expect(filterClause).to.deep.equal(expected);
@@ -194,7 +194,7 @@ describe("FilterDefinition v3", () => {
             it(`converts ${periodName} period ${duration}`, () => {
               const filterClauseDefinition = flooredTimeFilterDefinition("time", step, duration);
 
-              const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+              const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, wikiClientDataCube);
               const expected = timePeriod("time", duration, period);
 
               expect(filterClause).to.deep.equal(expected);

@@ -76,7 +76,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const dimension = DragManager.draggingDimension();
     if (dimension) return !splits.hasSplitOn(dimension);
     if (DragManager.isDraggingFilter()) {
-      const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
+      const dimension = dataCube.dimensions.getDimensionByName(DragManager.draggingFilter().reference);
       return dimension && !splits.hasSplitOn(dimension);
     }
     return DragManager.isDraggingSplit();
@@ -133,7 +133,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const { essence: { dataCube } } = this.props;
     if (DragManager.isDraggingSplit()) return DragManager.draggingSplit();
     if (DragManager.isDraggingFilter()) {
-      const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
+      const dimension = dataCube.dimensions.getDimensionByName(DragManager.draggingFilter().reference);
       return Split.fromDimension(dimension);
     }
     return Split.fromDimension(DragManager.draggingDimension());

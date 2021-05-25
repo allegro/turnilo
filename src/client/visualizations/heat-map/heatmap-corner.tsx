@@ -37,8 +37,8 @@ export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ colorScale, width
 
   const row = splits.get(0);
   const column = splits.get(1);
-  const rowTitle = row.getTitle(dataCube.getDimension(row.reference));
-  const columnTitle = column.getTitle(dataCube.getDimension(column.reference));
+  const rowTitle = row.getTitle(dataCube.dimensions.getDimensionByName(row.reference));
+  const columnTitle = column.getTitle(dataCube.dimensions.getDimensionByName(column.reference));
   const series = essence.getConcreteSeries().first();
 
   const legendHeight = height - labelOffset;

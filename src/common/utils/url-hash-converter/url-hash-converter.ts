@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Visualization } from "../../models/visualization-manifest/visualization-manifest";
-import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, LEGACY_VIEW_DEFINITION_VERSION, version2Visualizations, ViewDefinitionVersion } from "../../view-definitions";
+import {
+  DEFAULT_VIEW_DEFINITION_VERSION,
+  definitionConverters,
+  definitionUrlEncoders,
+  LEGACY_VIEW_DEFINITION_VERSION,
+  version2Visualizations,
+  ViewDefinitionVersion
+} from "../../view-definitions";
 
 const SEGMENT_SEPARATOR = "/";
 const MINIMAL_HASH_SEGMENTS_COUNT = 2;
 
 export interface UrlHashConverter {
-  essenceFromHash(hash: string, dataCube: DataCube): Essence;
+  essenceFromHash(hash: string, dataCube: ClientDataCube): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
@@ -78,7 +85,7 @@ export function getHashSegments(hash: string): HashSegments {
 }
 
 export const urlHashConverter: UrlHashConverter = {
-  essenceFromHash(hash: string, dataCube: DataCube): Essence {
+  essenceFromHash(hash: string, dataCube: ClientDataCube): Essence {
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];

@@ -17,7 +17,7 @@
 
 import { Duration, Timezone } from "chronoshift";
 import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube, getMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -54,7 +54,7 @@ export interface AutoRefreshMenuProps {
   autoRefreshRate: Duration;
   setAutoRefreshRate: Unary<Duration, void>;
   refreshMaxTime: Fn;
-  dataCube: DataCube;
+  dataCube: ClientDataCube;
   timekeeper: Timekeeper;
   timezone: Timezone;
 }
@@ -71,14 +71,14 @@ function renderRefreshIntervalDropdown(autoRefreshRate: Duration, setAutoRefresh
   />;
 }
 
-function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timezone): string {
+function updatedText(dataCube: ClientDataCube, timekeeper: Timekeeper, timezone: Timezone): string {
   const { refreshRule } = dataCube;
   if (refreshRule.isRealtime()) {
     return "Updated ~1 second ago";
   } else if (refreshRule.isFixed()) {
     return `Fixed to ${formatDateTime(refreshRule.time, timezone)}`;
   } else { // refreshRule is query
-    const maxTime = dataCube.getMaxTime(timekeeper);
+    const maxTime = getMaxTime(dataCube, timekeeper);
     if (!maxTime) return null;
     return `Updated ${formatTimeElapsed(maxTime, timezone)} ago`;
   }

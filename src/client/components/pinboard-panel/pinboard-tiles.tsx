@@ -41,7 +41,7 @@ function pinnedSortOn(essence: Essence): SortOn | null {
 
 function pinnedDimensions(essence: Essence): Dimension[] {
   const { dataCube, pinnedDimensions } = essence;
-  return mapTruthy(pinnedDimensions.toArray(), dimensionName => dataCube.getDimension(dimensionName));
+  return mapTruthy(pinnedDimensions.toArray(), dimensionName => dataCube.dimensions.getDimensionByName(dimensionName));
 }
 
 export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {

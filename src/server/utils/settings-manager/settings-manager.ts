@@ -19,7 +19,8 @@ import { Dataset, External } from "plywood";
 import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster } from "../../../common/models/cluster/cluster";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { DataCube, fromClusterAndExternal, queryMaxTime } from "../../../common/models/data-cube/data-cube";
+import { attachDatasetExecutor, attachExternalExecutor } from "../../../common/models/data-cube/queryable-data-cube";
 import {
   addOrUpdateDataCube,
   deleteDataCube,
@@ -28,6 +29,7 @@ import {
   Sources
 } from "../../../common/models/sources/sources";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import dataCubeToExternal from "../../../common/utils/external/datacube-to-external";
 import { noop, Unary } from "../../../common/utils/functional/functional";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { timeout } from "../../../common/utils/promise/promise";
@@ -90,8 +92,8 @@ export class SettingsManager {
     const initialExternals = dataCubes.map(dataCube => {
       return {
         name: dataCube.name,
-        external: dataCube.toExternal(),
-        suppressIntrospection: dataCube.getIntrospection() === "none"
+        external: dataCubeToExternal(dataCube),
+        suppressIntrospection: dataCube.introspection === "none"
       };
     });
 
@@ -200,11 +202,11 @@ export class SettingsManager {
 
     let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) throw new Error(`Unknown dataset ${dataCubeName}`);
-    dataCube = dataCube.updateWithDataset(changedDataset);
+    dataCube = attachDatasetExecutor(dataCube, changedDataset);
 
     if (dataCube.refreshRule.isQuery()) {
       this.timeMonitor.addCheck(dataCube.name, () => {
-        return DataCube.queryMaxTime(dataCube);
+        return queryMaxTime(dataCube);
       });
     }
 
@@ -219,13 +221,13 @@ export class SettingsManager {
 
     let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) {
-      dataCube = DataCube.fromClusterAndExternal(dataCubeName, cluster, changedExternal);
+      dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal);
     }
-    dataCube = dataCube.updateWithExternal(changedExternal);
+    dataCube = attachExternalExecutor(dataCube, changedExternal);
 
     if (dataCube.refreshRule.isQuery()) {
       this.timeMonitor.addCheck(dataCube.name, () => {
-        return DataCube.queryMaxTime(dataCube);
+        return queryMaxTime(dataCube);
       });
     }
 

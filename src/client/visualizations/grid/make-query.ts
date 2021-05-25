@@ -16,7 +16,7 @@
 
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Sort } from "../../../common/models/sort/sort";
@@ -50,7 +50,7 @@ function applySort(sort: Sort) {
   return (query: Expression) => query.performAction(sort.toExpression());
 }
 
-function applyCanonicalLength(splits: List<Split>, dataCube: DataCube) {
+function applyCanonicalLength(splits: List<Split>, dataCube: ClientDataCube) {
   return (exp: Expression) => {
     const canonicalLength = splits
       .map(split => splitCanonicalLength(split, dataCube))
@@ -66,7 +66,7 @@ function applySplits(essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const firstSplit = splits.first();
 
   const splitsMap = splits.reduce<Record<string, Expression>>((map, split) => {
-    const dimension = dataCube.getDimension(split.reference);
+    const dimension = dataCube.dimensions.getDimensionByName(split.reference);
     const { name } = dimension;
     const expression = splitToExpression(split, dimension, timeShiftEnv);
     return assoc(map, name, expression);

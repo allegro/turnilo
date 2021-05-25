@@ -16,11 +16,11 @@
 
 import { expect } from "chai";
 import { hour, month } from "chronoshift";
-import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { wikiClientDataCube } from "../../models/data-cube/data-cube.fixtures";
 import { stringSplitCombine, timeSplitCombine } from "../../models/split/split.fixtures";
 import splitCanonicalLength from "./split-canonical-length";
 
-const dataCube = DataCubeFixtures.wiki();
+const dataCube = wikiClientDataCube;
 const timeSplitName = dataCube.timeAttribute.name;
 
 describe("Split canonical length", () => {

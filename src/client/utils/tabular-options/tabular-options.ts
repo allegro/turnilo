@@ -42,7 +42,7 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
     },
     attributeFilter: ({ name }: AttributeInfo) => {
       return findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null
-        || essence.dataCube.getDimension(name) !== undefined;
+        || essence.dataCube.dimensions.getDimensionByName(name) !== undefined;
     },
     attributeTitle: ({ name }: AttributeInfo) => {
       const seriesWithDerivation = findSeriesAndDerivation(name, essence.getConcreteSeries());
@@ -50,7 +50,7 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
         const { series, derivation } = seriesWithDerivation;
         return series.title(derivation);
       }
-      const dimension = essence.dataCube.getDimension(name);
+      const dimension = essence.dataCube.dimensions.getDimensionByName(name);
       if (dimension) {
         return dimension.title;
       }

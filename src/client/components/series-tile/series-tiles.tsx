@@ -86,7 +86,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   function insertPlaceholder<T>(tiles: Array<ReactElement<T>>): Array<ReactElement<T>> {
     if (!placeholderSeries) return tiles;
     const { series, index } = placeholderSeries;
-    const measure = essence.dataCube.getMeasure(series.reference);
+    const measure = essence.dataCube.measures.getMeasureByName(series.reference);
 
     const placeholderTile = <PlaceholderSeriesTile
       key="placeholder-series-tile"

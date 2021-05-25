@@ -40,7 +40,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(({ splits, dataCube, series }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+      const splitDimension = dataCube.dimensions.getDimensionByName(split.reference);
       const sortStrategy = splitDimension.sortStrategy;
 
       if (isSortEmpty(split.sort)) {

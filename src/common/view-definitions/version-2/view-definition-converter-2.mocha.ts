@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { wikiClientDataCube } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { stringIn, timePeriod } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
@@ -64,7 +64,7 @@ describe("ViewDefinitionConverter2", () => {
   ].forEach(({ label, expression, period }) => {
     it(`converts ${label} bucket expression to time period`, () => {
       const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression(expression);
-      const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki());
+      const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, wikiClientDataCube);
       const convertedClause = essence.filter.clauses.first();
 
       const expectedClause = timePeriod("time", "P1D", period);
@@ -125,7 +125,7 @@ describe("ViewDefinitionConverter2", () => {
         }
       }
     ]);
-    const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki()).filter;
+    const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, wikiClientDataCube).filter;
     const convertedClause = convertedFilter.clauses.get(1);
 
     const expectedClause = stringIn("page_last_author", ["TypeScript"]);
@@ -160,7 +160,7 @@ describe("ViewDefinitionConverter2", () => {
         limit: 10
       }
     }]);
-    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki()).splits;
+    const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, wikiClientDataCube).splits;
 
     expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");
   });

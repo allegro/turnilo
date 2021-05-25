@@ -30,7 +30,7 @@ export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ essence }) =
     <div className="header-split-columns">
       {splits.toArray().map(split => {
         const { reference } = split;
-        const title = dataCube.getDimension(reference).title;
+        const title = dataCube.dimensions.getDimensionByName(reference).title;
         return <span className="header-split-column" key={reference}>{title}</span>;
       })}
     </div>

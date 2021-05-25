@@ -27,7 +27,7 @@ export abstract class SortOn {
     const { type, reference } = sort;
     switch (type) {
       case SortType.DIMENSION:
-        const dimension = essence.dataCube.getDimension(reference);
+        const dimension = essence.dataCube.dimensions.getDimensionByName(reference);
         return new DimensionSortOn(dimension);
       case SortType.SERIES:
         const period = (sort as SeriesSort).period;

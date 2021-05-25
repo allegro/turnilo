@@ -279,7 +279,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   draggingDimension(): Dimension {
     const { essence: { dataCube } } = this.props;
     if (DragManager.isDraggingSplit()) {
-      return dataCube.getDimension(DragManager.draggingSplit().reference);
+      return dataCube.dimensions.getDimensionByName(DragManager.draggingSplit().reference);
     }
     return DragManager.draggingDimension();
   }
@@ -305,7 +305,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     let tryingToReplaceTime = false;
     if (dragPosition.replace !== null) {
       const targetClause = filter.clauses.get(dragPosition.replace);
-      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
+      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.timeAttribute.name;
     }
     if (dragPosition && !tryingToReplaceTime) {
       this.addDummy(dimension, dragPosition);
@@ -486,7 +486,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        const dimension = dataCube.getDimension(clause.reference);
+        const dimension = dataCube.dimensions.getDimensionByName(clause.reference);
         if (!dimension) return null;
         return {
           dimension,

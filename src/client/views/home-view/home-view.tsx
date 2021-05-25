@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Fn } from "../../../common/utils/general/general";
 import { ClearableInput } from "../../components/clearable-input/clearable-input";
 import { HeaderBar } from "../../components/header-bar/header-bar";
@@ -28,7 +28,7 @@ import { DataCubeCard } from "./data-cube-card/data-cube-card";
 import "./home-view.scss";
 
 export interface HomeViewProps {
-  dataCubes?: DataCube[];
+  dataCubes?: ClientDataCube[];
   onOpenAbout: Fn;
   customization?: ClientCustomization;
 }
@@ -49,7 +49,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     this.setState(state => ({ ...state, query }));
   };
 
-  renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
+  renderDataCube({ name, title, description, extendedDescription }: ClientDataCube): JSX.Element {
     return <DataCubeCard
       key={name}
       title={title}
