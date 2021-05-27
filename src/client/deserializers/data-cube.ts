@@ -15,7 +15,6 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { List, OrderedSet } from "immutable";
 import { AttributeInfo, Executor } from "plywood";
 import { ClientDataCube, SerializedDataCube } from "../../common/models/data-cube/data-cube";
 import { Filter } from "../../common/models/filter/filter";
@@ -53,10 +52,10 @@ export function deserialize(dataCube: SerializedDataCube, executor: Executor): C
     clusterName,
     defaultDuration: Duration.fromJS(defaultDuration),
     defaultFilter: defaultFilter && Filter.fromJS(defaultFilter),
-    defaultPinnedDimensions: OrderedSet(defaultPinnedDimensions),
-    defaultSelectedMeasures: OrderedSet(defaultSelectedMeasures),
+    defaultPinnedDimensions,
+    defaultSelectedMeasures,
     defaultSortMeasure,
-    defaultSplitDimensions: defaultSplitDimensions && List(defaultSplitDimensions),
+    defaultSplitDimensions,
     defaultTimezone: Timezone.fromJS(defaultTimezone),
     description,
     dimensions: dimensionsDeserialize(dimensions),

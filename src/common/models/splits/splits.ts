@@ -44,8 +44,8 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return new Splits({ splits: List(splits) });
   }
 
-  static fromDimensions(dimensions: List<Dimension>): Splits {
-    const splits = dimensions.map(dimension => Split.fromDimension(dimension));
+  static fromDimensions(dimensions: Dimension[]): Splits {
+    const splits = List(dimensions.map(dimension => Split.fromDimension(dimension)));
     return new Splits({ splits });
   }
 

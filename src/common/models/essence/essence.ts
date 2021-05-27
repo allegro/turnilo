@@ -170,7 +170,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       timeShift: TimeShift.empty(),
       splits: getDefaultSplits(dataCube),
       series: getDefaultSeries(dataCube),
-      pinnedDimensions: dataCube.defaultPinnedDimensions,
+      pinnedDimensions: OrderedSet(dataCube.defaultPinnedDimensions),
       pinnedSort: dataCube.defaultSortMeasure
     });
 

@@ -286,7 +286,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     .add("defaultSortMeasure", { defaultValue: dataCube.defaultSortMeasure })
   ;
 
-  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
+  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures : null;
   if (withComments) {
     lines.push("", "# The names of measures that are selected by default");
   }
@@ -296,7 +296,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     lines.push("#defaultSelectedMeasures: []");
   }
 
-  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
+  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions : null;
   if (withComments) {
     lines.push("", "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }

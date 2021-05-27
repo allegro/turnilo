@@ -115,11 +115,11 @@ export interface DataCube {
   timeAttribute?: RefExpression;
   defaultTimezone: Timezone;
   defaultFilter?: Filter;
-  defaultSplitDimensions: List<string>;
+  defaultSplitDimensions: string[];
   defaultDuration: Duration;
   defaultSortMeasure?: string;
-  defaultSelectedMeasures: OrderedSet<string>;
-  defaultPinnedDimensions: OrderedSet<string>;
+  defaultSelectedMeasures: string[];
+  defaultPinnedDimensions: string[];
   refreshRule: RefreshRule;
   maxSplits: number;
   maxQueries: number;
@@ -202,11 +202,11 @@ export interface ClientDataCube {
   timeAttribute?: string;
   defaultTimezone: Timezone;
   defaultFilter?: Filter;
-  defaultSplitDimensions?: List<string>;
+  defaultSplitDimensions?: string[];
   defaultDuration: Duration;
   defaultSortMeasure?: string;
-  defaultSelectedMeasures: OrderedSet<string>;
-  defaultPinnedDimensions: OrderedSet<string>;
+  defaultSelectedMeasures: string[];
+  defaultPinnedDimensions: string[];
   refreshRule: RefreshRule;
   maxSplits: number;
   executor: Executor;
@@ -355,11 +355,11 @@ export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Clus
     // TODO: provide some better defaults, instead of nulls?
     defaultFilter,
     defaultTimezone: config.defaultTimezone ? Timezone.fromJS(config.defaultTimezone) : DEFAULT_DEFAULT_TIMEZONE,
-    defaultSplitDimensions: List(config.defaultSplitDimensions || []),
+    defaultSplitDimensions: config.defaultSplitDimensions || [],
     defaultDuration: config.defaultDuration ? Duration.fromJS(config.defaultDuration) : DEFAULT_DEFAULT_DURATION,
     defaultSortMeasure: config.defaultSortMeasure || (measures.size() ? measures.first().name : null),
-    defaultSelectedMeasures: OrderedSet(config.defaultSelectedMeasures || []),
-    defaultPinnedDimensions: OrderedSet(config.defaultPinnedDimensions || []),
+    defaultSelectedMeasures: config.defaultSelectedMeasures || [],
+    defaultPinnedDimensions: config.defaultPinnedDimensions || [],
     maxSplits: config.maxSplits || DEFAULT_MAX_SPLITS,
     maxQueries: config.maxQueries || DEFAULT_MAX_QUERIES,
     queryDecorator: config.queryDecorator ? QueryDecoratorDefinition.fromJS(config.queryDecorator) : null,
@@ -398,10 +398,10 @@ export function serialize(dataCube: DataCube): SerializedDataCube {
     clusterName,
     defaultDuration: defaultDuration && defaultDuration.toJS(),
     defaultFilter: defaultFilter && defaultFilter.toJS(),
-    defaultPinnedDimensions: defaultPinnedDimensions.toJS(),
-    defaultSelectedMeasures: defaultSelectedMeasures.toJS(),
+    defaultPinnedDimensions,
+    defaultSelectedMeasures,
     defaultSortMeasure,
-    defaultSplitDimensions: defaultSplitDimensions && defaultSplitDimensions.toJS(),
+    defaultSplitDimensions,
     defaultTimezone: defaultTimezone.toJS(),
     description,
     dimensions: dimensionsSerialize(dimensions),
@@ -488,7 +488,7 @@ export function getDefaultSplits(dataCube: ClientDataCube): Splits {
 }
 
 export function getDefaultSeries(dataCube: ClientDataCube): SeriesList {
-  const measureNames = dataCube.defaultSelectedMeasures || dataCube.measures.getFirstNMeasureNames(4);
-  const measures = measureNames.toArray().map(name => dataCube.measures.getMeasureByName(name));
+  const measureNames = dataCube.defaultSelectedMeasures || dataCube.measures.getFirstNMeasureNames(4).toArray();
+  const measures = measureNames.map(name => dataCube.measures.getMeasureByName(name));
   return SeriesList.fromMeasures(measures);
 }

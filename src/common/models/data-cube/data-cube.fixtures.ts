@@ -16,7 +16,6 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { List, OrderedSet } from "immutable";
 import { $, AttributeInfo, basicExecutorFactory, Dataset, Expression } from "plywood";
 import { Omit } from "../../utils/functional/functional";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
@@ -50,10 +49,10 @@ export const wikiDataCube: DataCube = {
   ]),
   cluster: ClusterFixtures.druidWikiCluster(),
   defaultDuration: Duration.fromJS("P3D"),
-  defaultSplitDimensions: List([]),
+  defaultSplitDimensions: [],
   maxQueries: DEFAULT_MAX_QUERIES,
-  defaultPinnedDimensions: OrderedSet(["articleName"]),
-  defaultSelectedMeasures: OrderedSet(["count"]),
+  defaultPinnedDimensions: ["articleName"],
+  defaultSelectedMeasures: ["count"],
   defaultSortMeasure: "count",
   defaultTimezone: Timezone.fromJS("Etc/UTC"),
   extendedDescription: "",
@@ -130,10 +129,10 @@ export const wikiClientDataCube: ClientDataCube = {
 };
 
 export const twitterDataCube: DataCube = {
-  defaultSplitDimensions: List([]),
+  defaultSplitDimensions: [],
   maxQueries: DEFAULT_MAX_QUERIES,
   cluster: ClusterFixtures.druidTwitterCluster(),
-  defaultSelectedMeasures: OrderedSet([]),
+  defaultSelectedMeasures: [],
   attributeOverrides: [],
   attributes: [],
   derivedAttributes: {},
@@ -153,7 +152,7 @@ export const twitterDataCube: DataCube = {
   defaultTimezone: Timezone.fromJS("Etc/UTC"),
   defaultDuration: Duration.fromJS("P3D"),
   defaultSortMeasure: "count",
-  defaultPinnedDimensions: OrderedSet(["tweet"]),
+  defaultPinnedDimensions: ["tweet"],
   refreshRule: RefreshRule.fromJS({
     rule: "realtime"
   })
@@ -169,7 +168,7 @@ export function customCube(title: string, description: string, extendedDescripti
     clusterName: "druid-custom",
     source: "custom",
     introspection: "none",
-    defaultSplitDimensions: List([]),
+    defaultSplitDimensions: [],
     maxQueries: DEFAULT_MAX_QUERIES,
     dimensions: fromConfig([]),
     measures: Measures.fromMeasures([]),
@@ -183,8 +182,8 @@ export function customCube(title: string, description: string, extendedDescripti
     name: "custom",
     attributeOverrides: [],
     attributes: [],
-    defaultPinnedDimensions: OrderedSet([]),
-    defaultSelectedMeasures: OrderedSet([]),
+    defaultPinnedDimensions: [],
+    defaultSelectedMeasures: [],
     derivedAttributes: {},
     description,
     extendedDescription,
@@ -208,7 +207,7 @@ export function customCubeWithGuard(): DataCube {
     cluster: ClusterFixtures.druidTwitterClusterJSWithGuard(),
     source: "custom",
     introspection: "none",
-    defaultSplitDimensions: List([]),
+    defaultSplitDimensions: [],
     maxQueries: DEFAULT_MAX_QUERIES,
     dimensions: fromConfig([]),
     measures: Measures.fromMeasures([]),
@@ -222,8 +221,8 @@ export function customCubeWithGuard(): DataCube {
     name: "some-name",
     attributeOverrides: [],
     attributes: [],
-    defaultPinnedDimensions: OrderedSet([]),
-    defaultSelectedMeasures: OrderedSet([]),
+    defaultPinnedDimensions: [],
+    defaultSelectedMeasures: [],
     derivedAttributes: {},
     description: "",
     extendedDescription: "",

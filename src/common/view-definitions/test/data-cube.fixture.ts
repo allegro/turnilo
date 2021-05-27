@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
 import { ClientDataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE } from "../../models/data-cube/data-cube";
 import { dimensions, timeDimension } from "./dimension";
 import { measuresCollection } from "./measure";
@@ -23,8 +22,8 @@ export const dataCube: ClientDataCube = {
   attributes: [],
   clusterName: "druid",
   defaultDuration: DEFAULT_DEFAULT_DURATION,
-  defaultPinnedDimensions: OrderedSet([]),
-  defaultSelectedMeasures: OrderedSet([]),
+  defaultPinnedDimensions: [],
+  defaultSelectedMeasures: [],
   defaultTimezone: DEFAULT_DEFAULT_TIMEZONE,
   description: "",
   dimensions,

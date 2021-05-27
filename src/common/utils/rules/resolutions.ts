@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { List, OrderedSet } from "immutable";
+import { List } from "immutable";
 import { ClientDataCube, getDimensionsByKind } from "../../models/data-cube/data-cube";
 import { SeriesList } from "../../models/series-list/series-list";
 import { MeasureSeries } from "../../models/series/measure-series";
@@ -39,8 +39,8 @@ export class Resolutions {
   }
 
   static defaultSelectedMeasures = (dataCube: ClientDataCube): Resolution[] => {
-    const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || OrderedSet();
-    const measures = defaultSelectedMeasures.map(measureName => dataCube.measures.getMeasureByName(measureName)).toArray();
+    const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || [];
+    const measures = defaultSelectedMeasures.map(measureName => dataCube.measures.getMeasureByName(measureName));
     if (measures.length === 0) {
       return [];
     }
