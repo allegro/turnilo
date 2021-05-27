@@ -20,6 +20,7 @@ import { clamp } from "../../../client/utils/dom/dom";
 import { AVAILABLE_LIMITS } from "../../limit/limit";
 import { NORMAL_COLORS } from "../../models/colors/colors";
 import { getDimensionsByKind } from "../../models/data-cube/data-cube";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -55,7 +56,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let score = 4;
 
     let continuousSplit = splits.getSplit(0);
-    const continuousDimension = dataCube.dimensions.getDimensionByName(continuousSplit.reference);
+    const continuousDimension = findDimensionByName(dataCube.dimensions, continuousSplit.reference);
     const sortStrategy = continuousDimension.sortStrategy;
 
     let sort: Sort = null;
@@ -94,7 +95,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.areExactSplitKinds("time", "*"))
   .then(({ splits, dataCube }) => {
     let timeSplit = splits.getSplit(0);
-    const timeDimension = dataCube.dimensions.getDimensionByName(timeSplit.reference);
+    const timeDimension = findDimensionByName(dataCube.dimensions, timeSplit.reference);
 
     const sort: Sort = new DimensionSort({
       reference: timeDimension.name,
@@ -122,7 +123,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .or(Predicates.areExactSplitKinds("*", "number"))
   .then(({ splits, dataCube }) => {
     let timeSplit = splits.getSplit(1);
-    const timeDimension = dataCube.dimensions.getDimensionByName(timeSplit.reference);
+    const timeDimension = findDimensionByName(dataCube.dimensions, timeSplit.reference);
 
     let autoChanged = false;
 
@@ -159,7 +160,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.haveAtLeastSplitKinds("time"))
   .then(({ splits, dataCube }) => {
-    let timeSplit = splits.splits.find(split => dataCube.dimensions.getDimensionByName(split.reference).kind === "time");
+    let timeSplit = splits.splits.find(split => findDimensionByName(dataCube.dimensions, split.reference).kind === "time");
     return Resolve.manual(NORMAL_PRIORITY_ACTION, "Too many splits on the line chart", [
       {
         description: "Remove all but the time split",

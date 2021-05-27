@@ -19,6 +19,7 @@ import { List, Set } from "immutable";
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import {
   BooleanFilterClause,
   FilterClause,
@@ -228,7 +229,7 @@ export const filterDefinitionConverter: FilterDefinitionConverter = {
       throw new Error("Dimension name cannot be empty.");
     }
 
-    const dimension = dataCube.dimensions.getDimensionByName(clauseDefinition.ref);
+    const dimension = findDimensionByName(dataCube.dimensions, clauseDefinition.ref);
 
     if (dimension == null) {
       throw new Error(`Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`);

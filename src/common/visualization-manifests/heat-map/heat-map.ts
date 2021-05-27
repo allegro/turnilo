@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
@@ -40,7 +41,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(({ splits, dataCube, series }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.dimensions.getDimensionByName(split.reference);
+      const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
       const sortStrategy = splitDimension.sortStrategy;
 
       if (isSortEmpty(split.sort)) {
@@ -90,8 +91,8 @@ const suggestRemovingSplits = ({ splits }: ActionVariables) => [{
 }];
 
 const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
-  dataCube.dimensions
-    .filterDimensions(dimension => !splits.hasSplitOn(dimension))
+  allDimensions(dataCube.dimensions)
+    .filter(dimension => !splits.hasSplitOn(dimension))
     .slice(0, 2)
     .map(dimension => ({
       description: `Add ${dimension.title} split`,

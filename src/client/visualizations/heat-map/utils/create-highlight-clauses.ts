@@ -19,6 +19,7 @@ import { Datum } from "plywood";
 import { ClientDataCube } from "../../../../common/models/data-cube/data-cube";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { Dimension } from "../../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../../common/models/dimension/dimensions";
 import { Essence } from "../../../../common/models/essence/essence";
 import {
   BooleanFilterClause,
@@ -43,7 +44,7 @@ interface SplitSelection {
 
 function splitSelection(split: Split, offset: number, dataCube: ClientDataCube, dataset: Datum[]): SplitSelection {
   const dimensionName = split.reference;
-  const dimension = dataCube.dimensions.getDimensionByName(dimensionName);
+  const dimension = findDimensionByName(dataCube.dimensions, dimensionName);
   const labelIndex = Math.floor(offset / TILE_SIZE);
   if (labelIndex > dataset.length - 1) {
     return null;

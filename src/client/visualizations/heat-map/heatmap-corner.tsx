@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import "./heatmap-corner.scss";
 import { HeatmapLegend } from "./heatmap-legend";
@@ -37,8 +38,8 @@ export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ colorScale, width
 
   const row = splits.get(0);
   const column = splits.get(1);
-  const rowTitle = row.getTitle(dataCube.dimensions.getDimensionByName(row.reference));
-  const columnTitle = column.getTitle(dataCube.dimensions.getDimensionByName(column.reference));
+  const rowTitle = row.getTitle(findDimensionByName(dataCube.dimensions, row.reference));
+  const columnTitle = column.getTitle(findDimensionByName(dataCube.dimensions, column.reference));
   const series = essence.getConcreteSeries().first();
 
   const legendHeight = height - labelOffset;

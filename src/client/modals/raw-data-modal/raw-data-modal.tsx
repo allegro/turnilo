@@ -20,6 +20,7 @@ import { List } from "immutable";
 import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
 import * as React from "react";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
@@ -149,7 +150,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.dimensions.getDimensionByName(clause.reference);
+      const dimension = findDimensionByName(dataCube.dimensions, clause.reference);
       if (!dimension) return null;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();

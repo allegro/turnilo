@@ -21,6 +21,7 @@ import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { isTimeAttribute } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { allDimensions, findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
@@ -280,7 +281,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   draggingDimension(): Dimension {
     const { essence: { dataCube } } = this.props;
     if (DragManager.isDraggingSplit()) {
-      return dataCube.dimensions.getDimensionByName(DragManager.draggingSplit().reference);
+      return findDimensionByName(dataCube.dimensions, DragManager.draggingSplit().reference);
     }
     return DragManager.draggingDimension();
   }
@@ -487,7 +488,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        const dimension = dataCube.dimensions.getDimensionByName(clause.reference);
+        const dimension = findDimensionByName(dataCube.dimensions, clause.reference);
         if (!dimension) return null;
         return {
           dimension,
@@ -517,8 +518,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderAddButton() {
     const { essence: { dataCube, filter }, menuStage } = this.props;
-    const tiles = dataCube.dimensions
-      .filterDimensions(dimension => !filter.getClauseForDimension(dimension))
+    const tiles = allDimensions(dataCube.dimensions)
+      .filter(dimension => !filter.getClauseForDimension(dimension))
       .map(dimension => {
         return {
           key: dimension.name,

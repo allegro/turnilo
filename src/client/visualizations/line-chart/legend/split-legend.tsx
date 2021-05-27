@@ -16,6 +16,7 @@
 
 import { Dataset } from "plywood";
 import * as React from "react";
+import { findDimensionByName } from "../../../../common/models/dimension/dimensions";
 import { Essence } from "../../../../common/models/essence/essence";
 import { selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
 import { Legend } from "./legend";
@@ -29,7 +30,7 @@ export const SplitLegend: React.SFC<SplitLegendProps> = props => {
   const { essence, dataset } = props;
   const legendSplit = essence.splits.splits.first();
 
-  const legendDimension = essence.dataCube.dimensions.getDimensionByName(legendSplit.reference);
+  const legendDimension = findDimensionByName(essence.dataCube.dimensions, legendSplit.reference);
   const title = legendSplit.getTitle(legendDimension);
 
   const nestedDataset = selectFirstSplitDatums(dataset);

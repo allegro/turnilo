@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -29,8 +30,8 @@ interface AddSplitProps {
 
 export const AddSplit: React.SFC<AddSplitProps> = props => {
   const { appendSplit, menuStage, essence: { dataCube, splits } } = props;
-  const tiles = dataCube.dimensions
-    .filterDimensions(d => splits.findSplitForDimension(d) === undefined)
+  const tiles = allDimensions(dataCube.dimensions)
+    .filter(d => splits.findSplitForDimension(d) === undefined)
     .map(dimension => {
       return {
         key: dimension.name,

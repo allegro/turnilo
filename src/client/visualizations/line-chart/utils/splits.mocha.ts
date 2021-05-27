@@ -15,6 +15,7 @@
  */
 
 import { expect, use } from "chai";
+import { findDimensionByName } from "../../../../common/models/dimension/dimensions";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import equivalent from "../../../utils/test-utils/equivalent";
 import { getContinuousDimension, getContinuousReference, getContinuousSplit, getNominalDimension, getNominalSplit, hasNominalSplit } from "./splits";
@@ -24,7 +25,7 @@ use(equivalent);
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
 const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const timeDimension = essenceWithNominalSplit.getTimeDimension();
-const channelDimension = essenceWithNominalSplit.dataCube.dimensions.getDimensionByName("channel");
+const channelDimension = findDimensionByName(essenceWithNominalSplit.dataCube.dimensions, "channel");
 const timeSplit = essenceWithNominalSplit.splits.findSplitForDimension(timeDimension);
 const channelSplit = essenceWithNominalSplit.splits.findSplitForDimension(channelDimension);
 

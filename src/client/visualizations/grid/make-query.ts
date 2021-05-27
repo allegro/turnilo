@@ -17,6 +17,7 @@
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Sort } from "../../../common/models/sort/sort";
@@ -66,7 +67,7 @@ function applySplits(essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const firstSplit = splits.first();
 
   const splitsMap = splits.reduce<Record<string, Expression>>((map, split) => {
-    const dimension = dataCube.dimensions.getDimensionByName(split.reference);
+    const dimension = findDimensionByName(dataCube.dimensions, split.reference);
     const { name } = dimension;
     const expression = splitToExpression(split, dimension, timeShiftEnv);
     return assoc(map, name, expression);

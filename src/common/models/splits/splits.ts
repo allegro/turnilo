@@ -18,13 +18,13 @@
 import { Timezone } from "chronoshift";
 import { List, Record, Set } from "immutable";
 import { Unary } from "../../utils/functional/functional";
-import { Dimension } from "../dimension/dimension";
-import { Dimensions } from "../dimension/dimensions";
+import { canBucketByDefault, Dimension } from "../dimension/dimension";
+import { Dimensions, findDimensionByName } from "../dimension/dimensions";
 import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { SeriesList } from "../series-list/series-list";
-import { DimensionSort, isSortEmpty, Sort, SortType } from "../sort/sort";
+import { DimensionSort, isSortEmpty, Sort } from "../sort/sort";
 import { Split } from "../split/split";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -128,12 +128,15 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
       const { bucket, reference } = split;
       if (bucket) return split;
 
-      const splitDimension = dimensions.getDimensionByName(reference);
+      const splitDimension = findDimensionByName(dimensions, reference);
       const splitKind = splitDimension.kind;
-      if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !splitDimension.canBucketByDefault()) {
+      if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !canBucketByDefault(splitDimension)) {
         return split;
       }
       if (splitKind === "time") {
+        if (splitDimension.kind !== "time") {
+          throw new Error(`Expected Time Dimension, god ${splitDimension.kind}`);
+        }
         const clause = specificFilter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
         return split.changeBucket(clause
           ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
@@ -141,6 +144,9 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
         );
 
       } else if (splitKind === "number") {
+        if (splitDimension.kind !== "number") {
+          throw new Error(`Expected Number Dimension, god ${splitDimension.kind}`);
+        }
         const clause = specificFilter.clauses.find(clause => clause instanceof NumberFilterClause) as NumberFilterClause;
         return split.changeBucket(clause
           ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
@@ -155,10 +161,11 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
 
   public constrainToDimensionsAndSeries(dimensions: Dimensions, series: SeriesList): Splits {
     function validSplit(split: Split): boolean {
-      if (!dimensions.getDimensionByName(split.reference)) return false;
+      if (!findDimensionByName(dimensions, split.reference)) return false;
       if (isSortEmpty(split.sort)) return true;
       const sortRef = split.sort.reference;
-      return dimensions.containsDimensionWithName(sortRef) || series.hasSeriesWithKey(sortRef);
+      const sortedDimensionExists = findDimensionByName(dimensions, sortRef) !== null;
+      return sortedDimensionExists || series.hasSeriesWithKey(sortRef);
     }
 
     return this.updateSplits(splits => splits.filter(validSplit));

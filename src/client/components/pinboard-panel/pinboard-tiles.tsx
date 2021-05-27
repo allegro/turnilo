@@ -17,6 +17,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { SeriesSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -41,7 +42,7 @@ function pinnedSortOn(essence: Essence): SortOn | null {
 
 function pinnedDimensions(essence: Essence): Dimension[] {
   const { dataCube, pinnedDimensions } = essence;
-  return mapTruthy(pinnedDimensions.toArray(), dimensionName => dataCube.dimensions.getDimensionByName(dimensionName));
+  return mapTruthy(pinnedDimensions.toArray(), dimensionName => findDimensionByName(dataCube.dimensions, dimensionName));
 }
 
 export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {

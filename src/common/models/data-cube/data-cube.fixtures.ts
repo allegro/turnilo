@@ -20,7 +20,7 @@ import { List, OrderedSet } from "immutable";
 import { $, AttributeInfo, basicExecutorFactory, Dataset, Expression } from "plywood";
 import { Omit } from "../../utils/functional/functional";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
-import { Dimensions } from "../dimension/dimensions";
+import { fromConfig } from "../dimension/dimensions";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { Measures } from "../measure/measures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
@@ -38,7 +38,7 @@ export const wikiDataCube: DataCube = {
   derivedAttributes: {},
   options: {},
   subsetExpression: Expression.TRUE,
-  dimensions: Dimensions.fromJS(DimensionsFixtures.wikiJS()),
+  dimensions: DimensionsFixtures.wiki(),
   measures: Measures.fromJS(MeasuresFixtures.wikiJS()),
   attributeOverrides: [],
   attributes: AttributeInfo.fromJSs([
@@ -147,7 +147,7 @@ export const twitterDataCube: DataCube = {
   clusterName: "druid-twitter",
   source: "twitter",
   introspection: "none",
-  dimensions: Dimensions.fromJS(DimensionsFixtures.twitterJS()),
+  dimensions: DimensionsFixtures.twitter(),
   measures: Measures.fromJS(MeasuresFixtures.twitterJS()),
   timeAttribute: $("time"),
   defaultTimezone: Timezone.fromJS("Etc/UTC"),
@@ -171,7 +171,7 @@ export function customCube(title: string, description: string, extendedDescripti
     introspection: "none",
     defaultSplitDimensions: List([]),
     maxQueries: DEFAULT_MAX_QUERIES,
-    dimensions: Dimensions.fromDimensions([]),
+    dimensions: fromConfig([]),
     measures: Measures.fromMeasures([]),
     timeAttribute: $("time"),
     defaultTimezone: Timezone.fromJS("Etc/UTC"),
@@ -210,7 +210,7 @@ export function customCubeWithGuard(): DataCube {
     introspection: "none",
     defaultSplitDimensions: List([]),
     maxQueries: DEFAULT_MAX_QUERIES,
-    dimensions: Dimensions.fromDimensions([]),
+    dimensions: fromConfig([]),
     measures: Measures.fromMeasures([]),
     timeAttribute: $("time"),
     defaultTimezone: Timezone.fromJS("Etc/UTC"),

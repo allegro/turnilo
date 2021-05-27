@@ -19,6 +19,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
@@ -53,7 +54,7 @@ function dividerConstraints(height: number) {
 }
 
 export function initialPosition(height: number, dataCube: ClientDataCube) {
-  const dimensionsCount = dataCube.dimensions.size();
+  const dimensionsCount = allDimensions(dataCube.dimensions).length;
   const measuresCount = dataCube.measures.size();
   const ratio = dimensionsCount / (measuresCount + dimensionsCount);
 

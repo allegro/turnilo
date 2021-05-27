@@ -17,6 +17,7 @@
 import { NamedArray } from "immutable-class";
 import { AttributeInfo, Attributes, External, ExternalValue } from "plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { allDimensions } from "../../models/dimension/dimensions";
 import { Measure } from "../../models/measure/measure";
 
 /**
@@ -31,7 +32,7 @@ function deduceAttributes(dataCube: DataCube): Attributes {
     attributes.push(AttributeInfo.fromJS({ name: timeAttribute.name, type: "TIME" }));
   }
 
-  dimensions.forEachDimension(dimension => {
+  allDimensions(dimensions).forEach(dimension => {
     const expression = dimension.expression;
     if (expression.equals(timeAttribute)) return;
     const references = expression.getFreeReferences();

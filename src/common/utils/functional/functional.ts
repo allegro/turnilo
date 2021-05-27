@@ -82,6 +82,10 @@ export function mapTruthy<T, S>(coll: T[], f: Binary<T, number, S>): S[] {
   }, []);
 }
 
+export function values<T>(obj: Record<string, T>): T[] {
+  return Object.keys(obj).map(k => obj[k]);
+}
+
 export function thread(x: any, ...fns: Function[]) {
   return fns.reduce((x, f) => f(x), x);
 }

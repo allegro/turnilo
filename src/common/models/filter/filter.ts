@@ -21,8 +21,16 @@ import { Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
 import { ClientDataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
-import { Dimensions } from "../dimension/dimensions";
-import { FilterClause, FilterDefinition, fromJS, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
+import { Dimensions, findDimensionByName } from "../dimension/dimensions";
+import {
+  FilterClause,
+  FilterDefinition,
+  fromJS,
+  RelativeTimeFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  toExpression
+} from "../filter-clause/filter-clause";
 
 export enum FilterMode { EXCLUDE = "exclude", INCLUDE = "include", REGEX = "regex", CONTAINS = "contains" }
 
@@ -91,7 +99,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
   }
 
   public toExpression(dataCube: ClientDataCube): Expression {
-    const clauses = this.clauses.toArray().map(clause => toExpression(clause, dataCube.dimensions.getDimensionByName(clause.reference)));
+    const clauses = this.clauses.toArray().map(clause => toExpression(clause, findDimensionByName(dataCube.dimensions, clause.reference)));
     switch (clauses.length) {
       case 0:
         return Expression.TRUE;
@@ -175,7 +183,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public constrainToDimensions(dimensions: Dimensions): Filter {
     return this.updateClauses(clauses =>
-      clauses.filter(clause => dimensions.getDimensionByName(clause.reference)));
+      clauses.filter(clause => findDimensionByName(dimensions, clause.reference)));
   }
 
   public setExclusionForDimension(exclusion: boolean, { name }: Dimension): Filter {

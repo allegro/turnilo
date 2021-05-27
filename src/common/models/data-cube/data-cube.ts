@@ -34,9 +34,19 @@ import {
 } from "plywood";
 import { quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { Cluster } from "../cluster/cluster";
-import { Dimension } from "../dimension/dimension";
-import { DimensionOrGroupJS } from "../dimension/dimension-group";
-import { Dimensions } from "../dimension/dimensions";
+import { Dimension, DimensionKind, timeDimension } from "../dimension/dimension";
+import {
+  allDimensions,
+  ClientDimensions,
+  DimensionOrGroupJS,
+  Dimensions,
+  findDimensionByExpression,
+  findDimensionByName,
+  fromConfig as dimensionsFromConfig,
+  prepend,
+  serialize as dimensionsSerialize,
+  SerializedDimensions
+} from "../dimension/dimensions";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
 import { MeasureOrGroupJS } from "../measure/measure-group";
@@ -59,11 +69,11 @@ export const DEFAULT_MAX_QUERIES = 500;
 
 function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measures: Measures, dataCubeName: string) {
   if (dimensions != null && measures != null) {
-    const dimensionNames = dimensions.getDimensionNames();
+    const dimensionNames = Object.keys(dimensions.byName);
     const measureNames = measures.getMeasureNames();
 
-    const duplicateNames = dimensionNames
-      .concat(measureNames)
+    const duplicateNames = measureNames
+      .concat(dimensionNames)
       .groupBy(name => name)
       .filter(names => names.count() > 1)
       .map((names, name) => name)
@@ -161,7 +171,7 @@ export interface SerializedDataCube {
   options: DataCubeOptions;
   attributes: AttributeJSs;
 
-  dimensions: DimensionOrGroupJS[];
+  dimensions: SerializedDimensions;
   measures: MeasureOrGroupJS[];
   timeAttribute?: string;
   defaultTimezone: string;
@@ -187,7 +197,7 @@ export interface ClientDataCube {
   options: DataCubeOptions;
   attributes: Attributes;
 
-  dimensions: Dimensions;
+  dimensions: ClientDimensions;
   measures: Measures;
   timeAttribute?: string;
   defaultTimezone: Timezone;
@@ -268,19 +278,20 @@ function readTimeAttribute(config: DataCubeJS, cluster?: Cluster): RefExpression
   return undefined;
 }
 
+function readDimensions(config: DataCubeJS, timeAttribute?: RefExpression): Dimensions {
+  const dimensions = dimensionsFromConfig(config.dimensions || []);
+  if (timeAttribute && findDimensionByExpression(dimensions, timeAttribute) === null) {
+    return prepend(timeDimension(timeAttribute), dimensions);
+  }
+  return dimensions;
+}
+
 function readColumns(config: DataCubeJS, timeAttribute: RefExpression): { dimensions: Dimensions, measures: Measures } {
   const name = config.name;
   try {
-    let dimensions = Dimensions.fromJS(config.dimensions || []);
+    const dimensions = readDimensions(config, timeAttribute);
     const measures = Measures.fromJS(config.measures || []);
 
-    if (timeAttribute && !dimensions.getDimensionByExpression(timeAttribute)) {
-      dimensions = dimensions.prepend(new Dimension({
-        name: timeAttribute.name,
-        kind: "time",
-        formula: timeAttribute.toString()
-      }));
-    }
     checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
     return {
       dimensions,
@@ -393,7 +404,7 @@ export function serialize(dataCube: DataCube): SerializedDataCube {
     defaultSplitDimensions: defaultSplitDimensions && defaultSplitDimensions.toJS(),
     defaultTimezone: defaultTimezone.toJS(),
     description,
-    dimensions: dimensions.toJS(),
+    dimensions: dimensionsSerialize(dimensions),
     extendedDescription,
     group,
     maxSplits,
@@ -450,8 +461,8 @@ export function getMaxTime({ name, refreshRule }: ClientDataCube, timekeeper: Ti
   }
 }
 
-export function getDimensionsByKind(dataCube: { dimensions: Dimensions }, kind: string): Dimension[] {
-  return dataCube.dimensions.filterDimensions(dimension => dimension.kind === kind);
+export function getDimensionsByKind(dataCube: { dimensions: Dimensions }, kind: DimensionKind): Dimension[] {
+  return allDimensions(dataCube.dimensions).filter(d => d.kind === kind);
 }
 
 export function isTimeAttribute(dataCube: ClientDataCube, ex: Expression) {
@@ -470,7 +481,7 @@ export function getDefaultFilter(dataCube: ClientDataCube): Filter {
 
 export function getDefaultSplits(dataCube: ClientDataCube): Splits {
   if (dataCube.defaultSplitDimensions) {
-    const dimensions = dataCube.defaultSplitDimensions.map(name => dataCube.dimensions.getDimensionByName(name));
+    const dimensions = dataCube.defaultSplitDimensions.map(name => findDimensionByName(dataCube.dimensions, name));
     return Splits.fromDimensions(dimensions);
   }
   return DEFAULT_DEFAULT_SPLITS;

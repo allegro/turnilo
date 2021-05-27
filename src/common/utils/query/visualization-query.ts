@@ -20,6 +20,7 @@ import { SPLIT } from "../../../client/config/constants";
 import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Essence } from "../../models/essence/essence";
 import { toExpression } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
@@ -79,7 +80,7 @@ function applyCanonicalLengthForTimeSplit(split: Split, dataCube: ClientDataCube
 
 function applyDimensionFilter(dimension: Dimension, filter: Filter) {
   return (query: Expression) => {
-    if (!dimension.multiValue) return query;
+    if (dimension.kind !== "string" || !dimension.multiValue) return query;
     const filterClause = filter.clauseForReference(dimension.name);
     if (!filterClause) return query;
     return query.filter(toExpression(filterClause, dimension));
@@ -89,7 +90,7 @@ function applyDimensionFilter(dimension: Dimension, filter: Filter) {
 function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const { splits, dataCube } = essence;
   const split = splits.getSplit(index);
-  const dimension = dataCube.dimensions.getDimensionByName(split.reference);
+  const dimension = findDimensionByName(dataCube.dimensions, split.reference);
   const { sort, limit } = split;
   if (!sort) {
     throw new Error("something went wrong during query generation");

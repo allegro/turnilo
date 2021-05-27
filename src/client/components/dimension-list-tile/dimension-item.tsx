@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import { DragEvent, MouseEvent } from "react";
+import { DimensionKind } from "../../../common/models/dimension/dimension";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { InfoBubble } from "../info-bubble/info-bubble";
@@ -28,19 +29,19 @@ export interface DimensionItemProps {
   name: string;
   title: string;
   description?: string;
-  classSuffix: string;
   dimensionClick: DimensionClickHandler;
   dimensionDragStart: DimensionDragStartHandler;
   searchText: string;
   selected: boolean;
+  kind: DimensionKind;
 }
 
 export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
-export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, classSuffix, searchText, selected }) => {
+export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, searchText, kind, selected }) => {
   const infoBubbleClassName = "info-icon";
-  const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
+  const className = classNames(DIMENSION_CLASS_NAME, { selected });
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.currentTarget;
@@ -60,7 +61,7 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
   >
     <div className="label-icon-container" onClick={handleClick}>
       <div className="icon">
-        <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
+        <SvgIcon svg={require("../../icons/dim-" + kind + ".svg")} />
       </div>
       <HighlightString className={"label"} text={title} highlight={searchText} />
     </div>

@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import { Dimension, DimensionKind, DimensionValue } from "../../models/dimension/dimension";
-import { Omit } from "../../utils/functional/functional";
+import { $ } from "plywood";
+import { createDimension } from "../../models/dimension/dimension";
+import { Dimensions } from "../../models/dimension/dimensions";
+import { DimensionsFixtures } from "../../models/dimension/dimensions.fixtures";
 
 export type DimensionRefs = "string_a" | "string_b" | "time" | "numeric" | "boolean";
 
-export const timeDimension = dimension("time", "time");
+export const timeDimension = createDimension("time", "time", $("time"));
 
-export const dimensions: Dimension[] = [
+export const dimensions: Dimensions = DimensionsFixtures.fromDimensions([
   timeDimension,
-  dimension("numeric", "number"),
-  dimension("string_a", "string"),
-  dimension("string_b", "string"),
-  dimension("boolean", "boolean")
-];
-
-function dimension(name: DimensionRefs, kind: DimensionKind, opts: Omit<DimensionValue, "name" | "kind"> = {}) {
-  return new Dimension({
-    name,
-    kind,
-    ...opts
-  });
-}
+  createDimension("string", "string_a", $("string_a")),
+  createDimension("string", "string_b", $("string_b")),
+  createDimension("boolean", "boolean", $("boolean"))
+]);

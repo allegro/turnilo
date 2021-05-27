@@ -36,6 +36,7 @@ import {
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByExpression, findDimensionByName } from "../../models/dimension/dimensions";
 import { Essence } from "../../models/essence/essence";
 import {
   BooleanFilterClause,
@@ -216,7 +217,7 @@ function expressionAction(expression: ChainableExpression): SupportedAction {
 
 function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: ClientDataCube): FilterClause {
   const { expression, exclude } = extractExclude(filter);
-  const dimension = dataCube.dimensions.getDimensionByExpression(expression.operand);
+  const dimension = findDimensionByExpression(dataCube.dimensions, expression.operand);
 
   if (isBooleanFilterSelection(expression.expression)) {
     return readBooleanFilterClause(expression.expression, dimension, exclude);
@@ -245,7 +246,7 @@ function createSort(sortAction: any, dataCube: ClientDataCube): Sort {
   if (!sortAction) return null;
   const reference = sortAction.expression.name;
   const direction = sortAction.direction;
-  if (dataCube.dimensions.getDimensionByName(sortAction.expression.name)) {
+  if (findDimensionByName(dataCube.dimensions, sortAction.expression.name)) {
     return new DimensionSort({ reference, direction });
   }
   return new SeriesSort({ reference, direction });
@@ -254,7 +255,7 @@ function createSort(sortAction: any, dataCube: ClientDataCube): Sort {
 function convertSplit(split: any, dataCube: ClientDataCube): Split {
   const { sortAction, limitAction, bucketAction } = split;
   const expression = Expression.fromJS(split.expression);
-  const dimension = dataCube.dimensions.getDimensionByExpression(expression);
+  const dimension = findDimensionByExpression(dataCube.dimensions, expression);
   const reference = dimension.name;
   const sort = createSort(sortAction, dataCube);
   const type = kindToType(dimension.kind);

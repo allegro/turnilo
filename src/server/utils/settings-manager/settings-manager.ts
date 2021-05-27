@@ -210,7 +210,7 @@ export class SettingsManager {
       });
     }
 
-    this.sources = addOrUpdateDataCube(sources, dataCube);
+    this.sources = addOrUpdateDataCube(sources, queryableDataCube);
   };
 
   onExternalChange = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
@@ -231,7 +231,7 @@ export class SettingsManager {
       });
     }
 
-    this.sources = addOrUpdateDataCube(sources, dataCube);
+    this.sources = addOrUpdateDataCube(sources, queryableDataCube);
     return Promise.resolve(null);
   };
 

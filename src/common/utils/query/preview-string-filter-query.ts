@@ -17,6 +17,7 @@
 import { $, Expression, r, SortExpression } from "plywood";
 import { PreviewFilterMode } from "../../../client/components/preview-string-filter-menu/preview-string-filter-menu";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Essence } from "../../models/essence/essence";
 import { FilterMode } from "../../models/filter/filter";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
@@ -48,7 +49,7 @@ function filterExpression(params: QueryParams): Expression {
 export function previewStringFilterQuery(params: QueryParams) {
   const { dimension, essence, limit } = params;
   const { dataCube } = essence;
-  const nativeCount = dataCube.dimensions.getDimensionByName("count");
+  const nativeCount = findDimensionByName(dataCube.dimensions, "count");
   const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
   return $("main")

@@ -26,7 +26,7 @@ import {
   serialize as dataCubeSerialize,
   SerializedDataCube
 } from "../data-cube/data-cube";
-import { isQueryable } from "../data-cube/queryable-data-cube";
+import { isQueryable, QueryableDataCube } from "../data-cube/queryable-data-cube";
 
 export interface SourcesJS {
   clusters?: ClusterJS[];
@@ -112,7 +112,7 @@ export function getDataCube(sources: Sources, dataCubeName: string): DataCube {
   return NamedArray.findByName(sources.dataCubes, dataCubeName);
 }
 
-export function addOrUpdateDataCube(sources: Sources, dataCube: DataCube): Sources {
+export function addOrUpdateDataCube(sources: Sources, dataCube: QueryableDataCube): Sources {
   const dataCubes = NamedArray.overrideByName(sources.dataCubes, dataCube);
   return {
     ...sources,

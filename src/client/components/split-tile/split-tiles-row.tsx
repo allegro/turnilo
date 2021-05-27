@@ -17,6 +17,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
@@ -76,7 +77,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const dimension = DragManager.draggingDimension();
     if (dimension) return !splits.hasSplitOn(dimension);
     if (DragManager.isDraggingFilter()) {
-      const dimension = dataCube.dimensions.getDimensionByName(DragManager.draggingFilter().reference);
+      const dimension = findDimensionByName(dataCube.dimensions, DragManager.draggingFilter().reference);
       return dimension && !splits.hasSplitOn(dimension);
     }
     return DragManager.isDraggingSplit();
@@ -133,7 +134,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const { essence: { dataCube } } = this.props;
     if (DragManager.isDraggingSplit()) return DragManager.draggingSplit();
     if (DragManager.isDraggingFilter()) {
-      const dimension = dataCube.dimensions.getDimensionByName(DragManager.draggingFilter().reference);
+      const dimension = findDimensionByName(dataCube.dimensions, DragManager.draggingFilter().reference);
       return Split.fromDimension(dimension);
     }
     return Split.fromDimension(DragManager.draggingDimension());

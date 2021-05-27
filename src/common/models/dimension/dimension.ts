@@ -15,14 +15,58 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
-import { $, Expression } from "plywood";
+import { Duration } from "chronoshift";
+import { $, Expression, ExpressionJS, RefExpression } from "plywood";
+import {
+  DEFAULT_LATEST_PERIOD_DURATIONS,
+  DEFAULT_TIME_SHIFT_DURATIONS
+} from "../../../client/components/filter-menu/time-filter-menu/presets";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
-import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
+import { GranularityJS } from "../granularity/granularity";
 import { Bucket } from "../split/split";
-import { DimensionOrGroupVisitor } from "./dimension-group";
+import { TimeShift, TimeShiftJS } from "../time-shift/time-shift";
+
+const DEFAULT_TIME_SHIFTS = DEFAULT_TIME_SHIFT_DURATIONS.map(TimeShift.fromJS);
+const DEFAULT_LATEST_PERIODS = DEFAULT_LATEST_PERIOD_DURATIONS.map(Duration.fromJS);
 
 export type DimensionKind = "string" | "boolean" | "time" | "number";
+
+interface BaseDimension {
+  kind: DimensionKind;
+  name: string;
+  title: string;
+  description?: string;
+  expression: Expression;
+  url?: string;
+  sortStrategy?: string;
+}
+
+interface StringDimension extends BaseDimension {
+  kind: "string";
+  multiValue: boolean;
+}
+
+interface BooleanDimension extends BaseDimension {
+  kind: "boolean";
+}
+
+interface TimeDimension extends BaseDimension {
+  kind: "time";
+  granularities?: Duration[];
+  bucketedBy?: Duration;
+  bucketingStrategy?: BucketingStrategy;
+  timeShiftDurations: TimeShift[];
+  latestPeriodDurations: Duration[];
+}
+
+interface NumberDimension extends BaseDimension {
+  kind: "number";
+  granularities?: number[];
+  bucketedBy?: number;
+  bucketingStrategy?: BucketingStrategy;
+}
+
+export type Dimension = StringDimension | BooleanDimension | TimeDimension | NumberDimension;
 
 function readKind(kind: string): DimensionKind {
   if (kind === "string" || kind === "boolean" || kind === "time" || kind === "number") return kind;
@@ -39,229 +83,308 @@ export enum BucketingStrategy {
   defaultNoBucket = "defaultNoBucket"
 }
 
-const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy } = {
+export const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy } = {
   defaultBucket: BucketingStrategy.defaultBucket,
   defaultNoBucket: BucketingStrategy.defaultNoBucket
 };
-
-export interface DimensionValue {
-  name: string;
-  title?: string;
-  description?: string;
-  formula?: string;
-  kind?: DimensionKind;
-  multiValue?: boolean;
-  url?: string;
-  granularities?: Bucket[];
-  bucketedBy?: Bucket;
-  bucketingStrategy?: BucketingStrategy;
-  sortStrategy?: string;
-}
 
 export interface DimensionJS {
   name: string;
   title?: string;
   description?: string;
   formula?: string;
-  kind?: DimensionKind;
+  kind?: string;
   multiValue?: boolean;
   url?: string;
   granularities?: GranularityJS[];
+  timeShiftDurations?: string[];
+  latestPeriodDurations?: string[];
   bucketedBy?: GranularityJS;
   bucketingStrategy?: BucketingStrategy;
   sortStrategy?: string;
 }
 
-var check: Class<DimensionValue, DimensionJS>;
-
-export class Dimension implements Instance<DimensionValue, DimensionJS> {
-  static isDimension(candidate: any): candidate is Dimension {
-    return candidate instanceof Dimension;
-  }
-
-  static fromJS(parameters: DimensionJS): Dimension {
-    const parameterExpression = (parameters as any).expression; // Back compat
-
-    const value: DimensionValue = {
-      name: parameters.name,
-      title: parameters.title,
-      description: parameters.description,
-      formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
-      kind: parameters.kind ? readKind(parameters.kind) : typeToKind((parameters as any).type),
-      multiValue: parameters.multiValue === true,
-      url: parameters.url
-    };
-
-    if (parameters.granularities) {
-      value.granularities = parameters.granularities.map(granularityFromJS);
-    }
-    if (parameters.bucketedBy) {
-      value.bucketedBy = granularityFromJS(parameters.bucketedBy);
-    }
-    if (parameters.bucketingStrategy) {
-      value.bucketingStrategy = bucketingStrategies[parameters.bucketingStrategy];
-    }
-    if (parameters.sortStrategy) {
-      value.sortStrategy = parameters.sortStrategy;
-    }
-
-    return new Dimension(value);
-  }
-
-  public name: string;
-  public title: string;
-  public description?: string;
-  public formula: string;
-  public expression: Expression;
-  public kind: DimensionKind;
-  public multiValue: boolean;
-  public className: string;
-  public url: string;
-  public granularities: Bucket[];
-  public bucketedBy: Bucket;
-  public bucketingStrategy: BucketingStrategy;
-  public sortStrategy: string;
-  public type = "dimension";
-
-  constructor(parameters: DimensionValue) {
-    const name = parameters.name;
-    verifyUrlSafeName(name);
-    this.name = name;
-    this.title = parameters.title || makeTitle(name);
-    this.description = parameters.description;
-
-    const formula = parameters.formula || $(name).toString();
-    this.formula = formula;
-    this.expression = Expression.parse(formula);
-
-    const kind = parameters.kind ? readKind(parameters.kind) : typeToKind(this.expression.type);
-    this.kind = kind;
-    this.multiValue = true === parameters.multiValue;
-    this.className = kind;
-
-    if (parameters.url) {
-      if (typeof parameters.url !== "string") {
-        throw new Error(`unsupported url: ${parameters.url}: only strings are supported`);
-      }
-      this.url = parameters.url;
-    }
-
-    const granularities = parameters.granularities;
-    if (granularities) {
-      if (!Array.isArray(granularities) || granularities.length !== 5) {
-        throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
-      }
-      const sameType = granularities.every(g => typeof g === typeof granularities[0]);
-      if (!sameType) throw new Error("granularities must have the same type of actions");
-      this.granularities = granularities;
-    }
-    if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
-    if (parameters.bucketingStrategy) this.bucketingStrategy = parameters.bucketingStrategy;
-    if (parameters.sortStrategy) this.sortStrategy = parameters.sortStrategy;
-  }
-
-  accept<R>(visitor: DimensionOrGroupVisitor<R>): R {
-    return visitor.visitDimension(this);
-  }
-
-  public valueOf(): DimensionValue {
-    return {
-      name: this.name,
-      title: this.title,
-      formula: this.formula,
-      description: this.description,
-      kind: this.kind,
-      multiValue: this.multiValue,
-      url: this.url,
-      granularities: this.granularities,
-      bucketedBy: this.bucketedBy,
-      bucketingStrategy: this.bucketingStrategy,
-      sortStrategy: this.sortStrategy
-    };
-  }
-
-  public toJS(): DimensionJS {
-    var js: DimensionJS = {
-      name: this.name,
-      title: this.title,
-      formula: this.formula,
-      kind: this.kind
-    };
-    if (this.description) js.description = this.description;
-    if (this.url) js.url = this.url;
-    if (this.multiValue) js.multiValue = this.multiValue;
-    if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
-    if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
-    if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
-    if (this.sortStrategy) js.sortStrategy = this.sortStrategy;
-    return js;
-  }
-
-  public toJSON(): DimensionJS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return `[Dimension: ${this.name}]`;
-  }
-
-  public equals(other: any): boolean {
-    return Dimension.isDimension(other) &&
-      this.name === other.name &&
-      this.title === other.title &&
-      this.description === other.description &&
-      this.formula === other.formula &&
-      this.kind === other.kind &&
-      this.multiValue === other.multiValue &&
-      this.url === other.url &&
-      this.granularitiesEqual(other.granularities) &&
-      granularityEquals(this.bucketedBy, other.bucketedBy) &&
-      this.bucketingStrategy === other.bucketingStrategy &&
-      this.sortStrategy === other.sortStrategy;
-  }
-
-  private granularitiesEqual(otherGranularities: Bucket[]): boolean {
-    if (!otherGranularities) return !this.granularities;
-    if (otherGranularities.length !== this.granularities.length) return false;
-    return this.granularities.every((g, idx) => granularityEquals(g, otherGranularities[idx]));
-  }
-
-  public canBucketByDefault(): boolean {
-    return this.isContinuous() && this.bucketingStrategy !== BucketingStrategy.defaultNoBucket;
-  }
-
-  public isContinuous() {
-    const { kind } = this;
-    return kind === "time" || kind === "number";
-  }
-
-  change(propertyName: string, newValue: any): Dimension {
-    var v = this.valueOf();
-
-    if (!v.hasOwnProperty(propertyName)) {
-      throw new Error(`Unknown property : ${propertyName}`);
-    }
-
-    (v as any)[propertyName] = newValue;
-    return new Dimension(v);
-  }
-
-  changeKind(newKind: DimensionKind): Dimension {
-    return this.change("kind", newKind);
-  }
-
-  changeName(newName: string): Dimension {
-    return this.change("name", newName);
-  }
-
-  changeTitle(newTitle: string): Dimension {
-    return this.change("title", newTitle);
-  }
-
-  public changeFormula(newFormula: string): Dimension {
-    return this.change("formula", newFormula);
-  }
-
+interface LegacyDimension {
+  expression?: any;
+  type?: string;
 }
 
-check = Dimension;
+function readExpression(config: DimensionJS & LegacyDimension): Expression {
+  if (config.formula) return Expression.parse(config.formula);
+  if (config.expression) return Expression.parse(config.expression);
+  return $(config.name);
+}
+
+export function fromConfig(config: DimensionJS & LegacyDimension): Dimension {
+  const { kind: rawKind, description, name, title: rawTitle, url, sortStrategy } = config;
+  verifyUrlSafeName(name);
+  const kind = rawKind ? readKind(rawKind) : typeToKind(config.type);
+  const expression = readExpression(config);
+  const title = rawTitle || makeTitle(name);
+  switch (kind) {
+    case "string": {
+      const { multiValue } = config;
+      return {
+        description,
+        url,
+        name,
+        title,
+        expression,
+        multiValue: Boolean(multiValue),
+        sortStrategy,
+        kind
+      };
+    }
+    case "boolean":
+      return {
+        description,
+        url,
+        name,
+        title,
+        expression,
+        sortStrategy,
+        kind
+      };
+    case "time": {
+      const {
+        bucketedBy,
+        bucketingStrategy
+      } = config;
+
+      return {
+        kind,
+        name,
+        sortStrategy,
+        title,
+        url,
+        description,
+        expression,
+        bucketedBy: bucketedBy && Duration.fromJS(bucketedBy as string),
+        bucketingStrategy: bucketingStrategy && bucketingStrategies[bucketingStrategy],
+        granularities: readGranularities(config, "time"),
+        latestPeriodDurations: readLatestPeriodDurations(config),
+        timeShiftDurations: readTimeShiftDurations(config)
+      };
+    }
+    case "number": {
+      const {
+        bucketedBy,
+        bucketingStrategy
+      } = config;
+
+      return {
+        kind,
+        name,
+        sortStrategy,
+        title,
+        url,
+        description,
+        expression,
+        bucketedBy: bucketedBy && Number(bucketedBy),
+        bucketingStrategy: bucketingStrategy && bucketingStrategies[bucketingStrategy],
+        granularities: readGranularities(config, "number")
+      };
+    }
+  }
+}
+
+function readLatestPeriodDurations({ name, latestPeriodDurations }: DimensionJS): Duration[] {
+  if (!latestPeriodDurations) return DEFAULT_LATEST_PERIODS;
+  if (!Array.isArray(latestPeriodDurations) || latestPeriodDurations.length !== 5) {
+    throw new Error(`must have list of 5 latestPeriodDurations in dimension '${name}'`);
+  }
+  return latestPeriodDurations.map(Duration.fromJS);
+}
+
+function readTimeShiftDurations({ name, timeShiftDurations }: DimensionJS): TimeShift[] {
+  if (!timeShiftDurations) return DEFAULT_TIME_SHIFTS;
+  if (!Array.isArray(timeShiftDurations) || timeShiftDurations.length !== 4) {
+    throw new Error(`must have list of 4 timeShiftDurations in dimension '${name}'`);
+  }
+  return timeShiftDurations.map(TimeShift.fromJS);
+}
+
+function readGranularities(config: DimensionJS, kind: "time"): Duration[] | undefined;
+function readGranularities(config: DimensionJS, kind: "number"): number[] | undefined;
+function readGranularities(config: DimensionJS, kind: "number" | "time"): Bucket[] | undefined {
+  const { granularities } = config;
+  if (!granularities) return undefined;
+  if (!Array.isArray(granularities) || granularities.length !== 5) {
+    throw new Error(`must have list of 5 granularities in dimension '${config.name}'`);
+  }
+  switch (kind) {
+    case "number":
+      return granularities.map(g => Number(g));
+    case "time":
+      return granularities.map(g => Duration.fromJS(g as string));
+  }
+}
+
+interface SerializedStringDimension {
+  kind: "string";
+  name: string;
+  title: string;
+  description?: string;
+  expression: ExpressionJS;
+  url?: string;
+  sortStrategy?: string;
+  multiValue: boolean;
+}
+
+interface SerializedBooleanDimension {
+  kind: "boolean";
+  name: string;
+  title: string;
+  description?: string;
+  expression: ExpressionJS;
+  url?: string;
+  sortStrategy?: string;
+}
+
+interface SerializedNumberDimension {
+  kind: "number";
+  name: string;
+  title: string;
+  description?: string;
+  expression: ExpressionJS;
+  url?: string;
+  sortStrategy?: string;
+  granularities?: number[];
+  bucketedBy?: number;
+  bucketingStrategy?: BucketingStrategy;
+}
+
+interface SerializedTimeDimension {
+  kind: "time";
+  name: string;
+  title: string;
+  description?: string;
+  expression: ExpressionJS;
+  url?: string;
+  sortStrategy?: string;
+  granularities?: string[];
+  bucketedBy?: string;
+  bucketingStrategy?: BucketingStrategy;
+  timeShiftDurations: TimeShiftJS[];
+  latestPeriodDurations: string[];
+}
+
+export type SerializedDimension =
+  SerializedStringDimension
+  | SerializedBooleanDimension
+  | SerializedNumberDimension
+  | SerializedTimeDimension;
+
+export function serialize(dimension: Dimension): SerializedDimension {
+  const { name, description, expression, title, sortStrategy, url } = dimension;
+
+  // NOTE: If we move kind to destructuring above, typescript would not infer proper Dimension variant
+  switch (dimension.kind) {
+    case "string": {
+      const { multiValue } = dimension;
+      return {
+        description,
+        url,
+        name,
+        title,
+        expression: expression.toJS(),
+        multiValue,
+        sortStrategy,
+        kind: dimension.kind
+      };
+    }
+    case "boolean":
+      return {
+        description,
+        url,
+        name,
+        title,
+        expression: expression.toJS(),
+        sortStrategy,
+        kind: dimension.kind
+      };
+    case "time": {
+      const { granularities, bucketedBy, bucketingStrategy, latestPeriodDurations, timeShiftDurations } = dimension;
+      return {
+        description,
+        url,
+        name,
+        title,
+        expression: expression.toJS(),
+        sortStrategy,
+        bucketingStrategy,
+        bucketedBy: bucketedBy && bucketedBy.toJS(),
+        granularities: granularities && granularities.map(g => g.toJS()),
+        latestPeriodDurations: latestPeriodDurations.map(p => p.toJS()),
+        timeShiftDurations: timeShiftDurations.map(ts => ts.toJS()),
+        kind: dimension.kind
+      };
+    }
+    case "number": {
+      const { granularities, bucketedBy, bucketingStrategy } = dimension;
+      return {
+        description,
+        url,
+        name,
+        title,
+        expression: expression.toJS(),
+        sortStrategy,
+        bucketingStrategy,
+        bucketedBy,
+        granularities,
+        kind: dimension.kind
+      };
+    }
+  }
+}
+
+export type ClientDimension = Dimension;
+
+export function canBucketByDefault(dimension: ClientDimension): boolean {
+  return isContinuous(dimension) && dimension.bucketingStrategy !== BucketingStrategy.defaultNoBucket;
+}
+
+export function isContinuous(dimension: ClientDimension): dimension is TimeDimension | NumberDimension  {
+  const { kind } = dimension;
+  return kind === "time" || kind === "number";
+}
+
+export function createDimension(kind: DimensionKind, name: string, expression: Expression, multiValue?: boolean): Dimension {
+  switch (kind) {
+    case "string":
+      return {
+        kind,
+        name,
+        title: makeTitle(name),
+        expression,
+        multiValue: Boolean(multiValue)
+      };
+    case "boolean":
+      return {
+        kind,
+        name,
+        title: makeTitle(name),
+        expression
+      };
+    case "time":
+      return {
+        latestPeriodDurations: DEFAULT_LATEST_PERIODS,
+        timeShiftDurations: DEFAULT_TIME_SHIFTS,
+        kind,
+        name,
+        title: makeTitle(name),
+        expression
+      };
+    case "number":
+      return {
+        kind,
+        name,
+        title: makeTitle(name),
+        expression
+      };
+  }
+}
+
+export function timeDimension(timeAttribute: RefExpression): Dimension {
+  return createDimension("time", "time", timeAttribute);
+}

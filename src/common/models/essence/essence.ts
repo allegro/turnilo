@@ -32,6 +32,7 @@ import {
 } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
+import { findDimensionByName } from "../dimension/dimensions";
 import {
   FilterClause,
   FixedTimeFilterClause,
@@ -55,7 +56,7 @@ import { Resolve, VisualizationManifest } from "../visualization-manifest/visual
 import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: ClientDataCube): OrderedSet<string> {
-  return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(dataCube.dimensions.getDimensionByName(dimensionName)));
+  return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(findDimensionByName(dataCube.dimensions, dimensionName)));
 }
 
 export interface VisualizationAndResolve {
@@ -259,7 +260,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public getTimeDimension(): Dimension {
-    return this.dataCube.dimensions.getDimensionByName(this.dataCube.timeAttribute);
+    return findDimensionByName(this.dataCube.dimensions, this.dataCube.timeAttribute);
   }
 
   public evaluateSelection(filter: TimeFilterClause, timekeeper: Timekeeper): FixedTimeFilterClause {
@@ -486,7 +487,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   private defaultSplitSort(split: Split): Sort {
     const { dataCube, series } = this;
-    const dimension = dataCube.dimensions.getDimensionByName(split.reference);
+    const dimension = findDimensionByName(dataCube.dimensions, split.reference);
     const { sortStrategy, name, kind } = dimension;
     if (sortStrategy === "self" || sortStrategy === name) {
       return new DimensionSort({ reference: name, direction: SortDirection.ascending });

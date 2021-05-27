@@ -59,7 +59,7 @@ export class DimensionsRenderer {
 
   private renderDimension(dimensionView: DimensionForView): JSX.Element {
     const { dimensionClick, dimensionDragStart, searchText } = this;
-    const { name, title, description, classSuffix, selected } = dimensionView;
+    const { name, title, description, kind, selected } = dimensionView;
 
     return <DimensionItem
       key={name}
@@ -67,9 +67,9 @@ export class DimensionsRenderer {
       title={title}
       description={description}
       selected={selected}
+      kind={kind}
       dimensionClick={dimensionClick}
       dimensionDragStart={dimensionDragStart}
-      classSuffix={classSuffix}
       searchText={searchText}
     />;
   }

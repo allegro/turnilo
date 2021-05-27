@@ -20,13 +20,21 @@ import {
   AttributeInfo,
   Attributes,
   basicExecutorFactory,
-  Dataset, Executor,
+  Dataset,
+  Executor,
   Expression,
   External,
   RefExpression
 } from "plywood";
 import { hasOwnProperty, makeUrlSafeName } from "../../utils/general/general";
-import { Dimension } from "../dimension/dimension";
+import { createDimension } from "../dimension/dimension";
+import {
+  allDimensions,
+  append,
+  findDimensionByExpression,
+  findDimensionByName,
+  prepend
+} from "../dimension/dimensions";
 import { Measure } from "../measure/measure";
 import { DataCube } from "./data-cube";
 
@@ -51,53 +59,37 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
 
     // Already exists as a current dimension or a measure
     const urlSafeName = makeUrlSafeName(name);
-    if (dataCube.dimensions.getDimensionByName(urlSafeName) || dataCube.dimensions.getDimensionByName(urlSafeName)) continue;
+    if (findDimensionByName(dataCube.dimensions, urlSafeName) || dataCube.measures.getMeasureByName(urlSafeName)) continue;
 
     let expression: Expression;
     switch (type) {
       case "TIME":
         if (!autofillDimensions) continue;
         expression = $(name);
-        if (dataCube.dimensions.getDimensionByExpression(expression)) continue;
+        if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
         // Add to the start
-        dimensions = dimensions.prepend(new Dimension({
-          name: urlSafeName,
-          kind: "time",
-          formula: expression.toString()
-        }));
+        dimensions = prepend(createDimension("time", urlSafeName, expression), dimensions);
         break;
 
       case "STRING":
         if (!autofillDimensions) continue;
         expression = $(name);
-        if (dataCube.dimensions.getDimensionByExpression(expression)) continue;
-        dimensions = dimensions.append(new Dimension({
-          name: urlSafeName,
-          formula: expression.toString()
-        }));
+        if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
+        dimensions = append(createDimension("string", urlSafeName, expression), dimensions);
         break;
 
       case "SET/STRING":
         if (!autofillDimensions) continue;
         expression = $(name);
-        if (dataCube.dimensions.getDimensionByExpression(expression)) continue;
-        dimensions = dimensions.append(new Dimension({
-          kind: "string",
-          multiValue: true,
-          name: urlSafeName,
-          formula: expression.toString()
-        }));
+        if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
+        dimensions = append(createDimension("string", urlSafeName, expression, true), dimensions);
         break;
 
       case "BOOLEAN":
         if (!autofillDimensions) continue;
         expression = $(name);
-        if (dataCube.dimensions.getDimensionByExpression(expression)) continue;
-        dimensions = dimensions.append(new Dimension({
-          name: urlSafeName,
-          kind: "boolean",
-          formula: expression.toString()
-        }));
+        if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
+        dimensions = append(createDimension("boolean", urlSafeName, expression, true), dimensions);
         break;
 
       case "NUMBER":
@@ -133,8 +125,11 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
     value.defaultSortMeasure = measures.size() ? measures.first().name : null;
   }
 
-  if (!value.timeAttribute && dimensions.size && dimensions.first().kind === "time") {
-    value.timeAttribute = dimensions.first().expression as RefExpression;
+  if (!value.timeAttribute) {
+    const [first] = allDimensions(dimensions);
+    if (first && first.kind === "time") {
+      value.timeAttribute = first.expression as RefExpression;
+    }
   }
 
   return value;
