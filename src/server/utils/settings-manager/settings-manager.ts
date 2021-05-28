@@ -19,7 +19,7 @@ import { Dataset, External } from "plywood";
 import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster } from "../../../common/models/cluster/cluster";
-import { DataCube, fromClusterAndExternal, queryMaxTime } from "../../../common/models/data-cube/data-cube";
+import { DataCube, fromClusterAndExternal } from "../../../common/models/data-cube/data-cube";
 import { attachDatasetExecutor, attachExternalExecutor } from "../../../common/models/data-cube/queryable-data-cube";
 import {
   addOrUpdateDataCube,
@@ -33,6 +33,7 @@ import dataCubeToExternal from "../../../common/utils/external/datacube-to-exter
 import { noop, Unary } from "../../../common/utils/functional/functional";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { timeout } from "../../../common/utils/promise/promise";
+import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
 import { ClusterManager } from "../cluster-manager/cluster-manager";
 import { FileManager } from "../file-manager/file-manager";
@@ -206,7 +207,7 @@ export class SettingsManager {
 
     if (queryableDataCube.refreshRule.isQuery()) {
       this.timeMonitor.addCheck(dataCube.name, () => {
-        return queryMaxTime(queryableDataCube.timeAttribute, queryableDataCube.executor);
+        return maxTimeQuery(queryableDataCube.timeAttribute, queryableDataCube.executor);
       });
     }
 
@@ -227,7 +228,7 @@ export class SettingsManager {
 
     if (queryableDataCube.refreshRule.isQuery()) {
       this.timeMonitor.addCheck(queryableDataCube.name, () => {
-        return queryMaxTime(queryableDataCube.timeAttribute, queryableDataCube.executor);
+        return maxTimeQuery(queryableDataCube.timeAttribute, queryableDataCube.executor);
       });
     }
 

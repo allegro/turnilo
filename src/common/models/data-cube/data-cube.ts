@@ -16,7 +16,6 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { List, OrderedSet } from "immutable";
 import {
   $,
   AttributeInfo,
@@ -24,12 +23,10 @@ import {
   Attributes,
   CustomDruidAggregations,
   CustomDruidTransforms,
-  Dataset,
   Executor,
   Expression,
   ExpressionJS,
   External,
-  ply,
   RefExpression
 } from "plywood";
 import { quoteNames, verifyUrlSafeName } from "../../utils/general/general";
@@ -48,7 +45,7 @@ import {
   SerializedDimensions
 } from "../dimension/dimensions";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
-import { EMPTY_FILTER, Filter } from "../filter/filter";
+import { EMPTY_FILTER, Filter, FilterJS } from "../filter/filter";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { QueryDecoratorDefinition, QueryDecoratorDefinitionJS } from "../query-decorator/query-decorator";
@@ -147,7 +144,7 @@ export interface DataCubeJS {
   measures?: MeasureOrGroupJS[];
   timeAttribute?: string;
   defaultTimezone?: string;
-  defaultFilter?: any;
+  defaultFilter?: FilterJS;
   defaultSplitDimensions?: string[];
   defaultDuration?: string;
   defaultSortMeasure?: string;
@@ -175,7 +172,7 @@ export interface SerializedDataCube {
   measures: MeasureOrGroupJS[];
   timeAttribute?: string;
   defaultTimezone: string;
-  defaultFilter?: any; // TODO why?
+  defaultFilter?: FilterJS;
   defaultSplitDimensions?: string[];
   defaultDuration: string;
   defaultSortMeasure?: string;
@@ -352,7 +349,6 @@ export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Clus
     dimensions,
     measures,
     timeAttribute,
-    // TODO: provide some better defaults, instead of nulls?
     defaultFilter,
     defaultTimezone: config.defaultTimezone ? Timezone.fromJS(config.defaultTimezone) : DEFAULT_DEFAULT_TIMEZONE,
     defaultSplitDimensions: config.defaultSplitDimensions || [],
@@ -434,21 +430,6 @@ export function fromClusterAndExternal(name: string, cluster: Cluster, external:
   }, cluster);
 
   return attachExternalExecutor(dataCube, external);
-}
-
-// TODO: move out?
-export function queryMaxTime(timeAttribute?: RefExpression, executor?: Executor): Promise<Date> {
-  if (!executor) {
-    return Promise.reject(new Error("dataCube not ready"));
-  }
-
-  const ex = ply().apply("maxTime", $("main").max(timeAttribute));
-
-  return executor(ex).then((dataset: Dataset) => {
-    const maxTimeDate = dataset.data[0]["maxTime"] as Date;
-    if (isNaN(maxTimeDate as any)) return null;
-    return maxTimeDate;
-  });
 }
 
 export function getMaxTime({ name, refreshRule }: ClientDataCube, timekeeper: Timekeeper): Date {

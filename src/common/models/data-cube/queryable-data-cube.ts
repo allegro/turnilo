@@ -30,7 +30,7 @@ import { hasOwnProperty, makeUrlSafeName } from "../../utils/general/general";
 import { createDimension } from "../dimension/dimension";
 import {
   allDimensions,
-  append,
+  append, Dimensions,
   findDimensionByExpression,
   findDimensionByName,
   prepend
@@ -115,24 +115,22 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
     }));
   }
 
-  // TODO: FIX mutation!
-  let value = dataCube;
-  value.attributes = attributes ? AttributeInfo.override(attributes, newAttributes) : newAttributes;
-  value.dimensions = dimensions;
-  value.measures = measures;
-
-  if (!value.defaultSortMeasure) {
-    value.defaultSortMeasure = measures.size() ? measures.first().name : null;
-  }
-
-  if (!value.timeAttribute) {
+  function getTimeAttribute(dimensions: Dimensions): RefExpression | undefined {
     const [first] = allDimensions(dimensions);
     if (first && first.kind === "time") {
-      value.timeAttribute = first.expression as RefExpression;
+      return first.expression as RefExpression;
     }
+    return undefined;
   }
 
-  return value;
+  return {
+    ...dataCube,
+    dimensions,
+    measures,
+    attributes: attributes ? AttributeInfo.override(attributes, newAttributes) : newAttributes,
+    defaultSortMeasure: dataCube.defaultSortMeasure || (measures.size() ? measures.first().name : undefined),
+    timeAttribute: dataCube.timeAttribute || getTimeAttribute(dimensions)
+  };
 }
 
 export function attachDatasetExecutor(dataCube: DataCube, dataset: Dataset): QueryableDataCube {

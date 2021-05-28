@@ -17,14 +17,13 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { RefExpression } from "plywood";
+import { serialize } from "../../../client/deserializers/data-cube";
 import { thread } from "../../utils/functional/functional";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { MANIFESTS } from "../../visualization-manifests";
 import {
   ClientDataCube,
-  DataCubeJS,
   getDefaultFilter,
   getDefaultSeries,
   getDefaultSplits,
@@ -184,11 +183,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return seriesRefs.first();
   }
 
-  static defaultSort(series: SeriesList, dataCube: ClientDataCube): Sort {
-    const reference = Essence.defaultSortReference(series, dataCube);
-    return new SeriesSort({ reference });
-  }
-
   static timeFilter(filter: Filter, dataCube: ClientDataCube): TimeFilterClause {
     const timeFilter = filter.clauseForReference(dataCube.timeAttribute);
     if (!isTimeFilter(timeFilter)) throw new Error(`Unknown time filter: ${timeFilter}`);
@@ -247,7 +241,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return {
       visualization: this.visualization,
       visualizationSettings: this.visualizationSettings,
-      dataCube: null as DataCubeJS, // Why we insist on serializing Essence?!
+      dataCube: serialize(this.dataCube),
       timezone: this.timezone.toJS(),
       filter: this.filter && this.filter.toJS(),
       splits: this.splits && this.splits.toJS(),

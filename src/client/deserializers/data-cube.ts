@@ -17,6 +17,7 @@
 import { Duration, Timezone } from "chronoshift";
 import { AttributeInfo, Executor } from "plywood";
 import { ClientDataCube, SerializedDataCube } from "../../common/models/data-cube/data-cube";
+import { serialize as dimensionsSerialize } from "../../common/models/dimension/dimensions";
 import { Filter } from "../../common/models/filter/filter";
 import { Measures } from "../../common/models/measure/measures";
 import { RefreshRule } from "../../common/models/refresh-rule/refresh-rule";
@@ -64,6 +65,61 @@ export function deserialize(dataCube: SerializedDataCube, executor: Executor): C
     group,
     maxSplits,
     measures: Measures.fromJS(measures),
+    name,
+    options,
+    refreshRule: RefreshRule.fromJS(refreshRule),
+    rollup,
+    source,
+    timeAttribute,
+    title
+  };
+}
+
+/*
+ NOTE: Function is used only for serialize-deserialize cycle in Essence class.
+ Now it's hard to remove that functionality but in the end, Essence does not need to serialize itself.
+*/
+export function serialize(dataCube: ClientDataCube): SerializedDataCube {
+  const {
+    attributes,
+    clusterName,
+    defaultDuration,
+    defaultFilter,
+    defaultPinnedDimensions,
+    defaultSelectedMeasures,
+    defaultSortMeasure,
+    defaultSplitDimensions,
+    defaultTimezone,
+    description,
+    dimensions,
+    extendedDescription,
+    group,
+    maxSplits,
+    measures,
+    name,
+    options,
+    refreshRule,
+    rollup,
+    source,
+    timeAttribute,
+    title
+  } = dataCube;
+  return {
+    attributes: attributes.map(a => a.toJS()),
+    clusterName,
+    defaultDuration: defaultDuration.toJS(),
+    defaultFilter: defaultFilter && defaultFilter.toJS(),
+    defaultPinnedDimensions,
+    defaultSelectedMeasures,
+    defaultSortMeasure,
+    defaultSplitDimensions,
+    defaultTimezone: defaultTimezone.toJS(),
+    description,
+    dimensions: dimensionsSerialize(dimensions),
+    extendedDescription,
+    group,
+    maxSplits,
+    measures: measures.toJS(),
     name,
     options,
     refreshRule: RefreshRule.fromJS(refreshRule),

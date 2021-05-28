@@ -23,7 +23,7 @@ import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../common/models/customization/customization";
-import { ClientDataCube, queryMaxTime } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -40,6 +40,7 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Binary, Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
@@ -216,7 +217,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { dataCube: { name, executor, timeAttribute, refreshRule } } = essence;
     this.setState({ updatingMaxTime: true });
 
-    queryMaxTime($(timeAttribute), executor)
+    maxTimeQuery($(timeAttribute), executor)
       .then(maxTime => {
         if (!this.mounted) return;
         const timeName = name;

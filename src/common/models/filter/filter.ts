@@ -38,6 +38,10 @@ export interface FilterValue {
   clauses: List<FilterClause>;
 }
 
+export interface FilterJS {
+  clauses: FilterDefinition[];
+}
+
 const defaultFilter: FilterValue = { clauses: List([]) };
 
 export class Filter extends Record<FilterValue>(defaultFilter) {
@@ -51,7 +55,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return new Filter({ clauses: List(clauses) });
   }
 
-  static fromJS(definition: { clauses: FilterDefinition[] }): Filter {
+  static fromJS(definition: FilterJS): Filter {
     return new Filter({
       clauses: List(definition.clauses.map(def => fromJS(def)))
     });
