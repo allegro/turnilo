@@ -15,7 +15,7 @@
  */
 
 import { fromEntries } from "../../utils/object/object";
-import { Dimension } from "./dimension";
+import { Dimension, DimensionJS } from "./dimension";
 import { DimensionFixtures } from "./dimension.fixtures";
 import { DimensionGroupJS, Dimensions } from "./dimensions";
 
@@ -24,17 +24,7 @@ export class DimensionsFixtures {
     return {
       name: "dummyName",
       dimensions: [
-        // DimensionFixtures.wikiTimeJS()
-      ]
-    };
-  }
-
-  static withTitleInferredJS(): DimensionGroupJS {
-    return {
-      name: "dummyName",
-      title: "Dummy Name",
-      dimensions: [
-        // DimensionFixtures.wikiTimeJS()
+        ...DimensionsFixtures.dimensions()
       ]
     };
   }
@@ -42,7 +32,7 @@ export class DimensionsFixtures {
   static noNameJS(): DimensionGroupJS {
     return {
       dimensions: [
-        // DimensionFixtures.wikiTimeJS()
+        ...DimensionsFixtures.dimensions()
       ]
     } as DimensionGroupJS;
   }
@@ -60,31 +50,27 @@ export class DimensionsFixtures {
     } as DimensionGroupJS;
   }
 
-  static commentsJS(): DimensionGroupJS {
-    return {
-      name: "comment_group",
-      title: "Comment Group",
-      dimensions: [
-        {
-          kind: "string",
-          name: "comment",
-          title: "Comment",
-          formula: "$comment"
-        },
-        {
-          kind: "number",
-          name: "commentLength",
-          title: "Comment Length",
-          formula: "$commentLength"
-        },
-        {
-          kind: "boolean",
-          name: "commentLengthOver100",
-          title: "Comment Length Over 100",
-          formula: "$commentLength > 100"
-        }
-      ]
-    };
+  static dimensions(): DimensionJS[] {
+    return [
+      {
+        kind: "string",
+        name: "comment",
+        title: "Comment",
+        formula: "$comment"
+      },
+      {
+        kind: "number",
+        name: "commentLength",
+        title: "Comment Length",
+        formula: "$commentLength"
+      },
+      {
+        kind: "boolean",
+        name: "commentLengthOver100",
+        title: "Comment Length Over 100",
+        formula: "$commentLength > 100"
+      }
+    ];
   }
 
   static fromDimensions(dimensions: Dimension[]): Dimensions {
@@ -111,7 +97,7 @@ export class DimensionsFixtures {
       articleName: DimensionFixtures.articleName(),
       page: DimensionFixtures.page(),
       page_last_author: DimensionFixtures.pageLastAuthor(),
-      userCharts: DimensionFixtures.userCharts()
+      userChars: DimensionFixtures.userChars()
     };
 
     return {
@@ -119,7 +105,7 @@ export class DimensionsFixtures {
         name: "comment_group",
         title: "Comment Group",
         dimensions: ["comment", "commentLength", "commentLengthOver100"]
-      }, "isRobot", "namespace", "articleName", "page", "page_last_author", "userCharts"],
+      }, "isRobot", "namespace", "articleName", "page", "page_last_author", "userChars"],
       byName
     };
   }

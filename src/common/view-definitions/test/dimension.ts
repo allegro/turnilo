@@ -25,6 +25,7 @@ export const timeDimension = createDimension("time", "time", $("time"));
 
 export const dimensions: Dimensions = DimensionsFixtures.fromDimensions([
   timeDimension,
+  createDimension("number", "numeric", $("numeric")),
   createDimension("string", "string_a", $("string_a")),
   createDimension("string", "string_b", $("string_b")),
   createDimension("boolean", "boolean", $("boolean"))

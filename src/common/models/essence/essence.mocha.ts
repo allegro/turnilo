@@ -21,9 +21,7 @@ import { BAR_CHART_MANIFEST } from "../../visualization-manifests/bar-chart/bar-
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
-import { DataCube, Introspection } from "../data-cube/data-cube";
 import { twitterClientDataCube } from "../data-cube/data-cube.fixtures";
-import { DimensionKind } from "../dimension/dimension";
 import { TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { timePeriod } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
@@ -37,47 +35,7 @@ import { TimeShift } from "../time-shift/time-shift";
 import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
-// TODO: Implement? Solve "serialization" of data cube inside essence
 describe("EssenceProps", () => {
-  var dataCubeJS = {
-    name: "twitter",
-    title: "Twitter",
-    clusterName: "druid",
-    source: "twitter",
-    introspection: ("none" as Introspection),
-    dimensions: [
-      {
-        kind: "time" as DimensionKind,
-        name: "time",
-        title: "Time",
-        formula: "$time"
-      },
-      {
-        kind: "string" as DimensionKind,
-        name: "twitterHandle",
-        title: "Twitter Handle",
-        formula: "$twitterHandle"
-      }
-    ],
-    measures: [
-      {
-        name: "count",
-        title: "count",
-        formula: "$main.count()"
-      }
-    ],
-    timeAttribute: "time",
-    defaultTimezone: "Etc/UTC",
-    defaultSplits: "time",
-    defaultDuration: "P3D",
-    defaultSortMeasure: "count",
-    defaultPinnedDimensions: ["twitterHandle"],
-    refreshRule: {
-      rule: "fixed",
-      time: new Date("2015-09-13T00:00:00Z")
-    }
-  };
-
   const dataCube = twitterClientDataCube;
 
   describe(".fromDataCube", () => {

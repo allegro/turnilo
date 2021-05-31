@@ -15,40 +15,20 @@
  */
 
 import { expect } from "chai";
-import { fromConfig } from "./dimensions";
+import { DimensionsGroup, fromConfig } from "./dimensions";
 import { DimensionsFixtures } from "./dimensions.fixtures";
 
 describe("DimensionGroup", () => {
-
-  it("should convert to / from JS", () => {
-    const dimensionGroup = fromConfig([DimensionsFixtures.commentsJS()]);
-
-    expect(dimensionGroup).to.deep.equal(DimensionsFixtures.commentsJS());
-  });
-
   it("should infer title from name", () => {
-    const dimensionGroup = fromConfig([DimensionsFixtures.noTitleJS()]);
+    const { tree } = fromConfig([DimensionsFixtures.noTitleJS()]);
 
-    expect(dimensionGroup).to.deep.equal(DimensionsFixtures.withTitleInferredJS());
-  });
-
-  it("should infer title from name", () => {
-    const dimensionGroup = fromConfig([DimensionsFixtures.noTitleJS()]);
-
-    expect(dimensionGroup).to.deep.equal(DimensionsFixtures.withTitleInferredJS());
+    expect((tree[0] as DimensionsGroup).title).to.equal("Dummy Name");
   });
 
   it("should throw when no name given", () => {
     const dimensionGroupConversion = () => fromConfig([DimensionsFixtures.noNameJS()]);
 
     expect(dimensionGroupConversion).to.throw("dimension group requires a name");
-  });
-
-  it("should throw when no dimensions given", () => {
-    const groupWithNoDimensions = DimensionsFixtures.noDimensionsJS();
-    const dimensionGroupConversion = () => fromConfig([groupWithNoDimensions]);
-
-    expect(dimensionGroupConversion).to.throw(`dimension group '${groupWithNoDimensions.name}' has no dimensions`);
   });
 
   it("should throw when empty dimensions given", () => {

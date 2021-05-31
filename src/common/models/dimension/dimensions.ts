@@ -65,7 +65,7 @@ export function fromConfig(config: DimensionOrGroupJS[]): Dimensions {
         throw new Error("dimension group requires a name");
       }
 
-      if (dimensions == null || dimensions.length === 0) {
+      if (!Array.isArray(dimensions) || dimensions.length === 0) {
         throw new Error(`dimension group '${name}' has no dimensions`);
       }
       return {

@@ -89,8 +89,8 @@ export class DimensionFixtures {
     return createDimension("string", "page", $("page"));
   }
 
-  static userCharts() {
-    return createDimension("string", "userCharts", $("userCharts"));
+  static userChars() {
+    return createDimension("string", "userChars", $("userChars"));
   }
 
   static pageLastAuthor() {
