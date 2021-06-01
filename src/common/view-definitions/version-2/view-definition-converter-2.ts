@@ -50,6 +50,7 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
+import { findMeasureByName } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 import { DimensionSort, SeriesSort, Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
@@ -69,7 +70,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const visualizationSettings = visualization.visualizationSettings.defaults;
 
     const measureNames = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
-    const series = SeriesList.fromMeasures(dataCube.measures.getMeasuresByNames(measureNames));
+    const series = SeriesList.fromMeasures(measureNames.map(name => findMeasureByName(dataCube.measures, name)));
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);

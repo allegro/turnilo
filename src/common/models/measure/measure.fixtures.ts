@@ -14,10 +14,31 @@
  * limitations under the License.
  */
 
-import { ExpressionJS } from "plywood";
+import { $ } from "plywood";
 import { Measure, MeasureJS } from "./measure";
+import { createMeasure } from "./measures";
 
 export class MeasureFixtures {
+  static count(): Measure {
+    return createMeasure("count", $("main").count());
+  }
+
+  static added(): Measure {
+    return createMeasure("added", $("main").sum($("added")));
+  }
+
+  static avgAdded(): Measure {
+    return createMeasure("avg_added", $("main").average($("added")));
+  }
+
+  static delta(): Measure {
+    return createMeasure("delta", $("main").sum($("delta")));
+  }
+
+  static avgDelta(): Measure {
+    return createMeasure("avg_delta", $("main").average($("delta")));
+  }
+
   static wikiCountJS(): MeasureJS {
     return {
       name: "count",
@@ -42,134 +63,7 @@ export class MeasureFixtures {
     };
   }
 
-  static wikiCount(): Measure {
-    return new Measure({
-      name: "count",
-      title: "Count",
-      formula: "$main.sum($count)"
-    });
-  }
-
-  static wikiUniqueUsersJS(): MeasureJS {
-    return {
-      name: "unique_users",
-      title: "Unique Users",
-      formula: "$main.countDistinct($unique_users)"
-    };
-  }
-
   static wikiUniqueUsers(): Measure {
-    return new Measure({
-      name: "unique_users",
-      title: "Unique Users",
-      formula: "$main.countDistinct($unique_users)"
-    });
-  }
-
-  static twitterCount(): Measure {
-    return Measure.fromJS({
-      name: "count",
-      formula: "$main.count()"
-    });
-  }
-
-  static noTransformationMeasure(): Measure {
-    return Measure.fromJS({
-      name: "items_measure",
-      formula: "$main.sum($item)"
-    });
-  }
-
-  static percentOfParentMeasure(): Measure {
-    return Measure.fromJS({
-      name: "items_measure",
-      formula: "$main.sum($item)",
-      transformation: "percent-of-parent"
-    });
-  }
-
-  static percentOfTotalMeasure(): Measure {
-    return Measure.fromJS({
-      name: "items_measure",
-      formula: "$main.sum($item)",
-      transformation: "percent-of-total"
-    });
-  }
-
-  static applyWithNoTransformation(): ExpressionJS {
-    return {
-      expression: {
-        expression: {
-          name: "item",
-          op: "ref"
-        },
-        op: "sum",
-        operand: {
-          name: "main",
-          op: "ref"
-        }
-      },
-      name: "items_measure",
-      op: "apply"
-    };
-  }
-
-  static applyWithTransformationAtRootLevel(): ExpressionJS {
-    return {
-      expression: {
-        expression: {
-          name: "item",
-          op: "ref"
-        },
-        op: "sum",
-        operand: {
-          name: "main",
-          op: "ref"
-        }
-      },
-      name: "__formula_items_measure",
-      op: "apply"
-    };
-  }
-
-  static applyWithTransformationAtLevel(level: number): ExpressionJS {
-    return {
-      expression: {
-        expression: {
-          op: "literal",
-          value: 100
-        },
-        op: "multiply",
-        operand: {
-          expression: {
-            name: "__formula_items_measure",
-            nest: level,
-            op: "ref"
-          },
-          op: "divide",
-          operand: {
-            name: "__formula_items_measure",
-            op: "ref"
-          }
-        }
-      },
-      name: "items_measure",
-      op: "apply",
-      operand: {
-        expression: {
-          expression: {
-            name: "item",
-            op: "ref"
-          },
-          op: "sum",
-          operand: {
-            name: "main",
-            op: "ref"
-          }
-        },
-        name: "__formula_items_measure",
-        op: "apply"
-      }
-    };
+    return createMeasure("unique_users", $("main").countDistinct($("unique_users")));
   }
 }

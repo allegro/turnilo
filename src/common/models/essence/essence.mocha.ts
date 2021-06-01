@@ -245,7 +245,7 @@ describe("EssenceProps", () => {
           expect(withoutSplit.visualization).to.deep.equal(visualization);
           expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.be.true;
 
-          const toggledAgain = withoutSplit.addSeries(MeasureSeries.fromMeasure(MeasureFixtures.twitterCount()));
+          const toggledAgain = withoutSplit.addSeries(MeasureSeries.fromMeasure(MeasureFixtures.count()));
           expect(toggledAgain.visualization).to.deep.equal(visualization);
           expect(toggledAgain.visResolve.isManual(), "is manual after second toggle").to.be.true;
         });

@@ -19,9 +19,10 @@ import { AttributeInfo, Executor } from "plywood";
 import { ClientDataCube, SerializedDataCube } from "../../common/models/data-cube/data-cube";
 import { serialize as dimensionsSerialize } from "../../common/models/dimension/dimensions";
 import { Filter } from "../../common/models/filter/filter";
-import { Measures } from "../../common/models/measure/measures";
+import { serialize as measuresSerialize } from "../../common/models/measure/measures";
 import { RefreshRule } from "../../common/models/refresh-rule/refresh-rule";
 import { deserialize as dimensionsDeserialize } from "./dimensions";
+import { deserialize as measuresDeserialize } from "./measures";
 
 export function deserialize(dataCube: SerializedDataCube, executor: Executor): ClientDataCube {
   const {
@@ -64,7 +65,7 @@ export function deserialize(dataCube: SerializedDataCube, executor: Executor): C
     extendedDescription,
     group,
     maxSplits,
-    measures: Measures.fromJS(measures),
+    measures: measuresDeserialize(measures),
     name,
     options,
     refreshRule: RefreshRule.fromJS(refreshRule),
@@ -119,7 +120,7 @@ export function serialize(dataCube: ClientDataCube): SerializedDataCube {
     extendedDescription,
     group,
     maxSplits,
-    measures: measures.toJS(),
+    measures: measuresSerialize(measures),
     name,
     options,
     refreshRule: RefreshRule.fromJS(refreshRule),

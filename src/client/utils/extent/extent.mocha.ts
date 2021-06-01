@@ -15,8 +15,8 @@
  */
 
 import { expect } from "chai";
-import { Datum } from "plywood";
-import { Measure } from "../../../common/models/measure/measure";
+import { $, Datum } from "plywood";
+import { createMeasure } from "../../../common/models/measure/measures";
 import { SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { MeasureConcreteSeries } from "../../../common/models/series/measure-concrete-series";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
@@ -27,7 +27,7 @@ describe("extent", () => {
     const reference = "count";
     const seriesFixture = new MeasureConcreteSeries(
       new MeasureSeries({ reference }),
-      Measure.fromJS({ title: "Count", name: reference, formula: "$main.count()" }));
+      createMeasure(reference, $("main").count()));
 
     const datumFixture = {
       [seriesFixture.plywoodKey()]: 42,

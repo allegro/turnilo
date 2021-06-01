@@ -40,6 +40,7 @@ import {
   toExpression
 } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
+import { findMeasureByName, hasMeasureWithName } from "../measure/measures";
 import { SeriesList } from "../series-list/series-list";
 import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
 import createConcreteSeries from "../series/create-concrete-series";
@@ -360,7 +361,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   private concreteSeriesFromSeries(series: Series): ConcreteSeries {
     const { reference } = series;
     const { dataCube } = this;
-    const measure = dataCube.measures.getMeasureByName(reference);
+    const measure = findMeasureByName(dataCube.measures, reference);
     return createConcreteSeries(series, measure, dataCube.measures);
   }
 
@@ -432,7 +433,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
         .set("series", newSeriesList)
         .update("splits", splits => splits.constrainToDimensionsAndSeries(newDataCube.dimensions, newSeriesList))
         .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
-        .update("pinnedSort", sort => !newDataCube.measures.getMeasureByName(sort) ? newDataCube.defaultSortMeasure : sort);
+        .update("pinnedSort", sort => !hasMeasureWithName(newDataCube.measures, sort) ? newDataCube.defaultSortMeasure : sort);
     }
 
     function adjustVisualization(essence: Essence): Essence {

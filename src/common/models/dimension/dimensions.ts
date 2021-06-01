@@ -16,7 +16,7 @@
 
 import { Expression } from "plywood";
 import { values } from "../../utils/functional/functional";
-import { makeTitle } from "../../utils/general/general";
+import { isTruthy, makeTitle } from "../../utils/general/general";
 import { mapValues } from "../../utils/object/object";
 import {
   Dimension,
@@ -48,6 +48,10 @@ export interface DimensionsGroup {
 
 type DimensionId = string;
 
+export function isDimensionId(o: DimensionOrGroup): o is DimensionId {
+  return typeof o === "string";
+}
+
 export type DimensionOrGroup = DimensionId | DimensionsGroup;
 
 export interface Dimensions {
@@ -77,6 +81,9 @@ export function fromConfig(config: DimensionOrGroupJS[]): Dimensions {
     } else {
       const dimension = dimensionFromConfig(dimOrGroup);
       const { name } = dimension;
+      if (isTruthy(byName[name])) {
+        throw new Error(`found duplicate dimension with name: '${name}'`);
+      }
       byName[name] = dimension;
       return name;
     }

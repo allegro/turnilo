@@ -20,7 +20,7 @@ import { fromMeasure } from "../../../../common/models/series/measure-concrete-s
 import { dataset } from "./datum-fixtures";
 import scales from "./scales";
 
-const measure = MeasureFixtures.wikiCount();
+const measure = MeasureFixtures.count();
 const concreteSeries = fromMeasure(measure);
 
 describe("scales", () => {

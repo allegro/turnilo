@@ -30,19 +30,28 @@ import { hasOwnProperty, makeUrlSafeName } from "../../utils/general/general";
 import { createDimension } from "../dimension/dimension";
 import {
   allDimensions,
-  append, Dimensions,
+  append as dimensionAppend,
+  Dimensions,
   findDimensionByExpression,
   findDimensionByName,
-  prepend
+  prepend as dimensionPrepend
 } from "../dimension/dimensions";
-import { Measure } from "../measure/measure";
-import { DataCube } from "./data-cube";
+import { measuresFromAttributeInfo } from "../measure/measure";
+import {
+  append as measureAppend,
+  createMeasure,
+  findMeasureByExpression,
+  findMeasureByName,
+  hasMeasureWithName,
+  prepend as measurePrepend
+} from "../measure/measures";
+import { DataCube, getDefaultSortMeasure } from "./data-cube";
 
 export interface QueryableDataCube extends DataCube {
   executor: Executor;
 }
 
-function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube {
+export function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube {
   let { dimensions, measures, attributes, introspection } = dataCube;
   if (introspection === "none") return dataCube;
 
@@ -59,7 +68,7 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
 
     // Already exists as a current dimension or a measure
     const urlSafeName = makeUrlSafeName(name);
-    if (findDimensionByName(dataCube.dimensions, urlSafeName) || dataCube.measures.getMeasureByName(urlSafeName)) continue;
+    if (findDimensionByName(dataCube.dimensions, urlSafeName) || findMeasureByName(dataCube.measures, urlSafeName)) continue;
 
     let expression: Expression;
     switch (type) {
@@ -68,38 +77,40 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
         expression = $(name);
         if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
         // Add to the start
-        dimensions = prepend(createDimension("time", urlSafeName, expression), dimensions);
+        dimensions = dimensionPrepend(createDimension("time", urlSafeName, expression), dimensions);
         break;
 
       case "STRING":
         if (!autofillDimensions) continue;
         expression = $(name);
         if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
-        dimensions = append(createDimension("string", urlSafeName, expression), dimensions);
+        dimensions = dimensionAppend(createDimension("string", urlSafeName, expression), dimensions);
         break;
 
       case "SET/STRING":
         if (!autofillDimensions) continue;
         expression = $(name);
         if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
-        dimensions = append(createDimension("string", urlSafeName, expression, true), dimensions);
+        dimensions = dimensionAppend(createDimension("string", urlSafeName, expression, true), dimensions);
         break;
 
       case "BOOLEAN":
         if (!autofillDimensions) continue;
         expression = $(name);
         if (findDimensionByExpression(dataCube.dimensions, expression)) continue;
-        dimensions = append(createDimension("boolean", urlSafeName, expression, true), dimensions);
+        dimensions = dimensionAppend(createDimension("boolean", urlSafeName, expression, true), dimensions);
         break;
 
       case "NUMBER":
       case "NULL":
         if (!autofillMeasures) continue;
 
-        const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+        const newMeasures = measuresFromAttributeInfo(newAttribute);
         newMeasures.forEach(newMeasure => {
-          if (dataCube.measures.getMeasureByExpression(newMeasure.expression)) return;
-          measures = (name === "count") ? measures.prepend(newMeasure) : measures.append(newMeasure);
+          if (findMeasureByExpression(dataCube.measures, newMeasure.expression)) return;
+          measures = (name === "count")
+            ? measurePrepend(measures, newMeasure)
+            : measureAppend(measures, newMeasure);
         });
         break;
 
@@ -108,11 +119,8 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
     }
   }
 
-  if (dataCube.clusterName !== "druid" && !measures.containsMeasureWithName("count")) {
-    measures = measures.prepend(new Measure({
-      name: "count",
-      formula: $main.count().toString()
-    }));
+  if (dataCube.clusterName !== "druid" && !hasMeasureWithName(measures, "count")) {
+    measures = measurePrepend(measures, createMeasure("count", $main.count()));
   }
 
   function getTimeAttribute(dimensions: Dimensions): RefExpression | undefined {
@@ -128,7 +136,7 @@ function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube 
     dimensions,
     measures,
     attributes: attributes ? AttributeInfo.override(attributes, newAttributes) : newAttributes,
-    defaultSortMeasure: dataCube.defaultSortMeasure || (measures.size() ? measures.first().name : undefined),
+    defaultSortMeasure: getDefaultSortMeasure(dataCube, measures),
     timeAttribute: dataCube.timeAttribute || getTimeAttribute(dimensions)
   };
 }

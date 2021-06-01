@@ -15,162 +15,147 @@
  * limitations under the License.
  */
 
-import { List, OrderedSet } from "immutable";
-import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
-import { complement } from "../../utils/functional/functional";
-import { isNil, isTruthy, quoteNames } from "../../utils/general/general";
-import { SeriesDerivation } from "../series/concrete-series";
-import { Measure } from "./measure";
-import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
+import { values } from "../../utils/functional/functional";
+import { isTruthy, makeTitle } from "../../utils/general/general";
+import { mapValues } from "../../utils/object/object";
+import { measureDefaultFormat } from "../series/series-format";
+import {
+  fromConfig as measureFromConfig,
+  Measure,
+  MeasureJS,
+  serialize as measureSerialize,
+  SerializedMeasure
+} from "./measure";
 
-class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
-  private items = List<MeasureOrGroup>().asMutable();
+type MeasureId = string;
+export type MeasureOrGroupJS = MeasureJS | MeasureGroupJS;
+export type MeasureOrGroup = MeasureId | MeasuresGroup;
 
-  visitMeasure(measure: Measure): void {
-    this.items.push(measure);
-  }
-
-  visitMeasureGroup(measureGroup: MeasureGroup): void {
-    this.items.push(measureGroup);
-    measureGroup.measures.forEach(measureOrGroup => measureOrGroup.accept(this));
-  }
-
-  getMeasuresAndGroups(): List<MeasureOrGroup> {
-    return this.items.toList();
-  }
+export function isMeasure(o: MeasureOrGroup): o is MeasureId {
+  return typeof o === "string";
 }
 
-function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
-  return items
-    .groupBy(measure => measure.name)
-    .filter(names => names.count() > 1)
-    .map((names, name) => name)
-    .toList();
+export interface MeasureGroupJS {
+  name: string;
+  title?: string;
+  description?: string;
+  measures: MeasureOrGroupJS[];
 }
 
-function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ name: string, prefix: string }> {
-  return items
-    .map(measureOrGroup => {
-      if (isMeasureGroupJS(measureOrGroup)) {
-        return null;
+export function isMeasureGroupJS(measureOrGroupJS: MeasureOrGroupJS): measureOrGroupJS is MeasureGroupJS {
+  return (measureOrGroupJS as MeasureGroupJS).measures !== undefined;
+}
+
+export interface MeasuresGroup {
+  name: string;
+  title?: string;
+  description?: string;
+  measures: MeasureOrGroup[];
+}
+
+export interface Measures {
+  tree: MeasureOrGroup[];
+  byName: Record<MeasureId, Measure>;
+}
+
+export function fromConfig(config: MeasureOrGroupJS[]): Measures {
+  let byName: Record<MeasureId, Measure> = {};
+
+  function readMeasureOrGroup(measureOrGroup: MeasureOrGroupJS): MeasureOrGroup {
+    if (isMeasureGroupJS(measureOrGroup)) {
+      const { name, title, description, measures } = measureOrGroup;
+      if (name == null) {
+        throw new Error("measure group requires a name");
       }
-      if (measureOrGroup.name.startsWith(SeriesDerivation.PREVIOUS)) {
-        return { name: measureOrGroup.name, prefix: SeriesDerivation.PREVIOUS };
+
+      if (!Array.isArray(measures) || measures.length === 0) {
+        throw new Error(`measure group '${name}' has no measures`);
       }
-      if (measureOrGroup.name.startsWith(SeriesDerivation.DELTA)) {
-        return { name: measureOrGroup.name, prefix: SeriesDerivation.DELTA };
+      return {
+        name,
+        title: title || makeTitle(name),
+        description,
+        measures: measures.map(readMeasureOrGroup)
+      };
+    } else {
+      const measure = measureFromConfig(measureOrGroup);
+      const { name } = measure;
+      if (isTruthy(byName[name])) {
+        throw new Error(`found duplicate measure with name: '${name}'`);
       }
-      return null;
-    })
-    .filter(complement(isNil))
-    .toList();
-}
-
-function filterMeasures(items: List<MeasureOrGroup>): List<Measure> {
-  return items.filter(item => item.type === "measure") as List<Measure>;
-}
-
-export class Measures {
-  static empty(): Measures {
-    return new Measures([]);
-  }
-
-  static fromJS(parameters: MeasureOrGroupJS[]): Measures {
-    return new Measures(parameters.map(measureOrGroupFromJS));
-  }
-
-  static fromMeasures(measures: Measure[]): Measures {
-    return new Measures(measures);
-  }
-
-  private readonly measures: MeasureOrGroup[];
-  private readonly flattenedMeasures: List<Measure>;
-
-  private constructor(measures: MeasureOrGroup[]) {
-    this.measures = [...measures];
-
-    const duplicateNamesFindingVisitor = new FlattenMeasuresWithGroupsVisitor();
-    this.measures.forEach(measureOrGroup => measureOrGroup.accept(duplicateNamesFindingVisitor));
-    const flattenedMeasuresWithGroups = duplicateNamesFindingVisitor.getMeasuresAndGroups();
-
-    const duplicateNames = findDuplicateNames(flattenedMeasuresWithGroups);
-    if (duplicateNames.size > 0) {
-      throw new Error(`found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
+      byName[name] = measure;
+      return name;
     }
-
-    const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
-    if (invalidNames.size > 0) {
-      throw new Error(`found measure that starts with forbidden prefixes: ${invalidNames.map(({ name, prefix }) => `'${name}' (prefix: '${prefix}')`).toArray().join(", ")}`);
-    }
-    this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
   }
 
-  accept<R>(visitor: MeasureOrGroupVisitor<R>): R[] {
-    return this.measures.map(measureOrGroup => measureOrGroup.accept(visitor));
-  }
+  const tree = config.map(readMeasureOrGroup);
 
-  size(): int {
-    return this.flattenedMeasures.size;
-  }
+  return {
+    tree,
+    byName
+  };
+}
 
-  first(): Measure {
-    return this.flattenedMeasures.first();
-  }
+export interface SerializedMeasures {
+  tree: MeasureOrGroup[];
+  byName: Record<MeasureId, SerializedMeasure>;
+}
 
-  equals(other: Measures): boolean {
-    return this === other || immutableArraysEqual(this.measures, other.measures);
-  }
+export type ClientMeasures = Measures;
 
-  mapMeasures<R>(mapper: (measure: Measure) => R): R[] {
-    return this.flattenedMeasures.map(mapper).toArray();
-  }
+export function serialize({ tree, byName }: Measures): SerializedMeasures {
+  return {
+    tree,
+    byName: mapValues(byName, measureSerialize)
+  };
+}
 
-  filterMeasures(predicate: (measure: Measure) => boolean): Measure[] {
-    return this.flattenedMeasures.filter(predicate).toArray();
-  }
+export function allMeasures(measures: Measures): Measure[] {
+  return values(measures.byName);
+}
 
-  getMeasuresByNames(names: string[]): Measure[] {
-    return names.map(name => this.getMeasureByName(name));
-  }
+export function findMeasureByName(measures: Measures, measureName: string): Measure | null {
+  return measures.byName[measureName] || null;
+}
 
-  forEachMeasure(sideEffect: (measure: Measure) => void): void {
-    this.flattenedMeasures.forEach(sideEffect);
-  }
+export function hasMeasureWithName(measures: Measures, measureName: string): boolean {
+  return isTruthy(findMeasureByName(measures, measureName));
+}
 
-  getMeasureByName(measureName: string): Measure {
-    return this.flattenedMeasures.find(measure => measure.name === measureName);
-  }
+export function findMeasureByExpression(measures: Measures, expression: Expression): Measure | null {
+  return values(measures.byName).find(measure => measure.expression.equals(expression)) || null;
+}
 
-  hasMeasureByName(measureName: string): boolean {
-    return isTruthy(this.getMeasureByName(measureName));
-  }
+export function append(measures: Measures, measure: Measure): Measures {
+  const { name } = measure;
+  return {
+    byName: {
+      ...measures.byName,
+      [name]: measure
+    },
+    tree: [...measures.tree, name]
+  };
+}
 
-  getMeasureByExpression(expression: Expression): Measure {
-    return this.flattenedMeasures.find(measure => measure.expression.equals(expression));
-  }
+export function prepend(measures: Measures, measure: Measure): Measures {
+  const { name } = measure;
+  return {
+    byName: {
+      ...measures.byName,
+      [name]: measure
+    },
+    tree: [name, ...measures.tree]
+  };
+}
 
-  getMeasureNames(): List<string> {
-    return this.flattenedMeasures.map(measure => measure.name).toList();
-  }
-
-  containsMeasureWithName(name: string): boolean {
-    return this.flattenedMeasures.some(measure => measure.name === name);
-  }
-
-  getFirstNMeasureNames(n: number): OrderedSet<string> {
-    return OrderedSet(this.flattenedMeasures.slice(0, n).map(measure => measure.name));
-  }
-
-  append(...measures: Measure[]): Measures {
-    return new Measures([...this.measures, ...measures]);
-  }
-
-  prepend(...measures: Measure[]): Measures {
-    return new Measures([...measures, ...this.measures]);
-  }
-
-  toJS(): MeasureOrGroupJS[] {
-    return this.measures.map(measure => measure.toJS());
-  }
+export function createMeasure(name: string, expression: Expression): Measure {
+  return {
+    format: measureDefaultFormat,
+    lowerIsBetter: false,
+    transformation: "none",
+    name,
+    title: makeTitle(name),
+    expression
+  };
 }

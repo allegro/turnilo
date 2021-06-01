@@ -16,14 +16,17 @@
  */
 
 import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
+import { allMeasures } from "../../models/measure/measures";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
-import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
-import { ActionVariables } from "../../utils/rules/visualization-dependent-evaluator";
+import {
+  ActionVariables,
+  visualizationDependentEvaluatorBuilder
+} from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.numberOfSplitsIsNot(2))
@@ -40,7 +43,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   ))
   .otherwise(({ splits, dataCube, series }) => {
     let autoChanged = false;
-    const newSplits = splits.update("splits", splits => splits.map((split, i) => {
+    const newSplits = splits.update("splits", splits => splits.map(split => {
       const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
       const sortStrategy = splitDimension.sortStrategy;
 
@@ -101,12 +104,15 @@ const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
       }
     }));
 
-const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => [{
-  description: `Add measure ${dataCube.measures.first().title}`,
-  adjustment: {
-    series: series.addSeries(MeasureSeries.fromMeasure(dataCube.measures.first()))
-  }
-}];
+const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => {
+  const firstMeasure = allMeasures(dataCube.measures)[0];
+  return [{
+    description: `Add measure ${firstMeasure.title}`,
+    adjustment: {
+      series: series.addSeries(MeasureSeries.fromMeasure(firstMeasure))
+    }
+  }];
+};
 
 const suggestRemovingMeasures = ({ series }: ActionVariables) => [{
   description: series.count() === 2 ? "Remove last measure" : `Remove last ${series.count() - 1} measures`,

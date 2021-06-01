@@ -19,9 +19,9 @@ import { Duration, Timezone } from "chronoshift";
 import { $, AttributeInfo, basicExecutorFactory, Dataset, Expression } from "plywood";
 import { Omit } from "../../utils/functional/functional";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
-import { fromConfig } from "../dimension/dimensions";
+import { fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
-import { Measures } from "../measure/measures";
+import { fromConfig as measuresFromConfig } from "../measure/measures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
 import { RefreshRule } from "../refresh-rule/refresh-rule";
 import { ClientDataCube, DataCube, DEFAULT_MAX_QUERIES, DEFAULT_MAX_SPLITS } from "./data-cube";
@@ -38,7 +38,7 @@ export const wikiDataCube: DataCube = {
   options: {},
   subsetExpression: Expression.TRUE,
   dimensions: DimensionsFixtures.wiki(),
-  measures: Measures.fromJS(MeasuresFixtures.wikiJS()),
+  measures: MeasuresFixtures.wiki(),
   attributeOverrides: [],
   attributes: AttributeInfo.fromJSs([
     { name: "time", type: "TIME" },
@@ -147,7 +147,7 @@ export const twitterDataCube: DataCube = {
   source: "twitter",
   introspection: "none",
   dimensions: DimensionsFixtures.twitter(),
-  measures: Measures.fromJS(MeasuresFixtures.twitterJS()),
+  measures: MeasuresFixtures.twitter(),
   timeAttribute: $("time"),
   defaultTimezone: Timezone.fromJS("Etc/UTC"),
   defaultDuration: Duration.fromJS("P3D"),
@@ -170,8 +170,8 @@ export function customCube(title: string, description: string, extendedDescripti
     introspection: "none",
     defaultSplitDimensions: [],
     maxQueries: DEFAULT_MAX_QUERIES,
-    dimensions: fromConfig([]),
-    measures: Measures.fromMeasures([]),
+    dimensions: dimensionsFromConfig([]),
+    measures: measuresFromConfig([]),
     timeAttribute: $("time"),
     defaultTimezone: Timezone.fromJS("Etc/UTC"),
     defaultDuration: Duration.fromJS("P3D"),
@@ -209,8 +209,8 @@ export function customCubeWithGuard(): DataCube {
     introspection: "none",
     defaultSplitDimensions: [],
     maxQueries: DEFAULT_MAX_QUERIES,
-    dimensions: fromConfig([]),
-    measures: Measures.fromMeasures([]),
+    dimensions: dimensionsFromConfig([]),
+    measures: measuresFromConfig([]),
     timeAttribute: $("time"),
     defaultTimezone: Timezone.fromJS("Etc/UTC"),
     defaultDuration: Duration.fromJS("P3D"),

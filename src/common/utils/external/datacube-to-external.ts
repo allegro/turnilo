@@ -15,16 +15,35 @@
  */
 
 import { NamedArray } from "immutable-class";
-import { AttributeInfo, Attributes, External, ExternalValue } from "plywood";
+import {
+  AttributeInfo,
+  Attributes,
+  deduplicateSort,
+  Expression,
+  External,
+  ExternalValue,
+  RefExpression
+} from "plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { allDimensions } from "../../models/dimension/dimensions";
-import { Measure } from "../../models/measure/measure";
+import { isApproximate } from "../../models/measure/measure";
+import { allMeasures } from "../../models/measure/measures";
+
+function getReferences(ex: Expression): string[] {
+  let references: string[] = [];
+  ex.forEach((sub: Expression) => {
+    if (sub instanceof RefExpression && sub.name !== "main") {
+      references = references.concat(sub.name);
+    }
+  });
+  return deduplicateSort(references);
+}
 
 /**
  * This function tries to deduce the structure of the dataCube based on the dimensions and measures defined within.
  * It should only be used when, for some reason, introspection if not available.
  */
-function deduceAttributes(dataCube: DataCube): Attributes {
+export function deduceAttributes(dataCube: DataCube): Attributes {
   const { dimensions, measures, timeAttribute, attributeOverrides } = dataCube;
   let attributes: Attributes = [];
 
@@ -42,12 +61,11 @@ function deduceAttributes(dataCube: DataCube): Attributes {
     }
   });
 
-  measures.forEachMeasure(measure => {
-    const references = Measure.getReferences(measure.expression);
+  allMeasures(measures).forEach(measure => {
+    const references = getReferences(measure.expression);
     for (let reference of references) {
       if (NamedArray.findByName(attributes, reference)) continue;
-      if (Measure.hasCountDistinctReferences(measure.expression)) continue;
-      if (Measure.hasQuantileReferences(measure.expression)) continue;
+      if (isApproximate(measure)) continue;
       attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
     }
   });

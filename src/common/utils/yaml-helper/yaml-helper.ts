@@ -24,6 +24,7 @@ import { Dimension } from "../../models/dimension/dimension";
 import { allDimensions } from "../../models/dimension/dimensions";
 import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../models/labels";
 import { Measure } from "../../models/measure/measure";
+import { allMeasures } from "../../models/measure/measures";
 import { Sources } from "../../models/sources/sources";
 
 function spaces(n: number) {
@@ -230,7 +231,8 @@ function measureToYAML(measure: Measure): string[] {
     lines.push(`units: ${measure.units}`);
   }
 
-  lines.push(`formula: ${measure.formula}`);
+  // TODO: We don't have proper formula! Maybe we should keep it in Measure for yaml-helper? Seems weird :/
+  lines.push(`formula: ${measure.expression.toString()}`);
 
   const format = measure.format;
   if (!!format) {
@@ -409,7 +411,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.measures.mapMeasures(measureToYAML));
+  lines = lines.concat.apply(lines, allMeasures(dataCube.measures).map(measureToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",

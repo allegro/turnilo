@@ -25,7 +25,7 @@ import { fromMeasure } from "../../../common/models/series/measure-concrete-seri
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
-const measure = MeasureFixtures.wikiCount();
+const measure = MeasureFixtures.count();
 const series = fromMeasure(measure);
 
 const datum: Datum = { [measure.name]: 10000, [series.plywoodKey(SeriesDerivation.PREVIOUS)]: 200 };

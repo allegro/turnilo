@@ -16,6 +16,7 @@
 
 import { List } from "immutable";
 import { ClientDataCube, getDimensionsByKind } from "../../models/data-cube/data-cube";
+import { allMeasures, findMeasureByName } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { Split } from "../../models/split/split";
@@ -40,7 +41,7 @@ export class Resolutions {
 
   static defaultSelectedMeasures = (dataCube: ClientDataCube): Resolution[] => {
     const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || [];
-    const measures = defaultSelectedMeasures.map(measureName => dataCube.measures.getMeasureByName(measureName));
+    const measures = defaultSelectedMeasures.map(measureName => findMeasureByName(dataCube.measures, measureName));
     if (measures.length === 0) {
       return [];
     }
@@ -57,7 +58,7 @@ export class Resolutions {
   }
 
   static firstMeasure = (dataCube: ClientDataCube): Resolution[] => {
-    const firstMeasure = dataCube.measures.first();
+    const firstMeasure = allMeasures(dataCube.measures)[0];
     if (!firstMeasure) return [];
     return [
       {

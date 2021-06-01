@@ -21,6 +21,7 @@ import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
+import { allMeasures } from "../../../common/models/measure/measures";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -55,7 +56,7 @@ function dividerConstraints(height: number) {
 
 export function initialPosition(height: number, dataCube: ClientDataCube) {
   const dimensionsCount = allDimensions(dataCube.dimensions).length;
-  const measuresCount = dataCube.measures.size();
+  const measuresCount = allMeasures(dataCube.measures).length;
   const ratio = dimensionsCount / (measuresCount + dimensionsCount);
 
   const { minDividerPosition, maxDividerPosition } = dividerConstraints(height);

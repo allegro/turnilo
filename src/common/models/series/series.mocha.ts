@@ -17,7 +17,7 @@
 import { expect } from "chai";
 import { ExpressionSeriesOperation } from "../expression/expression";
 import { PercentExpression } from "../expression/percent";
-import { Measure } from "../measure/measure";
+import { fromConfig } from "../measure/measure";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { ExpressionSeries } from "./expression-series";
 import { MeasureSeries } from "./measure-series";
@@ -26,12 +26,12 @@ import { fromJS, fromMeasure } from "./series";
 import { DEFAULT_FORMAT } from "./series-format";
 import { SeriesType } from "./series-type";
 
-const quantileMeasure = Measure.fromJS({
+const quantileMeasure = fromConfig({
   name: "quantile",
   formula: "$main.quantile($histogram,0.95,'tuning')"
 });
 
-const quantileOperandMeasure = Measure.fromJS({
+const quantileOperandMeasure = fromConfig({
   name: "quantile_by_100",
   formula: "$main.quantile($histogram,0.95,'tuning').divide(100)"
 });
@@ -44,7 +44,7 @@ describe("Series", () => {
         expression: { operation: ExpressionSeriesOperation.PERCENT_OF_PARENT },
         reference: "count"
       };
-      const measure = MeasureFixtures.wikiCount();
+      const measure = MeasureFixtures.count();
       const expected = new ExpressionSeries({
         expression: new PercentExpression({ operation: ExpressionSeriesOperation.PERCENT_OF_PARENT }),
         format: DEFAULT_FORMAT,
@@ -74,7 +74,7 @@ describe("Series", () => {
         type: SeriesType.MEASURE,
         reference: "count"
       };
-      const measure = MeasureFixtures.wikiCount();
+      const measure = MeasureFixtures.count();
       const expected = new MeasureSeries({
         format: DEFAULT_FORMAT,
         type: SeriesType.MEASURE,
@@ -102,7 +102,7 @@ describe("Series", () => {
       const params = {
         reference: "count"
       };
-      const measure = MeasureFixtures.wikiCount();
+      const measure = MeasureFixtures.count();
       const expected = new MeasureSeries({
         format: DEFAULT_FORMAT,
         type: SeriesType.MEASURE,
@@ -128,7 +128,7 @@ describe("Series", () => {
 
   describe("fromMeasure", () => {
     it("should create Measure Series for non-quantile expression", () => {
-      expect(fromMeasure(MeasureFixtures.wikiCount())).to.be.instanceOf(MeasureSeries);
+      expect(fromMeasure(MeasureFixtures.count())).to.be.instanceOf(MeasureSeries);
     });
 
     it("should create Quantile Series for quantile expression", () => {

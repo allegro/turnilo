@@ -16,6 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
+import { List } from "immutable";
 import {
   $,
   AttributeInfo,
@@ -46,8 +47,15 @@ import {
 } from "../dimension/dimensions";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { EMPTY_FILTER, Filter, FilterJS } from "../filter/filter";
-import { MeasureOrGroupJS } from "../measure/measure-group";
-import { Measures } from "../measure/measures";
+import {
+  allMeasures,
+  findMeasureByName,
+  fromConfig as measuresFromConfig,
+  hasMeasureWithName,
+  MeasureOrGroupJS,
+  Measures,
+  serialize as measuresSerialize, SerializedMeasures
+} from "../measure/measures";
 import { QueryDecoratorDefinition, QueryDecoratorDefinitionJS } from "../query-decorator/query-decorator";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
 import { SeriesList } from "../series-list/series-list";
@@ -67,9 +75,9 @@ export const DEFAULT_MAX_QUERIES = 500;
 function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measures: Measures, dataCubeName: string) {
   if (dimensions != null && measures != null) {
     const dimensionNames = Object.keys(dimensions.byName);
-    const measureNames = measures.getMeasureNames();
+    const measureNames = Object.keys(measures.byName);
 
-    const duplicateNames = measureNames
+    const duplicateNames = List(measureNames)
       .concat(dimensionNames)
       .groupBy(name => name)
       .filter(names => names.count() > 1)
@@ -169,7 +177,7 @@ export interface SerializedDataCube {
   attributes: AttributeJSs;
 
   dimensions: SerializedDimensions;
-  measures: MeasureOrGroupJS[];
+  measures: SerializedMeasures;
   timeAttribute?: string;
   defaultTimezone: string;
   defaultFilter?: FilterJS;
@@ -287,7 +295,7 @@ function readColumns(config: DataCubeJS, timeAttribute: RefExpression): { dimens
   const name = config.name;
   try {
     const dimensions = readDimensions(config, timeAttribute);
-    const measures = Measures.fromJS(config.measures || []);
+    const measures = measuresFromConfig(config.measures || []);
 
     checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
     return {
@@ -301,7 +309,7 @@ function readColumns(config: DataCubeJS, timeAttribute: RefExpression): { dimens
 
 function verifyDefaultSortMeasure(config: DataCubeJS, measures: Measures) {
   if (config.defaultSortMeasure) {
-    if (!measures.containsMeasureWithName(config.defaultSortMeasure)) {
+    if (!hasMeasureWithName(measures, config.defaultSortMeasure)) {
       throw new Error(`Can not find defaultSortMeasure '${config.defaultSortMeasure}' in data cube '${config.name}'`);
     }
   }
@@ -353,7 +361,7 @@ export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Clus
     defaultTimezone: config.defaultTimezone ? Timezone.fromJS(config.defaultTimezone) : DEFAULT_DEFAULT_TIMEZONE,
     defaultSplitDimensions: config.defaultSplitDimensions || [],
     defaultDuration: config.defaultDuration ? Duration.fromJS(config.defaultDuration) : DEFAULT_DEFAULT_DURATION,
-    defaultSortMeasure: config.defaultSortMeasure || (measures.size() ? measures.first().name : null),
+    defaultSortMeasure: getDefaultSortMeasure(config, measures),
     defaultSelectedMeasures: config.defaultSelectedMeasures || [],
     defaultPinnedDimensions: config.defaultPinnedDimensions || [],
     maxSplits: config.maxSplits || DEFAULT_MAX_SPLITS,
@@ -404,7 +412,7 @@ export function serialize(dataCube: DataCube): SerializedDataCube {
     extendedDescription,
     group,
     maxSplits,
-    measures: measures.toJS(),
+    measures: measuresSerialize(measures),
     name,
     options,
     refreshRule: refreshRule.toJS(),
@@ -469,7 +477,16 @@ export function getDefaultSplits(dataCube: ClientDataCube): Splits {
 }
 
 export function getDefaultSeries(dataCube: ClientDataCube): SeriesList {
-  const measureNames = dataCube.defaultSelectedMeasures || dataCube.measures.getFirstNMeasureNames(4).toArray();
-  const measures = measureNames.map(name => dataCube.measures.getMeasureByName(name));
-  return SeriesList.fromMeasures(measures);
+  if (dataCube.defaultSelectedMeasures) {
+    return SeriesList.fromMeasures(dataCube.defaultSelectedMeasures.map(name => findMeasureByName(dataCube.measures, name)));
+  }
+  const first4Measures = allMeasures(dataCube.measures).slice(0, 4);
+  return SeriesList.fromMeasures(first4Measures);
+}
+
+export function getDefaultSortMeasure(dataCube: { defaultSortMeasure?: string }, measures: Measures): string | undefined {
+  if (dataCube.defaultSortMeasure) return dataCube.defaultSortMeasure;
+  const firstMeasure = allMeasures(measures)[0];
+  if (firstMeasure) return firstMeasure.name;
+  return undefined;
 }

@@ -16,12 +16,12 @@
 
 import { expect } from "chai";
 import { ApplyExpression, Expression, QuantileExpression } from "plywood";
-import { Measure } from "../measure/measure";
+import { fromConfig } from "../measure/measure";
 import { SeriesDerivation } from "./concrete-series";
 import { QuantileConcreteSeries } from "./quantile-concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
-const quantileMeasure = Measure.fromJS({
+const quantileMeasure = fromConfig({
   title: "Quantile Title",
   name: "my-quantile",
   formula: "$main.quantile($histogram, 0.93, 'tuning')"

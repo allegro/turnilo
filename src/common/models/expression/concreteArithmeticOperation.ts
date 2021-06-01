@@ -17,7 +17,7 @@
 import { Record } from "immutable";
 import { ApplyExpression, Expression } from "plywood";
 import { Measure } from "../measure/measure";
-import { Measures } from "../measure/measures";
+import { findMeasureByName, Measures } from "../measure/measures";
 import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
 export type ArithmeticOperation = ExpressionSeriesOperation.ADD
@@ -46,7 +46,7 @@ export class ArithmeticExpression extends Record<ExpressionArithmeticOperationVa
   }
 
   toConcreteExpression(measures: Measures): ConcreteArithmeticOperation {
-    return new ConcreteArithmeticOperation(this.operation, measures.getMeasureByName(this.reference));
+    return new ConcreteArithmeticOperation(this.operation, findMeasureByName(measures, this.reference));
   }
 }
 

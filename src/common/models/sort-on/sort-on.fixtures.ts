@@ -17,13 +17,13 @@
 
 import { $ } from "plywood";
 import { createDimension, Dimension } from "../dimension/dimension";
-import { Measure } from "../measure/measure";
+import { fromConfig, Measure } from "../measure/measure";
 import { fromMeasure } from "../series/measure-concrete-series";
 import { DimensionSortOn, SeriesSortOn } from "./sort-on";
 
 export class SortOnFixtures {
   public static get DEFAULT_A_JS(): Measure {
-    return Measure.fromJS({
+    return fromConfig({
       name: "price",
       title: "Price",
       formula: "$main.min($price)"
@@ -31,7 +31,7 @@ export class SortOnFixtures {
   }
 
   public static get DEFAULT_B_JS(): Measure {
-    return Measure.fromJS({
+    return fromConfig({
       name: "price",
       title: "Price",
       formula: "$main.sum($price)"

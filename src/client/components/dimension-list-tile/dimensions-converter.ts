@@ -15,7 +15,7 @@
  */
 
 import { Dimension, DimensionKind } from "../../../common/models/dimension/dimension";
-import { DimensionOrGroup, Dimensions } from "../../../common/models/dimension/dimensions";
+import { DimensionOrGroup, Dimensions, isDimensionId } from "../../../common/models/dimension/dimensions";
 
 export type DimensionOrGroupForView = DimensionForView | DimensionGroupForView;
 
@@ -54,7 +54,7 @@ export function convert(
   const { byName, tree } = dimensions;
 
   function convertElement(el: DimensionOrGroup): DimensionOrGroupForView {
-    if (typeof el === "string") {
+    if (isDimensionId(el)) {
       const dimension = byName[el];
       const { name, title, kind, description } = dimension;
 
