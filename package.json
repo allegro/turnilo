@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.32.0-beta.3",
+  "version": "1.32.0",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -156,7 +156,7 @@
     "mime": "2.3.1",
     "mocha": "4.1.0",
     "nock": "11.0.0",
-    "node-sass": "4.13.1",
+    "node-sass": "4.14.1",
     "npm-run-all": "4.1.5",
     "querystring": "0.2.0",
     "randomstring": "1.1.5",

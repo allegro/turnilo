@@ -62,7 +62,7 @@ export function plyqlRouter(sourcesGetter: SourcesGetter) {
 
     const outputFn = outputFunctions[outputType];
     if (outputFn === undefined) {
-      res.status(400).send("Invalid output type: " + outputType);
+      res.status(400).send("Invalid output type");
       return;
     }
 
