@@ -20,7 +20,7 @@ import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { getMaxTime } from "../../../../common/models/data-cube/data-cube";
 import { DateRange } from "../../../../common/models/date-range/date-range";
-import { Dimension } from "../../../../common/models/dimension/dimension";
+import { TimeDimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
@@ -37,7 +37,7 @@ export interface FixedTimeTabProps {
   essence: Essence;
   timekeeper: Timekeeper;
   locale: Locale;
-  dimension: Dimension;
+  dimension: TimeDimension;
   onClose: Fn;
   clicker: Clicker;
 }
@@ -154,6 +154,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
       />
       <div className="cont">
         <TimeShiftSelector
+          dimension={dimension}
           shift={shift}
           time={this.createDateRange()}
           onShiftChange={this.setTimeShift}

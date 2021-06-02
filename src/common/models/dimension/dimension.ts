@@ -41,16 +41,16 @@ interface BaseDimension {
   sortStrategy?: string;
 }
 
-interface StringDimension extends BaseDimension {
+export interface StringDimension extends BaseDimension {
   kind: "string";
   multiValue: boolean;
 }
 
-interface BooleanDimension extends BaseDimension {
+export interface BooleanDimension extends BaseDimension {
   kind: "boolean";
 }
 
-interface TimeDimension extends BaseDimension {
+export interface TimeDimension extends BaseDimension {
   kind: "time";
   granularities?: Duration[];
   bucketedBy?: Duration;
@@ -59,7 +59,7 @@ interface TimeDimension extends BaseDimension {
   latestPeriodDurations: Duration[];
 }
 
-interface NumberDimension extends BaseDimension {
+export interface NumberDimension extends BaseDimension {
   kind: "number";
   granularities?: number[];
   bucketedBy?: number;

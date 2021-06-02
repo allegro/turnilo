@@ -29,6 +29,8 @@ dataCubes:
         formula: $time
         kind: time
         granularities: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
+        timeShiftDurations: [ 'P1W', 'P1M', 'P3M', 'P6M' ]
+        latestPeriodDurations: [ 'P1D', 'P1W', 'P1M', 'P3M', 'P1Y' ]
 
       - name: geography_group
         title: Geography
@@ -101,33 +103,33 @@ dataCubes:
       - name: development_indicators_group
         title: Development Indicators
         dimensions:
-        - name: gdp_per_capita
-          title: GDP Per Capita
-          description: Gross domestic product at purchasing power parity (thousands).
-          formula: $gdp_per_capita.divide(1000).fallback(-1)
-          kind: number
-        - name: extreme_poverty
-          title: Extreme Poverty
-          description: Share of the population living in extreme poverty (% of population).
-          formula: $extreme_poverty.fallback(-1)
-          kind: number
+          - name: gdp_per_capita
+            title: GDP Per Capita
+            description: Gross domestic product at purchasing power parity (thousands).
+            formula: $gdp_per_capita.divide(1000).fallback(-1)
+            kind: number
+          - name: extreme_poverty
+            title: Extreme Poverty
+            description: Share of the population living in extreme poverty (% of population).
+            formula: $extreme_poverty.fallback(-1)
+            kind: number
 
-        - name: human_development_index
-          title: Human Development Index
-          description: |
-            Summary measure of average achievement in key dimensions of human development: a long and healthy life,
-            being knowledgeable and have a decent standard of living (scale 0-100).
-          formula: $human_development_index.multiply(100).fallback(-1)
-          kind: number
+          - name: human_development_index
+            title: Human Development Index
+            description: |
+              Summary measure of average achievement in key dimensions of human development: a long and healthy life,
+              being knowledgeable and have a decent standard of living (scale 0-100).
+            formula: $human_development_index.multiply(100).fallback(-1)
+            kind: number
 
-        - name: stringency_index
-          title: Stringency Index
-          description: |
-            Government Response Stringency Index: composite measure based on 9 response indicators including
-            school closures, workplace closures, and travel bans,
-            rescaled to a value from 0 to 100 (100 = strictest response).
-          formula: $stringency_index.fallback(-1)
-          kind: number
+          - name: stringency_index
+            title: Stringency Index
+            description: |
+              Government Response Stringency Index: composite measure based on 9 response indicators including
+              school closures, workplace closures, and travel bans,
+              rescaled to a value from 0 to 100 (100 = strictest response).
+            formula: $stringency_index.fallback(-1)
+            kind: number
 
     measures:
       - name: cases_group
@@ -211,7 +213,7 @@ dataCubes:
       rule: fixed
       time: 2010-02-01T08:00:00.000Z
 
-    defaultDuration: P1M
+    defaultDuration: P1D
     defaultSortMeasure: count
     defaultSelectedMeasures: [ "count" ]
     introspection: no-autofill
