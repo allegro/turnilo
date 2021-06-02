@@ -56,6 +56,14 @@ export interface ShiftPreset {
   shift: TimeShift;
 }
 
+export const DEFAULT_TIME_SHIFT_DURATIONS = [
+  "P1D", "P1W", "P1M", "P3M"
+];
+
+export const DEFAULT_LATEST_PERIOD_DURATIONS = [
+  "PT1H", "PT6H", "P1D", "P7D", "P30D"
+];
+
 export const COMPARISON_PRESETS: ShiftPreset[] = [
   { label: "Off", shift: TimeShift.empty() },
   { label: "D", shift: TimeShift.fromJS("P1D") },
@@ -78,7 +86,7 @@ export function constructFilter(period: TimeFilterPeriod, duration: string): Exp
 }
 
 export function getTimeFilterPresets(period: TimeFilterPeriod): TimeFilterPreset[] {
-   switch (period) {
+  switch (period) {
     case TimeFilterPeriod.PREVIOUS:
       return PREVIOUS_PRESETS;
     case TimeFilterPeriod.LATEST:

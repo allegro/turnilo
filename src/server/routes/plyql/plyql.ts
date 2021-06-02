@@ -17,6 +17,7 @@
 
 import { Request, Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
+import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { getDataCube } from "../../../common/models/sources/sources";
 import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
@@ -87,6 +88,12 @@ export function plyqlRouter(sourcesGetter: SourcesGetter) {
         res.status(400).send({ error: "unknown data cube" });
         return;
       }
+
+      if (!isQueryable(myDataCube)) {
+        res.status(400).send({ error: "un queryable data cube" });
+        return;
+      }
+
       const data: Dataset = await myDataCube.executor(parsedQuery) as Dataset;
       res.type(outputType);
       res.send(outputFn(Dataset.fromJS(data.toJS())));

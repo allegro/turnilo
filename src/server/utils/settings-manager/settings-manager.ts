@@ -19,7 +19,8 @@ import { Dataset, External } from "plywood";
 import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster } from "../../../common/models/cluster/cluster";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { DataCube, fromClusterAndExternal } from "../../../common/models/data-cube/data-cube";
+import { attachDatasetExecutor, attachExternalExecutor } from "../../../common/models/data-cube/queryable-data-cube";
 import {
   addOrUpdateDataCube,
   deleteDataCube,
@@ -28,9 +29,11 @@ import {
   Sources
 } from "../../../common/models/sources/sources";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import dataCubeToExternal from "../../../common/utils/external/datacube-to-external";
 import { noop, Unary } from "../../../common/utils/functional/functional";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { timeout } from "../../../common/utils/promise/promise";
+import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
 import { ClusterManager } from "../cluster-manager/cluster-manager";
 import { FileManager } from "../file-manager/file-manager";
@@ -90,8 +93,8 @@ export class SettingsManager {
     const initialExternals = dataCubes.map(dataCube => {
       return {
         name: dataCube.name,
-        external: dataCube.toExternal(),
-        suppressIntrospection: dataCube.getIntrospection() === "none"
+        external: dataCubeToExternal(dataCube),
+        suppressIntrospection: dataCube.introspection === "none"
       };
     });
 
@@ -198,17 +201,17 @@ export class SettingsManager {
 
     logger.log(`Got native dataset update for ${dataCubeName}`);
 
-    let dataCube = getDataCube(sources, dataCubeName);
+    const dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) throw new Error(`Unknown dataset ${dataCubeName}`);
-    dataCube = dataCube.updateWithDataset(changedDataset);
+    const queryableDataCube = attachDatasetExecutor(dataCube, changedDataset);
 
-    if (dataCube.refreshRule.isQuery()) {
+    if (queryableDataCube.refreshRule.isQuery()) {
       this.timeMonitor.addCheck(dataCube.name, () => {
-        return DataCube.queryMaxTime(dataCube);
+        return maxTimeQuery(queryableDataCube.timeAttribute, queryableDataCube.executor);
       });
     }
 
-    this.sources = addOrUpdateDataCube(sources, dataCube);
+    this.sources = addOrUpdateDataCube(sources, queryableDataCube);
   };
 
   onExternalChange = (cluster: Cluster, dataCubeName: string, changedExternal: External): Promise<void> => {
@@ -219,17 +222,17 @@ export class SettingsManager {
 
     let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) {
-      dataCube = DataCube.fromClusterAndExternal(dataCubeName, cluster, changedExternal);
+      dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal);
     }
-    dataCube = dataCube.updateWithExternal(changedExternal);
+    const queryableDataCube = attachExternalExecutor(dataCube, changedExternal);
 
-    if (dataCube.refreshRule.isQuery()) {
-      this.timeMonitor.addCheck(dataCube.name, () => {
-        return DataCube.queryMaxTime(dataCube);
+    if (queryableDataCube.refreshRule.isQuery()) {
+      this.timeMonitor.addCheck(queryableDataCube.name, () => {
+        return maxTimeQuery(queryableDataCube.timeAttribute, queryableDataCube.executor);
       });
     }
 
-    this.sources = addOrUpdateDataCube(sources, dataCube);
+    this.sources = addOrUpdateDataCube(sources, queryableDataCube);
     return Promise.resolve(null);
   };
 

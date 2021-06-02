@@ -14,126 +14,133 @@
  * limitations under the License.
  */
 
-import { List } from "immutable";
-import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
-import { quoteNames } from "../../utils/general/general";
-import { Dimension } from "./dimension";
-import { DimensionGroup, DimensionOrGroup, dimensionOrGroupFromJS, DimensionOrGroupJS, DimensionOrGroupVisitor } from "./dimension-group";
+import { values } from "../../utils/functional/functional";
+import { isTruthy, makeTitle } from "../../utils/general/general";
+import { mapValues } from "../../utils/object/object";
+import {
+  Dimension,
+  DimensionJS,
+  fromConfig as dimensionFromConfig,
+  serialize as dimensionSerialize,
+  SerializedDimension
+} from "./dimension";
 
-class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void> {
-  private items = List<DimensionOrGroup>().asMutable();
+export type DimensionOrGroupJS = DimensionJS | DimensionGroupJS;
 
-  visitDimension(dimension: Dimension): void {
-    this.items.push(dimension);
-  }
-
-  visitDimensionGroup(dimensionGroup: DimensionGroup): void {
-    this.items.push(dimensionGroup);
-    dimensionGroup.dimensions.forEach(dimensionOrGroup => dimensionOrGroup.accept(this));
-  }
-
-  getDimensionsWithGroups(): List<DimensionOrGroup> {
-    return this.items.toList();
-  }
+export interface DimensionGroupJS {
+  name: string;
+  title?: string;
+  description?: string;
+  dimensions: DimensionOrGroupJS[];
 }
 
-function findDuplicateNames(items: List<DimensionOrGroup>): List<string> {
-  return items
-    .groupBy(dimension => dimension.name)
-    .filter(names => names.count() > 1)
-    .map((names, name) => name)
-    .toList();
+function isDimensionGroupJS(dimensionOrGroup: DimensionOrGroupJS): dimensionOrGroup is DimensionGroupJS {
+  return (dimensionOrGroup as DimensionGroupJS).dimensions !== undefined;
 }
 
-function filterDimensions(items: List<DimensionOrGroup>): List<Dimension> {
-  return items.filter(item => item.type === "dimension") as List<Dimension>;
+export interface DimensionsGroup {
+  name: string;
+  title: string;
+  description?: string;
+  dimensions: DimensionOrGroup[];
 }
 
-export class Dimensions {
-  static empty(): Dimensions {
-    return new Dimensions([]);
-  }
+type DimensionId = string;
 
-  static fromJS(parameters: DimensionOrGroupJS[]): Dimensions {
-    return new Dimensions(parameters.map(dimensionOrGroupFromJS));
-  }
+export function isDimensionId(o: DimensionOrGroup): o is DimensionId {
+  return typeof o === "string";
+}
 
-  static fromDimensions(dimensions: Dimension[]): Dimensions {
-    return new Dimensions(dimensions);
-  }
+export type DimensionOrGroup = DimensionId | DimensionsGroup;
 
-  private readonly dimensions: DimensionOrGroup[];
-  private readonly flattenedDimensions: List<Dimension>;
+export interface Dimensions {
+  tree: DimensionOrGroup[];
+  byName: Record<DimensionId, Dimension>;
+}
 
-  private constructor(dimensions: DimensionOrGroup[]) {
-    this.dimensions = [...dimensions];
+export function fromConfig(config: DimensionOrGroupJS[]): Dimensions {
+  let byName: Record<DimensionId, Dimension> = {};
 
-    const flattenDimensionsWithGroupsVisitor = new FlattenDimensionsWithGroupsVisitor();
-    this.dimensions.forEach(dimensionOrGroup => dimensionOrGroup.accept(flattenDimensionsWithGroupsVisitor));
-    const flattenedDimensionsWithGroups = flattenDimensionsWithGroupsVisitor.getDimensionsWithGroups();
-    const duplicateNames = findDuplicateNames(flattenedDimensionsWithGroups);
+  function readDimensionOrGroup(dimOrGroup: DimensionOrGroupJS): DimensionOrGroup {
+    if (isDimensionGroupJS(dimOrGroup)) {
+      const { name, title, description, dimensions } = dimOrGroup;
+      if (name == null) {
+        throw new Error("dimension group requires a name");
+      }
 
-    if (duplicateNames.size > 0) {
-      throw new Error(`found duplicate dimension or group with names: ${quoteNames(duplicateNames)}`);
+      if (!Array.isArray(dimensions) || dimensions.length === 0) {
+        throw new Error(`dimension group '${name}' has no dimensions`);
+      }
+      return {
+        name,
+        title: title || makeTitle(name),
+        description,
+        dimensions: dimensions.map(readDimensionOrGroup)
+      };
+    } else {
+      const dimension = dimensionFromConfig(dimOrGroup);
+      const { name } = dimension;
+      if (isTruthy(byName[name])) {
+        throw new Error(`found duplicate dimension with name: '${name}'`);
+      }
+      byName[name] = dimension;
+      return name;
     }
-
-    this.flattenedDimensions = filterDimensions(flattenedDimensionsWithGroups);
   }
 
-  accept<R>(visitor: DimensionOrGroupVisitor<R>): R[] {
-    return this.dimensions.map(dimensionOrGroup => dimensionOrGroup.accept(visitor));
-  }
+  const tree = config.map(readDimensionOrGroup);
 
-  size(): number {
-    return this.flattenedDimensions.size;
-  }
+  return {
+    tree,
+    byName
+  };
+}
 
-  first(): Dimension {
-    return this.flattenedDimensions.first();
-  }
+export interface SerializedDimensions {
+  tree: DimensionOrGroup[];
+  byName: Record<DimensionId, SerializedDimension>;
+}
 
-  equals(other: Dimensions): boolean {
-    return this === other || immutableArraysEqual(this.dimensions, other.dimensions);
-  }
+export function serialize({ tree, byName }: Dimensions): SerializedDimensions {
+  return {
+    tree,
+    byName: mapValues(byName, dimensionSerialize)
+  };
+}
 
-  mapDimensions<R>(mapper: (dimension: Dimension) => R): R[] {
-    return this.flattenedDimensions.map(mapper).toArray();
-  }
+export type ClientDimensions = Dimensions;
 
-  filterDimensions(predicate: (dimension: Dimension) => boolean): Dimension[] {
-    return this.flattenedDimensions.filter(predicate).toArray();
-  }
+export function allDimensions(dimensions: Dimensions): Dimension[] {
+  return values(dimensions.byName);
+}
 
-  forEachDimension(sideEffect: (dimension: Dimension) => void): void {
-    this.flattenedDimensions.forEach(sideEffect);
-  }
+export function findDimensionByName(dimensions: Dimensions, name: string): Dimension | null {
+  return dimensions.byName[name] || null;
+}
 
-  getDimensionByName(name: string): Dimension {
-    return this.flattenedDimensions.find(dimension => dimension.name === name);
-  }
+export function findDimensionByExpression(dimensions: Dimensions, expression: Expression): Dimension | null {
+  return values(dimensions.byName).find(dimension => dimension.expression.equals(expression)) || null;
+}
 
-  getDimensionByExpression(expression: Expression): Dimension {
-    return this.flattenedDimensions.find(dimension => expression.equals(dimension.expression));
-  }
+export function append(dimension: Dimension, dimensions: Dimensions): Dimensions {
+  const { name } = dimension;
+  return {
+    byName: {
+      ...dimensions.byName,
+      [name]: dimension
+    },
+    tree: [...dimensions.tree, name]
+  };
+}
 
-  getDimensionNames(): List<string> {
-    return this.flattenedDimensions.map(dimension => dimension.name).toList();
-  }
-
-  containsDimensionWithName(name: string) {
-    return this.flattenedDimensions.some(dimension => dimension.name === name);
-  }
-
-  append(...dimensions: Dimension[]) {
-    return new Dimensions([...this.dimensions, ...dimensions]);
-  }
-
-  prepend(...dimensions: Dimension[]) {
-    return new Dimensions([...dimensions, ...this.dimensions]);
-  }
-
-  toJS(): DimensionOrGroupJS[] {
-    return this.dimensions.map(dimensionOrGroup => dimensionOrGroup.toJS());
-  }
+export function prepend(dimension: Dimension, dimensions: Dimensions): Dimensions {
+  const { name } = dimension;
+  return {
+    byName: {
+      ...dimensions.byName,
+      [name]: dimension
+    },
+    tree: [name, ...dimensions.tree]
+  };
 }

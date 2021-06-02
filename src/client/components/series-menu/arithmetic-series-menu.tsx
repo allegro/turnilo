@@ -17,22 +17,22 @@
 import * as React from "react";
 import { ArithmeticExpression, ArithmeticOperation } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
-import { Measure } from "../../../common/models/measure/measure";
-import { Measures } from "../../../common/models/measure/measures";
+import { ClientMeasure, isApproximate } from "../../../common/models/measure/measure";
+import { ClientMeasures, findMeasureByName } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionConcreteSeries } from "../../../common/models/series/expression-concrete-series";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { Series } from "../../../common/models/series/series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
-import { Binary } from "../../../common/utils/functional/functional";
+import { Binary, values } from "../../../common/utils/functional/functional";
 import { isTruthy } from "../../../common/utils/general/general";
 import { Dropdown } from "../dropdown/dropdown";
 import "./arithmetic-series-menu.scss";
 import { FormatPicker } from "./format-picker";
 
 interface ArithmeticOperationSeriesMenuProps {
-  measure: Measure;
-  measures: Measures;
+  measure: ClientMeasure;
+  measures: ClientMeasures;
   seriesList: SeriesList;
   series: ExpressionSeries;
   initialSeries: Series;
@@ -56,10 +56,10 @@ const OPERATIONS: Operation[] = [{
 
 const renderOperation = (op: Operation): string => op.label;
 
-const renderMeasure = (m: Measure): string => m.title;
-const renderSelectedMeasure = (m: Measure): string => m ? m.title : "Select measure";
+const renderMeasure = (m: ClientMeasure): string => m.title;
+const renderSelectedMeasure = (m: ClientMeasure): string => m ? m.title : "Select measure";
 
-function expressionSeriesTitle(series: ExpressionSeries, measure: Measure, measures: Measures): string {
+function expressionSeriesTitle(series: ExpressionSeries, measure: ClientMeasure, measures: ClientMeasures): string {
   const concreteSeries = new ExpressionConcreteSeries(series, measure, measures);
   return concreteSeries.title();
 }
@@ -83,7 +83,7 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
     onSeriesChange(series.setIn(["expression", "operation"], id));
   }
 
-  function onOperandSelect({ name }: Measure) {
+  function onOperandSelect({ name }: ClientMeasure) {
     onSeriesChange(series.setIn(["expression", "reference"], name));
   }
 
@@ -91,7 +91,8 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
   const duplicate = otherSeries.getSeriesWithKey(series.key());
   const expression = series.expression as ArithmeticExpression;
   const operation = OPERATIONS.find(op => op.id === expression.operation);
-  const operand = measures.getMeasureByName(expression.reference);
+  const operand = findMeasureByName(measures, expression.reference);
+  const items = values(measures.byName).filter(m => m.name !== measure.name && !isApproximate(m));
 
   return <React.Fragment>
     <div className="operation-select__title">Select operation</div>
@@ -104,12 +105,12 @@ export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps>
       onSelect={onOperationSelect}
     />
     <div className="operand-select__title">Select measure</div>
-    <Dropdown<Measure>
+    <Dropdown<ClientMeasure>
       className="operand-select"
-      items={measures.filterMeasures(m => !m.equals(measure) && !m.isApproximate())}
+      items={items}
       renderItem={renderMeasure}
       renderSelectedItem={renderSelectedMeasure}
-      equal={(a, b) => a.equals(b)}
+      equal={(a, b) => a.name === b.name}
       selectedItem={operand}
       onSelect={onOperandSelect}
     />

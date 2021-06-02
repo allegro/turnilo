@@ -15,9 +15,9 @@
  */
 
 import { $, Expression } from "plywood";
-import { Measure, MeasureValue } from "../../models/measure/measure";
+import { fromConfig, Measure } from "../../models/measure/measure";
 import { Measures } from "../../models/measure/measures";
-import { Omit } from "../../utils/functional/functional";
+import { MeasuresFixtures } from "../../models/measure/measures.fixtures";
 
 export type MeasureRefs = "count" | "sum" | "average" | "quantile" | "complex";
 
@@ -35,12 +35,11 @@ export const measures: Measure[] = [
   complex
 ];
 
-export const measuresCollection: Measures = Measures.fromMeasures(measures);
+export const measuresCollection: Measures = MeasuresFixtures.fromMeasures(measures);
 
-export function measure(name: MeasureRefs, expression: Expression, opts: Omit<MeasureValue, "name" | "formula"> = {}) {
-  return new Measure({
+function measure(name: MeasureRefs, expression: Expression): Measure {
+  return fromConfig({
     name,
-    formula: expression.toString(),
-    ...opts
+    formula: expression.toString()
   });
 }

@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
@@ -46,7 +47,7 @@ export const SplitTiles: React.SFC<SplitTilesProps> = props => {
   const splits = essence.splits.splits.toArray();
 
   const splitTiles = splits.map(split => {
-    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimension = findDimensionByName(essence.dataCube.dimensions, split.reference);
     return <SplitTile
       key={split.toKey()}
       split={split}

@@ -14,40 +14,91 @@
  * limitations under the License.
  */
 
-import { MeasureOrGroupJS } from "./measure-group";
-import { MeasureGroupFixtures } from "./measure-group.fixtures";
+import { fromEntries } from "../../utils/object/object";
+import { Measure } from "./measure";
 import { MeasureFixtures } from "./measure.fixtures";
+import { MeasureGroupJS, Measures } from "./measures";
 
 export class MeasuresFixtures {
+  static fromMeasures(measures: Measure[]): Measures {
+    return {
+      tree: measures.map(m => m.name),
+      byName: fromEntries(measures.map(m => [m.name, m] as [string, Measure]))
+    };
+  }
+
+  static noTitleJS(): MeasureGroupJS {
+    return {
+      name: "dummyName",
+      measures: [
+        MeasureFixtures.wikiCountJS()
+      ]
+    };
+  }
+
+  static withTitleInferredJS(): MeasureGroupJS {
+    return {
+      name: "dummyName",
+      title: "Dummy Name",
+      measures: [
+        MeasureFixtures.wikiCountJS()
+      ]
+    };
+  }
+
+  static noNameJS(): MeasureGroupJS {
+    return {
+      measures: [MeasureFixtures.wikiCountJS()]
+    } as MeasureGroupJS;
+  }
+
+  static emptyMeasuresJS(): MeasureGroupJS {
+    return {
+      name: "dummyName",
+      measures: []
+    } as MeasureGroupJS;
+  }
+
   static wikiNames(): string[] {
     return ["count", "added", "avg_added", "delta", "avg_delta"];
   }
 
-  static wikiTitles(): string[] {
-    return ["Count", "Added", "Avg Added", "Delta", "Avg Delta"];
+  static wiki(): Measures {
+    return {
+      tree: [
+        "count",
+        {
+          name: "other",
+          title: "Other",
+          measures: [
+            {
+
+              name: "added_group",
+              title: "Added Group",
+              measures: ["added", "avg_added"]
+            },
+            {
+
+              name: "delta_group",
+              title: "Delta Group",
+              measures: ["delta", "avg_delta"]
+            }
+          ]
+        }
+      ],
+      byName: {
+        count: MeasureFixtures.count(),
+        added: MeasureFixtures.added(),
+        avg_added: MeasureFixtures.avgAdded(),
+        delta: MeasureFixtures.delta(),
+        avg_delta: MeasureFixtures.avgDelta()
+      }
+    };
   }
 
-  static wikiJS(): MeasureOrGroupJS[] {
-    return [
-      MeasureFixtures.wikiCountJS(),
-      {
-        name: "other",
-        title: "Other",
-        measures: [
-          MeasureGroupFixtures.wikiAddedJS(),
-          MeasureGroupFixtures.wikiDeltaJS()
-        ]
-      }
-    ];
-  }
-
-  static twitterJS(): MeasureOrGroupJS[] {
-    return [
-      {
-        name: "count",
-        title: "count",
-        formula: "$main.count()"
-      }
-    ];
+  static twitter(): Measures {
+    return MeasuresFixtures.fromMeasures([
+      MeasureFixtures.count()
+    ]);
   }
 }

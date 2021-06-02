@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-import { Dimension } from "../dimension/dimension";
-import { Measure } from "../measure/measure";
+import { $ } from "plywood";
+import { createDimension, Dimension } from "../dimension/dimension";
+import { fromConfig, Measure } from "../measure/measure";
 import { fromMeasure } from "../series/measure-concrete-series";
-import { DimensionSortOn, SeriesSortOn, SortOn } from "./sort-on";
+import { DimensionSortOn, SeriesSortOn } from "./sort-on";
 
 export class SortOnFixtures {
   public static get DEFAULT_A_JS(): Measure {
-    return Measure.fromJS({
+    return fromConfig({
       name: "price",
       title: "Price",
       formula: "$main.min($price)"
@@ -30,7 +31,7 @@ export class SortOnFixtures {
   }
 
   public static get DEFAULT_B_JS(): Measure {
-    return Measure.fromJS({
+    return fromConfig({
       name: "price",
       title: "Price",
       formula: "$main.sum($price)"
@@ -38,12 +39,7 @@ export class SortOnFixtures {
   }
 
   public static get DEFAULT_C_JS(): Dimension {
-    return Dimension.fromJS({
-      name: "country",
-      title: "important countries",
-      formula: "$country",
-      kind: "string"
-    });
+    return createDimension("string", "country", $("country"));
   }
 
   static defaultA() {

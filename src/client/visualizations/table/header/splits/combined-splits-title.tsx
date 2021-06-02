@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Corner } from "../../../../components/tabular-scroller/corner/corner";
 
@@ -24,6 +25,6 @@ interface CombinedSplitsTitle {
 
 export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ essence }) => {
   const { splits, dataCube } = essence;
-  const title = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
+  const title = splits.splits.map(split => findDimensionByName(dataCube.dimensions, split.reference).title).join(", ");
   return <Corner>{title}</Corner>;
 };

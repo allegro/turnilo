@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +14,12 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import { Equalable } from "immutable-class";
 
-// sass-lint:disable no-empty-rulesets
-.immutable-dropdown {
-
+export default function immutableArrayEquals(xs: Equalable[], ys: Equalable[]): boolean {
+  if (!Array.isArray(xs) || !Array.isArray(ys)) {
+    return xs === ys;
+  }
+  if (xs.length !== ys.length) return false;
+  return xs.every((x, idx) => x.equals(ys[idx]));
 }
-// sass-lint:enable no-empty-rulesets

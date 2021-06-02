@@ -15,16 +15,24 @@
  */
 
 import { expect, use } from "chai";
+import { findDimensionByName } from "../../../../common/models/dimension/dimensions";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import equivalent from "../../../utils/test-utils/equivalent";
-import { getContinuousDimension, getContinuousReference, getContinuousSplit, getNominalDimension, getNominalSplit, hasNominalSplit } from "./splits";
+import {
+  getContinuousDimension,
+  getContinuousReference,
+  getContinuousSplit,
+  getNominalDimension,
+  getNominalSplit,
+  hasNominalSplit
+} from "./splits";
 
 use(equivalent);
 
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
 const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const timeDimension = essenceWithNominalSplit.getTimeDimension();
-const channelDimension = essenceWithNominalSplit.dataCube.getDimension("channel");
+const channelDimension = findDimensionByName(essenceWithNominalSplit.dataCube.dimensions, "channel");
 const timeSplit = essenceWithNominalSplit.splits.findSplitForDimension(timeDimension);
 const channelSplit = essenceWithNominalSplit.splits.findSplitForDimension(channelDimension);
 
@@ -38,7 +46,7 @@ describe("splits", () => {
 
     describe("getContinuousDimension", () => {
       it("should pick continuous dimension", () => {
-        expect(getContinuousDimension(essenceWithoutNominalSplit)).to.be.equivalent(timeDimension);
+        expect(getContinuousDimension(essenceWithoutNominalSplit)).to.be.deep.equal(timeDimension);
       });
     });
 
@@ -76,7 +84,7 @@ describe("splits", () => {
 
     describe("getContinuousDimension", () => {
       it("should pick continuous dimension", () => {
-        expect(getContinuousDimension(essenceWithNominalSplit)).to.be.equivalent(timeDimension);
+        expect(getContinuousDimension(essenceWithNominalSplit)).to.be.deep.equal(timeDimension);
       });
     });
 
@@ -87,19 +95,19 @@ describe("splits", () => {
     });
 
     describe("getNominalSplit", () => {
-      it("should return null", () => {
+      it("should return nominal split", () => {
         expect(getNominalSplit(essenceWithNominalSplit)).to.be.equivalent(channelSplit);
       });
     });
 
     describe("getNominalDimension", () => {
-      it("should return null", () => {
-        expect(getNominalDimension(essenceWithNominalSplit)).to.be.equivalent(channelDimension);
+      it("should return nominal split", () => {
+        expect(getNominalDimension(essenceWithNominalSplit)).to.be.deep.equal(channelDimension);
       });
     });
 
     describe("hasNominalSplit", () => {
-      it("should return false", () => {
+      it("should return true", () => {
         expect(hasNominalSplit(essenceWithNominalSplit)).to.be.true;
       });
     });

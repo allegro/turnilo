@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Corner } from "../../corner/corner";
 import "./split-columns.scss";
@@ -30,7 +31,7 @@ export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ essence }) =
     <div className="header-split-columns">
       {splits.toArray().map(split => {
         const { reference } = split;
-        const title = dataCube.getDimension(reference).title;
+        const title = findDimensionByName(dataCube.dimensions, reference).title;
         return <span className="header-split-column" key={reference}>{title}</span>;
       })}
     </div>

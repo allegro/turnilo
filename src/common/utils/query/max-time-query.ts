@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +14,18 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import { $, Dataset, Executor, ply, RefExpression } from "plywood";
 
-.immutable-input {
-  @extend %default-input;
+export function maxTimeQuery(timeAttribute?: RefExpression, executor?: Executor): Promise<Date> {
+  if (!executor) {
+    return Promise.reject(new Error("dataCube not ready"));
+  }
+
+  const ex = ply().apply("maxTime", $("main").max(timeAttribute));
+
+  return executor(ex).then((dataset: Dataset) => {
+    const maxTimeDate = dataset.data[0]["maxTime"] as Date;
+    if (isNaN(maxTimeDate as any)) return null;
+    return maxTimeDate;
+  });
 }

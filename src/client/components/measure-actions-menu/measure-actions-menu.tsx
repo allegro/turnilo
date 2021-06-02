@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Measure } from "../../../common/models/measure/measure";
+import { isApproximate, isQuantile, Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
@@ -69,7 +69,7 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
 function measureActions(props: MeasureActionsProps): JSX.Element[] {
   const { series, measure, onClose, addSeries, appendDirtySeries } = props;
 
-  if (measure.isQuantile()) {
+  if (isQuantile(measure)) {
     return [
       <AddQuantileSeriesButton
         key="Add"
@@ -81,7 +81,7 @@ function measureActions(props: MeasureActionsProps): JSX.Element[] {
     ];
   }
 
-  if (measure.isApproximate()) {
+  if (isApproximate(measure)) {
     return [
       <AddMeasureSeriesButton
         key="Add"

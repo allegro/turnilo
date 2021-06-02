@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Unary } from "../functional/functional";
+import { assoc, Unary } from "../functional/functional";
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
@@ -42,4 +42,9 @@ export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Unary<S, T
     result[key] = fn(obj[key]);
     return result;
   }, {} as Record<K, T>);
+}
+
+export function fromEntries<K extends Key, T>(entries: Array<[K, T]>): Record<K, T> {
+  return entries.reduce((result: Record<K, T>, [key, value]: [K, T]) =>
+    assoc(result, key, value), {} as Record<K, T>);
 }

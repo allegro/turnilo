@@ -18,8 +18,9 @@ import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Essence } from "../../models/essence/essence";
 import { toExpression } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
@@ -69,7 +70,7 @@ function applySubSplit(nestingLevel: number, essence: Essence, timeShiftEnv: Tim
   };
 }
 
-function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
+function applyCanonicalLengthForTimeSplit(split: Split, dataCube: ClientDataCube) {
   return (exp: Expression) => {
     const canonicalLength = splitCanonicalLength(split, dataCube);
     if (!canonicalLength) return exp;
@@ -79,7 +80,7 @@ function applyCanonicalLengthForTimeSplit(split: Split, dataCube: DataCube) {
 
 function applyDimensionFilter(dimension: Dimension, filter: Filter) {
   return (query: Expression) => {
-    if (!dimension.multiValue) return query;
+    if (dimension.kind !== "string" || !dimension.multiValue) return query;
     const filterClause = filter.clauseForReference(dimension.name);
     if (!filterClause) return query;
     return query.filter(toExpression(filterClause, dimension));
@@ -89,7 +90,7 @@ function applyDimensionFilter(dimension: Dimension, filter: Filter) {
 function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const { splits, dataCube } = essence;
   const split = splits.getSplit(index);
-  const dimension = dataCube.getDimension(split.reference);
+  const dimension = findDimensionByName(dataCube.dimensions, split.reference);
   const { sort, limit } = split;
   if (!sort) {
     throw new Error("something went wrong during query generation");
@@ -112,7 +113,7 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
 
 export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   const { splits, dataCube } = essence;
-  if (splits.length() > dataCube.getMaxSplits()) throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`);
+  if (splits.length() > dataCube.maxSplits) throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.maxSplits} splits`);
 
   const hasComparison = essence.hasComparison();
   const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison });

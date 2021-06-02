@@ -19,10 +19,12 @@ import { AttributeInfo } from "plywood";
 import { AppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
-import { DataCube, Source } from "../../models/data-cube/data-cube";
+import { DataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
+import { allDimensions } from "../../models/dimension/dimensions";
 import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../models/labels";
 import { Measure } from "../../models/measure/measure";
+import { allMeasures } from "../../models/measure/measures";
 import { Sources } from "../../models/sources/sources";
 
 function spaces(n: number) {
@@ -208,11 +210,12 @@ function dimensionToYAML(dimension: Dimension): string[] {
     lines.push(`kind: ${dimension.kind}`);
   }
 
-  if (dimension.multiValue) {
+  if (dimension.kind === "string" && dimension.multiValue) {
     lines.push("multiValue: true");
   }
 
-  lines.push(`formula: ${dimension.formula}`);
+  // TODO: We don't have proper formula! Maybe we should keep it in Dimension for yaml-helper? Seems weird :/
+  lines.push(`formula: ${dimension.expression.toString()}`);
 
   lines.push("");
   return yamlObject(lines);
@@ -228,7 +231,8 @@ function measureToYAML(measure: Measure): string[] {
     lines.push(`units: ${measure.units}`);
   }
 
-  lines.push(`formula: ${measure.formula}`);
+  // TODO: We don't have proper formula! Maybe we should keep it in Measure for yaml-helper? Seems weird :/
+  lines.push(`formula: ${measure.expression.toString()}`);
 
   const format = measure.format;
   if (!!format) {
@@ -279,12 +283,12 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
   addProps
-    .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
-    .add("defaultDuration", { defaultValue: DataCube.DEFAULT_DEFAULT_DURATION })
-    .add("defaultSortMeasure", { defaultValue: dataCube.getDefaultSortMeasure() })
+    .add("defaultTimezone", { defaultValue: DEFAULT_DEFAULT_TIMEZONE })
+    .add("defaultDuration", { defaultValue: DEFAULT_DEFAULT_DURATION })
+    .add("defaultSortMeasure", { defaultValue: dataCube.defaultSortMeasure })
   ;
 
-  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
+  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures : null;
   if (withComments) {
     lines.push("", "# The names of measures that are selected by default");
   }
@@ -294,7 +298,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     lines.push("#defaultSelectedMeasures: []");
   }
 
-  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
+  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions : null;
   if (withComments) {
     lines.push("", "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }
@@ -304,7 +308,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     lines.push("", "#defaultPinnedDimensions: []");
   }
 
-  const introspection = dataCube.getIntrospection();
+  const introspection = dataCube.introspection;
   if (withComments) {
     lines.push(
       "",
@@ -369,7 +373,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.dimensions.mapDimensions(dimensionToYAML));
+  lines = lines.concat.apply(lines, allDimensions(dataCube.dimensions).map(dimensionToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived dimensions.",
@@ -407,7 +411,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.measures.mapMeasures(measureToYAML));
+  lines = lines.concat.apply(lines, allMeasures(dataCube.measures).map(measureToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",

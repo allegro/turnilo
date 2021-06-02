@@ -23,7 +23,8 @@ import {
   complement,
   concatTruthy,
   cons,
-  constant, cyclicShift,
+  constant,
+  cyclicShift,
   debounceWithPromise,
   flatMap,
   mapTruthy,
@@ -31,7 +32,7 @@ import {
   replaceAt,
   thread,
   threadConditionally,
-  threadNullable,
+  threadNullable, values,
   zip
 } from "./functional";
 
@@ -116,6 +117,19 @@ describe("Functional utilities", () => {
         [1, "a"],
         [2, "b"]
       ]);
+    });
+  });
+
+  describe("values", () => {
+    it("should return all values from object", () => {
+      const input = {
+        a: "foobar",
+        b: "bazz",
+        c: 42,
+        d: "qvux",
+        e: true
+      };
+      expect(values(input)).to.deep.equal(["foobar", "bazz", 42, "qvux", true]);
     });
   });
 

@@ -17,7 +17,7 @@
 
 import { Duration } from "chronoshift";
 import * as React from "react";
-import { Dimension } from "../../../common/models/dimension/dimension";
+import { Dimension, isContinuous } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
 import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
@@ -158,7 +158,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       <LimitDropdown
         onLimitSelect={this.saveLimit}
         limit={limit}
-        includeNone={dimension.isContinuous()} />
+        includeNone={isContinuous(dimension)} />
       <div className="button-bar">
         <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />

@@ -19,7 +19,8 @@ import { isDate } from "chronoshift";
 import { List } from "immutable";
 import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
 import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
@@ -149,18 +150,16 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimension(clause.reference);
+      const dimension = findDimensionByName(dataCube.dimensions, clause.reference);
       if (!dimension) return null;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();
   }
 
-  getSortedAttributes(dataCube: DataCube): AttributeInfo[] {
-    const timeAttributeName = dataCube.timeAttribute ? dataCube.timeAttribute.name : null;
-
+  getSortedAttributes(dataCube: ClientDataCube): AttributeInfo[] {
     const attributeRank = (attribute: AttributeInfo) => {
       const name = attribute.name;
-      if (name === timeAttributeName) {
+      if (name === dataCube.timeAttribute) {
         return 1;
       } else if (attribute.unsplitable) {
         return 3;

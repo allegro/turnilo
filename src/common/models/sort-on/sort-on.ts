@@ -17,6 +17,7 @@
  */
 
 import { Dimension } from "../dimension/dimension";
+import { findDimensionByName } from "../dimension/dimensions";
 import { Essence } from "../essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
@@ -27,7 +28,7 @@ export abstract class SortOn {
     const { type, reference } = sort;
     switch (type) {
       case SortType.DIMENSION:
-        const dimension = essence.dataCube.getDimension(reference);
+        const dimension = findDimensionByName(essence.dataCube.dimensions, reference);
         return new DimensionSortOn(dimension);
       case SortType.SERIES:
         const period = (sort as SeriesSort).period;

@@ -17,13 +17,13 @@
 
 import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
-import { Dataset, TabulatorOptions } from "plywood";
+import { $, Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../common/models/customization/customization";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -40,6 +40,7 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Binary, Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
@@ -90,11 +91,11 @@ export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
   hash: string;
-  changeCubeAndEssence: Ternary<DataCube, Essence, boolean, void>;
-  urlForCubeAndEssence: Binary<DataCube, Essence, string>;
-  getEssenceFromHash: Binary<string, DataCube, Essence>;
-  dataCube: DataCube;
-  dataCubes: DataCube[];
+  changeCubeAndEssence: Ternary<ClientDataCube, Essence, boolean, void>;
+  urlForCubeAndEssence: Binary<ClientDataCube, Essence, string>;
+  getEssenceFromHash: Binary<string, ClientDataCube, Essence>;
+  dataCube: ClientDataCube;
+  dataCubes: ClientDataCube[];
   openAboutModal: Fn;
   customization?: ClientCustomization;
   appSettings: ClientAppSettings;
@@ -213,14 +214,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   refreshMaxTime = () => {
     const { essence, timekeeper } = this.state;
-    const { dataCube } = essence;
+    const { dataCube: { name, executor, timeAttribute, refreshRule } } = essence;
     this.setState({ updatingMaxTime: true });
 
-    DataCube.queryMaxTime(dataCube)
+    maxTimeQuery($(timeAttribute), executor)
       .then(maxTime => {
         if (!this.mounted) return;
-        const timeName = dataCube.name;
-        const isBatchCube = !dataCube.refreshRule.isRealtime();
+        const timeName = name;
+        const isBatchCube = !refreshRule.isRealtime();
         const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
         if (isBatchCube && isCubeUpToDate) {
           this.setState({ updatingMaxTime: false });
@@ -282,7 +283,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.mounted = false;
   }
 
-  updateEssenceFromHashOrDataCube(hash: string, dataCube: DataCube) {
+  updateEssenceFromHashOrDataCube(hash: string, dataCube: ClientDataCube) {
     let essence: Essence;
     try {
       essence = this.getEssenceFromHash(hash, dataCube);
@@ -294,11 +295,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ essence });
   }
 
-  getEssenceFromDataCube(dataCube: DataCube): Essence {
+  getEssenceFromDataCube(dataCube: ClientDataCube): Essence {
     return Essence.fromDataCube(dataCube);
   }
 
-  getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
+  getEssenceFromHash(hash: string, dataCube: ClientDataCube): Essence {
     if (!dataCube) {
       throw new Error("Data cube is required.");
     }

@@ -17,11 +17,11 @@
 
 import { Timezone } from "chronoshift";
 import { Class, Instance } from "immutable-class";
-import { DataCube } from "../data-cube/data-cube";
+import { ClientDataCube } from "../data-cube/data-cube";
 import { Filter } from "../filter/filter";
 import { Splits } from "../splits/splits";
 
-export type LinkGenerator = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
+export type LinkGenerator = (dataCube: ClientDataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
 
 export interface ExternalViewValue {
   title: string;
@@ -68,7 +68,7 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
       throw new Error(`Error constructing link generator function: ${e.message}`);
     }
 
-    this.linkGeneratorFn = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => {
+    this.linkGeneratorFn = (dataCube: ClientDataCube, timezone: Timezone, filter: Filter, splits: Splits) => {
       try {
         return linkGeneratorFnRaw(dataCube, dataCube, timezone, filter, splits);
       } catch (e) {

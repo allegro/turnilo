@@ -20,7 +20,8 @@ import { List, Set } from "immutable";
 import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
 import * as React from "react";
 import { DateRange } from "../../../common/models/date-range/date-range";
-import { Dimension } from "../../../common/models/dimension/dimension";
+import { canBucketByDefault, Dimension } from "../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
@@ -478,7 +479,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     let bars: JSX.Element[] = [];
     let highlight: JSX.Element;
 
-    const dimension = essence.dataCube.getDimension(essence.splits.splits.get(splitIndex).reference);
+    const dimension = findDimensionByName(essence.dataCube.dimensions, essence.splits.splits.get(splitIndex).reference);
     const splitLength = essence.splits.length();
 
     data.forEach((d, i) => {
@@ -568,10 +569,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xTicks = xScale.domain();
 
     const split = essence.splits.splits.first();
-    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimension = findDimensionByName(essence.dataCube.dimensions, split.reference);
 
     const labels: JSX.Element[] = [];
-    if (dimension.canBucketByDefault()) {
+    if (canBucketByDefault(dimension)) {
       const lastIndex = data.length - 1;
       const ascending = split.sort.direction === SortDirection.ascending;
       const leftThing = ascending ? "start" : "end";
@@ -720,7 +721,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     this.coordinatesCache = [];
     if (!splits.length()) return {};
     const split = splits.splits.first();
-    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimension = findDimensionByName(essence.dataCube.dimensions, split.reference);
     const dimensionKind = dimension.kind;
     const series = essence.getConcreteSeries().toArray();
     // TODO: very suspicious
@@ -756,7 +757,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence } = this.props;
     const { splits, dataCube } = essence;
     const firstSplit = splits.splits.first();
-    const dimension = dataCube.getDimension(firstSplit.reference);
+    const dimension = findDimensionByName(dataCube.dimensions, firstSplit.reference);
 
     const getX = (d: Datum) => d[dimension.name] as string;
 
@@ -812,7 +813,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const series = essence.getConcreteSeries().get(chartIndex);
     const firstSplit = splits.splits.first();
-    const dimension = dataCube.getDimension(firstSplit.reference);
+    const dimension = findDimensionByName(dataCube.dimensions, firstSplit.reference);
 
     const chartStage = this.getSingleChartStage();
     const yScale = this.getYScale(series, this.getAxisStages(chartStage).yAxisStage);

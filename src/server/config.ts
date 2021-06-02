@@ -24,7 +24,7 @@ import {
   fromConfig as appSettingsFromConfig
 } from "../common/models/app-settings/app-settings";
 import { Cluster } from "../common/models/cluster/cluster";
-import { DataCube } from "../common/models/data-cube/data-cube";
+import { fromConfig } from "../common/models/data-cube/data-cube";
 import { fromConfig as sourcesFromConfig, SourcesJS } from "../common/models/sources/sources";
 import { arraySum, isTruthy } from "../common/utils/general/general";
 import { appSettingsToYaml, printExtra, sourcesToYaml } from "../common/utils/yaml-helper/yaml-helper";
@@ -232,11 +232,11 @@ function readArgs(file: string | undefined, url: string | undefined) {
       sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
       sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
     })],
-    dataCubes: !isTruthy(file) ? [] : [new DataCube({
+    dataCubes: !isTruthy(file) ? [] : [fromConfig({
       name: path.basename(file, path.extname(file)),
       clusterName: "native",
       source: file
-    })
+    }, undefined)
     ]
   };
 

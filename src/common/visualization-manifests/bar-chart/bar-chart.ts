@@ -19,7 +19,8 @@ import { List } from "immutable";
 import { clamp } from "../../../client/utils/dom/dom";
 import { AVAILABLE_LIMITS } from "../../limit/limit";
 import { NORMAL_COLORS } from "../../models/colors/colors";
-import { Dimension } from "../../models/dimension/dimension";
+import { canBucketByDefault, Dimension } from "../../models/dimension/dimension";
+import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
 import { DimensionSort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -117,8 +118,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let autoChanged = false;
 
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
-      const splitDimension = dataCube.getDimension(split.reference);
-      if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
+      const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
+      if (canBucketByDefault(splitDimension) && split.sort.reference !== splitDimension.name) {
         split = split.changeSort(new DimensionSort({
           reference: splitDimension.name,
           direction: split.sort.direction
@@ -147,7 +148,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .otherwise(({ dataCube }) => {
-    const categoricalDimensions = dataCube.dimensions.filterDimensions(dimension => dimension.kind !== "time");
+    const categoricalDimensions = allDimensions(dataCube.dimensions).filter(dimension => dimension.kind !== "time");
 
     return Resolve.manual(
       NORMAL_PRIORITY_ACTION,

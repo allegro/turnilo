@@ -15,8 +15,7 @@
  */
 
 import { expect } from "chai";
-import { noop } from "../functional/functional";
-import { mapValues, omitFalsyValues } from "./object";
+import { fromEntries, mapValues, omitFalsyValues } from "./object";
 
 describe("Object utils", () => {
   describe("omitFalsyValues", () => {
@@ -54,6 +53,23 @@ describe("Object utils", () => {
       omitFalsyValues(input);
 
       expect(input).to.deep.equal(inputCopy);
+    });
+  });
+
+  describe("fromEntries", () => {
+    it("should construct object from key-value pairs", () => {
+      const input = [
+        ["a", "foobar"],
+        ["b", 42],
+        ["c", true],
+        ["d", "qvux"]
+        ] as Array<[string, string | number | boolean]>;
+      expect(fromEntries<string, string | number | boolean>(input)).to.be.deep.equal({
+        a: "foobar",
+        b: 42,
+        c: true,
+        d: "qvux"
+      });
     });
   });
 

@@ -18,7 +18,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ClientCustomization } from "../../../common/models/customization/customization";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
@@ -34,11 +34,11 @@ import "./side-drawer.scss";
 
 export interface SideDrawerProps {
   essence: Essence;
-  dataCubes: DataCube[];
+  dataCubes: ClientDataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: ClientCustomization;
-  changeDataCubeAndEssence: Ternary<DataCube, Essence, boolean, void>;
+  changeDataCubeAndEssence: Ternary<ClientDataCube, Essence, boolean, void>;
 }
 
 export interface SideDrawerState {
@@ -94,7 +94,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
-  navigateToCube = (dataCube: DataCube) => {
+  navigateToCube = (dataCube: ClientDataCube) => {
     const { onClose, essence, changeDataCubeAndEssence } = this.props;
     changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube), true);
     onClose();

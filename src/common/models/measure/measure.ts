@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-import { List } from "immutable";
-import { BaseImmutable, Property } from "immutable-class";
-import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "plywood";
+import { $, AttributeInfo, CountDistinctExpression, Expression, ExpressionJS, QuantileExpression } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import some from "../../utils/plywood/some";
-import { formatFnFactory, measureDefaultFormat } from "../series/series-format";
-import { MeasureOrGroupVisitor } from "./measure-group";
-
-export interface MeasureValue {
-  name: string;
-  title?: string;
-  units?: string;
-  formula?: string;
-  format?: string;
-  transformation?: string;
-  description?: string;
-  lowerIsBetter?: boolean;
-}
+import { SeriesDerivation } from "../series/concrete-series";
+import { measureDefaultFormat } from "../series/series-format";
+import { createMeasure } from "./measures";
 
 export interface MeasureJS {
   name: string;
@@ -40,157 +28,156 @@ export interface MeasureJS {
   units?: string;
   formula?: string;
   format?: string;
-  transformation?: string;
+  transformation?: Transformation;
   description?: string;
   lowerIsBetter?: boolean;
 }
 
-export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
-  static DEFAULT_FORMAT = measureDefaultFormat;
-  static DEFAULT_TRANSFORMATION = "none";
-  static TRANSFORMATIONS = ["none", "percent-of-parent", "percent-of-total"];
+type Transformation = "none" | "percent-of-parent" | "percent-of-total";
 
-  static isMeasure(candidate: any): candidate is Measure {
-    return candidate instanceof Measure;
-  }
+const DEFAULT_FORMAT = measureDefaultFormat;
+const DEFAULT_TRANSFORMATION = "none";
+const TRANSFORMATIONS: Set<Transformation> = new Set(["none", "percent-of-parent", "percent-of-total"] as Transformation[]);
 
-  static getMeasure(measures: List<Measure>, measureName: string): Measure {
-    if (!measureName) return null;
-    measureName = measureName.toLowerCase(); // Case insensitive
-    return measures.find(measure => measure.name.toLowerCase() === measureName);
-  }
-
-  static getReferences(ex: Expression): string[] {
-    let references: string[] = [];
-    ex.forEach((sub: Expression) => {
-      if (sub instanceof RefExpression && sub.name !== "main") {
-        references = references.concat(sub.name);
-      }
-    });
-    return deduplicateSort(references);
-  }
-
-  static hasCountDistinctReferences(ex: Expression): boolean {
-    return some(ex, e => e instanceof CountDistinctExpression);
-  }
-
-  static hasQuantileReferences(ex: Expression): boolean {
-    return some(ex, e => e instanceof QuantileExpression);
-  }
-
-  static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
-    const { name, nativeType } = attribute;
-    const $main = $("main");
-    const ref = $(name);
-
-    if (nativeType) {
-      if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "HLLSketch") {
-        return [
-          new Measure({
-            name: makeUrlSafeName(name),
-            formula: $main.countDistinct(ref).toString()
-          })
-        ];
-      } else if (nativeType === "approximateHistogram" || nativeType === "quantilesDoublesSketch") {
-        return [
-          new Measure({
-            name: makeUrlSafeName(name + "_p98"),
-            formula: $main.quantile(ref, 0.98).toString()
-          })
-        ];
-      }
-    }
-
-    let expression: Expression = $main.sum(ref);
-    const makerAction = attribute.maker;
-    if (makerAction) {
-      switch (makerAction.op) {
-        case "min":
-          expression = $main.min(ref);
-          break;
-
-        case "max":
-          expression = $main.max(ref);
-          break;
-
-        // default: // sum, count
-      }
-    }
-
-    return [new Measure({
-      name: makeUrlSafeName(name),
-      formula: expression.toString()
-    })];
-  }
-
-  static fromJS(parameters: MeasureJS): Measure {
-    // Back compat
-    if (!parameters.formula) {
-      let parameterExpression = (parameters as any).expression;
-      parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
-    }
-
-    return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
-  }
-
-  static PROPERTIES: Property[] = [
-    { name: "name", validate: verifyUrlSafeName },
-    { name: "title", defaultValue: null },
-    { name: "units", defaultValue: null },
-    { name: "lowerIsBetter", defaultValue: false },
-    { name: "formula" },
-    { name: "description", defaultValue: undefined },
-    { name: "format", defaultValue: Measure.DEFAULT_FORMAT },
-    { name: "transformation", defaultValue: Measure.DEFAULT_TRANSFORMATION, possibleValues: Measure.TRANSFORMATIONS }
-  ];
-
-  public name: string;
-  public title: string;
-  public description?: string;
-  public units: string;
-  public formula: string;
-  public expression: Expression;
-  public format: string;
-  public formatFn: (n: number) => string;
-  public transformation: string;
-  public lowerIsBetter: boolean;
-  public readonly type = "measure";
-
-  constructor(parameters: MeasureValue) {
-    super(parameters);
-
-    this.title = this.title || makeTitle(this.name);
-    this.expression = Expression.parse(this.formula);
-    this.formatFn = formatFnFactory(this.getFormat());
-  }
-
-  accept<R>(visitor: MeasureOrGroupVisitor<R>): R {
-    return visitor.visitMeasure(this);
-  }
-
-  equals(other: any): boolean {
-    return this === other || Measure.isMeasure(other) && super.equals(other);
-  }
-
-  public getTitleWithUnits(): string {
-    if (this.units) {
-      return `${this.title} (${this.units})`;
-    } else {
-      return this.title;
-    }
-  }
-
-  public isApproximate(): boolean {
-    return Measure.hasCountDistinctReferences(this.expression) || Measure.hasQuantileReferences(this.expression);
-  }
-
-  public isQuantile() {
-    return this.expression instanceof QuantileExpression;
-  }
-
-  // Default getter from ImmutableValue
-  public getFormat: () => string;
-
+export interface Measure {
+  name: string;
+  title: string;
+  units?: string;
+  expression: Expression;
+  format: string;
+  transformation: Transformation;
+  description?: string;
+  lowerIsBetter: boolean;
 }
 
-BaseImmutable.finalize(Measure);
+export interface SerializedMeasure {
+  name: string;
+  title: string;
+  units?: string;
+  expression: ExpressionJS;
+  format: string;
+  transformation: Transformation;
+  description?: string;
+  lowerIsBetter: boolean;
+}
+
+export type ClientMeasure = Measure;
+
+export function serialize(measure: Measure): SerializedMeasure {
+  return {
+    ...measure,
+    expression: measure.expression.toJS()
+  };
+}
+
+export function deserialize(measure: SerializedMeasure): ClientMeasure {
+  const { description, format, expression, lowerIsBetter, name, title, transformation, units } = measure;
+
+  return {
+    description,
+    expression: Expression.fromJS(expression),
+    format,
+    lowerIsBetter,
+    name,
+    title,
+    transformation,
+    units
+  };
+}
+
+interface LegacyMeasureJS {
+  expression?: string;
+}
+
+function readFormula({ formula, expression, name }: MeasureJS & LegacyMeasureJS): Expression {
+  if (formula) return Expression.parse(formula);
+  if (expression) return Expression.parse(expression);
+  return $("main").sum($(name));
+}
+
+function verifyName(name: string) {
+  verifyUrlSafeName(name);
+  if (name.startsWith(SeriesDerivation.PREVIOUS)) {
+    throw new Error(`measure ${name} starts with forbidden prefix: ${SeriesDerivation.PREVIOUS}`);
+  }
+  if (name.startsWith(SeriesDerivation.DELTA)) {
+    throw new Error(`measure ${name} starts with forbidden prefix: ${SeriesDerivation.DELTA}`);
+  }
+}
+
+export function fromConfig(config: MeasureJS & LegacyMeasureJS): Measure {
+  const { name, title, units, format, transformation, description, lowerIsBetter } = config;
+  verifyName(name);
+  if (transformation && !TRANSFORMATIONS.has(transformation)) {
+    throw new Error(`Incorrect transformation (${transformation}) for measure ${name}`);
+  }
+
+  const expression = readFormula(config);
+
+  return {
+    name,
+    title: title || makeTitle(name),
+    units,
+    format: format || DEFAULT_FORMAT,
+    expression,
+    description,
+    lowerIsBetter: Boolean(lowerIsBetter),
+    transformation: transformation || DEFAULT_TRANSFORMATION
+  };
+}
+
+export function measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
+  const { name, nativeType } = attribute;
+  const $main = $("main");
+  const ref = $(name);
+
+  if (nativeType) {
+    if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "HLLSketch") {
+      return [createMeasure(makeUrlSafeName(name), $main.countDistinct(ref))];
+    } else if (nativeType === "approximateHistogram" || nativeType === "quantilesDoublesSketch") {
+      return [createMeasure(makeUrlSafeName(name + "_p98"), $main.quantile(ref, 0.98))];
+    }
+  }
+
+  let expression: Expression = $main.sum(ref);
+  const makerAction = attribute.maker;
+  if (makerAction) {
+    switch (makerAction.op) {
+      case "min":
+        expression = $main.min(ref);
+        break;
+
+      case "max":
+        expression = $main.max(ref);
+        break;
+
+      // default: // sum, count
+    }
+  }
+
+  return [createMeasure(makeUrlSafeName(name), expression)];
+}
+
+export function getTitleWithUnits(measure: ClientMeasure): string {
+  if (measure.units) {
+    return `${measure.title} (${measure.units})`;
+  } else {
+    return measure.title;
+  }
+}
+
+function hasCountDistinctReferences(ex: Expression): boolean {
+  return some(ex, e => e instanceof CountDistinctExpression);
+}
+
+function hasQuantileReferences(ex: Expression): boolean {
+  return some(ex, e => e instanceof QuantileExpression);
+}
+
+export function isApproximate(measure: ClientMeasure): boolean {
+  return hasCountDistinctReferences(measure.expression) || hasQuantileReferences(measure.expression);
+}
+
+export function isQuantile(measure: ClientMeasure) {
+  return measure.expression instanceof QuantileExpression;
+}

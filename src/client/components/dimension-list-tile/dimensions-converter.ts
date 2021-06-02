@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { DimensionGroup, DimensionOrGroupVisitor } from "../../../common/models/dimension/dimension-group";
+import { Dimension, DimensionKind } from "../../../common/models/dimension/dimension";
+import { DimensionOrGroup, Dimensions, isDimensionId } from "../../../common/models/dimension/dimensions";
 
 export type DimensionOrGroupForView = DimensionForView | DimensionGroupForView;
 
@@ -23,10 +23,10 @@ export interface DimensionForView {
   name: string;
   title: string;
   description?: string;
-  classSuffix: string;
   hasSearchText: boolean;
   isFilteredOrSplit: boolean;
   selected: boolean;
+  kind: DimensionKind;
   type: DimensionForViewType.dimension;
 }
 
@@ -45,42 +45,44 @@ export enum DimensionForViewType {
   group = "group"
 }
 
-export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrGroupForView> {
-  constructor(
-    private readonly hasSearchTextPredicate: (dimension: Dimension) => boolean,
-    private readonly isFilteredOrSplitPredicate: (dimension: Dimension) => boolean,
-    private readonly isSelectedDimensionPredicate: (dimension: Dimension) => boolean
-  ) {
+export function convert(
+  dimensions: Dimensions,
+  hasSearchTextPredicate: (dimension: Dimension) => boolean,
+  isFilteredOrSplitPredicate: (dimension: Dimension) => boolean,
+  isSelectedDimensionPredicate: (dimension: Dimension) => boolean): DimensionOrGroupForView[] {
+
+  const { byName, tree } = dimensions;
+
+  function convertElement(el: DimensionOrGroup): DimensionOrGroupForView {
+    if (isDimensionId(el)) {
+      const dimension = byName[el];
+      const { name, title, kind, description } = dimension;
+
+      return {
+        name,
+        title,
+        description,
+        kind,
+        isFilteredOrSplit: isFilteredOrSplitPredicate(dimension),
+        hasSearchText: hasSearchTextPredicate(dimension),
+        selected: isSelectedDimensionPredicate(dimension),
+        type: DimensionForViewType.dimension
+      };
+    } else {
+      const { name, description, title, dimensions } = el;
+      const dimensionsForView = dimensions.map(item => convertElement(item));
+
+      return {
+        name,
+        title,
+        description,
+        hasSearchText: dimensionsForView.some(item => item.hasSearchText),
+        isFilteredOrSplit: dimensionsForView.some(item => item.isFilteredOrSplit),
+        children: dimensionsForView,
+        type: DimensionForViewType.group
+      };
+    }
   }
 
-  visitDimension(dimension: Dimension): DimensionOrGroupForView {
-    const { hasSearchTextPredicate, isFilteredOrSplitPredicate, isSelectedDimensionPredicate } = this;
-    const { name, title, description, className } = dimension;
-
-    return {
-      name,
-      title,
-      description,
-      classSuffix: className,
-      isFilteredOrSplit: isFilteredOrSplitPredicate(dimension),
-      hasSearchText: hasSearchTextPredicate(dimension),
-      selected: isSelectedDimensionPredicate(dimension),
-      type: DimensionForViewType.dimension
-    };
-  }
-
-  visitDimensionGroup(dimensionGroup: DimensionGroup): DimensionOrGroupForView {
-    const { name, description, title, dimensions } = dimensionGroup;
-    const dimensionsForView = dimensions.map(item => item.accept(this));
-
-    return {
-      name,
-      title,
-      description,
-      hasSearchText: dimensionsForView.some(item => item.hasSearchText),
-      isFilteredOrSplit: dimensionsForView.some(item => item.isFilteredOrSplit),
-      children: dimensionsForView,
-      type: DimensionForViewType.group
-    };
-  }
+  return tree.map(convertElement);
 }

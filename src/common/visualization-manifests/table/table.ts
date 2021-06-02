@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
@@ -30,7 +31,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(({ splits, dataCube, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+      const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
 
       // ToDo: review this
       if (!split.limit && splitDimension.kind !== "time") {

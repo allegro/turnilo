@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { SeriesList } from "../../models/series-list/series-list";
 import { Splits } from "../../models/splits/splits";
 import { RulesEvaluator } from "./rules-evaluator";
 import { Action, Predicate, RulesEvaluatorBuilder, RulesEvaluatorBuilderEmpty } from "./rules-evaluator-builder";
 
 export interface PredicateVariables {
-  dataCube?: DataCube;
+  dataCube?: ClientDataCube;
   splits: Splits;
   series: SeriesList;
 }
 
 export interface ActionVariables {
-  dataCube?: DataCube;
+  dataCube?: ClientDataCube;
   splits?: Splits;
   series: SeriesList;
   isSelectedVisualization?: boolean;

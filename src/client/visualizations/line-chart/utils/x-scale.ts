@@ -17,6 +17,7 @@
 import { Duration, Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { Dataset, PlywoodRange, Range } from "plywood";
+import { getMaxTime } from "../../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { ContinuousDimensionKind } from "../../../../common/models/granularity/granularity";
@@ -67,7 +68,7 @@ function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange 
   const continuousFilterClause = effectiveFilter.clauseForReference(continuousSplit.reference);
   if (!continuousFilterClause) return null;
   const filterRange = toPlywoodRange(continuousFilterClause);
-  const maxTime = essence.dataCube.getMaxTime(timekeeper);
+  const maxTime = getMaxTime(essence.dataCube, timekeeper);
   return includeMaxTimeBucket(filterRange, maxTime, continuousSplit, essence.timezone);
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Measures } from "../../models/measure/measures";
+import { findMeasureByName, Measures } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 
 export interface MeasuresDefinitionJS {
@@ -30,6 +30,6 @@ export interface SeriesDefinitionConverter {
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
   toEssenceSeries: ({ isMulti, multi, single }, measures: Measures) => {
     const names = isMulti ? multi : [single];
-    return SeriesList.fromMeasures(measures.getMeasuresByNames(names));
+    return SeriesList.fromMeasures(names.map(name => findMeasureByName(measures, name)));
   }
 };

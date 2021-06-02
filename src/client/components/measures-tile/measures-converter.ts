@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Measure } from "../../../common/models/measure/measure";
-import { MeasureGroup, MeasureOrGroupVisitor } from "../../../common/models/measure/measure-group";
+import { getTitleWithUnits, isApproximate, Measure } from "../../../common/models/measure/measure";
+import { isMeasure, MeasureOrGroup, Measures } from "../../../common/models/measure/measures";
 
 export type MeasureOrGroupForView = MeasureForView | MeasureGroupForView;
 
@@ -44,39 +44,41 @@ export enum MeasureForViewType {
   group = "group"
 }
 
-export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupForView> {
-  constructor(
-    private hasSearchTextPredicate: (measure: Measure) => boolean,
-    private isSelectedMeasurePredicate: (measure: Measure) => boolean
-  ) {
+export function convert(
+  measures: Measures,
+  hasSearchTextPredicate: (measure: Measure) => boolean,
+  isSelectedMeasurePredicate: (measure: Measure) => boolean): MeasureOrGroupForView[] {
+
+  const { byName, tree } = measures;
+
+  function convertElement(el: MeasureOrGroup): MeasureOrGroupForView {
+    if (isMeasure(el)) {
+      const measure = byName[el];
+      const {} = measure;
+
+      return {
+        name: measure.name,
+        title: getTitleWithUnits(measure),
+        description: measure.description,
+        hasSelectedMeasures: isSelectedMeasurePredicate(measure),
+        hasSearchText: hasSearchTextPredicate(measure),
+        type: MeasureForViewType.measure,
+        approximate: isApproximate(measure)
+      };
+    } else {
+      const { name, title, description, measures } = el;
+      const measuresForView = measures.map(item => convertElement(item));
+      return {
+        name,
+        title,
+        description,
+        hasSearchText: measuresForView.some(measureForView => measureForView.hasSearchText),
+        hasSelectedMeasures: measuresForView.some(measureForView => measureForView.hasSelectedMeasures),
+        children: measuresForView,
+        type: MeasureForViewType.group
+      };
+    }
   }
 
-  visitMeasure(measure: Measure): MeasureOrGroupForView {
-    const { hasSearchTextPredicate, isSelectedMeasurePredicate } = this;
-
-    return {
-      name: measure.name,
-      title: measure.getTitleWithUnits(),
-      description: measure.description,
-      hasSelectedMeasures: isSelectedMeasurePredicate(measure),
-      hasSearchText: hasSearchTextPredicate(measure),
-      type: MeasureForViewType.measure,
-      approximate: measure.isApproximate()
-    };
-  }
-
-  visitMeasureGroup(measureGroup: MeasureGroup): MeasureOrGroupForView {
-    const { name, title, description, measures } = measureGroup;
-    const measuresForView = measures.map(measureOrGroup => measureOrGroup.accept(this));
-
-    return {
-      name,
-      title,
-      description,
-      hasSearchText: measuresForView.some(measureForView => measureForView.hasSearchText),
-      hasSelectedMeasures: measuresForView.some(measureForView => measureForView.hasSelectedMeasures),
-      children: measuresForView,
-      type: MeasureForViewType.group
-    };
-  }
+  return tree.map(convertElement);
 }

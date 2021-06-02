@@ -15,12 +15,12 @@
  */
 
 import { expect } from "chai";
-import { Measure } from "../measure/measure";
+import { fromConfig } from "../measure/measure";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
-const quantileMeasure = Measure.fromJS({
+const quantileMeasure = fromConfig({
   name: "my-quantile",
   formula: "$main.quantile($histogram, 0.92, 'tuning')"
 });
@@ -30,7 +30,7 @@ const quantileSeries = QuantileSeries.fromQuantileMeasure(quantileMeasure);
 describe("QuantileSeries", () => {
   describe("fromQuantileMeasure", () => {
     it("throws when measure expression is not a quantile", () => {
-      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount())).throws(/Expected QuantileExpression/);
+      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.count())).throws(/Expected QuantileExpression/);
     });
 
     it("creates QuantileSeries from Measure with quantile expression", () => {

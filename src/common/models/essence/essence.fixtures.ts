@@ -21,7 +21,7 @@ import { HEAT_MAP_MANIFEST } from "../../visualization-manifests/heat-map/heat-m
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
-import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { customClientCube, twitterClientDataCube, wikiClientDataCube } from "../data-cube/data-cube.fixtures";
 import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
@@ -34,7 +34,7 @@ import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceValue, VisStrategy } from "./essence";
 
 const defaultEssence: EssenceValue = {
-  dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
+  dataCube: customClientCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
   visualization: null,
   visualizationSettings: null,
   timezone: Timezone.UTC,
@@ -76,13 +76,13 @@ export class EssenceFixtures {
 
   static getWikiContext() {
     return {
-      dataCube: DataCubeFixtures.wiki()
+      dataCube: wikiClientDataCube
     };
   }
 
   static getTwitterContext() {
     return {
-      dataCube: DataCubeFixtures.twitter()
+      dataCube: twitterClientDataCube
     };
   }
 
@@ -95,7 +95,7 @@ export class EssenceFixtures {
       stringSplitCombine("namespace", { sort: { reference: "added", direction: SortDirection.descending }, limit: 5 })
     ];
     return new Essence({
-      dataCube: DataCubeFixtures.wiki(),
+      dataCube: wikiClientDataCube,
       visualization: HEAT_MAP_MANIFEST,
       visualizationSettings: HEAT_MAP_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
@@ -129,7 +129,7 @@ export class EssenceFixtures {
       measureSeries("added")
     ];
     return new Essence({
-      dataCube: DataCubeFixtures.wiki(),
+      dataCube: wikiClientDataCube,
       visualization: TABLE_MANIFEST,
       visualizationSettings: TABLE_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
@@ -157,7 +157,7 @@ export class EssenceFixtures {
       measureSeries("added")
     ];
     return new Essence({
-      dataCube: DataCubeFixtures.wiki(),
+      dataCube: wikiClientDataCube,
       visualization: LINE_CHART_MANIFEST,
       visualizationSettings: LINE_CHART_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),

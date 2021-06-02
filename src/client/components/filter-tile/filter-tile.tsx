@@ -19,7 +19,9 @@ import { Timezone } from "chronoshift";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Clicker } from "../../../common/models/clicker/clicker";
+import { isTimeAttribute } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { allDimensions, findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
@@ -279,7 +281,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   draggingDimension(): Dimension {
     const { essence: { dataCube } } = this.props;
     if (DragManager.isDraggingSplit()) {
-      return dataCube.getDimension(DragManager.draggingSplit().reference);
+      return findDimensionByName(dataCube.dimensions, DragManager.draggingSplit().reference);
     }
     return DragManager.draggingDimension();
   }
@@ -305,7 +307,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     let tryingToReplaceTime = false;
     if (dragPosition.replace !== null) {
       const targetClause = filter.clauses.get(dragPosition.replace);
-      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
+      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.timeAttribute;
     }
     if (dragPosition && !tryingToReplaceTime) {
       this.addDummy(dimension, dragPosition);
@@ -417,7 +419,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   renderRemoveButton(itemBlank: ItemBlank) {
     const { essence } = this.props;
     const dataCube = essence.dataCube;
-    if (itemBlank.dimension.expression.equals(dataCube.timeAttribute)) return null;
+    if (isTimeAttribute(dataCube, itemBlank.dimension.expression)) return null;
     return <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
       <SvgIcon svg={require("../../icons/x.svg")} />
     </div>;
@@ -425,7 +427,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderTimeShiftLabel(dimension: Dimension): string {
     const { essence } = this.props;
-    if (!dimension.expression.equals(essence.dataCube.timeAttribute)) return null;
+    if (!isTimeAttribute(essence.dataCube, dimension.expression)) return null;
     if (!essence.hasComparison()) return null;
     return `(Shift: ${essence.timeShift.getDescription(true)})`;
   }
@@ -486,7 +488,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        const dimension = dataCube.getDimension(clause.reference);
+        const dimension = findDimensionByName(dataCube.dimensions, clause.reference);
         if (!dimension) return null;
         return {
           dimension,
@@ -516,8 +518,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderAddButton() {
     const { essence: { dataCube, filter }, menuStage } = this.props;
-    const tiles = dataCube.dimensions
-      .filterDimensions(dimension => !filter.getClauseForDimension(dimension))
+    const tiles = allDimensions(dataCube.dimensions)
+      .filter(dimension => !filter.getClauseForDimension(dimension))
       .map(dimension => {
         return {
           key: dimension.name,

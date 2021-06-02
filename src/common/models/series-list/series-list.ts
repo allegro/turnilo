@@ -19,7 +19,7 @@ import { Unary } from "../../utils/functional/functional";
 import { isTruthy } from "../../utils/general/general";
 import { ArithmeticExpression } from "../expression/concreteArithmeticOperation";
 import { Measure } from "../measure/measure";
-import { Measures } from "../measure/measures";
+import { findMeasureByName, hasMeasureWithName, Measures } from "../measure/measures";
 import { ExpressionSeries } from "../series/expression-series";
 import { MeasureSeries } from "../series/measure-series";
 import { fromJS, fromMeasure, Series } from "../series/series";
@@ -39,7 +39,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   static fromJS(seriesDefs: any[], measures: Measures): SeriesList {
     const series = List(seriesDefs.map(def => {
-      const measure = measures.getMeasureByName(def.reference);
+      const measure = findMeasureByName(measures, def.reference);
       return fromJS(def, measure);
     }));
     return new SeriesList({ series });
@@ -51,9 +51,9 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   static validSeries(series: Series, measures: Measures): boolean {
     if (series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression) {
-      return measures.hasMeasureByName(series.reference) && measures.hasMeasureByName(series.expression.reference);
+      return hasMeasureWithName(measures, series.reference) && hasMeasureWithName(measures, series.expression.reference);
     }
-    return measures.hasMeasureByName(series.reference);
+    return hasMeasureWithName(measures, series.reference);
   }
 
   public addSeries(newSeries: Series): SeriesList {

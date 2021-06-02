@@ -30,7 +30,7 @@ export function shouldFetchData(
 
   return essence.differentDataCube(previousEssence) ||
     essence.differentEffectiveFilter(previousEssence, timekeeper, previousTimekeeper, dimension) ||
-    !dimension.equals(previousDimension) ||
+    dimension.name !== previousDimension.name ||
     previousSearchText !== searchText ||
     refreshRequestTimestamp !== previousRefreshRequestTimestamp ||
     !SortOn.equals(sortOn, previousSortOn);

@@ -29,7 +29,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   public equals(other: ConcreteSeries): boolean {
-    return this.definition.equals(other.definition) && this.measure.equals(other.measure);
+    return this.definition.equals(other.definition);
   }
 
   public reactKey(derivation = SeriesDerivation.CURRENT): string {

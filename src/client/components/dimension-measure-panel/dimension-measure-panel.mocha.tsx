@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
+import { wikiClientDataCube } from "../../../common/models/data-cube/data-cube.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { ResizeHandle } from "../resize-handle/resize-handle";
 import { DimensionMeasurePanel, initialPosition, MIN_PANEL_SIZE } from "./dimension-measure-panel";
@@ -56,7 +56,7 @@ describe("DimensionMeasurePanel", () => {
   describe("initialPosition", () => {
     [300, 500, 1000].forEach(height => {
       it(`should calculate position according to ratio for height ${height}`, () => {
-        const position = initialPosition(height, DataCubeFixtures.wiki());
+        const position = initialPosition(height, wikiClientDataCube);
 
         expect(position, "lower than total height").to.be.lt(height);
         expect(position, "should leave minimal space for dimensions").to.be.gte(MIN_PANEL_SIZE);

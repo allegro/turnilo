@@ -16,33 +16,23 @@
  */
 
 import { expect } from "chai";
-import { testImmutableClass } from "immutable-class-tester";
-
-import { AttributeInfo } from "plywood";
+import { $, AttributeInfo } from "plywood";
+import { deduceAttributes } from "../../utils/external/datacube-to-external";
 import { Cluster } from "../cluster/cluster";
-import { DataCube, DataCubeJS } from "./data-cube";
-import { DataCubeFixtures } from "./data-cube.fixtures";
+import { createDimension } from "../dimension/dimension";
+import { allDimensions } from "../dimension/dimensions";
+import { DataCube, fromConfig } from "./data-cube";
+import { addAttributes } from "./queryable-data-cube";
 
 describe("DataCube", () => {
-  var druidCluster = Cluster.fromJS({
+  const druidCluster = Cluster.fromJS({
     name: "druid"
-  });
-
-  var context = {
-    cluster: druidCluster
-  };
-
-  it("is an immutable class", () => {
-    testImmutableClass<DataCubeJS>(DataCube, [
-      DataCubeFixtures.TWITTER_JS,
-      DataCubeFixtures.WIKI_JS
-    ]);
   });
 
   describe("validates", () => {
     it("throws an error if bad name is used", () => {
       expect(() => {
-        DataCube.fromJS({
+        fromConfig({
           name: "wiki hello",
           clusterName: "druid",
           source: "wiki",
@@ -69,7 +59,7 @@ describe("DataCube", () => {
 
     it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
-        DataCube.fromJS({
+        fromConfig({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -92,12 +82,12 @@ describe("DataCube", () => {
             }
           ]
         });
-      }).to.throw("can not find defaultSortMeasure 'gaga'");
+      }).to.throw("Can not find defaultSortMeasure 'gaga' in data cube 'wiki'");
     });
 
     it("throws an error if duplicate name is used across measures and dimensions", () => {
       expect(() => {
-        DataCube.fromJS({
+        fromConfig({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -124,7 +114,7 @@ describe("DataCube", () => {
 
     it("throws an error if duplicate name is used in measures", () => {
       expect(() => {
-        DataCube.fromJS({
+        fromConfig({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -150,12 +140,12 @@ describe("DataCube", () => {
             }
           ]
         });
-      }).to.throw("data cube: 'wiki', found duplicate measure or group with names: 'articleName'");
+      }).to.throw("data cube: 'wiki', found duplicate measure with name: 'articleName'");
     });
 
     it("throws an error if duplicate name is used in dimensions", () => {
       expect(() => {
-        DataCube.fromJS({
+        fromConfig({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -181,70 +171,14 @@ describe("DataCube", () => {
             }
           ]
         });
-      }).to.throw("data cube: 'wiki', found duplicate dimension or group with names: 'articleName'");
+      }).to.throw("data cube: 'wiki', found duplicate dimension with name: 'articleName'");
     });
 
-  });
-
-  describe("#getIssues", () => {
-    it("raises issues", () => {
-      var dataCube = DataCube.fromJS({
-        name: "wiki",
-        clusterName: "druid",
-        source: "wiki",
-        attributes: [
-          { name: "__time", type: "TIME" },
-          { name: "articleName", type: "STRING" },
-          { name: "count", type: "NUMBER" }
-        ],
-        dimensions: [
-          {
-            name: "gaga",
-            formula: "$gaga"
-          },
-          {
-            name: "bucketArticleName",
-            formula: "$articleName.numberBucket(5)"
-          }
-        ],
-        measures: [
-          {
-            name: "count",
-            formula: "$main.sum($count)"
-          },
-          {
-            name: "added",
-            formula: "$main.sum($added)"
-          },
-          {
-            name: "sumArticleName",
-            formula: "$main.sum($articleName)"
-          },
-          {
-            name: "koalaCount",
-            formula: "$koala.sum($count)"
-          },
-          {
-            name: "countByThree",
-            formula: "$count / 3"
-          }
-        ]
-      });
-
-      expect(dataCube.getIssues()).to.deep.equal([
-        "failed to validate dimension 'gaga': could not resolve $gaga",
-        "failed to validate dimension 'bucketArticleName': numberBucket must have operand of type NUMBER (is STRING)",
-        "failed to validate measure 'added': could not resolve $added",
-        "failed to validate measure 'sumArticleName': sum must have expression of type NUMBER (is STRING)",
-        "failed to validate measure 'koalaCount': measure must contain a $main reference",
-        "failed to validate measure 'countByThree': measure must contain a $main reference"
-      ]);
-    });
   });
 
   describe.skip("back compat", () => {
     it("works in a generic case", () => {
-      var legacyDataCubeJS: any = {
+      const legacyDataCubeJS: any = {
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -281,9 +215,9 @@ describe("DataCube", () => {
         }
       };
 
-      var dataCube = DataCube.fromJS(legacyDataCubeJS, context);
+      var dataCube = fromConfig(legacyDataCubeJS, druidCluster);
 
-      expect(dataCube.toJS()).to.deep.equal({
+      expect(dataCube).to.deep.equal({
         attributeOverrides: [
           {
             name: "page",
@@ -344,7 +278,7 @@ describe("DataCube", () => {
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      var dataCube = DataCube.fromJS({
+      var dataCube = fromConfig({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -383,9 +317,9 @@ describe("DataCube", () => {
             formula: "$main.sum($added) / $main.sum($deleted)"
           }
         ]
-      }, context);
+      }, druidCluster);
 
-      expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
+      expect(AttributeInfo.toJSs(deduceAttributes(dataCube))).to.deep.equal([
         {
           name: "__time",
           type: "TIME"
@@ -414,7 +348,7 @@ describe("DataCube", () => {
     });
 
     it("omits unsupported expressions", () => {
-      var dataCube = DataCube.fromJS({
+      var dataCube = fromConfig({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -440,9 +374,9 @@ describe("DataCube", () => {
             formula: "$main.quantile($click_histogram,0.95)"
           }
         ]
-      }, context);
+      }, druidCluster);
 
-      expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
+      expect(AttributeInfo.toJSs(deduceAttributes(dataCube))).to.deep.equal([
         {
           name: "__time",
           type: "TIME"
@@ -461,7 +395,7 @@ describe("DataCube", () => {
   });
 
   describe("#addAttributes", () => {
-    var dataCubeStub = DataCube.fromJS({
+    const dataCubeStub = fromConfig({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -694,14 +628,14 @@ describe("DataCube", () => {
         });*/
 
     it("works with existing dimension", () => {
-      var attributes1 = AttributeInfo.fromJSs([
+      const attributes1 = AttributeInfo.fromJSs([
         { name: "__time", type: "TIME" },
         { name: "added", type: "NUMBER" },
         { name: "added!!!", type: "NUMBER" },
         { name: "deleted", type: "NUMBER" }
       ]);
 
-      var dataCubeWithDim = DataCube.fromJS({
+      const dataCubeWithDim = fromConfig({
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -724,14 +658,14 @@ describe("DataCube", () => {
         ]
       });
 
-      var dataCube = dataCubeWithDim.addAttributes(attributes1);
-      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(["deleted"]);
+      const dataCube = addAttributes(dataCubeWithDim, attributes1);
+      expect(Object.keys(dataCube.measures.byName)).to.deep.equal(["deleted"]);
     });
 
   });
 
   describe("#addAttributes (new dim)", () => {
-    var dataCube = DataCube.fromJS({
+    const dataCube = fromConfig({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -745,7 +679,7 @@ describe("DataCube", () => {
     });
 
     it("adds new dimensions", () => {
-      var columns: any = [
+      const columns: any = [
         { name: "__time", type: "TIME" },
         { name: "added", makerAction: { action: "sum", expression: { name: "added", op: "ref" } }, type: "NUMBER", unsplitable: true },
         { name: "count", makerAction: { action: "count" }, type: "NUMBER", unsplitable: true },
@@ -754,49 +688,23 @@ describe("DataCube", () => {
         { name: "page_unique", special: "unique", type: "STRING" }
       ];
 
-      var dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube1 = addAttributes(dataCube, AttributeInfo.fromJSs(columns));
 
-      expect(dataCube1.toJS().dimensions).to.deep.equal([
-        {
-          kind: "time",
-          name: "__time",
-          title: "Time",
-          formula: "$__time"
-        },
-        {
-          kind: "string",
-          name: "page",
-          title: "Page",
-          formula: "$page"
-        }
+      expect(allDimensions(dataCube1.dimensions)).to.deep.equal([
+        createDimension("time", "__time", $("__time")),
+        createDimension("string", "page", $("page"))
       ]);
 
       columns.push({ name: "channel", type: "STRING" });
-      var dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube2 = addAttributes(dataCube1, AttributeInfo.fromJSs(columns));
 
-      expect(dataCube2.toJS().dimensions).to.deep.equal([
-        {
-          kind: "time",
-          name: "__time",
-          title: "Time",
-          formula: "$__time"
-        },
-        {
-          kind: "string",
-          name: "page",
-          title: "Page",
-          formula: "$page"
-        },
-        {
-          kind: "string",
-          name: "channel",
-          title: "Channel",
-          formula: "$channel"
-        }
+      expect(allDimensions(dataCube2.dimensions)).to.deep.equal([
+        createDimension("time", "__time", $("__time")),
+        createDimension("string", "page", $("page")),
+        createDimension("string", "channel", $("channel"))
       ]);
 
     });
 
   });
-
 });

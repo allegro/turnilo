@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
-import { Sources } from "../../../common/models/sources/sources";
+import { ClientSources } from "../../../common/models/sources/sources";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Ajax } from "../../utils/ajax/ajax";
 import { Loader } from "../loader/loader";
@@ -34,7 +34,7 @@ interface SourcesRequestLoading extends SourcesRequestBase {
 
 interface SourcesRequestLoaded extends SourcesRequestBase {
   status: SourcesRequestStatus.LOADED;
-  sources: Sources;
+  sources: ClientSources;
 }
 
 interface SourcesRequestLoadError extends SourcesRequestBase {
@@ -45,7 +45,7 @@ interface SourcesRequestLoadError extends SourcesRequestBase {
 type SourcesRequest = SourcesRequestLoading | SourcesRequestLoadError | SourcesRequestLoaded;
 
 const loading: SourcesRequest = { status: SourcesRequestStatus.LOADING };
-const loaded = (sources: Sources): SourcesRequest => ({
+const loaded = (sources: ClientSources): SourcesRequest => ({
   status: SourcesRequestStatus.LOADED,
   sources
 });
@@ -56,7 +56,7 @@ const errored = (error: Error): SourcesRequest => ({
 
 interface SourcesProviderProps {
   appSettings: ClientAppSettings;
-  children: Unary<{ sources: Sources }, React.ReactNode>;
+  children: Unary<{ sources: ClientSources }, React.ReactNode>;
 }
 
 interface SourcesProviderState {

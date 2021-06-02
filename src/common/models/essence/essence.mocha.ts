@@ -21,9 +21,7 @@ import { BAR_CHART_MANIFEST } from "../../visualization-manifests/bar-chart/bar-
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
-import { DataCube, Introspection } from "../data-cube/data-cube";
-import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
-import { DimensionKind } from "../dimension/dimension";
+import { twitterClientDataCube } from "../data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { timePeriod } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
@@ -38,46 +36,7 @@ import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
 describe("EssenceProps", () => {
-  var dataCubeJS = {
-    name: "twitter",
-    title: "Twitter",
-    clusterName: "druid",
-    source: "twitter",
-    introspection: ("none" as Introspection),
-    dimensions: [
-      {
-        kind: "time" as DimensionKind,
-        name: "time",
-        title: "Time",
-        formula: "$time"
-      },
-      {
-        kind: "string" as DimensionKind,
-        name: "twitterHandle",
-        title: "Twitter Handle",
-        formula: "$twitterHandle"
-      }
-    ],
-    measures: [
-      {
-        name: "count",
-        title: "count",
-        formula: "$main.count()"
-      }
-    ],
-    timeAttribute: "time",
-    defaultTimezone: "Etc/UTC",
-    defaultSplits: "time",
-    defaultDuration: "P3D",
-    defaultSortMeasure: "count",
-    defaultPinnedDimensions: ["twitterHandle"],
-    refreshRule: {
-      rule: "fixed",
-      time: new Date("2015-09-13T00:00:00Z")
-    }
-  };
-
-  const dataCube = DataCube.fromJS(dataCubeJS);
+  const dataCube = twitterClientDataCube;
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {
@@ -183,7 +142,7 @@ describe("EssenceProps", () => {
       tests.forEach(({ splits, current, series, expected }) => {
         it(`chooses ${expected.name} given splits: [${splits}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
-            DataCubeFixtures.twitter(),
+            twitterClientDataCube,
             Splits.fromSplits(splits),
             SeriesList.fromSeries(series),
             current);
@@ -286,7 +245,7 @@ describe("EssenceProps", () => {
           expect(withoutSplit.visualization).to.deep.equal(visualization);
           expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.be.true;
 
-          const toggledAgain = withoutSplit.addSeries(MeasureSeries.fromMeasure(MeasureFixtures.twitterCount()));
+          const toggledAgain = withoutSplit.addSeries(MeasureSeries.fromMeasure(MeasureFixtures.count()));
           expect(toggledAgain.visualization).to.deep.equal(visualization);
           expect(toggledAgain.visResolve.isManual(), "is manual after second toggle").to.be.true;
         });

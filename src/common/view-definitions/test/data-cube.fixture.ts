@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-import { RefExpression } from "plywood";
-import { DataCube } from "../../models/data-cube/data-cube";
-import { Dimensions } from "../../models/dimension/dimensions";
+import { ClientDataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE } from "../../models/data-cube/data-cube";
 import { dimensions, timeDimension } from "./dimension";
 import { measuresCollection } from "./measure";
 
-export const dataCube = new DataCube({
+export const dataCube: ClientDataCube = {
+  attributes: [],
   clusterName: "druid",
-  dimensions: Dimensions.fromDimensions(dimensions),
+  defaultDuration: DEFAULT_DEFAULT_DURATION,
+  defaultPinnedDimensions: [],
+  defaultSelectedMeasures: [],
+  defaultTimezone: DEFAULT_DEFAULT_TIMEZONE,
+  description: "",
+  dimensions,
+  executor: undefined,
+  maxSplits: 3,
   measures: measuresCollection,
   name: "fixture",
+  options: undefined,
+  refreshRule: undefined,
+  rollup: false,
   source: "custom",
-  timeAttribute: timeDimension.expression as RefExpression
-});
+  title: "fixture",
+  timeAttribute: timeDimension.name
+};

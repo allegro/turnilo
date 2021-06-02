@@ -17,6 +17,7 @@
 import { Duration } from "chronoshift";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
+import { isTimeAttribute } from "../../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
@@ -183,7 +184,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     const overlapError = this.validateOverlap();
 
     return <div className="cont">
-      {essence.dataCube.isTimeAttribute(dimension.expression) && this.renderLatestPresets()}
+      {isTimeAttribute(essence.dataCube, dimension.expression) && this.renderLatestPresets()}
       {this.renderButtonGroup(STRINGS.current, TimeFilterPeriod.CURRENT)}
       {this.renderButtonGroup(STRINGS.previous, TimeFilterPeriod.PREVIOUS)}
       <div className="preview preview--with-spacing">{previewText}</div>

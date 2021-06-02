@@ -16,17 +16,17 @@
 
 import { basicExecutorFactory, Dataset } from "plywood";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
-import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { twitterDataCube, wikiDataCube } from "../data-cube/data-cube.fixtures";
 import { Sources } from "./sources";
 
 export const wikiSources: Sources = {
   clusters: [ClusterFixtures.druidWikiCluster()],
-  dataCubes: [DataCubeFixtures.wiki()]
+  dataCubes: [wikiDataCube]
 };
 
 export const wikiTwitterSources: Sources = {
   clusters: [ClusterFixtures.druidWikiCluster(), ClusterFixtures.druidTwitterCluster()],
-  dataCubes: [DataCubeFixtures.wiki(), DataCubeFixtures.twitter()]
+  dataCubes: [wikiDataCube, twitterDataCube]
 };
 
 const SMALL_WIKI_DATA = [
@@ -294,9 +294,12 @@ const SMALL_WIKI_DATA = [
 
 export const wikiSourcesWithExecutor = {
   clusters: [ClusterFixtures.druidWikiCluster()],
-  dataCubes: [DataCubeFixtures.wiki().attachExecutor(basicExecutorFactory({
-    datasets: {
-      main: Dataset.fromJS(SMALL_WIKI_DATA)
-    }
-  }))]
+  dataCubes: [{
+    ...wikiDataCube,
+    executor: basicExecutorFactory({
+      datasets: {
+        main: Dataset.fromJS(SMALL_WIKI_DATA)
+      }
+    })
+  }]
 };

@@ -18,7 +18,7 @@
 import { NamedArray } from "immutable-class";
 import * as React from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -142,12 +142,12 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     if (force) this.hashToState(hash);
   }
 
-  updateCubeAndEssenceInHash = (dataCube: DataCube, essence: Essence, force: boolean) => {
+  updateCubeAndEssenceInHash = (dataCube: ClientDataCube, essence: Essence, force: boolean) => {
     const newHash = `${dataCube.name}/${(urlHashConverter.toHash(essence))}`;
     this.changeHash(newHash, force);
   };
 
-  urlForEssence = (dataCube: DataCube, essence: Essence): string => {
+  urlForEssence = (dataCube: ClientDataCube, essence: Essence): string => {
     return `${this.getUrlPrefix()}#${dataCube.name}/${(urlHashConverter.toHash(essence))}`;
   };
 

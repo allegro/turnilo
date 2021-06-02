@@ -16,7 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
 import { Splits } from "../../models/splits/splits";
@@ -31,7 +31,7 @@ import { ViewDefinition3 } from "./view-definition-3";
 export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
   version = 3;
 
-  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube): Essence {
+  fromViewDefinition(definition: ViewDefinition3, dataCube: ClientDataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);

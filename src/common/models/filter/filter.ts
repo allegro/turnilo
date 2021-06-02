@@ -19,15 +19,27 @@ import { Timezone } from "chronoshift";
 import { List, Record } from "immutable";
 import { Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
-import { DataCube } from "../data-cube/data-cube";
+import { ClientDataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
-import { Dimensions } from "../dimension/dimensions";
-import { FilterClause, FilterDefinition, fromJS, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
+import { Dimensions, findDimensionByName } from "../dimension/dimensions";
+import {
+  FilterClause,
+  FilterDefinition,
+  fromJS,
+  RelativeTimeFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  toExpression
+} from "../filter-clause/filter-clause";
 
 export enum FilterMode { EXCLUDE = "exclude", INCLUDE = "include", REGEX = "regex", CONTAINS = "contains" }
 
 export interface FilterValue {
   clauses: List<FilterClause>;
+}
+
+export interface FilterJS {
+  clauses: FilterDefinition[];
 }
 
 const defaultFilter: FilterValue = { clauses: List([]) };
@@ -43,7 +55,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return new Filter({ clauses: List(clauses) });
   }
 
-  static fromJS(definition: { clauses: FilterDefinition[] }): Filter {
+  static fromJS(definition: FilterJS): Filter {
     return new Filter({
       clauses: List(definition.clauses.map(def => fromJS(def)))
     });
@@ -90,8 +102,8 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.clauses.count();
   }
 
-  public toExpression(dataCube: DataCube): Expression {
-    const clauses = this.clauses.toArray().map(clause => toExpression(clause, dataCube.getDimension(clause.reference)));
+  public toExpression(dataCube: ClientDataCube): Expression {
+    const clauses = this.clauses.toArray().map(clause => toExpression(clause, findDimensionByName(dataCube.dimensions, clause.reference)));
     switch (clauses.length) {
       case 0:
         return Expression.TRUE;
@@ -175,7 +187,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public constrainToDimensions(dimensions: Dimensions): Filter {
     return this.updateClauses(clauses =>
-      clauses.filter(clause => dimensions.getDimensionByName(clause.reference)));
+      clauses.filter(clause => findDimensionByName(dimensions, clause.reference)));
   }
 
   public setExclusionForDimension(exclusion: boolean, { name }: Dimension): Filter {

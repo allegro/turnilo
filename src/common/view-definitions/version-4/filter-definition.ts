@@ -16,14 +16,16 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import {
   BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
-  NumberFilterClause, NumberRange,
+  NumberFilterClause,
+  NumberRange,
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
@@ -216,18 +218,18 @@ const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion
 };
 
 export interface FilterDefinitionConverter {
-  toFilterClause(filter: FilterClauseDefinition, dataCube: DataCube): FilterClause;
+  toFilterClause(filter: FilterClauseDefinition, dataCube: ClientDataCube): FilterClause;
 
   fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
 }
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
-  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: DataCube): FilterClause {
+  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: ClientDataCube): FilterClause {
     if (clauseDefinition.ref == null) {
       throw new Error("Dimension name cannot be empty.");
     }
 
-    const dimension = dataCube.getDimension(clauseDefinition.ref);
+    const dimension = findDimensionByName(dataCube.dimensions, clauseDefinition.ref);
 
     if (dimension == null) {
       throw new Error(`Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`);

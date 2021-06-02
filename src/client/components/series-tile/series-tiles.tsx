@@ -17,6 +17,7 @@
 import * as React from "react";
 import { ReactElement } from "react";
 import { Essence } from "../../../common/models/essence/essence";
+import { findMeasureByName } from "../../../common/models/measure/measures";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { insert } from "../../../common/utils/array/array";
@@ -86,7 +87,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
   function insertPlaceholder<T>(tiles: Array<ReactElement<T>>): Array<ReactElement<T>> {
     if (!placeholderSeries) return tiles;
     const { series, index } = placeholderSeries;
-    const measure = essence.dataCube.getMeasure(series.reference);
+    const measure = findMeasureByName(essence.dataCube.measures, series.reference);
 
     const placeholderTile = <PlaceholderSeriesTile
       key="placeholder-series-tile"

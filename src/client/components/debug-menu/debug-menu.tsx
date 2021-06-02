@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -27,7 +27,7 @@ export interface DebugMenuProps {
   openRawDataModal: Fn;
   openViewDefinitionModal: Fn;
   openDruidQueryModal: Fn;
-  dataCube: DataCube;
+  dataCube: ClientDataCube;
 }
 
 export const DebugMenu: React.SFC<DebugMenuProps> = ({ dataCube, openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {

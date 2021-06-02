@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Splits } from "../../models/splits/splits";
 import { HIGH_PRIORITY_ACTION, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/visualization-manifest/visualization-manifest";
 import { Resolutions } from "./resolutions";
@@ -34,11 +35,11 @@ export class Actions {
 
   static removeExcessiveSplits(visualizationName = "Visualization"): VisualizationDependentAction {
     return ({ splits, dataCube }) => {
-      const newSplits = splits.splits.take(dataCube.getMaxSplits());
+      const newSplits = splits.splits.take(dataCube.maxSplits);
       const excessiveSplits = splits.splits
-        .skip(dataCube.getMaxSplits())
-        .map(split => dataCube.getDimension(split.reference).title);
-      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
+        .skip(dataCube.maxSplits)
+        .map(split => findDimensionByName(dataCube.dimensions, split.reference).title);
+      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.maxSplits} splits`, [
         {
           description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,
           adjustment: {

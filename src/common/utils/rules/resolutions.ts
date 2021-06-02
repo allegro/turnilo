@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { List, OrderedSet } from "immutable";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { List } from "immutable";
+import { ClientDataCube, getDimensionsByKind } from "../../models/data-cube/data-cube";
+import { allMeasures, findMeasureByName } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { Split } from "../../models/split/split";
@@ -23,10 +24,9 @@ import { Splits } from "../../models/splits/splits";
 import { Resolution } from "../../models/visualization-manifest/visualization-manifest";
 
 export class Resolutions {
-  static someDimensions = (dataCube: DataCube): Resolution[] => {
+  static someDimensions = (dataCube: ClientDataCube): Resolution[] => {
     const numberOfSuggestedSplitDimensions = 2;
-    const suggestedSplitDimensions = dataCube
-      .getDimensionsByKind("string")
+    const suggestedSplitDimensions = getDimensionsByKind(dataCube, "string")
       .slice(0, numberOfSuggestedSplitDimensions);
 
     return suggestedSplitDimensions.map(dimension => {
@@ -39,9 +39,9 @@ export class Resolutions {
     });
   }
 
-  static defaultSelectedMeasures = (dataCube: DataCube): Resolution[] => {
-    const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || OrderedSet();
-    const measures = defaultSelectedMeasures.map(measureName => dataCube.getMeasure(measureName)).toArray();
+  static defaultSelectedMeasures = (dataCube: ClientDataCube): Resolution[] => {
+    const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || [];
+    const measures = defaultSelectedMeasures.map(measureName => findMeasureByName(dataCube.measures, measureName));
     if (measures.length === 0) {
       return [];
     }
@@ -57,8 +57,8 @@ export class Resolutions {
     ];
   }
 
-  static firstMeasure = (dataCube: DataCube): Resolution[] => {
-    const firstMeasure = dataCube.measures.first();
+  static firstMeasure = (dataCube: ClientDataCube): Resolution[] => {
+    const firstMeasure = allMeasures(dataCube.measures)[0];
     if (!firstMeasure) return [];
     return [
       {

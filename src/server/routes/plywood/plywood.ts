@@ -19,6 +19,7 @@ import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
 import { LOGGER } from "../../../common/logger/logger";
+import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { getDataCube } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { loadQueryDecorator } from "../../utils/query-decorator-loader/load-query-decorator";
@@ -77,7 +78,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       return;
     }
 
-    if (!myDataCube.executor) {
+    if (!isQueryable(myDataCube)) {
       res.status(400).send({ error: "un queryable data cube" });
       return;
     }
@@ -87,7 +88,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       return;
     }
 
-    const maxQueries = myDataCube.getMaxQueries();
+    const maxQueries = myDataCube.maxQueries;
     const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, LOGGER);
     const expression = decorator(parsedExpression, req);
     try {

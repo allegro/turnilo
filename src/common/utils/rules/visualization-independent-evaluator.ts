@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { SeriesList } from "../../models/series-list/series-list";
 import { Actions } from "./actions";
 import { Predicates } from "./predicates";
@@ -26,7 +26,7 @@ export interface PredicateVariables {
 }
 
 export interface ActionVariables {
-  dataCube: DataCube;
+  dataCube: ClientDataCube;
 }
 
 export type VisualizationIndependentPredicate = Predicate<PredicateVariables>;

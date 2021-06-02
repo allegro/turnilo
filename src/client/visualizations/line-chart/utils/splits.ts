@@ -15,11 +15,12 @@
  */
 
 import { Dimension } from "../../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../../common/models/dimension/dimensions";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Split } from "../../../../common/models/split/split";
 
 function dimensionForSplit(essence: Essence, split: Split): Dimension {
-   return essence.dataCube.getDimension(split.reference);
+   return findDimensionByName(essence.dataCube.dimensions, split.reference);
 }
 
 export function getContinuousSplit({ splits: { splits } }: Essence): Split {

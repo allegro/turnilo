@@ -15,108 +15,85 @@
  * limitations under the License.
  */
 
-import { Dimension, DimensionJS } from "./dimension";
+import { $, Expression } from "plywood";
+import { createDimension, Dimension } from "./dimension";
 
 export class DimensionFixtures {
-  public static get COUNTRY_STRING_JS(): DimensionJS {
+  static wikiTime(): Dimension {
+    return createDimension("time", "time", $("time"));
+  }
+
+  static wikiIsRobot(): Dimension {
+    return createDimension("boolean", "isRobot", $("isRobot"));
+  }
+
+  static wikiChannel(): Dimension {
+    return createDimension("string", "channel", $("channel"));
+  }
+
+  static countryString() {
     return {
-      name: "country",
-      title: "important countries",
-      formula: "$country",
-      kind: "string"
+      ...createDimension("string", "country", $("country")),
+      title: "important countries"
     };
   }
 
-  public static get COUNTRY_URL_JS(): DimensionJS {
+  static countryURL() {
     return {
-      name: "country",
+      ...createDimension("string", "country", $("country")),
       title: "important countries",
-      formula: "$country",
-      kind: "string",
       url: "https://www.country.com/%s" // country.com redirects to a CMT.com. Could've been worse.
     };
   }
 
-  public static get TIME_JS(): DimensionJS {
+  static time() {
     return {
-      name: "time",
-      title: "time",
-      formula: "$time",
-      kind: "time",
+      ...createDimension("time", "time", $("time")),
       url: "http://www.time.com/%s"
     };
   }
 
-  public static get NUMBER_JS(): DimensionJS {
-    return {
-      name: "numeric",
-      title: "Numeric",
-      formula: "$n",
-      kind: "number"
-    };
-  }
-
-  static wikiTimeJS(): DimensionJS {
-    return {
-      name: "time",
-      title: "Time",
-      formula: "$time",
-      kind: "time"
-    };
-  }
-
-  static wikiCommentLengthJS(): DimensionJS {
-    return {
-      name: "commentLength",
-      title: "Comment Length",
-      formula: "$commentLength",
-      kind: "number"
-    };
-  }
-
-  static wikiTime(): Dimension {
-    return new Dimension({
-      name: "time",
-      title: "Time",
-      formula: "$time",
-      kind: "time"
-    });
-  }
-
-  static wikiIsRobot(): Dimension {
-    return new Dimension({
-      name: "isRobot",
-      title: "Is Robot",
-      formula: "$isRobot",
-      kind: "boolean"
-    });
-  }
-
-  static wikiChannel(): Dimension {
-    return new Dimension({
-      name: "channel",
-      title: "Channel",
-      formula: "$channel"
-    });
-  }
-
-  static countryString() {
-    return Dimension.fromJS(DimensionFixtures.COUNTRY_STRING_JS);
-  }
-
-  static countryURL() {
-    return Dimension.fromJS(DimensionFixtures.COUNTRY_URL_JS);
-  }
-
-  static time() {
-    return Dimension.fromJS(DimensionFixtures.TIME_JS);
-  }
-
   static number() {
-    return Dimension.fromJS(DimensionFixtures.NUMBER_JS);
+    return createDimension("number", "numeric", $("n"));
+  }
+
+  static tweetLength() {
+    return createDimension("number", "tweetLength", $("tweetLength"));
   }
 
   static wikiCommentLength() {
-    return Dimension.fromJS(DimensionFixtures.wikiCommentLengthJS());
+    return createDimension("number", "commentLength", $("commentLength"));
+  }
+
+  static comment() {
+    return createDimension("string", "comment", $("comment"));
+  }
+
+  static commentOver100() {
+    return createDimension("boolean", "commentLengthOver100", Expression.parse("$commentLength > 100"));
+  }
+
+  static twitterHandle() {
+    return createDimension("string", "twitterHandle", $("twitterHandle"));
+  }
+
+  static namespace() {
+    return createDimension("string", "namespace", $("namespace"));
+  }
+
+  static articleName() {
+    return createDimension("string", "articleName", $("articleName"));
+  }
+
+  static page() {
+    return createDimension("string", "page", $("page"));
+  }
+
+  static userChars() {
+    return createDimension("string", "userChars", $("userChars"));
+  }
+
+  static pageLastAuthor() {
+    return createDimension("string", "page_last_author", Expression.parse("$page.lookup(page_last_author)"));
   }
 }

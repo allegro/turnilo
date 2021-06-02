@@ -33,9 +33,10 @@ import {
   TimeRange,
   TimeRangeExpression
 } from "plywood";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByExpression, findDimensionByName } from "../../models/dimension/dimensions";
 import { Essence } from "../../models/essence/essence";
 import {
   BooleanFilterClause,
@@ -49,6 +50,7 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
+import { findMeasureByName } from "../../models/measure/measures";
 import { SeriesList } from "../../models/series-list/series-list";
 import { DimensionSort, SeriesSort, Sort } from "../../models/sort/sort";
 import { kindToType, Split } from "../../models/split/split";
@@ -63,12 +65,12 @@ export type FilterSelection = Expression | string;
 export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDefinition2, Essence> {
   version = 2;
 
-  fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube): Essence {
+  fromViewDefinition(definition: ViewDefinition2, dataCube: ClientDataCube): Essence {
     const visualization = manifestByName(definition.visualization);
     const visualizationSettings = visualization.visualizationSettings.defaults;
 
     const measureNames = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
-    const series = SeriesList.fromMeasures(dataCube.measures.getMeasuresByNames(measureNames));
+    const series = SeriesList.fromMeasures(measureNames.map(name => findMeasureByName(dataCube.measures, name)));
     const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
     const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
@@ -111,7 +113,7 @@ function isRelativeTimeRangeSelection(selection: FilterSelection): selection is 
   return selection instanceof TimeRangeExpression || selection instanceof TimeBucketExpression;
 }
 
-function filterJSConverter(filter: any, dataCube: DataCube): FilterClause[] {
+function filterJSConverter(filter: any, dataCube: ClientDataCube): FilterClause[] {
   const filterExpression = Expression.fromJSLoose(filter);
   if (filterExpression instanceof LiteralExpression && filterExpression.simple) return [];
   if (filterExpression instanceof AndExpression) {
@@ -214,9 +216,9 @@ function expressionAction(expression: ChainableExpression): SupportedAction {
   throw new Error(`Unrecognized Supported Action for expression ${expression}`);
 }
 
-function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: DataCube): FilterClause {
+function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: ClientDataCube): FilterClause {
   const { expression, exclude } = extractExclude(filter);
-  const dimension = dataCube.getDimensionByExpression(expression.operand);
+  const dimension = findDimensionByExpression(dataCube.dimensions, expression.operand);
 
   if (isBooleanFilterSelection(expression.expression)) {
     return readBooleanFilterClause(expression.expression, dimension, exclude);
@@ -241,20 +243,20 @@ function isTimeBucket(action: any): boolean {
   return action.op === "timeBucket" || action.action === "timeBucket";
 }
 
-function createSort(sortAction: any, dataCube: DataCube): Sort {
+function createSort(sortAction: any, dataCube: ClientDataCube): Sort {
   if (!sortAction) return null;
   const reference = sortAction.expression.name;
   const direction = sortAction.direction;
-  if (dataCube.getDimension(sortAction.expression.name)) {
+  if (findDimensionByName(dataCube.dimensions, sortAction.expression.name)) {
     return new DimensionSort({ reference, direction });
   }
   return new SeriesSort({ reference, direction });
 }
 
-function convertSplit(split: any, dataCube: DataCube): Split {
+function convertSplit(split: any, dataCube: ClientDataCube): Split {
   const { sortAction, limitAction, bucketAction } = split;
   const expression = Expression.fromJS(split.expression);
-  const dimension = dataCube.getDimensionByExpression(expression);
+  const dimension = findDimensionByExpression(dataCube.dimensions, expression);
   const reference = dimension.name;
   const sort = createSort(sortAction, dataCube);
   const type = kindToType(dimension.kind);
@@ -263,6 +265,6 @@ function convertSplit(split: any, dataCube: DataCube): Split {
   return new Split({ type, reference, sort, limit, bucket });
 }
 
-export default function splitJSConverter(splits: any[], dataCube: DataCube): Split[] {
+export default function splitJSConverter(splits: any[], dataCube: ClientDataCube): Split[] {
   return splits.map(split => convertSplit(split, dataCube));
 }
