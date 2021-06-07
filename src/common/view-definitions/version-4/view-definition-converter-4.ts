@@ -21,6 +21,7 @@ import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
+import { isTruthy } from "../../utils/general/general";
 import { manifestByName } from "../../visualization-manifests";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { filterDefinitionConverter } from "./filter-definition";
@@ -39,10 +40,29 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const visualizationSettings = fromViewDefinition(visualization, definition.visualizationSettings);
     const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
 
-    const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
+    const clauses = definition.filters
+      .map(fc => {
+        try {
+          return filterDefinitionConverter.toFilterClause(fc, dataCube);
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(isTruthy);
 
-    const splitDefinitions = List(definition.splits);
-    const splits = new Splits({ splits: splitDefinitions.map(sd => splitConverter.toSplitCombine(sd, dataCube)) });
+    const filter = Filter.fromClauses(clauses);
+
+    const splitDefinitions = definition.splits
+      .map(sd => {
+        try {
+          return splitConverter.toSplitCombine(sd, dataCube);
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(isTruthy);
+
+    const splits = new Splits({ splits: List(splitDefinitions) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const pinnedSort = definition.pinnedSort;

@@ -197,6 +197,9 @@ export interface SplitDefinitionConverter {
 export const splitConverter: SplitDefinitionConverter = {
   toSplitCombine(split: SplitDefinition, dataCube: ClientDataCube): Split {
     const dimension = findDimensionByName(dataCube.dimensions, split.dimension);
+    if (dimension == null) {
+      throw new Error(`Dimension ${split.dimension} not found in data cube ${dataCube.name}.`);
+    }
     return splitConversions[split.type].toSplitCombine(split, dimension);
   },
 
