@@ -97,10 +97,14 @@ function fromSort(sort: Sort): SplitSortDefinition {
   return { ref, ...rest };
 }
 
+function firstLimitValue(dimension: Dimension): number {
+  return dimension.limits[0];
+}
+
 function toLimit(limit: unknown, dimension: Dimension): number | null {
   if (limit === null) return null;
   if (isNumber(limit) && isFiniteNumber(limit)) return limit;
-  return dimension.limits[0];
+  return firstLimitValue(dimension);
 }
 
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
