@@ -230,6 +230,217 @@ dataCubes:
         title: Count
         formula: $main.sum($count)
 
+  - name: 2016-rio
+    title: Rio 2016 Olympics Athletes
+    description: |
+      All athletes attending Rio 2016 Olympics
+
+    clusterName: native
+    source: assets/data/rio2016-athletes.csv
+    introspection: no-autofill
+    timeAttribute: __time
+    refreshRule:
+      rule: fixed
+      time: 2016-01-01T00:00:00.000Z
+
+    defaultDuration: P1M
+    defaultSortMeasure: gold
+    defaultSelectedMeasures:
+      - gold
+      - silver
+      - bronze
+    defaultPinnedDimensions:
+      - sex
+      - sport
+
+    dimensions:
+      - name: __time
+        kind: time
+        formula: $__time
+      - name: nationality
+        formula: $nationality
+      - name: sex
+        formula: $sex
+      - name: sport
+        formula: $sport
+      - name: weight
+        formula: $weight
+        kind: number
+      - name: height
+        formula: $height
+        kind: number
+    measures:
+      - name: gold
+        title: Gold medals
+        formula: $main.sum($gold)
+        format: 0,0a
+      - name: silver
+        title: Silver medals
+        formula: $main.sum($silver)
+        format: 0,0a
+      - name: bronze
+        title: Bronze medals
+        formula: $main.sum($bronze)
+        format: 0,0a
+
+  - name: 2019-weather
+    title: Weather in 2019
+    description: |
+      Weather data for 2019 for USA cities
+
+    clusterName: native
+    source: assets/data/2019-weather.json
+    introspection: no-autofill
+    timeAttribute: time
+    refreshRule:
+      rule: fixed
+      time: 2019-12-31T00:00:00.000Z
+
+    defaultDuration: P1M
+    defaultSortMeasure: min_temp
+    defaultSelectedMeasures:
+      - min_temp
+      - max_temp
+      - precipitation
+    defaultPinnedDimensions:
+      - city
+
+    dimensions:
+      - name: time
+        kind: time
+        formula: $time
+      - name: city
+        formula: $city
+      - name: conditions
+        formula: $contitions
+        multiValue: true
+    measures:
+      - name: temperatures
+        measures:
+          - name: min_temp
+            title: Minimal temperature
+            formula: $main.min($min_temp)
+          - name: max_temp
+            title: Maximal temperature
+            formula: $main.max($max_temp)
+      - name: wind_speed
+        title: Average wind speed
+        formula: $main.average($wind_speed)
+      - name: precipitation
+        title: Average precipitation
+        formula: $main.average($precipitation)
+        format: "0,0.00a"
+        units: "%"
+      - name: cloud_cover
+        title: Average cloud cover
+        formula: $main.average($cloud_cover)
+        format: "0,0.00a"
+        units: "%"
+
+  - name: lax-flights
+    title: LAX Flights
+    description: |
+      LAX Passenger Traffic By Terminal
+
+    clusterName: native
+    source: assets/data/lax-flights.csv
+    introspection: no-autofill
+    timeAttribute: __time
+    refreshRule:
+      rule: fixed
+      time: 2019-03-01T00:00:00.000Z
+
+    defaultDuration: P1Y
+    defaultSortMeasure: arrivals
+    defaultSelectedMeasures:
+      - arrivals
+      - departures
+    defaultPinnedDimensions:
+      - flight
+
+    dimensions:
+      - name: __time
+        kind: time
+        latestPeriodDurations:
+          - P6M
+          - P1Y
+          - P2Y
+          - P3Y
+          - P6Y
+        timeShiftDurations:
+          - P1Y
+          - P2Y
+          - P2Y
+          - P5Y
+        granularities:
+          - P1M
+          - P3M
+          - P6M
+          - P1Y
+          - P2Y
+        formula: $__time
+      - name: terminal
+        title: Terminal
+        formula: $terminal
+      - name: flight
+        title: Flight type
+        formula: $flight
+    measures:
+      - name: arrivals
+        title: Arriving Passenger Count
+        formula: $main.sum($arrivals)
+      - name: departures
+        title: Departing Passenger Count
+        formula: $main.sum($departures)
+
+  - name: penguins
+    title: Palmer Penguins
+    description: |
+      This data cube contains size measurements for three penguin species observed on three islands in the Palmer Archipelago, Antarctica.
+
+    clusterName: native
+    source: assets/data/palmer-penguins.csv
+    introspection: no-autofill
+    timeAttribute: __time
+    refreshRule:
+      rule: fixed
+      time: 2009-01-01T00:00:00.000Z
+
+    defaultDuration: P1D
+    defaultSortMeasure: body_mass
+    defaultSelectedMeasures:
+      - body_mass
+      - bill_length
+      - bill_depth
+      - flipper_length
+    defaultPinnedDimensions:
+      - species
+
+    dimensions:
+      - name: __time
+        kind: time
+        formula: $__time
+      - name: species
+        title: Species
+        formula: $species
+      - name: island
+        formula: $island
+      - name: sex
+        formula: $sex
+    measures:
+      - name: bill_length
+        title: Average bill length
+        formula: $main.average($bill_length)
+      - name: bill_depth
+        title: Average bill depth
+        formula: $main.average($bill_depth)
+      - name: flipper_length
+        title: Average flipper length
+        formula: $main.average($flipper_length)
+      - name: body_mass
+        title: Average body mass
+        formula: $main.average($body_mass)
+
   - name: wiki
     title: Wikipedia
     description: |
