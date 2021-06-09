@@ -312,7 +312,7 @@ dataCubes:
       - name: city
         formula: $city
       - name: conditions
-        formula: $contitions
+        formula: $conditions
         multiValue: true
     measures:
       - name: temperatures
