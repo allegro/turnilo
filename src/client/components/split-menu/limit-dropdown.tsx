@@ -15,7 +15,6 @@
  */
 
 import * as React from "react";
-import { AVAILABLE_LIMITS } from "../../../common/limit/limit";
 import { Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { Dropdown } from "../dropdown/dropdown";
@@ -24,22 +23,24 @@ function formatLimit(limit: number): string {
   return limit === null ? "None" : String(limit);
 }
 
-function calculateLimits(includeNone: boolean) {
-  if (!includeNone) return AVAILABLE_LIMITS;
-  return [...AVAILABLE_LIMITS, null];
+// TODO: Review again when fixing time split menu in #756
+function calculateLimits(limits: number[], includeNone: boolean) {
+  if (!includeNone) return limits;
+  return [...limits, null];
 }
 
 export interface LimitDropdownProps {
-  limit: number;
+  selectedLimit: number;
+  limits: number[];
   includeNone: boolean;
   onLimitSelect: Unary<number, void>;
 }
 
-export const LimitDropdown: React.SFC<LimitDropdownProps> = ({ onLimitSelect, limit, includeNone }) => {
+export const LimitDropdown: React.SFC<LimitDropdownProps> = ({ onLimitSelect, limits, selectedLimit, includeNone }) => {
   return <Dropdown<number | string>
     label={STRINGS.limit}
-    items={calculateLimits(includeNone)}
-    selectedItem={limit}
+    items={calculateLimits(limits, includeNone)}
+    selectedItem={selectedLimit}
     renderItem={formatLimit}
     onSelect={onLimitSelect}
   />;

@@ -157,8 +157,9 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       {this.renderSortDropdown()}
       <LimitDropdown
         onLimitSelect={this.saveLimit}
-        limit={limit}
-        includeNone={isContinuous(dimension)} />
+       selectedLimit={limit}
+        includeNone={isContinuous(dimension)}
+        limits={dimension.limits}/>
       <div className="button-bar">
         <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
