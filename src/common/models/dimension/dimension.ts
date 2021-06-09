@@ -21,6 +21,7 @@ import {
   DEFAULT_LATEST_PERIOD_DURATIONS,
   DEFAULT_TIME_SHIFT_DURATIONS
 } from "../../../client/components/filter-menu/time-filter-menu/presets";
+import { DEFAULT_LIMITS } from "../../limit/limit";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
 import { GranularityJS } from "../granularity/granularity";
 import { Bucket } from "../split/split";
@@ -37,6 +38,7 @@ interface BaseDimension {
   title: string;
   description?: string;
   expression: Expression;
+  limits: number[];
   url?: string;
   sortStrategy?: string;
 }
@@ -99,6 +101,7 @@ export interface DimensionJS {
   granularities?: GranularityJS[];
   timeShiftDurations?: string[];
   latestPeriodDurations?: string[];
+  limits?: number[];
   bucketedBy?: GranularityJS;
   bucketingStrategy?: BucketingStrategy;
   sortStrategy?: string;
@@ -121,6 +124,7 @@ export function fromConfig(config: DimensionJS & LegacyDimension): Dimension {
   const kind = rawKind ? readKind(rawKind) : typeToKind(config.type);
   const expression = readExpression(config);
   const title = rawTitle || makeTitle(name);
+  const limits = readLimits(config);
   switch (kind) {
     case "string": {
       const { multiValue } = config;
@@ -130,6 +134,7 @@ export function fromConfig(config: DimensionJS & LegacyDimension): Dimension {
         name,
         title,
         expression,
+        limits,
         multiValue: Boolean(multiValue),
         sortStrategy,
         kind
@@ -142,6 +147,7 @@ export function fromConfig(config: DimensionJS & LegacyDimension): Dimension {
         name,
         title,
         expression,
+        limits,
         sortStrategy,
         kind
       };
@@ -159,6 +165,7 @@ export function fromConfig(config: DimensionJS & LegacyDimension): Dimension {
         url,
         description,
         expression,
+        limits,
         bucketedBy: bucketedBy && Duration.fromJS(bucketedBy as string),
         bucketingStrategy: bucketingStrategy && bucketingStrategies[bucketingStrategy],
         granularities: readGranularities(config, "time"),
@@ -180,12 +187,21 @@ export function fromConfig(config: DimensionJS & LegacyDimension): Dimension {
         url,
         description,
         expression,
+        limits,
         bucketedBy: bucketedBy && Number(bucketedBy),
         bucketingStrategy: bucketingStrategy && bucketingStrategies[bucketingStrategy],
         granularities: readGranularities(config, "number")
       };
     }
   }
+}
+
+function readLimits({ name, limits }: DimensionJS): number[] {
+  if (!limits) return DEFAULT_LIMITS;
+  if (!Array.isArray(limits)) {
+    throw new Error(`must have list of valid limits in dimension '${name}'`);
+  }
+  return limits;
 }
 
 function readLatestPeriodDurations({ name, latestPeriodDurations }: DimensionJS): Duration[] {
@@ -226,6 +242,7 @@ interface SerializedStringDimension {
   title: string;
   description?: string;
   expression: ExpressionJS;
+  limits: number[];
   url?: string;
   sortStrategy?: string;
   multiValue: boolean;
@@ -237,6 +254,7 @@ interface SerializedBooleanDimension {
   title: string;
   description?: string;
   expression: ExpressionJS;
+  limits: number[];
   url?: string;
   sortStrategy?: string;
 }
@@ -247,6 +265,7 @@ interface SerializedNumberDimension {
   title: string;
   description?: string;
   expression: ExpressionJS;
+  limits: number[];
   url?: string;
   sortStrategy?: string;
   granularities?: number[];
@@ -260,6 +279,7 @@ interface SerializedTimeDimension {
   title: string;
   description?: string;
   expression: ExpressionJS;
+  limits: number[];
   url?: string;
   sortStrategy?: string;
   granularities?: string[];
@@ -276,7 +296,7 @@ export type SerializedDimension =
   | SerializedTimeDimension;
 
 export function serialize(dimension: Dimension): SerializedDimension {
-  const { name, description, expression, title, sortStrategy, url } = dimension;
+  const { name, description, expression, title, sortStrategy, url, limits } = dimension;
 
   // NOTE: If we move kind to destructuring above, typescript would not infer proper Dimension variant
   switch (dimension.kind) {
@@ -288,6 +308,7 @@ export function serialize(dimension: Dimension): SerializedDimension {
         name,
         title,
         expression: expression.toJS(),
+        limits,
         multiValue,
         sortStrategy,
         kind: dimension.kind
@@ -300,6 +321,7 @@ export function serialize(dimension: Dimension): SerializedDimension {
         name,
         title,
         expression: expression.toJS(),
+        limits,
         sortStrategy,
         kind: dimension.kind
       };
@@ -311,6 +333,7 @@ export function serialize(dimension: Dimension): SerializedDimension {
         name,
         title,
         expression: expression.toJS(),
+        limits,
         sortStrategy,
         bucketingStrategy,
         bucketedBy: bucketedBy && bucketedBy.toJS(),
@@ -328,6 +351,7 @@ export function serialize(dimension: Dimension): SerializedDimension {
         name,
         title,
         expression: expression.toJS(),
+        limits,
         sortStrategy,
         bucketingStrategy,
         bucketedBy,
@@ -357,6 +381,7 @@ export function createDimension(kind: DimensionKind, name: string, expression: E
         name,
         title: makeTitle(name),
         expression,
+        limits: DEFAULT_LIMITS,
         multiValue: Boolean(multiValue)
       };
     case "boolean":
@@ -364,6 +389,7 @@ export function createDimension(kind: DimensionKind, name: string, expression: E
         kind,
         name,
         title: makeTitle(name),
+        limits: DEFAULT_LIMITS,
         expression
       };
     case "time":
@@ -372,6 +398,7 @@ export function createDimension(kind: DimensionKind, name: string, expression: E
         timeShiftDurations: DEFAULT_TIME_SHIFTS,
         kind,
         name,
+        limits: DEFAULT_LIMITS,
         title: makeTitle(name),
         expression
       };
@@ -379,6 +406,7 @@ export function createDimension(kind: DimensionKind, name: string, expression: E
       return {
         kind,
         name,
+        limits: DEFAULT_LIMITS,
         title: makeTitle(name),
         expression
       };
