@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
-import { Dimension } from "../../../../common/models/dimension/dimension";
+import { TimeDimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Locale } from "../../../../common/models/locale/locale";
@@ -61,7 +61,7 @@ export interface TimeFilterMenuProps {
   timekeeper: Timekeeper;
   essence: Essence;
   locale: Locale;
-  dimension: Dimension;
+  dimension: TimeDimension;
   onClose: Fn;
   containerStage?: Stage;
   openOn: Element;

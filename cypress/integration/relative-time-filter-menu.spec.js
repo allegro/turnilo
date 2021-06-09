@@ -9,6 +9,7 @@ context("Relative Time Filter Menu", () => {
   const filterMenuOkButton = () => timeFilter().find(".button.primary");
   const latestSelector = () => timeFilter().find(".button-group:contains('Latest')");
   const latestPreset = (preset) => latestSelector().find(`.group-member:contains(${preset})`);
+  const latestDayPreset = () => latestPreset("D").first();
   const currentSelector = () => timeFilter().find(".button-group:contains('Current')");
   const currentPreset = (preset) => currentSelector().find(`.group-member:contains(${preset})`);
   const previousSelector = () => timeFilter().find(".button-group:contains('Previous')");
@@ -43,7 +44,7 @@ context("Relative Time Filter Menu", () => {
     });
 
     it("should mark selected preset", () => {
-      latestPreset("1D").should("have.class", "selected");
+      latestDayPreset().should("have.class", "selected");
     });
 
     it("should mark selected time shift", () => {
@@ -60,7 +61,7 @@ context("Relative Time Filter Menu", () => {
 
     it("should disable Ok button after reverting preset", () => {
       currentPreset("D").click();
-      latestPreset("1D").click();
+      latestDayPreset().click();
 
       filterMenuOkButton().should("be.disabled");
     });

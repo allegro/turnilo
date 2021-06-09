@@ -18,7 +18,7 @@ import { Duration } from "chronoshift";
 import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { isTimeAttribute } from "../../../../common/models/data-cube/data-cube";
-import { Dimension } from "../../../../common/models/dimension/dimension";
+import { TimeDimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
@@ -30,14 +30,15 @@ import { formatTimeRange } from "../../../../common/utils/time/time";
 import { STRINGS } from "../../../config/constants";
 import { ButtonGroup } from "../../button-group/button-group";
 import { Button } from "../../button/button";
+import { Preset } from "../../input-with-presets/input-with-presets";
 import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
-import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
+import { getTimeFilterPresets, normalizeDurationName } from "./presets";
 import { TimeShiftSelector } from "./time-shift-selector";
 
 export interface PresetTimeTabProps {
   essence: Essence;
   timekeeper: Timekeeper;
-  dimension: Dimension;
+  dimension: TimeDimension;
   clicker: Clicker;
   onClose: Fn;
 }
@@ -48,7 +49,7 @@ export interface PresetTimeTabState {
   timeShift: string;
 }
 
-function initialState(essence: Essence, dimension: Dimension): PresetTimeTabState {
+function initialState(essence: Essence, dimension: TimeDimension): PresetTimeTabState {
   const filterClause = essence.filter.getClauseForDimension(dimension);
   const timeShift = essence.timeShift.toJS();
   if (filterClause instanceof RelativeTimeFilterClause) {
@@ -130,9 +131,13 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
   }
 
   private renderLatestPresets() {
+    const { dimension } = this.props;
     const { filterDuration, filterPeriod } = this.state;
-    const presets = LATEST_PRESETS.map(({ name, duration }: TimeFilterPreset) => {
-      return { name, identity: duration };
+    const presets: Array<Preset<string>> = dimension.latestPeriodDurations.map(duration => {
+      return {
+        name: normalizeDurationName(duration.toJS()),
+        identity: duration.toJS()
+      };
     });
 
     const latestPeriod = filterPeriod === TimeFilterPeriod.LATEST;
@@ -145,7 +150,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       placeholder={STRINGS.durationsExamples} />;
   }
 
-  private renderButtonGroup(title: string, period: TimeFilterPeriod) {
+  private renderButtonGroup(title: string, period: TimeFilterPeriod.CURRENT | TimeFilterPeriod.PREVIOUS) {
     const { filterDuration, filterPeriod } = this.state;
     const activePeriod = period === filterPeriod;
     const presets = getTimeFilterPresets(period);
@@ -189,6 +194,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       {this.renderButtonGroup(STRINGS.previous, TimeFilterPeriod.PREVIOUS)}
       <div className="preview preview--with-spacing">{previewText}</div>
       <TimeShiftSelector
+        dimension={dimension}
         shift={timeShift}
         time={previewFilter}
         timezone={essence.timezone}

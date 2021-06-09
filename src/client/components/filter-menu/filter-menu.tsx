@@ -43,16 +43,16 @@ export interface FilterMenuProps {
   inside?: Element;
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = (props: FilterMenuProps) => {
-  if (!props.dimension) return null;
-  switch (props.dimension.kind) {
+export const FilterMenu: React.SFC<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
+  if (!dimension) return null;
+  switch (dimension.kind) {
     case "time":
-      return <TimeFilterMenu {...props} />;
+      return <TimeFilterMenu dimension={dimension} {...props} />;
     case "boolean":
-      return <BooleanFilterMenu {...props} />;
+      return <BooleanFilterMenu dimension={dimension}{...props} />;
     case "number":
-      return <NumberFilterMenu {...props} />;
+      return <NumberFilterMenu dimension={dimension} {...props} />;
     default:
-      return <StringFilterMenu {...props} />;
+      return <StringFilterMenu dimension={dimension}{...props} />;
   }
 };
