@@ -41,6 +41,7 @@ import { MeasureRows } from "./measure-rows";
 
 interface GridState extends BaseVisualizationState {
   segmentWidth: number;
+  scrollTop: number;
 }
 
 export class Grid extends BaseVisualization<GridState> {
@@ -54,11 +55,12 @@ export class Grid extends BaseVisualization<GridState> {
   getDefaultState(): GridState {
     return {
       segmentWidth: SEGMENT_WIDTH,
+      scrollTop: 0,
       ...super.getDefaultState()
     };
   }
 
-  setScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
+  setScroll = (scrollTop: number) => this.setState({ scrollTop });
 
   setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
 
@@ -89,6 +91,10 @@ export class Grid extends BaseVisualization<GridState> {
     }
 
     return SEGMENT_WIDTH;
+  }
+
+  deriveDatasetState(dataset: Dataset): Partial<GridState> {
+    return { scrollTop: 0 };
   }
 
   getSegmentWidth(): number {

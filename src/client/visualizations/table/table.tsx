@@ -55,6 +55,7 @@ export interface TableState extends BaseVisualizationState {
   flatData?: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
+  scrollTop: number;
 }
 
 export class Table extends BaseVisualization<TableState> {
@@ -66,6 +67,7 @@ export class Table extends BaseVisualization<TableState> {
       flatData: null,
       hoverRow: null,
       segmentWidth: SEGMENT_WIDTH,
+      scrollTop: 0,
       ...super.getDefaultState()
     };
   }
@@ -165,7 +167,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   };
 
-  setScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
+  setScroll = (scrollTop: number) => this.setState({ scrollTop });
 
   setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
 
@@ -180,7 +182,7 @@ export class Table extends BaseVisualization<TableState> {
     if (!this.props.essence.splits.length()) return {};
     const flatDataset = dataset.flatten(this.flattenOptions());
     const flatData = flatDataset.data;
-    return { flatData };
+    return { flatData, scrollTop: 0 };
   }
 
   private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {

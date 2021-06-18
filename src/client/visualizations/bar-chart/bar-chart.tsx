@@ -77,6 +77,8 @@ export interface BarChartState extends BaseVisualizationState {
   selectionInfo?: BubbleInfo;
   scrollerYPosition?: number;
   scrollerXPosition?: number;
+  scrollTop: number;
+  scrollLeft: number;
 
   // Precalculated stuff
   flatData?: PseudoDatum[];
@@ -154,7 +156,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
   private scroller = React.createRef<Scroller>();
 
   getDefaultState(): BarChartState {
-    return { hoverInfo: null, maxNumberOfLeaves: [], flatData: [], ...super.getDefaultState() };
+    return {
+      hoverInfo: null,
+      maxNumberOfLeaves: [],
+      flatData: [],
+      scrollTop: 0,
+      scrollLeft: 0,
+      ...super.getDefaultState()
+    };
   }
 
   componentDidUpdate() {
