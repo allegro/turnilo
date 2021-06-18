@@ -20,13 +20,11 @@ import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Series } from "../../../common/models/series/series";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Visualization } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { debounceWithPromise, noop } from "../../../common/utils/functional/functional";
+import { debounceWithPromise } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
-import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
 import { classNames } from "../../utils/dom/dom";
@@ -36,7 +34,6 @@ import { Highlight } from "./highlight";
 
 export interface BaseVisualizationState {
   datasetLoad?: DatasetLoad;
-  dragOnSeries: Series | null;
   highlight: Highlight | null;
 }
 
@@ -52,16 +49,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   protected getDefaultState(): BaseVisualizationState {
     return {
       datasetLoad: loading,
-      highlight: null,
-      dragOnSeries: null
+      highlight: null
     };
   }
-
-  protected globalMouseMoveListener: (e: MouseEvent) => void = noop;
-
-  protected globalMouseUpListener: (e: MouseEvent) => void = noop;
-
-  protected globalKeyDownListener: (e: KeyboardEvent) => void = noop;
 
   private lastQueryEssence: Essence = null;
 
@@ -142,7 +132,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return this.differentVisualizationDefinition(nextProps);
   }
 
-  protected differentVisualizationDefinition(nextProps: VisualizationProps) {
+  private differentVisualizationDefinition(nextProps: VisualizationProps) {
     const { essence, timekeeper } = this.props;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
@@ -215,10 +205,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const { datasetLoad } = this.state;
 
     return <div className={classNames("base-visualization", this.className)}>
-      <GlobalEventListener
-        mouseMove={this.globalMouseMoveListener}
-        mouseUp={this.globalMouseUpListener}
-        keyDown={this.globalKeyDownListener} />
       {isLoaded(datasetLoad) && this.renderInternals(datasetLoad.dataset)}
       {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
       {isLoading(datasetLoad) && <Loader />}
