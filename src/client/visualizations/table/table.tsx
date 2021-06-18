@@ -108,18 +108,18 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   private highlightRow(datum: Datum) {
-    const { essence: { splits } } = this.props;
+    const { essence: { splits }, highlight, saveHighlight, dropHighlight } = this.props;
     const rowHighlight = getFilterFromDatum(splits, datum);
 
     if (!rowHighlight) return;
 
-    const alreadyHighlighted = this.hasHighlight() && rowHighlight.equals(this.getHighlightClauses());
+    const alreadyHighlighted = highlight !== null && rowHighlight.equals(highlight.clauses);
     if (alreadyHighlighted) {
-      this.dropHighlight();
+      dropHighlight();
       return;
     }
 
-    this.highlight(rowHighlight, null);
+    saveHighlight(rowHighlight, null);
   }
 
   private calculateMousePosition(x: number, y: number, part: ScrollerPart): PositionHover {
@@ -208,17 +208,17 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   private highlightedRowIndex(flatData?: PseudoDatum[]): number | null {
-    const { essence } = this.props;
+    const { essence, highlight } = this.props;
     if (!flatData) return null;
-    if (!this.hasHighlight()) return null;
+    if (highlight === null) return null;
     const { splits } = essence;
-    const index = flatData.findIndex(d => this.getHighlightClauses().equals(getFilterFromDatum(splits, d)));
+    const index = flatData.findIndex(d => highlight.clauses.equals(getFilterFromDatum(splits, d)));
     if (index >= 0) return index;
     return null;
   }
 
   protected renderInternals() {
-    const { essence, stage } = this.props;
+    const { essence, stage, acceptHighlight, dropHighlight } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const collapseRows = this.shouldCollapseRows();
 
@@ -304,8 +304,8 @@ export class Table extends BaseVisualization<TableState> {
         title={nestedSplitName(flatData[highlightedRowIndex], essence)}
         left={stage.x + stage.width / 2}
         top={stage.y + HEADER_HEIGHT + (highlightedRowIndex * ROW_HEIGHT) - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-        acceptHighlight={this.acceptHighlight}
-        dropHighlight={this.dropHighlight} />}
+        acceptHighlight={acceptHighlight}
+        dropHighlight={dropHighlight} />}
     </div>;
   }
 }

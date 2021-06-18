@@ -36,7 +36,6 @@ import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Binary, Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
@@ -62,6 +61,7 @@ import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations";
+import { HighlightController } from "../../visualizations/highlight-controller/highlight-controller";
 import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
@@ -732,7 +732,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private visElement() {
     const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
-    const visProps: VisualizationProps = {
+    const visProps = {
       refreshRequestTimestamp: lastRefreshRequestTimestamp,
       essence,
       clicker: this.clicker,
@@ -743,6 +743,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       }
     };
 
-    return React.createElement(getVisualizationComponent(essence.visualization), visProps);
+    return <HighlightController essence={essence} clicker={this.clicker}>
+      {highlightProps =>
+        React.createElement(getVisualizationComponent(essence.visualization), { ...visProps, ...highlightProps })}
+    </HighlightController>;
   }
 }
