@@ -37,8 +37,6 @@ import { Highlight } from "./highlight";
 export interface BaseVisualizationState {
   datasetLoad?: DatasetLoad;
   dragOnSeries: Series | null;
-  scrollLeft?: number;
-  scrollTop?: number;
   highlight: Highlight | null;
 }
 
@@ -54,8 +52,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   protected getDefaultState(): BaseVisualizationState {
     return {
       datasetLoad: loading,
-      scrollLeft: 0,
-      scrollTop: 0,
       highlight: null,
       dragOnSeries: null
     };
@@ -135,7 +131,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
     // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
-    this.setState({ ...(derivedState as object), datasetLoad: dl, scrollLeft: 0, scrollTop: 0 });
+    this.setState({ ...(derivedState as object), datasetLoad: dl });
     const { registerDownloadableDataset } = this.props;
     if (registerDownloadableDataset) {
       registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
