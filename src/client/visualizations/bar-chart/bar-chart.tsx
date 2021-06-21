@@ -36,7 +36,6 @@ import { SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
-import { isLoaded } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { or } from "../../../common/utils/functional/functional";
 import { Predicates } from "../../../common/utils/rules/predicates";
@@ -212,9 +211,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   findPathForIndices(indices: number[]): Datum[] {
-    const { datasetLoad } = this.state;
-    if (!isLoaded(datasetLoad)) return null;
-    const mySplitDataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
+    const { data } = this.props;
+    const mySplitDataset = data.data[0][SPLIT] as Dataset;
 
     const path: Datum[] = [];
     let currentData: Dataset = mySplitDataset;
@@ -765,9 +763,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getPrimaryXScale(): d3.scale.Ordinal<string, number> {
-    const { datasetLoad, maxNumberOfLeaves } = this.state;
-    if (!isLoaded(datasetLoad)) return null;
-    const data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
+    const { data } = this.props;
+    const { maxNumberOfLeaves } = this.state;
+    const dataset = (data.data[0][SPLIT] as Dataset).data;
 
     const { essence } = this.props;
     const { splits, dataCube } = essence;
@@ -779,7 +777,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { usedWidth, padLeft } = this.getXValues(maxNumberOfLeaves);
 
     return d3.scale.ordinal()
-      .domain(data.map(getX))
+      .domain(dataset.map(getX))
       .rangeBands([padLeft, padLeft + usedWidth]);
   }
 
@@ -819,9 +817,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
       return this.coordinatesCache[chartIndex];
     }
 
-    const { datasetLoad } = this.state;
-    if (!isLoaded(datasetLoad)) return null;
-    const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
+    const { data } = this.props;
+    const dataset = data.data[0][SPLIT] as Dataset;
 
     const { essence } = this.props;
     const { splits, dataCube } = essence;

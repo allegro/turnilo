@@ -15,33 +15,14 @@
  * limitations under the License.
  */
 
-import { Dataset, Expression } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
-import { Essence } from "../../../common/models/essence/essence";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Visualization } from "../../../common/models/visualization-manifest/visualization-manifest";
-import {
-  DatasetLoad,
-  error,
-  isError,
-  isLoaded,
-  isLoading,
-  loaded,
-  loading,
-  VisualizationProps
-} from "../../../common/models/visualization-props/visualization-props";
-import { debounceWithPromise } from "../../../common/utils/functional/functional";
-import makeQuery from "../../../common/utils/query/visualization-query";
-import { Loader } from "../../components/loader/loader";
-import { QueryError } from "../../components/query-error/query-error";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { classNames } from "../../utils/dom/dom";
-import { reportError } from "../../utils/error-reporter/error-reporter";
 import "./base-visualization.scss";
-import { Highlight } from "./highlight";
 
 export interface BaseVisualizationState {
-  datasetLoad?: DatasetLoad;
-  highlight: Highlight | null;
 }
 
 export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
@@ -54,133 +35,18 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected getDefaultState(): BaseVisualizationState {
-    return {
-      datasetLoad: loading,
-      highlight: null
-    };
-  }
-
-  private lastQueryEssence: Essence = null;
-
-  componentDidMount() {
-    const { essence, timekeeper } = this.props;
-    this.loadData(essence, timekeeper);
-  }
-
-  componentWillUnmount() {
-    this.lastQueryEssence = null;
-    this.debouncedCallExecutor.cancel();
-  }
-
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
-      const { essence, timekeeper } = nextProps;
-      const hadDataLoaded = isLoaded(this.state.datasetLoad);
-      const essenceChanged = !essence.equals(this.props.essence);
-      this.loadData(essence, timekeeper, hadDataLoaded && essenceChanged);
-    }
-  }
-
-  private loadData(essence: Essence, timekeeper: Timekeeper, showSpinner = true) {
-    if (showSpinner) this.handleDatasetLoad(loading);
-    this.fetchData(essence, timekeeper)
-      .then(loadedDataset => {
-        // TODO: encode it better
-        // null is here when we get out of order request, so we just ignore it
-        if (!loadedDataset) return;
-        if (isError(loadedDataset)) {
-          this.handleDatasetLoad(loadedDataset);
-        }
-        if (isLoaded(loadedDataset)) {
-          this.handleDatasetLoad(loadedDataset, this.deriveDatasetState(loadedDataset.dataset));
-        }
-      });
-  }
-
-  private fetchData(essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> {
-    this.lastQueryEssence = essence;
-    return this.debouncedCallExecutor(essence, timekeeper);
-  }
-
-  protected getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    return makeQuery(essence, timekeeper);
-  }
-
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
-    essence.dataCube.executor(this.getQuery(essence, timekeeper), { timezone: essence.timezone })
-      .then((dataset: Dataset) => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          return loaded(dataset);
-        },
-        err => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          reportError(err);
-          return error(err);
-        });
-
-  private wasUsedForLastQuery(essence: Essence) {
-    return essence.equals(this.lastQueryEssence);
-  }
-
-  private debouncedCallExecutor = debounceWithPromise(this.callExecutor, 500);
-
-  private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
-    // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
-    this.setState({ ...(derivedState as object), datasetLoad: dl });
-    const { registerDownloadableDataset } = this.props;
-    if (registerDownloadableDataset) {
-      registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
-    }
-  }
-
-  protected shouldFetchData(nextProps: VisualizationProps): boolean {
-    return this.differentVisualizationDefinition(nextProps);
-  }
-
-  private differentVisualizationDefinition(nextProps: VisualizationProps) {
-    const { essence, timekeeper } = this.props;
-    const nextEssence = nextProps.essence;
-    const nextTimekeeper = nextProps.timekeeper;
-    return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
-      nextEssence.differentTimeShift(essence) ||
-      nextEssence.differentSplits(essence) ||
-      nextEssence.differentSeries(essence) ||
-      nextEssence.differentSettings(essence) ||
-      this.differentBucketingTimezone(nextEssence) ||
-      this.differentLastRefreshRequestTimestamp(nextProps);
-  }
-
-  private differentBucketingTimezone(newEssence: Essence): boolean {
-    const { essence } = this.props;
-    return !essence.timezone.equals(newEssence.timezone) && newEssence.splits.hasSplitOn(essence.getTimeDimension());
-  }
-
-  private differentLastRefreshRequestTimestamp({ refreshRequestTimestamp }: VisualizationProps): boolean {
-    return refreshRequestTimestamp !== this.props.refreshRequestTimestamp;
-  }
-
-  private visualisationNotResized(nextProps: VisualizationProps): boolean {
-    return this.props.stage.equals(nextProps.stage);
+    return {};
   }
 
   protected renderInternals(dataset: Dataset): JSX.Element {
     return null;
   }
 
-  deriveDatasetState(dataset: Dataset): Partial<S> {
-    return {};
-  }
-
   render() {
-    const { datasetLoad } = this.state;
-
+    // TODO: After removing BaseVisualization, renderInternals will become render and should not accept parameters
+    const { data } = this.props;
     return <div className={classNames("base-visualization", this.className)}>
-      {isLoaded(datasetLoad) && this.renderInternals(datasetLoad.dataset)}
-      {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
-      {isLoading(datasetLoad) && <Loader />}
+      {this.renderInternals(data)}
     </div>;
   }
 }
