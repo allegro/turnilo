@@ -46,7 +46,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
   }
 
   renderInternals() {
-    const { essence, stage } = this.props;
+    const { essence, stage, highlight, saveHighlight, acceptHighlight, dropHighlight } = this.props;
 
     const { preparedDataset: dataset } = this.state;
 
@@ -59,10 +59,10 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
         xScale={x}
         yScale={y}
         colorScale={color}
-        saveHighlight={this.highlight}
-        highlight={this.getHighlight()}
-        acceptHighlight={this.acceptHighlight}
-        dropHighlight={this.dropHighlight}
+        saveHighlight={saveHighlight}
+        highlight={highlight}
+        acceptHighlight={acceptHighlight}
+        dropHighlight={dropHighlight}
         essence={essence}
       />
     </div>;

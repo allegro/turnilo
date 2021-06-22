@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
+import { List } from "immutable";
 import { Dataset } from "plywood";
+import { Highlight } from "../../../client/visualizations/base-visualization/highlight";
+import { Nullary } from "../../utils/functional/functional";
 import { Clicker } from "../clicker/clicker";
 import { Essence } from "../essence/essence";
+import { FilterClause } from "../filter-clause/filter-clause";
 import { Stage } from "../stage/stage";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -28,6 +32,10 @@ export interface VisualizationProps {
   stage: Stage;
   registerDownloadableDataset?: (dataset: Dataset) => void;
   refreshRequestTimestamp: number;
+  dropHighlight: Nullary<void>;
+  acceptHighlight: Nullary<void>;
+  highlight: Highlight | null;
+  saveHighlight: (clauses: List<FilterClause>, key?: string) => void;
 }
 
 enum DatasetLoadStatus { LOADED, LOADING, ERROR }

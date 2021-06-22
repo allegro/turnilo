@@ -36,7 +36,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
   private chartsRef = React.createRef<HTMLDivElement>();
 
   protected renderInternals(dataset: Dataset): JSX.Element {
-    const { essence, timekeeper, stage } = this.props;
+    const { essence, timekeeper, stage, highlight, dropHighlight, acceptHighlight, saveHighlight } = this.props;
 
     const range = calculateXRange(essence, timekeeper, dataset);
     if (!range) {
@@ -52,10 +52,10 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
       xScale={scale}
       chartsContainerRef={this.chartsRef}
       essence={essence}
-      highlight={this.getHighlight()}
-      dropHighlight={this.dropHighlight}
-      acceptHighlight={this.acceptHighlight}
-      saveHighlight={this.highlight}>
+      highlight={highlight}
+      dropHighlight={dropHighlight}
+      acceptHighlight={acceptHighlight}
+      saveHighlight={saveHighlight}>
       {interactions => {
         return <div className="line-chart-container">
           <div className="line-charts" ref={this.chartsRef} style={{ maxHeight }}>

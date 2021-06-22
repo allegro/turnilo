@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-import { List } from "immutable";
 import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Visualization } from "../../../common/models/visualization-manifest/visualization-manifest";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading,
+  VisualizationProps
+} from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { Loader } from "../../components/loader/loader";
@@ -162,40 +169,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   protected renderInternals(dataset: Dataset): JSX.Element {
     return null;
   }
-
-  protected getHighlight(): Highlight | null {
-    return this.state.highlight;
-  }
-
-  protected hasHighlight(): boolean {
-    return this.state.highlight !== null;
-  }
-
-  protected highlightOn(key: string): boolean {
-    const highlight = this.getHighlight();
-    if (!highlight) return false;
-    return highlight.key === key;
-  }
-
-  protected getHighlightClauses(): List<FilterClause> {
-    const highlight = this.getHighlight();
-    if (!highlight) return null;
-    return highlight.clauses;
-  }
-
-  protected dropHighlight = () => this.setState({ highlight: null });
-
-  protected acceptHighlight = () => {
-    if (!this.hasHighlight()) return;
-    const { essence, clicker } = this.props;
-    clicker.changeFilter(essence.filter.mergeClauses(this.getHighlightClauses()));
-    this.setState({ highlight: null });
-  };
-
-  protected highlight = (clauses: List<FilterClause>, key: string | null = null) => {
-    const highlight = new Highlight(clauses, key);
-    this.setState({ highlight });
-  };
 
   deriveDatasetState(dataset: Dataset): Partial<S> {
     return {};

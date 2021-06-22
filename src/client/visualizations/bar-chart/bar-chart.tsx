@@ -22,7 +22,13 @@ import * as React from "react";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { canBucketByDefault, Dimension } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import {
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../common/models/filter-clause/filter-clause";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
@@ -46,6 +52,7 @@ import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { hasHighlightOn } from "../highlight-controller/highlight-controller";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
 import { BarChart as ImprovedBarChart } from "./improved-bar-chart/bar-chart";
@@ -252,14 +259,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
   };
 
   onClick = (x: number, y: number) => {
-    const { essence } = this.props;
+    const { essence, highlight, dropHighlight, saveHighlight } = this.props;
 
     const selectionInfo = this.calculateMousePosition(x, y);
 
     if (!selectionInfo) return;
 
     if (!selectionInfo.coordinates) {
-      this.dropHighlight();
+      dropHighlight();
       this.setState({ selectionInfo: null });
       return;
     }
@@ -272,17 +279,16 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const rowHighlight = getFilterFromDatum(splits, path);
 
     const currentSeries = series.get(chartIndex).definition;
-    if (this.highlightOn(currentSeries.key())) {
-      const delta = this.getHighlightClauses();
-      if (rowHighlight.equals(delta)) {
-        this.dropHighlight();
+    if (hasHighlightOn(highlight, currentSeries.key())) {
+      if (rowHighlight.equals(highlight.clauses)) {
+        dropHighlight();
         this.setState({ selectionInfo: null });
         return;
       }
     }
 
     this.setState({ selectionInfo });
-    this.highlight(rowHighlight, series.get(chartIndex).definition.key());
+    saveHighlight(rowHighlight, series.get(chartIndex).definition.key());
   };
 
   getYExtent(data: Datum[], series: ConcreteSeries): number[] {
@@ -393,6 +399,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderSelectionBubble(hoverInfo: BubbleInfo): JSX.Element {
+    const { dropHighlight, acceptHighlight } = this.props;
     const { series, path, chartIndex, segmentLabel, coordinates } = hoverInfo;
     const chartStage = this.getSingleChartStage();
     const leftOffset = this.getBubbleLeftOffset(coordinates.middleX);
@@ -403,8 +410,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return <HighlightModal
       left={leftOffset}
       top={topOffset}
-      dropHighlight={this.dropHighlight}
-      acceptHighlight={this.acceptHighlight}
+      dropHighlight={dropHighlight}
+      acceptHighlight={acceptHighlight}
       title={segmentLabel}>
       {segmentValue}
     </HighlightModal>;
@@ -413,7 +420,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
   renderHoverBubble(hoverInfo: BubbleInfo): JSX.Element {
     const chartStage = this.getSingleChartStage();
     const { series, path, chartIndex, segmentLabel, coordinates } = hoverInfo;
-    const { essence } = this.props;
 
     const leftOffset = this.getBubbleLeftOffset(coordinates.middleX);
     const topOffset = this.getBubbleTopOffset(coordinates.y, chartIndex, chartStage);
@@ -445,17 +451,17 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   isSelected(path: Datum[], series: Series): boolean {
-    const { essence } = this.props;
+    const { essence, highlight } = this.props;
     const { splits } = essence;
-    return this.highlightOn(series.key()) && this.getHighlightClauses().equals(getFilterFromDatum(splits, path));
+    return hasHighlightOn(highlight, series.key()) && highlight.clauses.equals(getFilterFromDatum(splits, path));
   }
 
   isFaded(): boolean {
-    return this.hasHighlight();
+    return this.props.highlight !== null;
   }
 
   hasAnySelectionGoingOn(): boolean {
-    return this.hasHighlight();
+    return this.props.highlight !== null;
   }
 
   isHovered(path: Datum[], series: ConcreteSeries): boolean {
@@ -901,15 +907,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderInternals(dataset: Dataset) {
-    const { essence, stage } = this.props;
+    const { essence, stage, highlight, saveHighlight, acceptHighlight, dropHighlight } = this.props;
     const { splits } = essence;
     const newVersionSupports = or(Predicates.areExactSplitKinds("time"), Predicates.areExactSplitKinds("*", "time"));
     if (newVersionSupports(essence)) {
       return <ImprovedBarChart
-        highlight={this.getHighlight()}
-        dropHighlight={this.dropHighlight}
-        acceptHighlight={this.acceptHighlight}
-        saveHighlight={this.highlight}
+        highlight={highlight}
+        dropHighlight={dropHighlight}
+        acceptHighlight={acceptHighlight}
+        saveHighlight={saveHighlight}
         dataset={dataset}
         essence={essence}
         stage={stage} />;
