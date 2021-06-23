@@ -28,7 +28,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { clamp } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
-import { Highlight } from "../base-visualization/highlight";
+import { Highlight } from "../highlight-controller/highlight";
 import "./heat-map.scss";
 import { HeatmapCorner } from "./heatmap-corner";
 import { HeatmapHighlightIndicator } from "./heatmap-highlight-indicator";

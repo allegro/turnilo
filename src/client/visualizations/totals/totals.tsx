@@ -17,14 +17,11 @@
 
 import { Dataset } from "plywood";
 import * as React from "react";
-import { TOTALS_MANIFEST } from "../../../common/visualization-manifests/totals/totals";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { Total } from "./total";
 import "./totals.scss";
 
-export class Totals extends BaseVisualization<BaseVisualizationState> {
-  protected className = TOTALS_MANIFEST.name;
-
+export class Totals extends React.Component<VisualizationProps> {
   renderTotals(dataset: Dataset): JSX.Element[] {
     const { essence } = this.props;
     const series = essence.getConcreteSeries().toArray();
@@ -39,11 +36,10 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
   }
 
-  renderInternals(dataset: Dataset) {
-    return <div className="internals">
-      <div className="total-container">
-        {this.renderTotals(dataset)}
-      </div>
+  render() {
+    const { data } = this.props;
+    return <div className="total-container">
+        {this.renderTotals(data)}
     </div>;
   }
 }

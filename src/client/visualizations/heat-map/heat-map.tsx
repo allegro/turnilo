@@ -20,39 +20,39 @@
 // tslint:disable-next-line: no-reference
 /// <reference path="../../index.d.ts" />
 
+import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { Split } from "../../../common/models/split/split";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
 
-interface HeatmapState extends BaseVisualizationState {
-  preparedDataset: Dataset;
-}
-
-export class HeatMap extends BaseVisualization<HeatmapState> {
+export class HeatMap extends React.Component<VisualizationProps> {
   protected className = HEAT_MAP_MANIFEST.name;
 
   getScales = memoizeOne(scales);
+  prepareDataset = memoizeOne(
+    (data: Dataset, series: ConcreteSeries, split: Split, timezone: Timezone) =>
+    fillDatasetWithMissingValues((data.data[0][SPLIT] as Dataset), series.plywoodKey(), split, timezone),
+    ([nextData], [oldData]) => nextData === oldData);
 
-  series(): ConcreteSeries {
-    return this.props.essence.getConcreteSeries().first();
-  }
+  render() {
+    const { essence, stage, highlight, data, saveHighlight, acceptHighlight, dropHighlight } = this.props;
+    const { timezone, splits: { splits } } = essence;
+    const series = essence.getConcreteSeries().first();
+    const secondSplit = splits.get(1);
+    const dataset = this.prepareDataset(data, series, secondSplit, timezone);
 
-  renderInternals() {
-    const { essence, stage, highlight, saveHighlight, acceptHighlight, dropHighlight } = this.props;
+    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, series);
 
-    const { preparedDataset: dataset } = this.state;
-
-    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, this.series());
-
-    return <div className="internals heatmap-container" style={{ maxHeight: stage.height }}>
+    return <div className="heatmap-container" style={{ maxHeight: stage.height }}>
       <LabelledHeatmap
         stage={stage}
         dataset={dataset.data}
@@ -66,20 +66,5 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
         essence={essence}
       />
     </div>;
-  }
-
-  deriveDatasetState(dataset: Dataset): Partial<HeatmapState> {
-    const { essence } = this.props;
-    const { timezone } = essence;
-    const secondSplit = essence.splits.splits.get(1);
-
-    const preparedDataset = fillDatasetWithMissingValues(
-      (dataset.data[0][SPLIT] as Dataset),
-      this.series().plywoodKey(),
-      secondSplit,
-      timezone
-    );
-
-    return { preparedDataset };
   }
 }

@@ -57,6 +57,7 @@ import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-moda
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
+import { classNames } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
@@ -639,7 +640,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
               className="center-main"
               onDragEnter={this.dragEnter}
             >
-              <div className="visualization" ref={this.visualization}>{this.visElement()}</div>
+              <div className="visualization" ref={this.visualization}>
+                {this.visElement()}
+              </div>
               {this.manualFallback()}
               {dragOver ? <DropIndicator/> : null}
               {dragOver ? <div
@@ -751,8 +754,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const registerDownloadableDataset = (dataset: Dataset) => {
       this.downloadableDataset = { dataset, options: tabularOptions(essence) };
     };
-
-    const Visualization = getVisualizationComponent(essence.visualization);
+    const { visualization } = essence;
+    const Visualization = getVisualizationComponent(visualization);
 
     return <HighlightController essence={essence} clicker={clicker}>
       {highlightProps =>
@@ -762,14 +765,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           essence={essence}
           timekeeper={timekeeper}
           stage={stage}>
-          {data => <Visualization
-              data={data}
-              essence={essence}
-              clicker={clicker}
-              timekeeper={timekeeper}
-              stage={stage}
-              {...highlightProps}
-            />}
+          {data => <div className={classNames("visualization-root", visualization.name)}>
+            <Visualization
+            data={data}
+            essence={essence}
+            clicker={clicker}
+            timekeeper={timekeeper}
+            stage={stage}
+            {...highlightProps}
+          />
+          </div>}
         </DataProvider>}
     </HighlightController>;
   }

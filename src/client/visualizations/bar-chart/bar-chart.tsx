@@ -36,6 +36,7 @@ import { SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { or } from "../../../common/utils/functional/functional";
 import { Predicates } from "../../../common/utils/rules/predicates";
@@ -50,7 +51,6 @@ import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { hasHighlightOn } from "../highlight-controller/highlight-controller";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -78,7 +78,7 @@ export interface BubbleInfo {
   segmentLabel?: string;
 }
 
-export interface BarChartState extends BaseVisualizationState {
+export interface BarChartState {
   hoverInfo?: BubbleInfo;
   selectionInfo?: BubbleInfo;
   scrollerYPosition?: number;
@@ -155,22 +155,19 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   return new Dataset(value);
 }
 
-export class BarChart extends BaseVisualization<BarChartState> {
+export class BarChart extends React.Component<VisualizationProps, BarChartState> {
   protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
   private scroller = React.createRef<Scroller>();
 
-  getDefaultState(): BarChartState {
-    return {
-      hoverInfo: null,
-      maxNumberOfLeaves: [],
-      flatData: [],
-      scrollTop: 0,
-      scrollLeft: 0,
-      ...super.getDefaultState()
-    };
-  }
+  state: BarChartState = {
+    hoverInfo: null,
+    maxNumberOfLeaves: [],
+    flatData: [],
+    scrollTop: 0,
+    scrollLeft: 0
+  };
 
   componentDidUpdate() {
     const { scrollerYPosition, scrollerXPosition } = this.state;
@@ -573,7 +570,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       height: roundToPx(Math.abs(height) + SELECTION_PAD * 2)
     };
 
-    return <div className="selection-highlight" style={style} />;
+    return <div className="selection-highlight" style={style}/>;
   }
 
   renderXAxis(data: Datum[], coordinates: BarCoordinates[], xAxisStage: Stage): JSX.Element {
@@ -625,7 +622,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     return <div className="x-axis" style={{ width: xAxisStage.width }}>
       <svg style={xAxisStage.getWidthHeight()} viewBox={xAxisStage.getViewBox()}>
-        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale} />
+        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale}/>
       </svg>
       {labels}
     </div>;
@@ -691,13 +688,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const measureLabel = <VisMeasureLabel
       series={series}
       datum={dataset.data[0]}
-      showPrevious={essence.hasComparison()} />;
+      showPrevious={essence.hasComparison()}/>;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(series, mySplitDataset.data)) {
       return {
         chart: <div className="measure-bar-chart" key={series.reactKey()} style={{ width: chartStage.width }}>
-          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)} />
+          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)}
+               viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}/>
           {measureLabel}
         </div>,
         yAxis: null,
@@ -718,7 +716,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
 
     const chart = <div className="measure-bar-chart" key={series.reactKey()} style={{ width: chartStage.width }}>
-      <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}>
+      <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)}
+           viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}>
         {yGridLines}
         <g className="bars" transform={chartStage.getTransform()}>{bars}</g>
       </svg>
@@ -728,11 +727,18 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { chart, yAxis, highlight };
   }
 
-  deriveDatasetState(dataset: Dataset): Partial<BarChartState> {
+  // TODO: of course it should be removed when refactoring rest of bar-chart. Look into LineChart and Table for inspiration.
+  componentWillReceiveProps(nextProps: Readonly<VisualizationProps>) {
+    if (nextProps.data !== this.props.data) {
+      this.setState(this.deriveDatasetState(nextProps.data));
+    }
+  }
+
+  private deriveDatasetState(dataset: Dataset): BarChartState {
     const { essence } = this.props;
     const { splits } = essence;
     this.coordinatesCache = [];
-    if (!splits.length()) return {};
+    if (!splits.length()) return {} as BarChartState;
     const split = splits.splits.first();
     const dimension = findDimensionByName(essence.dataCube.dimensions, split.reference);
     const dimensionKind = dimension.kind;
@@ -748,7 +754,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const maxNumberOfLeaves = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
     this.maxNumberOfLeaves(firstSplitDataSet.data, maxNumberOfLeaves, 0);
     const flatData = flattened.data;
-    return { maxNumberOfLeaves, flatData };
+    return { maxNumberOfLeaves, flatData, scrollTop: 0, scrollLeft: 0 } as BarChartState;
   }
 
   maxNumberOfLeaves(data: Datum[], maxima: number[], level: number) {
@@ -903,8 +909,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     </div>;
   }
 
-  renderInternals(dataset: Dataset) {
-    const { essence, stage, highlight, saveHighlight, acceptHighlight, dropHighlight } = this.props;
+  render() {
+    const { data, essence, stage, highlight, saveHighlight, acceptHighlight, dropHighlight } = this.props;
     const { splits } = essence;
     const newVersionSupports = or(Predicates.areExactSplitKinds("time"), Predicates.areExactSplitKinds("*", "time"));
     if (newVersionSupports(essence)) {
@@ -913,9 +919,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
         saveHighlight={saveHighlight}
-        dataset={dataset}
+        dataset={data}
         essence={essence}
-        stage={stage} />;
+        stage={stage}/>;
     }
 
     let scrollerLayout: ScrollerLayout;
@@ -931,11 +937,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
       const chartStage = this.getSingleChartStage();
       const { xAxisStage, yAxisStage } = this.getAxisStages(chartStage);
-      xAxis = this.renderXAxis((dataset.data[0][SPLIT] as Dataset).data, this.getBarsCoordinates(0, xScale), xAxisStage);
+      xAxis = this.renderXAxis((data.data[0][SPLIT] as Dataset).data, this.getBarsCoordinates(0, xScale), xAxisStage);
 
       series.forEach((series, chartIndex) => {
         const coordinates = this.getBarsCoordinates(chartIndex, xScale);
-        const { yAxis, chart, highlight } = this.renderChart(dataset, coordinates, series, chartIndex, chartStage);
+        const { yAxis, chart, highlight } = this.renderChart(data, coordinates, series, chartIndex, chartStage);
 
         measureCharts.push(chart);
         yAxes.push(yAxis);
@@ -948,7 +954,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       rightGutter = this.renderRightGutter(series.count(), chartStage, yAxes);
     }
 
-    return <div className="internals measure-bar-charts" style={{ maxHeight: stage.height }}>
+    return <div className="measure-bar-charts" style={{ maxHeight: stage.height }}>
       <Scroller
         layout={scrollerLayout}
         ref={this.scroller}

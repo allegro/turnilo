@@ -15,18 +15,20 @@
  */
 
 import * as d3 from "d3";
-import { Dataset, Datum, Expression, PseudoDatum } from "plywood";
+import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { GRID_MANIFEST } from "../../../common/visualization-manifests/grid/grid";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import {
-  HEADER_HEIGHT, MEASURE_WIDTH,
+  HEADER_HEIGHT,
+  MEASURE_WIDTH,
   MIN_DIMENSION_WIDTH,
   ROW_HEIGHT,
-  SEGMENT_WIDTH, SPACE_LEFT, SPACE_RIGHT
+  SEGMENT_WIDTH,
+  SPACE_LEFT,
+  SPACE_RIGHT
 } from "../../components/tabular-scroller/dimensions";
 import { MeasuresHeader } from "../../components/tabular-scroller/header/measures/measures-header";
 import { SplitColumnsHeader } from "../../components/tabular-scroller/header/splits/split-columns";
@@ -34,31 +36,21 @@ import { FlattenedSplits } from "../../components/tabular-scroller/splits/flatte
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./grid.scss";
-import makeQuery from "./make-query";
 import { MeasureRows } from "./measure-rows";
 
-interface GridState extends BaseVisualizationState {
+interface GridState {
   segmentWidth: number;
   scrollTop: number;
 }
 
-export class Grid extends BaseVisualization<GridState> {
-  protected className = GRID_MANIFEST.name;
-  protected innerGridRef = React.createRef<HTMLDivElement>();
+export class Grid extends React.Component<VisualizationProps, GridState> {
+  private innerGridRef = React.createRef<HTMLDivElement>();
 
-  protected getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    return makeQuery(essence, timekeeper);
-  }
-
-  getDefaultState(): GridState {
-    return {
-      segmentWidth: SEGMENT_WIDTH,
-      scrollTop: 0,
-      ...super.getDefaultState()
-    };
-  }
+  state: GridState = {
+    segmentWidth: SEGMENT_WIDTH,
+    scrollTop: 0
+  };
 
   setScroll = (scrollTop: number) => this.setState({ scrollTop });
 
@@ -93,24 +85,20 @@ export class Grid extends BaseVisualization<GridState> {
     return SEGMENT_WIDTH;
   }
 
-  deriveDatasetState(dataset: Dataset): Partial<GridState> {
-    return { scrollTop: 0 };
-  }
-
   getSegmentWidth(): number {
     const { segmentWidth } = this.state;
     return segmentWidth || SEGMENT_WIDTH;
   }
 
-  protected renderInternals(dataset: Dataset): JSX.Element {
-    const { essence, stage } = this.props;
+  render(): JSX.Element {
+    const { essence, stage, data } = this.props;
     const { segmentWidth, scrollTop } = this.state;
 
-    const data = selectFirstSplitDatums(dataset);
+    const datums = selectFirstSplitDatums(data);
 
     const columnsCount = measureColumnsCount(essence);
     const columnWidth = this.getIdealColumnWidth();
-    const rowsCount = data.length;
+    const rowsCount = datums.length;
     const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
 
     const layout: ScrollerLayout = {
@@ -122,7 +110,7 @@ export class Grid extends BaseVisualization<GridState> {
       top: HEADER_HEIGHT
     };
 
-    return <div className="internals" ref={this.innerGridRef}>
+    return <div className="grid-container" ref={this.innerGridRef}>
       <ResizeHandle
         direction={Direction.LEFT}
         onResize={this.setSegmentWidth}
@@ -142,21 +130,21 @@ export class Grid extends BaseVisualization<GridState> {
         leftGutter={<FlattenedSplits
           visibleRowsIndexRange={visibleRowsRange}
           essence={essence}
-          data={data}
+          data={datums}
           segmentWidth={segmentWidth}
-          highlightedRowIndex={null} />}
+          highlightedRowIndex={null}/>}
 
         topLeftCorner={<SplitColumnsHeader essence={essence}/>}
 
-        body={data && <MeasureRows
+        body={datums && <MeasureRows
           visibleRowsIndexRange={visibleRowsRange}
           essence={essence}
           highlightedRowIndex={null}
-          scales={this.getScalesForColumns(essence, data)}
-          data={data}
+          scales={this.getScalesForColumns(essence, datums)}
+          data={datums}
           cellWidth={columnWidth}
-          rowWidth={columnWidth * columnsCount} />}
-        />
-    </div> ;
+          rowWidth={columnWidth * columnsCount}/>}
+      />
+    </div>;
   }
 }

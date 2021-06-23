@@ -17,7 +17,7 @@
 
 import { List } from "immutable";
 import { Dataset } from "plywood";
-import { Highlight } from "../../../client/visualizations/base-visualization/highlight";
+import { Highlight } from "../../../client/visualizations/highlight-controller/highlight";
 import { Nullary } from "../../utils/functional/functional";
 import { Clicker } from "../clicker/clicker";
 import { Essence } from "../essence/essence";

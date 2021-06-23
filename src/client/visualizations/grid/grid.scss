@@ -18,5 +18,9 @@
 
 .grid {
   @include tabular-scroller;
+
+  .grid-container {
+    @include pin-full;
+  }
 }
 

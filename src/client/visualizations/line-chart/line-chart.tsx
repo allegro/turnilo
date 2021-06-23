@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
 import * as React from "react";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { MessageCard } from "../../components/message-card/message-card";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
@@ -30,15 +29,15 @@ import { XAxis } from "./x-axis/x-axis";
 const Y_AXIS_WIDTH = 60;
 const X_AXIS_HEIGHT = 30;
 
-export class LineChart extends BaseVisualization<BaseVisualizationState> {
+export class LineChart extends React.Component<VisualizationProps> {
   protected className = LINE_CHART_MANIFEST.name;
 
   private chartsRef = React.createRef<HTMLDivElement>();
 
-  protected renderInternals(dataset: Dataset): JSX.Element {
-    const { essence, timekeeper, stage, highlight, dropHighlight, acceptHighlight, saveHighlight } = this.props;
+  render(): JSX.Element {
+    const { essence, data, timekeeper, stage, highlight, dropHighlight, acceptHighlight, saveHighlight } = this.props;
 
-    const range = calculateXRange(essence, timekeeper, dataset);
+    const range = calculateXRange(essence, timekeeper, data);
     if (!range) {
       return <MessageCard title="No data found. Try different filters."/>;
     }
@@ -48,7 +47,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
     const maxHeight = stage.height - X_AXIS_HEIGHT;
 
     return <InteractionController
-      dataset={dataset}
+      dataset={data}
       xScale={scale}
       chartsContainerRef={this.chartsRef}
       essence={essence}
@@ -65,7 +64,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
               essence={essence}
               xScale={scale}
               xTicks={ticks}
-              dataset={dataset} />
+              dataset={data} />
           </div>
           <XAxis
             width={stage.width}

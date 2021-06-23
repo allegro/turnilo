@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-import { Visualization, VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
-import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
+import * as React from "react";
+import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
 import { BarChart } from "./bar-chart/bar-chart";
-import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
 import { Grid } from "./grid/grid";
 import { HeatMap } from "./heat-map/heat-map";
 import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
 
-type VisualizationComponent<S extends BaseVisualizationState = BaseVisualizationState> = new(props: VisualizationProps) => BaseVisualization<S>;
-
-const VIS_COMPONENTS: Record<Visualization, VisualizationComponent> = {
+const VIS_COMPONENTS  = {
   "totals": Totals,
   "table": Table,
   "line-chart": LineChart,
@@ -36,6 +33,6 @@ const VIS_COMPONENTS: Record<Visualization, VisualizationComponent> = {
   "grid": Grid
 };
 
-export function getVisualizationComponent({ name }: VisualizationManifest): VisualizationComponent {
+export function getVisualizationComponent({ name }: VisualizationManifest) {
   return VIS_COMPONENTS[name];
 }
