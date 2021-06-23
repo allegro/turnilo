@@ -65,7 +65,7 @@ context("Boolean Filter Menu", () => {
     });
 
     it("should close menu after clicking outside menu", () => {
-      cy.get(".base-visualization").click();
+      cy.get(".visualization-root").click();
 
       booleanMenu().should("not.exist");
     });

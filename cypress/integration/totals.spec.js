@@ -1,12 +1,12 @@
 /// <reference types="Cypress" />
 
-context("Base Visualisation", () => {
+context("Totals", () => {
   beforeEach(() => {
     cy.visit("http://localhost:9090/#wiki")
   });
 
   it("should load Totals visualisation", () => {
-    cy.get(".base-visualization")
+    cy.get(".visualization-root")
       .should("have.class", "totals");
   });
 
