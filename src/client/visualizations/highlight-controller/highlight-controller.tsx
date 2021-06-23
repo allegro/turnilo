@@ -21,7 +21,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../common/utils/functional/functional";
-import { Highlight } from "../base-visualization/highlight";
+import { Highlight } from "./highlight";
 
 interface HighlightProps {
   dropHighlight: Nullary<void>;

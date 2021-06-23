@@ -24,7 +24,7 @@ import { Binary, Unary } from "../../../../../common/utils/functional/functional
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
 import { toPlywoodRange } from "../../../../utils/highlight-clause/highlight-clause";
-import { Highlight } from "../../../base-visualization/highlight";
+import { Highlight } from "../../../highlight-controller/highlight";
 import { BarChartModel } from "../utils/bar-chart-model";
 import { BarChartLayout } from "../utils/layout";
 import { DomainValue } from "../utils/x-domain";

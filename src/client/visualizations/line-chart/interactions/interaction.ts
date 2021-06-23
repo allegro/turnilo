@@ -15,7 +15,7 @@
  */
 
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { Highlight as VizHighlight } from "../../base-visualization/highlight";
+import { Highlight as VizHighlight } from "../../highlight-controller/highlight";
 import { ContinuousRange, ContinuousValue } from "../utils/continuous-types";
 
 enum InteractionKind { HOVER, DRAGGING, HIGHLIGHT }
