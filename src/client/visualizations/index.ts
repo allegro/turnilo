@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import * as React from "react";
 import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
 import { BarChart } from "./bar-chart/bar-chart";
 import { Grid } from "./grid/grid";
