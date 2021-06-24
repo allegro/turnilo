@@ -71,10 +71,10 @@ export class Table extends React.Component<VisualizationProps> {
         saveHighlight={saveHighlight}>
         {({
             setSegmentWidth,
-            onScroll,
-            onMouseMove,
-            onMouseLeave,
-            onClick,
+            setScrollTop,
+            setHoverRow,
+            resetHover,
+            handleClick,
             columnWidth,
             segmentWidth,
             hoverRow,
@@ -87,10 +87,10 @@ export class Table extends React.Component<VisualizationProps> {
             dropHighlight={dropHighlight}
             acceptHighlight={acceptHighlight}
             highlight={highlight}
-            onClick={onClick}
-            onMouseMove={onMouseMove}
-            onMouseLeave={onMouseLeave}
-            onScroll={onScroll}
+            handleClick={handleClick}
+            setHoverRow={setHoverRow}
+            resetHover={resetHover}
+            setScrollTop={setScrollTop}
             setSegmentWidth={setSegmentWidth}
             columnWidth={columnWidth}
             segmentWidth={segmentWidth}

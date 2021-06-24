@@ -34,10 +34,10 @@ import { HoverElement, PositionHover, rowPosition, seriesPosition } from "../uti
 import { getFilterFromDatum } from "../utils/filter-for-datum";
 
 interface InteractionsProps {
-  onClick: Ternary<number, number, ScrollerPart, void>;
-  onMouseMove: Ternary<number, number, ScrollerPart, void>;
-  onMouseLeave: Fn;
-  onScroll: Binary<number, number, void>;
+  handleClick: Ternary<number, number, ScrollerPart, void>;
+  setHoverRow: Ternary<number, number, ScrollerPart, void>;
+  resetHover: Fn;
+  setScrollTop: Binary<number, number, void>;
   setSegmentWidth: Unary<number, void>;
   columnWidth: number;
   segmentWidth: number;
@@ -145,9 +145,9 @@ export class InteractionController extends React.Component<InteractionController
     }
   };
 
-  setScroll = (scrollTop: number) => this.setState({ scrollTop });
+  setScrollTop = (scrollTop: number) => this.setState({ scrollTop });
 
-  onClick = (x: number, y: number, part: ScrollerPart) => {
+  handleClick = (x: number, y: number, part: ScrollerPart) => {
     const position = this.calculateMousePosition(x, y, part);
 
     switch (position.element) {
@@ -173,10 +173,10 @@ export class InteractionController extends React.Component<InteractionController
         hoverRow,
         scrollTop,
         segmentWidth,
-        onClick: this.onClick,
-        onMouseLeave: this.resetHover,
-        onMouseMove: this.setHoverRow,
-        onScroll: this.setScroll,
+        handleClick: this.handleClick,
+        resetHover: this.resetHover,
+        setHoverRow: this.setHoverRow,
+        setScrollTop: this.setScrollTop,
         setSegmentWidth: this.setSegmentWidth
       })}
     </React.Fragment>;

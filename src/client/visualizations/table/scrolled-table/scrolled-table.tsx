@@ -45,10 +45,10 @@ interface ScrolledTableProps {
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
   highlight: Highlight | null;
-  onClick: Ternary<number, number, ScrollerPart, void>;
-  onMouseMove: Ternary<number, number, ScrollerPart, void>;
-  onMouseLeave: Fn;
-  onScroll: Binary<number, number, void>;
+  handleClick: Ternary<number, number, ScrollerPart, void>;
+  setHoverRow: Ternary<number, number, ScrollerPart, void>;
+  resetHover: Fn;
+  setScrollTop: Binary<number, number, void>;
   setSegmentWidth: Unary<number, void>;
   columnWidth: number;
   segmentWidth: number;
@@ -63,10 +63,10 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
     essence,
     stage,
     flatData,
-    onClick,
-    onMouseMove,
-    onMouseLeave,
-    onScroll,
+    handleClick,
+    setHoverRow,
+    resetHover,
+    setScrollTop,
     setSegmentWidth,
     segmentWidth,
     columnWidth,
@@ -146,10 +146,10 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
         scrollTopOffset={scrollTop}
         collapseRows={collapseRows}/>}
 
-      onClick={onClick}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      onScroll={onScroll}
+      onClick={handleClick}
+      onMouseMove={setHoverRow}
+      onMouseLeave={resetHover}
+      onScroll={setScrollTop}
 
     />
     {highlightedRowIndex !== null &&
