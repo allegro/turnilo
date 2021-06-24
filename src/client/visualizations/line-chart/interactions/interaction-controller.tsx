@@ -24,7 +24,7 @@ import { Binary, Nullary, Unary } from "../../../../common/utils/functional/func
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
 import { toFilterClause } from "../../../utils/highlight-clause/highlight-clause";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
-import { Highlight } from "../../base-visualization/highlight";
+import { Highlight } from "../../highlight-controller/highlight";
 import { ContinuousRange, ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousReference } from "../utils/splits";
 import { constructRange, shiftByOne } from "./continuous-range";

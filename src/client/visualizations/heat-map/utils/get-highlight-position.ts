@@ -18,7 +18,7 @@ import { Datum } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
 import { BooleanFilterClause, FilterClause, FilterTypes, FixedTimeFilterClause, NumberFilterClause, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Unary } from "../../../../common/utils/functional/functional";
-import { Highlight } from "../../base-visualization/highlight";
+import { Highlight } from "../../highlight-controller/highlight";
 import { nestedDataset } from "./nested-dataset";
 
 function clausePredicate(clause: FilterClause): Unary<Datum, boolean> {

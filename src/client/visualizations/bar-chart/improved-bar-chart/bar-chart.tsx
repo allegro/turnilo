@@ -24,7 +24,7 @@ import { Binary, Nullary } from "../../../../common/utils/functional/functional"
 import { Scroller } from "../../../components/scroller/scroller";
 import { SPLIT } from "../../../config/constants";
 import { selectMainDatum } from "../../../utils/dataset/selectors/selectors";
-import { Highlight } from "../../base-visualization/highlight";
+import { Highlight } from "../../highlight-controller/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";

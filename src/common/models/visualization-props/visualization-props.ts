@@ -17,7 +17,7 @@
 
 import { List } from "immutable";
 import { Dataset } from "plywood";
-import { Highlight } from "../../../client/visualizations/base-visualization/highlight";
+import { Highlight } from "../../../client/visualizations/highlight-controller/highlight";
 import { Nullary } from "../../utils/functional/functional";
 import { Clicker } from "../clicker/clicker";
 import { Essence } from "../essence/essence";
@@ -26,19 +26,18 @@ import { Stage } from "../stage/stage";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 export interface VisualizationProps {
+  data: Dataset;
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
   stage: Stage;
-  registerDownloadableDataset?: (dataset: Dataset) => void;
-  refreshRequestTimestamp: number;
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
   highlight: Highlight | null;
   saveHighlight: (clauses: List<FilterClause>, key?: string) => void;
 }
 
-enum DatasetLoadStatus { LOADED, LOADING, ERROR }
+export enum DatasetLoadStatus { LOADED, LOADING, ERROR }
 
 interface DatasetLoadBase {
   status: DatasetLoadStatus;

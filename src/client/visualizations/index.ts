@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
+import { BarChart } from "./bar-chart/bar-chart";
+import { Grid } from "./grid/grid";
+import { HeatMap } from "./heat-map/heat-map";
+import { LineChart } from "./line-chart/line-chart";
+import { Table } from "./table/table";
+import { Totals } from "./totals/totals";
 
-.base-visualization {
-  @include pin-full;
-  overflow: hidden;
+const VIS_COMPONENTS  = {
+  "totals": Totals,
+  "table": Table,
+  "line-chart": LineChart,
+  "bar-chart": BarChart,
+  "heatmap": HeatMap,
+  "grid": Grid
+};
 
-  .internals {
-    @include pin-full;
-    overflow: auto;
-  }
-
-  .loader,
-  .message {
-    @include pin-full;
-  }
+export function getVisualizationComponent({ name }: VisualizationManifest) {
+  return VIS_COMPONENTS[name];
 }

@@ -20,5 +20,9 @@
 
 .table {
   @include tabular-scroller;
+
+  .table-container {
+    @include pin-full;
+  }
 }
 

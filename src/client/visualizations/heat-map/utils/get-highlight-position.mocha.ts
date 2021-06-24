@@ -19,7 +19,7 @@ import { List } from "immutable";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { stringIn } from "../../../../common/models/filter-clause/filter-clause.fixtures";
-import { Highlight } from "../../base-visualization/highlight";
+import { Highlight } from "../../highlight-controller/highlight";
 import { dataset } from "./datum-fixtures";
 import getHighlightPosition from "./get-highlight-position";
 

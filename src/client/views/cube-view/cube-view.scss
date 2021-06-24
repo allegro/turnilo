@@ -118,6 +118,13 @@ $control-panel-height: 3 * $control-tile-height + 2px;
         @extend %module;
         @include pin-full;
         border-radius: $corner;
+        overflow: hidden;
+
+        .visualization-root,
+        .loader,
+        .message {
+          @include pin-full;
+        }
       }
 
       .drop-indicator {

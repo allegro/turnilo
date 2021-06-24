@@ -57,10 +57,12 @@ import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-moda
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
+import { classNames } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations";
+import { DataProvider } from "../../visualizations/data-provider/data-provider";
 import { HighlightController } from "../../visualizations/highlight-controller/highlight-controller";
 import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
@@ -68,8 +70,8 @@ import "./cube-view.scss";
 
 const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
   right
-    ? <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />
-    : <SvgIcon svg={require("../../icons/full-caret-small-left.svg")} />;
+    ? <SvgIcon svg={require("../../icons/full-caret-small-right.svg")}/>
+    : <SvgIcon svg={require("../../icons/full-caret-small-left.svg")}/>;
 
 export interface CubeViewLayout {
   factPanel: {
@@ -272,7 +274,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
   }
 
-  componentDidUpdate(prevProps: CubeViewProps, { layout: { pinboard: prevPinboard, factPanel: prevFactPanel } }: CubeViewState) {
+  componentDidUpdate(prevProps: CubeViewProps, {
+    layout: {
+      pinboard: prevPinboard,
+      factPanel: prevFactPanel
+    }
+  }: CubeViewState) {
     const { layout: { pinboard, factPanel } } = this.state;
     if (pinboard.hidden !== prevPinboard.hidden || factPanel.hidden !== prevFactPanel.hidden) {
       this.globalResizeListener();
@@ -418,7 +425,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <DruidQueryModal
       timekeeper={timekeeper}
       essence={essence}
-      onClose={this.closeDruidQueryModal} />;
+      onClose={this.closeDruidQueryModal}/>;
   }
 
   openUrlShortenerModal = (url: string, title: string) => {
@@ -439,7 +446,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <UrlShortenerModal
       title={urlShortenerModalProps.title}
       url={urlShortenerModalProps.url}
-      onClose={this.closeUrlShortenerModal} />;
+      onClose={this.closeUrlShortenerModal}/>;
   }
 
   triggerFilterMenu = (dimension: Dimension) => {
@@ -544,7 +551,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const clicker = this.clicker;
 
     const { customization } = this.props;
-    const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime, lastRefreshRequestTimestamp } = this.state;
+    const {
+      layout,
+      essence,
+      timekeeper,
+      menuStage,
+      visualizationStage,
+      dragOver,
+      updatingMaxTime,
+      lastRefreshRequestTimestamp
+    } = this.state;
 
     if (!essence) return null;
 
@@ -569,7 +585,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <div className="cube-view">
-        <GlobalEventListener resize={this.globalResizeListener} />
+        <GlobalEventListener resize={this.globalResizeListener}/>
         {headerBar}
         <div className="container" ref={this.container}>
           {!layout.factPanel.hidden && <DimensionMeasurePanel
@@ -588,14 +604,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             min={MIN_PANEL_WIDTH}
             max={MAX_PANEL_WIDTH}
           >
-            <DragHandle />
+            <DragHandle/>
           </ResizeHandle>}
 
           <div className="center-panel" style={styles.centerPanel}>
             <div className="center-top-bar">
               <div className="dimension-panel-toggle"
                    onClick={this.toggleFactPanel}>
-                <ToggleArrow right={layout.factPanel.hidden} />
+                <ToggleArrow right={layout.factPanel.hidden}/>
               </div>
               <div className="filter-split-section">
                 <FilterTile
@@ -612,21 +628,23 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   essence={essence}
                   menuStage={visualizationStage}
                 />
-                <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage} />
+                <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage}/>
               </div>
-              <VisSelector clicker={clicker} essence={essence} />
+              <VisSelector clicker={clicker} essence={essence}/>
               <div className="pinboard-toggle"
                    onClick={this.togglePinboard}>
-                <ToggleArrow right={!layout.pinboard.hidden} />
+                <ToggleArrow right={!layout.pinboard.hidden}/>
               </div>
             </div>
             <div
               className="center-main"
               onDragEnter={this.dragEnter}
             >
-              <div className="visualization" ref={this.visualization}>{this.visElement()}</div>
+              <div className="visualization" ref={this.visualization}>
+                {this.visElement()}
+              </div>
               {this.manualFallback()}
-              {dragOver ? <DropIndicator /> : null}
+              {dragOver ? <DropIndicator/> : null}
               {dragOver ? <div
                 className="drag-mask"
                 onDragOver={this.dragOver}
@@ -645,14 +663,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             min={MIN_PANEL_WIDTH}
             max={MAX_PANEL_WIDTH}
           >
-            <DragHandle />
+            <DragHandle/>
           </ResizeHandle>}
           {!layout.pinboard.hidden && <PinboardPanel
             style={styles.pinboardPanel}
             clicker={clicker}
             essence={essence}
             timekeeper={timekeeper}
-            refreshRequestTimestamp={lastRefreshRequestTimestamp} />}
+            refreshRequestTimestamp={lastRefreshRequestTimestamp}/>}
         </div>
         {this.renderDruidQueryModal()}
         {this.renderRawDataModal()}
@@ -726,26 +744,38 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private manualFallback() {
     const { essence } = this.state;
     if (!essence.visResolve.isManual()) return null;
-    return <ManualFallback clicker={this.clicker} essence={essence} />;
+    return <ManualFallback clicker={this.clicker} essence={essence}/>;
   }
 
   private visElement() {
-    const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
+    const { essence, timekeeper, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
-    const visProps = {
-      refreshRequestTimestamp: lastRefreshRequestTimestamp,
-      essence,
-      clicker: this.clicker,
-      timekeeper: this.state.timekeeper,
-      stage,
-      registerDownloadableDataset: (dataset: Dataset) => {
-        this.downloadableDataset = { dataset, options: tabularOptions(essence) };
-      }
+    const clicker = this.clicker;
+    const registerDownloadableDataset = (dataset: Dataset) => {
+      this.downloadableDataset = { dataset, options: tabularOptions(essence) };
     };
+    const { visualization } = essence;
+    const Visualization = getVisualizationComponent(visualization);
 
-    return <HighlightController essence={essence} clicker={this.clicker}>
+    return <HighlightController essence={essence} clicker={clicker}>
       {highlightProps =>
-        React.createElement(getVisualizationComponent(essence.visualization), { ...visProps, ...highlightProps })}
+        <DataProvider
+          refreshRequestTimestamp={lastRefreshRequestTimestamp}
+          registerDownloadableDataset={registerDownloadableDataset}
+          essence={essence}
+          timekeeper={timekeeper}
+          stage={stage}>
+          {data => <div className={classNames("visualization-root", visualization.name)}>
+            <Visualization
+            data={data}
+            essence={essence}
+            clicker={clicker}
+            timekeeper={timekeeper}
+            stage={stage}
+            {...highlightProps}
+          />
+          </div>}
+        </DataProvider>}
     </HighlightController>;
   }
 }
