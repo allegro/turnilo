@@ -73,6 +73,14 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
     return new DragPosition(parameters);
   }
 
+  static insertAt(index: number): DragPosition {
+    return new DragPosition({ insert: index });
+  }
+
+  static replaceAt(index: number): DragPosition {
+    return new DragPosition({ replace: index });
+  }
+
   public insert: number;
   public replace: number;
 
