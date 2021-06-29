@@ -338,16 +338,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     });
   }
 
-  // This will be called externally
-  filterMenuRequest(dimension: Dimension) {
-    const { filter } = this.props.essence;
-    if (filter.filteredOn(dimension.name)) {
-      this.openMenuOnDimension(dimension);
-    } else {
-      this.addDummy(dimension, new DragPosition({ insert: filter.length() }));
-    }
-  }
-
   overflowButtonClick = () => {
     this.openOverflowMenu(this.overflowButtonTarget());
   };
