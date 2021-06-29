@@ -40,7 +40,7 @@ export interface MeasureActionsMenuProps {
 }
 
 export interface MeasureActionsProps {
-  appendDirtySeries: Unary<Series, void>;
+  addPartialSeries: Unary<Series, void>;
   addSeries: Unary<Series, void>;
   series: SeriesList;
   measure: Measure;
@@ -67,14 +67,14 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
 };
 
 function measureActions(props: MeasureActionsProps): JSX.Element[] {
-  const { series, measure, onClose, addSeries, appendDirtySeries } = props;
+  const { series, measure, onClose, addSeries, addPartialSeries } = props;
 
   if (isQuantile(measure)) {
     return [
       <AddQuantileSeriesButton
         key="Add"
         addSeries={addSeries}
-        appendDirtySeries={appendDirtySeries}
+        addPartialSeries={addPartialSeries}
         measure={measure}
         series={series}
         onClose={onClose} />
@@ -107,7 +107,7 @@ function measureActions(props: MeasureActionsProps): JSX.Element[] {
       series={series} />,
     <AddArithmeticOperationButton
       key="Arithmetic"
-      addExpressionPlaceholder={appendDirtySeries}
+      addPartialSeries={addPartialSeries}
       measure={measure}
       onClose={onClose} />
   ];

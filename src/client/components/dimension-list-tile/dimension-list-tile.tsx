@@ -39,7 +39,7 @@ export interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: (dimension: Dimension) => void;
+  addPartialFilter: (dimension: Dimension) => void;
   style?: CSSProperties;
 }
 
@@ -141,7 +141,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   };
 
   renderMenu(): JSX.Element {
-    const { essence, clicker, menuStage, triggerFilterMenu } = this.props;
+    const { essence, clicker, menuStage, addPartialFilter } = this.props;
     const { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
 
@@ -152,7 +152,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       containerStage={menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}
-      triggerFilterMenu={triggerFilterMenu}
+      addPartialFilter={addPartialFilter}
       onClose={this.closeMenu}
     />;
   }

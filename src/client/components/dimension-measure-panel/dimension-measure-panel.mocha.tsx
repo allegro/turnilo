@@ -32,11 +32,11 @@ describe("DimensionMeasurePanel", () => {
     };
     return shallow(
       <DimensionMeasurePanel
-        appendDirtySeries={null}
+        addPartialFilter={null}
         clicker={clickyMcClickFace}
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
-        triggerFilterMenu={null}
+        addPartialSeries={null}
       />
     );
   }

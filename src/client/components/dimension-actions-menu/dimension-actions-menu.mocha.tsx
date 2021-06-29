@@ -34,7 +34,7 @@ describe("<DimensionActions>", () => {
   describe("Split Action", () => {
 
     const dimActions = (dimension: Dimension, essence: Essence) => shallow(<DimensionActions
-      triggerFilterMenu={null}
+      addPartialFilter={null}
       dimension={dimension}
       essence={essence}
       onClose={onClose}
@@ -77,7 +77,7 @@ describe("<DimensionActions>", () => {
         essence={essence}
         dimension={dimension}
         onClose={onCloseSpy}
-        triggerFilterMenu={null} />);
+        addPartialFilter={null} />);
 
       it("call clicker.changeSplit and onClose when dimension is not selected", () => {
         const dimension = DimensionFixtures.countryURL();
@@ -106,7 +106,7 @@ describe("<DimensionActions>", () => {
   describe("SubSplit Action", () => {
 
     const dimActions = (dimension: Dimension) => shallow(<DimensionActions
-      triggerFilterMenu={null}
+      addPartialFilter={null}
       dimension={dimension}
       essence={EssenceFixtures.wikiTable()}
       onClose={onClose}
@@ -140,7 +140,7 @@ describe("<DimensionActions>", () => {
         essence={EssenceFixtures.wikiTable()}
         dimension={dimension}
         onClose={onCloseSpy}
-        triggerFilterMenu={null} />);
+        addPartialFilter={null} />);
 
       it("call clicker.changeSplit and onClose when dimension is not selected", () => {
         const dimension = DimensionFixtures.countryURL();
@@ -171,7 +171,7 @@ describe("<DimensionActions>", () => {
       const triggerSpy = sinon.spy();
       const dimension = DimensionFixtures.countryURL();
       const actions = mount(<DimensionActions
-        triggerFilterMenu={triggerSpy}
+        addPartialFilter={triggerSpy}
         dimension={dimension}
         essence={EssenceFixtures.wikiTable()}
         onClose={onCloseSpy}
@@ -193,7 +193,7 @@ describe("<DimensionActions>", () => {
       const clicker = { pin: pinSpy };
       const dimension = DimensionFixtures.countryURL();
       const actions = mount(<DimensionActions
-        triggerFilterMenu={null}
+        addPartialFilter={null}
         dimension={dimension}
         essence={EssenceFixtures.wikiTable()}
         onClose={onCloseSpy}

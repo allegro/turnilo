@@ -26,16 +26,16 @@ import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
 interface AddPercentSeriesButtonProps {
-  addExpressionPlaceholder: Unary<Series, void>;
+  addPartialSeries: Unary<Series, void>;
   measure: Measure;
   onClose: Fn;
 }
 
 export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = props => {
-  const { measure, addExpressionPlaceholder, onClose } = props;
+  const { measure, addPartialSeries, onClose } = props;
 
   function onNewOperation() {
-    addExpressionPlaceholder(new ExpressionSeries({
+    addPartialSeries(new ExpressionSeries({
       reference: measure.name,
       expression: new ArithmeticExpression({
         operation: ExpressionSeriesOperation.ADD,
