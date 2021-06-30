@@ -16,14 +16,13 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
-import { DragPosition } from "../../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../../common/models/filter/filter";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Unary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
 import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
@@ -32,15 +31,13 @@ import { SelectableStringFilterMenu } from "../../selectable-string-filter-menu/
 import "./string-filter-menu.scss";
 
 export interface StringFilterMenuProps {
-  clicker: Clicker;
   dimension: Dimension;
+  saveClause: Unary<FilterClause, void>;
   essence: Essence;
   timekeeper: Timekeeper;
-  changePosition: DragPosition;
   onClose: Fn;
   containerStage?: Stage;
   openOn: Element;
-  inside?: Element;
 }
 
 export interface StringFilterMenuState {
@@ -60,19 +57,11 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   onSelectFilterOption = (filterMode: FilterMode) => this.setState({ filterMode });
 
   updateFilter: (clause: FilterClause) => Filter = clause => {
-    const { essence, dimension, changePosition } = this.props;
+    const { essence, dimension } = this.props;
     const { filter } = essence;
 
     if (!clause) return filter.removeClause(dimension.name);
-    if (changePosition) {
-      if (changePosition.isInsert()) {
-        return filter.insertByIndex(changePosition.insert, clause);
-      } else {
-        return filter.replaceByIndex(changePosition.replace, clause);
-      }
-    } else {
-      return filter.setClause(clause);
-    }
+    return filter.setClause(clause);
   };
 
   getFilterOptions() {
@@ -86,10 +75,9 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   renderFilterControls(): JSX.Element {
-    const { dimension, clicker, essence, timekeeper, onClose } = this.props;
+    const { dimension, saveClause, essence, timekeeper, onClose } = this.props;
     const { filterMode } = this.state;
-    const onClauseChange = this.updateFilter;
-    const props = { dimension, clicker, essence, timekeeper, onClose, onClauseChange };
+    const props = { dimension, essence, timekeeper, onClose, saveClause };
     switch (filterMode) {
       case FilterMode.EXCLUDE:
       case FilterMode.INCLUDE:
@@ -103,7 +91,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   render() {
-    const { dimension, onClose, containerStage, openOn, inside } = this.props;
+    const { dimension, onClose, containerStage, openOn } = this.props;
     const { filterMode } = this.state;
     if (!dimension) return null;
 
@@ -114,7 +102,6 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       stage={Stage.fromSize(300, 410)}
       openOn={openOn}
       onClose={onClose}
-      inside={inside}
     >
       <div className="string-filter-content">
         <FilterOptionsDropdown

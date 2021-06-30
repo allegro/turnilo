@@ -22,7 +22,7 @@ import { DimensionFixtures } from "../../../../common/models/dimension/dimension
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import { StageFixtures } from "../../../../common/models/stage/stage.fixtures";
 import { TimekeeperFixtures } from "../../../../common/models/timekeeper/timekeeper.fixtures";
-import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils/index";
+import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils";
 import { NumberFilterMenu } from "./number-filter-menu";
 
 describe("NumberFilterMenu", () => {
@@ -32,15 +32,13 @@ describe("NumberFilterMenu", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <NumberFilterMenu
-        clicker={null}
+        saveClause={null}
         dimension={DimensionFixtures.wikiCommentLength()}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
         onClose={null}
         containerStage={StageFixtures.defaultA()}
         openOn={div}
-        inside={div}
-
       />
     );
 

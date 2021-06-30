@@ -18,14 +18,25 @@
 import { Set } from "immutable";
 import { Dataset } from "plywood";
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import {
+  FilterClause,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../common/models/filter-clause/filter-clause";
+import { FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
-import { debounceWithPromise } from "../../../common/utils/functional/functional";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading
+} from "../../../common/models/visualization-props/visualization-props";
+import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
@@ -44,13 +55,12 @@ import { StringValuesList } from "./string-values-list";
 const TOP_N = 100;
 
 export interface SelectableStringFilterMenuProps {
-  clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
   timekeeper: Timekeeper;
   onClose: Fn;
   filterMode?: FilterMode;
-  onClauseChange: (clause: FilterClause) => Filter;
+  saveClause: Unary<FilterClause, void>;
 }
 
 export interface SelectableStringFilterMenuState {
@@ -153,19 +163,18 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   updateSearchText = (searchText: string) => this.setState({ searchText });
 
-  constructFilter(): Filter {
-    const { dimension, filterMode, onClauseChange } = this.props;
+  constructClause(): FilterClause | null {
+    const { dimension, filterMode } = this.props;
     const { selectedValues } = this.state;
     const { name } = dimension;
-    if (selectedValues.count() === 0) return onClauseChange(null);
+    if (selectedValues.isEmpty()) return null;
 
-    const clause = new StringFilterClause({
+    return new StringFilterClause({
       action: StringFilterAction.IN,
       reference: name,
       values: selectedValues,
       not: filterMode === FilterMode.EXCLUDE
     });
-    return onClauseChange(clause);
   }
 
   onValueClick = (value: string, withModKey: boolean) => {
@@ -179,8 +188,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   onOkClick = () => {
     if (!this.isFilterValid()) return;
-    const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    const { saveClause, onClose } = this.props;
+    saveClause(this.constructClause());
     onClose();
   };
 
@@ -193,7 +202,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   isFilterValid(): boolean {
     const { selectedValues } = this.state;
     if (selectedValues.isEmpty()) return false;
-    return !this.props.essence.filter.equals(this.constructFilter());
+    const { essence: { filter }, dimension } = this.props;
+    const newClause = this.constructClause();
+    const oldClause = filter.getClauseForDimension(dimension);
+    return newClause && !newClause.equals(oldClause);
   }
 
   renderSelectMode(): JSX.Element {

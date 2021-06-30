@@ -17,14 +17,12 @@
 import { Set } from "immutable";
 import { $, Dataset } from "plywood";
 import * as React from "react";
-import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
-import { DragPosition } from "../../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../../common/models/essence/essence";
-import { BooleanFilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../../common/models/filter/filter";
+import { BooleanFilterClause, FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Unary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { STRINGS } from "../../../config/constants";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
@@ -35,15 +33,13 @@ import { QueryError } from "../../query-error/query-error";
 import "./boolean-filter-menu.scss";
 
 interface BooleanFilterMenuProps {
-  clicker: Clicker;
   dimension: Dimension;
+  saveClause: Unary<FilterClause, void>;
   essence: Essence;
   timekeeper: Timekeeper;
-  changePosition: DragPosition;
   onClose: Fn;
   containerStage?: Stage;
   openOn: Element;
-  inside?: Element;
 }
 
 export type Booleanish = string | boolean | null;
@@ -105,27 +101,28 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
 
   }
 
-  constructFilter(): Filter | null {
+  constructClause(): BooleanFilterClause | null {
     const { selectedValues } = this.state;
     if (selectedValues.isEmpty()) return null;
 
-    const { essence: { filter }, dimension } = this.props;
-    return filter.setClause(new BooleanFilterClause({
+    const { dimension } = this.props;
+    return new BooleanFilterClause({
       reference: dimension.name,
       values: selectedValues
-    }));
+    });
   }
 
   actionEnabled(): boolean {
-    const { essence } = this.props;
-    const filter = this.constructFilter();
-    return Boolean(filter) && !essence.filter.equals(filter);
+    const { essence: { filter }, dimension } = this.props;
+    const newClause = this.constructClause();
+    const oldClause = filter.getClauseForDimension(dimension);
+    return newClause && !newClause.equals(oldClause);
   }
 
   onOkClick = () => {
     if (!this.actionEnabled()) return;
-    const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    const { saveClause, onClose } = this.props;
+    saveClause(this.constructClause());
     onClose();
   };
 
@@ -155,7 +152,7 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
   };
 
   render() {
-    const { onClose, containerStage, openOn, inside } = this.props;
+    const { onClose, containerStage, openOn } = this.props;
     const { values, error, loading } = this.state;
 
     return <BubbleMenu
@@ -164,8 +161,7 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
       containerStage={containerStage}
       stage={Stage.fromSize(250, 210)}
       openOn={openOn}
-      onClose={onClose}
-      inside={inside}>
+      onClose={onClose}>
       <div className="menu-table">
         <div className="rows">
           {values.map(this.renderRow)}
