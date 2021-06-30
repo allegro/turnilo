@@ -130,6 +130,10 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
     return this.replace !== null;
   }
 
+  public getIndex(): number {
+    return this.isInsert() ? this.insert : this.replace;
+  }
+
 }
 
 check = DragPosition;
