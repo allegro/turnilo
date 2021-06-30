@@ -44,7 +44,7 @@ import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
-import { FilterTile } from "../../components/filter-tile/filter-tile";
+import { FilterTilesRow } from "../../components/filter-tile/filter-tiles-row";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
@@ -577,7 +577,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         <GlobalEventListener resize={this.globalResizeListener}/>
         {headerBar}
         <div className="container" ref={this.container}>
-          <PartialTilesProvider>{({ series, addFilter, addSeries, removeTile }) => <React.Fragment>
+          <PartialTilesProvider>{({ series, filter, addFilter, addSeries, removeTile }) => <React.Fragment>
             {!layout.factPanel.hidden && <DimensionMeasurePanel
               style={styles.dimensionMeasurePanel}
               clicker={clicker}
@@ -606,12 +606,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   <ToggleArrow right={layout.factPanel.hidden}/>
                 </div>
                 <div className="filter-split-section">
-                  <FilterTile
+                  <FilterTilesRow
                     locale={customization.locale}
-                    clicker={clicker}
-                    essence={essence}
                     timekeeper={timekeeper}
                     menuStage={visualizationStage}
+                    partialFilter={filter}
+                    removePartialFilter={removeTile}
+                    addPartialFilter={addFilter}
                   />
                   <SplitTilesRow
                     clicker={clicker}
