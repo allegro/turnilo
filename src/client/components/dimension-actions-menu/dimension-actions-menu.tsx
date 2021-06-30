@@ -75,7 +75,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
   const isPinable = dimension.kind === "string" || dimension.kind === "boolean";
 
   function onFilter() {
-    if (!hasSplitOn) addPartialFilter(dimension);
+    if (!hasFilterOn) addPartialFilter(dimension);
     onClose();
   }
 
