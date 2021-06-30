@@ -2,10 +2,7 @@ context("Table", () => {
 
   const header = () => cy.get(".cube-header-bar");
   const filterTileRow = () => cy.get(".filter-tile");
-  const filterOverflowButton = () => filterTileRow().find(".overflow");
   const filterTile = (i) => filterTileRow().find(`.filter:nth-child(${i})`);
-  const overflowMenu = () => cy.get(".overflow-menu");
-  const overflowTile = (i) => overflowMenu().find(`.filter:nth-child(${i})`);
   const table = () => cy.get(".table");
   const clickTarget = () => table().find(".event-target");
   const highlightModal = () => cy.get(".highlight-modal");
@@ -50,14 +47,9 @@ context("Table", () => {
       table().find(".split-value.selected").should("not.exist");
     }
 
-    function assertFilterTileValues(values, overflowValues) {
+    function assertFilterTileValues(values) {
       values.forEach((value, idx) => {
         filterTile(idx + 1).should("contain", value);
-      });
-
-      filterOverflowButton().click();
-      overflowValues.forEach((value, idx) => {
-        overflowTile(idx + 1).should("contain", value);
       });
     }
 
@@ -94,7 +86,7 @@ context("Table", () => {
       it("should change filter", () => {
         acceptHighlight().click();
 
-        assertFilterTileValues(["Latest day", "Channel:en"], ["Namespace:Main"]);
+        assertFilterTileValues(["Latest day", "Channel:en", "Namespace:Main"]);
       });
     });
 
