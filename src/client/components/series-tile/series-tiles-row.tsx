@@ -41,11 +41,6 @@ interface SeriesTilesRowProps {
   removePartialSeries: Fn;
 }
 
-export interface Placeholder {
-  series: Series;
-  index: number;
-}
-
 interface SeriesTilesRowState {
   dragPosition?: DragPosition;
   openedSeries?: Series;
@@ -196,27 +191,16 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     addPartialSeries(series, DragPosition.insertAt(essence.series.count()));
   };
 
-  // TODO: simplify?
-  placeholderSeries(): Placeholder | null {
-    const { partialSeries } = this.props;
-    if (!partialSeries) return null;
-    if (!partialSeries.position.isInsert()) return null;
-    return {
-      series: partialSeries.series,
-      index: partialSeries.position.insert
-    };
-  }
-
   render() {
     const { dragPosition, openedSeries, overflowOpen } = this.state;
     const { essence } = this.context;
-    const { menuStage, removePartialSeries } = this.props;
+    const { menuStage, removePartialSeries, partialSeries } = this.props;
     return <div className="series-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.series}</div>
       <div className="items" ref={this.items}>
         <SeriesTiles
           menuStage={menuStage}
-          placeholderSeries={this.placeholderSeries()}
+          partialSeries={partialSeries}
           maxItems={this.maxItems()}
           essence={essence}
           removeSeries={this.removeSeries}
