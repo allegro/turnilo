@@ -143,13 +143,12 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
     const { essence: { filter, dataCube } } = this.context;
     const { addPartialFilter } = this.props;
     let tryingToReplaceTime = false;
-    if (position.replace !== null) {
+    if (position.isReplace()) {
       const targetClause = filter.clauses.get(position.replace);
       tryingToReplaceTime = targetClause && targetClause.reference === dataCube.timeAttribute;
+      if (tryingToReplaceTime) return;
     }
-    if (position && !tryingToReplaceTime) {
-      addPartialFilter(dimension, position);
-    }
+    addPartialFilter(dimension, position);
   }
 
   private dropFilter(clause: FilterClause, position: DragPosition) {
@@ -157,7 +156,9 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
     const newFilter = position.isReplace()
       ? filter.replaceByIndex(position.replace, clause)
       : filter.insertByIndex(position.insert, clause);
-    !filter.equals(newFilter) && clicker.changeFilter(newFilter);
+    if (!filter.equals(newFilter)) {
+      clicker.changeFilter(newFilter);
+    }
   }
 
   appendFilter = (dimension: Dimension) => {
@@ -195,7 +196,7 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
           overflowOpen={overflowOpen}
           closeOverflowMenu={this.closeOverflowMenu}
           openedFilterMenu={openedClause}
-          openOverflowMenu={this.openOverflowMenu} />
+          openOverflowMenu={this.openOverflowMenu}/>
       </div>
       <AddFilter
         menuStage={menuStage}

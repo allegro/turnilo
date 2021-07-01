@@ -19,7 +19,7 @@ import * as React from "react";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../../common/models/filter/filter";
+import { FilterMode } from "../../../../common/models/filter/filter";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../../common/utils/functional/functional";
@@ -55,14 +55,6 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   state: StringFilterMenuState = { filterMode: this.initialFilterMode() };
 
   onSelectFilterOption = (filterMode: FilterMode) => this.setState({ filterMode });
-
-  updateFilter: (clause: FilterClause) => Filter = clause => {
-    const { essence, dimension } = this.props;
-    const { filter } = essence;
-
-    if (!clause) return filter.removeClause(dimension.name);
-    return filter.setClause(clause);
-  };
 
   getFilterOptions() {
     const { dimension } = this.props;

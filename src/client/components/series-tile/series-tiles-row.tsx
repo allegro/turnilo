@@ -183,12 +183,12 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const { clicker, essence } = this.context;
     const series = fromMeasure(measure);
     const isMeasureSeries = series instanceof MeasureSeries;
-    const isUniqueQuantile = !this.context.essence.series.hasSeries(series);
+    const isUniqueQuantile = series instanceof QuantileSeries && !this.context.essence.series.hasSeries(series);
     if (isMeasureSeries || isUniqueQuantile) {
       clicker.addSeries(series);
-      return;
+    } else {
+      addPartialSeries(series, DragPosition.insertAt(essence.series.count()));
     }
-    addPartialSeries(series, DragPosition.insertAt(essence.series.count()));
   };
 
   render() {
