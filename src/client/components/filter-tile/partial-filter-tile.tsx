@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,34 +24,41 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { BooleanFilterMenu } from "./boolean-filter-menu/boolean-filter-menu";
-import "./filter-menu.scss";
-import { NumberFilterMenu } from "./number-filter-menu/number-filter-menu";
-import { StringFilterMenu } from "./string-filter-menu/string-filter-menu";
-import { TimeFilterMenu } from "./time-filter-menu/time-filter-menu";
+import { classNames } from "../../utils/dom/dom";
+import { FilterMenu } from "../filter-menu/filter-menu";
+import { WithRef } from "../with-ref/with-ref";
+import { FILTER_CLASS_NAME } from "./filter-tile";
 
-export interface FilterMenuProps {
+interface PartialFilterTileProps {
+  dimension: Dimension;
+  style?: React.CSSProperties;
   essence: Essence;
   timekeeper: Timekeeper;
   locale: Locale;
   clicker: Clicker;
   saveClause: Unary<FilterClause, void>;
-  containerStage?: Stage;
-  openOn: Element;
-  dimension: Dimension;
-  onClose: Fn;
+  stage: Stage;
+  closeItem: Fn;
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
-  if (!dimension) return null;
-  switch (dimension.kind) {
-    case "time":
-      return <TimeFilterMenu dimension={dimension} {...props} />;
-    case "boolean":
-      return <BooleanFilterMenu dimension={dimension}{...props} />;
-    case "number":
-      return <NumberFilterMenu dimension={dimension} {...props} />;
-    default:
-      return <StringFilterMenu dimension={dimension}{...props} />;
-  }
+export const PartialFilterTile: React.SFC<PartialFilterTileProps> = props => {
+  const { closeItem, saveClause, essence, timekeeper, locale, clicker, stage, dimension, style } = props;
+  return <WithRef>
+    {({ ref: openOn, setRef }) => <div
+      className={classNames(FILTER_CLASS_NAME, "dimension", "selected", "included")}
+      ref={setRef}
+      style={style}>
+      <div className="reading">{dimension.title}</div>
+      {openOn && <FilterMenu
+        essence={essence}
+        timekeeper={timekeeper}
+        locale={locale}
+        clicker={clicker}
+        saveClause={saveClause}
+        openOn={openOn}
+        dimension={dimension}
+        containerStage={stage}
+        onClose={closeItem} />}
+        </div>}
+  </WithRef>;
 };

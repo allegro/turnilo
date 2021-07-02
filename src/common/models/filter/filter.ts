@@ -147,8 +147,8 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.updateClauses(clauses => clauses.delete(index));
   }
 
-  public filteredOn(reference: string): boolean {
-    return this.indexOfClause(reference) !== -1;
+  public filteredOn({ name }: Dimension): boolean {
+    return this.indexOfClause(name) !== -1;
   }
 
   public getClauseForDimension({ name }: Dimension): FilterClause {

@@ -21,11 +21,14 @@ import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { QuantileSeries } from "../../../common/models/series/quantile-series";
 import { fromMeasure, Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
+import { Binary } from "../../../common/utils/functional/functional";
+import { Fn } from "../../../common/utils/general/general";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
 import { CubeContext, CubeContextValue } from "../../views/cube-view/cube-context";
+import { PartialSeries } from "../../views/cube-view/partial-tiles-provider";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSeries } from "./add-series";
 import { SeriesTiles } from "./series-tiles";
@@ -33,18 +36,15 @@ import "./series-tiles-row.scss";
 
 interface SeriesTilesRowProps {
   menuStage: Stage;
-}
-
-export interface Placeholder {
-  series: Series;
-  index: number;
+  partialSeries: PartialSeries | null;
+  addPartialSeries: Binary<Series, DragPosition, void>;
+  removePartialSeries: Fn;
 }
 
 interface SeriesTilesRowState {
   dragPosition?: DragPosition;
   openedSeries?: Series;
   overflowOpen?: boolean;
-  placeholderSeries?: Placeholder;
 }
 
 export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
@@ -60,22 +60,6 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     return menuStage && getMaxItems(menuStage.width, series.count());
   }
 
-  // This will be called externally
-  appendDirtySeries(series: Series) {
-    this.appendPlaceholder(series);
-  }
-
-  private appendPlaceholder(series: Series) {
-    this.setState({
-      placeholderSeries: {
-        series,
-        index: this.context.essence.series.count()
-      }
-    });
-  }
-
-  removePlaceholderSeries = () => this.setState({ placeholderSeries: null });
-
   openSeriesMenu = (series: Series) => this.setState({ openedSeries: series });
 
   closeSeriesMenu = () => this.setState({ openedSeries: null });
@@ -90,9 +74,10 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   savePlaceholderSeries = (series: Series) => {
+    const { removePartialSeries } = this.props;
     const { clicker } = this.context;
     clicker.addSeries(series);
-    this.removePlaceholderSeries();
+    removePartialSeries();
   };
 
   removeSeries = (series: Series) => {
@@ -127,7 +112,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const offset = x - rect.left;
     const position = DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
     if (position.replace === this.maxItems()) {
-      return new DragPosition({ insert: position.replace });
+      return DragPosition.insertAt(position.replace);
     }
     return position;
   }
@@ -168,14 +153,15 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
+    const { addPartialSeries } = this.props;
     const { clicker, essence: { series } } = this.context;
     const isDuplicateQuantile = newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
     if (isDuplicateQuantile) {
       if (dragPosition.isReplace()) {
         clicker.removeSeries(series.series.get(dragPosition.replace));
-        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.replace } });
+        addPartialSeries(newSeries, dragPosition);
       } else {
-        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.insert } });
+        addPartialSeries(newSeries, dragPosition);
       }
     } else {
       this.rearrangeSeries(newSeries, dragPosition);
@@ -193,26 +179,28 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   }
 
   appendMeasureSeries = (measure: Measure) => {
+    const { addPartialSeries } = this.props;
+    const { clicker, essence } = this.context;
     const series = fromMeasure(measure);
     const isMeasureSeries = series instanceof MeasureSeries;
-    const isUniqueQuantile = !this.context.essence.series.hasSeries(series);
+    const isUniqueQuantile = series instanceof QuantileSeries && !this.context.essence.series.hasSeries(series);
     if (isMeasureSeries || isUniqueQuantile) {
-      this.context.clicker.addSeries(series);
-      return;
+      clicker.addSeries(series);
+    } else {
+      addPartialSeries(series, DragPosition.insertAt(essence.series.count()));
     }
-    this.appendPlaceholder(series);
   };
 
   render() {
-    const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;
+    const { dragPosition, openedSeries, overflowOpen } = this.state;
     const { essence } = this.context;
-    const { menuStage } = this.props;
+    const { menuStage, removePartialSeries, partialSeries } = this.props;
     return <div className="series-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.series}</div>
       <div className="items" ref={this.items}>
         <SeriesTiles
           menuStage={menuStage}
-          placeholderSeries={placeholderSeries}
+          partialSeries={partialSeries}
           maxItems={this.maxItems()}
           essence={essence}
           removeSeries={this.removeSeries}
@@ -220,7 +208,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
           openSeriesMenu={this.openSeriesMenu}
           closeSeriesMenu={this.closeSeriesMenu}
           dragStart={this.dragStart}
-          removePlaceholderSeries={this.removePlaceholderSeries}
+          removePlaceholderSeries={removePartialSeries}
           savePlaceholderSeries={this.savePlaceholderSeries}
           overflowOpen={overflowOpen}
           closeOverflowMenu={this.closeOverflowMenu}

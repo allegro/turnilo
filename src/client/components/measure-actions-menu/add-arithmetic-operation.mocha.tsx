@@ -30,14 +30,14 @@ import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
 
 const renderButton = (measure: Measure) => shallow(<AddArithmeticOperationButton
   measure={measure}
-  addExpressionPlaceholder={null}
+  addPartialSeries={null}
   onClose={noop}
 />);
 
 const mountButton = (measure: Measure, addExpressionPlaceholder: Fn, onClose: Fn) => mount(<AddArithmeticOperationButton
   measure={measure}
   onClose={onClose}
-  addExpressionPlaceholder={addExpressionPlaceholder} />)
+  addPartialSeries={addExpressionPlaceholder} />)
   .find(".new-arithmetic-expression");
 
 describe("Add Arithmetic Operation Button", () => {

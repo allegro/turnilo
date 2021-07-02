@@ -18,14 +18,25 @@
 import { Set } from "immutable";
 import { Dataset } from "plywood";
 import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import {
+  FilterClause,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../common/models/filter-clause/filter-clause";
+import { FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
-import { debounceWithPromise } from "../../../common/utils/functional/functional";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading
+} from "../../../common/models/visualization-props/visualization-props";
+import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { previewStringFilterQuery } from "../../../common/utils/query/preview-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
@@ -53,13 +64,12 @@ const TOP_N = 100;
 export type PreviewFilterMode = FilterMode.CONTAINS | FilterMode.REGEX;
 
 export interface PreviewStringFilterMenuProps {
-  clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
   timekeeper: Timekeeper;
   onClose: Fn;
   filterMode: FilterMode.REGEX | FilterMode.CONTAINS;
-  onClauseChange: (clause: FilterClause) => Filter;
+  saveClause: Unary<FilterClause, void>;
 }
 
 export interface PreviewStringFilterMenuState {
@@ -154,32 +164,32 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     }
   };
 
-  constructFilter(): Filter {
-    const { dimension, filterMode, onClauseChange } = this.props;
+  constructClause(): FilterClause {
+    const { dimension, filterMode } = this.props;
     const { searchText } = this.state;
     if (!searchText) return null;
     const { name: reference } = dimension;
 
     switch (filterMode) {
       case FilterMode.CONTAINS:
-        return onClauseChange(new StringFilterClause({
+        return new StringFilterClause({
           reference,
           values: Set.of(searchText),
           action: StringFilterAction.CONTAINS
-        }));
+        });
       case FilterMode.REGEX:
-        return onClauseChange(new StringFilterClause({
+        return new StringFilterClause({
           reference,
           values: Set.of(searchText),
           action: StringFilterAction.MATCH
-        }));
+        });
     }
   }
 
   onOkClick = () => {
     if (!this.actionEnabled()) return;
-    const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    const { saveClause, onClose } = this.props;
+    saveClause(this.constructClause());
     onClose();
   };
 
@@ -188,10 +198,11 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   };
 
   actionEnabled() {
-    const { essence } = this.props;
+    const { essence: { filter }, dimension } = this.props;
     if (this.regexErrorMessage()) return false;
-    const filter = this.constructFilter();
-    return filter && !essence.filter.equals(filter);
+    const newClause = this.constructClause();
+    const oldClause = filter.getClauseForDimension(dimension);
+    return newClause && !newClause.equals(oldClause);
   }
 
   render() {

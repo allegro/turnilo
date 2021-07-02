@@ -17,13 +17,13 @@
 
 import { List } from "immutable";
 import * as React from "react";
-import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../../common/models/filter/filter";
+import { FilterClause, NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
+import { FilterMode } from "../../../../common/models/filter/filter";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Unary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { STRINGS } from "../../../config/constants";
 import { enterKey } from "../../../utils/dom/dom";
@@ -47,14 +47,13 @@ const MENU_WIDTH = 250;
 const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
 
 export interface NumberFilterMenuProps {
-  clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
   dimension: Dimension;
+  saveClause: Unary<FilterClause, void>;
   onClose: Fn;
   containerStage?: Stage;
   openOn: Element;
-  inside?: Element;
 }
 
 export interface NumberFilterMenuState {
@@ -67,8 +66,6 @@ export interface NumberFilterMenuState {
 }
 
 export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, NumberFilterMenuState> {
-  public mounted: boolean;
-
   state: NumberFilterMenuState = {
     leftOffset: null,
     rightBound: null,
@@ -103,18 +100,18 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  constructFilter(): Filter {
-    const { essence: { filter }, dimension } = this.props;
+  constructClause(): NumberFilterClause {
+    const { dimension } = this.props;
     const { start, end, filterMode } = this.state;
 
     if (isNaN(start) || isNaN(end)) return null;
     if (start === null && end === null) return null;
     if (start !== null && end !== null && start > end) return null;
-    return filter.setClause(new NumberFilterClause({
+    return new NumberFilterClause({
       reference: dimension.name,
       not: filterMode === FilterMode.EXCLUDE,
       values: List.of(new NumberRange({ start, end, bounds: start === end ? "[]" : "[)" }))
-    }));
+    });
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
@@ -125,8 +122,8 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
   onOkClick = () => {
     if (!this.actionEnabled()) return;
-    const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    const { saveClause, onClose } = this.props;
+    saveClause(this.constructClause());
     onClose();
   };
 
@@ -162,13 +159,14 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   };
 
   actionEnabled() {
-    const { essence } = this.props;
-    const filter = this.constructFilter();
-    return Boolean(filter) && !essence.filter.equals(filter);
+    const { essence: { filter }, dimension } = this.props;
+    const newClause = this.constructClause();
+    const oldClause = filter.getClauseForDimension(dimension);
+    return Boolean(filter) && !newClause.equals(oldClause);
   }
 
   render() {
-    const { essence, timekeeper, dimension, onClose, containerStage, openOn, inside } = this.props;
+    const { essence, timekeeper, dimension, onClose, containerStage, openOn } = this.props;
     const { end, start, filterMode } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
@@ -179,7 +177,6 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
       stage={menuSize}
       openOn={openOn}
       onClose={onClose}
-      inside={inside}
     >
       <div className="side-by-side">
         <div className="group">

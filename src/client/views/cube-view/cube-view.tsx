@@ -26,6 +26,7 @@ import { ClientCustomization } from "../../../common/models/customization/custom
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
 import { SeriesList } from "../../../common/models/series-list/series-list";
@@ -43,7 +44,7 @@ import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
-import { FilterTile } from "../../components/filter-tile/filter-tile";
+import { FilterTilesRow } from "../../components/filter-tile/filter-tiles-row";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
@@ -67,6 +68,7 @@ import { HighlightController } from "../../visualizations/highlight-controller/h
 import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
+import { PartialTilesProvider } from "./partial-tiles-provider";
 
 const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
   right
@@ -140,9 +142,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private downloadableDataset: DataSetWithTabOptions;
   private visualization = React.createRef<HTMLDivElement>();
   private container = React.createRef<HTMLDivElement>();
-  private filterTile = React.createRef<FilterTile>();
-  private seriesTile = React.createRef<SeriesTilesRow>();
-  private splitTile = React.createRef<SplitTilesRow>();
 
   constructor(props: CubeViewProps) {
     super(props);
@@ -449,16 +448,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       onClose={this.closeUrlShortenerModal}/>;
   }
 
-  triggerFilterMenu = (dimension: Dimension) => {
-    if (!dimension) return;
-    this.filterTile.current.filterMenuRequest(dimension);
-  };
-
-  appendDirtySeries = (series: Series) => {
-    if (!series) return;
-    this.seriesTile.current.appendDirtySeries(series);
-  };
-
   changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
@@ -588,89 +577,96 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         <GlobalEventListener resize={this.globalResizeListener}/>
         {headerBar}
         <div className="container" ref={this.container}>
-          {!layout.factPanel.hidden && <DimensionMeasurePanel
-            style={styles.dimensionMeasurePanel}
-            clicker={clicker}
-            essence={essence}
-            menuStage={menuStage}
-            triggerFilterMenu={this.triggerFilterMenu}
-            appendDirtySeries={this.appendDirtySeries}
-          />}
-          {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
-            direction={Direction.LEFT}
-            value={layout.factPanel.width}
-            onResize={this.onFactPanelResize}
-            onResizeEnd={this.onPanelResizeEnd}
-            min={MIN_PANEL_WIDTH}
-            max={MAX_PANEL_WIDTH}
-          >
-            <DragHandle/>
-          </ResizeHandle>}
-
-          <div className="center-panel" style={styles.centerPanel}>
-            <div className="center-top-bar">
-              <div className="dimension-panel-toggle"
-                   onClick={this.toggleFactPanel}>
-                <ToggleArrow right={layout.factPanel.hidden}/>
-              </div>
-              <div className="filter-split-section">
-                <FilterTile
-                  locale={customization.locale}
-                  ref={this.filterTile}
-                  clicker={clicker}
-                  essence={essence}
-                  timekeeper={timekeeper}
-                  menuStage={visualizationStage}
-                />
-                <SplitTilesRow
-                  ref={this.splitTile}
-                  clicker={clicker}
-                  essence={essence}
-                  menuStage={visualizationStage}
-                />
-                <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage}/>
-              </div>
-              <VisSelector clicker={clicker} essence={essence}/>
-              <div className="pinboard-toggle"
-                   onClick={this.togglePinboard}>
-                <ToggleArrow right={!layout.pinboard.hidden}/>
-              </div>
-            </div>
-            <div
-              className="center-main"
-              onDragEnter={this.dragEnter}
+          <PartialTilesProvider>{({ series, filter, addFilter, addSeries, removeTile }) => <React.Fragment>
+            {!layout.factPanel.hidden && <DimensionMeasurePanel
+              style={styles.dimensionMeasurePanel}
+              clicker={clicker}
+              essence={essence}
+              menuStage={menuStage}
+              addPartialFilter={dimension =>
+                addFilter(dimension, DragPosition.insertAt(essence.filter.length()))}
+              addPartialSeries={series =>
+                addSeries(series, DragPosition.insertAt(essence.series.count()))}
+            />}
+            {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
+              direction={Direction.LEFT}
+              value={layout.factPanel.width}
+              onResize={this.onFactPanelResize}
+              onResizeEnd={this.onPanelResizeEnd}
+              min={MIN_PANEL_WIDTH}
+              max={MAX_PANEL_WIDTH}
             >
-              <div className="visualization" ref={this.visualization}>
-                {this.visElement()}
-              </div>
-              {this.manualFallback()}
-              {dragOver ? <DropIndicator/> : null}
-              {dragOver ? <div
-                className="drag-mask"
-                onDragOver={this.dragOver}
-                onDragLeave={this.dragLeave}
-                onDragExit={this.dragLeave}
-                onDrop={this.drop}
-              /> : null}
-            </div>
-          </div>
+              <DragHandle/>
+            </ResizeHandle>}
 
-          {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
-            direction={Direction.RIGHT}
-            value={layout.pinboard.width}
-            onResize={this.onPinboardPanelResize}
-            onResizeEnd={this.onPanelResizeEnd}
-            min={MIN_PANEL_WIDTH}
-            max={MAX_PANEL_WIDTH}
-          >
-            <DragHandle/>
-          </ResizeHandle>}
-          {!layout.pinboard.hidden && <PinboardPanel
-            style={styles.pinboardPanel}
-            clicker={clicker}
-            essence={essence}
-            timekeeper={timekeeper}
-            refreshRequestTimestamp={lastRefreshRequestTimestamp}/>}
+            <div className="center-panel" style={styles.centerPanel}>
+              <div className="center-top-bar">
+                <div className="dimension-panel-toggle"
+                     onClick={this.toggleFactPanel}>
+                  <ToggleArrow right={layout.factPanel.hidden}/>
+                </div>
+                <div className="filter-split-section">
+                  <FilterTilesRow
+                    locale={customization.locale}
+                    timekeeper={timekeeper}
+                    menuStage={visualizationStage}
+                    partialFilter={filter}
+                    removePartialFilter={removeTile}
+                    addPartialFilter={addFilter}
+                  />
+                  <SplitTilesRow
+                    clicker={clicker}
+                    essence={essence}
+                    menuStage={visualizationStage}
+                  />
+                  <SeriesTilesRow
+                    removePartialSeries={removeTile}
+                    partialSeries={series}
+                    menuStage={visualizationStage}
+                    addPartialSeries={addSeries}/>
+                </div>
+                <VisSelector clicker={clicker} essence={essence}/>
+                <div className="pinboard-toggle"
+                     onClick={this.togglePinboard}>
+                  <ToggleArrow right={!layout.pinboard.hidden}/>
+                </div>
+              </div>
+              <div
+                className="center-main"
+                onDragEnter={this.dragEnter}
+              >
+                <div className="visualization" ref={this.visualization}>
+                  {this.visElement()}
+                </div>
+                {this.manualFallback()}
+                {dragOver ? <DropIndicator/> : null}
+                {dragOver ? <div
+                  className="drag-mask"
+                  onDragOver={this.dragOver}
+                  onDragLeave={this.dragLeave}
+                  onDragExit={this.dragLeave}
+                  onDrop={this.drop}
+                /> : null}
+              </div>
+            </div>
+
+            {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
+              direction={Direction.RIGHT}
+              value={layout.pinboard.width}
+              onResize={this.onPinboardPanelResize}
+              onResizeEnd={this.onPanelResizeEnd}
+              min={MIN_PANEL_WIDTH}
+              max={MAX_PANEL_WIDTH}
+            >
+              <DragHandle/>
+            </ResizeHandle>}
+            {!layout.pinboard.hidden && <PinboardPanel
+              style={styles.pinboardPanel}
+              clicker={clicker}
+              essence={essence}
+              timekeeper={timekeeper}
+              refreshRequestTimestamp={lastRefreshRequestTimestamp}/>}
+          </React.Fragment>}</PartialTilesProvider>
         </div>
         {this.renderDruidQueryModal()}
         {this.renderRawDataModal()}
@@ -767,13 +763,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           stage={stage}>
           {data => <div className={classNames("visualization-root", visualization.name)}>
             <Visualization
-            data={data}
-            essence={essence}
-            clicker={clicker}
-            timekeeper={timekeeper}
-            stage={stage}
-            {...highlightProps}
-          />
+              data={data}
+              essence={essence}
+              clicker={clicker}
+              timekeeper={timekeeper}
+              stage={stage}
+              {...highlightProps}
+            />
           </div>}
         </DataProvider>}
     </HighlightController>;

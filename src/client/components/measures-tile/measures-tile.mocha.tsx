@@ -33,7 +33,7 @@ describe("MeasuresTile", () => {
 
     const renderedComponent = renderIntoDocument(
       <MeasuresTile
-        appendDirtySeries={null}
+        addPartialSeries={null}
         clicker={fakeClicker}
         menuStage={null}
         essence={EssenceFixtures.wikiTotals()}

@@ -27,19 +27,19 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 
 interface AddQuantileSeriesButtonProps {
   addSeries: Unary<Series, void>;
-  appendDirtySeries: Unary<Series, void>;
+  addPartialSeries: Unary<Series, void>;
   measure: Measure;
   series: SeriesList;
   onClose: Fn;
 }
 
 export const AddQuantileSeriesButton: React.SFC<AddQuantileSeriesButtonProps> = props => {
-  const { series, measure, appendDirtySeries, addSeries, onClose } = props;
+  const { series, measure, addPartialSeries, addSeries, onClose } = props;
 
   function onNewQuantileSeries() {
     const quantileSeries = QuantileSeries.fromQuantileMeasure(measure);
     if (series.hasSeriesWithKey(quantileSeries.key())) {
-      appendDirtySeries(quantileSeries);
+      addPartialSeries(quantileSeries);
     } else {
       addSeries(quantileSeries);
     }

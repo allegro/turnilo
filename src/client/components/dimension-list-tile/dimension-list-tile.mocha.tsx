@@ -30,7 +30,7 @@ describe("DimensionListTile", () => {
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
-        triggerFilterMenu={null}
+        addPartialFilter={null}
       />
     );
 

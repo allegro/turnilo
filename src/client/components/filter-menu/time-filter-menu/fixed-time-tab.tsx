@@ -22,11 +22,11 @@ import { getMaxTime } from "../../../../common/models/data-cube/data-cube";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { TimeDimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../../common/models/filter/filter";
+import { FilterClause, FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Locale } from "../../../../common/models/locale/locale";
 import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { Unary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { STRINGS } from "../../../config/constants";
 import { Button } from "../../button/button";
@@ -40,6 +40,7 @@ export interface FixedTimeTabProps {
   dimension: TimeDimension;
   onClose: Fn;
   clicker: Clicker;
+  saveClause: Unary<FilterClause, void>;
 }
 
 export interface FixedTimeTabState {
@@ -79,11 +80,11 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     return new DateRange({ start, end });
   }
 
-  constructFixedFilter(): Filter {
-    const { essence: { filter }, dimension: { name } } = this.props;
+  constructFixedClause(): FixedTimeFilterClause {
+    const { dimension: { name: reference } } = this.props;
 
-    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(this.createDateRange()) });
-    return filter.setClause(clause);
+    const values = List.of(this.createDateRange());
+    return new FixedTimeFilterClause({ reference, values });
   }
 
   constructTimeShift(): TimeShift {
@@ -118,10 +119,11 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   isFilterDifferent(): boolean {
-    const { essence: { filter, timeShift } } = this.props;
+    const { essence: { filter, timeShift }, dimension } = this.props;
     const newTimeShift = this.constructTimeShift();
-    const newFilter = this.constructFixedFilter();
-    return !filter.equals(newFilter) || !timeShift.equals(newTimeShift);
+    const oldClause = filter.getClauseForDimension(dimension);
+    const newClause = this.constructFixedClause();
+    return !oldClause.equals(newClause) || !timeShift.equals(newTimeShift);
   }
 
   validate(): boolean {
@@ -130,8 +132,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   onOkClick = () => {
     if (!this.validate()) return;
-    const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFixedFilter());
+    const { saveClause, clicker, onClose } = this.props;
+    saveClause(this.constructFixedClause());
     clicker.changeComparisonShift(this.constructTimeShift());
     onClose();
   };
