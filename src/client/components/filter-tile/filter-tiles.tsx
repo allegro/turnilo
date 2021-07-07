@@ -137,8 +137,9 @@ export const FilterTiles: React.SFC<FilterTilesProps> = props => {
   if (overflowItems.length <= 0) return <React.Fragment>{visibleItems}</React.Fragment>;
 
   const overflowClauses = clauses.slice(maxItems);
+
   const anyOverflowItemOpen = overflowClauses.some(clause => clause.equals(openedFilterMenu));
-  const isPartialFilterInOverflow = overflowClauses.some(({ reference }) => partialFilter && reference === partialFilter.dimension.name);
+  const isPartialFilterInOverflow = overflowItems.some(element => element.type  === PartialFilterTile);
   const overflowOpened = overflowOpen || anyOverflowItemOpen || isPartialFilterInOverflow;
 
   const filterItemOverflow = <TileOverflowContainer
