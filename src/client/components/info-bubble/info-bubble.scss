@@ -20,3 +20,20 @@
   right: 5px;
   width: 19px;
 }
+
+.description-menu {
+  .markdown-content {
+    p {
+      margin: 10px 0;
+      line-height: 1.5em;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    p:first-child {
+      margin-top: 0;
+    }
+  }
+}
