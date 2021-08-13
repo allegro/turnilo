@@ -260,7 +260,11 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <SvgIcon svg={require("../../../icons/menu.svg")} />
       </div>
       <div className="title" onClick={onNavClick}>{dataCube.title}</div>
-      {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description} />}
+      {dataCube.description && <InfoBubble
+        className="cube-description"
+        description={dataCube.description}
+        extendedDescription={dataCube.extendedDescription}
+      />}
     </div>;
   }
 }
