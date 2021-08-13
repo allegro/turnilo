@@ -24,7 +24,7 @@ import "./data-cube-card.scss";
 export interface DataCubeCardProps {
   title: string;
   count?: number;
-  extendedDescription: string;
+  extendedDescription?: string;
   description: string;
   icon: string;
   onClick: () => void;
