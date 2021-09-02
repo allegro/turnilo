@@ -954,7 +954,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       rightGutter = this.renderRightGutter(series.count(), chartStage, yAxes);
     }
 
-    return <div className="measure-bar-charts" style={{ maxHeight: stage.height }}>
+    return <div className="measure-bar-charts" style={{ height: stage.height }}>
       <Scroller
         layout={scrollerLayout}
         ref={this.scroller}
