@@ -161,13 +161,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
   private coordinatesCache: BarCoordinates[][] = [];
   private scroller = React.createRef<Scroller>();
 
-  state: BarChartState = {
-    hoverInfo: null,
-    maxNumberOfLeaves: [],
-    flatData: [],
-    scrollTop: 0,
-    scrollLeft: 0
-  };
+  state: BarChartState = this.initState();
 
   componentDidUpdate() {
     const { scrollerYPosition, scrollerXPosition } = this.state;
@@ -727,15 +721,8 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     return { chart, yAxis, highlight };
   }
 
-  // TODO: of course it should be removed when refactoring rest of bar-chart. Look into LineChart and Table for inspiration.
-  componentWillReceiveProps(nextProps: Readonly<VisualizationProps>) {
-    if (nextProps.data !== this.props.data) {
-      this.setState(this.deriveDatasetState(nextProps.data));
-    }
-  }
-
-  private deriveDatasetState(dataset: Dataset): BarChartState {
-    const { essence } = this.props;
+  private initState(): BarChartState {
+    const { essence, data } = this.props;
     const { splits } = essence;
     this.coordinatesCache = [];
     if (!splits.length()) return {} as BarChartState;
@@ -744,7 +731,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     const dimensionKind = dimension.kind;
     const series = essence.getConcreteSeries().toArray();
     // TODO: very suspicious
-    const paddedDataset = dimensionKind === "number" ? padDataset(dataset, dimension, series.map(s => s.measure)) : dataset;
+    const paddedDataset = dimensionKind === "number" ? padDataset(data, dimension, series.map(s => s.measure)) : data;
     const firstSplitDataSet = paddedDataset.data[0][SPLIT] as Dataset;
     const flattened = firstSplitDataSet.flatten({
       order: "preorder",
@@ -754,7 +741,13 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     const maxNumberOfLeaves = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
     this.maxNumberOfLeaves(firstSplitDataSet.data, maxNumberOfLeaves, 0);
     const flatData = flattened.data;
-    return { maxNumberOfLeaves, flatData, scrollTop: 0, scrollLeft: 0 } as BarChartState;
+    return {
+      hoverInfo: null,
+      maxNumberOfLeaves,
+      flatData,
+      scrollTop: 0,
+      scrollLeft: 0
+    };
   }
 
   maxNumberOfLeaves(data: Datum[], maxima: number[], level: number) {
