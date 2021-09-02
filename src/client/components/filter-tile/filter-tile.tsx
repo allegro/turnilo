@@ -31,6 +31,36 @@ import { FilterMenu } from "../filter-menu/filter-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
 
+function timeShiftLabel(dimension: Dimension, essence: Essence) {
+  if (!isTimeAttribute(essence.dataCube, dimension.expression)) return null;
+  if (!essence.hasComparison()) return null;
+  return `(Shift: ${essence.timeShift.getDescription(true)})`;
+}
+
+interface LabelProps {
+  dimension: Dimension;
+  clause: FilterClause;
+  essence: Essence;
+}
+
+function Label(props: LabelProps) {
+  const { dimension, clause, essence } = props;
+  const { title, values } = getFormattedClause(dimension, clause, essence.timezone);
+  const timeShift = timeShiftLabel(dimension, essence);
+
+  return <div className="reading">
+    {title ? <span className="dimension-title">{title}</span> : null}
+    <span className="values">{values} {timeShift}</span>
+  </div>;
+}
+
+function tileTitle(dimension: Dimension, clause: FilterClause, essence: Essence): string {
+  const { title, values } = getFormattedClause(dimension, clause, essence.timezone);
+  const timeShift = timeShiftLabel(dimension, essence);
+
+  return `${title} ${values} ${timeShift || ""}`;
+}
+
 interface FilterTileProps {
   clause: FilterClause;
   open: boolean;
@@ -46,22 +76,6 @@ interface FilterTileProps {
   timekeeper: Timekeeper;
   locale: Locale;
   clicker: Clicker;
-}
-
-function renderTimeShiftLabel(dimension: Dimension, essence: Essence): string {
-  if (!isTimeAttribute(essence.dataCube, dimension.expression)) return null;
-  if (!essence.hasComparison()) return null;
-  return `(Shift: ${essence.timeShift.getDescription(true)})`;
-}
-
-function renderLabel(dimension: Dimension, clause: FilterClause, essence: Essence): JSX.Element {
-  const { title, values } = getFormattedClause(dimension, clause, essence.timezone);
-  const timeShift = renderTimeShiftLabel(dimension, essence);
-
-  return <div className="reading">
-    {title ? <span className="dimension-title">{title}</span> : null}
-    <span className="values">{values} {timeShift}</span>
-  </div>;
 }
 
 export const FILTER_CLASS_NAME = "filter";
@@ -84,8 +98,6 @@ export const FilterTile: React.SFC<FilterTileProps> = props => {
     clicker
   } = props;
 
-  const label = renderLabel(dimension, clause, essence);
-
   const excluded = clause && !isTimeFilter(clause) && clause.not;
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
@@ -99,8 +111,10 @@ export const FilterTile: React.SFC<FilterTileProps> = props => {
         ref={setRef}
         onClick={() => openFilterMenu(clause)}
         onDragStart={e => dragStart(dimension, clause, e)}
-        style={style}>
-        {label}
+        style={style}
+        title={tileTitle(dimension, clause, essence)}
+      >
+        <Label dimension={dimension} clause={clause} essence={essence} />
         {removeClause && <div className="remove" onClick={() => removeClause(clause)}>
           <SvgIcon svg={require("../../icons/x.svg")} />
         </div>}
