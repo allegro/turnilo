@@ -61,7 +61,9 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
         ref={setRef}
         onClick={() => openSeriesMenu(definition)}
         onDragStart={e => dragStart(measure.title, definition, e)}
-        style={style}>
+        style={style}
+        title={title}
+      >
         <div className="reading">{title}</div>
         <div className="remove" onClick={remove}>
           <SvgIcon svg={require("../../icons/x.svg")} />
