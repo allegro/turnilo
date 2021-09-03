@@ -162,7 +162,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     const { essence: { filter }, dimension } = this.props;
     const newClause = this.constructClause();
     const oldClause = filter.getClauseForDimension(dimension);
-    return Boolean(filter) && !newClause.equals(oldClause);
+    return Boolean(newClause) && !newClause.equals(oldClause);
   }
 
   render() {
