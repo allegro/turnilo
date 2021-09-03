@@ -24,7 +24,7 @@ import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { DraggedElementType, DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSplit } from "./add-split";
@@ -74,13 +74,21 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
 
   canDrop(): boolean {
     const { essence: { splits, dataCube } } = this.props;
-    const dimension = DragManager.draggingDimension();
-    if (dimension) return !splits.hasSplitOn(dimension);
-    if (DragManager.isDraggingFilter()) {
-      const dimension = findDimensionByName(dataCube.dimensions, DragManager.draggingFilter().reference);
-      return dimension && !splits.hasSplitOn(dimension);
+    switch (DragManager.dragging.type) {
+      case DraggedElementType.DIMENSION:
+        return !splits.hasSplitOn(DragManager.draggingDimension());
+      case DraggedElementType.FILTER:
+        const dimension = findDimensionByName(dataCube.dimensions, DragManager.draggingFilter().reference);
+        return !splits.hasSplitOn(dimension);
+      case DraggedElementType.SPLIT:
+        return true;
+      case DraggedElementType.MEASURE:
+        return false;
+      case DraggedElementType.SERIES:
+        return false;
+      case DraggedElementType.NONE:
+        return false;
     }
-    return DragManager.isDraggingSplit();
   }
 
   dragStart = (label: string, split: Split, e: React.DragEvent<HTMLElement>) => {
@@ -132,12 +140,17 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
 
   draggingSplit(): Split {
     const { essence: { dataCube } } = this.props;
-    if (DragManager.isDraggingSplit()) return DragManager.draggingSplit();
-    if (DragManager.isDraggingFilter()) {
-      const dimension = findDimensionByName(dataCube.dimensions, DragManager.draggingFilter().reference);
-      return Split.fromDimension(dimension);
+
+    switch (DragManager.dragging.type) {
+      case DraggedElementType.DIMENSION:
+        return Split.fromDimension(DragManager.draggingDimension());
+      case DraggedElementType.FILTER:
+        const dimension = findDimensionByName(dataCube.dimensions, DragManager.draggingFilter().reference);
+        return Split.fromDimension(dimension);
+      case DraggedElementType.SPLIT:
+        return DragManager.draggingSplit();
     }
-    return Split.fromDimension(DragManager.draggingDimension());
+    throw new Error(`Expected Dimension, Filter or Split, got ${DragManager.dragging.type}`);
   }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
@@ -148,15 +161,16 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const split = this.draggingSplit();
     if (!split) return;
 
-    const dragPosition = this.calculateDragPosition(e);
-    if (dragPosition.isReplace()) {
-      if (dragPosition.replace === this.maxItems()) {
-        this.insertSplit(split, dragPosition.replace);
+    const position = this.calculateDragPosition(e);
+
+    if (position.isReplace()) {
+      if (position.replace === this.maxItems()) {
+        this.insertSplit(split, position.replace);
       } else {
-        this.replaceSplit(split, dragPosition.replace);
+        this.replaceSplit(split, position.replace);
       }
     } else {
-      this.insertSplit(split, dragPosition.insert);
+      this.insertSplit(split, position.insert);
     }
   };
 

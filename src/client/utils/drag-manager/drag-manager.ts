@@ -21,7 +21,7 @@ import { Measure } from "../../../common/models/measure/measure";
 import { Series } from "../../../common/models/series/series";
 import { Split } from "../../../common/models/split/split";
 
-enum DraggedElementType { NONE, DIMENSION, MEASURE, SERIES, SPLIT, FILTER }
+export enum DraggedElementType { NONE, DIMENSION, MEASURE, SERIES, SPLIT, FILTER }
 
 interface DraggedElementBase<T> {
   type: DraggedElementType;
