@@ -16,16 +16,18 @@
 
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Locale } from "../../../common/models/locale/locale";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
-import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { DraggedElementType, DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
 import { CubeContext, CubeContextValue } from "../../views/cube-view/cube-context";
 import { PartialFilter } from "../../views/cube-view/partial-tiles-provider";
@@ -72,12 +74,20 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
 
   canDrop(): boolean {
     const { essence: { filter } } = this.context;
-    const dimension = DragManager.draggingDimension();
-    if (dimension) return !filter.getClauseForDimension(dimension);
-    if (DragManager.isDraggingSplit()) {
-      return !filter.clauseForReference(DragManager.draggingSplit().reference);
+    switch (DragManager.dragging.type) {
+      case DraggedElementType.DIMENSION:
+        return !filter.getClauseForDimension(DragManager.draggingDimension());
+      case DraggedElementType.SPLIT:
+        return !filter.clauseForReference(DragManager.draggingSplit().reference);
+      case DraggedElementType.FILTER:
+        return true;
+      case DraggedElementType.MEASURE:
+        return false;
+      case DraggedElementType.SERIES:
+        return false;
+      case DraggedElementType.NONE:
+        return false;
     }
-    return DragManager.isDraggingFilter();
   }
 
   dragStart = (dimension: Dimension, clause: FilterClause, e: React.DragEvent<HTMLElement>) => {
@@ -131,13 +141,24 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
     this.setState({ dragPosition: null });
 
     const position = this.calculateDragPosition(e);
-
-    if (DragManager.isDraggingFilter()) {
-      this.dropFilter(DragManager.draggingFilter(), position);
-    } else {
-      this.dropDimension(DragManager.draggingDimension(), position);
+    switch (DragManager.dragging.type) {
+      case DraggedElementType.DIMENSION:
+        this.dropDimension(DragManager.draggingDimension(), position);
+        break;
+      case DraggedElementType.FILTER:
+        this.dropFilter(DragManager.draggingFilter(), position);
+        break;
+      case DraggedElementType.SPLIT:
+        this.dropSplit(DragManager.draggingSplit(), position);
+        break;
     }
   };
+
+  private dropSplit(split: Split, position: DragPosition) {
+    const { essence: { dataCube: { dimensions } } } = this.context;
+    const dimension = findDimensionByName(dimensions, split.reference);
+    this.dropDimension(dimension, position);
+  }
 
   private dropDimension(dimension: Dimension, position: DragPosition) {
     const { essence: { filter, dataCube } } = this.context;

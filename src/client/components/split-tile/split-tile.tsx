@@ -63,6 +63,7 @@ export const SplitTile: React.SFC<SplitTileProps> = props => {
         onClick={() => openMenu(split)}
         onDragStart={e => dragStart(dimension.title, split, e)}
         style={style}
+        title={title}
       >
         <div className="reading">{title}</div>
         <div className="remove"
