@@ -24,7 +24,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
-import { download, FileFormat } from "../../utils/download/download";
+import { download, FileFormat, fileNameBase } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
@@ -40,14 +40,15 @@ export interface ShareMenuProps {
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-type ExportProps = Pick<ShareMenuProps, "onClose" | "getDownloadableDataset" | "customization">;
+type ExportProps = Pick<ShareMenuProps, "timekeeper" | "essence" | "onClose" | "getDownloadableDataset" | "customization">;
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
-  const { onClose, getDownloadableDataset, customization: { locale: { exportEncoding } } } = props;
+  const { essence, timekeeper, onClose, getDownloadableDataset, customization: { locale: { exportEncoding } } } = props;
   const dataSetWithTabOptions = getDownloadableDataset();
   if (!dataSetWithTabOptions.dataset) return;
+  const fileName = fileNameBase(essence, timekeeper);
 
-  download(dataSetWithTabOptions, fileFormat, "turnilo-export", exportEncoding);
+  download(dataSetWithTabOptions, fileFormat, `${fileName}_export`, exportEncoding);
   onClose();
 }
 
@@ -111,7 +112,7 @@ function externalViewItems({ customization: { externalViews = [] }, essence }: E
   });
 }
 
-export const ShareMenu: React.SFC<ShareMenuProps> = props => {
+export function ShareMenu(props: ShareMenuProps) {
   const { openOn, onClose } = props;
 
   return <BubbleMenu
@@ -127,4 +128,4 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
       {externalViewItems(props)}
     </ul>
   </BubbleMenu>;
-};
+}

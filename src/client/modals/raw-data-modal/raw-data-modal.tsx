@@ -34,7 +34,7 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import { download, FileFormat } from "../../utils/download/download";
+import { download, FileFormat, fileNameBase } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
@@ -291,10 +291,11 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   download(fileFormat: FileFormat) {
     const { dataset } = this.state;
-    const { essence, locale } = this.props;
+    const { essence, locale, timekeeper } = this.props;
 
     const options = tabularOptions(essence);
-    download({ dataset, options }, fileFormat, "turnilo-raw-data", locale.exportEncoding);
+    const fileName = fileNameBase(essence, timekeeper);
+    download({ dataset, options }, fileFormat, `${fileName}_raw_data`, locale.exportEncoding);
   }
 
   render() {
