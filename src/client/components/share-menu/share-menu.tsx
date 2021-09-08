@@ -40,7 +40,13 @@ export interface ShareMenuProps {
   urlForEssence: (essence: Essence) => string;
 }
 
-type ExportProps = Pick<ShareMenuProps, "timekeeper" | "essence" | "onClose" | "customization"> & { getDataset: Nullary<Dataset | null> };
+interface ExportProps {
+  getDataset: Nullary<Dataset | null>;
+  essence: Essence;
+  timekeeper: Timekeeper;
+  customization: ClientCustomization;
+  onClose: Fn;
+}
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
   const { getDataset, essence, timekeeper, onClose, customization: { locale: { exportEncoding } } } = props;
