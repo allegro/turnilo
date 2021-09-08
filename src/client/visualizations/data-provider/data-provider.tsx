@@ -33,7 +33,6 @@ import visualizationQuery from "../../../common/utils/query/visualization-query"
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
 import { reportError } from "../../utils/error-reporter/error-reporter";
-import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 import gridQuery from "../grid/make-query";
 
@@ -123,9 +122,8 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
 
   private handleDatasetLoad(dataset: DatasetLoad) {
     this.setState({ dataset });
-    const { essence } = this.props;
     const { setDataset } = this.context;
-    setDataset(!isLoaded(dataset) ? null : { dataset: dataset.dataset, options: tabularOptions(essence) });
+    setDataset(isLoaded(dataset) ? dataset.dataset : null);
   }
 
   protected shouldFetchData(nextProps: DataProviderProps): boolean {

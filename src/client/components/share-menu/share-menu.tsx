@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Dataset } from "plywood";
 import * as React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
@@ -25,11 +26,7 @@ import { Binary, Nullary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, fileNameBase } from "../../utils/download/download";
-import {
-  DataSetWithTabOptions,
-  DownloadableDataset,
-  DownloadableDatasetContext
-} from "../../views/cube-view/downloadable-dataset-context";
+import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
 
@@ -43,15 +40,15 @@ export interface ShareMenuProps {
   urlForEssence: (essence: Essence) => string;
 }
 
-type ExportProps = Pick<ShareMenuProps, "timekeeper" | "essence" | "onClose" | "customization"> & { getDataset: Nullary<DataSetWithTabOptions | null> };
+type ExportProps = Pick<ShareMenuProps, "timekeeper" | "essence" | "onClose" | "customization"> & { getDataset: Nullary<Dataset | null> };
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
   const { getDataset, essence, timekeeper, onClose, customization: { locale: { exportEncoding } } } = props;
-  const datasetWithOptions = getDataset();
-  if (!datasetWithOptions) return;
+  const dataset = getDataset();
+  if (!dataset) return;
   const fileName = fileNameBase(essence, timekeeper);
 
-  download(datasetWithOptions, fileFormat, `${fileName}_export`, exportEncoding);
+  download(dataset, essence, fileFormat, `${fileName}_export`, exportEncoding);
   onClose();
 }
 

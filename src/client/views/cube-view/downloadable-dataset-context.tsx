@@ -25,15 +25,15 @@ export interface DataSetWithTabOptions {
 }
 
 export interface DownloadableDataset {
-  getDataset: Nullary<DataSetWithTabOptions | null>;
-  setDataset: Unary<DataSetWithTabOptions, void>;
+  getDataset: Nullary<Dataset | null>;
+  setDataset: Unary<Dataset, void>;
 }
 
 export const DownloadableDatasetContext = React.createContext<DownloadableDataset>({
-  getDataset(): DataSetWithTabOptions {
+  getDataset(): Dataset | null {
     throw new Error("Trying to fetch DownloadableDataset before Provider initialisation");
   },
-  setDataset(dataset: DataSetWithTabOptions): void {
+  setDataset(dataset: Dataset): void {
     throw new Error("Trying to set DownloadableDataset before Provider initialisation");
   }
 });
@@ -44,10 +44,10 @@ interface DownloadableDatasetProps {
 
 export class DownloadableDatasetProvider extends React.Component<DownloadableDatasetProps> {
 
-  private dataset?: DataSetWithTabOptions = null;
+  private dataset?: Dataset = null;
   private value: DownloadableDataset = {
     getDataset: () => this.dataset,
-    setDataset: (dataset: DataSetWithTabOptions) => {
+    setDataset: (dataset: Dataset) => {
       this.dataset = dataset;
     }
   };
