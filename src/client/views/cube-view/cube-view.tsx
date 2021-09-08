@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
-import { $, Dataset, TabulatorOptions } from "plywood";
+import { $ } from "plywood";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
@@ -61,13 +61,13 @@ import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-def
 import { classNames } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
-import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations";
 import { DataProvider } from "../../visualizations/data-provider/data-provider";
 import { HighlightController } from "../../visualizations/highlight-controller/highlight-controller";
 import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
+import { DownloadableDatasetProvider } from "./downloadable-dataset-context";
 import { PartialTilesProvider } from "./partial-tiles-provider";
 
 const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
@@ -125,11 +125,6 @@ export interface CubeViewState {
 const MIN_PANEL_WIDTH = 240;
 const MAX_PANEL_WIDTH = 400;
 
-export interface DataSetWithTabOptions {
-  dataset: Dataset;
-  options?: TabulatorOptions;
-}
-
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps: Partial<CubeViewProps> = { maxFilters: 20 };
 
@@ -139,7 +134,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   public mounted: boolean;
   private readonly clicker: Clicker;
-  private downloadableDataset: DataSetWithTabOptions;
   private visualization = React.createRef<HTMLDivElement>();
   private container = React.createRef<HTMLDivElement>();
 
@@ -567,113 +561,114 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       openUrlShortenerModal={this.openUrlShortenerModal}
       openDruidQueryModal={this.openDruidQueryModal}
       customization={customization}
-      getDownloadableDataset={() => this.downloadableDataset}
       changeTimezone={this.changeTimezone}
       updatingMaxTime={updatingMaxTime}
     />;
 
     return <CubeContext.Provider value={this.getCubeContext()}>
-      <div className="cube-view">
-        <GlobalEventListener resize={this.globalResizeListener}/>
-        {headerBar}
-        <div className="container" ref={this.container}>
-          <PartialTilesProvider>{({ series, filter, addFilter, addSeries, removeTile }) => <React.Fragment>
-            {!layout.factPanel.hidden && <DimensionMeasurePanel
-              style={styles.dimensionMeasurePanel}
-              clicker={clicker}
-              essence={essence}
-              menuStage={menuStage}
-              addPartialFilter={dimension =>
-                addFilter(dimension, DragPosition.insertAt(essence.filter.length()))}
-              addPartialSeries={series =>
-                addSeries(series, DragPosition.insertAt(essence.series.count()))}
-            />}
-            {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
-              direction={Direction.LEFT}
-              value={layout.factPanel.width}
-              onResize={this.onFactPanelResize}
-              onResizeEnd={this.onPanelResizeEnd}
-              min={MIN_PANEL_WIDTH}
-              max={MAX_PANEL_WIDTH}
-            >
-              <DragHandle/>
-            </ResizeHandle>}
-
-            <div className="center-panel" style={styles.centerPanel}>
-              <div className="center-top-bar">
-                <div className="dimension-panel-toggle"
-                     onClick={this.toggleFactPanel}>
-                  <ToggleArrow right={layout.factPanel.hidden}/>
-                </div>
-                <div className="filter-split-section">
-                  <FilterTilesRow
-                    locale={customization.locale}
-                    timekeeper={timekeeper}
-                    menuStage={visualizationStage}
-                    partialFilter={filter}
-                    removePartialFilter={removeTile}
-                    addPartialFilter={addFilter}
-                  />
-                  <SplitTilesRow
-                    clicker={clicker}
-                    essence={essence}
-                    menuStage={visualizationStage}
-                  />
-                  <SeriesTilesRow
-                    removePartialSeries={removeTile}
-                    partialSeries={series}
-                    menuStage={visualizationStage}
-                    addPartialSeries={addSeries}/>
-                </div>
-                <VisSelector clicker={clicker} essence={essence}/>
-                <div className="pinboard-toggle"
-                     onClick={this.togglePinboard}>
-                  <ToggleArrow right={!layout.pinboard.hidden}/>
-                </div>
-              </div>
-              <div
-                className="center-main"
-                onDragEnter={this.dragEnter}
+      <DownloadableDatasetProvider>
+        <div className="cube-view">
+          <GlobalEventListener resize={this.globalResizeListener}/>
+          {headerBar}
+          <div className="container" ref={this.container}>
+            <PartialTilesProvider>{({ series, filter, addFilter, addSeries, removeTile }) => <React.Fragment>
+              {!layout.factPanel.hidden && <DimensionMeasurePanel
+                style={styles.dimensionMeasurePanel}
+                clicker={clicker}
+                essence={essence}
+                menuStage={menuStage}
+                addPartialFilter={dimension =>
+                  addFilter(dimension, DragPosition.insertAt(essence.filter.length()))}
+                addPartialSeries={series =>
+                  addSeries(series, DragPosition.insertAt(essence.series.count()))}
+              />}
+              {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
+                direction={Direction.LEFT}
+                value={layout.factPanel.width}
+                onResize={this.onFactPanelResize}
+                onResizeEnd={this.onPanelResizeEnd}
+                min={MIN_PANEL_WIDTH}
+                max={MAX_PANEL_WIDTH}
               >
-                <div className="visualization" ref={this.visualization}>
-                  {this.visElement()}
-                </div>
-                {this.manualFallback()}
-                {dragOver ? <DropIndicator/> : null}
-                {dragOver ? <div
-                  className="drag-mask"
-                  onDragOver={this.dragOver}
-                  onDragLeave={this.dragLeave}
-                  onDragExit={this.dragLeave}
-                  onDrop={this.drop}
-                /> : null}
-              </div>
-            </div>
+                <DragHandle/>
+              </ResizeHandle>}
 
-            {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
-              direction={Direction.RIGHT}
-              value={layout.pinboard.width}
-              onResize={this.onPinboardPanelResize}
-              onResizeEnd={this.onPanelResizeEnd}
-              min={MIN_PANEL_WIDTH}
-              max={MAX_PANEL_WIDTH}
-            >
-              <DragHandle/>
-            </ResizeHandle>}
-            {!layout.pinboard.hidden && <PinboardPanel
-              style={styles.pinboardPanel}
-              clicker={clicker}
-              essence={essence}
-              timekeeper={timekeeper}
-              refreshRequestTimestamp={lastRefreshRequestTimestamp}/>}
-          </React.Fragment>}</PartialTilesProvider>
+              <div className="center-panel" style={styles.centerPanel}>
+                <div className="center-top-bar">
+                  <div className="dimension-panel-toggle"
+                       onClick={this.toggleFactPanel}>
+                    <ToggleArrow right={layout.factPanel.hidden}/>
+                  </div>
+                  <div className="filter-split-section">
+                    <FilterTilesRow
+                      locale={customization.locale}
+                      timekeeper={timekeeper}
+                      menuStage={visualizationStage}
+                      partialFilter={filter}
+                      removePartialFilter={removeTile}
+                      addPartialFilter={addFilter}
+                    />
+                    <SplitTilesRow
+                      clicker={clicker}
+                      essence={essence}
+                      menuStage={visualizationStage}
+                    />
+                    <SeriesTilesRow
+                      removePartialSeries={removeTile}
+                      partialSeries={series}
+                      menuStage={visualizationStage}
+                      addPartialSeries={addSeries}/>
+                  </div>
+                  <VisSelector clicker={clicker} essence={essence}/>
+                  <div className="pinboard-toggle"
+                       onClick={this.togglePinboard}>
+                    <ToggleArrow right={!layout.pinboard.hidden}/>
+                  </div>
+                </div>
+                <div
+                  className="center-main"
+                  onDragEnter={this.dragEnter}
+                >
+                  <div className="visualization" ref={this.visualization}>
+                    {this.visElement()}
+                  </div>
+                  {this.manualFallback()}
+                  {dragOver ? <DropIndicator/> : null}
+                  {dragOver ? <div
+                    className="drag-mask"
+                    onDragOver={this.dragOver}
+                    onDragLeave={this.dragLeave}
+                    onDragExit={this.dragLeave}
+                    onDrop={this.drop}
+                  /> : null}
+                </div>
+              </div>
+
+              {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
+                direction={Direction.RIGHT}
+                value={layout.pinboard.width}
+                onResize={this.onPinboardPanelResize}
+                onResizeEnd={this.onPanelResizeEnd}
+                min={MIN_PANEL_WIDTH}
+                max={MAX_PANEL_WIDTH}
+              >
+                <DragHandle/>
+              </ResizeHandle>}
+              {!layout.pinboard.hidden && <PinboardPanel
+                style={styles.pinboardPanel}
+                clicker={clicker}
+                essence={essence}
+                timekeeper={timekeeper}
+                refreshRequestTimestamp={lastRefreshRequestTimestamp}/>}
+            </React.Fragment>}</PartialTilesProvider>
+          </div>
+          {this.renderDruidQueryModal()}
+          {this.renderRawDataModal()}
+          {this.renderViewDefinitionModal()}
+          {this.renderUrlShortenerModal()}
         </div>
-        {this.renderDruidQueryModal()}
-        {this.renderRawDataModal()}
-        {this.renderViewDefinitionModal()}
-        {this.renderUrlShortenerModal()}
-      </div>
-      {this.renderSideDrawer()}
+        {this.renderSideDrawer()}
+      </DownloadableDatasetProvider>
     </CubeContext.Provider>;
   }
 
@@ -747,9 +742,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { essence, timekeeper, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const clicker = this.clicker;
-    const registerDownloadableDataset = (dataset: Dataset) => {
-      this.downloadableDataset = { dataset, options: tabularOptions(essence) };
-    };
     const { visualization } = essence;
     const Visualization = getVisualizationComponent(visualization);
 
@@ -757,7 +749,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       {highlightProps =>
         <DataProvider
           refreshRequestTimestamp={lastRefreshRequestTimestamp}
-          registerDownloadableDataset={registerDownloadableDataset}
           essence={essence}
           timekeeper={timekeeper}
           stage={stage}>

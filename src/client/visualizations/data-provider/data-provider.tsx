@@ -33,11 +33,12 @@ import visualizationQuery from "../../../common/utils/query/visualization-query"
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
 import { reportError } from "../../utils/error-reporter/error-reporter";
+import tabularOptions from "../../utils/tabular-options/tabular-options";
+import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 import gridQuery from "../grid/make-query";
 
 interface DataProviderProps {
   refreshRequestTimestamp: number;
-  registerDownloadableDataset?: (dataset: Dataset) => void;
   essence: Essence;
   timekeeper: Timekeeper;
   stage: Stage;
@@ -49,6 +50,8 @@ interface DataProviderState {
 }
 
 export class DataProvider extends React.Component<DataProviderProps, DataProviderState> {
+  static contextType = DownloadableDatasetContext;
+  context: DownloadableDataset;
 
   state: DataProviderState = { dataset: loading };
 
@@ -120,10 +123,9 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
 
   private handleDatasetLoad(dataset: DatasetLoad) {
     this.setState({ dataset });
-    const { registerDownloadableDataset } = this.props;
-    if (registerDownloadableDataset) {
-      registerDownloadableDataset(isLoaded(dataset) ? dataset.dataset : null);
-    }
+    const { essence } = this.props;
+    const { setDataset } = this.context;
+    setDataset(!isLoaded(dataset) ? null : { dataset: dataset.dataset, options: tabularOptions(essence) });
   }
 
   protected shouldFetchData(nextProps: DataProviderProps): boolean {
@@ -162,9 +164,9 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
     const { dataset } = this.state;
     switch (dataset.status) {
       case DatasetLoadStatus.LOADING:
-        return <Loader />;
+        return <Loader/>;
       case DatasetLoadStatus.ERROR:
-        return <QueryError error={dataset.error} />;
+        return <QueryError error={dataset.error}/>;
       case DatasetLoadStatus.LOADED:
         return children(dataset.dataset);
     }

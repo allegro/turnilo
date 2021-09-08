@@ -31,7 +31,6 @@ import { ShareMenu } from "../../../components/share-menu/share-menu";
 import { SvgIcon } from "../../../components/svg-icon/svg-icon";
 import { TimezoneMenu } from "../../../components/timezone-menu/timezone-menu";
 import { classNames } from "../../../utils/dom/dom";
-import { DataSetWithTabOptions } from "../cube-view";
 import "./cube-header-bar.scss";
 
 export interface CubeHeaderBarProps {
@@ -47,7 +46,6 @@ export interface CubeHeaderBarProps {
   openDruidQueryModal?: Fn;
   openUrlShortenerModal?: Binary<string, string, void>;
   customization?: ClientCustomization;
-  getDownloadableDataset?: () => DataSetWithTabOptions;
   changeTimezone?: (timezone: Timezone) => void;
 }
 
@@ -128,7 +126,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { customization, essence, timekeeper, openUrlShortenerModal, urlForEssence, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, openUrlShortenerModal, urlForEssence } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
@@ -140,7 +138,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       onClose={this.closeShareMenu}
       customization={customization}
       urlForEssence={urlForEssence}
-      getDownloadableDataset={getDownloadableDataset}
     />;
   }
 
