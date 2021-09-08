@@ -20,7 +20,7 @@ import { Dataset, TabulatorOptions } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatUrlSafeDateTime } from "../../../common/utils/time/time";
-import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
+import { DataSetWithTabOptions } from "../../views/cube-view/downloadable-dataset-context";
 
 export type FileFormat = "csv" | "tsv";
 
@@ -36,7 +36,7 @@ export function getMIMEType(fileType: FileFormat) {
 function saveFile(part: string | Buffer, fileName: string, fileFormat: FileFormat, fileEncoding: string) {
   const type = `${getMIMEType(fileFormat)};charset=${fileEncoding}`;
   const blob = new Blob([part], { type });
-  fileSaver.saveAs(blob, `${fileName}.${fileFormat}`, true); // true == disable auto BOM
+  fileSaver.saveAs(blob, `${fileName}.${fileFormat}`, true);
 }
 
 function encodeContent(content: string, encoding: string): Promise<string | Buffer> {
