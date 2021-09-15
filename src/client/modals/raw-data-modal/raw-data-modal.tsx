@@ -36,7 +36,6 @@ import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { download, FileFormat, fileNameBase } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
-import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
 
 const HEADER_HEIGHT = 30;
@@ -293,9 +292,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataset } = this.state;
     const { essence, locale, timekeeper } = this.props;
 
-    const options = tabularOptions(essence);
     const fileName = fileNameBase(essence, timekeeper);
-    download({ dataset, options }, fileFormat, `${fileName}_raw_data`, locale.exportEncoding);
+    download(dataset, essence, fileFormat, `${fileName}_raw_data`, locale.exportEncoding);
   }
 
   render() {

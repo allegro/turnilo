@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
+import { Dataset } from "plywood";
 import * as React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Binary } from "../../../common/utils/functional/functional";
+import { Binary, Nullary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, fileNameBase } from "../../utils/download/download";
-import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
+import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
 
@@ -37,18 +38,23 @@ export interface ShareMenuProps {
   openUrlShortenerModal: Binary<string, string, void>;
   customization: ClientCustomization;
   urlForEssence: (essence: Essence) => string;
-  getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-type ExportProps = Pick<ShareMenuProps, "timekeeper" | "essence" | "onClose" | "getDownloadableDataset" | "customization">;
+interface ExportProps {
+  getDataset: Nullary<Dataset | null>;
+  essence: Essence;
+  timekeeper: Timekeeper;
+  customization: ClientCustomization;
+  onClose: Fn;
+}
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
-  const { essence, timekeeper, onClose, getDownloadableDataset, customization: { locale: { exportEncoding } } } = props;
-  const dataSetWithTabOptions = getDownloadableDataset();
-  if (!dataSetWithTabOptions.dataset) return;
+  const { getDataset, essence, timekeeper, onClose, customization: { locale: { exportEncoding } } } = props;
+  const dataset = getDataset();
+  if (!dataset) return;
   const fileName = fileNameBase(essence, timekeeper);
 
-  download(dataSetWithTabOptions, fileFormat, `${fileName}_export`, exportEncoding);
+  download(dataset, essence, fileFormat, `${fileName}_export`, exportEncoding);
   onClose();
 }
 
@@ -112,20 +118,26 @@ function externalViewItems({ customization: { externalViews = [] }, essence }: E
   });
 }
 
-export function ShareMenu(props: ShareMenuProps) {
-  const { openOn, onClose } = props;
+export class ShareMenu extends React.Component<ShareMenuProps> {
+  static contextType = DownloadableDatasetContext;
+  context: DownloadableDataset;
 
-  return <BubbleMenu
-    className="header-menu"
-    direction="down"
-    stage={Stage.fromSize(230, 200)}
-    openOn={openOn}
-    onClose={onClose}
-  >
-    <ul className="bubble-list">
-      {linkItems(props)}
-      {exportItems(props)}
-      {externalViewItems(props)}
-    </ul>
-  </BubbleMenu>;
+  render() {
+    const { getDataset } = this.context;
+    const { openOn, onClose } = this.props;
+
+    return <BubbleMenu
+      className="header-menu"
+      direction="down"
+      stage={Stage.fromSize(230, 200)}
+      openOn={openOn}
+      onClose={onClose}
+    >
+      <ul className="bubble-list">
+        {linkItems(this.props)}
+        {exportItems({ ...this.props, getDataset })}
+        {externalViewItems(this.props)}
+      </ul>
+    </BubbleMenu>;
+  }
 }

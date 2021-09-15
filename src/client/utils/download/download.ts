@@ -20,7 +20,7 @@ import { Dataset, TabulatorOptions } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatUrlSafeDateTime } from "../../../common/utils/time/time";
-import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
+import tabularOptions from "../tabular-options/tabular-options";
 
 export type FileFormat = "csv" | "tsv";
 
@@ -36,7 +36,7 @@ export function getMIMEType(fileType: FileFormat) {
 function saveFile(part: string | Buffer, fileName: string, fileFormat: FileFormat, fileEncoding: string) {
   const type = `${getMIMEType(fileFormat)};charset=${fileEncoding}`;
   const blob = new Blob([part], { type });
-  fileSaver.saveAs(blob, `${fileName}.${fileFormat}`, true); // true == disable auto BOM
+  fileSaver.saveAs(blob, `${fileName}.${fileFormat}`, true);
 }
 
 function encodeContent(content: string, encoding: string): Promise<string | Buffer> {
@@ -44,8 +44,8 @@ function encodeContent(content: string, encoding: string): Promise<string | Buff
   return import("iconv-lite").then(iconv => iconv.encode(content, encoding));
 }
 
-export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName: string, fileEncoding: string) {
-  const result = datasetToFileString(dataset, fileFormat, options);
+export function download(dataset: Dataset, essence: Essence, fileFormat: FileFormat, fileName: string, fileEncoding: string) {
+  const result = datasetToFileString(dataset, fileFormat, tabularOptions(essence));
   encodeContent(result, fileEncoding).then(content => {
     saveFile(content, fileName, fileFormat, fileEncoding);
   });
