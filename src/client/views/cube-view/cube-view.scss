@@ -47,6 +47,33 @@ $control-panel-height: 3 * $control-tile-height + 2px;
     left: $left-panel-width;
     right: $pinboard-width;
 
+    .dimension-panel-toggle, .pinboard-toggle {
+      position: absolute;
+      top: 0;
+      height: $control-panel-height;
+      width: $toggle-width;
+      @include css-variable(background-color, background-lightest);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      svg {
+        width: $toggle-icon-width;
+
+        path {
+          @include css-variable(fill, background-dark);
+        }
+      }
+    }
+
+    .dimension-panel-toggle {
+      left: 0;
+    }
+
+    .pinboard-toggle {
+      right: 0;
+    }
+
     .center-top-bar {
       @include pin-top($control-panel-height);
 
@@ -81,30 +108,6 @@ $control-panel-height: 3 * $control-tile-height + 2px;
         width: $vis-selector-width;
         z-index: 8;
         border-radius: 0 $corner $corner 0;
-      }
-
-      .dimension-panel-toggle, .pinboard-toggle {
-        @include css-variable(background-color, background-lightest);
-        display: flex;
-        align-items: center;
-        height: 100%;
-        cursor: pointer;
-
-        svg {
-          width: $toggle-icon-width;
-
-          path {
-            @include css-variable(fill, background-dark);
-          }
-        }
-      }
-
-      .dimension-panel-toggle {
-        @include pin-left($toggle-width);
-      }
-
-      .pinboard-toggle {
-        @include pin-right($toggle-width);
       }
     }
 

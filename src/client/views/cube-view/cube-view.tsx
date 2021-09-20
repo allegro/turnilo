@@ -43,27 +43,18 @@ import { Fn } from "../../../common/utils/general/general";
 import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
-import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
-import { FilterTilesRow } from "../../components/filter-tile/filter-tiles-row";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
-import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
-import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
-import { SplitTilesRow } from "../../components/split-tile/split-tiles-row";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
-import { VisSelector } from "../../components/vis-selector/vis-selector";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
-import { classNames } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
-import { getVisualizationComponent } from "../../visualizations";
-import { DataProvider } from "../../visualizations/data-provider/data-provider";
-import { HighlightController } from "../../visualizations/highlight-controller/highlight-controller";
+import { CenterPanel } from "./center-panel/center-panel";
 import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
@@ -594,53 +585,32 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
               </ResizeHandle>}
 
               <div className="center-panel" style={styles.centerPanel}>
-                <div className="center-top-bar">
-                  <div className="dimension-panel-toggle"
-                       onClick={this.toggleFactPanel}>
-                    <ToggleArrow right={layout.factPanel.hidden}/>
-                  </div>
-                  <div className="filter-split-section">
-                    <FilterTilesRow
-                      locale={customization.locale}
-                      timekeeper={timekeeper}
-                      menuStage={visualizationStage}
-                      partialFilter={filter}
-                      removePartialFilter={removeTile}
-                      addPartialFilter={addFilter}
-                    />
-                    <SplitTilesRow
-                      clicker={clicker}
-                      essence={essence}
-                      menuStage={visualizationStage}
-                    />
-                    <SeriesTilesRow
-                      removePartialSeries={removeTile}
-                      partialSeries={series}
-                      menuStage={visualizationStage}
-                      addPartialSeries={addSeries}/>
-                  </div>
-                  <VisSelector clicker={clicker} essence={essence}/>
-                  <div className="pinboard-toggle"
-                       onClick={this.togglePinboard}>
-                    <ToggleArrow right={!layout.pinboard.hidden}/>
-                  </div>
+                <div className="dimension-panel-toggle"
+                     onClick={this.toggleFactPanel}>
+                  <ToggleArrow right={layout.factPanel.hidden}/>
                 </div>
-                <div
-                  className="center-main"
-                  onDragEnter={this.dragEnter}
-                >
-                  <div className="visualization" ref={this.visualization}>
-                    {this.visElement()}
-                  </div>
-                  {this.manualFallback()}
-                  {dragOver ? <DropIndicator/> : null}
-                  {dragOver ? <div
-                    className="drag-mask"
-                    onDragOver={this.dragOver}
-                    onDragLeave={this.dragLeave}
-                    onDragExit={this.dragLeave}
-                    onDrop={this.drop}
-                  /> : null}
+                <CenterPanel
+                  ref={this.visualization}
+                  essence={essence}
+                  clicker={clicker}
+                  timekeeper={timekeeper}
+                  customization={customization}
+                  stage={visualizationStage}
+                  addSeries={addSeries}
+                  addFilter={addFilter}
+                  lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
+                  partialFilter={filter}
+                  partialSeries={series}
+                  removeTile={removeTile}
+                  dragEnter={this.dragEnter}
+                  dragOver={this.dragOver}
+                  isDraggedOver={dragOver}
+                  dragLeave={this.dragLeave}
+                  drop={this.drop}
+                />
+                <div className="pinboard-toggle"
+                     onClick={this.togglePinboard}>
+                  <ToggleArrow right={!layout.pinboard.hidden}/>
                 </div>
               </div>
 
@@ -730,39 +700,5 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         width: isPinboardHidden ? 0 : layout.pinboard.width
       }
     };
-  }
-
-  private manualFallback() {
-    const { essence } = this.state;
-    if (!essence.visResolve.isManual()) return null;
-    return <ManualFallback clicker={this.clicker} essence={essence}/>;
-  }
-
-  private visElement() {
-    const { essence, timekeeper, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
-    if (!(essence.visResolve.isReady() && stage)) return null;
-    const clicker = this.clicker;
-    const { visualization } = essence;
-    const Visualization = getVisualizationComponent(visualization);
-
-    return <HighlightController essence={essence} clicker={clicker}>
-      {highlightProps =>
-        <DataProvider
-          refreshRequestTimestamp={lastRefreshRequestTimestamp}
-          essence={essence}
-          timekeeper={timekeeper}
-          stage={stage}>
-          {data => <div className={classNames("visualization-root", visualization.name)}>
-            <Visualization
-              data={data}
-              essence={essence}
-              clicker={clicker}
-              timekeeper={timekeeper}
-              stage={stage}
-              {...highlightProps}
-            />
-          </div>}
-        </DataProvider>}
-    </HighlightController>;
   }
 }
