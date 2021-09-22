@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
 import * as React from "react";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { CenterPanel, CenterProps } from "../../views/cube-view/center-panel/center-panel";
 import { Total } from "./total";
 import "./totals.scss";
 
-export class Totals extends React.Component<VisualizationProps> {
-  renderTotals(dataset: Dataset): JSX.Element[] {
-    const { essence } = this.props;
-    const series = essence.getConcreteSeries().toArray();
-    const datum = dataset.data[0];
-    return series.map(series =>
-      <Total
-        key={series.reactKey()}
-        series={series}
-        datum={datum}
-        showPrevious={essence.hasComparison()}
-      />);
+const BigNumbers: React.SFC<VisualizationProps> = ({ essence, data }) => {
+  const series = essence.getConcreteSeries().toArray();
+  const datum = data.data[0];
+  return <div className="total-container">
+    {series.map(series =>
+    <Total
+      key={series.reactKey()}
+      series={series}
+      datum={datum}
+      showPrevious={essence.hasComparison()}
+    />)}
+  </div>;
+};
 
-  }
-
-  render() {
-    const { data } = this.props;
-    return <div className="total-container">
-        {this.renderTotals(data)}
-    </div>;
-  }
+export function Totals(props: CenterProps) {
+  return <CenterPanel {...props} visualizationComponent={BigNumbers}/>;
 }

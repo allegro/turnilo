@@ -48,11 +48,11 @@ $control-panel-height: 3 * $control-tile-height + 2px;
     right: $pinboard-width;
 
     .dimension-panel-toggle, .pinboard-toggle {
+      @include css-variable(background-color, background-lightest);
       position: absolute;
       top: 0;
       height: $control-panel-height;
       width: $toggle-width;
-      @include css-variable(background-color, background-lightest);
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -75,10 +75,14 @@ $control-panel-height: 3 * $control-tile-height + 2px;
     }
 
     .center-top-bar {
-      @include pin-top($control-panel-height);
+      position: absolute;
+      top: 0;
+      height: $control-panel-height;
+      left: $toggle-width;
+      right: $toggle-width;
 
       .filter-split-section {
-        @include unpin-full(0, $vis-selector-width + 1px + $toggle-width, 0, $toggle-width);
+        @include unpin-full(0, $vis-selector-width + 1px, 0, 0);
 
         .filter-tile,
         .series-tile,
@@ -104,7 +108,7 @@ $control-panel-height: 3 * $control-tile-height + 2px;
         position: absolute;
         top: 0;
         bottom: 0;
-        right: $toggle-width;
+        right: 0;
         width: $vis-selector-width;
         z-index: 8;
         border-radius: 0 $corner $corner 0;

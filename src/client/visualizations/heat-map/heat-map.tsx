@@ -30,11 +30,16 @@ import { VisualizationProps } from "../../../common/models/visualization-props/v
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
+import { CenterPanel, CenterProps } from "../../views/cube-view/center-panel/center-panel";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
 
-export class HeatMap extends React.Component<VisualizationProps> {
+export function HeatMap(props: CenterProps) {
+  return <CenterPanel {...props} visualizationComponent={HeatMapComponent} />;
+}
+
+export class HeatMapComponent extends React.Component<VisualizationProps> {
   protected className = HEAT_MAP_MANIFEST.name;
 
   getScales = memoizeOne(scales);

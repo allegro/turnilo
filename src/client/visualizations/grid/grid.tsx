@@ -36,6 +36,7 @@ import { FlattenedSplits } from "../../components/tabular-scroller/splits/flatte
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import { CenterPanel, CenterProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
 import { MeasureRows } from "./measure-rows";
 
@@ -44,7 +45,11 @@ interface GridState {
   scrollTop: number;
 }
 
-export class Grid extends React.Component<VisualizationProps, GridState> {
+export function Grid(props: CenterProps) {
+  return <CenterPanel {...props} visualizationComponent={GridComponent}/>;
+}
+
+class GridComponent extends React.Component<VisualizationProps, GridState> {
   private innerGridRef = React.createRef<HTMLDivElement>();
 
   state: GridState = {

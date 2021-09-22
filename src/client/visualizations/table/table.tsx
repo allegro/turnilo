@@ -20,13 +20,18 @@ import * as React from "react";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
+import { CenterPanel, CenterProps } from "../../views/cube-view/center-panel/center-panel";
 import { InteractionController } from "./interactions/interaction-controller";
 import { ScrolledTable } from "./scrolled-table/scrolled-table";
 import "./table.scss";
 
+export function Table(props: CenterProps) {
+  return <CenterPanel {...props} visualizationComponent={TableComponent} />;
+}
+
 const MIN_DIMENSION_WIDTH = 100;
 
-export class Table extends React.Component<VisualizationProps> {
+class TableComponent extends React.Component<VisualizationProps> {
   private innerTableRef = React.createRef<HTMLDivElement>();
 
   availableWidth(): number | undefined {

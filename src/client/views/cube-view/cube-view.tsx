@@ -54,7 +54,7 @@ import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortene
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
-import { CenterPanel } from "./center-panel/center-panel";
+import { getVisualizationComponent } from "../../visualizations";
 import { CubeContext, CubeContextValue } from "./cube-context";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
@@ -99,7 +99,6 @@ export interface CubeViewProps {
 export interface CubeViewState {
   essence?: Essence;
   timekeeper?: Timekeeper;
-  visualizationStage?: Stage;
   menuStage?: Stage;
   dragOver?: boolean;
   showSideBar?: boolean;
@@ -125,7 +124,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   public mounted: boolean;
   private readonly clicker: Clicker;
-  private visualization = React.createRef<HTMLDivElement>();
   private container = React.createRef<HTMLDivElement>();
 
   constructor(props: CubeViewProps) {
@@ -305,13 +303,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   globalResizeListener = () => {
     const containerDOM = this.container.current;
-    const visualizationDOM = this.visualization.current;
-    if (!containerDOM || !visualizationDOM) return;
+    if (!containerDOM) return;
 
     this.setState({
       deviceSize: Device.getSize(),
-      menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
-      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
+      menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect())
     });
   };
 
@@ -530,7 +526,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence,
       timekeeper,
       menuStage,
-      visualizationStage,
       dragOver,
       updatingMaxTime,
       lastRefreshRequestTimestamp
@@ -555,6 +550,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       changeTimezone={this.changeTimezone}
       updatingMaxTime={updatingMaxTime}
     />;
+
+    const Visualization = getVisualizationComponent(essence.visualization);
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>
@@ -589,13 +586,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                      onClick={this.toggleFactPanel}>
                   <ToggleArrow right={layout.factPanel.hidden}/>
                 </div>
-                <CenterPanel
-                  ref={this.visualization}
+                <Visualization
                   essence={essence}
                   clicker={clicker}
                   timekeeper={timekeeper}
                   customization={customization}
-                  stage={visualizationStage}
                   addSeries={addSeries}
                   addFilter={addFilter}
                   lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
