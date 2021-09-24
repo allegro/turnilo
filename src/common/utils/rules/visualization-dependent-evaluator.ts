@@ -27,8 +27,8 @@ export interface PredicateVariables {
 }
 
 export interface ActionVariables {
-  dataCube?: ClientDataCube;
-  splits?: Splits;
+  dataCube: ClientDataCube;
+  splits: Splits;
   series: SeriesList;
   isSelectedVisualization?: boolean;
 }
