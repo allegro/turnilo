@@ -26,6 +26,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Grid requires at least one split"))
 
+  .when(Predicates.noSelectedMeasures())
+  .then(Actions.manualMeasuresSelection())
+
   .otherwise(({ isSelectedVisualization, splits, series }) => {
     const firstSeries = series.series.first();
     const { limit: firstLimit, sort: firstSort } = splits.getSplit(0);
