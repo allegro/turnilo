@@ -16,12 +16,12 @@
  */
 
 import * as React from "react";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { CenterMain, CenterProps, CenterTopBar } from "../../views/cube-view/center-panel/center-panel";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
+import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { Total } from "./total";
 import "./totals.scss";
 
-const BigNumbers: React.SFC<VisualizationProps> = ({ essence, data }) => {
+const BigNumbers: React.SFC<ChartProps> = ({ essence, data }) => {
   const series = essence.getConcreteSeries().toArray();
   const datum = data.data[0];
   return <div className="total-container">
@@ -35,9 +35,9 @@ const BigNumbers: React.SFC<VisualizationProps> = ({ essence, data }) => {
   </div>;
 };
 
-export function Totals(props: CenterProps) {
+export function TotalsVisualization(props: VisualizationProps) {
   return <React.Fragment>
-    <CenterTopBar {...props} />
-    <CenterMain {...props} visualizationComponent={BigNumbers}/>
+    <VisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={BigNumbers}/>
   </React.Fragment>;
 }

@@ -18,6 +18,15 @@
 import { Set } from "immutable";
 import { Dataset } from "plywood";
 import * as React from "react";
+import {
+  DatasetRequest,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading
+} from "../../../common/models/dataset-request/dataset-request";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import {
@@ -27,15 +36,6 @@ import {
 } from "../../../common/models/filter-clause/filter-clause";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import {
-  DatasetLoad,
-  error,
-  isError,
-  isLoaded,
-  isLoading,
-  loaded,
-  loading
-} from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
@@ -65,7 +65,7 @@ export interface SelectableStringFilterMenuProps {
 
 export interface SelectableStringFilterMenuState {
   searchText: string;
-  dataset: DatasetLoad;
+  dataset: DatasetRequest;
   selectedValues: Set<string>;
   pasteModeEnabled: boolean;
 }
@@ -106,13 +106,13 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       });
   }
 
-  private sendQueryFilter(): Promise<DatasetLoad> {
+  private sendQueryFilter(): Promise<DatasetRequest> {
     const { searchText } = this.state;
     this.lastSearchText = searchText;
     return this.debouncedQueryFilter({ ...this.props, searchText });
   }
 
-  private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
+  private queryFilter = (props: QueryProps): Promise<DatasetRequest> => {
     const { essence, searchText } = props;
     const query = stringFilterOptionsQuery({ ...props, limit: TOP_N + 1 });
 

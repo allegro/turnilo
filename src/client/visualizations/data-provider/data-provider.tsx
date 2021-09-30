@@ -17,17 +17,18 @@
 import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import { ReactNode } from "react";
-import { Essence } from "../../../common/models/essence/essence";
-import { Stage } from "../../../common/models/stage/stage";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import {
-  DatasetLoad, DatasetLoadStatus,
+  DatasetRequest,
+  DatasetRequestStatus,
   error,
   isError,
   isLoaded,
   loaded,
   loading
-} from "../../../common/models/visualization-props/visualization-props";
+} from "../../../common/models/dataset-request/dataset-request";
+import { Essence } from "../../../common/models/essence/essence";
+import { Stage } from "../../../common/models/stage/stage";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import visualizationQuery from "../../../common/utils/query/visualization-query";
 import { Loader } from "../../components/loader/loader";
@@ -45,7 +46,7 @@ interface DataProviderProps {
 }
 
 interface DataProviderState {
-  dataset: DatasetLoad;
+  dataset: DatasetRequest;
 }
 
 export class DataProvider extends React.Component<DataProviderProps, DataProviderState> {
@@ -91,7 +92,7 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
       });
   }
 
-  private fetchData(essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> {
+  private fetchData(essence: Essence, timekeeper: Timekeeper): Promise<DatasetRequest | null> {
     this.lastQueryEssence = essence;
     return this.debouncedCallExecutor(essence, timekeeper);
   }
@@ -100,7 +101,7 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
     return essence.visualization.name === "grid" ? gridQuery(essence, timekeeper) : visualizationQuery(essence, timekeeper);
   }
 
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
+  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetRequest | null> =>
     essence.dataCube.executor(this.getQuery(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           // signal out of order requests with null
@@ -120,7 +121,7 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
 
   private debouncedCallExecutor = debounceWithPromise(this.callExecutor, 500);
 
-  private handleDatasetLoad(dataset: DatasetLoad) {
+  private handleDatasetLoad(dataset: DatasetRequest) {
     this.setState({ dataset });
     const { setDataset } = this.context;
     setDataset(isLoaded(dataset) ? dataset.dataset : null);
@@ -161,11 +162,11 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
     const { children } = this.props;
     const { dataset } = this.state;
     switch (dataset.status) {
-      case DatasetLoadStatus.LOADING:
+      case DatasetRequestStatus.LOADING:
         return <Loader/>;
-      case DatasetLoadStatus.ERROR:
+      case DatasetRequestStatus.ERROR:
         return <QueryError error={dataset.error}/>;
-      case DatasetLoadStatus.LOADED:
+      case DatasetRequestStatus.LOADED:
         return children(dataset.dataset);
     }
   }

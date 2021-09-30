@@ -15,10 +15,10 @@
  */
 
 import * as React from "react";
-import { DatasetLoad, isLoaded } from "../../../../common/models/visualization-props/visualization-props";
+import { DatasetRequest, isLoaded } from "../../../../common/models/dataset-request/dataset-request";
 import { PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT } from "../../../config/constants";
 
-export function tileStyles(datasetLoad: DatasetLoad): React.CSSProperties {
+export function tileStyles(datasetLoad: DatasetRequest): React.CSSProperties {
   const topOffset = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;
   const rowsCount = isLoaded(datasetLoad) ? datasetLoad.dataset.count() : 0;
   const rowsHeight = Math.max(4, rowsCount) * PIN_ITEM_HEIGHT;

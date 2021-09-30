@@ -526,6 +526,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence,
       timekeeper,
       menuStage,
+      centerStage,
       dragOver,
       updatingMaxTime,
       lastRefreshRequestTimestamp
@@ -552,7 +553,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     />;
 
     const Visualization = getVisualizationComponent(essence.visualization);
-    const centerStage = this.centerPanel.current && Stage.fromClientRect(this.centerPanel.current.getBoundingClientRect());
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>

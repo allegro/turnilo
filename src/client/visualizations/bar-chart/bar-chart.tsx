@@ -19,6 +19,7 @@ import * as d3 from "d3";
 import { List, Set } from "immutable";
 import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
 import * as React from "react";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { canBucketByDefault, Dimension } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
@@ -36,7 +37,6 @@ import { SortDirection } from "../../../common/models/sort/sort";
 import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { or } from "../../../common/utils/functional/functional";
 import { Predicates } from "../../../common/utils/rules/predicates";
@@ -51,7 +51,7 @@ import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
-import { CenterMain, CenterProps, CenterTopBar } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { hasHighlightOn } from "../highlight-controller/highlight-controller";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -156,14 +156,14 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   return new Dataset(value);
 }
 
-export function BarChart(props: CenterProps) {
+export function BarChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
-    <CenterTopBar {...props} />
-    <CenterMain {...props} visualizationComponent={BarChartComponent}/>
+    <VisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={BarChart}/>
   </React.Fragment>;
 }
 
-export class BarChartComponent extends React.Component<VisualizationProps, BarChartState> {
+class BarChart extends React.Component<ChartProps, BarChartState> {
   protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];

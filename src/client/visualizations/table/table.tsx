@@ -17,24 +17,24 @@
 
 import { FlattenOptions, PseudoDatum } from "plywood";
 import * as React from "react";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
-import { CenterMain, CenterProps, CenterTopBar } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { InteractionController } from "./interactions/interaction-controller";
 import { ScrolledTable } from "./scrolled-table/scrolled-table";
 import "./table.scss";
 
-export function Table(props: CenterProps) {
+export function TableVisualization(props: VisualizationProps) {
   return <React.Fragment>
-    <CenterTopBar {...props} />
-    <CenterMain {...props} visualizationComponent={TableComponent}/>
+    <VisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={Table}/>
   </React.Fragment>;
 }
 
 const MIN_DIMENSION_WIDTH = 100;
 
-class TableComponent extends React.Component<VisualizationProps> {
+class Table extends React.Component<ChartProps> {
   private innerTableRef = React.createRef<HTMLDivElement>();
 
   availableWidth(): number | undefined {

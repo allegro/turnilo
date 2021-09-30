@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { ChartProps } from "../../../../common/models/chart-props/chart-props";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../../common/models/customization/customization";
 import { Dimension } from "../../../../common/models/dimension/dimension";
@@ -23,7 +24,6 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { Series } from "../../../../common/models/series/series";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
-import { VisualizationProps as BaseVizProps } from "../../../../common/models/visualization-props/visualization-props";
 import { Binary, Omit, Unary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { DropIndicator } from "../../../components/drop-indicator/drop-indicator";
@@ -37,7 +37,7 @@ import { DataProvider } from "../../../visualizations/data-provider/data-provide
 import { HighlightController } from "../../../visualizations/highlight-controller/highlight-controller";
 import { PartialFilter, PartialSeries } from "../partial-tiles-provider";
 
-interface CenterTopBarProps {
+interface VisualizationControlsProps {
   essence: Essence;
   clicker: Clicker;
   stage: Stage;
@@ -50,7 +50,7 @@ interface CenterTopBarProps {
   removeTile: Fn;
 }
 
-export const CenterTopBar: React.SFC<CenterTopBarProps> = props => {
+export const VisualizationControls: React.SFC<VisualizationControlsProps> = props => {
   const {
     addSeries,
     addFilter,
@@ -88,11 +88,11 @@ export const CenterTopBar: React.SFC<CenterTopBarProps> = props => {
   </div>;
 };
 
-interface CenterMainProps {
+interface ChartPanelProps {
   essence: Essence;
   clicker: Clicker;
   stage: Stage;
-  visualizationComponent: React.ComponentType<BaseVizProps>;
+  chartComponent: React.ComponentType<ChartProps>;
   timekeeper: Timekeeper;
   lastRefreshRequestTimestamp: number;
   dragEnter: Unary<React.DragEvent<HTMLElement>, void>;
@@ -102,9 +102,9 @@ interface CenterMainProps {
   drop: Unary<React.DragEvent<HTMLElement>, void>;
 }
 
-export const CenterMain: React.SFC<CenterMainProps> = props => {
+export const ChartPanel: React.SFC<ChartPanelProps> = props => {
   const {
-    visualizationComponent,
+    chartComponent,
     essence,
     clicker,
     timekeeper,
@@ -121,8 +121,8 @@ export const CenterMain: React.SFC<CenterMainProps> = props => {
     onDragEnter={dragEnter}
   >
     <div className="visualization">
-      <Visualization
-        visualizationComponent={visualizationComponent}
+      <ChartWrapper
+        chartComponent={chartComponent}
         essence={essence}
         clicker={clicker}
         timekeeper={timekeeper}
@@ -143,16 +143,16 @@ export const CenterMain: React.SFC<CenterMainProps> = props => {
   </div>;
 };
 
-type VisualizationProps = Pick<CenterMainProps,
+type ChartWrapperProps = Pick<ChartPanelProps,
   "timekeeper" |
   "essence" |
   "clicker" |
   "stage" |
   "lastRefreshRequestTimestamp" |
-  "visualizationComponent">;
+  "chartComponent">;
 
-function Visualization(props: VisualizationProps) {
-  const { visualizationComponent: VisualizationComponent, essence, clicker, timekeeper, stage, lastRefreshRequestTimestamp } = props;
+function ChartWrapper(props: ChartWrapperProps) {
+  const { chartComponent: ChartComponent, essence, clicker, timekeeper, stage, lastRefreshRequestTimestamp } = props;
   if (essence.visResolve.isManual()) {
     return <ManualFallback clicker={clicker} essence={essence}/>;
   }
@@ -165,7 +165,7 @@ function Visualization(props: VisualizationProps) {
         timekeeper={timekeeper}
         stage={stage}>
         {data => <div className={classNames("visualization-root", essence.visualization.name)}>
-          <VisualizationComponent
+          <ChartComponent
             data={data}
             clicker={clicker}
             essence={essence}
@@ -177,5 +177,5 @@ function Visualization(props: VisualizationProps) {
   </HighlightController>;
 }
 
-type CenterPanelProps = CenterMainProps & CenterTopBarProps;
-export type CenterProps = Omit<CenterPanelProps, "visualizationComponent">;
+type VisualizationPanelProps = ChartPanelProps & VisualizationControlsProps;
+export type VisualizationProps = Omit<VisualizationPanelProps, "chartComponent">;
