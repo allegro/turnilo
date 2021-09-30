@@ -19,7 +19,7 @@ import * as React from "react";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { MessageCard } from "../../components/message-card/message-card";
-import { CenterPanel, CenterProps } from "../../views/cube-view/center-panel/center-panel";
+import { CenterMain, CenterProps, CenterTopBar } from "../../views/cube-view/center-panel/center-panel";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
@@ -31,7 +31,10 @@ const Y_AXIS_WIDTH = 60;
 const X_AXIS_HEIGHT = 30;
 
 export function LineChart(props: CenterProps) {
-  return <CenterPanel {...props} visualizationComponent={LineChartComponent} />;
+  return <React.Fragment>
+    <CenterTopBar {...props} />
+    <CenterMain {...props} visualizationComponent={LineChartComponent}/>
+  </React.Fragment>;
 }
 
 export class LineChartComponent extends React.Component<VisualizationProps> {

@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { CenterPanel, CenterProps } from "../../views/cube-view/center-panel/center-panel";
+import { CenterMain, CenterProps, CenterTopBar } from "../../views/cube-view/center-panel/center-panel";
 import { Total } from "./total";
 import "./totals.scss";
 
@@ -36,5 +36,8 @@ const BigNumbers: React.SFC<VisualizationProps> = ({ essence, data }) => {
 };
 
 export function Totals(props: CenterProps) {
-  return <CenterPanel {...props} visualizationComponent={BigNumbers}/>;
+  return <React.Fragment>
+    <CenterTopBar {...props} />
+    <CenterMain {...props} visualizationComponent={BigNumbers}/>
+  </React.Fragment>;
 }

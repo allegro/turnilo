@@ -37,55 +37,20 @@ import { DataProvider } from "../../../visualizations/data-provider/data-provide
 import { HighlightController } from "../../../visualizations/highlight-controller/highlight-controller";
 import { PartialFilter, PartialSeries } from "../partial-tiles-provider";
 
-interface CenterPanelProps {
+interface CenterTopBarProps {
   essence: Essence;
   clicker: Clicker;
-  visualizationComponent: React.ComponentType<BaseVizProps>;
+  stage: Stage;
   timekeeper: Timekeeper;
   customization: ClientCustomization;
   addSeries: Binary<Series, DragPosition, void>;
   addFilter: Binary<Dimension, DragPosition, void>;
-  lastRefreshRequestTimestamp: number;
   partialSeries: PartialSeries | null;
   partialFilter: PartialFilter | null;
   removeTile: Fn;
-  dragEnter: Unary<React.DragEvent<HTMLElement>, void>;
-  dragOver: Unary<React.DragEvent<HTMLElement>, void>;
-  isDraggedOver: boolean;
-  dragLeave: Fn;
-  drop: Unary<React.DragEvent<HTMLElement>, void>;
 }
 
-export type CenterProps = Omit<CenterPanelProps, "visualizationComponent">;
-
-interface WithStage {
-  stage: Stage;
-}
-
-export class CenterPanel extends React.Component<CenterPanelProps, WithStage> {
-  private visualization = React.createRef<HTMLDivElement>();
-
-  render() {
-    const stage = this.visualization.current ? Stage.fromClientRect(this.visualization.current.getBoundingClientRect()) : Stage.fromSize(600, 400);
-    return <React.Fragment>
-      <CenterTopBar {...this.props} stage={stage} />
-      <CenterMain {...this.props} ref={this.visualization} stage={stage}/>
-    </React.Fragment>;
-  }
-}
-
-type CenterTopBarProps = Pick<CenterPanelProps,
-  "customization" |
-  "timekeeper" |
-  "partialSeries" |
-  "partialFilter" |
-  "removeTile" |
-  "addFilter" |
-  "addSeries" |
-  "clicker" |
-  "essence"> & WithStage;
-
-const CenterTopBar: React.SFC<CenterTopBarProps> = props => {
+export const CenterTopBar: React.SFC<CenterTopBarProps> = props => {
   const {
     addSeries,
     addFilter,
@@ -123,23 +88,21 @@ const CenterTopBar: React.SFC<CenterTopBarProps> = props => {
   </div>;
 };
 
-type CenterMainProps = Pick<CenterPanelProps,
-  "essence" |
-  "clicker" |
-  "timekeeper" |
-  "visualizationComponent" |
-  "lastRefreshRequestTimestamp" |
-  "isDraggedOver" |
-  "dragOver" |
-  "dragLeave" |
-  "dragEnter" |
-  "drop"> & WithStage;
+interface CenterMainProps {
+  essence: Essence;
+  clicker: Clicker;
+  stage: Stage;
+  visualizationComponent: React.ComponentType<BaseVizProps>;
+  timekeeper: Timekeeper;
+  lastRefreshRequestTimestamp: number;
+  dragEnter: Unary<React.DragEvent<HTMLElement>, void>;
+  dragOver: Unary<React.DragEvent<HTMLElement>, void>;
+  isDraggedOver: boolean;
+  dragLeave: Fn;
+  drop: Unary<React.DragEvent<HTMLElement>, void>;
+}
 
-const CenterMain = React.forwardRef<HTMLDivElement, CenterMainProps>((props, ref) => <CenterMainComponent {...props} visualizationRef={ref} />);
-
-type CenterMainComponentProps = CenterMainProps & { visualizationRef: React.Ref<HTMLDivElement> };
-
-const CenterMainComponent: React.SFC<CenterMainComponentProps> = props => {
+export const CenterMain: React.SFC<CenterMainProps> = props => {
   const {
     visualizationComponent,
     essence,
@@ -151,14 +114,13 @@ const CenterMainComponent: React.SFC<CenterMainComponentProps> = props => {
     dragOver,
     dragEnter,
     dragLeave,
-    drop,
-    visualizationRef
+    drop
   } = props;
   return <div
     className="center-main"
     onDragEnter={dragEnter}
   >
-    <div className="visualization" ref={visualizationRef}>
+    <div className="visualization">
       <Visualization
         visualizationComponent={visualizationComponent}
         essence={essence}
@@ -194,7 +156,6 @@ function Visualization(props: VisualizationProps) {
   if (essence.visResolve.isManual()) {
     return <ManualFallback clicker={clicker} essence={essence}/>;
   }
-  const { visualization } = essence;
 
   return <HighlightController essence={essence} clicker={clicker}>
     {highlightProps =>
@@ -203,7 +164,7 @@ function Visualization(props: VisualizationProps) {
         essence={essence}
         timekeeper={timekeeper}
         stage={stage}>
-        {data => <div className={classNames("visualization-root", visualization.name)}>
+        {data => <div className={classNames("visualization-root", essence.visualization.name)}>
           <VisualizationComponent
             data={data}
             clicker={clicker}
@@ -215,3 +176,6 @@ function Visualization(props: VisualizationProps) {
       </DataProvider>}
   </HighlightController>;
 }
+
+type CenterPanelProps = CenterMainProps & CenterTopBarProps;
+export type CenterProps = Omit<CenterPanelProps, "visualizationComponent">;
