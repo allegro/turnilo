@@ -100,6 +100,7 @@ export interface CubeViewState {
   essence?: Essence;
   timekeeper?: Timekeeper;
   menuStage?: Stage;
+  centerStage?: Stage;
   dragOver?: boolean;
   showSideBar?: boolean;
   showRawDataModal?: boolean;
@@ -125,6 +126,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   public mounted: boolean;
   private readonly clicker: Clicker;
   private container = React.createRef<HTMLDivElement>();
+  private centerPanel = React.createRef<HTMLDivElement>();
 
   constructor(props: CubeViewProps) {
     super(props);
@@ -302,12 +304,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   globalResizeListener = () => {
-    const containerDOM = this.container.current;
-    if (!containerDOM) return;
-
     this.setState({
       deviceSize: Device.getSize(),
-      menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect())
+      menuStage: this.container.current && Stage.fromClientRect(this.container.current.getBoundingClientRect()),
+      centerStage: this.centerPanel.current && Stage.fromClientRect(this.centerPanel.current.getBoundingClientRect())
     });
   };
 
@@ -552,6 +552,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     />;
 
     const Visualization = getVisualizationComponent(essence.visualization);
+    const centerStage = this.centerPanel.current && Stage.fromClientRect(this.centerPanel.current.getBoundingClientRect());
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>
@@ -581,7 +582,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 <DragHandle/>
               </ResizeHandle>}
 
-              <div className="center-panel" style={styles.centerPanel}>
+              <div className="center-panel" style={styles.centerPanel} ref={this.centerPanel}>
                 <div className="dimension-panel-toggle"
                      onClick={this.toggleFactPanel}>
                   <ToggleArrow right={layout.factPanel.hidden}/>
@@ -590,6 +591,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   essence={essence}
                   clicker={clicker}
                   timekeeper={timekeeper}
+                  stage={centerStage}
                   customization={customization}
                   addSeries={addSeries}
                   addFilter={addFilter}
