@@ -100,7 +100,6 @@ export interface CubeViewState {
   essence?: Essence;
   timekeeper?: Timekeeper;
   menuStage?: Stage;
-  centerStage?: Stage;
   dragOver?: boolean;
   showSideBar?: boolean;
   showRawDataModal?: boolean;
@@ -115,6 +114,8 @@ export interface CubeViewState {
 
 const MIN_PANEL_WIDTH = 240;
 const MAX_PANEL_WIDTH = 400;
+
+const CONTROL_PANEL_HEIGHT = 115; // redefined in .center-top-bar in cube-view.scss
 
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps: Partial<CubeViewProps> = { maxFilters: 20 };
@@ -306,8 +307,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   globalResizeListener = () => {
     this.setState({
       deviceSize: Device.getSize(),
-      menuStage: this.container.current && Stage.fromClientRect(this.container.current.getBoundingClientRect()),
-      centerStage: this.centerPanel.current && Stage.fromClientRect(this.centerPanel.current.getBoundingClientRect())
+      menuStage: this.container.current && Stage.fromClientRect(this.container.current.getBoundingClientRect())
     });
   };
 
@@ -496,6 +496,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
   };
 
+  // TODO: Refactor via https://github.com/allegro/turnilo/issues/799
+  private chartStage(): Stage | null {
+    const { menuStage, layout: { factPanel, pinboard } } = this.state;
+    if (!menuStage) return null;
+    return menuStage.within({
+      left: factPanel.hidden ? 0 : factPanel.width,
+      right: pinboard.hidden ? 0 : pinboard.width,
+      top: CONTROL_PANEL_HEIGHT
+    });
+  }
+
   private getCubeContext(): CubeContextValue {
     const { essence } = this.state;
     /*
@@ -526,7 +537,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence,
       timekeeper,
       menuStage,
-      centerStage,
       dragOver,
       updatingMaxTime,
       lastRefreshRequestTimestamp
@@ -591,7 +601,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   essence={essence}
                   clicker={clicker}
                   timekeeper={timekeeper}
-                  stage={centerStage}
+                  stage={this.chartStage()}
                   customization={customization}
                   addSeries={addSeries}
                   addFilter={addFilter}
