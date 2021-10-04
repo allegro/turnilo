@@ -15,7 +15,7 @@
  */
 import { expect } from "chai";
 import { Dataset } from "plywood";
-import { error, loaded, loading } from "../../../../common/models/visualization-props/visualization-props";
+import { error, loaded, loading } from "../../../../common/models/dataset-request/dataset-request";
 import { range } from "../../../../common/utils/functional/functional";
 import { tileStyles } from "./tile-styles";
 

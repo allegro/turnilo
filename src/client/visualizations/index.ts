@@ -16,22 +16,22 @@
  */
 
 import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
-import { BarChart } from "./bar-chart/bar-chart";
-import { Grid } from "./grid/grid";
-import { HeatMap } from "./heat-map/heat-map";
-import { LineChart } from "./line-chart/line-chart";
-import { Table } from "./table/table";
-import { Totals } from "./totals/totals";
+import { BarChartVisualization } from "./bar-chart/bar-chart";
+import { GridVisualization } from "./grid/grid";
+import { HeatMapVisualization } from "./heat-map/heat-map";
+import { LineChartVisualization } from "./line-chart/line-chart";
+import { TableVisualization } from "./table/table";
+import { TotalsVisualization } from "./totals/totals";
 
-const VIS_COMPONENTS  = {
-  "totals": Totals,
-  "table": Table,
-  "line-chart": LineChart,
-  "bar-chart": BarChart,
-  "heatmap": HeatMap,
-  "grid": Grid
+const VISUALIZATIONS  = {
+  "totals": TotalsVisualization,
+  "table": TableVisualization,
+  "line-chart": LineChartVisualization,
+  "bar-chart": BarChartVisualization,
+  "heatmap": HeatMapVisualization,
+  "grid": GridVisualization
 };
 
 export function getVisualizationComponent({ name }: VisualizationManifest) {
-  return VIS_COMPONENTS[name];
+  return VISUALIZATIONS[name];
 }

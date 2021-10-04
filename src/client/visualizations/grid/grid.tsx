@@ -17,8 +17,8 @@
 import * as d3 from "d3";
 import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { Essence } from "../../../common/models/essence/essence";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import {
@@ -36,6 +36,7 @@ import { FlattenedSplits } from "../../components/tabular-scroller/splits/flatte
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
 import { MeasureRows } from "./measure-rows";
 
@@ -44,7 +45,14 @@ interface GridState {
   scrollTop: number;
 }
 
-export class Grid extends React.Component<VisualizationProps, GridState> {
+export function GridVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <VisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={Grid}/>
+  </React.Fragment>;
+}
+
+class Grid extends React.Component<ChartProps, GridState> {
   private innerGridRef = React.createRef<HTMLDivElement>();
 
   state: GridState = {

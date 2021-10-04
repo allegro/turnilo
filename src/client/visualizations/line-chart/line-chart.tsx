@@ -16,9 +16,10 @@
  */
 
 import * as React from "react";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { MessageCard } from "../../components/message-card/message-card";
+import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
@@ -29,7 +30,14 @@ import { XAxis } from "./x-axis/x-axis";
 const Y_AXIS_WIDTH = 60;
 const X_AXIS_HEIGHT = 30;
 
-export class LineChart extends React.Component<VisualizationProps> {
+export function LineChartVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <VisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={LineChart}/>
+  </React.Fragment>;
+}
+
+class LineChart extends React.Component<ChartProps> {
   protected className = LINE_CHART_MANIFEST.name;
 
   private chartsRef = React.createRef<HTMLDivElement>();
