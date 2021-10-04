@@ -51,7 +51,7 @@ import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
-import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { hasHighlightOn } from "../highlight-controller/highlight-controller";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -158,7 +158,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
 
 export function BarChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
-    <VisualizationControls {...props} />
+    <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} chartComponent={BarChart}/>
   </React.Fragment>;
 }

@@ -36,9 +36,10 @@ import { FlattenedSplits } from "../../components/tabular-scroller/splits/flatte
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
-import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
 import { MeasureRows } from "./measure-rows";
+import { GridVisualizationControls } from "./visualization-controls";
 
 interface GridState {
   segmentWidth: number;
@@ -47,7 +48,7 @@ interface GridState {
 
 export function GridVisualization(props: VisualizationProps) {
   return <React.Fragment>
-    <VisualizationControls {...props} />
+    <GridVisualizationControls {...props} />
     <ChartPanel {...props} chartComponent={Grid}/>
   </React.Fragment>;
 }

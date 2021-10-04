@@ -30,14 +30,18 @@ import { DropIndicator } from "../../../components/drop-indicator/drop-indicator
 import { FilterTilesRow } from "../../../components/filter-tile/filter-tiles-row";
 import { ManualFallback } from "../../../components/manual-fallback/manual-fallback";
 import { SeriesTilesRow } from "../../../components/series-tile/series-tiles-row";
-import { SplitTilesRow } from "../../../components/split-tile/split-tiles-row";
+import {
+  DefaultSplitTilesRow,
+  SplitTilesRow,
+  SplitTilesRowBaseProps
+} from "../../../components/split-tile/split-tiles-row";
 import { VisSelector } from "../../../components/vis-selector/vis-selector";
 import { classNames } from "../../../utils/dom/dom";
 import { DataProvider } from "../../../visualizations/data-provider/data-provider";
 import { HighlightController } from "../../../visualizations/highlight-controller/highlight-controller";
 import { PartialFilter, PartialSeries } from "../partial-tiles-provider";
 
-interface VisualizationControlsProps {
+export interface VisualizationControlsBaseProps {
   essence: Essence;
   clicker: Clicker;
   stage: Stage;
@@ -50,8 +54,17 @@ interface VisualizationControlsProps {
   removeTile: Fn;
 }
 
+interface VisualizationControlsProps extends VisualizationControlsBaseProps {
+  splitTilesRow: React.ComponentType<SplitTilesRowBaseProps>;
+}
+
+export const DefaultVisualizationControls: React.SFC<VisualizationControlsBaseProps> = props => {
+  return <VisualizationControls {...props} splitTilesRow={DefaultSplitTilesRow} />;
+};
+
 export const VisualizationControls: React.SFC<VisualizationControlsProps> = props => {
   const {
+    splitTilesRow: SplitTilesRow,
     addSeries,
     addFilter,
     clicker,
@@ -177,5 +190,5 @@ function ChartWrapper(props: ChartWrapperProps) {
   </HighlightController>;
 }
 
-type VisualizationPanelProps = ChartPanelProps & VisualizationControlsProps;
+type VisualizationPanelProps = ChartPanelProps & VisualizationControlsBaseProps;
 export type VisualizationProps = Omit<VisualizationPanelProps, "chartComponent">;
