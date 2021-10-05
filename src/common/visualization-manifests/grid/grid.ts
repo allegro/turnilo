@@ -22,6 +22,8 @@ import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
+export const GRID_LIMITS = [50, 100, 200, 500, 1000];
+
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Grid requires at least one split"))
@@ -32,7 +34,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(({ isSelectedVisualization, splits, series }) => {
     const firstSeries = series.series.first();
     const { limit: firstLimit, sort: firstSort } = splits.getSplit(0);
-    const safeFirstLimit = isFiniteNumber(firstLimit) ? firstLimit : 50;
+    const safeFirstLimit = isFiniteNumber(firstLimit) ? firstLimit : GRID_LIMITS[0];
     const sort = firstSort instanceof SeriesSort
       ? firstSort
       : new SeriesSort({ reference: firstSeries.reference });
