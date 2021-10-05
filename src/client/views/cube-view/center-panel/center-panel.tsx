@@ -37,7 +37,7 @@ import {
 } from "../../../components/split-tile/split-tiles-row";
 import { VisSelector } from "../../../components/vis-selector/vis-selector";
 import { classNames } from "../../../utils/dom/dom";
-import { DataProvider } from "../../../visualizations/data-provider/data-provider";
+import { DataProvider, QueryFactory } from "../../../visualizations/data-provider/data-provider";
 import { HighlightController } from "../../../visualizations/highlight-controller/highlight-controller";
 import { PartialFilter, PartialSeries } from "../partial-tiles-provider";
 
@@ -106,6 +106,7 @@ interface ChartPanelProps {
   clicker: Clicker;
   stage: Stage;
   chartComponent: React.ComponentType<ChartProps>;
+  queryFactory: QueryFactory;
   timekeeper: Timekeeper;
   lastRefreshRequestTimestamp: number;
   dragEnter: Unary<React.DragEvent<HTMLElement>, void>;
@@ -118,6 +119,7 @@ interface ChartPanelProps {
 export const ChartPanel: React.SFC<ChartPanelProps> = props => {
   const {
     chartComponent,
+    queryFactory,
     essence,
     clicker,
     timekeeper,
@@ -136,6 +138,7 @@ export const ChartPanel: React.SFC<ChartPanelProps> = props => {
     <div className="visualization">
       <ChartWrapper
         chartComponent={chartComponent}
+        queryFactory={queryFactory}
         essence={essence}
         clicker={clicker}
         timekeeper={timekeeper}
@@ -162,10 +165,11 @@ type ChartWrapperProps = Pick<ChartPanelProps,
   "clicker" |
   "stage" |
   "lastRefreshRequestTimestamp" |
+  "queryFactory" |
   "chartComponent">;
 
 function ChartWrapper(props: ChartWrapperProps) {
-  const { chartComponent: ChartComponent, essence, clicker, timekeeper, stage, lastRefreshRequestTimestamp } = props;
+  const { chartComponent: ChartComponent, queryFactory, essence, clicker, timekeeper, stage, lastRefreshRequestTimestamp } = props;
   if (essence.visResolve.isManual()) {
     return <ManualFallback clicker={clicker} essence={essence}/>;
   }
@@ -174,6 +178,7 @@ function ChartWrapper(props: ChartWrapperProps) {
     {highlightProps =>
       <DataProvider
         refreshRequestTimestamp={lastRefreshRequestTimestamp}
+        queryFactory={queryFactory}
         essence={essence}
         timekeeper={timekeeper}
         stage={stage}>
@@ -191,4 +196,4 @@ function ChartWrapper(props: ChartWrapperProps) {
 }
 
 type VisualizationPanelProps = ChartPanelProps & VisualizationControlsBaseProps;
-export type VisualizationProps = Omit<VisualizationPanelProps, "chartComponent">;
+export type VisualizationProps = Omit<VisualizationPanelProps, "chartComponent" | "queryFactory">;

@@ -39,6 +39,7 @@ import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { or } from "../../../common/utils/functional/functional";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { Predicates } from "../../../common/utils/rules/predicates";
 import { BAR_CHART_MANIFEST } from "../../../common/visualization-manifests/bar-chart/bar-chart";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
@@ -159,7 +160,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
 export function BarChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} chartComponent={BarChart}/>
+    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BarChart}/>
   </React.Fragment>;
 }
 
