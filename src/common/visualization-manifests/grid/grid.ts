@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { SeriesSort } from "../../models/sort/sort";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
-import { isFiniteNumber } from "../../utils/general/general";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -31,16 +29,12 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSelectedMeasures())
   .then(Actions.manualMeasuresSelection())
 
-  .otherwise(({ isSelectedVisualization, splits, series }) => {
-    const firstSeries = series.series.first();
-    const { limit: firstLimit, sort: firstSort } = splits.getSplit(0);
-    const safeFirstLimit = isFiniteNumber(firstLimit) ? firstLimit : GRID_LIMITS[0];
-    const sort = firstSort instanceof SeriesSort
-      ? firstSort
-      : new SeriesSort({ reference: firstSeries.reference });
-    const newSplits = splits.update("splits", splits =>
-      splits.map(split =>
-        split.changeLimit(safeFirstLimit).changeSort(sort)));
+  .otherwise(({ isSelectedVisualization, splits }) => {
+    const firstSplit = splits.getSplit(0);
+    const { limit: firstLimit } = firstSplit;
+    const safeFirstLimit = GRID_LIMITS.indexOf(firstLimit) === -1 ? GRID_LIMITS[0] : firstLimit;
+
+    const newSplits = splits.replace(firstSplit, firstSplit.changeLimit(safeFirstLimit));
 
     if (splits.equals(newSplits)) {
       return Resolve.ready(isSelectedVisualization ? 10 : 4);

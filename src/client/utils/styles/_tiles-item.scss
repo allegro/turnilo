@@ -30,7 +30,7 @@
     @include css-variable(background-color, item-dimension);
     @include css-variable(color, item-dimension-text);
 
-    &:hover, &.selected {
+    &:hover:not(.disabled), &.selected {
       @include css-variable(background-color, item-dimension-hover);
     }
   }
@@ -39,7 +39,7 @@
     @include css-variable(background-color, item-measure);
     @include css-variable(color, item-measure-text);
 
-    &:hover, &.selected {
+    &:hover:not(.disabled), &.selected {
       @include css-variable(background-color, item-measure-hover);
     }
   }

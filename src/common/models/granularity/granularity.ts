@@ -26,8 +26,9 @@ import {
   getNumberOfWholeDigits,
   isDecimalInteger,
   toSignificantDigits
-} from "../../../common/utils/general/general";
+} from "../../utils/general/general";
 import { isFloorableDuration, isValidDuration } from "../../utils/plywood/duration";
+import { DimensionKind } from "../dimension/dimension";
 import { Bucket } from "../split/split";
 
 const MENU_LENGTH = 5;
@@ -213,6 +214,19 @@ export function granularityFromJS(input: GranularityJS): Bucket {
   if (typeof input === "number") return input;
   if (isValidDuration(input)) return Duration.fromJS(input);
   throw new Error("input should be number or Duration");
+}
+
+export function coerceGranularity(granularity: string, kind: DimensionKind): Bucket | null {
+  switch (kind) {
+    case "string":
+      return null;
+    case "boolean":
+      return null;
+    case "time":
+      return Duration.fromJS(granularity);
+    case "number":
+      return parseInt(granularity, 10);
+  }
 }
 
 export function granularityToString(input: Bucket): string {
