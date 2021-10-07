@@ -17,6 +17,7 @@
 
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { Total } from "./total";
 import "./totals.scss";
@@ -38,6 +39,6 @@ const BigNumbers: React.SFC<ChartProps> = ({ essence, data }) => {
 export function TotalsVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} chartComponent={BigNumbers}/>
+    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BigNumbers}/>
   </React.Fragment>;
 }

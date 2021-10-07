@@ -27,6 +27,7 @@ import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Split } from "../../../common/models/split/split";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
@@ -38,7 +39,7 @@ import scales from "./utils/scales";
 export function HeatMapVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} chartComponent={HeatMap}/>
+    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={HeatMap}/>
   </React.Fragment>;
 }
 

@@ -38,6 +38,7 @@ import { visibleIndexRange } from "../../components/tabular-scroller/visible-row
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
+import makeQuery from "./make-query";
 import { MeasureRows } from "./measure-rows";
 import { GridVisualizationControls } from "./visualization-controls";
 
@@ -49,7 +50,7 @@ interface GridState {
 export function GridVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <GridVisualizationControls {...props} />
-    <ChartPanel {...props} chartComponent={Grid}/>
+    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Grid}/>
   </React.Fragment>;
 }
 
