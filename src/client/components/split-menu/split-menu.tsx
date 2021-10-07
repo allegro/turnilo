@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
 import * as React from "react";
 import { Dimension, isContinuous } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
+import { granularityToString } from "../../../common/models/granularity/granularity";
 import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { Sort } from "../../../common/models/sort/sort";
-import { Bucket, Split } from "../../../common/models/split/split";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-import { enterKey } from "../../utils/dom/dom";
-import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { Button } from "../button/button";
 import { GranularityPicker } from "./granularity-picker";
 import { LimitDropdown } from "./limit-dropdown";
 import { SortDropdown } from "./sort-dropdown";
+import { createSplit, SplitMenuBase, validateSplit } from "./split-menu-base";
 import "./split-menu.scss";
 
 export interface SplitMenuProps {
@@ -46,7 +42,6 @@ export interface SplitMenuProps {
 }
 
 export interface SplitMenuState {
-  reference?: string;
   granularity?: string;
   sort?: Sort;
   limit?: number;
@@ -58,25 +53,14 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   componentWillMount() {
     const { split } = this.props;
-    const { bucket, reference, sort, limit } = split;
+    const { bucket, sort, limit } = split;
 
     this.setState({
-      reference,
       sort,
       limit,
       granularity: bucket && granularityToString(bucket)
     });
   }
-
-  componentDidMount() {
-    window.addEventListener("keydown", this.globalKeyDownListener);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.globalKeyDownListener);
-  }
-
-  globalKeyDownListener = (e: KeyboardEvent) => enterKey(e) && this.onOkClick();
 
   saveGranularity = (granularity: string) => this.setState({ granularity });
 
@@ -84,86 +68,54 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   saveLimit = (limit: number) => this.setState({ limit });
 
-  onCancelClick = () => this.props.onClose();
-
-  onOkClick = () => {
-    if (!this.validate()) return;
-    const { split, saveSplit, onClose } = this.props;
-    const newSplit = this.constructSplitCombine();
-    saveSplit(split, newSplit);
-    onClose();
+  saveSplit = () => {
+    const { split, saveSplit } = this.props;
+    saveSplit(split, this.createSplit());
   };
 
-  private constructGranularity(): Bucket {
-    const { dimension: { kind } } = this.props;
-    const { granularity } = this.state;
-    if (kind === "time") {
-      return Duration.fromJS(granularity);
-    }
-    if (kind === "number") {
-      return parseInt(granularity, 10);
-    }
-    return null;
-  }
-
-  private constructSplitCombine(): Split {
-    const { split: { type } } = this.props;
-    const { limit, sort, reference } = this.state;
-    const bucket = this.constructGranularity();
-    return new Split({ type, reference, limit, sort, bucket });
+  private createSplit(): Split {
+    const { split, dimension } = this.props;
+    const { limit, sort, granularity } = this.state;
+    return createSplit({ split, dimension, limit, sort, granularity });
   }
 
   validate() {
-    const { dimension: { kind }, split: originalSplit  } = this.props;
-    if (!isGranularityValid(kind, this.state.granularity)) {
-      return false;
-    }
-    const newSplit: Split = this.constructSplitCombine();
-    return !originalSplit.equals(newSplit);
-  }
-
-  renderSortDropdown() {
-    const { essence, dimension } = this.props;
-    const { sort } = this.state;
-    const seriesSortOns = essence.seriesSortOns(true).toArray();
-    const options = [new DimensionSortOn(dimension), ...seriesSortOns];
-    const selected = SortOn.fromSort(sort, essence);
-    return <SortDropdown
-      direction={sort.direction}
-      selected={selected}
-      options={options}
-      onChange={this.saveSort}
-    />;
+    const { dimension, split } = this.props;
+    const { limit, sort, granularity } = this.state;
+    return validateSplit({ split, dimension, limit, sort, granularity });
   }
 
   render() {
-    const { containerStage, openOn, dimension, onClose } = this.props;
-    const { granularity, limit } = this.state;
-    if (!dimension) return null;
+    const { essence, containerStage, openOn, dimension, onClose } = this.props;
+    const { granularity, sort, limit } = this.state;
 
-    return <BubbleMenu
-      className="split-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={Stage.fromSize(250, 240)}
+    const seriesSortOns = essence.seriesSortOns(true).toArray();
+    const options = [new DimensionSortOn(dimension), ...seriesSortOns];
+    const selected = SortOn.fromSort(sort, essence);
+
+    return <SplitMenuBase
       openOn={openOn}
+      containerStage={containerStage}
       onClose={onClose}
-    >
+      onSave={this.saveSplit}
+      dimension={dimension}
+      isValid={this.validate()}>
       <GranularityPicker
         dimension={dimension}
         granularityChange={this.saveGranularity}
         granularity={granularity}
       />
-      {this.renderSortDropdown()}
+      <SortDropdown
+        direction={sort.direction}
+        selected={selected}
+        options={options}
+        onChange={this.saveSort}
+      />
       <LimitDropdown
         onLimitSelect={this.saveLimit}
-       selectedLimit={limit}
+        selectedLimit={limit}
         includeNone={isContinuous(dimension)}
         limits={dimension.limits}/>
-      <div className="button-bar">
-        <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
-        <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
-      </div>
-    </BubbleMenu>;
+    </SplitMenuBase>;
   }
 }
