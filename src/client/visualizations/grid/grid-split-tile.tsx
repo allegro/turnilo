@@ -21,11 +21,12 @@ import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { WithRef } from "../../components/with-ref/with-ref";
 import { classNames } from "../../utils/dom/dom";
 import { GridSplitMenu } from "./grid-split-menu";
+import { mainSplit } from "./utils/main-split";
 
 export const GridSplitTile: React.SFC<SplitTileBaseProps> = props => {
   const { essence, open: isOpened, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
 
-  const enabled = split.equals(essence.splits.getSplit(0)) || isContinuous(dimension);
+  const enabled = split.equals(mainSplit(essence)) || isContinuous(dimension);
 
   const title = split.getTitle(dimension);
 

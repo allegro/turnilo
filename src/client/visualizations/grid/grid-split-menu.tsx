@@ -27,10 +27,11 @@ import { LimitDropdown } from "../../components/split-menu/limit-dropdown";
 import { SortDropdown } from "../../components/split-menu/sort-dropdown";
 import { SplitMenuProps } from "../../components/split-menu/split-menu";
 import { createSplit, SplitMenuBase, validateSplit } from "../../components/split-menu/split-menu-base";
+import { mainSplit } from "./utils/main-split";
 
 export const GridSplitMenu: React.SFC<SplitMenuProps> = props => {
   const { essence, split, dimension } = props;
-  const controlSplit = split.equals(essence.splits.getSplit(0));
+  const controlSplit = split.equals(mainSplit(essence));
   if (controlSplit) {
     return <GridControlMenu {...props} />;
   }
