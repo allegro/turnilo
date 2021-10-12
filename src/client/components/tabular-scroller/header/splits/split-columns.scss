@@ -21,7 +21,16 @@
 }
 
 .header-split-column {
+  flex: 1;
+  display: flex;
+}
+
+.header-split-column-title {
   @include ellipsis;
   padding-left: 6px;
+  flex: 1;
+}
+
+.header-split-column-sort-icon {
   flex: 1;
 }

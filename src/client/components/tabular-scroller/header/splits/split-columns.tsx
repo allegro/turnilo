@@ -21,6 +21,7 @@ import { DimensionSort, Sort, SortDirection } from "../../../../../common/models
 import { Split } from "../../../../../common/models/split/split";
 import { Splits } from "../../../../../common/models/splits/splits";
 import { Corner } from "../../corner/corner";
+import { SortIcon } from "../../sort-icon/sort-icon";
 import "./split-columns.scss";
 
 interface SplitColumnsHeader {
@@ -29,8 +30,10 @@ interface SplitColumnsHeader {
   splits: Splits;
 }
 
-export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ essence }) => {
-  const { splits: { splits }, dataCube } = essence;
+function sortDirection(split: Split, sort: Sort): SortDirection | null {
+  const isCurrentSort = sort instanceof DimensionSort && split.reference === sort.reference;
+  return isCurrentSort ? sort.direction : null;
+}
 
 export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
   return <Corner>
@@ -38,7 +41,13 @@ export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ sort, splits
       {splits.splits.toArray().map(split => {
         const { reference } = split;
         const title = findDimensionByName(dataCube.dimensions, reference).title;
-        return <span className="header-split-column" key={reference}>{title}</span>;
+        const direction = sortDirection(split, sort);
+        return <div className="header-split-column" key={reference}>
+          <div className="header-split-column-title">{title}</div>
+          {direction && <div className="header-split-column-sort-icon">
+            <SortIcon direction={direction} />
+          </div>}
+        </div>;
       })}
     </div>
   </Corner>;
