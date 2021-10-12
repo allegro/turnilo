@@ -25,7 +25,7 @@ function indexToPeriod(index: number): SeriesDerivation {
   return [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA][index % 3];
 }
 
-export enum HoverElement { CORNER, ROW, HEADER, WHITESPACE }
+export enum HoverElement { ROW, HEADER, WHITESPACE }
 
 interface RowHover {
   element: HoverElement.ROW;
@@ -38,15 +38,11 @@ interface SeriesHover {
   period: SeriesDerivation;
 }
 
-interface CornerHover {
-  element: HoverElement.CORNER;
-}
-
 interface WhiteSpaceHover {
   element: HoverElement.WHITESPACE;
 }
 
-export type PositionHover = RowHover | SeriesHover | CornerHover | WhiteSpaceHover;
+export type PositionHover = RowHover | SeriesHover | WhiteSpaceHover;
 
 export function seriesPosition(x: number, essence: Essence, segmentWidth: number, columnWidth: number): PositionHover {
   const seriesList = essence.series.series;
