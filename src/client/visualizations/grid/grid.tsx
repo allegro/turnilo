@@ -14,38 +14,15 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
-import { Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import { Essence } from "../../../common/models/essence/essence";
-import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
-import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
-import {
-  HEADER_HEIGHT,
-  MEASURE_WIDTH,
-  MIN_DIMENSION_WIDTH,
-  ROW_HEIGHT,
-  SEGMENT_WIDTH,
-  SPACE_LEFT,
-  SPACE_RIGHT
-} from "../../components/tabular-scroller/dimensions";
-import { MeasuresHeader } from "../../components/tabular-scroller/header/measures/measures-header";
-import { SplitColumnsHeader } from "../../components/tabular-scroller/header/splits/split-columns";
-import { FlattenedSplits } from "../../components/tabular-scroller/splits/flattened-splits";
-import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
-import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
-import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import { MIN_DIMENSION_WIDTH } from "../../components/tabular-scroller/dimensions";
 import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
+import { InteractionController } from "./interaction-controller";
 import makeQuery from "./make-query";
-import { MeasureRows } from "./measure-rows";
+import { ScrolledGrid } from "./scrolled-grid";
 import { GridVisualizationControls } from "./visualization-controls";
-
-interface GridState {
-  segmentWidth: number;
-  scrollTop: number;
-}
 
 export function GridVisualization(props: VisualizationProps) {
   return <React.Fragment>
@@ -54,107 +31,43 @@ export function GridVisualization(props: VisualizationProps) {
   </React.Fragment>;
 }
 
-class Grid extends React.Component<ChartProps, GridState> {
+class Grid extends React.Component<ChartProps, {}> {
   private innerGridRef = React.createRef<HTMLDivElement>();
 
-  state: GridState = {
-    segmentWidth: SEGMENT_WIDTH,
-    scrollTop: 0
-  };
-
-  setScroll = (scrollTop: number) => this.setState({ scrollTop });
-
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
-
-  private getIdealColumnWidth(): number {
-    const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
-    const count = measureColumnsCount(this.props.essence);
-
-    return count * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / count;
-  }
-
-  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-    const concreteSeries = essence.getConcreteSeries().toArray();
-
-    return concreteSeries.map(series => {
-      const measureValues = flatData
-        .map((d: Datum) => series.selectValue(d));
-
-      return d3.scale.linear()
-        // Ensure that 0 is in there
-        .domain(d3.extent([0, ...measureValues]))
-        .range([0, 100]);
-    });
-  }
-
-  maxSegmentWidth(): number {
-    if (this.innerGridRef.current) {
-      return this.innerGridRef.current.clientWidth - MIN_DIMENSION_WIDTH;
-    }
-
-    return SEGMENT_WIDTH;
-  }
-
-  getSegmentWidth(): number {
-    const { segmentWidth } = this.state;
-    return segmentWidth || SEGMENT_WIDTH;
+  availableWidth(): number | undefined {
+    if (!this.innerGridRef.current) return undefined;
+    return this.innerGridRef.current.clientWidth - MIN_DIMENSION_WIDTH;
   }
 
   render(): JSX.Element {
-    const { essence, stage, data } = this.props;
-    const { segmentWidth, scrollTop } = this.state;
-
-    const datums = selectFirstSplitDatums(data);
-
-    const columnsCount = measureColumnsCount(essence);
-    const columnWidth = this.getIdealColumnWidth();
-    const rowsCount = datums.length;
-    const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
-
-    const layout: ScrollerLayout = {
-      bodyWidth: columnWidth * columnsCount + SPACE_RIGHT,
-      bodyHeight: rowsCount * ROW_HEIGHT,
-      bottom: 0,
-      left: this.getSegmentWidth(),
-      right: 0,
-      top: HEADER_HEIGHT
-    };
+    const { essence, stage, clicker, data } = this.props;
 
     return <div className="grid-container" ref={this.innerGridRef}>
-      <ResizeHandle
-        direction={Direction.LEFT}
-        onResize={this.setSegmentWidth}
-        min={SEGMENT_WIDTH}
-        max={this.maxSegmentWidth()}
-        value={segmentWidth}
-      />
-      <Scroller
-        layout={layout}
-        onScroll={this.setScroll}
-        topGutter={<MeasuresHeader
-          cellWidth={columnWidth}
-          series={essence.getConcreteSeries().toArray()}
-          commonSort={essence.getCommonSort()}
-          showPrevious={essence.hasComparison()}/>}
-
-        leftGutter={<FlattenedSplits
-          visibleRowsIndexRange={visibleRowsRange}
-          essence={essence}
-          data={datums}
-          segmentWidth={segmentWidth}
-          highlightedRowIndex={null}/>}
-
-        topLeftCorner={<SplitColumnsHeader essence={essence}/>}
-
-        body={datums && <MeasureRows
-          visibleRowsIndexRange={visibleRowsRange}
-          essence={essence}
-          highlightedRowIndex={null}
-          scales={this.getScalesForColumns(essence, datums)}
-          data={datums}
-          cellWidth={columnWidth}
-          rowWidth={columnWidth * columnsCount}/>}
-      />
+      <InteractionController
+        essence={essence}
+        clicker={clicker}
+        stage={stage}
+      >
+        {({
+            segmentWidth,
+            columnWidth,
+            scrollTop,
+            setSegmentWidth,
+            setScrollTop,
+            handleClick
+          }) =>
+          <ScrolledGrid
+            essence={essence}
+            data={data}
+            stage={stage}
+            handleClick={handleClick}
+            setScrollTop={setScrollTop}
+            setSegmentWidth={setSegmentWidth}
+            availableWidth={this.availableWidth()}
+            columnWidth={columnWidth}
+            segmentWidth={segmentWidth}
+            scrollTop={scrollTop}/>}
+      </InteractionController>
     </div>;
   }
 }
