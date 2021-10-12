@@ -20,7 +20,7 @@ import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
-export const GRID_LIMITS = [50, 100, 200, 500, 1000];
+export const GRID_LIMITS = [50, 100, 200, 500, 1000, 10000];
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
