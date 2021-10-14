@@ -112,7 +112,7 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
         <MeasuresHeader
           cellWidth={columnWidth}
           series={essence.getConcreteSeries().toArray()}
-          commonSort={essence.getCommonSort()}
+          sort={essence.getCommonSort()}
           showPrevious={essence.hasComparison()}
         />
       }

@@ -15,24 +15,39 @@
  */
 
 import * as React from "react";
+import { ClientDataCube } from "../../../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
-import { Essence } from "../../../../../common/models/essence/essence";
+import { DimensionSort, Sort, SortDirection } from "../../../../../common/models/sort/sort";
+import { Split } from "../../../../../common/models/split/split";
+import { Splits } from "../../../../../common/models/splits/splits";
 import { Corner } from "../../corner/corner";
+import { SortIcon } from "../../sort-icon/sort-icon";
 import "./split-columns.scss";
 
 interface SplitColumnsHeader {
-  essence: Essence;
+  dataCube: ClientDataCube;
+  sort?: Sort;
+  splits: Splits;
 }
 
-export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ essence }) => {
-  const { splits: { splits }, dataCube } = essence;
+function sortDirection(split: Split, sort: Sort): SortDirection | null {
+  const isCurrentSort = sort instanceof DimensionSort && split.reference === sort.reference;
+  return isCurrentSort ? sort.direction : null;
+}
 
+export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
   return <Corner>
     <div className="header-split-columns">
-      {splits.toArray().map(split => {
+      {splits.splits.toArray().map(split => {
         const { reference } = split;
         const title = findDimensionByName(dataCube.dimensions, reference).title;
-        return <span className="header-split-column" key={reference}>{title}</span>;
+        const direction = sortDirection(split, sort);
+        return <div className="header-split-column" key={reference}>
+          <div className="header-split-column-title">{title}</div>
+          {direction && <div className="header-split-column-sort-icon">
+            <SortIcon direction={direction} />
+          </div>}
+        </div>;
       })}
     </div>
   </Corner>;

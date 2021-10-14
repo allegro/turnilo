@@ -23,11 +23,11 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
-import { SplitMenu } from "../split-menu/split-menu";
+import { SplitMenu, SplitMenuProps } from "../split-menu/split-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
 
-interface SplitTileProps {
+export interface SplitTileBaseProps {
   essence: Essence;
   split: Split;
   dimension: Dimension;
@@ -41,10 +41,18 @@ interface SplitTileProps {
   containerStage: Stage;
 }
 
-const SPLIT_CLASS_NAME = "split";
+interface SplitTileProps extends SplitTileBaseProps {
+  splitMenuComponent: React.ComponentType<SplitMenuProps>;
+}
+
+export const SPLIT_CLASS_NAME = "split";
+
+export const DefaultSplitTile: React.SFC<SplitTileBaseProps> = props => {
+  return <SplitTile {...props} splitMenuComponent={SplitMenu} />;
+};
 
 export const SplitTile: React.SFC<SplitTileProps> = props => {
-  const { essence, open, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
+  const { splitMenuComponent: SplitMenu, essence, open, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
 
   const title = split.getTitle(dimension);
 

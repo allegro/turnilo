@@ -15,16 +15,17 @@
  */
 
 import * as React from "react";
+import { ClientDataCube } from "../../../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
-import { Essence } from "../../../../../common/models/essence/essence";
+import { Splits } from "../../../../../common/models/splits/splits";
 import { Corner } from "../../../../components/tabular-scroller/corner/corner";
 
 interface CombinedSplitsTitle {
-  essence: Essence;
+  dataCube: ClientDataCube;
+  splits: Splits;
 }
 
-export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ essence }) => {
-  const { splits, dataCube } = essence;
-  const title = splits.splits.map(split => findDimensionByName(dataCube.dimensions, split.reference).title).join(", ");
+export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ dataCube, splits: { splits } }) => {
+  const title = splits.map(split => findDimensionByName(dataCube.dimensions, split.reference).title).join(", ");
   return <Corner>{title}</Corner>;
 };

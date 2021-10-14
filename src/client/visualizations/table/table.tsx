@@ -19,16 +19,17 @@ import { FlattenOptions, PseudoDatum } from "plywood";
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
-import { ChartPanel, VisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { InteractionController } from "./interactions/interaction-controller";
 import { ScrolledTable } from "./scrolled-table/scrolled-table";
 import "./table.scss";
 
 export function TableVisualization(props: VisualizationProps) {
   return <React.Fragment>
-    <VisualizationControls {...props} />
-    <ChartPanel {...props} chartComponent={Table}/>
+    <DefaultVisualizationControls {...props} />
+    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Table}/>
   </React.Fragment>;
 }
 
