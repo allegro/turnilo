@@ -24,7 +24,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { TileOverflowContainer } from "../tile-overflow-container/tile-overflow-container";
-import { SplitTile } from "./split-tile";
+import { SplitTileBaseProps } from "./split-tile";
 
 interface SplitTilesProps {
   essence: Essence;
@@ -39,10 +39,25 @@ interface SplitTilesProps {
   overflowOpen: boolean;
   closeOverflowMenu: Fn;
   openOverflowMenu: Fn;
+  splitTileComponent: React.ComponentType<SplitTileBaseProps>;
 }
 
 export const SplitTiles: React.SFC<SplitTilesProps> = props => {
-  const { overflowOpen, closeOverflowMenu, openOverflowMenu, essence, maxItems, removeSplit, updateSplit, openedSplit, openMenu, closeMenu, dragStart, menuStage } = props;
+  const {
+    splitTileComponent: SplitTile,
+    overflowOpen,
+    closeOverflowMenu,
+    openOverflowMenu,
+    essence,
+    maxItems,
+    removeSplit,
+    updateSplit,
+    openedSplit,
+    openMenu,
+    closeMenu,
+    dragStart,
+    menuStage
+  } = props;
 
   const splits = essence.splits.splits.toArray();
 

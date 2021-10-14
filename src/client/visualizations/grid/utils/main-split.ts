@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-@import '../../../../imports';
+import { Essence } from "../../../../common/models/essence/essence";
+import { Split } from "../../../../common/models/split/split";
 
-.header-split-columns {
-  display: flex;
-}
-
-.header-split-column {
-  flex: 1;
-  display: flex;
-}
-
-.header-split-column-title {
-  @include ellipsis;
-  padding-left: 6px;
-  flex: 1;
-}
-
-.header-split-column-sort-icon {
-  flex: 1;
+export function mainSplit(essence: Essence): Split {
+  return essence.splits.getSplit(0);
 }

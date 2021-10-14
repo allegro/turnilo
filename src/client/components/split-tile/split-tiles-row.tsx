@@ -28,13 +28,18 @@ import { DraggedElementType, DragManager } from "../../utils/drag-manager/drag-m
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSplit } from "./add-split";
+import { DefaultSplitTile, SplitTileBaseProps } from "./split-tile";
 import "./split-tile.scss";
 import { SplitTiles } from "./split-tiles";
 
-interface SplitTilesRowProps {
+export interface SplitTilesRowBaseProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+}
+
+interface SplitTilesRowProps extends SplitTilesRowBaseProps {
+  splitTileComponent: React.ComponentType<SplitTileBaseProps>;
 }
 
 interface SplitTilesRowState {
@@ -42,6 +47,9 @@ interface SplitTilesRowState {
   openedSplit?: Split;
   overflowOpen?: boolean;
 }
+
+export const DefaultSplitTilesRow: React.SFC<SplitTilesRowBaseProps> = props =>
+  <SplitTilesRow {...props} splitTileComponent={DefaultSplitTile} />;
 
 export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTilesRowState> {
   private items = React.createRef<HTMLDivElement>();
@@ -189,13 +197,14 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   };
 
   render() {
-    const { essence, menuStage } = this.props;
+    const { essence, menuStage, splitTileComponent } = this.props;
     const { dragPosition, overflowOpen, openedSplit } = this.state;
     return <div className="split-tile" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.split}</div>
       <div className="items" ref={this.items}>
         <SplitTiles
           essence={essence}
+          splitTileComponent={splitTileComponent}
           openedSplit={openedSplit}
           removeSplit={this.removeSplit}
           updateSplit={this.updateSplit}

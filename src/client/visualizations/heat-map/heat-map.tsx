@@ -24,17 +24,26 @@ import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
 import * as React from "react";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Split } from "../../../common/models/split/split";
-import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
+import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
 
-export class HeatMap extends React.Component<VisualizationProps> {
+export function HeatMapVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <DefaultVisualizationControls {...props} />
+    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={HeatMap}/>
+  </React.Fragment>;
+}
+
+class HeatMap extends React.Component<ChartProps> {
   protected className = HEAT_MAP_MANIFEST.name;
 
   getScales = memoizeOne(scales);

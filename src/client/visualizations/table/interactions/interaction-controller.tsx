@@ -81,11 +81,6 @@ export class InteractionController extends React.Component<InteractionController
     clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
   }
 
-  private setSortToDimension() {
-    const { clicker, essence: { splits } } = this.props;
-    clicker.changeSplits(splits.setSortToDimension(), VisStrategy.KeepAlways); // set each to dimension ascending
-  }
-
   private highlightRow(datum: Datum) {
     const { essence: { splits }, highlight, saveHighlight, dropHighlight } = this.props;
     const rowHighlight = getFilterFromDatum(splits, datum);
@@ -111,8 +106,6 @@ export class InteractionController extends React.Component<InteractionController
   private calculateMousePosition(x: number, y: number, part: ScrollerPart): PositionHover {
     const { flatData } = this.props;
     switch (part) {
-      case "top-left-corner":
-        return { element: HoverElement.CORNER };
       case "top-gutter":
         return seriesPosition(x, this.props.essence, this.getSegmentWidth(), this.getIdealColumnWidth());
       case "body":
@@ -151,9 +144,6 @@ export class InteractionController extends React.Component<InteractionController
     const position = this.calculateMousePosition(x, y, part);
 
     switch (position.element) {
-      case HoverElement.CORNER:
-        this.setSortToDimension();
-        break;
       case HoverElement.HEADER:
         this.setSortToSeries(position.series, position.period);
         break;

@@ -18,14 +18,13 @@ import { Set } from "immutable";
 import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
+import { DatasetRequest, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/dataset-request/dataset-request";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { BooleanFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
-import { Fn } from "../../../common/utils/general/general";
 import { MAX_SEARCH_LENGTH } from "../../config/constants";
 import { setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -57,10 +56,8 @@ export class PinboardTileProps {
 export interface PinboardTileState {
   searchText: string;
   showSearch: boolean;
-  datasetLoad: DatasetLoad;
+  datasetLoad: DatasetRequest;
 }
-
-const noMeasureError = new Error("No measure selected");
 
 export class PinboardTile extends React.Component<PinboardTileProps, PinboardTileState> {
 
@@ -81,14 +78,14 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
       });
   }
 
-  private fetchData(params: QueryParams): Promise<DatasetLoad | null> {
+  private fetchData(params: QueryParams): Promise<DatasetRequest | null> {
     this.lastQueryParams = params;
     return this.debouncedCallExecutor(params);
   }
 
   private lastQueryParams: Partial<QueryParams> = {};
 
-  private callExecutor = (params: QueryParams): Promise<DatasetLoad | null> => {
+  private callExecutor = (params: QueryParams): Promise<DatasetRequest | null> => {
     const { essence: { timezone, dataCube } } = params;
     return dataCube.executor(makeQuery(params), { timezone })
       .then((dataset: Dataset) => {
