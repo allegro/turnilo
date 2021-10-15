@@ -24,7 +24,7 @@ import { DimensionSort, SeriesSort, Sort, SortDirection } from "../../../common/
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { ScrollerPart } from "../../components/scroller/scroller";
-import { MEASURE_WIDTH, SEGMENT_WIDTH, SPACE_LEFT } from "../../components/tabular-scroller/dimensions";
+import { MEASURE_WIDTH, SPACE_LEFT } from "../../components/tabular-scroller/dimensions";
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { Position, seriesPosition, splitPosition } from "./utils/hover-position";
 import { mainSplit } from "./utils/main-split";
@@ -32,9 +32,7 @@ import { mainSplit } from "./utils/main-split";
 interface InteractionsProps {
   handleClick: Ternary<number, number, ScrollerPart, void>;
   setScrollTop: Binary<number, number, void>;
-  setSegmentWidth: Unary<number, void>;
   columnWidth: number;
-  segmentWidth: number;
   scrollTop: number;
 }
 
@@ -43,32 +41,25 @@ interface InteractionControllerProps {
   clicker: Clicker;
   stage: Stage;
   children: Unary<InteractionsProps, React.ReactNode>;
+  segmentWidth: number;
 }
 
 interface InteractionControllerState {
-  segmentWidth: number;
   scrollTop: number;
 }
 
 export class InteractionController extends React.Component<InteractionControllerProps, InteractionControllerState> {
 
   state: InteractionControllerState = {
-    segmentWidth: SEGMENT_WIDTH,
     scrollTop: 0
   };
-
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
-
-  getSegmentWidth(): number {
-    const { segmentWidth } = this.state;
-    return segmentWidth || SEGMENT_WIDTH;
-  }
 
   setScrollTop = (scrollTop: number) => this.setState({ scrollTop });
 
   private getIdealColumnWidth(): number {
-    const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
-    const count = measureColumnsCount(this.props.essence);
+    const { stage, segmentWidth, essence } = this.props;
+    const availableWidth = stage.width - SPACE_LEFT - segmentWidth;
+    const count = measureColumnsCount(essence);
 
     return count * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / count;
   }
@@ -95,11 +86,12 @@ export class InteractionController extends React.Component<InteractionController
   }
 
   calculatePosition(x: number, y: number, part: ScrollerPart): Position {
+    const { segmentWidth, essence } = this.props;
     switch (part) {
       case "top-left-corner":
-        return splitPosition(x, this.props.essence, this.getSegmentWidth());
+        return splitPosition(x, essence, segmentWidth);
       case "top-gutter":
-        return seriesPosition(x, this.props.essence, this.getSegmentWidth(), this.getIdealColumnWidth());
+        return seriesPosition(x, essence, segmentWidth, this.getIdealColumnWidth());
       default:
         return { element: "whitespace" };
     }
@@ -120,16 +112,14 @@ export class InteractionController extends React.Component<InteractionController
 
   render() {
     const { children } = this.props;
-    const { scrollTop, segmentWidth } = this.state;
+    const { scrollTop } = this.state;
 
     return <React.Fragment>
       {children({
         columnWidth: this.getIdealColumnWidth(),
         scrollTop,
-        segmentWidth,
         handleClick: this.handleClick,
-        setScrollTop: this.setScrollTop,
-        setSegmentWidth: this.setSegmentWidth
+        setScrollTop: this.setScrollTop
       })}
     </React.Fragment>;
   }

@@ -38,9 +38,7 @@ interface InteractionsProps {
   setHoverRow: Ternary<number, number, ScrollerPart, void>;
   resetHover: Fn;
   setScrollTop: Binary<number, number, void>;
-  setSegmentWidth: Unary<number, void>;
   columnWidth: number;
-  segmentWidth: number;
   scrollTop: number;
   hoverRow?: Datum;
 }
@@ -55,11 +53,11 @@ interface InteractionControllerProps {
   highlight: Highlight | null;
   saveHighlight: (clauses: List<FilterClause>, key?: string) => void;
   children: Unary<InteractionsProps, ReactNode>;
+  segmentWidth: number;
 }
 
 interface InteractionControllerState {
   hoverRow?: Datum;
-  segmentWidth: number;
   scrollTop: number;
 }
 
@@ -67,7 +65,6 @@ export class InteractionController extends React.Component<InteractionController
 
   state: InteractionControllerState = {
     hoverRow: null,
-    segmentWidth: SEGMENT_WIDTH,
     scrollTop: 0
   };
 
@@ -117,11 +114,9 @@ export class InteractionController extends React.Component<InteractionController
   }
 
   getSegmentWidth(): number {
-    const { segmentWidth } = this.state;
+    const { segmentWidth } = this.props;
     return segmentWidth || SEGMENT_WIDTH;
   }
-
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
 
   setHoverRow = (x: number, y: number, part: ScrollerPart) => {
     const { hoverRow } = this.state;
@@ -155,19 +150,17 @@ export class InteractionController extends React.Component<InteractionController
 
   render() {
     const { children } = this.props;
-    const { hoverRow, scrollTop, segmentWidth } = this.state;
+    const { hoverRow, scrollTop } = this.state;
 
     return <React.Fragment>
       {children({
         columnWidth: this.getIdealColumnWidth(),
         hoverRow,
         scrollTop,
-        segmentWidth,
         handleClick: this.handleClick,
         resetHover: this.resetHover,
         setHoverRow: this.setHoverRow,
-        setScrollTop: this.setScrollTop,
-        setSegmentWidth: this.setSegmentWidth
+        setScrollTop: this.setScrollTop
       })}
     </React.Fragment>;
   }

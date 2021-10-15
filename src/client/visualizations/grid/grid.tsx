@@ -16,7 +16,9 @@
 
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import { MIN_DIMENSION_WIDTH } from "../../components/tabular-scroller/dimensions";
+import { Unary } from "../../../common/utils/functional/functional";
+import { MIN_DIMENSION_WIDTH, SEGMENT_WIDTH } from "../../components/tabular-scroller/dimensions";
+import { withProps } from "../../utils/react/with-props";
 import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
 import { InteractionController } from "./interaction-controller";
@@ -24,8 +26,13 @@ import makeQuery from "./make-query";
 import { ScrolledGrid } from "./scrolled-grid";
 import { GridVisualizationControls } from "./visualization-controls";
 
-const Grid: React.SFC<ChartProps> = props => {
-  const { essence, stage, clicker, data } = props;
+interface GridProps extends ChartProps {
+  setSegmentWidth: Unary<number, void>;
+  segmentWidth: number;
+}
+
+const Grid: React.SFC<GridProps> = props => {
+  const { essence, segmentWidth, setSegmentWidth, stage, clicker, data } = props;
   const availableWidth = stage.width - MIN_DIMENSION_WIDTH;
 
   return <div className="grid-container">
@@ -33,12 +40,11 @@ const Grid: React.SFC<ChartProps> = props => {
       essence={essence}
       clicker={clicker}
       stage={stage}
+      segmentWidth={segmentWidth}
     >
       {({
-          segmentWidth,
           columnWidth,
           scrollTop,
-          setSegmentWidth,
           setScrollTop,
           handleClick
         }) =>
@@ -57,11 +63,26 @@ const Grid: React.SFC<ChartProps> = props => {
   </div>;
 };
 
-export function GridVisualization(props: VisualizationProps) {
-  return <React.Fragment>
-    <GridVisualizationControls {...props} />
-    <ChartPanel {...props}
-                queryFactory={makeQuery}
-                chartComponent={Grid}/>
-  </React.Fragment>;
+interface GridVisualizationState {
+  segmentWidth: number;
+}
+
+export class GridVisualization extends React.Component<VisualizationProps, GridVisualizationState> {
+  state: GridVisualizationState = {
+    segmentWidth: SEGMENT_WIDTH
+  };
+
+  setSegmentWidth = (segmentWidth: number) => {
+    this.setState({ segmentWidth });
+  }
+
+  render() {
+    const { segmentWidth } = this.state;
+    return <React.Fragment>
+      <GridVisualizationControls {...this.props} />
+      <ChartPanel {...this.props}
+                  queryFactory={makeQuery}
+                  chartComponent={withProps(Grid, { segmentWidth, setSegmentWidth: this.setSegmentWidth })}/>
+    </React.Fragment>;
+  }
 }
