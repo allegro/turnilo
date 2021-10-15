@@ -24,50 +24,44 @@ import makeQuery from "./make-query";
 import { ScrolledGrid } from "./scrolled-grid";
 import { GridVisualizationControls } from "./visualization-controls";
 
+const Grid: React.SFC<ChartProps> = props => {
+  const { essence, stage, clicker, data } = props;
+  const availableWidth = stage.width - MIN_DIMENSION_WIDTH;
+
+  return <div className="grid-container">
+    <InteractionController
+      essence={essence}
+      clicker={clicker}
+      stage={stage}
+    >
+      {({
+          segmentWidth,
+          columnWidth,
+          scrollTop,
+          setSegmentWidth,
+          setScrollTop,
+          handleClick
+        }) =>
+        <ScrolledGrid
+          essence={essence}
+          data={data}
+          stage={stage}
+          handleClick={handleClick}
+          setScrollTop={setScrollTop}
+          setSegmentWidth={setSegmentWidth}
+          availableWidth={availableWidth}
+          columnWidth={columnWidth}
+          segmentWidth={segmentWidth}
+          scrollTop={scrollTop}/>}
+    </InteractionController>
+  </div>;
+};
+
 export function GridVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <GridVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Grid}/>
+    <ChartPanel {...props}
+                queryFactory={makeQuery}
+                chartComponent={Grid}/>
   </React.Fragment>;
-}
-
-class Grid extends React.Component<ChartProps, {}> {
-  private innerGridRef = React.createRef<HTMLDivElement>();
-
-  availableWidth(): number | undefined {
-    if (!this.innerGridRef.current) return undefined;
-    return this.innerGridRef.current.clientWidth - MIN_DIMENSION_WIDTH;
-  }
-
-  render(): JSX.Element {
-    const { essence, stage, clicker, data } = this.props;
-
-    return <div className="grid-container" ref={this.innerGridRef}>
-      <InteractionController
-        essence={essence}
-        clicker={clicker}
-        stage={stage}
-      >
-        {({
-            segmentWidth,
-            columnWidth,
-            scrollTop,
-            setSegmentWidth,
-            setScrollTop,
-            handleClick
-          }) =>
-          <ScrolledGrid
-            essence={essence}
-            data={data}
-            stage={stage}
-            handleClick={handleClick}
-            setScrollTop={setScrollTop}
-            setSegmentWidth={setSegmentWidth}
-            availableWidth={this.availableWidth()}
-            columnWidth={columnWidth}
-            segmentWidth={segmentWidth}
-            scrollTop={scrollTop}/>}
-      </InteractionController>
-    </div>;
-  }
 }

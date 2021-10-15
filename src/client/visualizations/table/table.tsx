@@ -36,12 +36,6 @@ export function TableVisualization(props: VisualizationProps) {
 const MIN_DIMENSION_WIDTH = 100;
 
 class Table extends React.Component<ChartProps> {
-  private innerTableRef = React.createRef<HTMLDivElement>();
-
-  availableWidth(): number | undefined {
-    if (!this.innerTableRef.current) return undefined;
-    return this.innerTableRef.current.clientWidth - MIN_DIMENSION_WIDTH;
-  }
 
   private shouldCollapseRows(): boolean {
     const { essence: { visualizationSettings } } = this.props;
@@ -67,8 +61,9 @@ class Table extends React.Component<ChartProps> {
     const { essence, clicker, stage, acceptHighlight, saveHighlight, highlight, dropHighlight } = this.props;
     const flatData = this.flattenData();
     const collapseRows = this.shouldCollapseRows();
+    const availableWidth = stage.width - MIN_DIMENSION_WIDTH;
 
-    return <div className="table-container" ref={this.innerTableRef}>
+    return <div className="table-container">
       <InteractionController
         essence={essence}
         clicker={clicker}
@@ -106,7 +101,7 @@ class Table extends React.Component<ChartProps> {
             scrollTop={scrollTop}
             hoverRow={hoverRow}
             collapseRows={collapseRows}
-            availableWidth={this.availableWidth()}
+            availableWidth={availableWidth}
           />}
       </InteractionController>
     </div>;

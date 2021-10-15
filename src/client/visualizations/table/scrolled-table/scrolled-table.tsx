@@ -55,7 +55,7 @@ interface ScrolledTableProps {
   scrollTop: number;
   hoverRow?: Datum;
   collapseRows: boolean;
-  availableWidth?: number;
+  availableWidth: number;
 }
 
 export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
