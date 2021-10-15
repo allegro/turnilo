@@ -498,11 +498,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   // TODO: Refactor via https://github.com/allegro/turnilo/issues/799
   private chartStage(): Stage | null {
-    const { menuStage, layout: { factPanel, pinboard } } = this.state;
+    const { menuStage } = this.state;
+    const { centerPanel: { left, right } } = this.calculateStyles();
     if (!menuStage) return null;
     return menuStage.within({
-      left: factPanel.hidden ? 0 : factPanel.width,
-      right: pinboard.hidden ? 0 : pinboard.width,
+      left,
+      right,
       top: CONTROL_PANEL_HEIGHT
     });
   }
