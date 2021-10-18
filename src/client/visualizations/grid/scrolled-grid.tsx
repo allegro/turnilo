@@ -41,7 +41,7 @@ interface ScrolledGridProps {
   setSegmentWidth: Unary<number, void>;
   columnWidth: number;
   segmentWidth: number;
-  availableWidth?: number;
+  availableWidth: number;
   scrollTop: number;
 }
 

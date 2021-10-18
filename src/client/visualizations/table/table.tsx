@@ -18,30 +18,54 @@
 import { FlattenOptions, PseudoDatum } from "plywood";
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
+import { Unary } from "../../../common/utils/functional/functional";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
-import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { SEGMENT_WIDTH } from "../../components/tabular-scroller/dimensions";
+import { withProps } from "../../utils/react/with-props";
+import {
+  ChartPanel,
+  DefaultVisualizationControls,
+  VisualizationProps
+} from "../../views/cube-view/center-panel/center-panel";
 import { InteractionController } from "./interactions/interaction-controller";
 import { ScrolledTable } from "./scrolled-table/scrolled-table";
 import "./table.scss";
 
-export function TableVisualization(props: VisualizationProps) {
-  return <React.Fragment>
-    <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Table}/>
-  </React.Fragment>;
+interface TableVisualizationState {
+  segmentWidth: number;
+}
+
+export class TableVisualization extends React.Component<VisualizationProps, TableVisualizationState> {
+  state: TableVisualizationState = {
+    segmentWidth: SEGMENT_WIDTH
+  };
+
+  setSegmentWidth = (segmentWidth: number) => {
+    this.setState({ segmentWidth });
+  }
+
+  render() {
+    const { segmentWidth } = this.state;
+    return <React.Fragment>
+      <DefaultVisualizationControls {...this.props} />
+      <ChartPanel
+        {...this.props}
+        queryFactory={makeQuery}
+        chartComponent={withProps(Table, { segmentWidth, setSegmentWidth: this.setSegmentWidth })}/>
+    </React.Fragment>;
+  }
 }
 
 const MIN_DIMENSION_WIDTH = 100;
 
-class Table extends React.Component<ChartProps> {
-  private innerTableRef = React.createRef<HTMLDivElement>();
+interface TableProps extends ChartProps {
+  setSegmentWidth: Unary<number, void>;
+  segmentWidth: number;
+}
 
-  availableWidth(): number | undefined {
-    if (!this.innerTableRef.current) return undefined;
-    return this.innerTableRef.current.clientWidth - MIN_DIMENSION_WIDTH;
-  }
+class Table extends React.Component<TableProps> {
 
   private shouldCollapseRows(): boolean {
     const { essence: { visualizationSettings } } = this.props;
@@ -64,11 +88,12 @@ class Table extends React.Component<ChartProps> {
   }
 
   render() {
-    const { essence, clicker, stage, acceptHighlight, saveHighlight, highlight, dropHighlight } = this.props;
+    const { essence, clicker, stage, acceptHighlight, saveHighlight, highlight, dropHighlight, setSegmentWidth, segmentWidth } = this.props;
     const flatData = this.flattenData();
     const collapseRows = this.shouldCollapseRows();
+    const availableWidth = stage.width - MIN_DIMENSION_WIDTH;
 
-    return <div className="table-container" ref={this.innerTableRef}>
+    return <div className="table-container">
       <InteractionController
         essence={essence}
         clicker={clicker}
@@ -77,15 +102,14 @@ class Table extends React.Component<ChartProps> {
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
         highlight={highlight}
+        segmentWidth={segmentWidth}
         saveHighlight={saveHighlight}>
         {({
-            setSegmentWidth,
             setScrollTop,
             setHoverRow,
             resetHover,
             handleClick,
             columnWidth,
-            segmentWidth,
             hoverRow,
             scrollTop
           }) =>
@@ -106,7 +130,7 @@ class Table extends React.Component<ChartProps> {
             scrollTop={scrollTop}
             hoverRow={hoverRow}
             collapseRows={collapseRows}
-            availableWidth={this.availableWidth()}
+            availableWidth={availableWidth}
           />}
       </InteractionController>
     </div>;

@@ -33,7 +33,6 @@ export interface ResizeHandleProps {
 }
 
 export interface ResizeHandleState {
-  dragging?: boolean;
   anchor?: number;
 }
 
@@ -53,7 +52,6 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     const eventX = this.getValue(event);
 
     this.setState({
-      dragging: true,
       anchor: eventX - value
     });
 
@@ -61,9 +59,6 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   };
 
   onGlobalMouseUp = () => {
-    this.setState({
-      dragging: false
-    });
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
 
