@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
+import { thread } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
+import { fixLimit, fixSort } from "../../utils/rules/split-validators";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 export const GRID_LIMITS = [50, 100, 200, 500, 1000, 10000];
@@ -29,12 +32,17 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSelectedMeasures())
   .then(Actions.manualMeasuresSelection())
 
-  .otherwise(({ isSelectedVisualization, splits }) => {
+  .otherwise(({ isSelectedVisualization, series, dataCube, splits }) => {
     const firstSplit = splits.getSplit(0);
-    const { limit: firstLimit } = firstSplit;
-    const safeFirstLimit = GRID_LIMITS.indexOf(firstLimit) === -1 ? GRID_LIMITS[0] : firstLimit;
 
-    const newSplits = splits.replace(firstSplit, firstSplit.changeLimit(safeFirstLimit));
+    const splitReferences = splits.splits.toArray().map(split => split.reference);
+    const dimension = findDimensionByName(dataCube.dimensions, firstSplit.reference);
+    const fixedFirstSplit = thread(
+      firstSplit,
+      fixLimit(GRID_LIMITS),
+      fixSort(dimension, series, splitReferences)
+    );
+    const newSplits = splits.replace(firstSplit, fixedFirstSplit);
 
     if (splits.equals(newSplits)) {
       return Resolve.ready(isSelectedVisualization ? 10 : 4);

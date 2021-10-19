@@ -16,19 +16,32 @@
  */
 
 import { List } from "immutable";
-import { clamp } from "../../../client/utils/dom/dom";
-import { NORMAL_COLORS } from "../../models/colors/colors";
 import { getDimensionsByKind } from "../../models/data-cube/data-cube";
+import { Dimension } from "../../models/dimension/dimension";
 import { findDimensionByName } from "../../models/dimension/dimensions";
-import { DimensionSort, Sort, SortDirection } from "../../models/sort/sort";
+import { DimensionSort, SortDirection } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
-import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  NORMAL_PRIORITY_ACTION,
+  Resolve,
+  VisualizationManifest
+} from "../../models/visualization-manifest/visualization-manifest";
+import { thread } from "../../utils/functional/functional";
 import { Predicates } from "../../utils/rules/predicates";
+import { fixColorSplit, fixContinuousTimeSplit, fixLimit } from "../../utils/rules/split-validators";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings } from "./settings";
 
-const COLORS_COUNT = NORMAL_COLORS.length;
+function fixNumberSplit(split: Split, dimension: Dimension): Split {
+  return thread(
+    split.changeSort(new DimensionSort({
+      reference: split.reference,
+      direction: SortDirection.ascending
+    })),
+    fixLimit(dimension.limits)
+  );
+}
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(({ dataCube }) => !(getDimensionsByKind(dataCube, "time").length || getDimensionsByKind(dataCube, "number").length))
@@ -50,112 +63,68 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("time"))
-  .or(Predicates.areExactSplitKinds("number"))
+  .then(({ splits, isSelectedVisualization }) => {
+    const timeSplit = splits.getSplit(0);
+    const newTimeSplit = fixContinuousTimeSplit(timeSplit);
+    if (timeSplit.equals(newTimeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 7);
+    return Resolve.automatic(7, { splits: new Splits({ splits: List([newTimeSplit]) }) });
+  })
+  .when(Predicates.areExactSplitKinds("number"))
   .then(({ splits, dataCube, isSelectedVisualization }) => {
-    let score = 4;
+    const numberSplit = splits.getSplit(0);
+    const dimension = findDimensionByName(dataCube.dimensions, numberSplit.reference);
 
-    let continuousSplit = splits.getSplit(0);
-    const continuousDimension = findDimensionByName(dataCube.dimensions, continuousSplit.reference);
-    const sortStrategy = continuousDimension.sortStrategy;
+    const newContinuousSplit = fixNumberSplit(numberSplit, dimension);
 
-    let sort: Sort = null;
-    if (sortStrategy && sortStrategy !== "self") {
-      sort = new DimensionSort({
-        reference: sortStrategy,
-        direction: SortDirection.ascending
-      });
-    } else {
-      sort = new DimensionSort({
-        reference: continuousDimension.name,
-        direction: SortDirection.ascending
-      });
-    }
-
-    let autoChanged = false;
-
-    // Fix time sort
-    if (!sort.equals(continuousSplit.sort)) {
-      continuousSplit = continuousSplit.changeSort(sort);
-      autoChanged = true;
-    }
-
-    // Fix time limit
-    if (continuousSplit.limit && continuousDimension.kind === "time") {
-      continuousSplit = continuousSplit.changeLimit(null);
-      autoChanged = true;
-    }
-
-    if (continuousDimension.kind === "time") score += 3;
-
-    if (!autoChanged) return Resolve.ready(isSelectedVisualization ? 10 : score);
-    return Resolve.automatic(score, { splits: new Splits({ splits: List([continuousSplit]) }) });
+    if (newContinuousSplit.equals(numberSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 4);
+    return Resolve.automatic(4, { splits: new Splits({ splits: List([numberSplit]) }) });
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
-  .then(({ splits, dataCube }) => {
-    let timeSplit = splits.getSplit(0);
-    const timeDimension = findDimensionByName(dataCube.dimensions, timeSplit.reference);
+  .then(({ splits, series, dataCube }) => {
+    const timeSplit = splits.getSplit(0);
 
-    const sort: Sort = new DimensionSort({
-      reference: timeDimension.name,
-      direction: SortDirection.ascending
-    });
+    const newTimeSplit = timeSplit
+      .changeSort(new DimensionSort({ reference: timeSplit.reference, direction: SortDirection.ascending }))
+      .changeLimit(null);
 
-    // Fix time sort
-    if (!sort.equals(timeSplit.sort)) {
-      timeSplit = timeSplit.changeSort(sort);
-    }
+    const colorSplit = splits.getSplit(1);
+    const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
 
-    // Fix time limit
-    if (timeSplit.limit) {
-      timeSplit = timeSplit.changeLimit(null);
-    }
-
-    // TODO: This magic 5 will disappear in #756
-    const colorSplit = splits.getSplit(1).update("limit", limit => clamp(limit, 5, COLORS_COUNT));
+    const newColorSplit = fixColorSplit(colorSplit, colorDimension, series);
 
     return Resolve.automatic(8, {
-      splits: new Splits({ splits: List([colorSplit, timeSplit]) })
+      splits: new Splits({ splits: List([newColorSplit, newTimeSplit]) })
     });
   })
 
   .when(Predicates.areExactSplitKinds("*", "time"))
-  .or(Predicates.areExactSplitKinds("*", "number"))
-  .then(({ splits, dataCube }) => {
-    let timeSplit = splits.getSplit(1);
-    const timeDimension = findDimensionByName(dataCube.dimensions, timeSplit.reference);
+  .then(({ splits, series, dataCube }) => {
+    const timeSplit = splits.getSplit(1);
+    const newTimeSplit = fixContinuousTimeSplit(timeSplit);
 
-    let autoChanged = false;
+    const colorSplit = splits.getSplit(0);
+    const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
+    const newColorSplit = fixColorSplit(colorSplit, colorDimension, series);
 
-    const sort: Sort = new DimensionSort({
-      reference: timeDimension.name,
-      direction: SortDirection.ascending
-    });
+    const newSplits = new Splits({ splits: List([newColorSplit, newTimeSplit]) });
+    if (newSplits.equals(splits)) return Resolve.ready(10);
+    return Resolve.automatic(8, { splits: newSplits });
+  })
+  .when(Predicates.areExactSplitKinds("*", "number"))
+  .then(({ splits, dataCube, series }) => {
+    const numberSplit = splits.getSplit(1);
+    const numberDimension = findDimensionByName(dataCube.dimensions, numberSplit.reference);
 
-    // Fix time sort
-    if (!sort.equals(timeSplit.sort)) {
-      timeSplit = timeSplit.changeSort(sort);
-      autoChanged = true;
-    }
+    const newNumberSplit = fixNumberSplit(numberSplit, numberDimension);
 
-    // Fix time limit
-    if (timeSplit.limit) {
-      timeSplit = timeSplit.changeLimit(null);
-      autoChanged = true;
-    }
+    const colorSplit = splits.getSplit(0);
+    const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
+    const newColorSplit = fixColorSplit(colorSplit, colorDimension, series);
 
-    const colorSplit = splits.getSplit(0).update("limit", limit => {
-      if (limit === null || limit > COLORS_COUNT) {
-        autoChanged = true;
-        return COLORS_COUNT;
-      }
-      return limit;
-    });
-
-    if (!autoChanged) return Resolve.ready(10);
-    return Resolve.automatic(8, {
-      splits: new Splits({ splits: List([colorSplit, timeSplit]) })
-    });
+    const newSplits = new Splits({ splits: List([newColorSplit, newNumberSplit]) });
+    if (newSplits.equals(splits)) return Resolve.ready(10);
+    return Resolve.automatic(8, { splits: newSplits });
   })
 
   .when(Predicates.haveAtLeastSplitKinds("time"))
