@@ -72,14 +72,14 @@ export function adjustSort(dimension: Dimension, series: SeriesList, availableDi
         }));
       }
       if (series.hasMeasureSeries(sortStrategy)) {
-        return split.changeSort(new DimensionSort({
+        return split.changeSort(new SeriesSort({
           reference: sortStrategy,
           direction
         }));
       }
     }
     if (split.type === SplitType.string) {
-      split = split.changeSort(new SeriesSort({
+      return split.changeSort(new SeriesSort({
         reference: series.series.first().reference,
         direction: SortDirection.descending
       }));
