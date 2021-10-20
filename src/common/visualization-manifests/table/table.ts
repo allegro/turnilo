@@ -17,8 +17,10 @@
 
 import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import { threadConditionally } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
+import { adjustLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings, TableSettings } from "./settings";
 
@@ -28,21 +30,21 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.supportedSplitsCount())
   .then(Actions.removeExcessiveSplits("Table"))
 
-  .otherwise(({ splits, dataCube, isSelectedVisualization }) => {
-    let autoChanged = false;
-    const newSplits = splits.update("splits", splits => splits.map((split, i) => {
+  .otherwise(({ splits, dataCube, series, isSelectedVisualization }) => {
+    const newSplits = splits.update("splits", splits => splits.map(split => {
       const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
 
-      // ToDo: review this
-      if (!split.limit && splitDimension.kind !== "time") {
-        split = split.changeLimit(i ? 5 : 50);
-        autoChanged = true;
-      }
-
-      return split;
+      return threadConditionally(
+        split,
+        adjustLimit(splitDimension),
+        adjustSort(splitDimension, series)
+      );
     }));
 
-    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 6);
+    const changed = !newSplits.equals(splits);
+    return changed
+      ? Resolve.automatic(6, { splits: newSplits })
+      : Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
   .build();
 

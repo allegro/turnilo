@@ -18,11 +18,12 @@
 import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
 import { allMeasures } from "../../models/measure/measures";
 import { MeasureSeries } from "../../models/series/measure-series";
-import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
-import { Split, SplitType } from "../../models/split/split";
+import { Split } from "../../models/split/split";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
+import { thread } from "../../utils/functional/functional";
 import { Predicates } from "../../utils/rules/predicates";
+import { adjustLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import {
   ActionVariables,
   visualizationDependentEvaluatorBuilder
@@ -42,49 +43,20 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     variables.series.series.size === 0 ? suggestAddingMeasure(variables) : suggestRemovingMeasures(variables)
   ))
   .otherwise(({ splits, dataCube, series }) => {
-    let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map(split => {
       const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
-      const sortStrategy = splitDimension.sortStrategy;
 
-      if (isSortEmpty(split.sort)) {
-        if (sortStrategy) {
-          if (sortStrategy === "self" || split.reference === sortStrategy) {
-            split = split.changeSort(new DimensionSort({
-              reference: splitDimension.name,
-              direction: SortDirection.descending
-            }));
-          } else {
-            split = split.changeSort(new SeriesSort({
-              reference: sortStrategy,
-              direction: SortDirection.descending
-            }));
-          }
-        } else {
-          if (split.type === SplitType.string) {
-            split = split.changeSort(new SeriesSort({
-              reference: series.series.first().reference,
-              direction: SortDirection.descending
-            }));
-          } else {
-            split = split.changeSort(new DimensionSort({
-              reference: splitDimension.name,
-              direction: SortDirection.descending
-            }));
-          }
-          autoChanged = true;
-        }
-      }
-
-      if (!split.limit && splitDimension.kind !== "time") {
-        split = split.changeLimit(25);
-        autoChanged = true;
-      }
-
-      return split;
+      return thread(
+        split,
+        adjustLimit(splitDimension),
+        adjustSort(splitDimension, series)
+      );
     }));
 
-    return autoChanged ? Resolve.automatic(10, { splits: newSplits }) : Resolve.ready(10);
+    const changed = !newSplits.equals(splits);
+    return changed
+      ? Resolve.automatic(10, { splits: newSplits })
+      : Resolve.ready(10);
   })
   .build();
 
