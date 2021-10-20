@@ -29,7 +29,7 @@ import { emptySettingsConfig } from "../../models/visualization-settings/empty-s
 import { thread } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
-import { fixColorSplit, fixContinuousTimeSplit, fixLimit, fixSort } from "../../utils/rules/split-validators";
+import { adjustColorSplit, adjustContinuousTimeSplit, adjustFiniteLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
@@ -39,7 +39,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.areExactSplitKinds("time"))
   .then(({ splits, isSelectedVisualization }) => {
     const timeSplit = splits.getSplit(0);
-    const newTimeSplit = fixContinuousTimeSplit(timeSplit);
+    const newTimeSplit = adjustContinuousTimeSplit(timeSplit);
     if (timeSplit.equals(newTimeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
     return Resolve.automatic(6, {
       splits: new Splits({
@@ -58,8 +58,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       // Switch splits in place and conform
       splits: new Splits({
         splits: List([
-          fixColorSplit(nominalSplit, nominalDimension, series),
-          fixContinuousTimeSplit(timeSplit)
+          adjustColorSplit(nominalSplit, nominalDimension, series),
+          adjustContinuousTimeSplit(timeSplit)
         ])
       })
     });
@@ -72,8 +72,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const newSplits = new Splits({
       splits: List([
-        fixColorSplit(nominalSplit, nominalDimension, series),
-        fixContinuousTimeSplit(timeSplit)
+        adjustColorSplit(nominalSplit, nominalDimension, series),
+        adjustContinuousTimeSplit(timeSplit)
       ])
     });
 
@@ -95,8 +95,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
       return thread(
         split,
-        fixLimit(splitDimension.limits),
-        fixSort(splitDimension, series)
+        adjustFiniteLimit(splitDimension.limits),
+        adjustSort(splitDimension, series)
       );
     }));
 

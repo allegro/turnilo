@@ -20,7 +20,7 @@ import { emptySettingsConfig } from "../../models/visualization-settings/empty-s
 import { thread } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
-import { fixLimit, fixSort } from "../../utils/rules/split-validators";
+import { adjustFiniteLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 export const GRID_LIMITS = [50, 100, 200, 500, 1000, 10000];
@@ -39,8 +39,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const dimension = findDimensionByName(dataCube.dimensions, firstSplit.reference);
     const fixedFirstSplit = thread(
       firstSplit,
-      fixLimit(GRID_LIMITS),
-      fixSort(dimension, series, splitReferences)
+      adjustFiniteLimit(GRID_LIMITS),
+      adjustSort(dimension, series, splitReferences)
     );
     const newSplits = splits.replace(firstSplit, fixedFirstSplit);
 

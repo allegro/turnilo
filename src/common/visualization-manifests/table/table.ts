@@ -20,7 +20,7 @@ import { Resolve, VisualizationManifest } from "../../models/visualization-manif
 import { threadConditionally } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
-import { fixLimit, fixSort } from "../../utils/rules/split-validators";
+import { adjustLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings, TableSettings } from "./settings";
 
@@ -36,8 +36,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
       return threadConditionally(
         split,
-        fixLimit(splitDimension.limits),
-        fixSort(splitDimension, series)
+        adjustLimit(splitDimension),
+        adjustSort(splitDimension, series)
       );
     }));
 

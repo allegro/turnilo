@@ -29,7 +29,7 @@ import {
 } from "../../models/visualization-manifest/visualization-manifest";
 import { thread } from "../../utils/functional/functional";
 import { Predicates } from "../../utils/rules/predicates";
-import { fixColorSplit, fixContinuousTimeSplit, fixLimit } from "../../utils/rules/split-validators";
+import { adjustColorSplit, adjustContinuousTimeSplit, adjustFiniteLimit } from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings } from "./settings";
 
@@ -39,7 +39,7 @@ function fixNumberSplit(split: Split, dimension: Dimension): Split {
       reference: split.reference,
       direction: SortDirection.ascending
     })),
-    fixLimit(dimension.limits)
+    adjustFiniteLimit(dimension.limits)
   );
 }
 
@@ -65,7 +65,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.areExactSplitKinds("time"))
   .then(({ splits, isSelectedVisualization }) => {
     const timeSplit = splits.getSplit(0);
-    const newTimeSplit = fixContinuousTimeSplit(timeSplit);
+    const newTimeSplit = adjustContinuousTimeSplit(timeSplit);
     if (timeSplit.equals(newTimeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 7);
     return Resolve.automatic(7, { splits: new Splits({ splits: List([newTimeSplit]) }) });
   })
@@ -91,7 +91,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const colorSplit = splits.getSplit(1);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
 
-    const newColorSplit = fixColorSplit(colorSplit, colorDimension, series);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series);
 
     return Resolve.automatic(8, {
       splits: new Splits({ splits: List([newColorSplit, newTimeSplit]) })
@@ -101,11 +101,11 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.areExactSplitKinds("*", "time"))
   .then(({ splits, series, dataCube }) => {
     const timeSplit = splits.getSplit(1);
-    const newTimeSplit = fixContinuousTimeSplit(timeSplit);
+    const newTimeSplit = adjustContinuousTimeSplit(timeSplit);
 
     const colorSplit = splits.getSplit(0);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
-    const newColorSplit = fixColorSplit(colorSplit, colorDimension, series);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series);
 
     const newSplits = new Splits({ splits: List([newColorSplit, newTimeSplit]) });
     if (newSplits.equals(splits)) return Resolve.ready(10);
@@ -120,7 +120,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const colorSplit = splits.getSplit(0);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
-    const newColorSplit = fixColorSplit(colorSplit, colorDimension, series);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series);
 
     const newSplits = new Splits({ splits: List([newColorSplit, newNumberSplit]) });
     if (newSplits.equals(splits)) return Resolve.ready(10);

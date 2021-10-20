@@ -23,7 +23,7 @@ import { Resolve, VisualizationManifest } from "../../models/visualization-manif
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
 import { thread } from "../../utils/functional/functional";
 import { Predicates } from "../../utils/rules/predicates";
-import { fixLimit, fixSort } from "../../utils/rules/split-validators";
+import { adjustLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import {
   ActionVariables,
   visualizationDependentEvaluatorBuilder
@@ -48,8 +48,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
       return thread(
         split,
-        fixLimit(splitDimension.limits),
-        fixSort(splitDimension, series)
+        adjustLimit(splitDimension),
+        adjustSort(splitDimension, series)
       );
     }));
 

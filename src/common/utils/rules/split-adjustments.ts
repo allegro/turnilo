@@ -23,16 +23,16 @@ import { thread } from "../functional/functional";
 
 const COLORS_COUNT = NORMAL_COLORS.length;
 
-export function fixColorSplit(split: Split, dimension: Dimension, series: SeriesList): Split {
+export function adjustColorSplit(split: Split, dimension: Dimension, series: SeriesList): Split {
   return thread(
     split,
-    fixSort(dimension, series),
+    adjustSort(dimension, series),
     // TODO: This magic 5 will disappear in #756
-    fixLimit([5, COLORS_COUNT], COLORS_COUNT)
+    adjustFiniteLimit([5, COLORS_COUNT], COLORS_COUNT)
   );
 }
 
-export function fixContinuousTimeSplit(split: Split): Split {
+export function adjustContinuousTimeSplit(split: Split): Split {
   const { reference } = split;
   return split
     .changeLimit(null)
@@ -42,7 +42,13 @@ export function fixContinuousTimeSplit(split: Split): Split {
     }));
 }
 
-export function fixLimit(availableLimits: number[], defaultLimit = availableLimits[0]) {
+export function adjustLimit({ kind, limits }: Dimension) {
+  const isTimeSplit = kind === "time";
+  const availableLimits = isTimeSplit ? [...limits, null] : limits;
+  return adjustFiniteLimit(availableLimits);
+}
+
+export function adjustFiniteLimit(availableLimits: number[], defaultLimit = availableLimits[0]) {
   return function(split: Split): Split {
     const { limit } = split;
     return availableLimits.indexOf(limit) === -1
@@ -51,7 +57,7 @@ export function fixLimit(availableLimits: number[], defaultLimit = availableLimi
   };
 }
 
-export function fixSort(dimension: Dimension, series: SeriesList, availableDimensions = [dimension.name]) {
+export function adjustSort(dimension: Dimension, series: SeriesList, availableDimensions = [dimension.name]) {
   return function(split: Split): Split {
     const { sort } = split;
     if (sort instanceof SeriesSort) return split;
