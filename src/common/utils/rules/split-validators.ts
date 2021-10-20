@@ -21,12 +21,14 @@ import { DimensionSort, SeriesSort, SortDirection } from "../../models/sort/sort
 import { Split, SplitType } from "../../models/split/split";
 import { thread } from "../functional/functional";
 
+const COLORS_COUNT = NORMAL_COLORS.length;
+
 export function fixColorSplit(split: Split, dimension: Dimension, series: SeriesList): Split {
   return thread(
     split,
     fixSort(dimension, series),
     // TODO: This magic 5 will disappear in #756
-    fixLimit([5, NORMAL_COLORS.length])
+    fixLimit([5, COLORS_COUNT], COLORS_COUNT)
   );
 }
 
