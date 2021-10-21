@@ -53,7 +53,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
 export const GRID_MANIFEST = new VisualizationManifest(
   "grid",
-  "[BETA] Grid",
+  "Grid",
   rulesEvaluator,
   emptySettingsConfig
 );
