@@ -28,18 +28,22 @@ const essenceFixture = EssenceFixtures
     stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 })
   ), VisStrategy.KeepAlways);
 
+const deltaSeries = essenceFixture.getConcreteSeries().get(0);
+const countSeries = essenceFixture.getConcreteSeries().get(1);
+const addedSeries = essenceFixture.getConcreteSeries().get(2);
+
 const dataMock = [
-  { __nest: 1, delta: -20, count: 10000, added: -12 },
-  { __nest: 1, delta: -10, count: 1312, added: 61 },
-  { __nest: 1, delta: 0, count: 2312, added: Infinity },
-  { __nest: 1, delta: 10, count: 9231, added: -Infinity },
-  { __nest: 1, delta: 20, count: 100, added: NaN }
+  { delta: -20, count: 10000, added: -12 },
+  { delta: -10, count: 1312, added: 61 },
+  { delta: 0, count: 2312, added: Infinity },
+  { delta: 10, count: 9231, added: -Infinity },
+  { delta: 20, count: 100, added: NaN }
 ];
 
 describe("getScalesForColumns", () => {
   it("should return scale for each series", () => {
     const scales = getScalesForColumns(essenceFixture, dataMock);
-    expect(scales).to.have.length(3);
+    expect(scales.count()).to.be.equal(3);
   });
 
   it("should return scales with range [0, 100]", () => {
@@ -51,27 +55,27 @@ describe("getScalesForColumns", () => {
 
   describe("delta scale", () => {
     it("should return scale with correct domain", () => {
-      const [deltaScale] = getScalesForColumns(essenceFixture, dataMock);
-      expect(deltaScale.domain()).to.be.deep.equal([-20, 20]);
+      const scales = getScalesForColumns(essenceFixture, dataMock);
+      expect(scales.get(deltaSeries.reactKey()).domain()).to.be.deep.equal([-20, 20]);
     });
   });
 
   describe("count scale", () => {
     it("should return scale with included 0 in domain", () => {
-      const [, countScale] = getScalesForColumns(essenceFixture, dataMock);
-      expect(countScale.domain()).to.be.deep.equal([0, 10000]);
+      const scales = getScalesForColumns(essenceFixture, dataMock);
+      expect(scales.get(countSeries.reactKey()).domain()).to.be.deep.equal([0, 10000]);
     });
   });
 
   describe("added scale", () => {
     it("should handle non numeric values", () => {
-      const [, , addedScale] = getScalesForColumns(essenceFixture, dataMock);
-      expect(addedScale.domain()).to.be.deep.equal([-Infinity, Infinity]);
+      const scales = getScalesForColumns(essenceFixture, dataMock);
+      expect(scales.get(addedSeries.reactKey()).domain()).to.be.deep.equal([-Infinity, Infinity]);
     });
   });
 
   it("should handle missing values", () => {
-    const [deltaScale] = getScalesForColumns(essenceFixture, []);
-    expect(deltaScale.domain()).to.be.deep.equal([0, 0]);
+    const scales = getScalesForColumns(essenceFixture, []);
+    expect(scales.get(deltaSeries.reactKey()).domain()).to.be.deep.equal([0, 0]);
   });
 });

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
-import { Dataset, Datum, PseudoDatum } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
@@ -27,6 +26,7 @@ import { MeasuresHeader } from "../../components/tabular-scroller/header/measure
 import { SplitColumnsHeader } from "../../components/tabular-scroller/header/splits/split-columns";
 import { MeasureRows } from "../../components/tabular-scroller/measures/measure-rows";
 import { FlattenedSplits } from "../../components/tabular-scroller/splits/flattened-splits";
+import { getScalesForColumns } from "../../components/tabular-scroller/utils/get-scales-for-columns";
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
 import { selectDatums } from "../../utils/dataset/selectors/selectors";
@@ -47,21 +47,6 @@ interface ScrolledGridProps {
   scrollTop: number;
 }
 
-function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-  const concreteSeries = essence.getConcreteSeries().toArray();
-
-  return concreteSeries.map(series => {
-    const measureValues = flatData
-      .filter(complement(isTotalDatum))
-      .map((d: Datum) => series.selectValue(d));
-
-    return d3.scale.linear()
-      // Ensure that 0 is in there
-      .domain(d3.extent([0, ...measureValues]))
-      .range([0, 100]);
-  });
-}
-
 export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
   const {
     essence,
@@ -80,6 +65,7 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
     order: "preorder",
     nestingName: NESTING_NAME
   }));
+  const scales = getScalesForColumns(essence, datums.filter(complement(isTotalDatum)));
   const rowsCount = datums.length;
   const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
   const columnsCount = measureColumnsCount(essence);
@@ -135,7 +121,7 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
         visibleRowsIndexRange={visibleRowsRange}
         essence={essence}
         highlightedRowIndex={null}
-        scales={getScalesForColumns(essence, datums)}
+        scales={scales}
         data={datums}
         showBarPredicate={complement(isTotalDatum)}
         cellWidth={columnWidth}

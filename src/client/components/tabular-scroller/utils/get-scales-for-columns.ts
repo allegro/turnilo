@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 import * as d3 from "d3";
+import { Map } from "immutable";
 import { Datum, PseudoDatum } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
 
-export function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-  const concreteSeries = essence.getConcreteSeries().toArray();
-  const splitLength = essence.splits.length();
-
-  return concreteSeries.map(series => {
-    const measureValues = flatData
-      .filter((d: Datum) => d["__nest"] === splitLength)
-      .map((d: Datum) => series.selectValue(d));
+export function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Map<string, d3.scale.Linear<number, number>> {
+  return essence.getConcreteSeries()
+    .groupBy(series => series.reactKey())
+    .map(seriesCollection => seriesCollection.first())
+    .toMap()
+    .map(series => {
+    const measureValues = flatData.map((d: Datum) => series.selectValue(d));
 
     return d3.scale.linear()
       // Ensure that 0 is in there
