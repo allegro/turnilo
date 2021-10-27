@@ -19,5 +19,5 @@ import { Datum } from "plywood";
 export const NESTING_NAME = "__nest";
 
 export function isTotalDatum(datum: Datum): boolean {
-  return datum.__nest === 0;
+  return datum[NESTING_NAME] === 0;
 }
