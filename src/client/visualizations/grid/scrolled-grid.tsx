@@ -115,8 +115,12 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
 
       leftGutter={<FlattenedSplits
         visibleRowsIndexRange={visibleRowsRange}
-        essence={essence}
         data={datums}
+        splitLabel={({ datum }) =>
+          <SplitLabels
+            splits={essence.splits.splits}
+            timezone={essence.timezone}
+            datum={datum}/>}
         segmentWidth={segmentWidth}
         highlightedRowIndex={null}/>}
 
