@@ -24,7 +24,7 @@ export const selectMainDatum = (dataset: Dataset): Datum =>
 export const selectSplitDataset = (datum: Datum): Dataset =>
   datum[SPLIT] as Dataset;
 
-const selectDatums = (dataset: Dataset): Datum[] =>
+export const selectDatums = (dataset: Dataset): Datum[] =>
   dataset.data;
 
 export const selectSplitDatums: (datum: Datum) => Datum[] =

@@ -28,9 +28,10 @@ import { SplitColumnsHeader } from "../../components/tabular-scroller/header/spl
 import { FlattenedSplits } from "../../components/tabular-scroller/splits/flattened-splits";
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
-import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
-import { MeasureRows } from "./measure-rows";
+import { selectDatums } from "../../utils/dataset/selectors/selectors";
+import { SplitLabels } from "./split-labels";
 import { mainSplit } from "./utils/main-split";
+import { isTotalDatum, NESTING_NAME } from "./utils/total-datum";
 
 interface ScrolledGridProps {
   essence: Essence;
@@ -73,7 +74,10 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
     availableWidth
   } = props;
 
-  const datums = selectFirstSplitDatums(data);
+  const datums = selectDatums(data.flatten({
+    order: "preorder",
+    nestingName: NESTING_NAME
+  }));
   const rowsCount = datums.length;
   const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
   const columnsCount = measureColumnsCount(essence);
