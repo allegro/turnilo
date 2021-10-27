@@ -30,10 +30,11 @@ interface MeasureRowProps {
   datum: Datum;
   cellWidth: number;
   scales: Array<d3.scale.Linear<number, number>>;
+  showBar: boolean;
 }
 
 export const MeasureRow: React.SFC<MeasureRowProps> = props => {
-  const { datum, scales, cellWidth, highlight, dimmed, style, essence } = props;
+  const { datum, showBar, scales, cellWidth, highlight, dimmed, style, essence } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();
 
@@ -47,7 +48,7 @@ export const MeasureRow: React.SFC<MeasureRowProps> = props => {
         series={series}
         datum={datum}
         highlight={highlight}
-        scale={scales[i]}
+        barScale={showBar ? scales[i] : null}
         cellWidth={cellWidth}
         showPrevious={essence.hasComparison()} />;
     })}

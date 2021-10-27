@@ -19,12 +19,13 @@ import { Dataset, Datum, PseudoDatum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
-import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Binary, complement, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { HEADER_HEIGHT, ROW_HEIGHT, SEGMENT_WIDTH, SPACE_RIGHT } from "../../components/tabular-scroller/dimensions";
 import { MeasuresHeader } from "../../components/tabular-scroller/header/measures/measures-header";
 import { SplitColumnsHeader } from "../../components/tabular-scroller/header/splits/split-columns";
+import { MeasureRows } from "../../components/tabular-scroller/measures/measure-rows";
 import { FlattenedSplits } from "../../components/tabular-scroller/splits/flattened-splits";
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
@@ -51,6 +52,7 @@ function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d
 
   return concreteSeries.map(series => {
     const measureValues = flatData
+      .filter(complement(isTotalDatum))
       .map((d: Datum) => series.selectValue(d));
 
     return d3.scale.linear()
@@ -127,7 +129,7 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
       topLeftCorner={<SplitColumnsHeader
         dataCube={dataCube}
         sort={mainSort}
-        splits={splits} />}
+        splits={splits}/>}
 
       body={datums && <MeasureRows
         visibleRowsIndexRange={visibleRowsRange}
@@ -135,6 +137,7 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
         highlightedRowIndex={null}
         scales={getScalesForColumns(essence, datums)}
         data={datums}
+        showBarPredicate={complement(isTotalDatum)}
         cellWidth={columnWidth}
         rowWidth={columnWidth * columnsCount}/>}
     />

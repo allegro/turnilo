@@ -25,14 +25,14 @@ import { MeasureCell } from "./measure-cell";
 interface MeasureValueProps {
   series: ConcreteSeries;
   datum: Datum;
-  scale: d3.scale.Linear<number, number>;
+  barScale?: d3.scale.Linear<number, number>;
   cellWidth: number;
   showPrevious: boolean;
   highlight: boolean;
 }
 
 export const MeasureValue: React.SFC<MeasureValueProps> = props => {
-  const { series, datum, scale, highlight, showPrevious, cellWidth } = props;
+  const { series, datum, barScale, highlight, showPrevious, cellWidth } = props;
 
   const currentValue = series.selectValue(datum);
 
@@ -41,7 +41,7 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
     width={cellWidth}
     value={series.formatValue(datum)}
   >
-    {scale && <MeasureBackground highlight={highlight} width={scale(currentValue)} />}
+    {barScale && <MeasureBackground highlight={highlight} width={barScale(currentValue)} />}
   </MeasureCell>;
 
   if (!showPrevious) {
@@ -56,7 +56,7 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
       key={series.reactKey(SeriesDerivation.PREVIOUS)}
       width={cellWidth}
       value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}>
-      {scale && <MeasureBackground highlight={highlight} width={scale(previousValue)} />}
+      {barScale && <MeasureBackground highlight={highlight} width={barScale(previousValue)} />}
     </MeasureCell>
     <MeasureCell
       width={cellWidth}

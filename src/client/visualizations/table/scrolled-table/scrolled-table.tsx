@@ -96,6 +96,7 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
   const highlightedRowIndex = getRowIndexForHighlight(essence, highlight, flatData);
   const showHighlight = highlightedRowIndex !== null && flatData;
   const maxSegmentWidth = availableWidth || SEGMENT_WIDTH;
+  const lastSplitLevel = essence.splits.length();
 
   return <React.Fragment>
     <ResizeHandle
@@ -132,6 +133,7 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
       body={flatData &&
       <MeasureRows
         hoverRow={hoverRow}
+        showBarPredicate={datum => datum.__nest === lastSplitLevel}
         visibleRowsIndexRange={visibleRowsRange}
         essence={essence}
         highlightedRowIndex={highlightedRowIndex}
