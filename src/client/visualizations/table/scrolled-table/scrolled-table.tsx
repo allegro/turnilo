@@ -26,6 +26,7 @@ import { Scroller, ScrollerLayout, ScrollerPart } from "../../../components/scro
 import { HEADER_HEIGHT, ROW_HEIGHT, SEGMENT_WIDTH, SPACE_RIGHT } from "../../../components/tabular-scroller/dimensions";
 import { MeasuresHeader } from "../../../components/tabular-scroller/header/measures/measures-header";
 import { MeasureRows } from "../../../components/tabular-scroller/measures/measure-rows";
+import { getScalesForColumns } from "../../../components/tabular-scroller/utils/get-scales-for-columns";
 import { measureColumnsCount } from "../../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../../components/tabular-scroller/visible-rows/visible-index-range";
 import { Highlight } from "../../highlight-controller/highlight";
@@ -34,7 +35,6 @@ import { SplitRows } from "../body/splits/split-rows";
 import { SplitsHeader } from "../header/splits/splits-header";
 import { Highlighter } from "../highlight/highlight";
 import { getRowIndexForHighlight } from "../utils/get-row-index-for-highlight";
-import { getScalesForColumns } from "../utils/get-scales-for-columns";
 
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
@@ -78,6 +78,8 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
     dropHighlight,
     availableWidth
   } = props;
+  const splitLength = essence.splits.length();
+  const scales = getScalesForColumns(essence, flatData.filter(d => d.__nest === splitLength));
   const columnsCount = measureColumnsCount(essence);
   const rowsCount = flatData ? flatData.length : 0;
   const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
@@ -96,6 +98,7 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
   const highlightedRowIndex = getRowIndexForHighlight(essence, highlight, flatData);
   const showHighlight = highlightedRowIndex !== null && flatData;
   const maxSegmentWidth = availableWidth || SEGMENT_WIDTH;
+  const lastSplitLevel = essence.splits.length();
 
   return <React.Fragment>
     <ResizeHandle
@@ -132,10 +135,11 @@ export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
       body={flatData &&
       <MeasureRows
         hoverRow={hoverRow}
+        showBarPredicate={datum => datum.__nest === lastSplitLevel}
         visibleRowsIndexRange={visibleRowsRange}
         essence={essence}
         highlightedRowIndex={highlightedRowIndex}
-        scales={getScalesForColumns(essence, flatData)}
+        scales={scales}
         data={flatData}
         cellWidth={columnWidth}
         rowWidth={columnWidth * columnsCount}/>}

@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-import * as d3 from "d3";
-import { Dataset, Datum, PseudoDatum } from "plywood";
+import { Dataset } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
-import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
+import { Binary, complement, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { HEADER_HEIGHT, ROW_HEIGHT, SEGMENT_WIDTH, SPACE_RIGHT } from "../../components/tabular-scroller/dimensions";
 import { MeasuresHeader } from "../../components/tabular-scroller/header/measures/measures-header";
 import { SplitColumnsHeader } from "../../components/tabular-scroller/header/splits/split-columns";
+import { MeasureRows } from "../../components/tabular-scroller/measures/measure-rows";
 import { FlattenedSplits } from "../../components/tabular-scroller/splits/flattened-splits";
+import { getScalesForColumns } from "../../components/tabular-scroller/utils/get-scales-for-columns";
 import { measureColumnsCount } from "../../components/tabular-scroller/utils/measure-columns-count";
 import { visibleIndexRange } from "../../components/tabular-scroller/visible-rows/visible-index-range";
-import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
-import { MeasureRows } from "./measure-rows";
+import { selectDatums } from "../../utils/dataset/selectors/selectors";
+import { SplitLabels } from "./split-labels";
 import { mainSplit } from "./utils/main-split";
+import { isTotalDatum, NESTING_NAME } from "./utils/total-datum";
 
 interface ScrolledGridProps {
   essence: Essence;
@@ -43,20 +45,6 @@ interface ScrolledGridProps {
   segmentWidth: number;
   availableWidth: number;
   scrollTop: number;
-}
-
-function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-  const concreteSeries = essence.getConcreteSeries().toArray();
-
-  return concreteSeries.map(series => {
-    const measureValues = flatData
-      .map((d: Datum) => series.selectValue(d));
-
-    return d3.scale.linear()
-      // Ensure that 0 is in there
-      .domain(d3.extent([0, ...measureValues]))
-      .range([0, 100]);
-  });
 }
 
 export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
@@ -73,7 +61,11 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
     availableWidth
   } = props;
 
-  const datums = selectFirstSplitDatums(data);
+  const datums = selectDatums(data.flatten({
+    order: "preorder",
+    nestingName: NESTING_NAME
+  }));
+  const scales = getScalesForColumns(essence, datums.filter(complement(isTotalDatum)));
   const rowsCount = datums.length;
   const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
   const columnsCount = measureColumnsCount(essence);
@@ -111,22 +103,27 @@ export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
 
       leftGutter={<FlattenedSplits
         visibleRowsIndexRange={visibleRowsRange}
-        essence={essence}
         data={datums}
+        splitLabel={({ datum }) =>
+          <SplitLabels
+            splits={essence.splits.splits}
+            timezone={essence.timezone}
+            datum={datum}/>}
         segmentWidth={segmentWidth}
         highlightedRowIndex={null}/>}
 
       topLeftCorner={<SplitColumnsHeader
         dataCube={dataCube}
         sort={mainSort}
-        splits={splits} />}
+        splits={splits}/>}
 
       body={datums && <MeasureRows
         visibleRowsIndexRange={visibleRowsRange}
         essence={essence}
         highlightedRowIndex={null}
-        scales={getScalesForColumns(essence, datums)}
+        scales={scales}
         data={datums}
+        showBarPredicate={complement(isTotalDatum)}
         cellWidth={columnWidth}
         rowWidth={columnWidth * columnsCount}/>}
     />

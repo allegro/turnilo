@@ -15,6 +15,7 @@
  */
 
 import * as d3 from "d3";
+import { Map } from "immutable";
 import { Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -29,11 +30,12 @@ interface MeasureRowProps {
   style: React.CSSProperties;
   datum: Datum;
   cellWidth: number;
-  scales: Array<d3.scale.Linear<number, number>>;
+  scales: Map<string, d3.scale.Linear<number, number>>;
+  showBar: boolean;
 }
 
 export const MeasureRow: React.SFC<MeasureRowProps> = props => {
-  const { datum, scales, cellWidth, highlight, dimmed, style, essence } = props;
+  const { datum, showBar, scales, cellWidth, highlight, dimmed, style, essence } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();
 
@@ -41,13 +43,13 @@ export const MeasureRow: React.SFC<MeasureRowProps> = props => {
     className={classNames("measure-row", { highlight, dimmed })}
     style={style}
   >
-    {concreteSeries.map((series, i) => {
+    {concreteSeries.map(series => {
       return <MeasureValue
         key={series.reactKey()}
         series={series}
         datum={datum}
         highlight={highlight}
-        scale={scales[i]}
+        barScale={showBar ? scales.get(series.reactKey()) : null}
         cellWidth={cellWidth}
         showPrevious={essence.hasComparison()} />;
     })}
