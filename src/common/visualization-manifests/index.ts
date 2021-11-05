@@ -26,11 +26,11 @@ import { TOTALS_MANIFEST } from "./totals/totals";
 
 export const MANIFESTS: VisualizationManifest[] = [
   TOTALS_MANIFEST,
-  TABLE_MANIFEST,
+  GRID_MANIFEST,
   LINE_CHART_MANIFEST,
   BAR_CHART_MANIFEST,
   HEAT_MAP_MANIFEST,
-  GRID_MANIFEST
+  TABLE_MANIFEST
 ];
 
 export function manifestByName(visualizationName: string): VisualizationManifest {
