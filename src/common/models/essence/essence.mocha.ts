@@ -18,6 +18,7 @@
 import { expect } from "chai";
 import { SinonSpy, spy, stub } from "sinon";
 import { BAR_CHART_MANIFEST } from "../../visualization-manifests/bar-chart/bar-chart";
+import { GRID_MANIFEST } from "../../visualization-manifests/grid/grid";
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
@@ -125,7 +126,7 @@ describe("EssenceProps", () => {
             sort: new DimensionSort({ reference: "twitterHandle" })
           })],
           series, current: TOTALS_MANIFEST,
-          expected: TABLE_MANIFEST
+          expected: GRID_MANIFEST
         },
         {
           splits: [new Split({
@@ -176,11 +177,11 @@ describe("EssenceProps", () => {
         expect(essence.visResolve.isReady()).to.be.true;
       });
 
-      it("defaults to table with non continuous dimension", () => {
+      it("defaults to grid with non continuous dimension", () => {
         const essence = EssenceFixtures.twitterNoVisualisation()
           .changeVisualization(TOTALS_MANIFEST)
           .addSplit(twitterHandleSplit, VisStrategy.FairGame);
-        expect(essence.visualization).to.deep.equal(TABLE_MANIFEST);
+        expect(essence.visualization).to.deep.equal(GRID_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
       });
 
@@ -226,7 +227,7 @@ describe("EssenceProps", () => {
       const noMeasuresTests = [
         { splits: [timeSplit], visualization: LINE_CHART_MANIFEST },
         { splits: [tweetLengthSplit], visualization: BAR_CHART_MANIFEST },
-        { splits: [twitterHandleSplit], visualization: TABLE_MANIFEST }
+        { splits: [twitterHandleSplit], visualization: GRID_MANIFEST }
       ];
 
       noMeasuresTests.forEach(({ splits, visualization }) => {
@@ -256,14 +257,10 @@ describe("EssenceProps", () => {
       });
 
       it("should handle adding too many splits for table", () => {
-        console.log("start it");
         const essence = EssenceFixtures.wikiTable();
-        console.log("splits before", essence.splits.length());
         const addedSplit = essence.addSplit(timeSplit, VisStrategy.KeepAlways);
-        console.log("splits after", addedSplit.splits.length());
 
         expect(addedSplit.splits.length()).to.be.eq(5);
-        console.log("visResolve", addedSplit.visResolve.state);
         expect(addedSplit.visResolve.isManual()).to.be.true;
         expect(addedSplit.visResolve.resolutions[0].adjustment.splits.length()).to.be.eq(4);
       });
