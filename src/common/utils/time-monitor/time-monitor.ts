@@ -16,36 +16,35 @@
  */
 
 import { Logger } from "../../logger/logger";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { QueryableDataCube } from "../../models/data-cube/queryable-data-cube";
 import { TimeTag } from "../../models/time-tag/time-tag";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
-
-export type Check = () => Promise<Date>;
+import { Nullary } from "../functional/functional";
+import { maxTimeQueryForCube } from "../query/max-time-query";
 
 export class TimeMonitor {
-  public logger: Logger;
-  public regularCheckInterval: number;
-  public specialCheckInterval: number;
   public timekeeper: Timekeeper;
-  public checks: Map<string, Check>;
+  private regularCheckInterval: number;
+  private checks: Map<string, Nullary<Promise<Date>>>;
   private doingChecks = false;
 
-  constructor(logger: Logger) {
-    this.logger = logger;
+  constructor(private logger: Logger) {
     this.checks = new Map();
     this.regularCheckInterval = 60000;
-    this.specialCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
     setInterval(this.doChecks, 1000);
   }
 
-  removeCheck(name: string): this {
+  removeCheck({ name }: DataCube): this {
     this.checks.delete(name);
     this.timekeeper = this.timekeeper.removeTimeTagFor(name);
     return this;
   }
 
-  addCheck(name: string, check: Check): this {
-    this.checks.set(name, check);
+  addCheck(cube: QueryableDataCube): this {
+    const { name } = cube;
+    this.checks.set(name, () => maxTimeQueryForCube(cube));
     this.timekeeper = this.timekeeper.addTimeTagFor(name);
     return this;
   }

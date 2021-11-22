@@ -15,6 +15,11 @@
  */
 
 import { $, Dataset, Executor, ply, RefExpression } from "plywood";
+import { QueryableDataCube } from "../../models/data-cube/queryable-data-cube";
+
+export function maxTimeQueryForCube({ timeAttribute, executor }: QueryableDataCube): Promise<Date> {
+  return maxTimeQuery(timeAttribute, executor);
+}
 
 export function maxTimeQuery(timeAttribute?: RefExpression, executor?: Executor): Promise<Date> {
   if (!executor) {
