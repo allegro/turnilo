@@ -86,7 +86,7 @@ exports.decorator = function (expression, request, options, plywood) {
   const filterClause = plywood.$(userColumnName).in([userId]); // show only rows where `userColumnName` is equal to current user id.
   return expression.substitute(e => {
     if (e instanceof plywood.RefExpression && e.name === "main") { // filter all main expression references
-      e.filter(filterClause);
+      return e.filter(filterClause);
     }
     return null;
   });
