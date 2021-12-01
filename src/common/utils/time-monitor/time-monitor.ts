@@ -74,7 +74,7 @@ export class TimeMonitor {
     const timeTags = timekeeper.timeTags;
 
     this.doingChecks = true;
-    const checkTasks = timeTags.filter(this.isStale).map(this.doCheck);
+    const checkTasks = timeTags.filter(this.isStale).map(this.doCheck).values();
     Promise.all(checkTasks).then(() => {
       this.doingChecks = false;
     });
