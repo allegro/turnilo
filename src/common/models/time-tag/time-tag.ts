@@ -17,20 +17,16 @@
 
 import { BaseImmutable, Property, PropertyType } from "immutable-class";
 
-export type Special = "static" | "realtime";
-
 export interface TimeTagValue {
   name: string;
   time?: Date;
   lastTimeChecked?: Date;
-  special?: Special;
 }
 
 export interface TimeTagJS {
   name: string;
   time?: Date | string;
   lastTimeChecked?: Date | string;
-  special?: Special;
 }
 
 export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
@@ -42,8 +38,7 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
   static PROPERTIES: Property[] = [
     { name: "name" },
     { name: "time", type: PropertyType.DATE, defaultValue: null },
-    { name: "lastTimeChecked", type: PropertyType.DATE, defaultValue: null },
-    { name: "special", defaultValue: null }
+    { name: "lastTimeChecked", type: PropertyType.DATE, defaultValue: null }
   ];
 
   static fromJS(parameters: TimeTagJS): TimeTag {
@@ -53,7 +48,6 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
   public name: string;
   public time: Date;
   public lastTimeChecked: Date;
-  public special: Special;
 
   constructor(parameters: TimeTagValue) {
     super(parameters);
