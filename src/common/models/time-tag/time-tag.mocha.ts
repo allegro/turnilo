@@ -24,12 +24,12 @@ describe("TimeTag", () => {
       {
         name: "dodo",
         time: new Date("2015-10-15T19:20:00Z"),
-        updated: new Date("2015-10-15T19:20:13Z")
+        lastTimeChecked: new Date("2015-10-15T19:20:13Z")
       },
       {
         name: "wikipedia",
         time: new Date("2015-10-15T19:21:00Z"),
-        updated: new Date("2015-10-15T19:21:13Z")
+        lastTimeChecked: new Date("2015-10-15T19:21:13Z")
       }
     ]);
   });

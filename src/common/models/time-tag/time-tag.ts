@@ -22,14 +22,14 @@ export type Special = "static" | "realtime";
 export interface TimeTagValue {
   name: string;
   time?: Date;
-  updated?: Date;
+  lastTimeChecked?: Date;
   special?: Special;
 }
 
 export interface TimeTagJS {
   name: string;
   time?: Date | string;
-  updated?: Date | string;
+  lastTimeChecked?: Date | string;
   special?: Special;
 }
 
@@ -42,7 +42,7 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
   static PROPERTIES: Property[] = [
     { name: "name" },
     { name: "time", type: PropertyType.DATE, defaultValue: null },
-    { name: "updated", type: PropertyType.DATE, defaultValue: null },
+    { name: "lastTimeChecked", type: PropertyType.DATE, defaultValue: null },
     { name: "special", defaultValue: null }
   ];
 
@@ -52,19 +52,20 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
 
   public name: string;
   public time: Date;
-  public updated: Date;
+  public lastTimeChecked: Date;
   public special: Special;
 
   constructor(parameters: TimeTagValue) {
     super(parameters);
-    if (this.time && !this.updated) this.updated = this.time;
+    if (this.time && !this.lastTimeChecked) this.lastTimeChecked = this.time;
   }
 
-  public changeTime(time: Date, now: Date): TimeTag {
-    var value = this.valueOf();
-    value.time = time;
-    value.updated = now;
-    return new TimeTag(value);
+  public changeTime(time: Date, lastTimeChecked: Date): TimeTag {
+    return new TimeTag({
+      name: this.name,
+      time,
+      lastTimeChecked
+    });
   }
 }
 
