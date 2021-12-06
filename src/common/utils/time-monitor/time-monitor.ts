@@ -27,9 +27,11 @@ export class TimeMonitor {
   public timekeeper: Timekeeper;
   private regularCheckInterval: number;
   private checks: Map<string, Nullary<Promise<Date>>>;
+  private logger: Logger;
   private doingChecks = false;
 
-  constructor(private logger: Logger) {
+  constructor(logger: Logger) {
+    this.logger = logger.addPrefix("TimeMonitor");
     this.checks = new Map();
     this.regularCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
