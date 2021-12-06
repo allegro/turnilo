@@ -49,7 +49,7 @@ export class TimeMonitor {
     return this;
   }
 
-  private doCheck = ({ name }: TimeTag): Promise<void> => {
+  private doCheck = ({ name, time: previousTime }: TimeTag): Promise<void> => {
     const { logger, checks } = this;
     const check = checks.get(name);
     if (!check) return Promise.resolve(null);
@@ -57,7 +57,8 @@ export class TimeMonitor {
       logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
       this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
     }).catch(e => {
-        logger.error(`Error getting time for '${name}': ${e.message}`);
+        logger.error(`Failed getting time for '${name}', using previous time.`, `Error: ${e.message}`);
+        this.timekeeper = this.timekeeper.updateTime(name, previousTime);
       }
     );
   }
