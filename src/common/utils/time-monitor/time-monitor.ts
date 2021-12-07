@@ -27,9 +27,11 @@ export class TimeMonitor {
   public timekeeper: Timekeeper;
   private regularCheckInterval: number;
   private checks: Map<string, Nullary<Promise<Date>>>;
+  private logger: Logger;
   private doingChecks = false;
 
-  constructor(private logger: Logger) {
+  constructor(logger: Logger) {
+    this.logger = logger.addPrefix("TimeMonitor");
     this.checks = new Map();
     this.regularCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
@@ -49,7 +51,7 @@ export class TimeMonitor {
     return this;
   }
 
-  private doCheck = ({ name }: TimeTag): Promise<void> => {
+  private doCheck = ({ name, time: previousTime }: TimeTag): Promise<void> => {
     const { logger, checks } = this;
     const check = checks.get(name);
     if (!check) return Promise.resolve(null);
@@ -57,7 +59,8 @@ export class TimeMonitor {
       logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
       this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
     }).catch(e => {
-        logger.error(`Error getting time for '${name}': ${e.message}`);
+        logger.error(`Failed getting time for '${name}', using previous time.`, `Error: ${e.message}`);
+        this.timekeeper = this.timekeeper.updateTime(name, previousTime);
       }
     );
   }
@@ -65,7 +68,7 @@ export class TimeMonitor {
   private isStale = (timeTag: TimeTag): boolean => {
     const { timekeeper, regularCheckInterval } = this;
     const now = timekeeper.now().valueOf();
-    return !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval;
+    return !timeTag.time || now - timeTag.lastTimeChecked.valueOf() > regularCheckInterval;
   }
 
   private doChecks = (): void => {
