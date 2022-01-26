@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-import { expect } from "chai";
+import { expect, use } from "chai";
 import { $, AttributeInfo } from "plywood";
+import equivalent from "../../../client/utils/test-utils/equivalent";
 import { deduceAttributes } from "../../utils/external/datacube-to-external";
 import { Cluster } from "../cluster/cluster";
-import { createDimension } from "../dimension/dimension";
-import { allDimensions } from "../dimension/dimensions";
-import { DataCube, fromConfig } from "./data-cube";
+import { createDimension, DimensionJS, timeDimension } from "../dimension/dimension";
+import { fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
+import { allDimensions, findDimensionByExpression } from "../dimension/dimensions";
+import { DataCube, DataCubeJS, fromConfig } from "./data-cube";
 import { addAttributes } from "./queryable-data-cube";
+
+use(equivalent);
 
 describe("DataCube", () => {
   const druidCluster = Cluster.fromJS({
@@ -691,7 +695,7 @@ describe("DataCube", () => {
       const dataCube1 = addAttributes(dataCube, AttributeInfo.fromJSs(columns));
 
       expect(allDimensions(dataCube1.dimensions)).to.deep.equal([
-        createDimension("time", "__time", $("__time")),
+        createDimension("time", "time", $("__time")),
         createDimension("string", "page", $("page"))
       ]);
 
@@ -699,12 +703,73 @@ describe("DataCube", () => {
       const dataCube2 = addAttributes(dataCube1, AttributeInfo.fromJSs(columns));
 
       expect(allDimensions(dataCube2.dimensions)).to.deep.equal([
-        createDimension("time", "__time", $("__time")),
+        createDimension("time", "time", $("__time")),
         createDimension("string", "page", $("page")),
         createDimension("string", "channel", $("channel"))
       ]);
+    });
+  });
 
+  describe("timeAttribute", () => {
+    describe("Druid clusters", () => {
+      const baseCube: DataCubeJS = {
+        name: "wiki",
+        clusterName: "druid",
+        source: "wiki"
+      };
+
+      const timeDimensionJS: DimensionJS = {
+        name: "time",
+        kind: "time",
+        formula: "$__time"
+      };
+
+      it("should add timeAttribute", () => {
+        const cube = fromConfig({ ...baseCube, dimensions: [timeDimensionJS] }, druidCluster);
+        expect(cube.timeAttribute).to.be.equivalent($("__time"));
+      });
+
+      it("should prepend time dimension if not defined", () => {
+        const cube = fromConfig({ ...baseCube, dimensions: [] }, druidCluster);
+        const timeAttribute = $("__time");
+        expect(cube.dimensions.byName.time).to.be.deep.equal(timeDimension(timeAttribute));
+        expect(cube.dimensions.tree).to.be.deep.equal(["time"]);
+      });
+
+      it("should override invalid time Attribute", () => {
+        const cube = fromConfig({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
+        const timeAttribute = $("__time");
+        expect(cube.timeAttribute).to.be.equivalent(timeAttribute);
+      });
     });
 
+    describe("Native clusters", () => {
+      const baseCube: DataCubeJS = {
+        name: "medals",
+        clusterName: "native",
+        source: "medals.json"
+      };
+
+      const timeDimensionJS: DimensionJS = {
+        name: "time",
+        kind: "time",
+        formula: "$time_column"
+      };
+
+      it("should throw without timeAttribute property", () => {
+        expect(() => fromConfig({ ...baseCube })).to.throw("DataCube \"medals\" must have defined timeAttribute property");
+      });
+
+      it("should throw with timeAttribute property pointing to non-existing dimension", () => {
+        expect(() => fromConfig({ ...baseCube, timeAttribute: "foobar", dimensions: [] })).to.throw("In DataCube \"medals\" could not find dimension for supplied timeAttribute \"foobar\"");
+      });
+
+      it("should pass well defined dimensions and timeAttribute", () => {
+        const cube = fromConfig({ ...baseCube, timeAttribute: "time_column", dimensions: [timeDimensionJS] });
+        const timeAttribute = $("time_column");
+        expect(cube.timeAttribute).to.be.equivalent(timeAttribute);
+        expect(cube.dimensions).to.be.deep.equal(dimensionsFromConfig([timeDimensionJS]));
+      });
+    });
   });
 });

@@ -30,7 +30,7 @@ import {
   External,
   RefExpression
 } from "plywood";
-import { quoteNames, verifyUrlSafeName } from "../../utils/general/general";
+import { isTruthy, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { Cluster } from "../cluster/cluster";
 import { Dimension, DimensionKind, timeDimension as createTimeDimension } from "../dimension/dimension";
 import {
@@ -278,27 +278,45 @@ function readAttributes(config: DataCubeJS): Pick<DataCube, "attributes" | "attr
   };
 }
 
-function readTimeAttribute(config: DataCubeJS, cluster?: Cluster): RefExpression | undefined {
-  const timeAttributeName = config.timeAttribute;
-  if (timeAttributeName) return $(timeAttributeName);
-  if (cluster && cluster.type === "druid" && !timeAttributeName) {
-    return $("__time");
+function readTimeAttribute(config: DataCubeJS, cluster: Cluster | undefined, dimensions: Dimensions): { dimensions: Dimensions, timeAttribute: RefExpression } {
+  const isFromDruidCluster = config.clusterName !== "native" && cluster.type === "druid";
+  if (isFromDruidCluster) {
+    if (config.timeAttribute !== "__time") {
+      console.warn(`timeAttribute in DataCube "${config.name}" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"`);
+    }
+    const timeAttribute = $("__time");
+    if (!isTruthy(findDimensionByExpression(dimensions, timeAttribute))) {
+      return {
+        timeAttribute,
+        dimensions: prepend(createTimeDimension(timeAttribute), dimensions)
+      };
+    } else {
+      return { timeAttribute, dimensions };
+    }
+  } else {
+    if (!isTruthy(config.timeAttribute)) {
+      throw new Error(`DataCube "${config.name}" must have defined timeAttribute property`);
+    }
+    const timeAttribute = $(config.timeAttribute);
+    const timeDimension = findDimensionByExpression(dimensions, timeAttribute);
+    if (!isTruthy(timeDimension)) {
+      throw new Error(`In DataCube "${config.name}" could not find dimension for supplied timeAttribute "${config.timeAttribute}" (must match)`);
+    }
+    return {
+      timeAttribute,
+      dimensions
+    };
   }
-  return undefined;
 }
 
-function readDimensions(config: DataCubeJS, timeAttribute?: RefExpression): Dimensions {
-  const dimensions = dimensionsFromConfig(config.dimensions || []);
-  if (timeAttribute && findDimensionByExpression(dimensions, timeAttribute) === null) {
-    return prepend(createTimeDimension(timeAttribute), dimensions);
-  }
-  return dimensions;
+function readDimensions(config: DataCubeJS): Dimensions {
+  return dimensionsFromConfig(config.dimensions || []);
 }
 
-function readColumns(config: DataCubeJS, timeAttribute: RefExpression): { dimensions: Dimensions, measures: Measures } {
+function readColumns(config: DataCubeJS): { dimensions: Dimensions, measures: Measures } {
   const name = config.name;
   try {
-    const dimensions = readDimensions(config, timeAttribute);
+    const dimensions = readDimensions(config);
     const measures = measuresFromConfig(config.measures || []);
 
     checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
@@ -335,8 +353,8 @@ export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Clus
   const { attributes, attributeOverrides, derivedAttributes } = readAttributes(config);
 
   const refreshRule = config.refreshRule ? RefreshRule.fromJS(config.refreshRule) : RefreshRule.query();
-  const timeAttribute = readTimeAttribute(config, cluster);
-  const { dimensions, measures } = readColumns(config, timeAttribute);
+  const { dimensions: initialDimensions, measures } = readColumns(config);
+  const { timeAttribute, dimensions } = readTimeAttribute(config, cluster, initialDimensions);
   verifyDefaultSortMeasure(config, measures);
   const subsetFormula = config.subsetFormula || config.subsetFilter;
   const defaultFilter = readDefaultFilter(config);
