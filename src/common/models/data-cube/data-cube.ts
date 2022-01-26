@@ -256,8 +256,12 @@ function readName(config: DataCubeJS): string {
   return name;
 }
 
+// TODO: this function should return Sum type DruidCluster<Druid> | NativeCluster<void> and we should use it in all DataCube types below
 function verifyCluster(config: DataCubeJS, cluster?: Cluster) {
-  if (cluster === undefined) return;
+  if (config.clusterName === "native") return;
+  if (cluster === undefined) {
+    throw new Error(`Could not find non-native cluster with name "${config.clusterName}" for data cube "${config.name}"`);
+  }
   if (config.clusterName !== cluster.name) {
     throw new Error(`Cluster name '${config.clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
   }

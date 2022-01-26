@@ -53,7 +53,7 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("'wiki hello' is not a URL safe name. Try 'wiki_hello' instead?");
     });
 
@@ -81,7 +81,7 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("Can not find defaultSortMeasure 'gaga' in data cube 'wiki'");
     });
 
@@ -108,7 +108,7 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("data cube: 'wiki', names: 'articleName' found in both dimensions and measures");
     });
 
@@ -139,7 +139,7 @@ describe("DataCube", () => {
               formula: "$articleName"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("data cube: 'wiki', found duplicate measure with name: 'articleName'");
     });
 
@@ -170,7 +170,7 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("data cube: 'wiki', found duplicate dimension with name: 'articleName'");
     });
 
@@ -405,7 +405,7 @@ describe("DataCube", () => {
       refreshRule: {
         rule: "realtime"
       }
-    });
+    }, druidCluster);
     /* TODO: check the correctness of the test */
     /*
         it("works in basic case (no count) + re-add", () => {
@@ -656,7 +656,7 @@ describe("DataCube", () => {
             formula: "${added!!!}"
           }
         ]
-      });
+      }, druidCluster);
 
       const dataCube = addAttributes(dataCubeWithDim, attributes1);
       expect(Object.keys(dataCube.measures.byName)).to.deep.equal(["deleted"]);
@@ -676,7 +676,7 @@ describe("DataCube", () => {
       refreshRule: {
         rule: "realtime"
       }
-    });
+    }, druidCluster);
 
     it("adds new dimensions", () => {
       const columns: any = [
