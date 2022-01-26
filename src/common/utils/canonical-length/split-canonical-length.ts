@@ -15,11 +15,11 @@
  */
 
 import { Duration } from "chronoshift";
-import { ClientDataCube } from "../../models/data-cube/data-cube";
+import { ClientDataCube, getTimeDimensionReference } from "../../models/data-cube/data-cube";
 import { Split } from "../../models/split/split";
 
 export default function splitCanonicalLength(split: Split, dataCube: ClientDataCube): number | null {
   const { reference, bucket } = split;
-  if (reference !== dataCube.timeAttribute) return null;
+  if (reference !== getTimeDimensionReference(dataCube)) return null;
   return (bucket as Duration).getCanonicalLength();
 }
