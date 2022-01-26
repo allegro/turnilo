@@ -32,7 +32,7 @@ import {
 } from "plywood";
 import { quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { Cluster } from "../cluster/cluster";
-import { Dimension, DimensionKind, timeDimension } from "../dimension/dimension";
+import { Dimension, DimensionKind, timeDimension as createTimeDimension } from "../dimension/dimension";
 import {
   allDimensions,
   ClientDimensions,
@@ -117,7 +117,7 @@ export interface DataCube {
 
   dimensions: Dimensions;
   measures: Measures;
-  timeAttribute?: RefExpression;
+  timeAttribute: RefExpression;
   defaultTimezone: Timezone;
   defaultFilter?: Filter;
   defaultSplitDimensions: string[];
@@ -178,7 +178,7 @@ export interface SerializedDataCube {
 
   dimensions: SerializedDimensions;
   measures: SerializedMeasures;
-  timeAttribute?: string;
+  timeAttribute: string;
   defaultTimezone: string;
   defaultFilter?: FilterJS;
   defaultSplitDimensions?: string[];
@@ -204,7 +204,7 @@ export interface ClientDataCube {
 
   dimensions: ClientDimensions;
   measures: Measures;
-  timeAttribute?: string;
+  timeAttribute: string;
   defaultTimezone: Timezone;
   defaultFilter?: Filter;
   defaultSplitDimensions?: string[];
@@ -286,7 +286,7 @@ function readTimeAttribute(config: DataCubeJS, cluster?: Cluster): RefExpression
 function readDimensions(config: DataCubeJS, timeAttribute?: RefExpression): Dimensions {
   const dimensions = dimensionsFromConfig(config.dimensions || []);
   if (timeAttribute && findDimensionByExpression(dimensions, timeAttribute) === null) {
-    return prepend(timeDimension(timeAttribute), dimensions);
+    return prepend(createTimeDimension(timeAttribute), dimensions);
   }
   return dimensions;
 }
@@ -456,6 +456,18 @@ export function getDimensionsByKind(dataCube: { dimensions: Dimensions }, kind: 
 
 export function isTimeAttribute(dataCube: ClientDataCube, ex: Expression) {
   return ex instanceof RefExpression && ex.name === dataCube.timeAttribute;
+}
+
+export function getTimeDimension(dataCube: ClientDataCube): Dimension {
+  const dimension =  findDimensionByExpression(dataCube.dimensions, $(dataCube.timeAttribute));
+  if (dimension === null) {
+    throw new Error(`Expected DataCube "${dataCube.name}" to have timeAttribute property defined with expression of existing dimension`);
+  }
+  return dimension;
+}
+
+export function getTimeDimensionReference(dataCube: ClientDataCube): string {
+  return getTimeDimension(dataCube).name;
 }
 
 export function getDefaultFilter(dataCube: ClientDataCube): Filter {
