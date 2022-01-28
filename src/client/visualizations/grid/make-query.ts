@@ -17,8 +17,11 @@
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
+import { toExpression } from "../../../common/models/filter-clause/filter-clause";
+import { Filter } from "../../../common/models/filter/filter";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Sort } from "../../../common/models/sort/sort";
 import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
@@ -60,8 +63,19 @@ function applyCanonicalLength(splits: List<Split>, dataCube: ClientDataCube) {
   };
 }
 
+function applyDimensionFilter(dimensions: List<Dimension>, filter: Filter) {
+  return (query: Expression) => {
+    return dimensions.reduce((query, dimension) => {
+      if (dimension.kind !== "string" || !dimension.multiValue) return query;
+      const filterClause = filter.clauseForReference(dimension.name);
+      if (!filterClause) return query;
+      return query.filter(toExpression(filterClause, dimension));
+    }, query);
+  };
+}
+
 function applySplits(essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
-  const { splits: { splits }, dataCube } = essence;
+  const { splits: { splits }, dataCube, filter } = essence;
   const firstSplit = splits.first();
 
   const splitsMap = splits.reduce<Record<string, Expression>>((map, split) => {
@@ -71,8 +85,11 @@ function applySplits(essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
     return assoc(map, name, expression);
   }, {});
 
+  const dimensions = splits.map(split => findDimensionByName(dataCube.dimensions, split.reference));
+
   return thread(
     $main.split(splitsMap),
+    applyDimensionFilter(dimensions, filter),
     applyCanonicalLength(splits, dataCube),
     applySeries(essence.getConcreteSeries(), timeShiftEnv),
     applySort(firstSplit.sort),
