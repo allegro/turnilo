@@ -495,10 +495,11 @@ export function getTimeDimensionReference(dataCube: ClientDataCube): string {
 export function getDefaultFilter(dataCube: ClientDataCube): Filter {
   const filter = dataCube.defaultFilter || DEFAULT_DEFAULT_FILTER;
   if (!dataCube.timeAttribute) return filter;
+  const timeDimensionReference = getTimeDimensionReference(dataCube);
   return filter.insertByIndex(0, new RelativeTimeFilterClause({
     period: TimeFilterPeriod.LATEST,
     duration: dataCube.defaultDuration,
-    reference: dataCube.timeAttribute
+    reference: timeDimensionReference
   }));
 }
 
