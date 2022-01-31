@@ -281,7 +281,10 @@ function readAttributes(config: DataCubeJS): Pick<DataCube, "attributes" | "attr
 function readTimeAttribute(config: DataCubeJS, cluster: Cluster | undefined, dimensions: Dimensions): { dimensions: Dimensions, timeAttribute: RefExpression } {
   const isFromDruidCluster = config.clusterName !== "native" && cluster.type === "druid";
   if (isFromDruidCluster) {
-    if (config.timeAttribute !== "__time") {
+    if (!isTruthy(config.timeAttribute)) {
+      console.warn(`DataCube "${config.name}" should have property timeAttribute. Setting timeAttribute to default value "__time"`);
+    }
+    if (isTruthy(config.timeAttribute) && config.timeAttribute !== "__time") {
       console.warn(`timeAttribute in DataCube "${config.name}" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"`);
     }
     const timeAttribute = $("__time");

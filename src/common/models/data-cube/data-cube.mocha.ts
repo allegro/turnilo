@@ -17,6 +17,7 @@
 
 import { expect, use } from "chai";
 import { $, AttributeInfo } from "plywood";
+import { SinonSpy, spy } from "sinon";
 import equivalent from "../../../client/utils/test-utils/equivalent";
 import { deduceAttributes } from "../../utils/external/datacube-to-external";
 import { Cluster } from "../cluster/cluster";
@@ -723,6 +724,28 @@ describe("DataCube", () => {
         kind: "time",
         formula: "$__time"
       };
+
+      describe("timeAttribute property warnings", () => {
+        let consoleWarnSpy: SinonSpy;
+
+        beforeEach(() => {
+          consoleWarnSpy = spy(console, "warn");
+        });
+
+        afterEach(() => {
+          consoleWarnSpy.restore();
+        });
+
+        it("should warn if timeAttribute is missing", () => {
+          fromConfig({ ...baseCube }, druidCluster);
+          expect(consoleWarnSpy.args[0][0]).to.be.equal("DataCube \"wiki\" should have property timeAttribute. Setting timeAttribute to default value \"__time\"");
+        });
+
+        it("should warn if timeAttribute has different value than \"__time\"", () => {
+          fromConfig({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
+          expect(consoleWarnSpy.args[0][0]).to.be.equal('timeAttribute in DataCube "wiki" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"');
+        });
+      });
 
       it("should add timeAttribute", () => {
         const cube = fromConfig({ ...baseCube, dimensions: [timeDimensionJS] }, druidCluster);
