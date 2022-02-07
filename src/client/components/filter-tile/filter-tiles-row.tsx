@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { getTimeDimensionReference } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
@@ -166,7 +167,7 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
     let tryingToReplaceTime = false;
     if (position.isReplace()) {
       const targetClause = filter.clauses.get(position.replace);
-      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.timeAttribute;
+      tryingToReplaceTime = targetClause && targetClause.reference === getTimeDimensionReference(dataCube);
       if (tryingToReplaceTime) return;
     }
     addPartialFilter(dimension, position);

@@ -27,7 +27,7 @@ import {
   getDefaultFilter,
   getDefaultSeries,
   getDefaultSplits,
-  getMaxTime
+  getMaxTime, getTimeDimension
 } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
@@ -185,7 +185,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   static timeFilter(filter: Filter, dataCube: ClientDataCube): TimeFilterClause {
-    const timeFilter = filter.clauseForReference(dataCube.timeAttribute);
+    const timeFilter = filter.getClauseForDimension(getTimeDimension(dataCube));
     if (!isTimeFilter(timeFilter)) throw new Error(`Unknown time filter: ${timeFilter}`);
     return timeFilter;
   }
@@ -255,7 +255,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public getTimeDimension(): Dimension {
-    return findDimensionByName(this.dataCube.dimensions, this.dataCube.timeAttribute);
+    return getTimeDimension(this.dataCube);
   }
 
   public evaluateSelection(filter: TimeFilterClause, timekeeper: Timekeeper): FixedTimeFilterClause {

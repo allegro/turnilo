@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { RefExpression } from "plywood";
 import { ClientDataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE } from "../../models/data-cube/data-cube";
 import { dimensions, timeDimension } from "./dimension";
 import { measuresCollection } from "./measure";
@@ -36,5 +37,5 @@ export const dataCube: ClientDataCube = {
   rollup: false,
   source: "custom",
   title: "fixture",
-  timeAttribute: timeDimension.name
+  timeAttribute: (timeDimension.expression as RefExpression).name
 };
