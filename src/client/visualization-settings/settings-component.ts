@@ -25,6 +25,7 @@ interface SettingsComponents {
   "heatmap": null;
   "grid": null;
   "totals": null;
+  "scatterplot": null;
 }
 
 const Components: SettingsComponents = {
@@ -33,7 +34,8 @@ const Components: SettingsComponents = {
   "heatmap": null,
   "grid": null,
   "totals": null,
-  "table": TableSettingsComponent
+  "table": TableSettingsComponent,
+  "scatterplot": null
 };
 
 export function settingsComponent<T extends Visualization>(visualization: T): SettingsComponents[T] {
