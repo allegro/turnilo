@@ -57,6 +57,7 @@
     "tsc:watch": "tsc -p tsconfig.json -w --pretty",
     "lint": "npm-run-all -p lint:*",
     "lint:ts": "tslint -p . --format verbose",
+    "lint:ts:fix":"tslint -p . --fix",
     "lint:sass": "sass-lint -v",
     "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
     "e2e:dev": "cypress open",

@@ -96,6 +96,8 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
       case "line-chart":
         const LineChartSettingsComponent = settingsComponent(visualization.name);
         return <LineChartSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<LineChartSettings>}/>;
+      case "scatterplot":
+        return null;
     }
   }
 
