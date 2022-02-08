@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
+import { allDimensions } from "../../models/dimension/dimensions";
 import { allMeasures } from "../../models/measure/measures";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { Split } from "../../models/split/split";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
-import { threadConditionally } from "../../utils/functional/functional";
 import { Predicates } from "../../utils/rules/predicates";
-import { adjustLimit, adjustSort } from "../../utils/rules/split-adjustments";
 import {
   ActionVariables,
   visualizationDependentEvaluatorBuilder
@@ -41,22 +39,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     "Scatterplot needs exactly 2 measures",
     variables.series.series.size < 2  ? suggestAddingMeasure(variables) : suggestRemovingMeasures(variables)
   ))
-  .otherwise(({ splits, dataCube, series, isSelectedVisualization }) => {
-    const newSplits = splits.update("splits", splits => splits.map(split => {
-      const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
-
-      return threadConditionally(
-        split,
-        adjustLimit(splitDimension),
-        adjustSort(splitDimension, series)
-      );
-    }));
-
-    const changed = !newSplits.equals(splits);
-    return changed
-      ? Resolve.automatic(6, { splits: newSplits })
-      : Resolve.ready(isSelectedVisualization ? 10 : 6);
-  })
+  .otherwise(({ isSelectedVisualization }) =>
+    Resolve.ready(isSelectedVisualization ? 10 : 3)
+  )
   .build();
 
 const suggestRemovingSplits = ({ splits }: ActionVariables) => [{
@@ -78,12 +63,20 @@ const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
 const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => {
   const firstSeriesKey = series.getSeriesKeys()[0];
   const notUsedMeasures = allMeasures(dataCube.measures).filter(measure => measure.name !== firstSeriesKey);
+
+  if (notUsedMeasures.length > 0) {
   const firstMeasure = notUsedMeasures[0];
   return [{
     description: `Add measure ${firstMeasure.title}`,
     adjustment: {
       series: series.addSeries(MeasureSeries.fromMeasure(firstMeasure))
     }
+  }];
+  }
+
+  return [{
+    description: "Second measure needed",
+    adjustment: null
   }];
 };
 
