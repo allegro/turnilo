@@ -23,6 +23,8 @@ import {
   VisualizationProps
 } from "../../views/cube-view/center-panel/center-panel";
 
+import "./scatterplot.scss";
+
 const Scatterplot: React.SFC<ChartProps> = () => {
   return <div className="scatterplot-container">
     <h2>Scatterplot will be here</h2>
