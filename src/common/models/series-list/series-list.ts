@@ -149,8 +149,8 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
       series.reference === reference && series instanceof ExpressionSeries) as List<ExpressionSeries>;
   }
 
-  public getSeriesKeys(): string[] {
-    return this.series.map(series => series.key()).toArray();
+  public getSeriesKeys(): List<string> {
+    return this.series.map(series => series.key());
   }
 }
 

@@ -61,7 +61,7 @@ const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
     }));
 
 const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => {
-  const firstSeriesKey = series.getSeriesKeys()[0];
+  const firstSeriesKey = series.getSeriesKeys().first();
   const notUsedMeasures = allMeasures(dataCube.measures).filter(measure => measure.name !== firstSeriesKey);
 
   if (notUsedMeasures.length > 0) {
