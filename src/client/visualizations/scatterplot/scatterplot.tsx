@@ -30,6 +30,7 @@ import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors"
 import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
+import { GridLines } from "../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
@@ -54,8 +55,9 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
 
   return <div className="scatterplot-container">
     <div style={chartStage.getWidthHeight()}>
-
       <svg viewBox={chartStage.getViewBox()}>
+        <GridLines orientation={"vertical"} stage={chartStage} ticks={xTicks} scale={xScale} />
+        <GridLines orientation={"horizontal"} stage={chartStage} ticks={yTicks} scale={yScale} />
         <VerticalAxis
           stage={chartStage}
           ticks={yTicks}
