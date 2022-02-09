@@ -46,16 +46,24 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
 
   const xExtent = getExtent(splitDatum, xSeries);
 
-  const yAxisStage = calculateYAxisStage(stage);
-  const yScale = d3.scale.linear().domain(yExtent).range([yAxisStage.height, 0]);
-  const xScale = d3.scale.linear().domain(xExtent).range([0, yAxisStage.width]);
+  const chartStage = calculateChartStage(stage);
+  const yScale = d3.scale.linear().domain(yExtent).range([chartStage.height, 0]);
+  const xScale = d3.scale.linear().domain(xExtent).range([0, chartStage.width]);
+  const xTicks = pickTicks(xScale, 10);
+  const yTicks = pickTicks(yScale, 10);
 
   return <div className="scatterplot-container">
-    <div style={yAxisStage.getWidthHeight()}>
-    <h2>Chart title will be here</h2>
+    <div style={chartStage.getWidthHeight()}>
 
-      <SingleYAxis series={ySeries} scale={yScale} stage={calculateYAxisStage(stage)} />
-      <XAxis scale={xScale} width={yAxisStage.width} ticks={pickTicks(xScale, 10)}/>
+      <svg viewBox={chartStage.getViewBox()}>
+        <VerticalAxis
+          stage={chartStage}
+          ticks={yTicks}
+          tickSize={TICK_SIZE}
+          scale={yScale}
+          formatter={ySeries.formatter()} />
+      </svg>
+      <XAxis scale={xScale} width={chartStage.width} ticks={xTicks}/>
     </div>
   </div>;
 };
@@ -67,34 +75,14 @@ export function ScatterplotVisualization(props: VisualizationProps) {
   </React.Fragment>;
 }
 
-export const TICK_LENGTH = 10;
-
-interface SingleYAxisProps {
-  series: ConcreteSeries;
-  scale: LinearScale;
-  stage: Stage;
-}
-
 // copies from bar chart
 
-export const SingleYAxis: React.SFC<SingleYAxisProps> = props => {
-  const { scale, series, stage } = props;
-  return (<svg viewBox={stage.getViewBox()}>
-      <g transform="translate(-1, 0)">
-        <VerticalAxis
-          stage={stage}
-          ticks={pickTicks(scale, 10)}
-          tickSize={TICK_LENGTH}
-          scale={scale}
-          formatter={series.formatter()} />
-      </g>
-    </svg>);
-};
+export const TICK_SIZE = 10;
 
-export function calculateYAxisStage(segmentStage: Stage): Stage {
+export function calculateChartStage(segmentStage: Stage): Stage {
   return Stage.fromJS({
-    x: 1,
-    y: 20,
+    x: 0,
+    y: 50,
     width: segmentStage.width - MARGIN,
     height: segmentStage.height - 2 * MARGIN
   });
@@ -104,7 +92,6 @@ const MARGIN = 50;
 
 // copies from line chart
 
-const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
 const X_AXIS_HEIGHT = 30;
 
@@ -119,16 +106,16 @@ export const XAxis: React.SFC<XAxisProps> = props => {
 
   const lines = ticks.map((tick: any) => {
     const x = roundToHalfPx(scale(tick));
-    return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />;
+    return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_SIZE} />;
   });
 
-  const labelY = TICK_HEIGHT + TEXT_OFFSET;
-  const labels = ticks.map((tick: any, index: number) => {
+  const labelY = TICK_SIZE + TEXT_OFFSET;
+  const labels = ticks.map((tick: any) => {
     const x = scale(tick);
-    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>{tick}</text>;
+    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: "middle" }}>{tick}</text>;
   });
 
-  return <svg className="bottom-axis" viewBox={stage.getViewBox()}>
+  return <svg viewBox={stage.getViewBox()}>
     <g stroke="gray" transform={stage.getTransform()}>
       {lines}
       {labels}
