@@ -53,6 +53,9 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const xTicks = pickTicks(xScale, 10);
   const yTicks = pickTicks(yScale, 10);
 
+  // const xSeriesKey = xSeries.definition.key()
+  // const ySeriesKey = ySeries.definition.key()
+
   return <div className="scatterplot-container">
     <div style={chartStage.getWidthHeight()}>
       <svg viewBox={chartStage.getViewBox()}>
@@ -64,6 +67,21 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
           tickSize={TICK_SIZE}
           scale={yScale}
           formatter={ySeries.formatter()} />
+        {/*{splitDatum.map((point, num) => {*/}
+        {/*  const x = point[xSeriesKey] as number;*/}
+        {/*  const y = point[ySeriesKey] as number;*/}
+        {/*  return (*/}
+        {/*    <circle*/}
+        {/*      cx={roundToHalfPx(xScale(x))}*/}
+        {/*      cy={roundToHalfPx(yScale(y) + chartStage.y)}*/}
+        {/*      key={num} r={3}*/}
+        {/*      stroke="blue"*/}
+        {/*      fill={"red"}*/}
+        {/*      transform="translate(-50%, -50%)"*/}
+        {/*    />*/}
+        {/*  );*/}
+        {/*})}*/}
+        <circle cx={roundToHalfPx(xScale(60))} cy={roundToHalfPx(yScale(10) + chartStage.y)} key={"hay"} r={3} stroke="blue" fill={"red"} transform="translate(-50%, -50%)"/>
       </svg>
       <XAxis scale={xScale} width={chartStage.width} ticks={xTicks}/>
     </div>
