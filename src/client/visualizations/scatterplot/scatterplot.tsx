@@ -15,7 +15,6 @@
  */
 import * as React from "react";
 
-
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import {
@@ -24,37 +23,39 @@ import {
   VisualizationProps
 } from "../../views/cube-view/center-panel/center-panel";
 
-import "./scatterplot.scss";
-import {Datum} from "plywood";
-import {ConcreteSeries} from "../../../common/models/series/concrete-series";
 import * as d3 from "d3";
-import {selectFirstSplitDatums} from "../../utils/dataset/selectors/selectors";
+import { Datum } from "plywood";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import "./scatterplot.scss";
 
-import {LinearScale, pickTicks} from "../../utils/linear-scale/linear-scale";
-import {Stage} from "../../../common/models/stage/stage";
-import {VerticalAxis} from "../../components/vertical-axis/vertical-axis";
+import { Stage } from "../../../common/models/stage/stage";
+import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
+import { roundToHalfPx } from "../../utils/dom/dom";
+import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
 
 function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
   return d3.extent(data, selectValues);
 }
 
-const Scatterplot: React.SFC<ChartProps> = ({data, essence, stage}) => {
+const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
-  const splitDatum = selectFirstSplitDatums(data)
-  const yExtent = getExtent(splitDatum, ySeries)
+  const splitDatum = selectFirstSplitDatums(data);
+  const yExtent = getExtent(splitDatum, ySeries);
 
-  const xExtent = getExtent(splitDatum, xSeries)
+  const xExtent = getExtent(splitDatum, xSeries);
 
-  const xScale=d3.scale.linear().domain(xExtent).range([ 0, stage.width])
-  const yAxisStage = calculateYAxisStage(stage)
-  const yScale=d3.scale.linear().domain(yExtent).range([yAxisStage.height, 0])
+  const yAxisStage = calculateYAxisStage(stage);
+  const yScale = d3.scale.linear().domain(yExtent).range([yAxisStage.height, 0]);
+  const xScale = d3.scale.linear().domain(xExtent).range([0, yAxisStage.width]);
 
   return <div className="scatterplot-container">
     <div style={yAxisStage.getWidthHeight()}>
-    <h2>Scatterplot will be here</h2>
+    <h2>Chart title will be here</h2>
 
-    <SingleYAxis series={ySeries} scale={yScale} stage={calculateYAxisStage(stage)} />
+      <SingleYAxis series={ySeries} scale={yScale} stage={calculateYAxisStage(stage)} />
+      <XAxis scale={xScale} width={yAxisStage.width} ticks={pickTicks(xScale, 10)}/>
     </div>
   </div>;
 };
@@ -87,18 +88,51 @@ export const SingleYAxis: React.SFC<SingleYAxisProps> = props => {
           scale={scale}
           formatter={series.formatter()} />
       </g>
-    </svg>)
+    </svg>);
 };
-
-
 
 export function calculateYAxisStage(segmentStage: Stage): Stage {
   return Stage.fromJS({
-    x: 10,
+    x: 1,
     y: 20,
-    width: segmentStage.width-MARGIN,
-    height: segmentStage.height -2*MARGIN
+    width: segmentStage.width - MARGIN,
+    height: segmentStage.height - 2 * MARGIN
   });
 }
 
 const MARGIN = 50;
+
+// copies from line chart
+
+const TICK_HEIGHT = 5;
+const TEXT_OFFSET = 12;
+const X_AXIS_HEIGHT = 30;
+
+export interface XAxisProps {
+  width: number;
+  ticks: Array<Date | number>;
+  scale: LinearScale;
+}
+export const XAxis: React.SFC<XAxisProps> = props => {
+  const { width, ticks, scale } = props;
+  const stage = Stage.fromSize(width, X_AXIS_HEIGHT);
+
+  const lines = ticks.map((tick: any) => {
+    const x = roundToHalfPx(scale(tick));
+    return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />;
+  });
+
+  const labelY = TICK_HEIGHT + TEXT_OFFSET;
+  const labels = ticks.map((tick: any, index: number) => {
+    const x = scale(tick);
+    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>{tick}</text>;
+  });
+
+  return <svg className="bottom-axis" viewBox={stage.getViewBox()}>
+    <g stroke="gray" transform={stage.getTransform()}>
+      {lines}
+      {labels}
+      <line y1={0} y2={0} x1={stage.x} x2={stage.width}/>
+    </g>
+  </svg>;
+};
