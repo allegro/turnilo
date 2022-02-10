@@ -57,6 +57,7 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const ySeriesKey = ySeries.definition.key();
 
   return <div className="scatterplot-container" style={stage.getWidthHeight()}>
+    <h2 style={{ paddingTop: 16 }}>tytuł wykresu</h2>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -101,11 +102,11 @@ export function ScatterplotVisualization(props: VisualizationProps) {
 // copies from bar chart
 // yaxis
 export const TICK_SIZE = 10;
-const MARGIN = 50;
+const MARGIN = 24;
 
 // copies from line chart
 
-const TEXT_OFFSET_X = 12;
+const TEXT_OFFSET_X = 16;
 const TEXT_OFFSET_Y = 4;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
@@ -122,19 +123,19 @@ export const XAxis: React.SFC<XAxisProps> = props => {
 
   const lines = ticks.map((tick: any) => {
     const x = roundToHalfPx(scale(tick));
-    return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_SIZE} />;
+    return <line className="tick" key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_SIZE} />;
   });
 
   const labelY = TICK_SIZE + TEXT_OFFSET_X;
   const labels = ticks.map((tick: any) => {
     const x = scale(tick);
-    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: "middle" }}>{formatter(tick)}</text>;
+    return <text className="tick" key={String(tick)} x={x} y={labelY} style={{ textAnchor: "middle" }}>{formatter(tick)}</text>;
   });
 
-  return (<g stroke="gray" transform={stage.getTransform()}>
+  return (<g stroke="gray" className="vertical-axis" transform={stage.getTransform()}>
       {lines}
       {labels}
-      <line y1={0} y2={0} x1={stage.x} x2={stage.width}/>
+      <line  className="border" y1={0} y2={0} x1={0} x2={stage.width}/>
     </g>);
 };
 
@@ -161,7 +162,7 @@ const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks: input
   const labels = ticks.map((tick: any) => {
     const y = scale(tick);
     const labelX = y + TEXT_OFFSET_Y;
-    return <text className="tick" key={String(tick)} x={tickSize} y={labelX}>{formatter(tick)}</text>;
+    return <text className="tick" key={String(tick)} x={0} y={labelX}>{formatter(tick)}</text>;
   });
 
   return <g className="vertical-axis" transform={stage.getTransform()}>
@@ -173,17 +174,17 @@ const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks: input
 
 export function calculatePlottingStage(stage: Stage): Stage {
   return Stage.fromJS({
-    x: 0,
-    y: 0,
-    width: stage.width,
-    height: stage.height - X_AXIS_HEIGHT
+    x: Y_AXIS_WIDTH + MARGIN,
+    y: MARGIN,
+    width: stage.width - Y_AXIS_WIDTH - 2 * MARGIN,
+    height: stage.height - X_AXIS_HEIGHT - 2 * MARGIN
   });
 }
 
 export function calculateXAxisStage(stage: Stage): Stage {
   return Stage.fromJS({
-    x: 0,
-    y: stage.height,
+    x: Y_AXIS_WIDTH + MARGIN,
+    y: stage.height + MARGIN,
     width: stage.width,
     height: X_AXIS_HEIGHT
   });
@@ -191,8 +192,8 @@ export function calculateXAxisStage(stage: Stage): Stage {
 
 export function calculateYAxisStage(stage: Stage): Stage {
   return Stage.fromJS({
-    x: 0,
-    y: 0,
+    x: MARGIN,
+    y: MARGIN,
     width: Y_AXIS_WIDTH,
     height: stage.height
   });
