@@ -30,6 +30,7 @@ import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors"
 import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
+import { Unary } from "../../../common/utils/functional/functional";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { roundToHalfPx } from "../../utils/dom/dom";
@@ -53,8 +54,8 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const xTicks = pickTicks(xScale, 10);
   const yTicks = pickTicks(yScale, 10);
 
-  // const xSeriesKey = xSeries.definition.key()
-  // const ySeriesKey = ySeries.definition.key()
+  const xSeriesKey = xSeries.definition.key();
+  const ySeriesKey = ySeries.definition.key();
 
   return <div className="scatterplot-container">
     <div style={chartStage.getWidthHeight()}>
@@ -67,23 +68,28 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
           tickSize={TICK_SIZE}
           scale={yScale}
           formatter={ySeries.formatter()} />
-        {/*{splitDatum.map((point, num) => {*/}
-        {/*  const x = point[xSeriesKey] as number;*/}
-        {/*  const y = point[ySeriesKey] as number;*/}
-        {/*  return (*/}
-        {/*    <circle*/}
-        {/*      cx={roundToHalfPx(xScale(x))}*/}
-        {/*      cy={roundToHalfPx(yScale(y) + chartStage.y)}*/}
-        {/*      key={num} r={3}*/}
-        {/*      stroke="blue"*/}
-        {/*      fill={"red"}*/}
-        {/*      transform="translate(-50%, -50%)"*/}
-        {/*    />*/}
-        {/*  );*/}
-        {/*})}*/}
-        <circle cx={roundToHalfPx(xScale(60))} cy={roundToHalfPx(yScale(10) + chartStage.y)} key={"hay"} r={3} stroke="blue" fill={"red"} transform="translate(-50%, -50%)"/>
+        {splitDatum.map((point, num) => {
+          const x = point[xSeriesKey] as number;
+          const y = point[ySeriesKey] as number;
+          return (
+            <circle
+              cx={roundToHalfPx(xScale(x))}
+              cy={roundToHalfPx(yScale(y) + chartStage.y)}
+              key={num} r={3}
+              stroke="blue"
+              fill={"red"}
+            />
+          );
+        })}
+        {/*<circle*/}
+        {/*  cx={60}*/}
+        {/*  cy={20}*/}
+        {/*  key={'key'} r={3}*/}
+        {/*  stroke="blue"*/}
+        {/*  fill={"red"}*/}
+        {/*/>*/}
       </svg>
-      <XAxis scale={xScale} width={chartStage.width} ticks={xTicks}/>
+      <XAxis scale={xScale} width={chartStage.width} ticks={xTicks} formatter={xSeries.formatter()}/>
     </div>
   </div>;
 };
@@ -119,9 +125,11 @@ export interface XAxisProps {
   width: number;
   ticks: Array<Date | number>;
   scale: LinearScale;
+  formatter: Unary<number, string>;
 }
+
 export const XAxis: React.SFC<XAxisProps> = props => {
-  const { width, ticks, scale } = props;
+  const { width, ticks, scale, formatter } = props;
   const stage = Stage.fromSize(width, X_AXIS_HEIGHT);
 
   const lines = ticks.map((tick: any) => {
@@ -132,7 +140,7 @@ export const XAxis: React.SFC<XAxisProps> = props => {
   const labelY = TICK_SIZE + TEXT_OFFSET;
   const labels = ticks.map((tick: any) => {
     const x = scale(tick);
-    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: "middle" }}>{tick}</text>;
+    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: "middle" }}>{formatter(tick)}</text>;
   });
 
   return <svg viewBox={stage.getViewBox()}>
