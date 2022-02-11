@@ -13,11 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@import '../../imports';
+
 .scatterplot {
   .scatterplot-container {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    position: relative;
+  }
+
+  .axis {
+    pointer-events: none;
+
+    line.border {
+      stroke: $gray;
+    }
+
+    line.tick {
+      stroke: $gray;
+    }
+
+    .label {
+      @include css-variable(fill, text-medium);
+      font-size: 12px;
+      font-weight: 400;
+
+      &.xAxisLabel {
+        text-anchor: middle;
+      }
+    }
+  }
+
+  .point {
+    @include css-variable(stroke, brand);
+    @include css-variable(fill, item-dimension);
   }
 }

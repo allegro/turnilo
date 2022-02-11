@@ -57,7 +57,6 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const ySeriesKey = ySeries.definition.key();
 
   return <div className="scatterplot-container" style={stage.getWidthHeight()}>
-    <h2 style={{ paddingTop: 16 }}>tytuł wykresu</h2>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -75,12 +74,13 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
             <circle
               cx={roundToHalfPx(xScale(x) + + plottingStage.x)}
               cy={roundToHalfPx(yScale(y) + plottingStage.y)}
-              key={num} r={3}
-              stroke="blue"
-              fill={"red"}
+              key={num}
+              r={3}
+              className="point"
             />
           );
-        })}
+        })
+        }
         {/*<circle*/}
         {/*  cx={60}*/}
         {/*  cy={20}*/}
@@ -102,7 +102,7 @@ export function ScatterplotVisualization(props: VisualizationProps) {
 // copies from bar chart
 // yaxis
 export const TICK_SIZE = 10;
-const MARGIN = 24;
+const MARGIN = 40;
 
 // copies from line chart
 
@@ -127,15 +127,16 @@ export const XAxis: React.SFC<XAxisProps> = props => {
   });
 
   const labelY = TICK_SIZE + TEXT_OFFSET_X;
+  const linePositionY = roundToHalfPx(0);
   const labels = ticks.map((tick: any) => {
     const x = scale(tick);
-    return <text className="tick" key={String(tick)} x={x} y={labelY} style={{ textAnchor: "middle" }}>{formatter(tick)}</text>;
+    return <text className="label xAxisLabel" key={String(tick)} x={x} y={labelY}>{formatter(tick)}</text>;
   });
 
-  return (<g stroke="gray" className="vertical-axis" transform={stage.getTransform()}>
+  return (<g className="axis" transform={stage.getTransform()}>
       {lines}
       {labels}
-      <line  className="border" y1={0} y2={0} x1={0} x2={stage.width}/>
+      <line className="border" y1={linePositionY} y2={linePositionY} x1={0} x2={stage.width}/>
     </g>);
 };
 
@@ -157,16 +158,16 @@ const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks: input
     return <line className="tick" key={String(tick)} x1={Y_AXIS_WIDTH - tickSize} y1={y} x2={Y_AXIS_WIDTH} y2={y} />;
   });
 
-  const border = roundToHalfPx(Y_AXIS_WIDTH);
+  const linePositionX = roundToHalfPx(Y_AXIS_WIDTH);
 
   const labels = ticks.map((tick: any) => {
     const y = scale(tick);
     const labelX = y + TEXT_OFFSET_Y;
-    return <text className="tick" key={String(tick)} x={0} y={labelX}>{formatter(tick)}</text>;
+    return <text className="label" key={String(tick)} x={0} y={labelX}>{formatter(tick)}</text>;
   });
 
-  return <g className="vertical-axis" transform={stage.getTransform()}>
-    <line className="border" x1={border} y1={-topLineExtend} x2={border} y2={stage.height} />
+  return <g className="axis" transform={stage.getTransform()}>
+    <line className="border" x1={linePositionX} y1={-topLineExtend} x2={linePositionX} y2={stage.height} />
     {lines}
     {labels}
   </g>;
