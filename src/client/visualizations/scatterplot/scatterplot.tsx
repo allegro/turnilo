@@ -44,19 +44,23 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
   const splitDatum = selectFirstSplitDatums(data);
   const yExtent = getExtent(splitDatum, ySeries);
-
   const xExtent = getExtent(splitDatum, xSeries);
 
   const plottingStage = calculatePlottingStage(stage);
-  const yScale = d3.scale.linear().domain(yExtent).range([plottingStage.height, 0]);
-  const xScale = d3.scale.linear().domain(xExtent).range([0, plottingStage.width]);
+  const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
+  const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
   const xTicks = pickTicks(xScale, 10);
   const yTicks = pickTicks(yScale, 10);
 
   const xSeriesKey = xSeries.definition.key();
   const ySeriesKey = ySeries.definition.key();
 
+  const ySeriesTitle = ySeries.title();
+  const xSeriesTitle = xSeries.title();
+
   return <div className="scatterplot-container" style={stage.getWidthHeight()}>
+    <span className="axisTitle" style={{ top: 10, left: 10 }}>{xSeriesTitle}</span>
+    <span className="axisTitle" style={{ bottom: 145, right: 10 }}>{ySeriesTitle}</span>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -72,7 +76,7 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
           const y = point[ySeriesKey] as number;
           return (
             <circle
-              cx={roundToHalfPx(xScale(x) + + plottingStage.x)}
+              cx={roundToHalfPx(xScale(x) + plottingStage.x)}
               cy={roundToHalfPx(yScale(y) + plottingStage.y)}
               key={num}
               r={3}
@@ -81,13 +85,6 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
           );
         })
         }
-        {/*<circle*/}
-        {/*  cx={60}*/}
-        {/*  cy={20}*/}
-        {/*  key={'key'} r={3}*/}
-        {/*  stroke="blue"*/}
-        {/*  fill={"red"}*/}
-        {/*/>*/}
       </svg>
   </div>;
 };
@@ -99,26 +96,21 @@ export function ScatterplotVisualization(props: VisualizationProps) {
   </React.Fragment>;
 }
 
-// copies from bar chart
-// yaxis
-export const TICK_SIZE = 10;
+const TICK_SIZE = 10;
 const MARGIN = 40;
-
-// copies from line chart
-
 const TEXT_OFFSET_X = 16;
 const TEXT_OFFSET_Y = 4;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 
-export interface XAxisProps {
+interface XAxisProps {
   stage: Stage;
   ticks: Array<Date | number>;
   scale: LinearScale;
   formatter: Unary<number, string>;
 }
 
-export const XAxis: React.SFC<XAxisProps> = props => {
+const XAxis: React.SFC<XAxisProps> = props => {
   const { stage, ticks, scale, formatter } = props;
 
   const lines = ticks.map((tick: any) => {
@@ -140,7 +132,7 @@ export const XAxis: React.SFC<XAxisProps> = props => {
     </g>);
 };
 
-export interface YAxisProps {
+interface YAxisProps {
   stage: Stage;
   ticks: number[];
   tickSize: number;
@@ -149,7 +141,7 @@ export interface YAxisProps {
   topLineExtend?: number;
   hideZero?: boolean;
 }
-// copies from VerticalAxis
+
 const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks: inputTicks, scale, topLineExtend = 0, hideZero }) => {
   const ticks = hideZero ? inputTicks.filter((tick: number) => tick !== 0) : inputTicks;
 
@@ -173,7 +165,7 @@ const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks: input
   </g>;
 };
 
-export function calculatePlottingStage(stage: Stage): Stage {
+function calculatePlottingStage(stage: Stage): Stage {
   return Stage.fromJS({
     x: Y_AXIS_WIDTH + MARGIN,
     y: MARGIN,
@@ -182,7 +174,7 @@ export function calculatePlottingStage(stage: Stage): Stage {
   });
 }
 
-export function calculateXAxisStage(stage: Stage): Stage {
+function calculateXAxisStage(stage: Stage): Stage {
   return Stage.fromJS({
     x: Y_AXIS_WIDTH + MARGIN,
     y: stage.height + MARGIN,
@@ -191,7 +183,7 @@ export function calculateXAxisStage(stage: Stage): Stage {
   });
 }
 
-export function calculateYAxisStage(stage: Stage): Stage {
+function calculateYAxisStage(stage: Stage): Stage {
   return Stage.fromJS({
     x: MARGIN,
     y: MARGIN,
