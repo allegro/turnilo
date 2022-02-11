@@ -39,7 +39,7 @@ export const XAxis: React.SFC<XAxisProps> = ({ stage, ticks, scale, formatter })
   });
   const labels = ticks.map((tick: number) => {
     const x = scale(tick);
-    return <text className="label xAxisLabel" key={String(tick)} x={x} y={labelY}>{formatter(tick)}</text>;
+    return <text className="label axis-label-x" key={String(tick)} x={x} y={labelY}>{formatter(tick)}</text>;
   });
 
   return (<g className="axis" transform={stage.getTransform()}>

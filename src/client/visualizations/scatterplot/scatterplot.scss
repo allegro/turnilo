@@ -41,7 +41,7 @@
       font-size: 12px;
       font-weight: 400;
 
-      &.xAxisLabel {
+      &.axis-label-x {
         text-anchor: middle;
       }
     }
@@ -52,7 +52,7 @@
     @include css-variable(fill, item-dimension);
   }
 
-  .axisTitle {
+  .axis-title {
     position: absolute;
     font-weight: $bold;
   }

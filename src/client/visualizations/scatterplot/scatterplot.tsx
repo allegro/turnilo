@@ -54,8 +54,8 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const yTicks = pickTicks(yScale, 10);
 
   return <div className="scatterplot-container" style={stage.getWidthHeight()}>
-    <span className="axisTitle" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
-    <span className="axisTitle" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
+    <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
+    <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
     <svg viewBox={stage.getViewBox()}>
       <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
       <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
