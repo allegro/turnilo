@@ -66,9 +66,11 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
         tickSize={TICK_SIZE}
         scale={yScale}
         formatter={ySeries.formatter()} />
-      {scatterplotData.map(datum => (
-        <Point datum={datum} xScale={xScale} yScale={yScale} xSeries={xSeries} ySeries={ySeries} stage={plottingStage} key={`point-${datum.x}-${datum.y}`}/>
-      ))}
+      <g transform={plottingStage.getTransform()}>
+        {scatterplotData.map(datum => (
+          <Point datum={datum} xScale={xScale} yScale={yScale} xSeries={xSeries} ySeries={ySeries} key={`point-${datum.x}-${datum.y}`}/>
+        ))}
+      </g>
     </svg>
   </div>;
 };

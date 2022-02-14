@@ -19,8 +19,6 @@ import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
-import { Stage } from "../../../common/models/stage/stage";
-import { roundToHalfPx } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
 interface PointProps {
@@ -29,24 +27,20 @@ interface PointProps {
   yScale: LinearScale;
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
-  stage: Stage;
 }
 
 const POINT_RADIUS = 3;
 
-export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries , stage }) => {
+export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries }) => {
   const xSeriesKey = xSeries.definition.key();
   const ySeriesKey = ySeries.definition.key();
 
   const xValue = datum[xSeriesKey] as number;
   const yValue = datum[ySeriesKey] as number;
 
-  const xPosition = roundToHalfPx(xScale(xValue) + stage.x);
-  const yPosition = roundToHalfPx(yScale(yValue) + stage.y);
-
   return (<circle
-      cx={xPosition}
-      cy={yPosition}
+      cx={xScale(xValue)}
+      cy={yScale(yValue)}
       r={POINT_RADIUS}
       className="point"
     />
