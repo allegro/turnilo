@@ -31,7 +31,9 @@ import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { pickTicks } from "../../utils/linear-scale/linear-scale";
+import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
+import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
+import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
@@ -70,6 +72,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
       <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
+      <Tooltip  datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} title={"hello there"}/>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -130,3 +133,25 @@ function calculateYAxisStage(stage: Stage): Stage {
     height: stage.height
   });
 }
+
+interface TooltipProps {
+  title: string;
+  datum: Datum;
+  stage: Stage;
+  xSeries: ConcreteSeries;
+  ySeries: ConcreteSeries;
+  xScale: LinearScale;
+  yScale: LinearScale;
+}
+const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xScale, yScale, title }) => {
+  if (!Boolean(datum)) return null;
+
+  const xValue = xSeries.selectValue(datum);
+  const yValue = ySeries.selectValue(datum);
+
+  return <TooltipWithinStage left={xScale(xValue)} top={yScale(yValue)} stage={stage} margin={0}>
+    <SegmentBubbleContent
+      title={title}
+      content={<span>{xSeries.title()} {xSeries.selectValue(datum)}, {ySeries.title()} {ySeries.selectValue(datum)}</span>}/>
+  </TooltipWithinStage>;
+};
