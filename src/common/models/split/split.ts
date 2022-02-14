@@ -20,14 +20,15 @@ import { Record } from "immutable";
 import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywood";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
-import { Dimension } from "../dimension/dimension";
+import { Dimension, DimensionKind } from "../dimension/dimension";
 import { DimensionSort, Sort } from "../sort/sort";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 
 export enum SplitType {
   number = "number",
   string = "string",
-  time = "time"
+  time = "time",
+  boolean = "boolean"
 }
 
 export type Bucket = number | Duration;
@@ -68,13 +69,15 @@ export function toExpression({ bucket, type }: Split, { expression }: Dimension,
   return expWithShift.performAction(bucketToAction(bucket));
 }
 
-export function kindToType(kind: string): SplitType {
+export function kindToType(kind: DimensionKind): SplitType {
   switch (kind) {
     case "time":
       return SplitType.time;
     case "number":
       return SplitType.number;
-    default:
+    case "boolean":
+      return SplitType.boolean;
+    case "string":
       return SplitType.string;
   }
 }
