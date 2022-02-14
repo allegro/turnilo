@@ -26,7 +26,7 @@ import {
 import * as d3 from "d3";
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
@@ -41,39 +41,56 @@ const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 
-const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
-  const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
-  const scatterplotData = selectFirstSplitDatums(data);
-  const xExtent = getExtent(scatterplotData, xSeries);
-  const yExtent = getExtent(scatterplotData, ySeries);
+interface ScatterplotState {
+  hoveredPoint: Datum | null;
+}
 
-  const plottingStage = calculatePlottingStage(stage);
-  const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
-  const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
-  const xTicks = pickTicks(xScale, 10);
-  const yTicks = pickTicks(yScale, 10);
+export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
+  state: ScatterplotState = {
+    hoveredPoint: null
+  };
 
-  return <div className="scatterplot-container" style={stage.getWidthHeight()}>
-    <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
-    <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
-    <svg viewBox={stage.getViewBox()}>
-      <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
-      <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
-      <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()} tickSize={TICK_SIZE}/>
-      <YAxis
-        stage={calculateYAxisStage(plottingStage)}
-        ticks={yTicks}
-        tickSize={TICK_SIZE}
-        scale={yScale}
-        formatter={ySeries.formatter()} />
-      <g transform={plottingStage.getTransform()}>
-        {scatterplotData.map(datum => (
-          <Point datum={datum} xScale={xScale} yScale={yScale} xSeries={xSeries} ySeries={ySeries} key={`point-${datum.x}-${datum.y}`}/>
-        ))}
-      </g>
-    </svg>
-  </div>;
-};
+  hoverOverPoint = (datum: Datum): void =>
+    this.setState({ hoveredPoint: datum });
+
+  render() {
+    const { data, essence, stage } = this.props;
+    const splitKey = selectFirstSplitDataset(data).keys[0];
+    const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
+    const scatterplotData = selectFirstSplitDatums(data);
+    const xExtent = getExtent(scatterplotData, xSeries);
+    const yExtent = getExtent(scatterplotData, ySeries);
+
+    const plottingStage = calculatePlottingStage(stage);
+    const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
+    const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
+    const xTicks = pickTicks(xScale, 10);
+    const yTicks = pickTicks(yScale, 10);
+
+    return <div className="scatterplot-container" style={stage.getWidthHeight()}>
+      <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
+      <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
+      <svg viewBox={stage.getViewBox()}>
+        <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
+        <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
+        <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()} tickSize={TICK_SIZE}/>
+        <YAxis
+          stage={calculateYAxisStage(plottingStage)}
+          ticks={yTicks}
+          tickSize={TICK_SIZE}
+          scale={yScale}
+          formatter={ySeries.formatter()} />
+        <g transform={plottingStage.getTransform()}>
+          {scatterplotData.map(datum => {
+            return (
+            <Point datum={datum} xScale={xScale} yScale={yScale} xSeries={xSeries} ySeries={ySeries} key={`point-${datum[splitKey]}`} onHover={this.hoverOverPoint}/>
+          ); }
+          )}
+        </g>
+      </svg>
+    </div>;
+  }
+}
 
 export function ScatterplotVisualization(props: VisualizationProps) {
   return <React.Fragment>

@@ -27,15 +27,18 @@ interface PointProps {
   yScale: LinearScale;
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
+  onHover(datum: Datum): void;
 }
 
 const POINT_RADIUS = 3;
 
-export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries }) => {
+export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries, onHover }) => {
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
   return (<circle
+      onMouseEnter={() => onHover(datum)}
+      onMouseLeave={() => onHover(null)}
       cx={xScale(xValue)}
       cy={yScale(yValue)}
       r={POINT_RADIUS}

@@ -50,6 +50,8 @@
   .point {
     @include css-variable(stroke, brand);
     @include css-variable(fill, item-dimension);
+
+    cursor: pointer;
   }
 
   .axis-title {
