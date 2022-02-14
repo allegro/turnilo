@@ -31,7 +31,7 @@ import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
+import { SegmentBubble, SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
 import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
@@ -149,9 +149,10 @@ const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xSca
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
-  return <TooltipWithinStage left={xScale(xValue)} top={yScale(yValue)} stage={stage} margin={0}>
-    <SegmentBubbleContent
-      title={title}
-      content={<span>{xSeries.title()} {xSeries.selectValue(datum)}, {ySeries.title()} {ySeries.selectValue(datum)}</span>}/>
-  </TooltipWithinStage>;
+  return <SegmentBubble
+    left={xScale(xValue) + stage.x + 240}
+    top={yScale(yValue) + stage.y +  160}
+    title={"wat"}
+    content={<span>{xSeries.title()} {xSeries.formatValue(datum)}, {ySeries.title()} {ySeries.formatValue(datum)}</span>}
+  />;
 };
