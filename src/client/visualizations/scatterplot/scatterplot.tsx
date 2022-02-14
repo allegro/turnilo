@@ -36,10 +36,10 @@ import { Point } from "./point";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
 
-function getExtent(data: Datum[], series: ConcreteSeries): number[] {
-  const selectValues = (d: Datum) => series.selectValue(d);
-  return d3.extent(data, selectValues);
-}
+const TICK_SIZE = 10;
+const MARGIN = 40;
+const X_AXIS_HEIGHT = 50;
+export const Y_AXIS_WIDTH = 50;
 
 const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
@@ -59,7 +59,7 @@ const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
     <svg viewBox={stage.getViewBox()}>
       <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
       <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
-      <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()}/>
+      <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()} tickSize={TICK_SIZE}/>
       <YAxis
         stage={calculateYAxisStage(plottingStage)}
         ticks={yTicks}
@@ -82,12 +82,10 @@ export function ScatterplotVisualization(props: VisualizationProps) {
   </React.Fragment>;
 }
 
-export const TICK_SIZE = 10;
-export const MARGIN = 40;
-export const TEXT_OFFSET_X = 16;
-export const TEXT_OFFSET_Y = 4;
-export const X_AXIS_HEIGHT = 50;
-export const Y_AXIS_WIDTH = 50;
+function getExtent(data: Datum[], series: ConcreteSeries): number[] {
+  const selectValues = (d: Datum) => series.selectValue(d);
+  return d3.extent(data, selectValues);
+}
 
 function calculatePlottingStage(stage: Stage): Stage {
   return Stage.fromJS({

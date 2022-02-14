@@ -20,7 +20,9 @@ import "./scatterplot.scss";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { roundToHalfPx } from "../../utils/dom/dom";
-import { TEXT_OFFSET_Y, Y_AXIS_WIDTH } from "./scatterplot";
+import { Y_AXIS_WIDTH } from "./scatterplot";
+
+const TEXT_OFFSET_Y = 4;
 
 interface YAxisProps {
   stage: Stage;

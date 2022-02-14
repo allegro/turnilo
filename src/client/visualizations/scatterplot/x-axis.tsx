@@ -21,21 +21,23 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
-import { TEXT_OFFSET_X, TICK_SIZE } from "./scatterplot";
+
+const TEXT_OFFSET_X = 16;
 
 interface XAxisProps {
   stage: Stage;
   ticks: number[];
+  tickSize: number;
   scale: LinearScale;
   formatter: Unary<number, string>;
 }
 
-export const XAxis: React.SFC<XAxisProps> = ({ stage, ticks, scale, formatter }) => {
-  const labelY = TICK_SIZE + TEXT_OFFSET_X;
+export const XAxis: React.SFC<XAxisProps> = ({ stage, ticks, scale, formatter, tickSize }) => {
+  const labelY = tickSize + TEXT_OFFSET_X;
   const linePositionY = roundToHalfPx(0);
   const lines = ticks.map((tick: number) => {
     const x = roundToHalfPx(scale(tick));
-    return <line className="tick" key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_SIZE} />;
+    return <line className="tick" key={String(tick)} x1={x} y1={0} x2={x} y2={tickSize} />;
   });
   const labels = ticks.map((tick: number) => {
     const x = scale(tick);
