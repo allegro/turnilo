@@ -21,7 +21,6 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
-import { Y_AXIS_WIDTH } from "./scatterplot";
 
 const TEXT_OFFSET_Y = 4;
 
@@ -34,11 +33,11 @@ interface YAxisProps {
 }
 
 export const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks, scale }) => {
-  const linePositionX = roundToHalfPx(Y_AXIS_WIDTH);
+  const linePositionX = roundToHalfPx(stage.width);
 
   const lines = ticks.map((tick: number) => {
     const y = roundToHalfPx(scale(tick));
-    return <line className="tick" key={String(tick)} x1={Y_AXIS_WIDTH - tickSize} y1={y} x2={Y_AXIS_WIDTH} y2={y} />;
+    return <line className="tick" key={String(tick)} x1={stage.width - tickSize} y1={y} x2={stage.width} y2={y} />;
   });
 
   const labels = ticks.map((tick: number) => {

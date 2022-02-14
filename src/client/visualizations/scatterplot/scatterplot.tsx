@@ -39,7 +39,7 @@ import { YAxis } from "./y-axis";
 const TICK_SIZE = 10;
 const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
-export const Y_AXIS_WIDTH = 50;
+const Y_AXIS_WIDTH = 50;
 
 const Scatterplot: React.SFC<ChartProps> = ({ data, essence, stage }) => {
   const [xSeries, ySeries] = essence.getConcreteSeries().toArray();

@@ -32,11 +32,8 @@ interface PointProps {
 const POINT_RADIUS = 3;
 
 export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries }) => {
-  const xSeriesKey = xSeries.definition.key();
-  const ySeriesKey = ySeries.definition.key();
-
-  const xValue = datum[xSeriesKey] as number;
-  const yValue = datum[ySeriesKey] as number;
+  const xValue = xSeries.selectValue(datum);
+  const yValue = ySeries.selectValue(datum);
 
   return (<circle
       cx={xScale(xValue)}
