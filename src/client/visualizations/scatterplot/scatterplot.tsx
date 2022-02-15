@@ -26,7 +26,7 @@ import {
 import * as d3 from "d3";
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
@@ -57,7 +57,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
 
   render() {
     const { data, essence, stage } = this.props;
-    const splitKey = selectFirstSplitDataset(data).keys[0];
+    const splitKey = essence.splits.splits.first().toKey();
     const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
     const scatterplotData = selectFirstSplitDatums(data);
     const xExtent = getExtent(scatterplotData, xSeries);
@@ -72,7 +72,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
       <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
-      <Tooltip datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} title={"hello there"}/>
+      <Tooltip datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} splitKey={splitKey}/>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -135,7 +135,7 @@ function calculateYAxisStage(stage: Stage): Stage {
 }
 
 interface TooltipProps {
-  title: string;
+  splitKey: string;
   datum: Datum;
   stage: Stage;
   xSeries: ConcreteSeries;
@@ -143,13 +143,18 @@ interface TooltipProps {
   xScale: LinearScale;
   yScale: LinearScale;
 }
-const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xScale, yScale, title }) => {
+
+const TOOLTIP_OFFSET_Y = 50;
+const TOOLTIP_OFFSET_X = 100;
+
+const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xScale, yScale, splitKey }) => {
   if (!Boolean(datum)) return null;
 
+  const title = datum[splitKey] as string;
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
-  return <TooltipWithinStage top={Math.round(yScale(yValue)) + 50} left={Math.round(xScale(xValue)) + 100} stage={stage}>
+  return <TooltipWithinStage top={Math.round(yScale(yValue)) + TOOLTIP_OFFSET_Y} left={Math.round(xScale(xValue)) + TOOLTIP_OFFSET_X} stage={stage}>
     <SegmentBubbleContent
       title={title}
       content={<span>{xSeries.title()} {xSeries.formatValue(datum)},<br/> {ySeries.title()} {ySeries.formatValue(datum)}</span>} />
