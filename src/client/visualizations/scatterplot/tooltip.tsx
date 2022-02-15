@@ -47,6 +47,9 @@ export const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySerie
   return <TooltipWithinStage top={Math.round(yScale(yValue)) + TOOLTIP_OFFSET_Y} left={Math.round(xScale(xValue)) + TOOLTIP_OFFSET_X} stage={stage}>
     <SegmentBubbleContent
       title={title}
-      content={<span>{xSeries.title()} {xSeries.formatValue(datum)},<br/> {ySeries.title()} {ySeries.formatValue(datum)}</span>} />
+      content={<span>
+        <strong>{xSeries.title()}</strong> {xSeries.formatValue(datum)}<br/>
+        <strong>{ySeries.title()}</strong> {ySeries.formatValue(datum)}
+      </span>} />
   </TooltipWithinStage>;
 };
