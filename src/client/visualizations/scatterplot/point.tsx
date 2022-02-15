@@ -31,18 +31,29 @@ interface PointProps {
 }
 
 const POINT_RADIUS = 3;
+const HOVER_AREA_RADIUS = 9;
 
 export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries, onHover }) => {
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
-  return (<circle
-      onMouseEnter={() => onHover(datum)}
-      onMouseLeave={() => onHover(null)}
-      cx={xScale(xValue)}
-      cy={yScale(yValue)}
-      r={POINT_RADIUS}
-      className="point"
-    />
+  return (
+    <>
+      <circle
+        cx={xScale(xValue)}
+        cy={yScale(yValue)}
+        r={POINT_RADIUS}
+        className="point"
+      />
+      <circle
+        onMouseEnter={() => onHover(datum)}
+        onMouseLeave={() => onHover(null)}
+        cx={xScale(xValue)}
+        cy={yScale(yValue)}
+        r={HOVER_AREA_RADIUS}
+        stroke="none"
+        fill="transparent"
+      />
+    </>
   );
 };
