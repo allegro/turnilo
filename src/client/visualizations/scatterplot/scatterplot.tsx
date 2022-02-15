@@ -31,10 +31,9 @@ import "./scatterplot.scss";
 
 import { Stage } from "../../../common/models/stage/stage";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
-import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
-import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
+import {  pickTicks } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
+import { Tooltip } from "./tooltip";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
 
@@ -133,30 +132,3 @@ function calculateYAxisStage(stage: Stage): Stage {
     height: stage.height
   });
 }
-
-interface TooltipProps {
-  splitKey: string;
-  datum: Datum;
-  stage: Stage;
-  xSeries: ConcreteSeries;
-  ySeries: ConcreteSeries;
-  xScale: LinearScale;
-  yScale: LinearScale;
-}
-
-const TOOLTIP_OFFSET_Y = 50;
-const TOOLTIP_OFFSET_X = 100;
-
-const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xScale, yScale, splitKey }) => {
-  if (!Boolean(datum)) return null;
-
-  const title = datum[splitKey] as string;
-  const xValue = xSeries.selectValue(datum);
-  const yValue = ySeries.selectValue(datum);
-
-  return <TooltipWithinStage top={Math.round(yScale(yValue)) + TOOLTIP_OFFSET_Y} left={Math.round(xScale(xValue)) + TOOLTIP_OFFSET_X} stage={stage}>
-    <SegmentBubbleContent
-      title={title}
-      content={<span>{xSeries.title()} {xSeries.formatValue(datum)},<br/> {ySeries.title()} {ySeries.formatValue(datum)}</span>} />
-  </TooltipWithinStage>;
-};
