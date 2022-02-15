@@ -29,6 +29,7 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import "./scatterplot.scss";
 
+import { TooltipWithBounds } from "@vx/tooltip";
 import { Stage } from "../../../common/models/stage/stage";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { SegmentBubble, SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
@@ -149,10 +150,20 @@ const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xSca
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
-  return <SegmentBubble
-    left={xScale(xValue) + stage.x + 240}
-    top={yScale(yValue) + stage.y +  160}
-    title={"wat"}
-    content={<span>{xSeries.title()} {xSeries.formatValue(datum)}, {ySeries.title()} {ySeries.formatValue(datum)}</span>}
-  />;
+  // return <SegmentBubble
+  //   left={xScale(xValue) + stage.x + 240}
+  //   top={yScale(yValue) + stage.y +  160}
+  //   title={"wat"}
+  //   content={<span>{xSeries.title()} {xSeries.formatValue(datum)}, {ySeries.title()} {ySeries.formatValue(datum)}</span>}
+  // />;
+
+  return <TooltipWithBounds
+    left={xScale(xValue)}
+    top={yScale(yValue)}
+    key={'wat'}>
+      <SegmentBubbleContent
+        title={"wat"}
+        content={<span>{xSeries.title()} {xSeries.formatValue(datum)},<br/> {ySeries.title()} {ySeries.formatValue(datum)}</span>}
+      />
+  </TooltipWithBounds>;
 };
