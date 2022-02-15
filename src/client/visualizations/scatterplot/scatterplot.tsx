@@ -24,14 +24,16 @@ import {
 } from "../../views/cube-view/center-panel/center-panel";
 
 import * as d3 from "d3";
-import { Datum } from "plywood";
+import { Dataset, Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import "./scatterplot.scss";
 
+import memoizeOne from "memoize-one";
+import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import {  pickTicks } from "../../utils/linear-scale/linear-scale";
+import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
 import { Tooltip } from "./tooltip";
 import { XAxis } from "./x-axis";
@@ -60,16 +62,18 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
   render() {
     const { data, essence, stage } = this.props;
     const splitKey = essence.splits.splits.first().toKey();
-    const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
-    const scatterplotData = selectFirstSplitDatums(data);
-    const xExtent = getExtent(scatterplotData, xSeries);
-    const yExtent = getExtent(scatterplotData, ySeries);
+    // const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
+    // const scatterplotData = selectFirstSplitDatums(data);
+    // const xExtent = getExtent(scatterplotData, xSeries);
+    // const yExtent = getExtent(scatterplotData, ySeries);
+    //
+    // const plottingStage = getPlottingStage(stage);
+    // const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
+    // const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
+    // const xTicks = pickTicks(xScale, 10);
+    // const yTicks = pickTicks(yScale, 10);
 
-    const plottingStage = calculatePlottingStage(stage);
-    const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
-    const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
-    const xTicks = pickTicks(xScale, 10);
-    const yTicks = pickTicks(yScale, 10);
+    const { xTicks, yTicks, xScale, yScale, xSeries, ySeries, plottingStage, scatterplotData } = getPlottingData(data, essence, stage);
 
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
@@ -78,9 +82,9 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
-        <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()} tickSize={TICK_SIZE}/>
+        <XAxis scale={xScale} stage={getXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()} tickSize={TICK_SIZE}/>
         <YAxis
-          stage={calculateYAxisStage(plottingStage)}
+          stage={getYAxisStage(plottingStage)}
           ticks={yTicks}
           tickSize={TICK_SIZE}
           scale={yScale}
@@ -111,6 +115,10 @@ export function ScatterplotVisualization(props: VisualizationProps) {
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Scatterplot}/>
   </React.Fragment>;
 }
+
+const getPlottingStage = memoizeOne(calculatePlottingStage);
+const getXAxisStage = memoizeOne(calculateXAxisStage);
+const getYAxisStage = memoizeOne(calculateYAxisStage);
 
 function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
@@ -143,3 +151,31 @@ function calculateYAxisStage(stage: Stage): Stage {
     height: stage.height
   });
 }
+
+interface PlottingData {
+  xSeries: ConcreteSeries;
+  ySeries: ConcreteSeries;
+  xScale: LinearScale;
+  yScale: LinearScale;
+  xTicks: number[];
+  yTicks: number[];
+  plottingStage: Stage;
+  scatterplotData: Datum[];
+}
+
+function preparePlottingData(data: Dataset, essence: Essence, stage: Stage): PlottingData {
+  const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
+  const scatterplotData = selectFirstSplitDatums(data);
+  const xExtent = getExtent(scatterplotData, xSeries);
+  const yExtent = getExtent(scatterplotData, ySeries);
+
+  const plottingStage = calculatePlottingStage(stage);
+  const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
+  const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
+  const xTicks = pickTicks(xScale, 10);
+  const yTicks = pickTicks(yScale, 10);
+
+  return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
+}
+
+const getPlottingData = memoizeOne(preparePlottingData);
