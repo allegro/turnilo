@@ -51,7 +51,9 @@
     @include css-variable(stroke, brand);
     @include css-variable(fill, item-dimension);
 
-    cursor: pointer;
+    &:hover {
+      @include css-variable(fill, brand);
+    }
   }
 
   .axis-title {

@@ -29,10 +29,9 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import "./scatterplot.scss";
 
-import { TooltipWithBounds } from "@vx/tooltip";
 import { Stage } from "../../../common/models/stage/stage";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import { SegmentBubble, SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
+import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
 import { LinearScale, pickTicks } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
@@ -73,7 +72,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
       <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
-      <Tooltip  datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} title={"hello there"}/>
+      <Tooltip datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} title={"hello there"}/>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -150,20 +149,9 @@ const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xSca
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
-  // return <SegmentBubble
-  //   left={xScale(xValue) + stage.x + 240}
-  //   top={yScale(yValue) + stage.y +  160}
-  //   title={"wat"}
-  //   content={<span>{xSeries.title()} {xSeries.formatValue(datum)}, {ySeries.title()} {ySeries.formatValue(datum)}</span>}
-  // />;
-
-  return <TooltipWithBounds
-    left={xScale(xValue)}
-    top={yScale(yValue)}
-    key={'wat'}>
-      <SegmentBubbleContent
-        title={"wat"}
-        content={<span>{xSeries.title()} {xSeries.formatValue(datum)},<br/> {ySeries.title()} {ySeries.formatValue(datum)}</span>}
-      />
-  </TooltipWithBounds>;
+  return <TooltipWithinStage top={Math.round(yScale(yValue)) + 50} left={Math.round(xScale(xValue)) + 100} stage={stage}>
+    <SegmentBubbleContent
+      title={title}
+      content={<span>{xSeries.title()} {xSeries.formatValue(datum)},<br/> {ySeries.title()} {ySeries.formatValue(datum)}</span>} />
+  </TooltipWithinStage>;
 };
