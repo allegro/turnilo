@@ -56,4 +56,12 @@
     position: absolute;
     font-weight: $bold;
   }
+
+  .segment-bubble-text {
+    .content {
+      strong {
+        font-weight: $bold;
+      }
+    }
+  }
 }

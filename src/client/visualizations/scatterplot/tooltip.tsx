@@ -19,42 +19,37 @@ import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
+import { Stage } from "../../../common/models/stage/stage";
+import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
+import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
-interface PointProps {
+interface TooltipProps {
+  splitKey: string;
   datum: Datum;
-  xScale: LinearScale;
-  yScale: LinearScale;
+  stage: Stage;
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
-  setHover(datum: Datum): void;
-  resetHover(): void;
+  xScale: LinearScale;
+  yScale: LinearScale;
 }
 
-const POINT_RADIUS = 3;
-const HOVER_AREA_RADIUS = 6;
+const TOOLTIP_OFFSET_Y = 50;
+const TOOLTIP_OFFSET_X = 100;
 
-export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries, setHover, resetHover }) => {
+export const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xScale, yScale, splitKey }) => {
+  if (!Boolean(datum)) return null;
+
+  const title = datum[splitKey] as string;
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
-  return (
-    <>
-      <circle
-        cx={xScale(xValue)}
-        cy={yScale(yValue)}
-        r={POINT_RADIUS}
-        className="point"
-      />
-      <circle
-        onMouseEnter={() => setHover(datum)}
-        onMouseLeave={() => resetHover()}
-        cx={xScale(xValue)}
-        cy={yScale(yValue)}
-        r={HOVER_AREA_RADIUS}
-        stroke="none"
-        fill="transparent"
-      />
-    </>
-  );
+  return <TooltipWithinStage top={yScale(yValue) + TOOLTIP_OFFSET_Y} left={xScale(xValue) + TOOLTIP_OFFSET_X} stage={stage}>
+    <SegmentBubbleContent
+      title={title}
+      content={<span>
+        <strong>{xSeries.title()}</strong> {xSeries.formatValue(datum)}<br/>
+        <strong>{ySeries.title()}</strong> {ySeries.formatValue(datum)}
+      </span>} />
+  </TooltipWithinStage>;
 };
