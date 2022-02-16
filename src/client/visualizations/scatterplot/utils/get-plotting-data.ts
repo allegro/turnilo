@@ -25,6 +25,11 @@ import { LinearScale, pickTicks } from "../../../utils/linear-scale/linear-scale
 const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
+const BREAKPOINT_SMALL = 544;
+const BREAKPOINT_MEDIUM = 768;
+const TICK_COUNT_SMALL = 4;
+const TICK_COUNT_MEDIUM = 6;
+const TICK_COUNT_LARGE = 10;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -37,17 +42,16 @@ interface PlottingData {
   scatterplotData: Datum[];
 }
 
-function getTicksCount(size: number): number {
-  // so many magic numbers here
-  if (size < 544) {
-    return 4;
+function getTicksCountByDimension(size: number): number {
+  if (size < BREAKPOINT_SMALL) {
+    return TICK_COUNT_SMALL;
   }
 
-  if (size < 768) {
-    return 6;
+  if (size < BREAKPOINT_MEDIUM) {
+    return TICK_COUNT_MEDIUM;
   }
 
-  return 10;
+  return TICK_COUNT_LARGE;
 }
 
 export function preparePlottingData(data: Dataset, essence: Essence, stage: Stage): PlottingData {
@@ -60,8 +64,8 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
   const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
 
-  const xTicks = pickTicks(xScale, getTicksCount(plottingStage.width));
-  const yTicks = pickTicks(yScale, getTicksCount(plottingStage.height));
+  const xTicks = pickTicks(xScale, getTicksCountByDimension(plottingStage.width));
+  const yTicks = pickTicks(yScale, getTicksCountByDimension(plottingStage.height));
 
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
