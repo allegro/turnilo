@@ -27,9 +27,11 @@ const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 const BREAKPOINT_SMALL = 544;
 const BREAKPOINT_MEDIUM = 768;
+const BREAKPOINT_LARGE = 1248;
 const TICK_COUNT_SMALL = 4;
 const TICK_COUNT_MEDIUM = 6;
-const TICK_COUNT_LARGE = 10;
+const TICK_COUNT_LARGE = 9;
+const TICK_COUNT_DEFAULT = 14;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -51,7 +53,11 @@ function getTicksCountByDimension(size: number): number {
     return TICK_COUNT_MEDIUM;
   }
 
-  return TICK_COUNT_LARGE;
+  if (size < BREAKPOINT_LARGE) {
+    return TICK_COUNT_LARGE;
+  }
+
+  return TICK_COUNT_DEFAULT;
 }
 
 export function preparePlottingData(data: Dataset, essence: Essence, stage: Stage): PlottingData {
@@ -64,8 +70,10 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
   const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
 
-  const xTicks = pickTicks(xScale, getTicksCountByDimension(plottingStage.width));
-  const yTicks = pickTicks(yScale, getTicksCountByDimension(plottingStage.height));
+  const xTicksCount = getTicksCountByDimension(plottingStage.width);
+  const yTicksCount =  getTicksCountByDimension(plottingStage.height);
+  const xTicks = pickTicks(xScale, xTicksCount);
+  const yTicks = pickTicks(yScale, yTicksCount);
 
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
@@ -77,7 +85,7 @@ export  function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   return d3.extent(data, selectValues);
 }
 
-export function calculatePlottingStageBasedOnWidth(stage: Stage): Stage {
+function calculatePlottingStageBasedOnWidth(stage: Stage): Stage {
   return Stage.fromJS({
     x: Y_AXIS_WIDTH + MARGIN,
     y: MARGIN,
@@ -86,7 +94,7 @@ export function calculatePlottingStageBasedOnWidth(stage: Stage): Stage {
   });
 }
 
-export function calculatePlottingStageBasedOnHeight(stage: Stage): Stage {
+function calculatePlottingStageBasedOnHeight(stage: Stage): Stage {
   return Stage.fromJS({
     x: Y_AXIS_WIDTH + MARGIN,
     y: MARGIN,
@@ -95,7 +103,7 @@ export function calculatePlottingStageBasedOnHeight(stage: Stage): Stage {
   });
 }
 
-export function calculateRegularPlottingStage(stage: Stage): Stage {
+function calculateRegularPlottingStage(stage: Stage): Stage {
   return Stage.fromJS({
     x: Y_AXIS_WIDTH + MARGIN,
     y: MARGIN,
@@ -108,7 +116,7 @@ export function calculatePlottingStage(stage: Stage): Stage {
   const ratio = stage.width / stage.height;
 
   if (ratio <= 1 ) return calculatePlottingStageBasedOnWidth(stage);
-  if (ratio >= 2 ) return calculatePlottingStageBasedOnHeight(stage);
+  if (ratio >= 2.5 ) return calculatePlottingStageBasedOnHeight(stage);
   return calculateRegularPlottingStage(stage);
 }
 
