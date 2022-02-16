@@ -31,7 +31,7 @@ interface PointProps {
 }
 
 const POINT_RADIUS = 3;
-const HOVER_AREA_RADIUS = 9;
+const HOVER_AREA_RADIUS = 6;
 
 export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries, onHover }) => {
   const xValue = xSeries.selectValue(datum);
