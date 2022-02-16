@@ -51,8 +51,11 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     hoveredPoint: null
   };
 
-  hoverOverPoint = (datum: Datum): void =>
+  setPointHover = (datum: Datum): void =>
     this.setState({ hoveredPoint: datum });
+
+  resetPointHover = (): void =>
+    this.setState({ hoveredPoint: null });
 
   render() {
     const { data, essence, stage } = this.props;
@@ -85,7 +88,15 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
         <g transform={plottingStage.getTransform()}>
           {scatterplotData.map(datum => {
             return (
-            <Point datum={datum} xScale={xScale} yScale={yScale} xSeries={xSeries} ySeries={ySeries} key={`point-${datum[splitKey]}`} onHover={this.hoverOverPoint}/>
+            <Point
+              key={`point-${datum[splitKey]}`}
+              datum={datum}
+              xScale={xScale}
+              yScale={yScale}
+              xSeries={xSeries}
+              ySeries={ySeries}
+              setHover={this.setPointHover}
+              resetHover={this.resetPointHover}/>
           ); }
           )}
         </g>
