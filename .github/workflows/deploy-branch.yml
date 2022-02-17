@@ -2,7 +2,7 @@ name: Deploy Branch
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   deploy:
@@ -34,7 +34,6 @@ jobs:
         run: docker push $IMAGE_NAME:$REF_NAME
 
       - name: Deploy app
-        id: deploy
         run: |
           gcloud run deploy turnilo-${REF_NAME//[^a-z]/-} \
             --image $IMAGE_NAME:$REF_NAME \
@@ -46,23 +45,23 @@ jobs:
             --cpu 1 --memory 1G --max-instances 1 --concurrency 80 \
             --args="--examples"
 
-      - name: Delete previous Docker image(s)
-        run: |
-          gcloud container images list-tags $IMAGE_NAME:$REF_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
-          xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
 
-      - name: Print deployment results
+      - name: Get app URL
+        run: |
+          echo ::set-env name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z]/-} --region europe-west1 --format 'value(status.url)')
+
+      - name: Print app URL
         uses: actions/github-script@v6
         with:
           script: |
-            const output = `#### Deployment\n
-            \`\`\`\n
-            ${{ steps.deploy.outputs.stdout }}
-            \`\`\``;
-                  
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: output
+              body: ':white_check_mark: Deployed successfully to: ' + process.env.app_url
             })
+
+      - name: Delete previous Docker image(s)
+        run: |
+          gcloud container images list-tags $IMAGE_NAME:$REF_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
+          xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
