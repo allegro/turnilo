@@ -11,6 +11,7 @@ jobs:
 
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
+      GITHUB_REF_NAME: ${{ github.ref_name }}
 
     steps:
       - name: Checkout
@@ -27,15 +28,15 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Docker image
-        run: docker build . -t $IMAGE_NAME:${GITHUB_REF_NAME}
+        run: docker build . -t $IMAGE_NAME:$GITHUB_REF_NAME
 
       - name: Push Docker image
-        run: docker push $IMAGE_NAME:${GITHUB_REF_NAME}
+        run: docker push $IMAGE_NAME:$GITHUB_REF_NAME
 
       - name: Deploy app
         run: |
           gcloud run deploy turnilo-${GITHUB_REF_NAME//[^a-z]/-} \
-            --image $IMAGE_NAME:${GITHUB_REF_NAME} \
+            --image $IMAGE_NAME:$GITHUB_REF_NAME \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
@@ -46,5 +47,5 @@ jobs:
 
       - name: Delete previous Docker image(s)
         run: |
-          gcloud container images list-tags $IMAGE_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
+          gcloud container images list-tags $IMAGE_NAME:$GITHUB_REF_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
           xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
