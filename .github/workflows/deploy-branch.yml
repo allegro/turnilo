@@ -34,6 +34,7 @@ jobs:
         run: docker push $IMAGE_NAME:$REF_NAME
 
       - name: Deploy app
+        id: deploy
         run: |
           gcloud run deploy turnilo-${REF_NAME//[^a-z]/-} \
             --image $IMAGE_NAME:$REF_NAME \
@@ -49,3 +50,13 @@ jobs:
         run: |
           gcloud container images list-tags $IMAGE_NAME:$REF_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
           xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
+
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: steps.deploy.outputs.stdout
+            })
