@@ -52,7 +52,7 @@ jobs:
           xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
 
       - name: Print deployment results
-      - uses: actions/github-script@v6
+        uses: actions/github-script@v6
         with:
           script: |
             github.rest.issues.createComment({
