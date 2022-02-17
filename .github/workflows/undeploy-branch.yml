@@ -11,7 +11,7 @@ jobs:
 
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
-      GITHUB_REF_NAME: ${{ github.head_ref }}
+      REF_NAME: ${{ github.head_ref }}
 
     steps:
       - name: Checkout
@@ -26,10 +26,10 @@ jobs:
 
       - name: Undeploy app
         run: |
-          gcloud run services delete turnilo-${GITHUB_REF_NAME//[^a-z]/-} \
+          gcloud run services delete turnilo-${REF_NAME//[^a-z]/-} \
             --region europe-west1 \
             --quiet
 
       - name: Delete Docker image
         run: |
-          gcloud container images delete $IMAGE_NAME:$GITHUB_REF_NAME --quiet
+          gcloud container images delete $IMAGE_NAME:$REF_NAME --quiet
