@@ -47,18 +47,21 @@ jobs:
 
 
       - name: Get app URL
+        id: app-url
         run: |
-          echo ::set-env name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z]/-} --region europe-west1 --format 'value(status.url)')
+          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z]/-} --region europe-west1 --format 'value(status.url)')
 
       - name: Print app URL
         uses: actions/github-script@v6
+        env:
+          APP_URL: ${{ steps.app-url.outputs.app_url }}
         with:
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':white_check_mark: Deployed successfully to: ' + process.env.app_url
+              body: ':white_check_mark: Deployed successfully to: ' + process.env.APP_URL
             })
 
       - name: Delete previous Docker image(s)
