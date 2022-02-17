@@ -1,0 +1,50 @@
+name: Deploy Branch
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Authenticate on GCP
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build Docker image
+        run: docker build . -t $IMAGE_NAME:${GITHUB_REF_NAME}
+
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME:${GITHUB_REF_NAME}
+
+      - name: Deploy app
+        run: |
+          gcloud run deploy turnilo-${GITHUB_REF_NAME//[^a-z]/-} \
+            --image $IMAGE_NAME:${GITHUB_REF_NAME} \
+            --region europe-west1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --quiet \
+            --port 9090 \
+            --cpu 1 --memory 1G --max-instances 1 --concurrency 80 \
+            --args="--examples"
+
+      - name: Delete previous Docker image(s)
+        run: |
+          gcloud container images list-tags $IMAGE_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
+          xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
