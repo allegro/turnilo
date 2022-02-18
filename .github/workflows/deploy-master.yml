@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Master
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
       - name: Push Docker image
         run: docker push $IMAGE_NAME:latest
 
-      - name: Deploy on GCP
+      - name: Deploy app
         run: |
           gcloud run deploy turnilo \
             --image $IMAGE_NAME:latest \
@@ -45,7 +45,7 @@ jobs:
             --cpu 1 --memory 1G --max-instances 1 --concurrency 80 \
             --args="--examples"
 
-      - name: Delete previous Docker image
+      - name: Delete previous Docker image(s)
         run: |
           gcloud container images list-tags $IMAGE_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
           xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet
