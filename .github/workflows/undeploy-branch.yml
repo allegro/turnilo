@@ -26,7 +26,7 @@ jobs:
 
       - name: Undeploy app
         run: |
-          gcloud run services delete turnilo-${REF_NAME//[^a-z]/-} \
+          gcloud run services delete turnilo-${REF_NAME//[^a-z0-9]/-} \
             --region europe-west1 \
             --quiet
 

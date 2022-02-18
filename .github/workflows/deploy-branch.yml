@@ -35,7 +35,7 @@ jobs:
 
       - name: Deploy app
         run: |
-          gcloud run deploy turnilo-${REF_NAME//[^a-z]/-} \
+          gcloud run deploy turnilo-${REF_NAME//[^a-z0-9]/-} \
             --image $IMAGE_NAME:$REF_NAME \
             --region europe-west1 \
             --platform managed \
@@ -49,7 +49,7 @@ jobs:
       - name: Get app URL
         id: app-url
         run: |
-          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z]/-} --region europe-west1 --format 'value(status.url)')
+          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z0-9]/-} --region europe-west1 --format 'value(status.url)')
 
       - name: Print app URL
         uses: actions/github-script@v6
