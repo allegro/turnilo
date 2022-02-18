@@ -23,6 +23,7 @@ import { Timezone } from "chronoshift";
 import { Stage } from "../../../common/models/stage/stage";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
+import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
@@ -35,6 +36,7 @@ interface TooltipProps {
   xScale: LinearScale;
   yScale: LinearScale;
   timezone: Timezone;
+  showPrevious: boolean;
 }
 
 const TOOLTIP_OFFSET_Y = 50;
@@ -48,7 +50,8 @@ export const Tooltip: React.SFC<TooltipProps> = ({
   xScale,
   yScale,
   splitKey,
-  timezone
+  timezone,
+  showPrevious
 }) => {
   if (!Boolean(datum)) return null;
 
@@ -59,8 +62,18 @@ export const Tooltip: React.SFC<TooltipProps> = ({
     <SegmentBubbleContent
       title={formatValue(datum[splitKey], timezone)}
       content={<span>
-        <strong>{xSeries.title()}</strong> {xSeries.formatValue(datum)}<br/>
-        <strong>{ySeries.title()}</strong> {ySeries.formatValue(datum)}
+        <strong>{xSeries.title()}</strong><br/>
+        <SeriesBubbleContent
+          datum={datum}
+          showPrevious={showPrevious}
+          series={xSeries} />
+        <br/>
+        <br/>
+        <strong>{ySeries.title()}</strong><br/>
+        <SeriesBubbleContent
+          datum={datum}
+          showPrevious={showPrevious}
+          series={ySeries} />
       </span>} />
   </TooltipWithinStage>;
 };
