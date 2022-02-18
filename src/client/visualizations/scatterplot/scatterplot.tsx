@@ -26,10 +26,15 @@ import {
 
 import "./scatterplot.scss";
 
+import memoizeOne from "memoize-one";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Point } from "./point";
 import { Tooltip } from "./tooltip";
-import { calculateXAxisStage, calculateYAxisStage, getPlottingData } from "./utils/get-plotting-data";
+import {
+  calculateXAxisStage,
+  calculateYAxisStage,
+  preparePlottingData
+} from "./utils/get-plotting-data";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
 
@@ -45,6 +50,8 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     hoveredPoint: null
   };
 
+  getPlottingData = memoizeOne(preparePlottingData);
+
   setPointHover = (datum: Datum): void =>
     this.setState({ hoveredPoint: datum });
 
@@ -55,7 +62,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     const { data, essence, stage } = this.props;
     const splitKey = essence.splits.splits.first().toKey();
 
-    const { xTicks, yTicks, xScale, yScale, xSeries, ySeries, plottingStage, scatterplotData } = getPlottingData(data, essence, stage);
+    const { xTicks, yTicks, xScale, yScale, xSeries, ySeries, plottingStage, scatterplotData } = this.getPlottingData(data, essence, stage);
 
     const rightXAxisLabelPosition = stage.width - (plottingStage.width + plottingStage.x);
     const bottomXAxisLabelPosition  = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);

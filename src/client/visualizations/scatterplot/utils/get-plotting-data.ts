@@ -66,8 +66,6 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
 
-export const getPlottingData = memoizeOne(preparePlottingData);
-
 export  function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
   return d3.extent(data, selectValues);
