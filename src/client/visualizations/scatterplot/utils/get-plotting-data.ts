@@ -116,7 +116,7 @@ export function calculatePlottingStage(stage: Stage): Stage {
   const ratio = stage.width / stage.height;
 
   if (ratio <= 1 ) return calculatePlottingStageBasedOnWidth(stage);
-  if (ratio >= 2.5 ) return calculatePlottingStageBasedOnHeight(stage);
+  if (ratio >= 2 ) return calculatePlottingStageBasedOnHeight(stage);
   return calculateRegularPlottingStage(stage);
 }
 
