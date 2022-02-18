@@ -62,13 +62,14 @@ export const Tooltip: React.SFC<TooltipProps> = ({
     <SegmentBubbleContent
       title={formatValue(datum[splitKey], timezone)}
       content={<span>
-        <strong>{xSeries.title()}</strong><br/>
+        <strong>{xSeries.title()}</strong>
+        <br/>
         <SeriesBubbleContent
           datum={datum}
           showPrevious={showPrevious}
           series={xSeries} />
         <br/>
-        <br/>
+        <hr/>
         <strong>{ySeries.title()}</strong><br/>
         <SeriesBubbleContent
           datum={datum}
