@@ -16,7 +16,15 @@
 import { List, Set } from "immutable";
 import { PseudoDatum } from "plywood";
 import { DateRange } from "../../../../common/models/date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  NumberRange,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../../common/models/filter-clause/filter-clause";
 import { SplitType } from "../../../../common/models/split/split";
 import { Splits } from "../../../../common/models/splits/splits";
 
@@ -38,6 +46,8 @@ export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List
           return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
+        case SplitType.boolean:
+          return new BooleanFilterClause({ reference, values: Set.of(segment) });
       }
     });
 

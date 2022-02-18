@@ -20,7 +20,7 @@ import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { getNumberOfWholeDigits, toSignificantDigits } from "../../../common/utils/general/general";
+import { getNumberOfWholeDigits, isTruthy, toSignificantDigits } from "../../../common/utils/general/general";
 import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
@@ -106,7 +106,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
           const min = (dataset.data[0]["Min"] as number);
           const max = (dataset.data[0]["Max"] as number);
 
-          const step = max && min && isFinite(max) && isFinite(min) ? (max - min) / rightBound : 1;
+          const areBoundsFinite = isTruthy(max) && isTruthy(min) && isFinite(max) && isFinite(min);
+          const step = areBoundsFinite ? (max - min) / rightBound : 1;
 
           this.setState({
             min,

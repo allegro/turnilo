@@ -20,7 +20,7 @@ import { Dimension } from "../../models/dimension/dimension";
 import { findDimensionByName } from "../../models/dimension/dimensions";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
-import { Split, SplitType } from "../../models/split/split";
+import { kindToType, Split, SplitType } from "../../models/split/split";
 import { isFiniteNumber, isNumber } from "../../utils/general/general";
 
 export interface SplitSortDefinition {
@@ -51,7 +51,11 @@ export interface TimeSplitDefinition extends BaseSplitDefinition {
   granularity: string;
 }
 
-export type SplitDefinition = NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
+export interface BooleanSplitDefinition extends BaseSplitDefinition {
+  type: SplitType.boolean;
+}
+
+export type SplitDefinition = BooleanSplitDefinition | NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
 
 interface SplitDefinitionConversion<In extends SplitDefinition> {
   toSplitCombine(split: In, dimension: Dimension): Split;
@@ -182,7 +186,29 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
   }
 };
 
+const booleanSplitConversion: SplitDefinitionConversion<BooleanSplitDefinition> = {
+  fromSplitCombine({ limit, sort, reference }: Split): BooleanSplitDefinition {
+    return {
+      type: SplitType.boolean,
+      dimension: reference,
+      sort: sort && fromSort(sort),
+      limit
+    };
+  },
+
+  toSplitCombine(split: BooleanSplitDefinition, dimension: Dimension): Split {
+    const { limit, sort } = split;
+    return new Split({
+      type: SplitType.boolean,
+      reference: dimension.name,
+      sort: sort && toSort(sort, dimension.name),
+      limit: toLimit(limit, dimension)
+    });
+  }
+};
+
 const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDefinition> } = {
+  boolean: booleanSplitConversion,
   number: numberSplitConversion,
   string: stringSplitConversion,
   time: timeSplitConversion
@@ -200,18 +226,19 @@ export const splitConverter: SplitDefinitionConverter = {
     if (dimension == null) {
       throw new Error(`Dimension ${split.dimension} not found in data cube ${dataCube.name}.`);
     }
-    return splitConversions[split.type].toSplitCombine(split, dimension);
+    return splitConversions[kindToType(dimension.kind)].toSplitCombine(split, dimension);
   },
 
   fromSplitCombine(splitCombine: Split): SplitDefinition {
-    const { bucket } = splitCombine;
-
-    if (bucket instanceof Duration) {
-      return timeSplitConversion.fromSplitCombine(splitCombine);
-    } else if (typeof bucket === "number") {
-      return numberSplitConversion.fromSplitCombine(splitCombine);
-    } else {
-      return stringSplitConversion.fromSplitCombine(splitCombine);
+    switch (splitCombine.type) {
+      case SplitType.boolean:
+        return booleanSplitConversion.fromSplitCombine(splitCombine);
+      case SplitType.number:
+        return numberSplitConversion.fromSplitCombine(splitCombine);
+      case SplitType.string:
+        return stringSplitConversion.fromSplitCombine(splitCombine);
+      case SplitType.time:
+        return timeSplitConversion.fromSplitCombine(splitCombine);
     }
   }
 };

@@ -28,7 +28,7 @@ import { Filter } from "../filter/filter";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
 import { measureSeries } from "../series/series.fixtures";
 import { SortDirection } from "../sort/sort";
-import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
+import { booleanSplitCombine, numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceValue, VisStrategy } from "./essence";
@@ -119,7 +119,7 @@ export class EssenceFixtures {
     ];
     const splitCombines = [
       stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
-      stringSplitCombine("isRobot", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
+      booleanSplitCombine("isRobot", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
       numberSplitCombine("commentLength", 10, { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
       timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
     ];

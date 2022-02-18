@@ -51,6 +51,22 @@ export function stringSplitCombine(dimension: string, {
   });
 }
 
+export function booleanSplitCombine(dimension: string, {
+  limit = 50,
+  sort: {
+    direction = SortDirection.ascending,
+    period = SeriesDerivation.CURRENT,
+    reference = dimension
+  } = {}
+}: SplitOpts = {}): Split {
+  return new Split({
+    type: SplitType.boolean,
+    reference: dimension,
+    sort: createSort(dimension === reference, { reference, period, direction }),
+    limit
+  });
+}
+
 export function numberSplitCombine(dimension: string, granularity = 100, {
   limit = 50,
   sort: {

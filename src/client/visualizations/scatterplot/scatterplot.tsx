@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Datum } from "plywood";
 import * as React from "react";
 
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
@@ -23,24 +24,22 @@ import {
   VisualizationProps
 } from "../../views/cube-view/center-panel/center-panel";
 
-import * as d3 from "d3";
-import { Datum } from "plywood";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import "./scatterplot.scss";
 
-import { Stage } from "../../../common/models/stage/stage";
+import memoizeOne from "memoize-one";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import {  pickTicks } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
 import { Tooltip } from "./tooltip";
+import {
+  calculateXAxisStage,
+  calculateYAxisStage,
+  preparePlottingData
+} from "./utils/get-plotting-data";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
 
 const TICK_SIZE = 10;
-const MARGIN = 40;
-const X_AXIS_HEIGHT = 50;
-const Y_AXIS_WIDTH = 50;
+const X_AXIS_LABEL_OFFSET = 55;
 
 interface ScatterplotState {
   hoveredPoint: Datum | null;
@@ -51,6 +50,8 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     hoveredPoint: null
   };
 
+  getPlottingData = memoizeOne(preparePlottingData);
+
   setPointHover = (datum: Datum): void =>
     this.setState({ hoveredPoint: datum });
 
@@ -60,21 +61,15 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
   render() {
     const { data, essence, stage } = this.props;
     const splitKey = essence.splits.splits.first().toKey();
-    const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
-    const scatterplotData = selectFirstSplitDatums(data);
-    const xExtent = getExtent(scatterplotData, xSeries);
-    const yExtent = getExtent(scatterplotData, ySeries);
 
-    const plottingStage = calculatePlottingStage(stage);
-    const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
-    const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
-    const xTicks = pickTicks(xScale, 10);
-    const yTicks = pickTicks(yScale, 10);
+    const { xTicks, yTicks, xScale, yScale, xSeries, ySeries, plottingStage, scatterplotData } = this.getPlottingData(data, essence, stage);
 
+    const rightXAxisLabelPosition = stage.width - (plottingStage.width + plottingStage.x);
+    const bottomXAxisLabelPosition  = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
-      <span className="axis-title" style={{ top: 10, left: 10 }}>{xSeries.title()}</span>
-      <span className="axis-title" style={{ bottom: 145, right: 10 }}>{ySeries.title()}</span>
-      <Tooltip datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} splitKey={splitKey} timezone={essence.timezone} />
+      <span className="axis-title" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
+      <span className="axis-title" style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
+      <Tooltip datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} splitKey={splitKey} timezone={essence.timezone}/>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
@@ -110,36 +105,4 @@ export function ScatterplotVisualization(props: VisualizationProps) {
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Scatterplot}/>
   </React.Fragment>;
-}
-
-function getExtent(data: Datum[], series: ConcreteSeries): number[] {
-  const selectValues = (d: Datum) => series.selectValue(d);
-  return d3.extent(data, selectValues);
-}
-
-function calculatePlottingStage(stage: Stage): Stage {
-  return Stage.fromJS({
-    x: Y_AXIS_WIDTH + MARGIN,
-    y: MARGIN,
-    width: stage.width - Y_AXIS_WIDTH - 2 * MARGIN,
-    height: stage.height - X_AXIS_HEIGHT - 2 * MARGIN
-  });
-}
-
-function calculateXAxisStage(stage: Stage): Stage {
-  return Stage.fromJS({
-    x: Y_AXIS_WIDTH + MARGIN,
-    y: stage.height + MARGIN,
-    width: stage.width,
-    height: X_AXIS_HEIGHT
-  });
-}
-
-function calculateYAxisStage(stage: Stage): Stage {
-  return Stage.fromJS({
-    x: MARGIN,
-    y: MARGIN,
-    width: Y_AXIS_WIDTH,
-    height: stage.height
-  });
 }
