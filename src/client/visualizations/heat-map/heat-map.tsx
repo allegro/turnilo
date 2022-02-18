@@ -61,7 +61,7 @@ class HeatMap extends React.Component<ChartProps> {
 
     const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, series);
 
-    return <div className="heatmap-container" style={{ maxHeight: stage.height }}>
+    return <div className="heatmap-container" style={{ height: stage.height }}>
       <LabelledHeatmap
         stage={stage}
         dataset={dataset.data}

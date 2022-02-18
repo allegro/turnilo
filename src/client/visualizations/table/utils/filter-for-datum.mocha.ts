@@ -19,7 +19,12 @@ import { List } from "immutable";
 import { NumberRange, TimeRange } from "plywood";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { numberRange, stringIn, timeRange } from "../../../../common/models/filter-clause/filter-clause.fixtures";
+import {
+  boolean,
+  numberRange,
+  stringIn,
+  timeRange
+} from "../../../../common/models/filter-clause/filter-clause.fixtures";
 import { getFilterFromDatum } from "./filter-for-datum";
 
 describe("getFilterForDatum", () => {
@@ -28,14 +33,14 @@ describe("getFilterForDatum", () => {
     const datum = {
       __nest: 4,
       channel: "foobar",
-      isRobot: "bazz",
+      isRobot: "true",
       commentLength: new NumberRange({ start: 42, end: 71 }),
       time: new TimeRange({ start: new Date(0), end: new Date(10000) })
     };
     const list = getFilterFromDatum(splits, datum);
     expect(list).to.deep.equal(List.of<FilterClause>(
       stringIn("channel", ["foobar"]),
-      stringIn("isRobot", ["bazz"]),
+      boolean("isRobot", ["true"]),
       numberRange("commentLength", 42, 71),
       timeRange("time", new Date(0), new Date(10000))
     ));
