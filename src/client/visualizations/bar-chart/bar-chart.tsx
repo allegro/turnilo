@@ -24,6 +24,7 @@ import { DateRange } from "../../../common/models/date-range/date-range";
 import { canBucketByDefault, Dimension } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import {
+  BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
   NumberFilterClause,
@@ -99,6 +100,8 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[]): List<FilterClaus
     const segment: any = datum[reference];
 
     switch (type) {
+      case SplitType.boolean:
+        return new BooleanFilterClause({ reference, values: Set.of(segment) });
       case SplitType.number:
         return new NumberFilterClause({ reference, values: List.of(segment) });
       case SplitType.time:
