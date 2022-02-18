@@ -28,15 +28,15 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Docker image
-        run: docker build . -t $IMAGE_NAME:$REF_NAME
+        run: docker build . -t $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-}
 
       - name: Push Docker image
-        run: docker push $IMAGE_NAME:$REF_NAME
+        run: docker push $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-}
 
       - name: Deploy app
         run: |
           gcloud run deploy turnilo-${REF_NAME//[^a-z0-9]/-} \
-            --image $IMAGE_NAME:$REF_NAME \
+            --image $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-} \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \

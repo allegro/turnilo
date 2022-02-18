@@ -32,4 +32,4 @@ jobs:
 
       - name: Delete Docker image
         run: |
-          gcloud container images delete $IMAGE_NAME:$REF_NAME --quiet
+          gcloud container images delete $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-} --quiet
