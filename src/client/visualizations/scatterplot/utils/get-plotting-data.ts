@@ -25,13 +25,9 @@ import { LinearScale, pickTicks } from "../../../utils/linear-scale/linear-scale
 const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
-const BREAKPOINT_SMALL = 544;
-const BREAKPOINT_MEDIUM = 768;
-const BREAKPOINT_LARGE = 1248;
+const BREAKPOINT_SMALL = 768;
 const TICK_COUNT_SMALL = 4;
-const TICK_COUNT_MEDIUM = 6;
-const TICK_COUNT_LARGE = 9;
-const TICK_COUNT_DEFAULT = 14;
+const TICK_COUNT_DEFAULT = 10;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -47,14 +43,6 @@ interface PlottingData {
 function getTicksCountByDimension(size: number): number {
   if (size < BREAKPOINT_SMALL) {
     return TICK_COUNT_SMALL;
-  }
-
-  if (size < BREAKPOINT_MEDIUM) {
-    return TICK_COUNT_MEDIUM;
-  }
-
-  if (size < BREAKPOINT_LARGE) {
-    return TICK_COUNT_LARGE;
   }
 
   return TICK_COUNT_DEFAULT;
