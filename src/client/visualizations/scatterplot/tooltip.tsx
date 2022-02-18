@@ -19,7 +19,9 @@ import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
+import { Timezone } from "chronoshift";
 import { Stage } from "../../../common/models/stage/stage";
+import { formatValue } from "../../../common/utils/formatter/formatter";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
@@ -32,21 +34,30 @@ interface TooltipProps {
   ySeries: ConcreteSeries;
   xScale: LinearScale;
   yScale: LinearScale;
+  timezone: Timezone;
 }
 
 const TOOLTIP_OFFSET_Y = 50;
 const TOOLTIP_OFFSET_X = 100;
 
-export const Tooltip: React.SFC<TooltipProps> = ({ datum, stage, xSeries, ySeries, xScale, yScale, splitKey }) => {
+export const Tooltip: React.SFC<TooltipProps> = ({
+  datum,
+  stage,
+  xSeries,
+  ySeries,
+  xScale,
+  yScale,
+  splitKey,
+  timezone
+}) => {
   if (!Boolean(datum)) return null;
 
-  const title = datum[splitKey] as string;
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
   return <TooltipWithinStage top={yScale(yValue) + TOOLTIP_OFFSET_Y} left={xScale(xValue) + TOOLTIP_OFFSET_X} stage={stage}>
     <SegmentBubbleContent
-      title={title}
+      title={formatValue(datum[splitKey], timezone)}
       content={<span>
         <strong>{xSeries.title()}</strong> {xSeries.formatValue(datum)}<br/>
         <strong>{ySeries.title()}</strong> {ySeries.formatValue(datum)}
