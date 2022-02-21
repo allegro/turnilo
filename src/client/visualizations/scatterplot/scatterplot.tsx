@@ -69,7 +69,16 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
       <span className="axis-title" style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
-      <Tooltip datum={this.state.hoveredPoint} stage={plottingStage} ySeries={ySeries} xSeries={xSeries} yScale={yScale} xScale={xScale} splitKey={splitKey}/>
+      <Tooltip
+        datum={this.state.hoveredPoint}
+        stage={plottingStage}
+        ySeries={ySeries}
+        xSeries={xSeries}
+        yScale={yScale}
+        xScale={xScale}
+        splitKey={splitKey}
+        timezone={essence.timezone}
+        showPrevious={essence.hasComparison()}/>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
