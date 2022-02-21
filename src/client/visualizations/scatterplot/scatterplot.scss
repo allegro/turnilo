@@ -59,14 +59,11 @@
 
   .segment-bubble-text {
     .content {
-      strong {
+      .series-title {
+        display: inline-block;
         font-weight: $bold;
+        margin-bottom: 4px;
       }
     }
-  }
-
-  hr {
-    border: none;
-    border-top: thin solid $gray;
   }
 }
