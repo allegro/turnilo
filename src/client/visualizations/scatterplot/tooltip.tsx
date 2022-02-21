@@ -22,6 +22,7 @@ import "./scatterplot.scss";
 import { Timezone } from "chronoshift";
 import { Stage } from "../../../common/models/stage/stage";
 import { formatValue } from "../../../common/utils/formatter/formatter";
+import { isTruthy } from "../../../common/utils/general/general";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
@@ -53,7 +54,7 @@ export const Tooltip: React.SFC<TooltipProps> = ({
   timezone,
   showPrevious
 }) => {
-  if (!Boolean(datum)) return null;
+  if (!isTruthy(datum)) return null;
 
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
