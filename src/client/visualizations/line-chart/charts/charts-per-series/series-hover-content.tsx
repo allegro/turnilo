@@ -41,11 +41,11 @@ function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSer
 
 function colorEntries(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ColorEntry[] {
   const { data } = dataset;
-  const { reference: nominalRef } = getNominalSplit(essence);
+  const nominalSplit = getNominalSplit(essence);
   const continuousRef = getContinuousReference(essence);
   const hasComparison = essence.hasComparison();
   return data.map((datum, i) => {
-    const name = String(datum[nominalRef]);
+    const name = String(nominalSplit.selectValue(datum));
     const color = NORMAL_COLORS[i];
     const hoverDatum = findSplitDatumByAttribute(datum, continuousRef, range);
 

@@ -110,9 +110,8 @@ export class InteractionController extends React.Component<InteractionController
   }
 
   findDatumByValue(value: DomainValue): Datum | null {
-    const { model, datums } = this.props;
-    const { reference } = model.continuousSplit;
-    return datums.find(datum => safeEquals(value, datum[reference]));
+    const { model: { continuousSplit }, datums } = this.props;
+    return datums.find(datum => safeEquals(value, continuousSplit.selectValue(datum)));
   }
 
   getSeriesFromEvent(y: number, part: ScrollerPart): ConcreteSeries | null {

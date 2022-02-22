@@ -15,8 +15,7 @@
  */
 
 import * as d3 from "d3";
-import { Datum, NumberRange, TimeRange } from "plywood";
-import { Unary } from "../../../../../common/utils/functional/functional";
+import { NumberRange, TimeRange } from "plywood";
 import { DomainValue, XDomain } from "./x-domain";
 
 export interface XScale {
@@ -44,9 +43,6 @@ export function createXScale(domain: XDomain, width: number): XScale {
     bandwidth: () => ordinalScale.bandwidth()
   };
 }
-
-export const xGetter = (reference: string): Unary<Datum, DomainValue> =>
-    datum => (datum[reference] as DomainValue);
 
 function formatDomainValue(value: DomainValue): string {
   if (TimeRange.isTimeRange(value)) {

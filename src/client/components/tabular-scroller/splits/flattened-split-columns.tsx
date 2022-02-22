@@ -32,7 +32,7 @@ export const FlattenedSplitColumns: React.SFC<FlattenedSplitColumnsProps> = ({ s
   <React.Fragment>
     {splits.map(split => {
       const { reference } = split;
-      const value = datum[reference];
+      const value = split.selectValue(datum);
       return <div key={reference} className="flattened-split-value">{formatSegment(value, timezone)}</div>;
     })}
   </React.Fragment>;
