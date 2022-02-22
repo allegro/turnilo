@@ -22,6 +22,13 @@ import { Stage } from "../../../common/models/stage/stage";
 import { range } from "../../../common/utils/functional/functional";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
+/**
+ * TODO:
+ *   Settings for heatmap visibility
+ *   Legend component (fix in heatmap viz also)
+ *   "Secondary" color for rect fill
+ */
+
 interface HeatmapProps {
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
@@ -40,7 +47,6 @@ type Counts = number[][];
 //   return counts;
 // }
 
-// TODO: better colors
 const white = "#fff";
 const orange = "#ff5a00";
 
