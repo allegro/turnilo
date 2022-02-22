@@ -18,39 +18,26 @@ import * as React from "react";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import "./heatmap-corner.scss";
-import { HeatmapLegend } from "./heatmap-legend";
-import { ColorScale } from "./utils/scales";
 
 interface HeatmapCornerProps {
   essence: Essence;
   width: number;
   height: number;
-  colorScale: ColorScale;
 }
 
 const labelMargin = 20;
-const labelOffset = 40;
 // Around half of font-size with handpicked offset to accommodate rounding errors and rotation artifacts
 const rotationAxisOffset = 7;
 
-export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ colorScale, width, height, essence }) => {
+export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ width, height, essence }) => {
   const { dataCube, splits: { splits } } = essence;
 
   const row = splits.get(0);
   const column = splits.get(1);
   const rowTitle = row.getTitle(findDimensionByName(dataCube.dimensions, row.reference));
   const columnTitle = column.getTitle(findDimensionByName(dataCube.dimensions, column.reference));
-  const series = essence.getConcreteSeries().first();
-
-  const legendHeight = height - labelOffset;
-  const legendWidth = width - labelOffset;
 
   return <div className="heatmap-corner">
-    <HeatmapLegend
-      scale={colorScale}
-      height={legendHeight}
-      width={legendWidth}
-      series={series} />
     <div className="heatmap-corner-row-title">
       <span className="heatmap-corner-overflow-label"
             style={{ width: `${width - labelMargin}px` }}>

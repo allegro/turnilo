@@ -20,13 +20,15 @@ import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Stage } from "../../../common/models/stage/stage";
 import { range } from "../../../common/utils/functional/functional";
+import { ColorLegend } from "../../components/color-legend/color-legend";
+import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
 /**
  * TODO:
- *   Settings for heatmap visibility
- *   Legend component (fix in heatmap viz also)
+ *   Beautify Legend component
  *   "Secondary" color for rect fill
+ *   Extract bunch of functions
  */
 
 interface HeatmapProps {
@@ -68,23 +70,28 @@ export const Heatmap: React.SFC<HeatmapProps> = props => {
 
   const colorScale = d3.scale.linear<string>().domain(countExtent).range([white, orange]);
 
-  return <g transform={stage.getTransform()}>
-    {counts.map((row, i) =>
-      row.map((count, j) => {
-        const [x0, x1] = xQuantile.invertExtent(i);
-        const [y0, y1] = yQuantile.invertExtent(j);
-        const x = xScale(x0);
-        const width = xScale(x1) - x;
-        const y = yScale(y1);
-        const height = yScale(y0) - yScale(y1);
-        return <rect key={`key-${i}-${j}`}
-                     fill={colorScale(count)}
-                     fillOpacity={0.5}
-                     x={x}
-                     width={width}
-                     y={y}
-                     height={height}>
-        </rect>;
-    }))}
-  </g>;
+  return <React.Fragment>
+    <LegendSpot>
+      <ColorLegend formatter={i => i.toString(10)} colorScale={colorScale} />
+    </LegendSpot>
+    <g transform={stage.getTransform()}>
+      {counts.map((row, i) =>
+        row.map((count, j) => {
+          const [x0, x1] = xQuantile.invertExtent(i);
+          const [y0, y1] = yQuantile.invertExtent(j);
+          const x = xScale(x0);
+          const width = xScale(x1) - x;
+          const y = yScale(y1);
+          const height = yScale(y0) - yScale(y1);
+          return <rect key={`key-${i}-${j}`}
+                       fill={colorScale(count)}
+                       fillOpacity={0.5}
+                       x={x}
+                       width={width}
+                       y={y}
+                       height={height}>
+          </rect>;
+        }))}
+    </g>
+  </React.Fragment>;
 };

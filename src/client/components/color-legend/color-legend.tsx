@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import * as d3 from "d3";
 import * as React from "react";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import "./heatmap-legend.scss";
-import { ColorScale } from "./utils/scales";
+import { Unary } from "../../../common/utils/functional/functional";
+import "./color-legend.scss";
 
-interface HeatmapLegendProps {
-  scale: ColorScale;
-  series: ConcreteSeries;
-  height: number;
-  width: number;
+interface ColorLegendProps {
+  width?: number;
+  height?: number;
+  formatter: Unary<number, string>;
+  colorScale: d3.scale.Linear<string, string>;
 }
 
 const leftMargin = 5;
@@ -34,20 +34,19 @@ const tickLabelTopOffset = 4;
 const tickLabelLeftOffset = 17;
 const stripeWidth = 10;
 
-export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({ width, height, series, scale }) => {
-  const [min, max] = scale.domain();
+export const ColorLegend: React.SFC<ColorLegendProps> = ({ width = 100, height = 200, formatter, colorScale }) => {
+  const [min, max] = colorScale.domain();
   if (isNaN(min) || isNaN(max)) return null;
 
   const stripeLength = height - topMargin - bottomMargin;
-  const [startColor, endColor] = scale.range();
-  const format = series.formatter();
+  const [startColor, endColor] = colorScale.range();
 
   return <svg
-    className="heatmap-legend"
+    className="color-legend"
     width={`${width}px`}
     height={`${height}px`}>
     <defs>
-      <linearGradient id="heatmap-stripe" gradientTransform="rotate(90)">
+      <linearGradient id="color-stripe" gradientTransform="rotate(90)">
         <stop offset="0%" stopColor={startColor} />
         <stop offset="10%" stopColor={startColor} />
         <stop offset="90%" stopColor={endColor} />
@@ -55,39 +54,39 @@ export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({ width, height, se
       </linearGradient>
     </defs>
     <g transform={`translate(${leftMargin}, ${topMargin})`}>
-      <rect className="heatmap-legend-stripe"
+      <rect className="color-legend-stripe"
             x={0}
             y={0}
             width={stripeWidth}
             height={stripeLength}
-            fill="url(#heatmap-stripe)" />
-      <line className="heatmap-legend-stripe-axis"
+            fill="url(#color-stripe)" />
+      <line className="color-legend-stripe-axis"
             x1={0.5}
             x2={0.5}
             y1={0}
             y2={stripeLength} />
-      <g className="heatmap-lower-bound">
-        <line className="heatmap-lower-bound-tick"
+      <g className="color-lower-bound">
+        <line className="color-lower-bound-tick"
               x1={0}
               x2={tickLength}
               y1={0.5}
               y2={0.5} />
-        <text className="heatmap-lower-bound-value"
+        <text className="color-lower-bound-value"
               x={tickLabelLeftOffset}
               y={tickLabelTopOffset}>
-          {format(min)}
+          {formatter(min)}
         </text>
       </g>
-      <g className="heatmap-upper-bound">
-        <line className="heatmap-upper-bound-tick"
+      <g className="color-upper-bound">
+        <line className="color-upper-bound-tick"
               x1={0}
               x2={tickLength}
               y1={stripeLength + 0.5}
               y2={stripeLength + 0.5} />
-        <text className="heatmap-upper-bound-value"
+        <text className="color-upper-bound-value"
               x={tickLabelLeftOffset}
               y={stripeLength + tickLabelTopOffset}>
-          {format(max)}
+          {formatter(max)}
         </text>
       </g>
     </g>
