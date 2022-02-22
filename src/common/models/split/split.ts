@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
-import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywood";
+import { Datum, Expression, NumberBucketExpression, PlywoodValue, TimeBucketExpression } from "plywood";
+import { formatValue } from "../../utils/formatter/formatter";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension, DimensionKind } from "../dimension/dimension";
@@ -110,6 +111,14 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   public getTitle(dimension: Dimension): string {
     return (dimension ? dimension.title : "?") + this.getBucketTitle();
+  }
+
+  public selectValue<T extends PlywoodValue>(datum: Datum): T {
+    return datum[this.toKey()] as T;
+  }
+
+  public formatValue(datum: Datum, timezone: Timezone): string {
+    return formatValue(datum[this.toKey()], timezone);
   }
 
   public getBucketTitle(): string {
