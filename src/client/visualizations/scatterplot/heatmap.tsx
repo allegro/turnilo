@@ -72,7 +72,7 @@ export const Heatmap: React.SFC<HeatmapProps> = props => {
 
   return <React.Fragment>
     <LegendSpot>
-      <ColorLegend formatter={i => i.toString(10)} colorScale={colorScale} />
+      <ColorLegend title="Count" formatter={i => i.toString(10)} colorScale={colorScale} />
     </LegendSpot>
     <g transform={stage.getTransform()}>
       {counts.map((row, i) =>

@@ -189,7 +189,10 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
         </React.Fragment>}
       />
       <LegendSpot>
-        <ColorLegend formatter={series.formatter()} colorScale={colorScale} />
+        <ColorLegend
+          title={series.title()}
+          formatter={series.formatter()}
+          colorScale={colorScale} />
       </LegendSpot>
       {highlightPosition && <HeatmapHighlightModal
         title={modalTitle(highlightPosition, dataset, essence)}
