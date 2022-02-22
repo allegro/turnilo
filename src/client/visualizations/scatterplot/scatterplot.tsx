@@ -27,6 +27,7 @@ import {
 import "./scatterplot.scss";
 
 import memoizeOne from "memoize-one";
+import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Heatmap } from "./heatmap";
 import { Point } from "./point";
@@ -62,6 +63,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
   render() {
     const { data, essence, stage } = this.props;
     const splitKey = essence.splits.splits.first().toKey();
+    const showHeatmap = (essence.visualizationSettings as ScatterplotSettings).showSummary;
 
     const {
       xTicks,
@@ -91,7 +93,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
         timezone={essence.timezone}
         showPrevious={essence.hasComparison()}/>
       <svg viewBox={stage.getViewBox()}>
-        <Heatmap
+        {showHeatmap && <Heatmap
           stage={plottingStage}
           data={scatterplotData}
           xBinCount={xTicks.length}
@@ -99,7 +101,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
           xScale={xScale}
           xSeries={xSeries}
           yScale={yScale}
-          ySeries={ySeries}/>
+          ySeries={ySeries}/>}
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale}/>
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale}/>
         <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()}

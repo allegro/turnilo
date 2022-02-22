@@ -15,6 +15,7 @@
  */
 
 import { Visualization } from "../../common/models/visualization-manifest/visualization-manifest";
+import { ScatterplotSettingsComponent } from "../visualizations/scatterplot/ScatterplotSettingsComponent";
 import { LineChartSettingsComponent } from "./line-chart/line-chart-settings";
 import { TableSettingsComponent } from "./table/table-settings";
 
@@ -25,7 +26,7 @@ interface SettingsComponents {
   "heatmap": null;
   "grid": null;
   "totals": null;
-  "scatterplot": null;
+  "scatterplot": typeof ScatterplotSettingsComponent;
 }
 
 const Components: SettingsComponents = {
@@ -35,7 +36,7 @@ const Components: SettingsComponents = {
   "grid": null,
   "totals": null,
   "table": TableSettingsComponent,
-  "scatterplot": null
+  "scatterplot": ScatterplotSettingsComponent
 };
 
 export function settingsComponent<T extends Visualization>(visualization: T): SettingsComponents[T] {

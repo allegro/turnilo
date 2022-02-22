@@ -18,12 +18,12 @@ import { allMeasures } from "../../models/measure/measures";
 import { MeasureSeries } from "../../models/series/measure-series";
 import { Split } from "../../models/split/split";
 import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
-import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
 import {
   ActionVariables,
   visualizationDependentEvaluatorBuilder
 } from "../../utils/rules/visualization-dependent-evaluator";
+import { settings } from "./settings";
 
 // FIXME: Update conditions and tests in EssenceProps src/common/models/essence/essence.mocha.ts
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
@@ -91,5 +91,5 @@ export const SCATTERPLOT_MANIFEST = new VisualizationManifest(
   "scatterplot",
   "Scatterplot",
   rulesEvaluator,
-  emptySettingsConfig
+  settings
 );
