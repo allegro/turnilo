@@ -28,6 +28,7 @@ import "./scatterplot.scss";
 
 import memoizeOne from "memoize-one";
 import { GridLines } from "../../components/grid-lines/grid-lines";
+import { Heatmap } from "./heatmap";
 import { Point } from "./point";
 import { Tooltip } from "./tooltip";
 import {
@@ -62,13 +63,23 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     const { data, essence, stage } = this.props;
     const splitKey = essence.splits.splits.first().toKey();
 
-    const { xTicks, yTicks, xScale, yScale, xSeries, ySeries, plottingStage, scatterplotData } = this.getPlottingData(data, essence, stage);
+    const {
+      xTicks,
+      yTicks,
+      xScale,
+      yScale,
+      xSeries,
+      ySeries,
+      plottingStage,
+      scatterplotData
+    } = this.getPlottingData(data, essence, stage);
 
     const rightXAxisLabelPosition = stage.width - (plottingStage.width + plottingStage.x);
-    const bottomXAxisLabelPosition  = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
+    const bottomXAxisLabelPosition = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
-      <span className="axis-title" style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
+      <span className="axis-title"
+            style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
       <Tooltip
         datum={this.state.hoveredPoint}
         stage={plottingStage}
@@ -80,28 +91,39 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
         timezone={essence.timezone}
         showPrevious={essence.hasComparison()}/>
       <svg viewBox={stage.getViewBox()}>
-        <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale} />
-        <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale} />
-        <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()} tickSize={TICK_SIZE}/>
+        <Heatmap
+          stage={plottingStage}
+          data={scatterplotData}
+          xBinCount={xTicks.length}
+          yBinCount={yTicks.length}
+          xScale={xScale}
+          xSeries={xSeries}
+          yScale={yScale}
+          ySeries={ySeries}/>
+        <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale}/>
+        <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale}/>
+        <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()}
+               tickSize={TICK_SIZE}/>
         <YAxis
           stage={calculateYAxisStage(plottingStage)}
           ticks={yTicks}
           tickSize={TICK_SIZE}
           scale={yScale}
-          formatter={ySeries.formatter()} />
+          formatter={ySeries.formatter()}/>
         <g transform={plottingStage.getTransform()}>
           {scatterplotData.map(datum => {
-            return (
-            <Point
-              key={`point-${datum[splitKey]}`}
-              datum={datum}
-              xScale={xScale}
-              yScale={yScale}
-              xSeries={xSeries}
-              ySeries={ySeries}
-              setHover={this.setPointHover}
-              resetHover={this.resetPointHover}/>
-          ); }
+              return (
+                <Point
+                  key={`point-${datum[splitKey]}`}
+                  datum={datum}
+                  xScale={xScale}
+                  yScale={yScale}
+                  xSeries={xSeries}
+                  ySeries={ySeries}
+                  setHover={this.setPointHover}
+                  resetHover={this.resetPointHover}/>
+              );
+            }
           )}
         </g>
       </svg>
