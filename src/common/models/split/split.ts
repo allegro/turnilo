@@ -84,8 +84,8 @@ export function kindToType(kind: DimensionKind): SplitType {
 
 export class Split extends Record<SplitValue>(defaultSplit) {
 
-  static fromDimension({ name, kind }: Dimension): Split {
-    return new Split({ reference: name, type: kindToType(kind) });
+  static fromDimension({ name, kind, limits }: Dimension): Split {
+    return new Split({ reference: name, type: kindToType(kind), limit: limits[limits.length - 1] });
   }
 
   public toString(): string {
