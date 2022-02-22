@@ -6,10 +6,9 @@ context("Scatterplot", () => {
     const firstAxisTitle = ()=>scatterplot().find(".axis-title:first");
     const secondAxisTitle = ()=>scatterplot().find(".axis-title:last");
     const firstAxis = ()=>scatterplot().find(".axis:first");
-    const secondAxis = ()=>scatterplot().find(".axis:last");
+    const secondAxis = ()=>scatterplot().find(".axis:last"); // TODO add relevant classes to components
     const gridLines = () => scatterplot().find(".grid-lines");
-    // const hoverableAreas = () => scatterplot().find("circle:not(.point):first")
-    // const firstPoint = ()=>scatterplot().find(".point:first");
+    const firstHoverableArea = () => scatterplot().find("circle:not(.point):first")
     // const tooltip = () => scatterplot().find(".tooltip-within-stage");
 
 
@@ -41,19 +40,19 @@ context("Scatterplot", () => {
         gridLines().should("have.length", 2);
     });
 
-    it("should load 11 ticks on x axis", () => {
+    it("should load 2 ticks on X axis", () => {
         firstAxis().find(".tick").should("have.length", 2);
     });
 
-    it("should load 11 ticks on Y axis", () => {
+    it("should load 2 ticks on Y axis", () => {
         secondAxis().find(".tick").should("have.length", 2);
     });
 
-    // it('should render tooltip on point hover', () => {
-    //     hoverableAreas().should("have.length", 1)
-    //     hoverableAreas().trigger('mouseenter', {force: true});
-    //
-    //     tooltip().should("exist")
-    // })
+    it('should render tooltip on point hover', () => {
+        firstHoverableArea().should("have.length", 1)
+        firstHoverableArea().trigger('mouseenter');
+
+        // tooltip().should("exist") //  y u no work :(
+    })
 })
 
