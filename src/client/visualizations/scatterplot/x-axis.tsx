@@ -44,7 +44,7 @@ export const XAxis: React.SFC<XAxisProps> = ({ stage, ticks, scale, formatter, t
     return <text className="label axis-label-x" key={String(tick)} x={x} y={labelY}>{formatter(tick)}</text>;
   });
 
-  return (<g className="axis" transform={stage.getTransform()}>
+  return (<g className="axis axis-x" transform={stage.getTransform()}>
     {lines}
     {labels}
     <line className="border" y1={linePositionY} y2={linePositionY} x1={0} x2={stage.width}/>
