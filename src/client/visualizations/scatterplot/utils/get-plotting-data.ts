@@ -25,8 +25,7 @@ const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 const BREAKPOINT_SMALL = 768;
-const TICK_COUNT_SMALL = 4;
-const TICK_COUNT_DEFAULT = 10;
+const TICK_COUNT = 10;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -39,14 +38,6 @@ interface PlottingData {
   scatterplotData: Datum[];
 }
 
-function getTicksCountByDimension(size: number): number {
-  if (size < BREAKPOINT_SMALL) {
-    return TICK_COUNT_SMALL;
-  }
-
-  return TICK_COUNT_DEFAULT;
-}
-
 export function preparePlottingData(data: Dataset, essence: Essence, stage: Stage): PlottingData {
   const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
   const scatterplotData = selectFirstSplitDatums(data);
@@ -57,10 +48,8 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
   const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
 
-  const xTicksCount = getTicksCountByDimension(plottingStage.width);
-  const yTicksCount =  getTicksCountByDimension(plottingStage.height);
-  const xTicks = xScale.ticks(xTicksCount);
-  const yTicks = yScale.nice().ticks(yTicksCount);
+  const xTicks = xScale.ticks(TICK_COUNT);
+  const yTicks = yScale.ticks(TICK_COUNT);
 
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
