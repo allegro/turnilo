@@ -46,7 +46,7 @@ export const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks
     return <text className="label" key={String(tick)} x={0} y={labelX}>{formatter(tick)}</text>;
   });
 
-  return <g className="axis" transform={stage.getTransform()}>
+  return <g className="axis axis-y" transform={stage.getTransform()}>
     <line className="border" x1={linePositionX} y1={0} x2={linePositionX} y2={stage.height} />
     {lines}
     {labels}
