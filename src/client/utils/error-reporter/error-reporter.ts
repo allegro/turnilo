@@ -15,6 +15,7 @@
  */
 
 import { captureException, init as initSentry } from "@sentry/browser";
+import { Integrations } from "@sentry/tracing";
 
 let isInitialised = false;
 
@@ -27,6 +28,11 @@ export function reportError(error: Error): string | null {
 }
 
 export function init(dsn: string, release: string) {
-  initSentry({ dsn, release });
+  initSentry({
+    dsn,
+    release,
+    integrations: [new Integrations.BrowserTracing()],
+    tracesSampleRate: 0.3
+  });
   isInitialised = true;
 }
