@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import * as d3 from "d3";
-import memoizeOne from "memoize-one";
 import { Dataset, Datum } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../common/models/stage/stage";
 import { selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
-import { LinearScale, pickTicks } from "../../../utils/linear-scale/linear-scale";
+import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 
 const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
@@ -60,8 +59,8 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
 
   const xTicksCount = getTicksCountByDimension(plottingStage.width);
   const yTicksCount =  getTicksCountByDimension(plottingStage.height);
-  const xTicks = pickTicks(xScale, xTicksCount);
-  const yTicks = pickTicks(yScale, yTicksCount);
+  const xTicks = xScale.ticks(xTicksCount);
+  const yTicks = yScale.nice().ticks(yTicksCount);
 
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }

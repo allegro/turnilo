@@ -95,8 +95,8 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
         {showHeatmap && <Heatmap
           stage={plottingStage}
           data={scatterplotData}
-          xBinCount={xTicks.length}
-          yBinCount={yTicks.length}
+          xBinCount={xTicks.length - 1}
+          yBinCount={yTicks.length - 1}
           xScale={xScale}
           xSeries={xSeries}
           yScale={yScale}
