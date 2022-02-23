@@ -34,7 +34,8 @@ import { Point } from "./point";
 import { Tooltip } from "./tooltip";
 import {
   calculateXAxisStage,
-  calculateYAxisStage, getTicksByDimension,
+  calculateYAxisStage,
+  getTicksForAvailableSpace,
   preparePlottingData
 } from "./utils/get-plotting-data";
 import { XAxis } from "./x-axis";
@@ -106,12 +107,12 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
         <XAxis
           scale={xScale}
           stage={calculateXAxisStage(plottingStage)}
-          ticks={getTicksByDimension(xTicks, plottingStage.width)}
+          ticks={getTicksForAvailableSpace(xTicks, plottingStage.width)}
           formatter={xSeries.formatter()}
           tickSize={TICK_SIZE}/>
         <YAxis
           stage={calculateYAxisStage(plottingStage)}
-          ticks={getTicksByDimension(yTicks, plottingStage.height)}
+          ticks={getTicksForAvailableSpace(yTicks, plottingStage.height)}
           tickSize={TICK_SIZE}
           scale={yScale}
           formatter={ySeries.formatter()}/>

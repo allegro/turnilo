@@ -59,7 +59,7 @@ function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   return d3.extent(data, selectValues);
 }
 
-export function getTicksByDimension(ticks: number[], size: number): number[] {
+export function getTicksForAvailableSpace(ticks: number[], size: number): number[] {
   if (size > BREAKPOINT_SMALL) {
     return ticks;
   }
