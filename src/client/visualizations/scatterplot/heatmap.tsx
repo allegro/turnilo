@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,8 @@ interface HeatmapProps {
 
 type Counts = number[][];
 
-// function getCounts({ data, xSeries, ySeries, xScale, yScale }: HeatmapProps): Counts {
-//
-//   return counts;
-// }
-
-const white = "#fff";
-const orange = "#ff5a00";
+const colorScaleStart = "#fff";
+const colorScaleEnd = "#90b5d0";
 
 export const Heatmap: React.SFC<HeatmapProps> = props => {
   const { xBinCount, yBinCount, data, xSeries, ySeries, xScale, yScale, stage } = props;
@@ -68,7 +63,7 @@ export const Heatmap: React.SFC<HeatmapProps> = props => {
 
   const countExtent = [0, d3.max(counts, c => d3.max(c))];
 
-  const colorScale = d3.scale.linear<string>().domain(countExtent).range([white, orange]);
+  const colorScale = d3.scale.linear<string>().domain(countExtent).range([colorScaleStart, colorScaleEnd]);
 
   return <React.Fragment>
     <LegendSpot>
@@ -76,22 +71,46 @@ export const Heatmap: React.SFC<HeatmapProps> = props => {
     </LegendSpot>
     <g transform={stage.getTransform()}>
       {counts.map((row, i) =>
-        row.map((count, j) => {
-          const [x0, x1] = xQuantile.invertExtent(i);
-          const [y0, y1] = yQuantile.invertExtent(j);
-          const x = xScale(x0);
-          const width = xScale(x1) - x;
-          const y = yScale(y1);
-          const height = yScale(y0) - yScale(y1);
-          return <rect key={`key-${i}-${j}`}
-                       fill={colorScale(count)}
-                       fillOpacity={0.5}
-                       x={x}
-                       width={width}
-                       y={y}
-                       height={height}>
-          </rect>;
-        }))}
+        row.map((count, j) => (
+          <Rectangle
+            key={`key-${i}-${j}`}
+            xScale={xScale}
+            yScale={yScale}
+            fillColor={colorScale(count)}
+            xRange={xQuantile.invertExtent(i)}
+            yRange={yQuantile.invertExtent(j)} />
+        )))}
     </g>
   </React.Fragment>;
+};
+
+interface RectangleProps {
+  xRange: [number, number];
+  yRange: [number, number];
+  xScale: LinearScale;
+  yScale: LinearScale;
+  fillColor: string;
+}
+
+const Rectangle: React.SFC<RectangleProps> = ({
+  xRange,
+  yRange,
+  xScale,
+  yScale,
+  fillColor
+}) => {
+  const [x0, x1] = xRange;
+  const [y0, y1] = yRange;
+  const xPosition = xScale(x0);
+  const width = xScale(x1) - xPosition;
+  const yPosition = yScale(y1);
+  const height = yScale(y0) - yScale(y1);
+
+  return <rect
+    fill={fillColor}
+    x={xPosition}
+    width={width}
+    y={yPosition}
+    height={height}>
+  </rect>;
 };
