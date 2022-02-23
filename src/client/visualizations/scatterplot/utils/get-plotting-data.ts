@@ -54,9 +54,17 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
 
-export  function getExtent(data: Datum[], series: ConcreteSeries): number[] {
+function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
   return d3.extent(data, selectValues);
+}
+
+export function getTicksByDimension(ticks: number[], size: number): number[] {
+  if (size > BREAKPOINT_SMALL) {
+    return ticks;
+  }
+
+  return ticks.filter((_, index) => index % 2 === 0);
 }
 
 function calculatePlottingStageBasedOnWidth(stage: Stage): Stage {

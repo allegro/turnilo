@@ -34,7 +34,7 @@ import { Point } from "./point";
 import { Tooltip } from "./tooltip";
 import {
   calculateXAxisStage,
-  calculateYAxisStage,
+  calculateYAxisStage, getTicksByDimension,
   preparePlottingData
 } from "./utils/get-plotting-data";
 import { XAxis } from "./x-axis";
@@ -103,27 +103,31 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
           ySeries={ySeries}/>}
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale}/>
         <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale}/>
-        <XAxis scale={xScale} stage={calculateXAxisStage(plottingStage)} ticks={xTicks} formatter={xSeries.formatter()}
-               tickSize={TICK_SIZE}/>
+        <XAxis
+          scale={xScale}
+          stage={calculateXAxisStage(plottingStage)}
+          ticks={getTicksByDimension(xTicks, plottingStage.width)}
+          formatter={xSeries.formatter()}
+          tickSize={TICK_SIZE}/>
         <YAxis
           stage={calculateYAxisStage(plottingStage)}
-          ticks={yTicks}
+          ticks={getTicksByDimension(yTicks, plottingStage.height)}
           tickSize={TICK_SIZE}
           scale={yScale}
           formatter={ySeries.formatter()}/>
         <g transform={plottingStage.getTransform()}>
           {scatterplotData.map(datum => {
-              return (
-                <Point
-                  key={`point-${datum[splitKey]}`}
-                  datum={datum}
-                  xScale={xScale}
-                  yScale={yScale}
-                  xSeries={xSeries}
-                  ySeries={ySeries}
-                  setHover={this.setPointHover}
-                  resetHover={this.resetPointHover}/>
-              );
+            return (
+              <Point
+                key={`point-${datum[splitKey]}`}
+                datum={datum}
+                xScale={xScale}
+                yScale={yScale}
+                xSeries={xSeries}
+                ySeries={ySeries}
+                setHover={this.setPointHover}
+                resetHover={this.resetPointHover}/>
+            );
             }
           )}
         </g>

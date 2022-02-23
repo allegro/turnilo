@@ -44,17 +44,6 @@
       &.axis-label-x {
         text-anchor: middle;
       }
-
-      &:nth-child(odd) {
-        // experimental values
-        @media (max-width: 1248px) {
-          display: none;
-        }
-
-        @media (max-height: 760px) {
-          display: none;
-        }
-      }
     }
   }
 
