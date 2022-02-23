@@ -60,7 +60,7 @@ export const Heatmap: React.SFC<HeatmapProps> = ({ xBinCount, yBinCount, xScale,
     <LegendSpot>
       <ColorLegend title="Count" formatter={i => i.toString(10)} colorScale={colorScale} />
     </LegendSpot>
-    <g transform={stage.getTransform()}>
+    <g transform={stage.getTransform()} className="heatmap">
       {counts.map((row, i) =>
         row.map((count, j) => (
           <Rectangle
