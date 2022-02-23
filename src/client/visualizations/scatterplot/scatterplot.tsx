@@ -79,9 +79,8 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     const rightXAxisLabelPosition = stage.width - (plottingStage.width + plottingStage.x);
     const bottomXAxisLabelPosition = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
-      <span className="axis-title" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
-      <span className="axis-title"
-            style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
+      <span className="axis-title axis-title-y" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
+      <span className="axis-title axis-title-x" style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
       <Tooltip
         datum={this.state.hoveredPoint}
         stage={plottingStage}
