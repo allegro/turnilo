@@ -15,6 +15,7 @@
  */
 
 import * as d3 from "d3";
+import { scale } from "d3";
 import { Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
@@ -26,9 +27,9 @@ import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
 /**
  * TODO:
- *   Beautify Legend component
+ *   Beautify Legend component - it's already a beauty though
  *   "Secondary" color for rect fill
- *   Extract bunch of functions
+ *   Extract bunch of functions - kind of done (?)
  */
 
 interface HeatmapProps {
@@ -42,28 +43,18 @@ interface HeatmapProps {
   stage: Stage;
 }
 
-type Counts = number[][];
+const COLOR_SCALE_START = "#fff";
+const COLOR_SCALE_END = "#90b5d0";
 
-const colorScaleStart = "#fff";
-const colorScaleEnd = "#90b5d0";
-
-export const Heatmap: React.SFC<HeatmapProps> = props => {
-  const { xBinCount, yBinCount, data, xSeries, ySeries, xScale, yScale, stage } = props;
-
+export const Heatmap: React.SFC<HeatmapProps> = ({ xBinCount, yBinCount, xScale, yScale, stage, data, xSeries, ySeries }) => {
   const xQuantile = d3.scale.quantile<number>().domain(xScale.domain()).range(range(0, xBinCount));
   const yQuantile = d3.scale.quantile<number>().domain(yScale.domain()).range(range(0, yBinCount));
 
-  let counts: Counts = Array.from({ length: xBinCount }).map(_ => Array.from({ length: yBinCount }).map(_ => 0));
-
-  data.forEach(datum => {
-    const i = xQuantile(xSeries.selectValue(datum));
-    const j = yQuantile(ySeries.selectValue(datum));
-    counts[i][j] += 1;
-  });
+  const counts = getCounts({ xBinCount, yBinCount, data, xQuantile, xSeries, yQuantile, ySeries });
 
   const countExtent = [0, d3.max(counts, c => d3.max(c))];
 
-  const colorScale = d3.scale.linear<string>().domain(countExtent).range([colorScaleStart, colorScaleEnd]);
+  const colorScale = d3.scale.linear<string>().domain(countExtent).range([COLOR_SCALE_START, COLOR_SCALE_END]);
 
   return <React.Fragment>
     <LegendSpot>
@@ -83,6 +74,30 @@ export const Heatmap: React.SFC<HeatmapProps> = props => {
     </g>
   </React.Fragment>;
 };
+
+interface GetCounts {
+  xBinCount: number;
+  yBinCount: number;
+  xSeries: ConcreteSeries;
+  ySeries: ConcreteSeries;
+  xQuantile: scale.Quantile<number>;
+  yQuantile: scale.Quantile<number>;
+  data: Datum[];
+}
+
+type Counts = number[][];
+
+function getCounts({ xBinCount, yBinCount, xSeries, ySeries, xQuantile, yQuantile, data }: GetCounts): Counts {
+  let counts = Array.from({ length: xBinCount }, () => Array.from({ length: yBinCount }, () => 0));
+
+  data.forEach(datum => {
+    const i = xQuantile(xSeries.selectValue(datum));
+    const j = yQuantile(ySeries.selectValue(datum));
+    counts[i][j] += 1;
+  });
+
+  return counts;
+}
 
 interface RectangleProps {
   xRange: [number, number];
