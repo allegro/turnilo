@@ -69,8 +69,8 @@ function extendExtentIfNeeded(extent: number[]): number[] {
     return extent;
   }
 
-  const loweredRangeStart = Math.floor(rangeStart - rangeStart * EXTENT_EXTEND_FACTOR);
-  const raisedRangeEnd = Math.ceil(rangeEnd + rangeEnd * EXTENT_EXTEND_FACTOR);
+  const loweredRangeStart = rangeStart - rangeStart * EXTENT_EXTEND_FACTOR;
+  const raisedRangeEnd = rangeEnd + rangeEnd * EXTENT_EXTEND_FACTOR;
   return [loweredRangeStart, raisedRangeEnd];
 }
 

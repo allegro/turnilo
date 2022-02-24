@@ -25,7 +25,6 @@ import {
 } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings } from "./settings";
 
-// FIXME: Update conditions and tests in EssenceProps src/common/models/essence/essence.mocha.ts
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.numberOfSplitsIsNot(1))
   .then(variables => Resolve.manual(

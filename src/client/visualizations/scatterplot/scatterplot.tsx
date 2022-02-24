@@ -129,8 +129,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
                 setHover={this.setPointHover}
                 resetHover={this.resetPointHover}/>
             );
-            }
-          )}
+          })}
         </g>
       </svg>
     </div>;

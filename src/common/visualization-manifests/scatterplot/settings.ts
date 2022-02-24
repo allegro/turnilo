@@ -33,8 +33,7 @@ const createSettings = (settings: Partial<ScatterplotSettings>): ImmutableRecord
 export const settings: ScatterplotVisualizationSettings = {
   converter: {
     print: (settings: ImmutableRecord<ScatterplotSettings>) => settings.toJS(),
-    // TODO: why so defensive?
-    read: (input: ScatterplotSettings) => createSettings({ showSummary: !!input.showSummary })
+    read: (input: ScatterplotSettings) => createSettings({ showSummary: Boolean(input.showSummary) })
   },
   defaults: createSettings({})
 };
