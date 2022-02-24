@@ -27,7 +27,6 @@ import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
 /**
  * TODO:
- *   Beautify Legend component - it's already a beauty though
  *   "Secondary" color for rect fill
  *   Extract bunch of functions - kind of done (?)
  */
@@ -58,7 +57,7 @@ export const Heatmap: React.SFC<HeatmapProps> = ({ xBinCount, yBinCount, xScale,
 
   return <React.Fragment>
     <LegendSpot>
-      <ColorLegend title="Count" formatter={i => i.toString(10)} colorScale={colorScale} />
+      <ColorLegend title="Count per summary bin" formatter={i => i.toString(10)} colorScale={colorScale} />
     </LegendSpot>
     <g transform={stage.getTransform()} className="heatmap">
       {counts.map((row, i) =>

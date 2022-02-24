@@ -56,10 +56,10 @@ export const ColorLegend: React.SFC<ColorLegendProps> = ({ title, width = panelW
         height={`${height}px`}>
         <defs>
           <linearGradient id="color-stripe" gradientTransform="rotate(90)">
-            <stop offset="0%" stopColor={startColor}/>
-            <stop offset="10%" stopColor={startColor}/>
-            <stop offset="90%" stopColor={endColor}/>
-            <stop offset="100%" stopColor={endColor}/>
+            <stop offset="0%" stopColor={endColor}/>
+            <stop offset="10%" stopColor={endColor}/>
+            <stop offset="90%" stopColor={startColor}/>
+            <stop offset="100%" stopColor={startColor}/>
           </linearGradient>
         </defs>
         <g transform={`translate(${leftMargin}, ${topMargin})`}>
@@ -74,28 +74,28 @@ export const ColorLegend: React.SFC<ColorLegendProps> = ({ title, width = panelW
                 x2={0.5}
                 y1={0}
                 y2={stripeLength}/>
-          <g className="color-lower-bound">
-            <line className="color-lower-bound-tick"
-                  x1={0}
-                  x2={tickLength}
-                  y1={0.5}
-                  y2={0.5}/>
-            <text className="color-lower-bound-value"
-                  x={tickLabelLeftOffset}
-                  y={tickLabelTopOffset}>
-              {formatter(min)}
-            </text>
-          </g>
           <g className="color-upper-bound">
             <line className="color-upper-bound-tick"
                   x1={0}
                   x2={tickLength}
-                  y1={stripeLength + 0.5}
-                  y2={stripeLength + 0.5}/>
+                  y1={0.5}
+                  y2={0.5}/>
             <text className="color-upper-bound-value"
                   x={tickLabelLeftOffset}
-                  y={stripeLength + tickLabelTopOffset}>
+                  y={tickLabelTopOffset}>
               {formatter(max)}
+            </text>
+          </g>
+          <g className="color-lower-bound">
+            <line className="color-lower-bound-tick"
+                  x1={0}
+                  x2={tickLength}
+                  y1={stripeLength + 0.5}
+                  y2={stripeLength + 0.5}/>
+            <text className="color-lower-bound-value"
+                  x={tickLabelLeftOffset}
+                  y={stripeLength + tickLabelTopOffset}>
+              {formatter(min)}
             </text>
           </g>
         </g>
