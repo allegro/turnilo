@@ -85,6 +85,9 @@ module.exports = {
       {
         test: /\.(woff|woff2)$/i,
         loader: "url-loader",
+        options: {
+          limit: 8192,
+        },
       },
       {
         test: /\.svg$/,
