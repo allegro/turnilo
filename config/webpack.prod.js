@@ -18,7 +18,6 @@ const common = require('./webpack.common');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = merge.smart(common, {
@@ -31,7 +30,6 @@ module.exports = merge.smart(common, {
     minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
   },
   plugins: [
-    new MiniCssExtractPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 const path = require("path");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -38,6 +39,9 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
+  plugins: [
+    new MiniCssExtractPlugin(),
+  ],
   module: {
     rules: [
       {
