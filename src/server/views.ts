@@ -75,6 +75,7 @@ export function mainLayout(options: ViewOptions): string {
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, timekeeper, appSettings: serialize(appSettings) })};</script>
 <script charset="UTF-8" src="main.js?v=${version}"></script>
+<link rel="stylesheet" href="main.css?v=${version}">
 ${cssOverrides}`
   );
 }
