@@ -18,7 +18,6 @@ import * as React from "react";
 import { VisualizationSettingsComponent } from "../../../common/models/visualization-settings/visualization-settings";
 import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { Checkbox } from "../../components/checkbox/checkbox";
-// TODO: Move to src/client/visualization-settings/<snake-case-dir-name>/<snake-case-file-name
 export const ScatterplotSettingsComponent: VisualizationSettingsComponent<ScatterplotSettings> = props => {
   const { settings, onChange } = props;
   const toggleSummary = () => onChange(settings.update("showSummary", showSummary => !showSummary));

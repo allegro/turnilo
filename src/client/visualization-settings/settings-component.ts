@@ -15,8 +15,8 @@
  */
 
 import { Visualization } from "../../common/models/visualization-manifest/visualization-manifest";
-import { ScatterplotSettingsComponent } from "../visualizations/scatterplot/ScatterplotSettingsComponent";
 import { LineChartSettingsComponent } from "./line-chart/line-chart-settings";
+import { ScatterplotSettingsComponent } from "./scatterplot/scatterplot-settings";
 import { TableSettingsComponent } from "./table/table-settings";
 
 interface SettingsComponents {
