@@ -26,6 +26,7 @@ const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 const BREAKPOINT_SMALL = 768;
 const TICK_COUNT = 10;
+const EXTENT_EXTEND_FACTOR = 0.05;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -56,7 +57,21 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
 
 function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
-  return d3.extent(data, selectValues);
+  const extent =  d3.extent(data, selectValues);
+
+  return extendExtentIfNeeded(extent);
+}
+
+function extendExtentIfNeeded(extent: number[]): number[] {
+  const [rangeStart, rangeEnd] = extent;
+
+  if (rangeStart !== rangeEnd) {
+    return extent;
+  }
+
+  const loweredRangeStart = Math.floor(rangeStart - rangeStart * EXTENT_EXTEND_FACTOR);
+  const raisedRangeEnd = Math.ceil(rangeEnd + rangeEnd * EXTENT_EXTEND_FACTOR);
+  return [loweredRangeStart, raisedRangeEnd];
 }
 
 export function getTicksForAvailableSpace(ticks: number[], size: number): number[] {

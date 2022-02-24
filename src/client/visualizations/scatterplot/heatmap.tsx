@@ -25,12 +25,6 @@ import { ColorLegend } from "../../components/color-legend/color-legend";
 import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
-/**
- * TODO:
- *   "Secondary" color for rect fill
- *   Extract bunch of functions - kind of done (?)
- */
-
 interface HeatmapProps {
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
@@ -118,7 +112,7 @@ const Rectangle: React.SFC<RectangleProps> = ({
   const xPosition = xScale(x0);
   const width = xScale(x1) - xPosition;
   const yPosition = yScale(y1);
-  const height = yScale(y0) - yScale(y1);
+  const height = yScale(y0) - yPosition;
 
   return <rect
     fill={fillColor}
