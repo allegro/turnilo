@@ -6,8 +6,7 @@ module.exports = {
             numberOfRuns: 5,
         },
         upload: {
-            target: 'filesystem',
-            outputDir: 'lhci'
+            target: 'temporary-public-storage',
         },
     },
 };

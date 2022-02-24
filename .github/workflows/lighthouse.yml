@@ -46,4 +46,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: lighthouse-report
-          path: ./lhci/*
+          path: |
+            ./.lighthouseci/
