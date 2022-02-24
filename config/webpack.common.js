@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 const path = require("path");
 
 const babelLoader = {
@@ -76,6 +75,10 @@ module.exports = {
           "css-loader",
           "sass-loader"
         ]
+      },
+      {
+        test: /\.(woff|woff2)$/i,
+        loader: "url-loader",
       },
       {
         test: /\.svg$/,
