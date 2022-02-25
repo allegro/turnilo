@@ -86,6 +86,8 @@ module.exports = {
         test: /\.(woff|woff2)$/i,
         loader: "url-loader",
         options: {
+          // Returns a data-url (data:font/woff;charset=utf-8;base64,...)
+          // if the file is smaller than a byte limit.
           limit: 8192,
         },
       },
