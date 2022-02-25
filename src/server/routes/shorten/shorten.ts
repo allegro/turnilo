@@ -31,8 +31,10 @@ export function shortenRouter(settings: Pick<AppSettings, "customization">, isTr
         // If trust proxy is not enabled, app is understood as directly facing the internet
         clientIp: isTrustedProxy ? req.ip : req.connection.remoteAddress
       };
-      const shortUrl = await shortener(request, url, context);
-      res.json({ shortUrl });
+      if (typeof url === "string") {
+        const shortUrl = await shortener(request, url, context);
+        res.json({ shortUrl });
+      }
     } catch (error) {
       console.log("error:", error.message);
       if (error.hasOwnProperty("stack")) {
