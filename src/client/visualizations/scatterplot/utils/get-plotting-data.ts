@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 import * as d3 from "d3";
-import memoizeOne from "memoize-one";
 import { Dataset, Datum } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../common/models/stage/stage";
 import { selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
-import { LinearScale, pickTicks } from "../../../utils/linear-scale/linear-scale";
+import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 
 const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 const BREAKPOINT_SMALL = 768;
-const TICK_COUNT_SMALL = 4;
-const TICK_COUNT_DEFAULT = 10;
+const TICK_COUNT = 10;
+const EXTENT_EXTEND_FACTOR = 0.05;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -40,14 +39,6 @@ interface PlottingData {
   scatterplotData: Datum[];
 }
 
-function getTicksCountByDimension(size: number): number {
-  if (size < BREAKPOINT_SMALL) {
-    return TICK_COUNT_SMALL;
-  }
-
-  return TICK_COUNT_DEFAULT;
-}
-
 export function preparePlottingData(data: Dataset, essence: Essence, stage: Stage): PlottingData {
   const [xSeries, ySeries] = essence.getConcreteSeries().toArray();
   const scatterplotData = selectFirstSplitDatums(data);
@@ -58,17 +49,37 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
   const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
 
-  const xTicksCount = getTicksCountByDimension(plottingStage.width);
-  const yTicksCount =  getTicksCountByDimension(plottingStage.height);
-  const xTicks = pickTicks(xScale, xTicksCount);
-  const yTicks = pickTicks(yScale, yTicksCount);
+  const xTicks = xScale.ticks(TICK_COUNT);
+  const yTicks = yScale.ticks(TICK_COUNT);
 
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
 
-export  function getExtent(data: Datum[], series: ConcreteSeries): number[] {
+function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
-  return d3.extent(data, selectValues);
+  const extent =  d3.extent(data, selectValues);
+
+  return extendExtentIfNeeded(extent);
+}
+
+function extendExtentIfNeeded(extent: number[]): number[] {
+  const [rangeStart, rangeEnd] = extent;
+
+  if (rangeStart !== rangeEnd) {
+    return extent;
+  }
+
+  const loweredRangeStart = rangeStart - rangeStart * EXTENT_EXTEND_FACTOR;
+  const raisedRangeEnd = rangeEnd + rangeEnd * EXTENT_EXTEND_FACTOR;
+  return [loweredRangeStart, raisedRangeEnd];
+}
+
+export function getTicksForAvailableSpace(ticks: number[], size: number): number[] {
+  if (size > BREAKPOINT_SMALL) {
+    return ticks;
+  }
+
+  return ticks.filter((_, index) => index % 2 === 0);
 }
 
 function calculatePlottingStageBasedOnWidth(stage: Stage): Stage {

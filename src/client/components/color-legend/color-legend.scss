@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,33 @@
 
 @import '../../imports';
 
-.heatmap-legend {
-  .heatmap-legend-stripe-axis,
-  .heatmap-lower-bound-tick,
-  .heatmap-upper-bound-tick {
+.color-legend {
+  .color-legend-header {
+    @extend %module;
+    @include css-variable(color, text-light);
+    margin-bottom: 1px;
+    height: 36px;
+    padding-left: 14px;
+    padding-top: 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .color-legend-stripe {
+    @extend %module;
+    margin-bottom: 1px;
+    padding: 10px 14px;
+  }
+
+  .color-legend-stripe-axis,
+  .color-lower-bound-tick,
+  .color-upper-bound-tick {
     stroke: #444;
     stroke-width: 1px;
   }
 
-  .heatmap-lower-bound-value,
-  .heatmap-upper-bound-value {
+  .color-lower-bound-value,
+  .color-upper-bound-value {
     fill: #444;
   }
 }
-
-
