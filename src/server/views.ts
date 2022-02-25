@@ -53,6 +53,7 @@ export function layout(options: ViewOptions, content: string): string {
   ${favicon(options)}
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
   <title>${options.title}</title>
+  <link rel="stylesheet" href="main.css?v=${options.version}">
 </head>
 <body>
 ${content}
@@ -74,7 +75,7 @@ export function mainLayout(options: ViewOptions): string {
 
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, timekeeper, appSettings: serialize(appSettings) })};</script>
-<script charset="UTF-8" src="main.js?v=${version}"></script>
+<script charset="UTF-8" async src="main.js?v=${version}"></script>
 ${cssOverrides}`
   );
 }

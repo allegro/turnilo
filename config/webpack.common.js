@@ -16,6 +16,8 @@
 
 const path = require("path");
 
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 const babelLoader = {
   loader: "babel-loader",
   options: {
@@ -37,6 +39,9 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
+  plugins: [
+    new MiniCssExtractPlugin(),
+  ],
   module: {
     rules: [
       {
@@ -65,17 +70,26 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          "style-loader",
+          MiniCssExtractPlugin.loader,
           "css-loader"
         ]
       },
       {
         test: /\.scss$/,
         use: [
-          "style-loader",
+          MiniCssExtractPlugin.loader,
           "css-loader",
           "sass-loader"
         ]
+      },
+      {
+        test: /\.(woff|woff2)$/i,
+        loader: "url-loader",
+        options: {
+          // Returns a data-url (data:font/woff;charset=utf-8;base64,...)
+          // if the file is smaller than a byte limit.
+          limit: 8192,
+        },
       },
       {
         test: /\.svg$/,
