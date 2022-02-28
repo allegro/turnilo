@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-const common = require('./webpack.common');
+const commonConfig = require('./webpack.common');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
-module.exports = merge.smart(common, {
+const prodConfig = {
+  name: "client-modern",
   mode: "production",
   entry: {
     main: "./src/client/main.tsx",
@@ -35,4 +36,27 @@ module.exports = merge.smart(common, {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
   ]
-});
+};
+
+const es5Config = {
+  module: {
+    rules: [{
+      test: /\.tsx?$/,
+      use: [{
+        loader: "babel-loader",
+        options: {
+          envName: "legacy",
+        },
+      }],
+    }]
+  },
+  name: "client-legacy",
+  output: {
+    filename: "[name].es5.js",
+  }
+};
+
+module.exports = [
+  merge.smart(commonConfig, prodConfig),
+  merge.smart(commonConfig, prodConfig, es5Config),
+]
