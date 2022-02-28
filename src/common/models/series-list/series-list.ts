@@ -140,7 +140,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.updateSeries(series => series.take(1));
   }
 
-  public takeNFirst(number: number) {
+  public takeNFirst(number: number): SeriesList {
     return this.updateSeries(series => series.take(number));
   }
 
