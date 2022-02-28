@@ -35,14 +35,13 @@ import { Tooltip } from "./tooltip";
 import {
   calculateXAxisStage,
   calculateYAxisStage,
-  getTicksForAvailableSpace,
+  getTicksForAvailableSpace, getXAxisLabelPosition,
   preparePlottingData
 } from "./utils/get-plotting-data";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
 
 const TICK_SIZE = 10;
-const X_AXIS_LABEL_OFFSET = 55;
 
 interface ScatterplotState {
   hoveredPoint: Datum | null;
@@ -77,11 +76,11 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
       scatterplotData
     } = this.getPlottingData(data, essence, stage);
 
-    const rightXAxisLabelPosition = stage.width - (plottingStage.width + plottingStage.x);
-    const bottomXAxisLabelPosition = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
+    const xAxisLabelPosition = getXAxisLabelPosition(stage, plottingStage);
+
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title axis-title-y" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
-      <span className="axis-title axis-title-x" style={{ bottom: bottomXAxisLabelPosition, right: rightXAxisLabelPosition }}>{xSeries.title()}</span>
+      <span className="axis-title axis-title-x" style={{ bottom: xAxisLabelPosition.bottom, right: xAxisLabelPosition.right }}>{xSeries.title()}</span>
       <Tooltip
         datum={this.state.hoveredPoint}
         stage={plottingStage}

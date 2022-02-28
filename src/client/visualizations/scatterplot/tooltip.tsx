@@ -56,10 +56,10 @@ export const Tooltip: React.SFC<TooltipProps> = ({
 }) => {
   if (!isTruthy(datum)) return null;
 
-  const xValue = xSeries.selectValue(datum);
-  const yValue = ySeries.selectValue(datum);
+  const xPosition = xScale(xSeries.selectValue(datum)) + TOOLTIP_OFFSET_X;
+  const yPosition = yScale(ySeries.selectValue(datum)) + TOOLTIP_OFFSET_Y;
 
-  return <TooltipWithinStage top={yScale(yValue) + TOOLTIP_OFFSET_Y} left={xScale(xValue) + TOOLTIP_OFFSET_X} stage={stage}>
+  return <TooltipWithinStage top={yPosition} left={xPosition} stage={stage}>
     <SegmentBubbleContent
       title={formatValue(datum[splitKey], timezone)}
       content={<>

@@ -27,6 +27,7 @@ const Y_AXIS_WIDTH = 50;
 const BREAKPOINT_SMALL = 768;
 const TICK_COUNT = 10;
 const EXTENT_EXTEND_FACTOR = 0.05;
+const X_AXIS_LABEL_OFFSET = 55;
 
 interface PlottingData {
   xSeries: ConcreteSeries;
@@ -62,7 +63,7 @@ function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   return extendExtentIfNeeded(extent);
 }
 
-function extendExtentIfNeeded(extent: number[]): number[] {
+export function extendExtentIfNeeded(extent: number[]): number[] {
   const [rangeStart, rangeEnd] = extent;
 
   if (rangeStart !== rangeEnd) {
@@ -72,6 +73,13 @@ function extendExtentIfNeeded(extent: number[]): number[] {
   const loweredRangeStart = rangeStart - rangeStart * EXTENT_EXTEND_FACTOR;
   const raisedRangeEnd = rangeEnd + rangeEnd * EXTENT_EXTEND_FACTOR;
   return [loweredRangeStart, raisedRangeEnd];
+}
+
+export function getXAxisLabelPosition(stage: Stage, plottingStage: Stage): {bottom: number, right: number} {
+  const bottom = stage.width - (plottingStage.width + plottingStage.x);
+  const right = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
+
+  return { bottom, right };
 }
 
 export function getTicksForAvailableSpace(ticks: number[], size: number): number[] {
