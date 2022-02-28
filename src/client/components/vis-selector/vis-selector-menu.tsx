@@ -23,6 +23,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import { MANIFESTS } from "../../../common/visualization-manifests";
 import { LineChartSettings } from "../../../common/visualization-manifests/line-chart/settings";
+import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { STRINGS } from "../../config/constants";
 import { settingsComponent } from "../../visualization-settings/settings-component";
@@ -96,6 +97,10 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
       case "line-chart":
         const LineChartSettingsComponent = settingsComponent(visualization.name);
         return <LineChartSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<LineChartSettings>}/>;
+      case "scatterplot":
+        const ScatterplotSettingsComponent = settingsComponent(visualization.name);
+        const settings = visualizationSettings as ImmutableRecord<ScatterplotSettings>;
+        return <ScatterplotSettingsComponent onChange={this.changeSettings} settings={settings} />;
     }
   }
 

@@ -140,9 +140,17 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
     return this.updateSeries(series => series.take(1));
   }
 
+  public takeNFirst(number: number): SeriesList {
+    return this.updateSeries(series => series.take(number));
+  }
+
   public getExpressionSeriesFor(reference: string): List<ExpressionSeries> {
     return this.series.filter(series =>
       series.reference === reference && series instanceof ExpressionSeries) as List<ExpressionSeries>;
+  }
+
+  public getSeriesKeys(): List<string> {
+    return this.series.map(series => series.key());
   }
 }
 
