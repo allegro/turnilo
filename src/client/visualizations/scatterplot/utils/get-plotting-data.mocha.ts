@@ -36,7 +36,7 @@ describe("extendExtentIfNeeded", () => {
 });
 
 describe("getTicksForAvailableSpace", () => {
-  it("should return not changed ticks when screen size is larger than 768px", () => {
+  it("should return not changed ticks when available space is more than 768px", () => {
     const ticks = [10, 20, 30, 40, 50];
 
     const result = getTicksForAvailableSpace(ticks, 1024);
@@ -44,7 +44,7 @@ describe("getTicksForAvailableSpace", () => {
     expect(result).to.eql([10, 20, 30, 40, 50]);
   });
 
-  it("should filter ticks at even indexes when screen size is less than 768 px", () => {
+  it("should filter ticks at even indexes when available space is less than 768px", () => {
     const ticks = [10, 20, 30, 40, 50];
 
     const result = getTicksForAvailableSpace(ticks, 544);
