@@ -33,7 +33,7 @@ module.exports = {
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, '../build/public'),
-    filename: "main.js",
+    filename: "[name].js",
     chunkFilename: "[name].[hash].js"
   },
   resolve: {
