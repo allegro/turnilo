@@ -24,7 +24,6 @@ import { Loader } from "./components/loader/loader";
 import { deserialize as deserializeAppSettings } from "./deserializers/app-settings";
 import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";
 import "./main.scss";
-import "./polyfills";
 import { Ajax } from "./utils/ajax/ajax";
 import { init as errorReporterInit } from "./utils/error-reporter/error-reporter";
 

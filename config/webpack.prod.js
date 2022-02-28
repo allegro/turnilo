@@ -23,7 +23,8 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 module.exports = merge.smart(common, {
   mode: "production",
   entry: {
-    main: ["./src/client/main.tsx"]
+    main: "./src/client/main.tsx",
+    polyfills: "./src/client/polyfills.ts",
   },
   optimization: {
     minimize: true,
