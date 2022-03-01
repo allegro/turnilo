@@ -76,8 +76,8 @@ export function extendExtentIfNeeded(extent: number[]): number[] {
 }
 
 export function getXAxisLabelPosition(stage: Stage, plottingStage: Stage): {bottom: number, right: number} {
-  const bottom = stage.width - (plottingStage.width + plottingStage.x);
-  const right = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
+  const right = stage.width - (plottingStage.width + plottingStage.x);
+  const bottom = stage.height - (plottingStage.height + plottingStage.y - X_AXIS_LABEL_OFFSET);
 
   return { bottom, right };
 }
