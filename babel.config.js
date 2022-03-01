@@ -1,28 +1,30 @@
-module.exports = api => {
+
+
+module.exports = (api) => {
     api.cache(true);
     return {
+        passPerPreset: true,
+        plugins: [
+            "@babel/plugin-proposal-class-properties"
+        ],
+        presets: [
+            "@babel/preset-typescript",
+            ["@babel/preset-react", {
+                development: false,
+                useBuiltIns: true,
+            }]
+        ],
         env: {
             legacy: {
-                passPerPreset: true,
                 presets: [
-                    "@babel/preset-typescript",
                     ["@babel/preset-env", {
                         modules: false,
                         targets: "> 0.25%, last 2 versions, Firefox ESR",
                     }],
-                    ["@babel/preset-react", {
-                        development: false,
-                        useBuiltIns: true,
-                    }]
                 ],
-                plugins: [
-                    "@babel/plugin-proposal-class-properties"
-                ]
             },
             modern: {
-                passPerPreset: true,
                 presets: [
-                    "@babel/preset-typescript",
                     ["@babel/preset-env", {
                         modules: false,
                         targets: {
@@ -30,14 +32,7 @@ module.exports = api => {
                         },
                         bugfixes: true,
                     }],
-                    ["@babel/preset-react", {
-                        development: false,
-                        useBuiltIns: true,
-                    }]
                 ],
-                plugins: [
-                    "@babel/plugin-proposal-class-properties"
-                ]
             }
         }
     }
