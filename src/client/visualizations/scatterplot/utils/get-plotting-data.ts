@@ -56,7 +56,7 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   return { xSeries, ySeries, xScale, yScale, xTicks, yTicks, plottingStage, scatterplotData };
 }
 
-function getExtent(data: Datum[], series: ConcreteSeries): number[] {
+export function getExtent(data: Datum[], series: ConcreteSeries): number[] {
   const selectValues = (d: Datum) => series.selectValue(d);
   const extent =  d3.extent(data, selectValues);
 
