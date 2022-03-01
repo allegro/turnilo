@@ -64,6 +64,6 @@ describe("getXAxisLabelPosition", () => {
 
     const result = getXAxisLabelPosition(stage, plottingStage);
 
-    expect(result).to.eql({ bottom: 100, right: 155 });
+    expect(result).to.eql({ bottom: 155, right: 100 });
   });
 });
