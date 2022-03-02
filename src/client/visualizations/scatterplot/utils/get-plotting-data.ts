@@ -47,8 +47,8 @@ export function preparePlottingData(data: Dataset, essence: Essence, stage: Stag
   const yExtent = getExtent(scatterplotData, ySeries);
 
   const plottingStage = calculatePlottingStage(stage);
-  const yScale = d3.scale.linear().domain(yExtent).nice().range([plottingStage.height, 0]);
-  const xScale = d3.scale.linear().domain(xExtent).nice().range([0, plottingStage.width]);
+  const yScale = d3.scaleLinear().domain(yExtent).nice().range([plottingStage.height, 0]);
+  const xScale = d3.scaleLinear().domain(xExtent).nice().range([0, plottingStage.width]);
 
   const xTicks = xScale.ticks(TICK_COUNT);
   const yTicks = yScale.ticks(TICK_COUNT);

@@ -27,7 +27,7 @@ interface MeasureRowsProps {
   visibleRowsIndexRange: [number, number];
   essence: Essence;
   highlightedRowIndex: number | null;
-  scales: Map<string, d3.scale.Linear<number, number>>;
+  scales: Map<string, d3.ScaleLinear<number, number>>;
   data: PseudoDatum[];
   hoverRow?: Datum;
   cellWidth: number;

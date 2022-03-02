@@ -64,7 +64,7 @@ function hasSameDateAndMonth(a: Date, b: Date): boolean {
   return a.getDate() === b.getDate() && a.getMonth() === b.getMonth();
 }
 
-export function scaleTicksFormat(scale: d3.time.Scale<number, number>): string {
+export function scaleTicksFormat(scale: d3.ScaleTime<number, number>): string {
   const ticks = scale.ticks();
   if (ticks.length < 2) return SHORT_FULL_FORMAT;
   const [first, ...rest] = ticks;
@@ -74,7 +74,7 @@ export function scaleTicksFormat(scale: d3.time.Scale<number, number>): string {
   return getShortFormat(sameYear, sameDayAndMonth, sameHour);
 }
 
-export function scaleTicksFormatter(scale: d3.time.Scale<number, number>): Unary<Moment, string> {
+export function scaleTicksFormatter(scale: d3.ScaleTime<number, number>): Unary<Moment, string> {
   return formatterFromDefinition(scaleTicksFormat(scale));
 }
 

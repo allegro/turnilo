@@ -64,7 +64,7 @@ context("Scatterplot", () => {
         })
 
         it('should render rectangles', () => {
-            rectangles().should("have.length", 77);
+            rectangles().should("have.length", 154);
         })
     });
 
@@ -75,7 +75,7 @@ context("Scatterplot", () => {
         });
 
         it("should load ticks on X axis", () => {
-            xAxis().find(".tick").should("have.length", 8);
+            xAxis().find(".tick").should("have.length", 15);
         });
 
         it("should load ticks on Y axis", () => {
@@ -90,7 +90,7 @@ context("Scatterplot", () => {
         });
 
         it("should load ticks on X axis", () => {
-            xAxis().find(".tick").should("have.length", 4);
+            xAxis().find(".tick").should("have.length", 8);
         });
 
         it("should load ticks on Y axis", () => {
