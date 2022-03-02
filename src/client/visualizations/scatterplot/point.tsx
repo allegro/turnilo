@@ -23,6 +23,40 @@ import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
 interface PointProps {
   datum: Datum;
+  x: number;
+  y: number;
+  r?: number;
+  setHover(datum: Datum): void;
+  resetHover(): void;
+}
+
+const POINT_RADIUS = 3;
+const HOVER_AREA_MARGIN = 3;
+
+export const Point: React.SFC<PointProps> = ({ datum, x, y, r = POINT_RADIUS, setHover, resetHover }) => {
+  return (
+    <>
+      <circle
+        cx={x}
+        cy={y}
+        r={r}
+        className="point"
+      />
+      <circle
+        onMouseEnter={() => setHover(datum)}
+        onMouseLeave={() => resetHover()}
+        cx={x}
+        cy={y}
+        r={r + HOVER_AREA_MARGIN}
+        stroke="none"
+        fill="transparent"
+      />
+    </>
+  );
+};
+
+interface ScatterplotPointProps {
+  datum: Datum;
   xScale: LinearScale;
   yScale: LinearScale;
   xSeries: ConcreteSeries;
@@ -31,30 +65,11 @@ interface PointProps {
   resetHover(): void;
 }
 
-const POINT_RADIUS = 3;
-const HOVER_AREA_RADIUS = 6;
-
-export const Point: React.SFC<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries, setHover, resetHover }) => {
+export const ScatterplotPoint: React.SFC<ScatterplotPointProps> = ({ datum, xScale, yScale, xSeries, ySeries, setHover, resetHover }) => {
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 
   return (
-    <>
-      <circle
-        cx={xScale(xValue)}
-        cy={yScale(yValue)}
-        r={POINT_RADIUS}
-        className="point"
-      />
-      <circle
-        onMouseEnter={() => setHover(datum)}
-        onMouseLeave={() => resetHover()}
-        cx={xScale(xValue)}
-        cy={yScale(yValue)}
-        r={HOVER_AREA_RADIUS}
-        stroke="none"
-        fill="transparent"
-      />
-    </>
+      <Point datum={datum} x={xScale(xValue)} y={yScale(yValue)} setHover={setHover} resetHover={resetHover} />
   );
 };

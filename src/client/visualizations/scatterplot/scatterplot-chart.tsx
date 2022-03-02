@@ -20,7 +20,7 @@ import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Heatmap } from "./heatmap";
-import { Point } from "./point";
+import { ScatterplotPoint } from "./point";
 import { Tooltip } from "./tooltip";
 import {
   calculateXAxisStage, calculateYAxisStage,
@@ -109,7 +109,7 @@ export class ScatterplotChart extends React.Component<ChartProps, ScatterplotCha
           <g transform={plottingStage.getTransform()}>
             {scatterplotData.map(datum => {
               return (
-                <Point
+                <ScatterplotPoint
                   key={`point-${datum[splitKey]}`}
                   datum={datum}
                   xScale={xScale}
