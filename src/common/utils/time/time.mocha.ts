@@ -58,7 +58,7 @@ describe("Time", () => {
     const createScale = (...dates: Date[]) => {
       return {
         ticks: () => dates
-      } as d3.time.Scale<number, number>;
+      } as d3.ScaleTime<number, number>;
     };
 
     it("should hide year when just year is the same in all ticks", () => {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { scale } from "d3";
+import * as d3 from "d3";
 
-export type LinearScale = scale.Linear<number, number>;
+export type LinearScale = d3.ScaleLinear<number, number>;
 
 export const TICKS_COUNT = 5;
 
@@ -29,7 +29,7 @@ export default function getScale([min, max]: number[], height: number): LinearSc
     return null;
   }
 
-  return scale.linear()
+  return d3.scaleLinear()
     .domain([Math.min(min, 0), Math.max(max, 0)])
     .nice(TICKS_COUNT)
     .range([height, 0]);

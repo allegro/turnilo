@@ -30,7 +30,7 @@ interface MeasureRowProps {
   style: React.CSSProperties;
   datum: Datum;
   cellWidth: number;
-  scales: Map<string, d3.scale.Linear<number, number>>;
+  scales: Map<string, d3.ScaleLinear<number, number>>;
   showBar: boolean;
 }
 

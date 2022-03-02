@@ -36,11 +36,11 @@ export function createContinuousScale(essence: Essence, domainRange: PlywoodRang
   switch (kind) {
     case "number": {
       const domain = [domainRange.start, domainRange.end] as [number, number];
-      return (d3.scale.linear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleLinear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
     case "time": {
       const domain = [domainRange.start, domainRange.end] as [Date, Date];
-      return (d3.time.scale().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleTime().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
   }
 }

@@ -23,7 +23,7 @@ import { ContinuousScale } from "../../utils/continuous-types";
 interface HoverGuideProps {
   hover: Hover;
   stage: Stage;
-  yScale: d3.scale.Linear<number, number>;
+  yScale: d3.ScaleLinear<number, number>;
   xScale: ContinuousScale;
 }
 
