@@ -108,7 +108,7 @@ function calculatePlottingStageBasedOnHeight(stage: Stage): Stage {
   });
 }
 
-function calculateRegularPlottingStage(stage: Stage): Stage {
+export function calculateRegularPlottingStage(stage: Stage): Stage {
   return Stage.fromJS({
     x: Y_AXIS_WIDTH + MARGIN,
     y: MARGIN,

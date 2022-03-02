@@ -16,7 +16,7 @@
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import {
-  calculatePlottingStage,
+  calculateRegularPlottingStage,
   calculateXAxisStage,
   getExtent,
   getTicksForAvailableSpace
@@ -26,51 +26,88 @@ import { GridLines } from "../../components/grid-lines/grid-lines";
 import { XAxis } from "./x-axis";
 
 import * as d3 from "d3";
+import { Dataset, Datum } from "plywood";
+import { Essence } from "../../../common/models/essence/essence";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { Stage } from "../../../common/models/stage/stage";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
+import { LinearScale } from "../../utils/linear-scale/linear-scale";
+import { Point } from "./point";
 import { dodge } from "./utils/dodge";
 
 const TICK_SIZE = 10;
 const TICK_COUNT = 10;
 
-export class BeeswarmChart extends React.Component<ChartProps, {}> {
+interface BeeswarmChartProps  extends ChartProps {
+  hoveredPoint: Datum | null;
+  setPointHover(datum: Datum): void;
+  resetPointHover(): void;
+}
+
+export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
   render() {
-    const { data, essence, stage } = this.props;
-    const series = essence.getConcreteSeries().first();
-    const beeswarmData = selectFirstSplitDatums(data);
-    const extent = getExtent(beeswarmData, series);
+    const { data, essence, stage, setPointHover, resetPointHover } = this.props;
+    const { plottingStage, scale, series, ticks, beeswarmData } = getBeeswarmData(data, essence, stage);
 
-    const plottingStage = calculatePlottingStage(stage);
-    const scale = d3.scale.linear().domain(extent).nice().range([0, plottingStage.width]);
-
-    const xTicks = scale.ticks(TICK_COUNT);
-
-    const radius = 3;
-    const padding = 3;
-    const yValues = dodge(beeswarmData.map(i => scale(series.selectValue(i))), radius * 2 + padding);
-
-    const yOffset = plottingStage.height / 2;
+    const points = getPoints(beeswarmData, series, scale, 3, plottingStage);
 
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title axis-title-x" style={{ bottom: 150, right: 10 }}>{series.title()}</span>
       <svg viewBox={stage.getViewBox()}>
-        <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={scale}/>
+        <GridLines orientation={"vertical"} stage={plottingStage} ticks={ticks} scale={scale}/>
         <XAxis
           scale={scale}
           stage={calculateXAxisStage(plottingStage)}
-          ticks={getTicksForAvailableSpace(xTicks, plottingStage.width)}
+          ticks={ticks}
           formatter={series.formatter()}
           tickSize={TICK_SIZE}/>
         <g transform={plottingStage.getTransform()}>
-          {beeswarmData.map((datum, index) =>
-            <circle
-              key={index}
-              cx={scale(series.selectValue(datum))}
-              cy={yValues[index] + yOffset}
-              r={3}
-              className="point"
-          />)}
+          {points.map((datum, index) =>
+            <Point key={index} datum={datum.data} x={datum.x} y={datum.y} setHover={setPointHover} resetHover={resetPointHover}/>
+          )}
         </g>
       </svg>
     </div>;
     }
   }
+
+interface BeeswarmData {
+  plottingStage: Stage;
+  ticks: number[];
+  scale: LinearScale;
+  series: ConcreteSeries;
+  beeswarmData: Datum[];
+}
+
+export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): BeeswarmData  {
+  const series = essence.getConcreteSeries().first();
+  const beeswarmData = selectFirstSplitDatums(data);
+  const extent = getExtent(beeswarmData, series);
+
+  const plottingStage = calculateRegularPlottingStage(stage);
+  const scale = d3.scale.linear().domain(extent).nice().range([0, plottingStage.width]);
+
+  const ticks = getTicksForAvailableSpace(scale.ticks(TICK_COUNT), plottingStage.width);
+
+  return { plottingStage, scale, series, ticks, beeswarmData };
+}
+
+interface Bee { // Change to Point later on, but this is way cuter
+  r: number;
+  x: number;
+  y: number;
+  data: Datum;
+}
+
+export function getPoints(data: Datum[], series: ConcreteSeries, scale: LinearScale, pointRadius: number, stage: Stage): Bee[] {
+  const padding = 3; // Calculate radius based on available space?
+  const yOffset = stage.height / 2;
+  const yValues = dodge(data.map(i => scale(series.selectValue(i))), pointRadius * 2 + padding);
+
+  return data.map((datum, index) => ({
+    data: datum,
+    r: pointRadius,
+    x: scale(series.selectValue(datum)),
+    y: yValues[index] + yOffset
+  }));
+}

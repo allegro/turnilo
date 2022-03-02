@@ -35,12 +35,22 @@ interface ScatterplotState {
 }
 
 class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
+  state: ScatterplotState = {
+    hoveredPoint: null
+  };
+
+  setPointHover = (datum: Datum): void =>
+    this.setState({ hoveredPoint: datum });
+
+  resetPointHover = (): void =>
+    this.setState({ hoveredPoint: null });
+
   render() {
     if (this.props.essence.getConcreteSeries().size === 1) {
-      return <BeeswarmChart {...this.props}/>;
+      return <BeeswarmChart {...this.props} setPointHover={this.setPointHover} resetPointHover={this.resetPointHover} hoveredPoint={this.state.hoveredPoint}/>;
     }
 
-    return <ScatterplotChart {...this.props} />;
+    return <ScatterplotChart {...this.props} setPointHover={this.setPointHover} resetPointHover={this.resetPointHover} hoveredPoint={this.state.hoveredPoint}/>;
   }
 }
 

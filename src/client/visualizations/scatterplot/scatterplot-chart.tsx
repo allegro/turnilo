@@ -33,25 +33,17 @@ import { YAxis } from "./y-axis";
 
 const TICK_SIZE = 10;
 
-interface ScatterplotChartState {
+interface ScatterplotChartProps extends ChartProps {
   hoveredPoint: Datum | null;
+  setPointHover(datum: Datum): void;
+  resetPointHover(): void;
 }
 
-export class ScatterplotChart extends React.Component<ChartProps, ScatterplotChartState> {
-  state: ScatterplotChartState = {
-    hoveredPoint: null
-  };
-
+export class ScatterplotChart extends React.Component<ScatterplotChartProps, {}> {
   getPlottingData = memoizeOne(preparePlottingData);
 
-  setPointHover = (datum: Datum): void =>
-    this.setState({ hoveredPoint: datum });
-
-  resetPointHover = (): void =>
-    this.setState({ hoveredPoint: null });
-
   render() {
-    const { data, essence, stage } = this.props;
+    const { data, essence, stage, hoveredPoint, setPointHover, resetPointHover } = this.props;
 
     const splitKey = essence.splits.splits.first().toKey();
     const showHeatmap = (essence.visualizationSettings as ScatterplotSettings).showSummary;
@@ -73,7 +65,7 @@ export class ScatterplotChart extends React.Component<ChartProps, ScatterplotCha
       <span className="axis-title axis-title-y" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
       <span className="axis-title axis-title-x" style={{ bottom: xAxisLabelPosition.bottom, right: xAxisLabelPosition.right }}>{xSeries.title()}</span>
       <Tooltip
-        datum={this.state.hoveredPoint}
+        datum={hoveredPoint}
         stage={plottingStage}
         ySeries={ySeries}
         xSeries={xSeries}
@@ -116,8 +108,8 @@ export class ScatterplotChart extends React.Component<ChartProps, ScatterplotCha
                   yScale={yScale}
                   xSeries={xSeries}
                   ySeries={ySeries}
-                  setHover={this.setPointHover}
-                  resetHover={this.resetPointHover}/>
+                  setHover={setPointHover}
+                  resetHover={resetPointHover}/>
               );
             })}
           </g>
