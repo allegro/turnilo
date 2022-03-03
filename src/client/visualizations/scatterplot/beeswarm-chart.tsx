@@ -46,8 +46,9 @@ interface BeeswarmChartProps  extends ChartProps {
 
 export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
   render() {
-    const { data, essence, stage, setPointHover, resetPointHover } = this.props;
+    const { data, essence, stage, setPointHover, resetPointHover, hoveredPoint } = this.props;
     const { plottingStage, scale, series, ticks, beeswarmData } = getBeeswarmData(data, essence, stage);
+    // const splitKey = essence.splits.splits.first().toKey();
 
     const points = getPoints(beeswarmData, series, scale, 3, plottingStage);
 
@@ -63,7 +64,7 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
           tickSize={TICK_SIZE}/>
         <g transform={plottingStage.getTransform()}>
           {points.map((datum, index) =>
-            <Point key={index} datum={datum.data} x={datum.x} y={datum.y} setHover={setPointHover} resetHover={resetPointHover}/>
+            <Point key={index} datum={datum} x={datum.x} y={datum.y} r={datum.r} setHover={setPointHover} resetHover={resetPointHover}/>
           )}
         </g>
       </svg>
@@ -84,7 +85,7 @@ export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): 
   const beeswarmData = selectFirstSplitDatums(data);
   const extent = getExtent(beeswarmData, series);
 
-  const plottingStage = calculateRegularPlottingStage(stage);
+  const plottingStage = calculateRegularPlottingStage(stage); // Left margin for Y axis is not needed for beeswarm
   const scale = d3.scale.linear().domain(extent).nice().range([0, plottingStage.width]);
 
   const ticks = getTicksForAvailableSpace(scale.ticks(TICK_COUNT), plottingStage.width);
@@ -92,13 +93,14 @@ export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): 
   return { plottingStage, scale, series, ticks, beeswarmData };
 }
 
-interface Bee { // Change to Point later on, but this is way cuter
+export interface Bee { // Change to Point later on, but this is way cuter
   r: number;
   x: number;
   y: number;
   data: Datum;
 }
 
+// getPoints should accept an object
 export function getPoints(data: Datum[], series: ConcreteSeries, scale: LinearScale, pointRadius: number, stage: Stage): Bee[] {
   const padding = 3; // Calculate radius based on available space?
   const yOffset = stage.height / 2;

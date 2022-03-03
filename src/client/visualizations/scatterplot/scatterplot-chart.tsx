@@ -21,7 +21,7 @@ import { ScatterplotSettings } from "../../../common/visualization-manifests/sca
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Heatmap } from "./heatmap";
 import { ScatterplotPoint } from "./point";
-import { Tooltip } from "./tooltip";
+import { ScatterplotTooltip } from "./tooltip";
 import {
   calculateXAxisStage, calculateYAxisStage,
   getTicksForAvailableSpace,
@@ -64,7 +64,7 @@ export class ScatterplotChart extends React.Component<ScatterplotChartProps, {}>
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title axis-title-y" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
       <span className="axis-title axis-title-x" style={{ bottom: xAxisLabelPosition.bottom, right: xAxisLabelPosition.right }}>{xSeries.title()}</span>
-      <Tooltip
+      <ScatterplotTooltip
         datum={hoveredPoint}
         stage={plottingStage}
         ySeries={ySeries}

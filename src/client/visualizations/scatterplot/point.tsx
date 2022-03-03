@@ -20,13 +20,15 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
+import { Bee } from "./beeswarm-chart";
 
+// Fix this Datum vs Bee mess
 interface PointProps {
-  datum: Datum;
+  datum: Datum | Bee;
   x: number;
   y: number;
   r?: number;
-  setHover(datum: Datum): void;
+  setHover(datum: Datum | Bee): void;
   resetHover(): void;
 }
 
