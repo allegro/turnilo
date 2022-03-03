@@ -81,4 +81,8 @@ export class Predicates {
   public static noSelectedMeasures(): VisualizationIndependentPredicate {
     return ({ series }) => series.isEmpty();
   }
+
+  public static numberOfSeriesIsNotBetween(lower: number, upper: number): VisualizationDependentPredicate {
+    return ({ series }) => series.count() < lower || series.count() > upper;
+  }
 }

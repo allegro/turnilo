@@ -25,7 +25,6 @@ import {
 } from "../../utils/rules/visualization-dependent-evaluator";
 import { settings } from "./settings";
 
-// FIXME: Handle one ore two measures
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.numberOfSplitsIsNot(1))
   .then(variables => Resolve.manual(
@@ -33,11 +32,11 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     "Scatterplot needs exactly 1 split",
     variables.splits.length() > 1 ? suggestRemovingSplits(variables) : suggestAddingSplits(variables)
   ))
-  .when(Predicates.numberOfSeriesIsNot(1))
+  .when(Predicates.numberOfSeriesIsNotBetween(1, 2))
   .then(variables => Resolve.manual(
     3,
     "Scatterplot needs 1 or 2 measures",
-    chooseMeasures(variables)
+    variables.series.series.size < 1 ? suggestAddingMeasure(variables) : suggestRemovingMeasures(variables)
   ))
   .otherwise(({ isSelectedVisualization }) =>
     Resolve.ready(isSelectedVisualization ? 10 : 3)
@@ -93,18 +92,6 @@ const suggestRemovingMeasures = ({ series }: ActionVariables) => [
       series: series.takeNFirst(2)
     }
   }];
-
-const chooseMeasures = (variables: ActionVariables) => {
-  if (variables.series.series.size < 1) {
-    return suggestAddingMeasure(variables);
-  }
-
-  if (variables.series.series.size > 2) {
-    return suggestRemovingMeasures(variables);
-  }
-
-  return [];
-};
 
 export const SCATTERPLOT_MANIFEST = new VisualizationManifest(
   "scatterplot",
