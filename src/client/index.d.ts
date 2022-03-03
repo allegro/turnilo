@@ -68,3 +68,9 @@ declare module "@vx/tooltip" {
   }
   const TooltipWithBounds: React.ComponentType<TooltipWithBoundsProps>;
 }
+
+declare module 'highlight.js/lib/languages/*' {
+  import { LanguageFn } from "highlight.js";
+  const defineLanguage: LanguageFn;
+  export default defineLanguage;
+}
