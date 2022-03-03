@@ -5,7 +5,11 @@ module.exports = (api) => {
     return {
         passPerPreset: true,
         plugins: [
-            "@babel/plugin-proposal-class-properties"
+            "@babel/plugin-proposal-class-properties",
+            ["@babel/plugin-transform-runtime", {
+                useESModules: true,
+                version: '^7.16.0',
+            }],
         ],
         presets: [
             "@babel/preset-typescript",
