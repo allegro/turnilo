@@ -18,9 +18,19 @@ Add your new `Visualization` type in `src/common/models/visualization-manifest/v
 #### Add a manifest
 Add a new entry in `src/common/visualization-manifests/index.ts`.
 
-Add a new instance of `VisualizationManifest` in `src/common/visualization-manifests/<visualizationName>/<visualizationName>.ts`:
-you can use `emptySettingsConfig` for `visualizationSettings` in the beginning and add settings later if needed.
-Write an `evaluateRules` function to make sure your visualization is shown under certain conditions.
+Add a new instance of `VisualizationManifest` in `src/common/visualization-manifests/<visualizationName>/<visualizationName>.ts`. You can use `emptySettingsConfig` for `visualizationSettings` in the beginning and add settings later if needed. Write an `evaluateRules` function to make sure your visualization is shown under certain conditions. If you need at least one split and one measure, it could look like this:
+
+```
+const rulesEvaluator = visualizationDependentEvaluatorBuilder
+  .when(Predicates.noSplits())
+  .then(Actions.manualDimensionSelection("The <visualizationName> requires at least one split"))
+  .when(Predicates.noSelectedMeasures())
+  .then(Actions.manualMeasuresSelection())
+  .otherwise(({ isSelectedVisualization }) =>
+    Resolve.ready(isSelectedVisualization ? 10 : 3)
+  )
+  .build();
+```
 
 #### Allow choosing your visualization from the menu
 
