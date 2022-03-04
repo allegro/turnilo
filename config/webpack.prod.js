@@ -26,6 +26,7 @@ const bundleAnalyzerConfig = {
     new StatoscopeWebpackPlugin({
       open: false,
       saveReportTo: "./build/report-[name].html",
+      saveStatsTo: "./build/report-[name].json",
     }),
   ]
 }
