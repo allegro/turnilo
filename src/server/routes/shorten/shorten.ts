@@ -24,17 +24,16 @@ export function shortenRouter(settings: Pick<AppSettings, "customization">, isTr
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
-    const { url } = req.query;
+    const  url = req.query.url as string;
     try {
       const shortener = settings.customization.urlShortener;
       const context: UrlShortenerContext = {
         // If trust proxy is not enabled, app is understood as directly facing the internet
         clientIp: isTrustedProxy ? req.ip : req.connection.remoteAddress
       };
-      if (typeof url === "string") {
-        const shortUrl = await shortener(request, url, context);
-        res.json({ shortUrl });
-      }
+
+      const shortUrl = await shortener(request, url, context);
+      res.json({ shortUrl });
     } catch (error) {
       console.log("error:", error.message);
       if (error.hasOwnProperty("stack")) {
