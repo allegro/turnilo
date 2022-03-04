@@ -17,6 +17,7 @@
 const path = require("path");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { IgnorePlugin } = require('webpack');
 
 module.exports = {
   devtool: "source-map",
@@ -30,6 +31,10 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
   ],
   module: {
     rules: [
