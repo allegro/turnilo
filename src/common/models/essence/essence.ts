@@ -190,8 +190,6 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return timeFilter;
   }
 
-  public visResolve: Resolve;
-
   constructor(parameters: EssenceValue) {
     const {
       filter,

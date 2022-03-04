@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const common = require("./webpack.common");
+const commonConfig = require("./webpack.common");
 const merge = require("webpack-merge");
 const webpack = require('webpack');
 const hotMiddlewareScript = 'webpack-hot-middleware/client';
 
-module.exports = merge.smart(common, {
+module.exports = merge.smart(commonConfig, {
   mode: 'development',
   entry: {
     main: [hotMiddlewareScript, "./src/client/main.tsx"]

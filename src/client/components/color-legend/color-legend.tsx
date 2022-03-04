@@ -24,7 +24,7 @@ interface ColorLegendProps {
   height?: number;
   title: string;
   formatter: Unary<number, string>;
-  colorScale: d3.scale.Linear<string, string>;
+  colorScale: d3.ScaleLinear<string, string>;
 }
 
 const leftMargin = 5;

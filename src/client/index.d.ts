@@ -56,7 +56,7 @@ declare module "@vx/scale" {
     domain: [number, number];
   }
 
-  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => d3.scale.Linear<Range, Output>;
+  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => d3.ScaleLinear<Range, Output>;
 }
 
 declare module "@vx/tooltip" {
@@ -67,4 +67,10 @@ declare module "@vx/tooltip" {
     children: React.ReactNode;
   }
   const TooltipWithBounds: React.ComponentType<TooltipWithBoundsProps>;
+}
+
+declare module 'highlight.js/lib/languages/*' {
+  import { LanguageFn } from "highlight.js";
+  const defineLanguage: LanguageFn;
+  export default defineLanguage;
 }
