@@ -62,7 +62,7 @@ jobs:
             })
 
       - name: Copy bundle analysis report
-        run: cp build/report-*.html ./.lighthouseci
+        run: cp build/report-*.{html,json} ./.lighthouseci
 
       - uses: actions/upload-artifact@v2
         with:
