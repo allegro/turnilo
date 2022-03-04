@@ -13,12 +13,12 @@
 _[Example code for scatterplot setup](https://github.com/allegro/turnilo/pull/827)_
 
 #### Set up a new type
-Add your new `Visualization` type in `src/common/models/visualization-manifest/visualization-manifest.ts`.
+Add your new `Visualization` type in [src/common/models/visualization-manifest/visualization-manifest.ts](https://github.com/allegro/turnilo/blob/master/src/common/models/visualization-manifest/visualization-manifest.ts).
 
 #### Add a manifest
-Add a new entry in `src/common/visualization-manifests/index.ts`.
+Add a new entry in [src/common/visualization-manifests/index.ts](https://github.com/allegro/turnilo/blob/master/src/common/visualization-manifests/index.ts).
 
-Add a new instance of `VisualizationManifest` in `src/common/visualization-manifests/<visualizationName>/<visualizationName>.ts`. You can use `emptySettingsConfig` for `visualizationSettings` in the beginning and add settings later if needed. Write an `evaluateRules` function to make sure your visualization is shown under certain conditions. If you need at least one split and one measure, it could look like this:
+Add a new instance of `VisualizationManifest` in [src/common/visualization-manifests/](https://github.com/allegro/turnilo/blob/master/src/common/visualization-manifests/)`<visualizationName>/<visualizationName>.ts`. You can use `emptySettingsConfig` for `visualizationSettings` in the beginning and add settings later if needed. Write an `evaluateRules` function to make sure your visualization is shown under certain conditions. If you need at least one split and one measure, it could look like this:
 
 ```
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
@@ -34,14 +34,14 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
 #### Allow choosing your visualization from the menu
 
-* To render an icon add an SVG to `src/client/icons/`. The file needs to have a `vis-` prefix, like so `vis-<visualizationName>.svg`.
-* Make sure to add the new visualization type to
-    * `src/client/components/vis-selector/vis-selector-menu.tsx`
-    * `src/client/visualization-settings/settings-component.ts`
+* To render an icon add an SVG to [src/client/icons/](https://github.com/allegro/turnilo/blob/master/src/client/icons/). The file needs to have a `vis-` prefix, like so `vis-<visualizationName>.svg`.
+* Make sure to handle the new visualization type in these files:
+    * [src/client/components/vis-selector/vis-selector-menu.tsx](https://github.com/allegro/turnilo/blob/master/src/client/components/vis-selector/vis-selector-menu.tsx)
+    * [src/client/visualization-settings/settings-component.ts](https://github.com/allegro/turnilo/blob/master/src/client/visualization-settings/settings-component.ts)
 
 #### Add a new component
 
-Create a new file `src/client/visualizations/<visualizationName>/<visualizationName>.tsx`.
+Create a new file [src/client/visualizations/](https://github.com/allegro/turnilo/blob/master/src/client/visualizations/)`<visualizationName>/<visualizationName>.tsx`.
 Here you want to add the basis for your component with the visualization panel at the top:
 
 ```
@@ -58,7 +58,7 @@ export function <visualizationName>Visualization(props: VisualizationProps) {
     </React.Fragment>;
 ```
 
-Lastly, add `<visualizationName>Visualization` to the `VISUALIZATIONS` map in `src/client/visualizations/index.ts`.
+Lastly, add `<visualizationName>Visualization` to the `VISUALIZATIONS` map in [src/client/visualizations/index.ts](https://github.com/allegro/turnilo/blob/master/src/client/visualizations/index.ts)
 
 There you go! This should be enough to create a new visualization scaffold. Next step? Plotting your data.
 
@@ -67,7 +67,7 @@ _[Example code for scatterplot](https://github.com/allegro/turnilo/pull/831/file
 
 In your new component you have all these [chart props](https://github.com/allegro/turnilo/blob/master/src/common/models/chart-props/chart-props.ts) at your disposal. In the beginning you will want to focus on `essence`, `stage`, `data`.
 
-`essence` keeps the application state and here you can find e.g. chosen splits and series. `stage` gives you the information about the available space to render your visualization. Lastly, there's `data` which you want to present to the user. To select a dataset of interest, you can use functions from `src/client/utils/dataset/selectors/selectors.ts`. Once you've found the data you want to plot, it is time to create a [scale](https://github.com/d3/d3/blob/main/API.md#scales-d3-scale). If, for example, you wanted to create a linear scale based on the `data` and `series` you have, you could code it like this:
+`essence` keeps the application state and here you can find e.g. chosen splits and series. `stage` gives you the information about the available space to render your visualization. Lastly, there's `data` which you want to present to the user. To select a dataset of interest, you can use functions from [src/client/utils/dataset/selectors/selectors.ts](https://github.com/allegro/turnilo/blob/master/src/client/utils/dataset/selectors/selectors.ts). Once you've found the data you want to plot, it is time to create a [scale](https://github.com/d3/d3/blob/main/API.md#scales-d3-scale). If, for example, you wanted to create a linear scale based on the `data` and `series` you have, you could code it like this:
 
 ```
 const [min, max] = d3.extent(data, (d) => series.selectValue(d));
@@ -106,10 +106,10 @@ If your visualization needs a legend, we have a spot designated just for this pu
 ```
 
 If you want to read how it is done in detail, check out
-* `src/client/components/pinboard-panel/pinboard-panel.tsx`,
-* `src/client/utils/teleporter/teleporter.tsx`.
+* [src/client/components/pinboard-panel/pinboard-panel.tsx](https://github.com/allegro/turnilo/blob/master/src/client/components/pinboard-panel/pinboard-panel.tsx),
+* [src/client/utils/teleporter/teleporter.tsx](https://github.com/allegro/turnilo/blob/master/src/client/utils/teleporter/teleporter.tsx).
 
-If you want to go straight to rendering a legend, check if `ColorSwabs` or `ColorLegend` is enough for your purposes. Otherwise create a new component in `src/client/components/`.
+If you want to go straight to rendering a legend, check if `ColorSwabs` or `ColorLegend` is enough for your purposes. Otherwise create a new component in [src/client/components/](https://github.com/allegro/turnilo/blob/master/src/client/components/).
 
 #### Tooltip
 
@@ -134,15 +134,15 @@ Check if timeshift is chosen through `essence.hasComparison()`. To pick the prev
 ### Add visualization settings
 _[Example code for scatterplot](https://github.com/allegro/turnilo/pull/844/files)_
 
-In `src/client/visualization-settings/<visualizationName>/<visualizationName>-settings.tsx` create a new `<visualizationName>SettingsComponent` with checkbox(es) to enable your additional settings.
+In [src/client/visualization-settings/](https://github.com/allegro/turnilo/blob/master/src/client/visualization-settings/)`<visualizationName>/<visualizationName>-settings.tsx` create a new `<visualizationName>SettingsComponent` with checkbox(es) to enable your additional settings.
 
-Add your component to `src/client/components/vis-selector/vis-selector-menu.tsx`.
+Add your component to [src/client/components/vis-selector/vis-selector-menu.tsx](https://github.com/allegro/turnilo/blob/master/src/client/components/vis-selector/vis-selector-menu.tsx).
 
-Add it again in `src/client/visualization-settings/settings-component.ts`.
+Add it again to [src/client/visualization-settings/settings-component.ts](https://github.com/allegro/turnilo/blob/master/src/client/visualization-settings/settings-component.ts).
 
-Create `settings` in `src/common/visualization-manifests/<visualizationName>/settings.ts`. This is a rather routine piece of code, so feel free to follow the pattern of other `settings` in visualization manifests.
+Create `settings` in [src/common/visualization-manifests/](https://github.com/allegro/turnilo/blob/master/src/common/visualization-manifests/)`<visualizationName>/settings.ts`. This is a rather routine piece of code, so feel free to follow the pattern of other `settings` in visualization manifests.
 
-Then import created `settings` to the manifest in `src/common/visualization-manifests/<visualizationName>/<visualizationName>.ts`
+Then import created `settings` to the manifest in [src/common/visualization-manifests/](https://github.com/allegro/turnilo/blob/master/src/common/visualization-manifests/)`<visualizationName>/<visualizationName>.ts`
 
 Add changes to your visualization component based on `essence.visualizationSettings`.
 
@@ -151,6 +151,6 @@ _[Example tests for scatterplot](https://github.com/allegro/turnilo/pull/846)_
 
 We add tests in order to make sure we don't introduce a regression later on. To write e2e tests in Turnilo we use [Cypress](https://www.cypress.io/).
 
-To start writing your tests, create a new file `<visualizationName>.spec.js` in `cypress/integration/` directory.
+To start writing your tests, create a new file `<visualizationName>.spec.js` in [cypress/integration/](https://github.com/allegro/turnilo/blob/master/cypress/integration/) directory.
 
 Basically what you want to achieve is to make Cypress enter a given URL at the beginning of each test case, find pieces of your visualization using CSS selectors and make an assertion. Take a look at the list of [common assertions](https://docs.cypress.io/guides/references/assertions#Common-Assertions) when adding your own.
