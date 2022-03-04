@@ -41,6 +41,7 @@
     "test:common": "mocha --exit --require ./test/setup/mocha.js src/common/**/*.mocha.{ts,tsx}",
     "test:client": "mocha --exit --require ./test/setup/mocha.js src/client/**/*.mocha.{ts,tsx}",
     "test:server": "mocha --exit --require ./test/setup/mocha.js src/server/**/*.mocha.ts",
+    "test:size": "size-limit",
     "watch:test:common": "npm run test:common -- --watch --watch-extensions ts,tsx",
     "watch:test:client": "npm run test:client -- --watch --watch-extensions ts,tsx",
     "watch:test:server": "npm run test:server -- --watch --watch-extensions ts,tsx",
@@ -109,6 +110,7 @@
     "@babel/preset-typescript": "7.16.7",
     "@babel/runtime": "7.17.2",
     "@statoscope/webpack-plugin": "5.20.1",
+    "@size-limit/preset-small-lib": "7.0.8",
     "@types/body-parser": "1.16.8",
     "@types/chai": "4.2.7",
     "@types/chai-datetime": "0.0.33",
@@ -178,6 +180,7 @@
     "sass-lint": "1.12.1",
     "sass-loader": "6.0.7",
     "sinon": "4.1.4",
+    "size-limit": "7.0.8",
     "source-map-loader": "0.2.3",
     "start-server-and-test": "1.10.0",
     "supertest": "3.0.0",
@@ -197,5 +200,11 @@
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "2.25.0",
     "webpack-merge": "4.2.2"
-  }
+  },
+  "size-limit": [
+    {
+      "path": "build/public/main.js",
+      "limit": "620 kB"
+    }
+  ]
 }
