@@ -32,6 +32,8 @@ import { BeeswarmChart } from "./beeswarm-chart";
 
 interface ScatterplotState {
   hoveredPoint: Datum | null;
+  x: number; // TODO: pass stuff
+  y: number;
 }
 
 class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
@@ -46,7 +48,7 @@ class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     this.setState({ hoveredPoint: null });
 
   render() {
-    if (this.props.essence.getConcreteSeries().size === 1) {
+    if (this.props.essence.series.count() === 1) {
       return <BeeswarmChart {...this.props} setPointHover={this.setPointHover} resetPointHover={this.resetPointHover} hoveredPoint={this.state.hoveredPoint}/>;
     }
 

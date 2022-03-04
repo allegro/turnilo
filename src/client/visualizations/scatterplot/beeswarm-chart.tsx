@@ -64,7 +64,7 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
           tickSize={TICK_SIZE}/>
         <g transform={plottingStage.getTransform()}>
           {points.map((datum, index) =>
-            <Point key={index} datum={datum} x={datum.x} y={datum.y} r={datum.r} setHover={setPointHover} resetHover={resetPointHover}/>
+            <Point key={index} datum={datum.data} x={datum.x} y={datum.y} r={datum.r} setHover={setPointHover} resetHover={resetPointHover}/>
           )}
         </g>
       </svg>
@@ -102,7 +102,7 @@ export interface Bee { // Change to Point later on, but this is way cuter
 
 // getPoints should accept an object
 export function getPoints(data: Datum[], series: ConcreteSeries, scale: LinearScale, pointRadius: number, stage: Stage): Bee[] {
-  const padding = 3; // Calculate radius based on available space?
+  const padding = 3;
   const yOffset = stage.height / 2;
   const yValues = dodge(data.map(i => scale(series.selectValue(i))), pointRadius * 2 + padding);
 
