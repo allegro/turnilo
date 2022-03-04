@@ -61,6 +61,9 @@ jobs:
               body: ':stopwatch: Lighthouse report: ' + process.env.REPORT_URL
             })
 
+      - name: Copy bundle analysis report
+        run: cp build/report-*.html ./.lighthouseci
+
       - uses: actions/upload-artifact@v2
         with:
           name: lighthouse-report
