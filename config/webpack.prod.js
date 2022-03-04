@@ -19,6 +19,16 @@ const merge = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { default: StatoscopeWebpackPlugin } = require("@statoscope/webpack-plugin");
+
+const bundleAnalyzerConfig = {
+  plugins: [
+    new StatoscopeWebpackPlugin({
+      open: false,
+      saveReportTo: "./build/report-[name].html",
+    }),
+  ]
+}
 
 const prodConfig = {
   name: "client-modern",
@@ -57,6 +67,6 @@ const es5Config = {
 };
 
 module.exports = [
-  merge.smart(commonConfig, prodConfig),
+  merge.smart(commonConfig, prodConfig, bundleAnalyzerConfig),
   merge.smart(commonConfig, prodConfig, es5Config),
 ]
