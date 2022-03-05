@@ -31,12 +31,17 @@ const bundleAnalyzerConfig = {
   ]
 }
 
+const polyfillsConfig = {
+  entry: {
+    polyfills: "./src/client/polyfills.ts",
+  }
+};
+
 const prodConfig = {
   name: "client-modern",
   mode: "production",
   entry: {
     main: "./src/client/main.tsx",
-    polyfills: "./src/client/polyfills.ts",
   },
   optimization: {
     minimize: true,
@@ -68,6 +73,6 @@ const es5Config = {
 };
 
 module.exports = [
-  merge.smart(commonConfig, prodConfig, bundleAnalyzerConfig),
+  merge.smart(commonConfig, prodConfig, polyfillsConfig, bundleAnalyzerConfig),
   merge.smart(commonConfig, prodConfig, es5Config),
 ]
