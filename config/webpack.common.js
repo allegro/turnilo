@@ -17,7 +17,7 @@
 const path = require("path");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { IgnorePlugin } = require('webpack');
+const { NormalModuleReplacementPlugin, IgnorePlugin } = require('webpack');
 
 module.exports = {
   devtool: "source-map",
@@ -35,6 +35,7 @@ module.exports = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
+    new NormalModuleReplacementPlugin(/moment-timezone\/data\/packed\/latest.json/, require.resolve('../src/replacement/moment-timezone/latest.json'))
   ],
   module: {
     rules: [
