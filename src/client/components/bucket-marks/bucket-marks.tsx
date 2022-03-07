@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import * as d3 from "d3";
 import { PlywoodValue } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
@@ -26,7 +27,7 @@ const TICK_HEIGHT = 5;
 export interface BucketMarksProps {
   stage: Stage;
   ticks: PlywoodValue[];
-  scale: any;
+  scale: d3.ScaleBand<PlywoodValue>;
 }
 
 export interface BucketMarksState {
@@ -36,21 +37,21 @@ export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksSt
 
   render() {
     const { stage, ticks, scale } = this.props;
-    var stageWidth = stage.width;
+    const stageWidth = stage.width;
 
-    var lines: JSX.Element[] = [];
+    let lines: JSX.Element[] = [];
 
     function addLine(x: number, key: string) {
       if (stageWidth < x) return;
       lines.push(<line key={key} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />);
     }
 
-    for (var tick of ticks) {
-      var x = roundToHalfPx(scale(tick));
+    for (let tick of ticks) {
+      let x = roundToHalfPx(scale(tick));
       addLine(x, "_" + tick);
     }
     if (ticks.length) {
-      var x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.rangeBand());
+      let x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.bandwidth());
       addLine(x, "last");
     }
 

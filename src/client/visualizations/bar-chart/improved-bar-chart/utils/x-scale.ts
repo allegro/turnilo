@@ -23,7 +23,7 @@ export interface XScale {
   calculate(x: DomainValue): number;
   invert(x: number): DomainValue;
   domain(): XDomain;
-  rangeBand(): number;
+  bandwidth(): number;
 }
 
 export function createXScale(domain: XDomain, width: number): XScale {
@@ -41,7 +41,7 @@ export function createXScale(domain: XDomain, width: number): XScale {
     calculate: (value: DomainValue) => ordinalScale(formatDomainValue(value)),
     domain: () => domain,
     invert: (x: number) => quantizedScale(x),
-    rangeBand: () => ordinalScale.bandwidth()
+    bandwidth: () => ordinalScale.bandwidth()
   };
 }
 
