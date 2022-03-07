@@ -27,7 +27,13 @@ module.exports = {
     chunkFilename: "[name].[hash].js"
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json"],
+    "alias": {
+      "react": "preact/compat",
+      "react-dom/test-utils": "preact/test-utils",
+      "react-dom": "preact/compat",     // Must be below test-utils
+      "react/jsx-runtime": "preact/jsx-runtime"
+    },
   },
   plugins: [
     new MiniCssExtractPlugin(),
