@@ -16,8 +16,8 @@
 
 import * as jsonLanguage from "highlight.js/lib/languages/json";
 import * as React from "react";
-import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import githubGist from "react-syntax-highlighter/dist/cjs/styles/hljs/github-gist";
+import SyntaxHighlighter from "react-syntax-highlighter/src/light";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Modal } from "../../components/modal/modal";

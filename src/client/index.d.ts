@@ -74,3 +74,11 @@ declare module 'highlight.js/lib/languages/*' {
   const defineLanguage: LanguageFn;
   export default defineLanguage;
 }
+
+declare module 'react-syntax-highlighter/src/light' {
+  export { default } from 'react-syntax-highlighter/dist/esm/light';
+}
+
+declare module 'react-syntax-highlighter/dist/cjs/styles/hljs/github-gist' {
+  export { default } from 'react-syntax-highlighter/dist/cjs/styles/hljs/github-gist';
+}
