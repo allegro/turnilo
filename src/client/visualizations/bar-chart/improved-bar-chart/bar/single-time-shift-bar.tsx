@@ -36,7 +36,7 @@ export const SingleTimeShiftBar: React.SFC<SingleTimeShiftBar> = props => {
   const [maxHeight] = yScale.range();
   const x = getX(datum);
   const xStart = xScale.calculate(x);
-  const rangeBand = xScale.rangeBand();
+  const rangeBand = xScale.bandwidth();
   const fullWidth = rangeBand - 2 * SIDE_PADDING;
   const barWidth = fullWidth * 2 / 3;
 

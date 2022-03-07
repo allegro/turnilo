@@ -44,7 +44,7 @@ export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props =>
   const x = getX(datum);
 
   const xStart = xScale.calculate(x);
-  const rangeBand = xScale.rangeBand();
+  const rangeBand = xScale.bandwidth();
   const fullWidth = rangeBand - 2 * SIDE_PADDING;
   const barWidth = fullWidth * 2 / 3;
   const color = (d: Datum) => model.colors.get(String(d[nominalReference]));

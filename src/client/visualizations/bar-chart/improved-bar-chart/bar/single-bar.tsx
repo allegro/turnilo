@@ -36,7 +36,7 @@ export const SingleBar: React.SFC<SingleBarProps> = props => {
   const [maxHeight] = yScale.range();
   const x = getX(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
-  const width = xScale.rangeBand() - (2 * SIDE_PADDING);
+  const width = xScale.bandwidth() - (2 * SIDE_PADDING);
   const y = series.selectValue(datum);
   const yPos = yScale(y);
   const height = maxHeight - yPos;

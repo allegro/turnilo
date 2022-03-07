@@ -50,7 +50,7 @@ export const HighlightModal: React.SFC<HighlightModalProps> = props => {
     series,
     xScale } = props;
   const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
+  const x = xScale.calculate(xValue) + (xScale.bandwidth() / 2);
   const yValue = series.selectValue(datum);
   const y = yScale(yValue);
   return <BaseHighlightModal
