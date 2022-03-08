@@ -22,7 +22,6 @@ import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
 import { deserialize as deserializeAppSettings } from "./deserializers/app-settings";
-import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";
 import "./main.scss";
 import { Ajax } from "./utils/ajax/ajax";
 import { init as errorReporterInit } from "./utils/error-reporter/error-reporter";
@@ -64,8 +63,6 @@ const app = <TurniloApplication
 />;
 
 ReactDOM.render(app, container);
-
-applyDragAndDropPolyfill();
 
 if (process.env.NODE_ENV === "dev-hmr" && module.hot) {
   module.hot.accept();
