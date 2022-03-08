@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { INDENT_WIDTH, ROW_HEIGHT } from "../../../components/tabular-scroller/dimensions";
 import "./highlight.scss";
 

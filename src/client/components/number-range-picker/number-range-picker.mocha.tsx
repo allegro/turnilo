@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";

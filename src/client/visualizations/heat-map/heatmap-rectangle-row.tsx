@@ -16,7 +16,7 @@
  */
 
 import { Bin } from "@vx/heatmap";
-import * as React from "react";
+import React from "react";
 
 interface HeatMapRectangleRowProps {
   bins: Bin[];

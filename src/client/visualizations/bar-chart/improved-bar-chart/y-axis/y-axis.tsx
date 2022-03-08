@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import getScale from "../../../../utils/linear-scale/linear-scale";
 import { BarChartModel } from "../utils/bar-chart-model";

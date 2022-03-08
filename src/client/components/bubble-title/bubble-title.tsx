@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { clamp } from "../../utils/dom/dom";
 
 const PER_LETTER_PIXELS = 8;

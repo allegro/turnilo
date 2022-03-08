@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Modal } from "../../components/modal/modal";

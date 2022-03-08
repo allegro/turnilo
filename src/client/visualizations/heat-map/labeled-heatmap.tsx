@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../common/models/stage/stage";

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { extend } from "../../../common/utils/object/object";
 import { replaceHash } from "../../utils/url/url";
 import "./router.scss";

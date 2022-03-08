@@ -17,7 +17,7 @@
 
 import { Set } from "immutable";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import {
   DatasetRequest,
   error,

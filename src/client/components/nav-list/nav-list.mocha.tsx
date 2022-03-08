@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 
 import { NavList } from "./nav-list";
 

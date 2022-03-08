@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Binary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox, CheckboxType } from "../checkbox/checkbox";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";

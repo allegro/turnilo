@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ClientDataCube } from "../../../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
 import { Splits } from "../../../../../common/models/splits/splits";

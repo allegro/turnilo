@@ -17,7 +17,7 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Split } from "../../../../common/models/split/split";
 import { formatSegment } from "../../../../common/utils/formatter/formatter";
 import "./flattened-split-columns.scss";

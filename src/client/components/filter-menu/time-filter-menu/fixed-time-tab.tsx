@@ -16,7 +16,7 @@
 
 import { day } from "chronoshift";
 import { List } from "immutable";
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { getMaxTime } from "../../../../common/models/data-cube/data-cube";
 import { DateRange } from "../../../../common/models/date-range/date-range";

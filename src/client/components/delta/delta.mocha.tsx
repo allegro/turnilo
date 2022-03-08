@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { Delta, formatDelta } from "./delta";
 
 const formatter = (i: number) => i.toFixed();

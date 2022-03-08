@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { AboutModal } from "./about-modal";

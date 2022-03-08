@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./heatmap-highlight-indicator.scss";
 import { HighlightPosition } from "./utils/get-highlight-position";
 

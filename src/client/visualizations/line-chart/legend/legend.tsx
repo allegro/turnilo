@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { NORMAL_COLORS } from "../../../../common/models/colors/colors";
 import "./legend.scss";
 

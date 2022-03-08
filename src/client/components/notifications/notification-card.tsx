@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { clamp, classNames } from "../../utils/dom/dom";
 import "./notification-card.scss";
 

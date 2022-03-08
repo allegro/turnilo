@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { identity, Omit } from "../../../common/utils/functional/functional";
 import { InputWithPresets, InputWithPresetsProps } from "./input-with-presets";
 

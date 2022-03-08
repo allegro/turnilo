@@ -16,7 +16,7 @@
 
 import { TooltipWithBounds } from "@vx/tooltip";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";

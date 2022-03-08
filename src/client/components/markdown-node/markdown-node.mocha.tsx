@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { MarkdownNode } from "./markdown-node";
 
 describe("<MarkdownNode>", () => {
@@ -25,6 +25,6 @@ describe("<MarkdownNode>", () => {
     const wrapper = shallow(<MarkdownNode markdown={"*strong* **em** [link](example.com)"} />);
     const content = wrapper.find(".markdown-content");
 
-    expect(content.html()).to.be.equal("<div class=\"markdown-content\"><p><em>strong</em> <strong>em</strong> <a href=\"example.com\">link</a></p>\n</div>");
+    expect(content.html()).to.be.equal("<div class=\"markdown-content\"><em>strong</em> <strong>em</strong> <a href=\"example.com\">link</a></div>");
   });
 });

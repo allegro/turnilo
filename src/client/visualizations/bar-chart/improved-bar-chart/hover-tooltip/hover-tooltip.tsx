@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Unary } from "../../../../../common/utils/functional/functional";

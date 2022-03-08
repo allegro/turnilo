@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { createColorEntry } from "../../../../components/color-swabs/color-entry";
 import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";

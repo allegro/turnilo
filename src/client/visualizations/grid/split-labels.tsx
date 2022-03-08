@@ -17,7 +17,7 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Split } from "../../../common/models/split/split";
 import { FlattenedSplitColumns } from "../../components/tabular-scroller/splits/flattened-split-columns";
 import { isTotalDatum } from "./utils/total-datum";

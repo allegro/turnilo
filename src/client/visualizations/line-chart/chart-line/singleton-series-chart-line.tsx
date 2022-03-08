@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Omit } from "../../../../common/utils/functional/functional";
 import { SeriesChartLine, SeriesChartLineProps } from "./series-chart-line";
 

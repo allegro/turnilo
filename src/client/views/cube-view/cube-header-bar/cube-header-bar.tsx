@@ -17,7 +17,7 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../../common/models/customization/customization";
 import { Essence } from "../../../../common/models/essence/essence";

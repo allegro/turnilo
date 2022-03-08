@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { firstUp } from "../../../common/utils/string/string";
 import { enterKey, escapeKey, leftKey, rightKey } from "../../utils/dom/dom";
 

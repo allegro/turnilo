@@ -15,7 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { isTimeAttribute } from "../../../../common/models/data-cube/data-cube";
 import { TimeDimension } from "../../../../common/models/dimension/dimension";

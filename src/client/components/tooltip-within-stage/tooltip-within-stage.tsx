@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { calculatePosition, Rect } from "./calculate-position";
 import "./tooltip-within-stage.scss";

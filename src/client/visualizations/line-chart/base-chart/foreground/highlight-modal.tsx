@@ -15,7 +15,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";

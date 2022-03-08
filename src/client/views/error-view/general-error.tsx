@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { MessagePanel, MessagePanelAction } from "../../components/message-panel/message-panel";
 
 const reload = () => window.location.reload();

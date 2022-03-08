@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { noop } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import "./heatmap-labels.scss";

@@ -16,7 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Nullary, Unary } from "../../../../../common/utils/functional/functional";

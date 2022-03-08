@@ -23,7 +23,7 @@
 import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Split } from "../../../common/models/split/split";
