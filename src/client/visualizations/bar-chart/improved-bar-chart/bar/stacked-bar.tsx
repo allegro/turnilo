@@ -42,7 +42,7 @@ export const StackedBar: React.SFC<StackedBarProps> = props => {
 
   const x = getX(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
-  const width = xScale.rangeBand() - (2 * SIDE_PADDING);
+  const width = xScale.bandwidth() - (2 * SIDE_PADDING);
   const color = (d: Datum) => model.colors.get(String(d[ref]));
   return <React.Fragment>
     {datums.map(datum => {

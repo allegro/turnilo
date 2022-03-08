@@ -51,7 +51,7 @@ describe("x-scale", () => {
       });
 
       it("should return range band", () => {
-        expect(scale.rangeBand()).to.be.equal(30);
+        expect(scale.bandwidth()).to.be.equal(30);
       });
 
       it("should apply scale function", () => {
