@@ -27,7 +27,7 @@ import {
   getTicksForAvailableSpace,
   getXAxisLabelPosition,
   preparePlottingData
-} from "./utils/get-plotting-data";
+} from "./utils/get-scatterplot-data";
 import { XAxis } from "./x-axis";
 import { YAxis } from "./y-axis";
 

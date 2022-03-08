@@ -20,7 +20,7 @@ import {
   calculateBeeswarmXAxisStage,
   getExtent,
   getTicksForAvailableSpace
-} from "./utils/get-plotting-data";
+} from "./utils/get-scatterplot-data";
 
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { XAxis } from "./x-axis";

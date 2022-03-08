@@ -15,7 +15,7 @@
  */
 import { expect } from "chai";
 import { Stage } from "../../../../common/models/stage/stage";
-import { extendExtentIfNeeded, getTicksForAvailableSpace, getXAxisLabelPosition } from "./get-plotting-data";
+import { extendExtentIfNeeded, getTicksForAvailableSpace, getXAxisLabelPosition } from "./get-scatterplot-data";
 
 describe("extendExtentIfNeeded", () => {
   it("should extend when min and max are the same", () => {
