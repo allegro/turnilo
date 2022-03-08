@@ -15,30 +15,16 @@
  */
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import {
-  calculateBeeswarmPlottingStage,
-  calculateBeeswarmXAxisStage,
-  getExtent,
-  getTicksForAvailableSpace
-} from "./utils/get-scatterplot-data";
 
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { XAxis } from "./x-axis";
 
-import * as d3 from "d3";
-import { Dataset, Datum } from "plywood";
-import { Essence } from "../../../common/models/essence/essence";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series";
-import { Stage } from "../../../common/models/stage/stage";
-import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
-import { LinearScale } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
 import { HoveredPoint } from "./scatterplot";
 import { Tooltip } from "./tooltip";
-import { dodge } from "./utils/dodge";
+import { calculateBeeswarmXAxisStage, getBeeswarmData, getPoints } from "./utils/get-beeswarm-data";
 
 const TICK_SIZE = 10;
-const TICK_COUNT = 10;
 
 interface BeeswarmChartProps  extends ChartProps {
   hoveredPoint: HoveredPoint | null;
@@ -80,52 +66,3 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
     </div>;
     }
   }
-
-interface BeeswarmData {
-  plottingStage: Stage;
-  ticks: number[];
-  scale: LinearScale;
-  series: ConcreteSeries;
-  beeswarmData: Datum[];
-}
-
-export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): BeeswarmData  {
-  const series = essence.getConcreteSeries().first();
-  const beeswarmData = selectFirstSplitDatums(data);
-  const extent = getExtent(beeswarmData, series);
-
-  const plottingStage = calculateBeeswarmPlottingStage(stage);
-  const scale = d3.scale.linear().domain(extent).nice().range([0, plottingStage.width]);
-
-  const ticks = getTicksForAvailableSpace(scale.ticks(TICK_COUNT), plottingStage.width);
-
-  return { plottingStage, scale, series, ticks, beeswarmData };
-}
-
-interface Point {
-  r: number;
-  x: number;
-  y: number;
-  data: Datum;
-}
-
-interface GetPoints {
-  data: Datum[];
-  series: ConcreteSeries;
-  scale: LinearScale;
-  pointRadius: number;
-  stage: Stage;
-}
-
-export function getPoints({ data, series, scale, pointRadius, stage }: GetPoints): Point[] {
-  const padding = 3;
-  const yOffset = stage.height / 2;
-  const yValues = dodge(data.map(i => scale(series.selectValue(i))), pointRadius * 2 + padding);
-
-  return data.map((datum, index) => ({
-    data: datum,
-    r: pointRadius,
-    x: scale(series.selectValue(datum)),
-    y: yValues[index] + yOffset
-  }));
-}

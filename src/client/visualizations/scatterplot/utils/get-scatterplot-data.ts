@@ -21,11 +21,11 @@ import { Stage } from "../../../../common/models/stage/stage";
 import { selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
 import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 
-const MARGIN = 40;
-const X_AXIS_HEIGHT = 50;
+export const MARGIN = 40;
+export const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
 const BREAKPOINT_SMALL = 768;
-const TICK_COUNT = 10;
+export const TICK_COUNT = 10;
 const EXTENT_EXTEND_FACTOR = 0.05;
 const X_AXIS_LABEL_OFFSET = 55;
 
@@ -140,24 +140,5 @@ export function calculateYAxisStage(stage: Stage): Stage {
     y: MARGIN,
     width: Y_AXIS_WIDTH,
     height: stage.height
-  });
-}
-
-// TODO: beeswarm stuff to move to new file
-export function calculateBeeswarmPlottingStage(stage: Stage): Stage {
-  return Stage.fromJS({
-    x: MARGIN,
-    y: MARGIN,
-    width: stage.width - 2 * MARGIN,
-    height: stage.height - X_AXIS_HEIGHT - 2 * MARGIN
-  });
-}
-
-export function calculateBeeswarmXAxisStage(stage: Stage): Stage {
-  return Stage.fromJS({
-    x: MARGIN,
-    y: stage.height + MARGIN,
-    width: stage.width,
-    height: X_AXIS_HEIGHT
   });
 }
