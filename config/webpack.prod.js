@@ -34,6 +34,7 @@ const bundleAnalyzerConfig = {
 const polyfillsConfig = {
   entry: {
     polyfills: "./src/client/polyfills.ts",
+    dnd: "./src/client/drag-and-drop-polyfill.ts",
   }
 };
 
@@ -73,6 +74,6 @@ const es5Config = {
 };
 
 module.exports = [
-  merge.smart(commonConfig, prodConfig, polyfillsConfig, bundleAnalyzerConfig),
-  merge.smart(commonConfig, prodConfig, es5Config),
+  merge.smart(commonConfig, prodConfig, bundleAnalyzerConfig),
+  merge.smart(commonConfig, prodConfig, es5Config, polyfillsConfig),
 ]

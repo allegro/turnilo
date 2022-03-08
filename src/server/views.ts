@@ -75,7 +75,8 @@ export function mainLayout(options: ViewOptions): string {
 
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, timekeeper, appSettings: serialize(appSettings) })};</script>
-<script charset="UTF-8" nomodule src="polyfills.js?v=${version}"></script>
+<script charset="UTF-8" nomodule src="polyfills.es5.js?v=${version}"></script>
+<script charset="UTF-8" async src="dnd.es5.js?v=${version}"></script>
 <script charset="UTF-8" async nomodule src="main.es5.js?v=${version}"></script>
 <script charset="UTF-8" async type="module" src="main.js?v=${version}"></script>
 ${cssOverrides}`
