@@ -142,3 +142,22 @@ export function calculateYAxisStage(stage: Stage): Stage {
     height: stage.height
   });
 }
+
+// TODO: beeswarm stuff to move to new file
+export function calculateBeeswarmPlottingStage(stage: Stage): Stage {
+  return Stage.fromJS({
+    x: MARGIN,
+    y: MARGIN,
+    width: stage.width - 2 * MARGIN,
+    height: stage.height - X_AXIS_HEIGHT - 2 * MARGIN
+  });
+}
+
+export function calculateBeeswarmXAxisStage(stage: Stage): Stage {
+  return Stage.fromJS({
+    x: MARGIN,
+    y: stage.height + MARGIN,
+    width: stage.width,
+    height: X_AXIS_HEIGHT
+  });
+}

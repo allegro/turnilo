@@ -15,7 +15,6 @@
  */
 import * as React from "react";
 
-import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
@@ -26,7 +25,6 @@ import { isTruthy } from "../../../common/utils/general/general";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
-import { LinearScale } from "../../utils/linear-scale/linear-scale";
 import { HoveredPoint } from "./scatterplot";
 
 const TOOLTIP_OFFSET_Y = 50;

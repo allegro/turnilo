@@ -16,8 +16,8 @@
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import {
-  calculateRegularPlottingStage,
-  calculateXAxisStage,
+  calculateBeeswarmPlottingStage,
+  calculateBeeswarmXAxisStage,
   getExtent,
   getTicksForAvailableSpace
 } from "./utils/get-plotting-data";
@@ -52,7 +52,7 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
     const { plottingStage, scale, series, ticks, beeswarmData } = getBeeswarmData(data, essence, stage);
     const splitKey = essence.splits.splits.first().toKey();
 
-    const points = getPoints(beeswarmData, series, scale, 3, plottingStage);
+    const points = getPoints({ data: beeswarmData, series, scale, pointRadius: 3, stage: plottingStage });
 
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title axis-title-x" style={{ bottom: 150, right: 10 }}>{series.title()}</span>
@@ -67,7 +67,7 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={ticks} scale={scale}/>
         <XAxis
           scale={scale}
-          stage={calculateXAxisStage(plottingStage)}
+          stage={calculateBeeswarmXAxisStage(plottingStage)}
           ticks={ticks}
           formatter={series.formatter()}
           tickSize={TICK_SIZE}/>
@@ -94,7 +94,7 @@ export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): 
   const beeswarmData = selectFirstSplitDatums(data);
   const extent = getExtent(beeswarmData, series);
 
-  const plottingStage = calculateRegularPlottingStage(stage); // Left margin for Y axis is not needed for beeswarm
+  const plottingStage = calculateBeeswarmPlottingStage(stage);
   const scale = d3.scale.linear().domain(extent).nice().range([0, plottingStage.width]);
 
   const ticks = getTicksForAvailableSpace(scale.ticks(TICK_COUNT), plottingStage.width);
@@ -102,15 +102,22 @@ export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): 
   return { plottingStage, scale, series, ticks, beeswarmData };
 }
 
-export interface Bee { // Change to Point later on, but this is way cuter
+interface Point {
   r: number;
   x: number;
   y: number;
   data: Datum;
 }
 
-// getPoints should accept an object
-export function getPoints(data: Datum[], series: ConcreteSeries, scale: LinearScale, pointRadius: number, stage: Stage): Bee[] {
+interface GetPoints {
+  data: Datum[];
+  series: ConcreteSeries;
+  scale: LinearScale;
+  pointRadius: number;
+  stage: Stage;
+}
+
+export function getPoints({ data, series, scale, pointRadius, stage }: GetPoints): Point[] {
   const padding = 3;
   const yOffset = stage.height / 2;
   const yValues = dodge(data.map(i => scale(series.selectValue(i))), pointRadius * 2 + padding);

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import memoizeOne from "memoize-one";
-import { Datum } from "plywood";
 import * as React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
