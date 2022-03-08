@@ -30,10 +30,14 @@ import {
 } from "../../views/cube-view/center-panel/center-panel";
 import { BeeswarmChart } from "./beeswarm-chart";
 
-interface ScatterplotState {
-  hoveredPoint: Datum | null;
-  x: number; // TODO: pass stuff
+export interface HoveredPoint {
+  datum: Datum;
+  x: number;
   y: number;
+}
+
+interface ScatterplotState {
+  hoveredPoint: HoveredPoint | null;
 }
 
 class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
@@ -41,8 +45,8 @@ class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
     hoveredPoint: null
   };
 
-  setPointHover = (datum: Datum): void =>
-    this.setState({ hoveredPoint: datum });
+  setPointHover = (hoveredPoint: HoveredPoint): void =>
+    this.setState({ hoveredPoint });
 
   resetPointHover = (): void =>
     this.setState({ hoveredPoint: null });

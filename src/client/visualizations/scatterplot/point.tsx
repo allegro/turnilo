@@ -20,15 +20,14 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
-import { Bee } from "./beeswarm-chart";
+import { HoveredPoint } from "./scatterplot";
 
-// Fix this Datum vs Bee mess
 interface PointProps {
-  datum: Datum | Bee;
+  datum: Datum;
   x: number;
   y: number;
   r?: number;
-  setHover(datum: Datum | Bee): void;
+  setHover(point: HoveredPoint): void;
   resetHover(): void;
 }
 
@@ -45,7 +44,7 @@ export const Point: React.SFC<PointProps> = ({ datum, x, y, r = POINT_RADIUS, se
         className="point"
       />
       <circle
-        onMouseEnter={() => setHover(datum)}
+        onMouseEnter={() => setHover({ x, y, datum })}
         onMouseLeave={() => resetHover()}
         cx={x}
         cy={y}
@@ -63,7 +62,7 @@ interface ScatterplotPointProps {
   yScale: LinearScale;
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
-  setHover(datum: Datum): void;
+  setHover(point: HoveredPoint): void;
   resetHover(): void;
 }
 

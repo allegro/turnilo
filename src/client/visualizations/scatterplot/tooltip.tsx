@@ -27,35 +27,37 @@ import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bu
 import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
 import { TooltipWithinStage } from "../../components/tooltip-within-stage/tooltip-within-stage";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
-import { Bee } from "./beeswarm-chart";
+import { HoveredPoint } from "./scatterplot";
 
 const TOOLTIP_OFFSET_Y = 50;
 const TOOLTIP_OFFSET_X = 100;
 
 interface TooltipProps {
-  title: string;
-  datum: Datum;
+  hoveredPoint: HoveredPoint;
   stage: Stage;
   xSeries: ConcreteSeries;
   ySeries?: ConcreteSeries;
-  xPosition: number;
-  yPosition: number;
   showPrevious: boolean;
+  timezone: Timezone;
+  splitKey: string;
 }
 
 export const Tooltip: React.SFC<TooltipProps> = ({
-  datum,
+  hoveredPoint,
   stage,
   xSeries,
   ySeries,
-  xPosition,
-  yPosition,
-  title,
-  showPrevious
+  showPrevious,
+  timezone,
+  splitKey
 }) => {
-  if (!isTruthy(datum)) return null;
+  if (!isTruthy(hoveredPoint)) return null;
 
-  return <TooltipWithinStage top={yPosition} left={xPosition} stage={stage}>
+  const { datum, x, y } = hoveredPoint;
+
+  const title = formatValue(datum[splitKey], timezone);
+
+  return <TooltipWithinStage top={y + TOOLTIP_OFFSET_Y} left={x + TOOLTIP_OFFSET_X} stage={stage}>
     <SegmentBubbleContent
       title={title}
       content={<>
@@ -78,80 +80,3 @@ export const Tooltip: React.SFC<TooltipProps> = ({
       </>} />
   </TooltipWithinStage>;
 };
-
-interface ScatterplotTooltipProps {
-  splitKey: string;
-  datum: Datum;
-  stage: Stage;
-  xSeries: ConcreteSeries;
-  ySeries: ConcreteSeries;
-  xScale: LinearScale;
-  yScale: LinearScale;
-  timezone: Timezone;
-  showPrevious: boolean;
-}
-
-export const ScatterplotTooltip: React.SFC<ScatterplotTooltipProps> = ({
- datum,
- stage,
- xSeries,
- ySeries,
- xScale,
- yScale,
- splitKey,
- timezone,
- showPrevious
-}) => {
-  if (!isTruthy(datum)) return null;
-
-  const xPosition = xScale(xSeries.selectValue(datum)) + TOOLTIP_OFFSET_X;
-  const yPosition = yScale(ySeries.selectValue(datum)) + TOOLTIP_OFFSET_Y;
-
-  const title = formatValue(datum[splitKey], timezone);
-
-  return <Tooltip
-    showPrevious={showPrevious}
-    xSeries={xSeries}
-    ySeries={ySeries}
-    stage={stage}
-    title={title}
-    datum={datum}
-    xPosition={xPosition}
-    yPosition={yPosition}
-  />;
-};
-//
-// interface BeeswarmTooltipProps {
-//   splitKey: string;
-//   datum: Bee; // should this be Datum?
-//   stage: Stage;
-//   xSeries: ConcreteSeries;
-//   timezone: Timezone;
-//   showPrevious: boolean;
-// }
-//
-// export const BeeswarmTooltip: React.SFC<BeeswarmTooltipProps> = ({
-//   datum,
-//   stage,
-//   xSeries,
-//   splitKey,
-//   timezone,
-//   showPrevious
-// }) => {
-//   if (!isTruthy(datum)) return null;
-//
-//   const xPosition = datum.x + TOOLTIP_OFFSET_X;
-//   const yPosition = datum.y + TOOLTIP_OFFSET_Y;
-//
-//   const title = formatValue(datum[splitKey], timezone);
-//
-//   return <Tooltip
-//     showPrevious={showPrevious}
-//     xSeries={xSeries}
-//     stage={stage}
-//     title={title}
-//     datum={datum}
-//     xPosition={xPosition}
-//     yPosition={yPosition}
-//   />;
-// };

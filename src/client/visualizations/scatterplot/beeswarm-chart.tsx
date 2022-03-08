@@ -33,14 +33,16 @@ import { Stage } from "../../../common/models/stage/stage";
 import { selectFirstSplitDatums } from "../../utils/dataset/selectors/selectors";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 import { Point } from "./point";
+import { HoveredPoint } from "./scatterplot";
+import { Tooltip } from "./tooltip";
 import { dodge } from "./utils/dodge";
 
 const TICK_SIZE = 10;
 const TICK_COUNT = 10;
 
 interface BeeswarmChartProps  extends ChartProps {
-  hoveredPoint: Datum | null;
-  setPointHover(datum: Datum): void;
+  hoveredPoint: HoveredPoint | null;
+  setPointHover(point: HoveredPoint): void;
   resetPointHover(): void;
 }
 
@@ -48,12 +50,19 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
   render() {
     const { data, essence, stage, setPointHover, resetPointHover, hoveredPoint } = this.props;
     const { plottingStage, scale, series, ticks, beeswarmData } = getBeeswarmData(data, essence, stage);
-    // const splitKey = essence.splits.splits.first().toKey();
+    const splitKey = essence.splits.splits.first().toKey();
 
     const points = getPoints(beeswarmData, series, scale, 3, plottingStage);
 
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title axis-title-x" style={{ bottom: 150, right: 10 }}>{series.title()}</span>
+      <Tooltip
+        hoveredPoint={hoveredPoint}
+        stage={plottingStage}
+        xSeries={series}
+        splitKey={splitKey}
+        timezone={essence.timezone}
+        showPrevious={essence.hasComparison()}/>
       <svg viewBox={stage.getViewBox()}>
         <GridLines orientation={"vertical"} stage={plottingStage} ticks={ticks} scale={scale}/>
         <XAxis
