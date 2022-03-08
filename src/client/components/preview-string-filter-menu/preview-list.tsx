@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Unary } from "../../../common/utils/functional/functional";

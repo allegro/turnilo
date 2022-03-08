@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, isInside, uniqueId } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";

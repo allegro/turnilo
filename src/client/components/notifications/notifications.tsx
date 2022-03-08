@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Button, ButtonType } from "../button/button";
 import { Modal } from "../modal/modal";

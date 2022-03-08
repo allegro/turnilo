@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { ROW_HEIGHT } from "../dimensions";
 

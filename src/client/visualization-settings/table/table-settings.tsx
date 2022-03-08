@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { VisualizationSettingsComponent } from "../../../common/models/visualization-settings/visualization-settings";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { Checkbox } from "../../components/checkbox/checkbox";

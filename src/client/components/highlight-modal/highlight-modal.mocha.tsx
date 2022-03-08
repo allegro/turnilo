@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { mount, ReactWrapper, shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { SinonSpy, spy } from "sinon";
 import { BubbleTitle } from "../bubble-title/bubble-title";
 import { ModalBubble } from "../modal-bubble/modal-bubble";

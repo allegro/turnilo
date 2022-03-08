@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { firstUp } from "../../../common/utils/string/string";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";

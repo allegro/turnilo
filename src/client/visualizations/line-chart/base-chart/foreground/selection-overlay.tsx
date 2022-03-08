@@ -16,7 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import { Range } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
 import { constructRange } from "../../interactions/continuous-range";

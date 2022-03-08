@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH } from "../../config/constants";
 import { SvgIcon } from "../svg-icon/svg-icon";

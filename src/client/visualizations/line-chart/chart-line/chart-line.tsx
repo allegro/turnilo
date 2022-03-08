@@ -16,7 +16,7 @@
 
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { ContinuousRange, ContinuousScale } from "../utils/continuous-types";

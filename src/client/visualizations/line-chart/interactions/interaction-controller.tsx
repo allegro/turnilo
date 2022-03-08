@@ -16,7 +16,7 @@
 
 import { List } from "immutable";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";

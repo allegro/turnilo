@@ -15,7 +15,7 @@
  */
 
 import { Dataset, Datum, PlywoodRange } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";

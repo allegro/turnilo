@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./drop-indicator.scss";
 

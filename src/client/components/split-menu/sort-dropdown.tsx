@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Sort, SortDirection } from "../../../common/models/sort/sort";
 import { Unary } from "../../../common/utils/functional/functional";

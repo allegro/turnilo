@@ -18,7 +18,7 @@
 import * as d3 from "d3";
 import { List, Set } from "immutable";
 import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { canBucketByDefault, Dimension } from "../../../common/models/dimension/dimension";

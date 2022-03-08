@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { SPACE_LEFT } from "../dimensions";
 import { VisibleRows } from "../visible-rows/visible-rows";
 import "./flattened-splits.scss";

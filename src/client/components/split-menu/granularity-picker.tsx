@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension, isContinuous } from "../../../common/models/dimension/dimension";
 import { ContinuousDimensionKind, formatGranularity, getGranularities, granularityToString, validateGranularity } from "../../../common/models/granularity/granularity";
 import { Bucket } from "../../../common/models/split/split";

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as jsonLanguage from "highlight.js/lib/languages/json";
-import * as React from "react";
+import jsonLanguage from "highlight.js/lib/languages/json";
+import React from "react";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import githubGist from "react-syntax-highlighter/dist/cjs/styles/hljs/github-gist";
 import { Fn } from "../../../common/utils/general/general";

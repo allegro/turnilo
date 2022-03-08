@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { SplitTilesRow, SplitTilesRowBaseProps } from "../../components/split-tile/split-tiles-row";
 import { VisualizationControls, VisualizationControlsBaseProps } from "../../views/cube-view/center-panel/center-panel";
 import { GridSplitTile } from "./grid-split-tile";

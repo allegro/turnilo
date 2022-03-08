@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { ClientSources } from "../../../common/models/sources/sources";
 import { Unary } from "../../../common/utils/functional/functional";

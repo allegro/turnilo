@@ -15,7 +15,7 @@
  */
 
 import { Datum, PlywoodValue } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
 import { getNominalDimension, hasNominalSplit } from "../../utils/splits";

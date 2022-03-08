@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import makeQuery from "../../../common/utils/query/visualization-query";

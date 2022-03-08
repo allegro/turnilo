@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { MeasureItem } from "./measure-item";
 import { MeasureForView, MeasureForViewType, MeasureGroupForView, MeasureOrGroupForView } from "./measures-converter";

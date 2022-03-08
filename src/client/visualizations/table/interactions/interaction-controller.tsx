@@ -15,7 +15,7 @@
  */
 import { List } from "immutable";
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Essence, VisStrategy } from "../../../../common/models/essence/essence";

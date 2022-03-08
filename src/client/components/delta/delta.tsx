@@ -15,7 +15,7 @@
  */
 
 import { format } from "d3";
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { isNil } from "../../../common/utils/general/general";
 import "./delta.scss";

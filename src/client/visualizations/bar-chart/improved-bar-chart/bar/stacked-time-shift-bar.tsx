@@ -16,7 +16,7 @@
 
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";

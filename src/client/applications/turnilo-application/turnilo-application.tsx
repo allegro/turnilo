@@ -16,7 +16,7 @@
  */
 
 import { NamedArray } from "immutable-class";
-import * as React from "react";
+import React from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";

@@ -16,7 +16,7 @@
 
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { Delta } from "../../delta/delta";
 import { MeasureBackground } from "./measure-background";

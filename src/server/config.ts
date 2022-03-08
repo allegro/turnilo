@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as nopt from "nopt";
+import nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
 import {

@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
 import { $ } from "plywood";
-import * as React from "react";
+import React from "react";
 import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";

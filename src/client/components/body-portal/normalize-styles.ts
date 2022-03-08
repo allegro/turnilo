@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { omitFalsyValues } from "../../../common/utils/object/object";
 
 function normalizeDimension(dimension: number | string): string | undefined {

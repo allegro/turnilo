@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import "./color-legend.scss";
 

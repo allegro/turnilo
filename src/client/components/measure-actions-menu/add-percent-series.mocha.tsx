@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { mount, shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { SinonSpy, spy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import * as express from "express";
+import express from "express";
 import { Express } from "express";
 import * as http from "http";
-import * as nock from "nock";
-import * as supertest from "supertest";
+import nock from "nock";
+import supertest from "supertest";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
 import { wikiSources, wikiTwitterSources } from "../../../common/models/sources/sources.fixtures";
 import { readinessRouter } from "./readiness";

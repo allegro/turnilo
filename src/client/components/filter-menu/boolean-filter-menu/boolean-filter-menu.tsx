@@ -16,7 +16,7 @@
 
 import { Set } from "immutable";
 import { $, Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { BooleanFilterClause, FilterClause } from "../../../../common/models/filter-clause/filter-clause";

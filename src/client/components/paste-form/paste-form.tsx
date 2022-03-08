@@ -15,7 +15,7 @@
  */
 
 import { Set } from "immutable";
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../button/button";

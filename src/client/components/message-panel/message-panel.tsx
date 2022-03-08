@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Nullary } from "../../../common/utils/functional/functional";
 import { Button } from "../button/button";
 import "./message-panel.scss";

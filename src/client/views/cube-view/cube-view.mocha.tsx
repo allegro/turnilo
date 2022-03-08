@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { mount } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { clientAppSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiClientDataCube } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";

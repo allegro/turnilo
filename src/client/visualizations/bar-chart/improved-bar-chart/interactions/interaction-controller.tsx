@@ -16,7 +16,7 @@
 
 import { List } from "immutable";
 import { Datum, TimeRange } from "plywood";
-import * as React from "react";
+import React from "react";
 import { DateRange } from "../../../../../common/models/date-range/date-range";
 import { FilterClause, FixedTimeFilterClause } from "../../../../../common/models/filter-clause/filter-clause";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";

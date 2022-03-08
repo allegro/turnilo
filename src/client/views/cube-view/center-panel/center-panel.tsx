@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ChartProps } from "../../../../common/models/chart-props/chart-props";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../../common/models/customization/customization";
