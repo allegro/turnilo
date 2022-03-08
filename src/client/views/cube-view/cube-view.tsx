@@ -44,6 +44,7 @@ import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
+import { Loader } from "../../components/loader/loader";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
@@ -51,7 +52,6 @@ import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
-import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import { getVisualizationComponent } from "../../visualizations";
@@ -380,11 +380,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   renderViewDefinitionModal() {
     const { showViewDefinitionModal, essence } = this.state;
     if (!showViewDefinitionModal) return null;
-
-    return <ViewDefinitionModal
-      onClose={this.onViewDefinitionModalClose}
-      essence={essence}
-    />;
+    const ViewDefinitionModal = React.lazy(() => import("../../modals/view-definition-modal/view-definition-modal"));
+    return <React.Suspense fallback={Loader}>
+        <ViewDefinitionModal
+          onClose={this.onViewDefinitionModalClose}
+          essence={essence}
+        />
+      </React.Suspense>;
   }
 
   openDruidQueryModal = () => {
