@@ -23,13 +23,13 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { StringValue } from "./string-value";
 import "./string-values-list.scss";
 
-function filterRows(rows: string[], searchText: string): string[] {
+function filterRows(rows: Array<unknown>, searchText: string): Array<unknown> {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
-  return rows.filter(d => d.toLowerCase().indexOf(searchTextLower) !== -1);
+  return rows.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
 }
 
-function prependPromotedValues(rows: string[], promoted: Set<string>): string[] {
+function prependPromotedValues(rows: Array<unknown>, promoted: Set<unknown>): Array<unknown> {
   return [
     ...promoted,
     ...rows.filter(value => !promoted.contains(value))
@@ -40,15 +40,15 @@ interface RowsListProps {
   dimension: Dimension;
   dataset: Dataset;
   searchText: string;
-  selectedValues: Set<string>;
-  promotedValues: Set<string>;
+  selectedValues: Set<unknown>;
+  promotedValues: Set<unknown>;
   filterMode: FilterMode;
   onRowSelect: Binary<unknown, boolean, void>;
 }
 
 export const StringValuesList: React.SFC<RowsListProps> = props => {
   const { onRowSelect, filterMode, dataset, dimension, searchText, promotedValues, selectedValues } = props;
-  const rowValues = dataset.data.map(d => String(d[dimension.name]));
+  const rowValues: Array<unknown> = dataset.data.map(d => d[dimension.name]);
   const values = prependPromotedValues(rowValues, promotedValues);
   const matchingValues = filterRows(values, searchText);
   if (searchText && matchingValues.length === 0) {
