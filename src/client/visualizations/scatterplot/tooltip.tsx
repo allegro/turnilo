@@ -20,8 +20,8 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
 import { Timezone } from "chronoshift";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import { formatValue } from "../../../common/utils/formatter/formatter";
 import { isTruthy } from "../../../common/utils/general/general";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
@@ -29,7 +29,7 @@ import { TooltipWithinStage } from "../../components/tooltip-within-stage/toolti
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
 interface TooltipProps {
-  splitKey: string;
+  split: Split;
   datum: Datum;
   stage: Stage;
   xSeries: ConcreteSeries;
@@ -50,7 +50,7 @@ export const Tooltip: React.SFC<TooltipProps> = ({
   ySeries,
   xScale,
   yScale,
-  splitKey,
+  split,
   timezone,
   showPrevious
 }) => {
@@ -61,7 +61,7 @@ export const Tooltip: React.SFC<TooltipProps> = ({
 
   return <TooltipWithinStage top={yPosition} left={xPosition} stage={stage}>
     <SegmentBubbleContent
-      title={formatValue(datum[splitKey], timezone)}
+      title={split.formatValue(datum, timezone)}
       content={<>
         <strong className="series-title">{xSeries.title()}</strong>
         <br/>
