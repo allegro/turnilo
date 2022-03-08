@@ -206,6 +206,16 @@
       "path": "build/public/main.js",
       "limit": "2303 kB",
       "gzip": false
+    },
+    {
+      "path": "build/public/polyfills.es5.js",
+      "limit": "46 kB",
+      "gzip": false
+    },
+    {
+      "path": "build/public/dnd.es5.js",
+      "limit": "4.7 kB",
+      "gzip": false
     }
   ]
 }
