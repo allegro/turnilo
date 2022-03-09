@@ -61,7 +61,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
     dataset={splitDataset} />;
 
   const continuousSplit = getContinuousSplit(essence);
-  const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
+  const getX = (d: Datum) => continuousSplit.selectValue<TimeRange | NumberRange>(d);
   const domain = extentAcrossSeries(splitDataset, essence);
 
   if (series.count() === 1) {

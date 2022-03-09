@@ -63,7 +63,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
     showPrevious={hasComparison} />;
 
   const continuousSplit = getContinuousSplit(essence);
-  const getX = (d: Datum) => d[continuousSplit.reference] as (TimeRange | NumberRange);
+  const getX = (d: Datum) => continuousSplit.selectValue<TimeRange | NumberRange>(d);
 
   const domain = extentAcrossSplits(continuousSplitDataset, essence, series);
 
@@ -83,7 +83,7 @@ export const SeriesChart: React.SFC<SeriesChartProps> = props => {
       yDomain={domain}>
       {({ yScale, lineStage }) => <React.Fragment>
         {continuousSplitDataset.data.map((datum, index) => {
-          const splitKey = datum[nominalSplit.reference];
+          const splitKey = nominalSplit.selectValue(datum);
           const color = NORMAL_COLORS[index];
           return <ColoredSeriesChartLine
             key={String(splitKey)}
