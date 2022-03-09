@@ -23,9 +23,9 @@ const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigat
 if (needsPatch) {
   Promise.all([
     // @ts-ignore
-    import("../../lib/polyfill/drag-drop-polyfill.min.js"),
+    import(/* webpackChunkName: "dnd-js" */ "../../lib/polyfill/drag-drop-polyfill.min.js"),
     // @ts-ignore
-    import("../../lib/polyfill/drag-drop-polyfill.css")
+    import(/* webpackChunkName: "dnd-css" */"../../lib/polyfill/drag-drop-polyfill.css")
   ]).then(([DragDropPolyfill, _]) => {
     DragDropPolyfill.Initialize({});
   });

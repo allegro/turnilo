@@ -59,7 +59,13 @@ const prodConfig = {
 const es5Config = {
   module: {
     rules: [{
-      test: /\.tsx?$/,
+      test: /\.[jt]sx?$/,
+      exclude: {
+        and: [/node_modules/],
+        not: [
+          /react-syntax-highlighter/,
+        ]
+      },
       use: [{
         loader: "babel-loader",
         options: {

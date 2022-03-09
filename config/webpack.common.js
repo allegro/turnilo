@@ -44,7 +44,13 @@ module.exports = {
         use: ["source-map-loader"]
       },
       {
-        test: /\.tsx?$/,
+        test: /\.[jt]sx?$/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /react-syntax-highlighter/,
+          ]
+        },
         use: [{
           loader: "babel-loader",
           options: {
