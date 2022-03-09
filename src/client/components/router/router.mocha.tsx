@@ -87,7 +87,7 @@ describe("Router", () => {
           {children.map((c, i) => React.cloneElement(c, { key: i }))}
         </Router>,
         node
-      ) as React.Component;
+      ) as unknown as React.Component;
     };
 
     isActiveRoute = (route: string) => {

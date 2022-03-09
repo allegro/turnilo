@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import jsonLanguage from "highlight.js/lib/languages/json";
 import React from "react";
-import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import githubGist from "react-syntax-highlighter/dist/cjs/styles/hljs/github-gist";
+
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
+import { Loader } from "../../components/loader/loader";
 import { Modal } from "../../components/modal/modal";
 import { SafeCopyToClipboard } from "../../components/safe-copy-to-clipboard/safe-copy-to-clipboard";
 import { STRINGS } from "../../config/constants";
 import { classNames, JSXNode } from "../../utils/dom/dom";
 import "./source-modal.scss";
-
-SyntaxHighlighter.registerLanguage("json", jsonLanguage);
 
 interface SourceModalProps {
   onClose: Fn;
@@ -49,6 +46,7 @@ export class SourceModal extends React.Component<SourceModalProps, SourceModalSt
 
   render() {
     const { copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header } = this.props;
+    const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
 
     return <Modal
       onClose={onClose}
@@ -57,9 +55,11 @@ export class SourceModal extends React.Component<SourceModalProps, SourceModalSt
     >
       <div className="content">
         {header}
-        <SyntaxHighlighter className="source-modal__source" language="json" style={githubGist}>
-          {source}
-        </SyntaxHighlighter>
+        <React.Suspense fallback={Loader}>
+          <SyntaxHighlighter>
+            {source}
+          </SyntaxHighlighter>
+        </React.Suspense>
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
           <SafeCopyToClipboard text={source} onCopy={this.onCopy}>
