@@ -19,7 +19,18 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { IgnorePlugin } = require('webpack');
 
-module.exports = {
+const toTranspilePattern = {
+  test: /\.[jt]sx?$/,
+  exclude: {
+    and: [/node_modules/],
+    not: [
+      /* List of node modules to transpile */
+      /react-syntax-highlighter/ // imported from "react-syntax-highlighter/src"
+    ]
+  }
+}
+
+const config = {
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, '../build/public'),
@@ -44,13 +55,7 @@ module.exports = {
         use: ["source-map-loader"]
       },
       {
-        test: /\.[jt]sx?$/,
-        exclude: {
-          and: [/node_modules/],
-          not: [
-            /react-syntax-highlighter/,
-          ]
-        },
+        ...toTranspilePattern,
         use: [{
           loader: "babel-loader",
           options: {
@@ -89,3 +94,6 @@ module.exports = {
     ]
   }
 };
+
+module.exports.config = config;
+module.exports.toTranspilePattern = toTranspilePattern;
