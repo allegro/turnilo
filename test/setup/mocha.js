@@ -18,6 +18,11 @@ require("@babel/register")({
     cache: true,
     configFile: false,
     extensions: [".ts", ".tsx", ".js", ".jsx"],
+    ignore: [
+        function(filePath) {
+            return filePath.includes("node_modules") && !filePath.includes("react-syntax-highlighter")
+        }
+    ],
     presets: [
         "@babel/preset-typescript",
         ["@babel/preset-env", {

@@ -136,7 +136,7 @@
     "@types/node": "8.5.2",
     "@types/nopt": "3.0.29",
     "@types/randomstring": "1.1.6",
-    "@types/react": "16.7.0",
+    "@types/react": "16.14.23",
     "@types/react-copy-to-clipboard": "4.3.0",
     "@types/react-dom": "16.0.11",
     "@types/react-syntax-highlighter": "13.5.2",
@@ -204,17 +204,17 @@
   "size-limit": [
     {
       "path": "build/public/main.js",
-      "limit": "2303 kB",
+      "limit": "1990 kB",
       "gzip": false
     },
     {
       "path": "build/public/polyfills.es5.js",
-      "limit": "46 kB",
+      "limit": "44 kB",
       "gzip": false
     },
     {
       "path": "build/public/dnd.es5.js",
-      "limit": "4.7 kB",
+      "limit": "4.75 kB",
       "gzip": false
     }
   ]
