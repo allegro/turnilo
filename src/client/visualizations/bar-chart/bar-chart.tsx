@@ -160,7 +160,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   return new Dataset(value);
 }
 
-export function BarChartVisualization(props: VisualizationProps) {
+export default function BarChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BarChart}/>

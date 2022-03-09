@@ -135,7 +135,7 @@ export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
   }
 }
 
-export function ScatterplotVisualization(props: VisualizationProps) {
+export default function ScatterplotVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Scatterplot}/>
