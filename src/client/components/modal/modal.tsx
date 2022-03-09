@@ -48,7 +48,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     var { id } = this.props;
 
     this.setState({

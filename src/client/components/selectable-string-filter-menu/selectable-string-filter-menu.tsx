@@ -131,7 +131,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.loadRows();
   }
 

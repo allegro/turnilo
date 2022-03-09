@@ -74,7 +74,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     });
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { initTimekeeper, appSettings: { oauth } } = this.props;
 
     if (!!oauth && hasCode()) {

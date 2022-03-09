@@ -48,7 +48,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     this.state = { opened: inSearchMode && hasItemsWithSearchText || shouldBeOpened };
   }
 
-  componentWillReceiveProps(nextProps: Readonly<SearchableFolderProps>) {
+  UNSAFE_componentWillReceiveProps(nextProps: Readonly<SearchableFolderProps>) {
     const { opened } = this.state;
     const { shouldBeOpened } = this.props;
 

@@ -222,7 +222,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       });
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
     if (!dataCube) {
       throw new Error("Data cube is required.");
@@ -240,7 +240,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
   }
 
-  componentWillReceiveProps(nextProps: CubeViewProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: CubeViewProps) {
     const { hash, dataCube } = this.props;
     if (!nextProps.dataCube) {
       throw new Error("Data cube is required.");
@@ -251,7 +251,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
   }
 
-  componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
+  UNSAFE_componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
     const { changeCubeAndEssence, dataCube } = this.props;
     const { essence } = this.state;
     if (!nextState.essence.equals(essence)) {

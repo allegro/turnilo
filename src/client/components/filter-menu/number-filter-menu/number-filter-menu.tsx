@@ -73,7 +73,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     end: ANY_VALUE
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { essence, dimension } = this.props;
     const clause = essence.filter.getClauseForDimension(dimension);
     if (!clause) return;
