@@ -97,7 +97,7 @@
     "react-copy-to-clipboard": "5.0.1",
     "react-dom": "16.9.0",
     "react-syntax-highlighter": "15.4.5",
-    "react-transition-group": "2.2.1",
+    "react-transition-group": "2.4.0",
     "request": "2.87.0",
     "request-promise-native": "1.0.5"
   },
