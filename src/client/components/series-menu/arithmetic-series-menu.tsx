@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ArithmeticExpression, ArithmeticOperation } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { ClientMeasure, isApproximate } from "../../../common/models/measure/measure";

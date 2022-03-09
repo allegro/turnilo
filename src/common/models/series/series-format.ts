@@ -15,7 +15,7 @@
  */
 
 import { Record } from "immutable";
-import * as numbro from "numbro";
+import numbro from "numbro";
 import { Unary } from "../../utils/functional/functional";
 import { isFiniteNumber, isNumber } from "../../utils/general/general";
 import { Measure } from "../measure/measure";

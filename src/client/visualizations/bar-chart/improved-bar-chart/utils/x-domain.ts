@@ -22,6 +22,5 @@ export type DomainValue = boolean | number | string | Date | NumberRange | TimeR
 export type XDomain = DomainValue[];
 
 export function getXDomain(datums: Datum[], { continuousSplit }: BarChartModel): XDomain {
-  const { reference: continuousReference } = continuousSplit;
-  return datums.map(datum => datum[continuousReference] as DomainValue);
+  return datums.map(datum => continuousSplit.selectValue<DomainValue>(datum));
 }

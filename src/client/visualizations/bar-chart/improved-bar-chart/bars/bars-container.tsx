@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
@@ -25,7 +25,7 @@ import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
 import { BarChartModel } from "../utils/bar-chart-model";
 import { calculateChartStage } from "../utils/layout";
-import { xGetter, XScale } from "../utils/x-scale";
+import { XScale } from "../utils/x-scale";
 import { yExtent } from "../utils/y-extent";
 import { Bars } from "./bars";
 import "./bars.scss";
@@ -53,8 +53,6 @@ export class BarsContainer extends React.Component<BarsContainerProps> {
     const { dropHighlight, acceptHighlight, interaction, model, stage, scrollLeft, series, totals, datums, xScale } = this.props;
     const hasComparison = model.hasComparison;
     const chartStage = calculateChartStage(stage);
-    const { reference: continuousReference } = model.continuousSplit;
-    const getX = xGetter(continuousReference);
     const extent = yExtent(datums, series, hasComparison);
     const yScale = getScale(extent, chartStage.height);
 
@@ -73,7 +71,6 @@ export class BarsContainer extends React.Component<BarsContainerProps> {
           model={model}
           stage={chartStage}
           xScale={xScale}
-          getX={getX}
           series={series}
           datums={datums} />
         {interaction && <Foreground
@@ -85,7 +82,6 @@ export class BarsContainer extends React.Component<BarsContainerProps> {
           model={model}
           xScale={xScale}
           series={series}
-          getX={getX}
           yScale={yScale} />}
       </div>
     </React.Fragment>;

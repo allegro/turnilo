@@ -15,11 +15,12 @@
  */
 
 import { expect } from "chai";
+import { Split } from "../../../../../common/models/split/split";
 import { BarChartModel } from "./bar-chart-model";
 import { getXDomain } from "./x-domain";
 
 describe("getXDomain", () => {
-  const mode = { continuousSplit: { reference: "foobar" } } as any as BarChartModel;
+  const model = { continuousSplit: new Split({ reference: "foobar" }) } as any as BarChartModel;
   const datums = [
     { foobar: 1, bazz: 42 },
     { foobar: 65, bazz: 1, qvux: 42 },
@@ -27,7 +28,7 @@ describe("getXDomain", () => {
   ];
 
   it("should pick split values from datums", () => {
-    const domain = getXDomain(datums, mode);
+    const domain = getXDomain(datums, model);
     expect(domain).to.be.deep.equal([1, 65, "dummy"]);
   });
 });

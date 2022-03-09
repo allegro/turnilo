@@ -17,7 +17,7 @@
 import * as d3 from "d3";
 import { Map } from "immutable";
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Predicate } from "../../../../common/utils/functional/functional";
 import { VisibleRows } from "../visible-rows/visible-rows";
@@ -27,7 +27,7 @@ interface MeasureRowsProps {
   visibleRowsIndexRange: [number, number];
   essence: Essence;
   highlightedRowIndex: number | null;
-  scales: Map<string, d3.scale.Linear<number, number>>;
+  scales: Map<string, d3.ScaleLinear<number, number>>;
   data: PseudoDatum[];
   hoverRow?: Datum;
   cellWidth: number;

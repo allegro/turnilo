@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { SortDirection } from "../../../../../common/models/sort/sort";
 import { classNames } from "../../../../utils/dom/dom";
 import { SortIcon } from "../../sort-icon/sort-icon";

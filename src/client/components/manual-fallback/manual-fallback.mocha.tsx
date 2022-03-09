@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { MessageCard } from "../message-card/message-card";
 import { ManualFallback } from "./manual-fallback";

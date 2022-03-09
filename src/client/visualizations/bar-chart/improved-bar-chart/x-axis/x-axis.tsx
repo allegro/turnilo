@@ -15,7 +15,7 @@
  */
 
 import { TimeRange } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { formatStartOfTimeRange } from "../../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../../utils/dom/dom";

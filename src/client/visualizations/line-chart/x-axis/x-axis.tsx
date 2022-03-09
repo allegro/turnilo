@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { getMoment, scaleTicksFormatter } from "../../../../common/utils/time/time";

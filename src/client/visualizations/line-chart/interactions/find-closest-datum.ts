@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-const MAX_HOVER_DIST = 50;
-
 import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
-import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
+import { Split } from "../../../../common/models/split/split";
 import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
 import { ContinuousScale, ContinuousValue } from "../utils/continuous-types";
-import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
+import { getContinuousSplit, hasNominalSplit } from "../utils/splits";
 
-function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousScale, continuousDimension: Dimension): Datum | null {
+const MAX_HOVER_DIST = 50;
+
+function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousScale, continuousSplit: Split): Datum | null {
   let closestDatum: Datum = null;
   let minDist = Infinity;
   for (const datum of data) {
-    const continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
+    const continuousSegmentValue = continuousSplit.selectValue<TimeRange | NumberRange>(datum);
     if (!continuousSegmentValue || !Range.isRange(continuousSegmentValue)) continue; // !Range.isRange => temp solution for non-bucketed reaching here
     const mid = continuousSegmentValue.midpoint();
     const dist = Math.abs(mid.valueOf() - value.valueOf());
@@ -41,10 +41,10 @@ function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousSc
 }
 
 export function findClosestDatum(value: ContinuousValue, essence: Essence, dataset: Dataset, xScale: ContinuousScale): Datum | null {
-  const continuousDimension = getContinuousDimension(essence);
+  const continuousSplit = getContinuousSplit(essence);
   if (hasNominalSplit(essence)) {
     const flattened = selectFirstSplitDataset(dataset).flatten();
-    return findClosest(flattened.data, value, xScale, continuousDimension);
+    return findClosest(flattened.data, value, xScale, continuousSplit);
   }
-  return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousDimension);
+  return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousSplit);
 }

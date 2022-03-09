@@ -18,7 +18,7 @@ import { expect, use } from "chai";
 import { TimeRange } from "plywood";
 import { january } from "../../../../utils/dataset/selectors/dataset-fixtures";
 import equivalent from "../../../../utils/test-utils/equivalent";
-import { createXScale, xGetter } from "./x-scale";
+import { createXScale } from "./x-scale";
 
 use(equivalent);
 
@@ -28,13 +28,6 @@ const januaryDateAsRange = (date: number) => new TimeRange({
 });
 
 describe("x-scale", () => {
-  describe("xGetter", () => {
-    it("should return function that picks defined prop", () => {
-      const getDummy = xGetter("dummy");
-      expect(getDummy({ dummy: "foo" })).to.be.equal("foo");
-    });
-  });
-
   describe("createXScale", () => {
     describe("TimeRange", () => {
       const domain = [
@@ -51,7 +44,7 @@ describe("x-scale", () => {
       });
 
       it("should return range band", () => {
-        expect(scale.rangeBand()).to.be.equal(30);
+        expect(scale.bandwidth()).to.be.equal(30);
       });
 
       it("should apply scale function", () => {

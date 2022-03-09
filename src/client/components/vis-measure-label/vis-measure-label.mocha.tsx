@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
 import { SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { fromMeasure } from "../../../common/models/series/measure-concrete-series";

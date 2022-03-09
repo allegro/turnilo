@@ -45,7 +45,7 @@ export const nominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: nonNomi
 
 export const sparseNominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: sparseNonNominalDatums }]);
 
-export const scale = d3.time.scale().domain([january(1), january(7)]).range([0, 1000]) as unknown as ContinuousScale;
+export const scale = d3.scaleTime().domain([january(1), january(7)]).range([0, 1000]) as unknown as ContinuousScale;
 
 export function createDailyNominalDatasetInJanuary(startDay: number, endDay: number): Dataset {
   const datums = range(startDay, endDay).map(i => {

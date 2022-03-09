@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Fn } from "../../../common/utils/general/general";

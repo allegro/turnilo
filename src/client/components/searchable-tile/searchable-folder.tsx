@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { PureComponent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { InfoBubble } from "../info-bubble/info-bubble";

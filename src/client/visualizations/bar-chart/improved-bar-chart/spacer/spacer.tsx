@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./spacer.scss";
 
 export const Spacer: React.SFC<{}> = props => {

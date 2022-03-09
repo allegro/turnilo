@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 
 export interface FormItem {
   change: (propName: string, propValue: any) => FormItem;

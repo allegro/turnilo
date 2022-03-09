@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { navigateToHome } from "../../applications/turnilo-application/view";
 import { MessagePanel, MessagePanelAction } from "../message-panel/message-panel";
 

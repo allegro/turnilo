@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { FlattenedSplitColumns } from "../../../../components/tabular-scroller/splits/flattened-split-columns";
 import { FlattenedSplits } from "../../../../components/tabular-scroller/splits/flattened-splits";

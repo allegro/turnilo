@@ -16,8 +16,8 @@
  */
 
 import * as bodyParser from "body-parser";
-import * as compress from "compression";
-import * as express from "express";
+import compress from "compression";
+import express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
 import { join } from "path";

@@ -16,7 +16,7 @@
  */
 
 import * as d3 from "d3";
-import * as React from "react";
+import React from "react";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
 export type JSXNode = JSX.Element | string;

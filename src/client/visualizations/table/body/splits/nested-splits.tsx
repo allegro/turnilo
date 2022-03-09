@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { INDENT_WIDTH } from "../../../../components/tabular-scroller/dimensions";
 import { SplitValue } from "../../../../components/tabular-scroller/splits/split-value";

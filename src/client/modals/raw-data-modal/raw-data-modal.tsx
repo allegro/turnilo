@@ -18,7 +18,7 @@
 import { isDate } from "chronoshift";
 import { List } from "immutable";
 import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";

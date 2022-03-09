@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { ClientDataCube, getMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";

@@ -15,23 +15,24 @@
  */
 
 import { Dataset, Datum, TimeRange } from "plywood";
+import { Split } from "../../../../../common/models/split/split";
 import { Binary, cons, replaceAt, Unary } from "../../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../../config/constants";
 import { selectFirstSplitDatums, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { BarChartModel, isStacked } from "./bar-chart-model";
 
-function rangeComparator(continuousRef: string): Binary<Datum, Datum, number> {
+function rangeComparator(continuousSplit: Split): Binary<Datum, Datum, number> {
   return (a: Datum, b: Datum) => {
-    const aRange = a[continuousRef] as TimeRange;
-    const bRange = b[continuousRef] as TimeRange;
+    const aRange = continuousSplit.selectValue<TimeRange>(a);
+    const bRange = continuousSplit.selectValue<TimeRange>(b);
     return aRange.compare(bRange);
   };
 }
 
-function equalBy(continuousRef: string, datum: Datum): Unary<Datum, boolean> {
-  const value = datum[continuousRef];
+function equalBy(split: Split, datum: Datum): Unary<Datum, boolean> {
+  const value = split.selectValue(datum);
   return (d: Datum) => {
-    const range = d[continuousRef];
+    const range = split.selectValue(d);
     return TimeRange.isTimeRange(value) && TimeRange.isTimeRange(range) && value.equals(range);
   };
 }
@@ -57,19 +58,19 @@ function mergeDatums(continuousRef: string, datum: Datum, newDatum: Datum): Datu
 export function transposeDataset(dataset: Dataset, model: BarChartModel): Datum[] {
   if (!isStacked(model)) return selectFirstSplitDatums(dataset);
 
-  const { reference } = model.continuousSplit;
+  const { continuousSplit } = model;
   const { data } = dataset.flatten();
 
   const result = data.reduce((coll: Datum[], currentDatum: Datum) => {
-    const idx = coll.findIndex(equalBy(reference, currentDatum));
+    const idx = coll.findIndex(equalBy(continuousSplit, currentDatum));
     const notFound = idx === -1;
 
     if (notFound) {
-      return cons(coll, createInnerDatum(reference, currentDatum));
+      return cons(coll, createInnerDatum(continuousSplit.reference, currentDatum));
     }
 
-    return replaceAt(coll, idx, mergeDatums(reference, coll[idx], currentDatum));
+    return replaceAt(coll, idx, mergeDatums(continuousSplit.reference, coll[idx], currentDatum));
   }, []);
 
-  return result.sort(rangeComparator(reference));
+  return result.sort(rangeComparator(continuousSplit));
 }

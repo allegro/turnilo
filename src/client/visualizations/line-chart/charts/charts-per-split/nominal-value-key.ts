@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Datum, PlywoodValue } from "plywood";
+import { Datum } from "plywood";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
-import { getNominalDimension, hasNominalSplit } from "../../utils/splits";
+import { getNominalSplit, hasNominalSplit } from "../../utils/splits";
 
 export function nominalValueKey(datum: Datum, essence: Essence): string {
   if (!hasNominalSplit(essence)) return "no-nominal-split";
-  const nominalDimension = getNominalDimension(essence);
-  const splitValue = datum[nominalDimension.name] as PlywoodValue;
+  const nominalSplit = getNominalSplit(essence);
+  const splitValue = nominalSplit.selectValue(datum);
   return formatSegment(splitValue, essence.timezone);
 }

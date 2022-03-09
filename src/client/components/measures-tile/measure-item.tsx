@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DragEvent, MouseEvent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";

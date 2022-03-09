@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Delta } from "../delta/delta";
 import "./measure-bubble-content.scss";

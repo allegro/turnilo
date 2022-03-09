@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { StackedBarChartModel } from "../utils/bar-chart-model";
 import "./legend.scss";
 

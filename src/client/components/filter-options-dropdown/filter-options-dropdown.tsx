@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { STRINGS } from "../../config/constants";
 import { CheckboxType } from "../checkbox/checkbox";

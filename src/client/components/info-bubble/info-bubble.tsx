@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";

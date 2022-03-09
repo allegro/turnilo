@@ -17,7 +17,7 @@
 
 import { HeatmapRect } from "@vx/heatmap";
 import { Dataset, Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { SPLIT } from "../../config/constants";
 import { equalProps } from "../../utils/equal-props/equal-props";

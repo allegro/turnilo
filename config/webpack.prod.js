@@ -14,16 +14,35 @@
  * limitations under the License.
  */
 
-const common = require('./webpack.common');
+const commonConfig = require('./webpack.common');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { default: StatoscopeWebpackPlugin } = require("@statoscope/webpack-plugin");
 
-module.exports = merge.smart(common, {
+const bundleAnalyzerConfig = {
+  plugins: [
+    new StatoscopeWebpackPlugin({
+      open: false,
+      saveReportTo: "./build/report-[name].html",
+      saveStatsTo: "./build/report-[name].json",
+    }),
+  ]
+}
+
+const polyfillsConfig = {
+  entry: {
+    polyfills: "./src/client/polyfills.ts",
+    dnd: "./src/client/drag-and-drop-polyfill.ts",
+  }
+};
+
+const prodConfig = {
+  name: "client-modern",
   mode: "production",
   entry: {
-    main: ["./src/client/main.tsx"]
+    main: "./src/client/main.tsx",
   },
   optimization: {
     minimize: true,
@@ -33,5 +52,29 @@ module.exports = merge.smart(common, {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-  ]
-});
+  ],
+  stats: 'minimal'
+};
+
+const es5Config = {
+  module: {
+    rules: [{
+      test: /\.tsx?$/,
+      use: [{
+        loader: "babel-loader",
+        options: {
+          envName: "legacy",
+        },
+      }],
+    }]
+  },
+  name: "client-legacy",
+  output: {
+    filename: "[name].es5.js",
+  }
+};
+
+module.exports = [
+  merge.smart(commonConfig, prodConfig, bundleAnalyzerConfig),
+  merge.smart(commonConfig, prodConfig, es5Config, polyfillsConfig),
+]

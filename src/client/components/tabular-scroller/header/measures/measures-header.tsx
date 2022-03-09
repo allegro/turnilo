@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { SeriesSort, Sort, SortDirection } from "../../../../../common/models/sort/sort";
 import { MeasureHeaderCell } from "./measure-header-cell";

@@ -18,7 +18,6 @@ import { Duration, Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { Dataset, PlywoodRange, Range } from "plywood";
 import { getMaxTime } from "../../../../common/models/data-cube/data-cube";
-import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { ContinuousDimensionKind } from "../../../../common/models/granularity/granularity";
 import { Split } from "../../../../common/models/split/split";
@@ -36,11 +35,11 @@ export function createContinuousScale(essence: Essence, domainRange: PlywoodRang
   switch (kind) {
     case "number": {
       const domain = [domainRange.start, domainRange.end] as [number, number];
-      return (d3.scale.linear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleLinear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
     case "time": {
       const domain = [domainRange.start, domainRange.end] as [Date, Date];
-      return (d3.time.scale().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleTime().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
   }
 }
@@ -76,18 +75,17 @@ function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRa
   return (a && b) ? a.extend(b) : (a || b);
 }
 
-function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
-  const continuousDimensionKey = continuousDimension.name;
+function getDatasetXRange(dataset: Dataset, continuousSplit: Split): PlywoodRange | null {
   const flatDataset = dataset.flatten();
   return flatDataset
     .data
-    .map(datum => datum[continuousDimensionKey] as PlywoodRange)
+    .map(datum => continuousSplit.selectValue(datum) as PlywoodRange)
     .reduce(safeRangeSum, null);
 }
 
 export function calculateXRange(essence: Essence, timekeeper: Timekeeper, dataset: Dataset): ContinuousRange | null {
-  const continuousDimension = getContinuousDimension(essence);
+  const continuousSplit = getContinuousSplit(essence);
   const filterRange = getFilterRange(essence, timekeeper);
-  const datasetRange = getDatasetXRange(dataset, continuousDimension);
+  const datasetRange = getDatasetXRange(dataset, continuousSplit);
   return union(filterRange, datasetRange) as ContinuousRange;
 }

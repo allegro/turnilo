@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../utils/functional/functional";
 import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 

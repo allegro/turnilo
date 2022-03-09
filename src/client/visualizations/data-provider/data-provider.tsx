@@ -15,7 +15,7 @@
  */
 
 import { Dataset, Expression } from "plywood";
-import * as React from "react";
+import React from "react";
 import {
   DatasetRequest,
   DatasetRequestStatus,

@@ -15,7 +15,7 @@
  */
 
 import { Dataset, Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { compose, Unary } from "../../../../../common/utils/functional/functional";

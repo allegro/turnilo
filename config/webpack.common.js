@@ -17,23 +17,13 @@
 const path = require("path");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
-const babelLoader = {
-  loader: "babel-loader",
-  options: {
-    presets: [
-      ["@babel/preset-env", {
-        modules: false
-      }]
-    ]
-  }
-};
+const { IgnorePlugin } = require('webpack');
 
 module.exports = {
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, '../build/public'),
-    filename: "main.js",
+    filename: "[name].js",
     chunkFilename: "[name].[hash].js"
   },
   resolve: {
@@ -41,6 +31,10 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
   ],
   module: {
     rules: [
@@ -50,22 +44,13 @@ module.exports = {
         use: ["source-map-loader"]
       },
       {
-        test: /\.js?$/,
-        use: [
-          babelLoader
-        ]
-      },
-      {
         test: /\.tsx?$/,
-        use: [
-          babelLoader,
-          {
-            loader: "ts-loader",
-            options: {
-              configFile: "src/client/tsconfig.json"
-            }
+        use: [{
+          loader: "babel-loader",
+          options: {
+            envName: "modern"
           }
-        ]
+        }]
       },
       {
         test: /\.css$/,
@@ -89,7 +74,7 @@ module.exports = {
           // Returns a data-url (data:font/woff;charset=utf-8;base64,...)
           // if the file is smaller than a byte limit.
           limit: 8192,
-        },
+        }
       },
       {
         test: /\.svg$/,

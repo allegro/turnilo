@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { formatValue } from "../../../../../common/utils/formatter/formatter";
-import { Unary } from "../../../../../common/utils/functional/functional";
 import { SegmentBubble } from "../../../../components/segment-bubble/segment-bubble";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Hover } from "../interactions/interaction";
@@ -32,7 +29,6 @@ interface HoverTooltipProps {
   xScale: XScale;
   yScale: LinearScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
   model: BarChartModel;
   rect: ClientRect | DOMRect;
 }
@@ -42,17 +38,17 @@ export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
     model,
     rect: { left, top },
     interaction: { datum },
-    getX,
     series,
     xScale,
     yScale
   } = props;
+  const { continuousSplit, timezone } = model;
   const y = yScale(series.selectValue(datum));
-  const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
+  const xValue = continuousSplit.selectValue<DomainValue>(datum);
+  const x = xScale.calculate(xValue) + (xScale.bandwidth() / 2);
   return <SegmentBubble
     top={top + y}
     left={left + x}
-    title={formatValue(xValue, model.timezone)}
+    title={continuousSplit.formatValue(datum, timezone)}
     content={<Content model={model} datum={datum} series={series}/>} />;
 };

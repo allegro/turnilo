@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { STRINGS } from "../../config/constants";
 import { isOauthError } from "../../oauth/oauth";
 import { Message } from "../message/message";

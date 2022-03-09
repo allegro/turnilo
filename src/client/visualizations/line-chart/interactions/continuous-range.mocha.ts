@@ -15,7 +15,7 @@
  */
 
 import { expect, use } from "chai";
-import * as chaiDatetime from "chai-datetime";
+import chaiDatetime from "chai-datetime";
 import { Timezone } from "chronoshift";
 import { NumberRange } from "plywood";
 import equivalent from "../../../utils/test-utils/equivalent";

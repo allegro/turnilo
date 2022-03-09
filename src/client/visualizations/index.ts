@@ -20,6 +20,7 @@ import { BarChartVisualization } from "./bar-chart/bar-chart";
 import { GridVisualization } from "./grid/grid";
 import { HeatMapVisualization } from "./heat-map/heat-map";
 import { LineChartVisualization } from "./line-chart/line-chart";
+import { ScatterplotVisualization } from "./scatterplot/scatterplot";
 import { TableVisualization } from "./table/table";
 import { TotalsVisualization } from "./totals/totals";
 
@@ -29,7 +30,8 @@ const VISUALIZATIONS  = {
   "line-chart": LineChartVisualization,
   "bar-chart": BarChartVisualization,
   "heatmap": HeatMapVisualization,
-  "grid": GridVisualization
+  "grid": GridVisualization,
+  "scatterplot": ScatterplotVisualization
 };
 
 export function getVisualizationComponent({ name }: VisualizationManifest) {

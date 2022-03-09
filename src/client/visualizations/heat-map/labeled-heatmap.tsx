@@ -18,13 +18,15 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../common/models/stage/stage";
 import { formatSegment } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { ColorLegend } from "../../components/color-legend/color-legend";
+import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { clamp } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
@@ -143,7 +145,6 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
         layout={layout}
 
         topLeftCorner={<HeatmapCorner
-          colorScale={colorScale}
           width={layout.left}
           height={layout.top}
           essence={essence}/>}
@@ -187,6 +188,12 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
             hoverPosition={hoverPosition} />}
         </React.Fragment>}
       />
+      <LegendSpot>
+        <ColorLegend
+          title={series.title()}
+          formatter={series.formatter()}
+          colorScale={colorScale} />
+      </LegendSpot>
       {highlightPosition && <HeatmapHighlightModal
         title={modalTitle(highlightPosition, dataset, essence)}
         position={highlightPosition}

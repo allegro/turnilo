@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Omit, Unary } from "../../../common/utils/functional/functional";
 import { SelectableRows } from "./selectable-rows";

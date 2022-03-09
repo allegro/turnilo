@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as sinon from "sinon";
 import { findDOMNode } from "../../utils/test-utils";

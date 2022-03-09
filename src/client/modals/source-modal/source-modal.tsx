@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { githubGist } from "react-syntax-highlighter/styles/hljs";
+import jsonLanguage from "highlight.js/lib/languages/json";
+import React from "react";
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import githubGist from "react-syntax-highlighter/dist/cjs/styles/hljs/github-gist";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Modal } from "../../components/modal/modal";
@@ -24,6 +25,8 @@ import { SafeCopyToClipboard } from "../../components/safe-copy-to-clipboard/saf
 import { STRINGS } from "../../config/constants";
 import { classNames, JSXNode } from "../../utils/dom/dom";
 import "./source-modal.scss";
+
+SyntaxHighlighter.registerLanguage("json", jsonLanguage);
 
 interface SourceModalProps {
   onClose: Fn;

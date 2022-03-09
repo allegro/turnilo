@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureSeries } from "../../../common/models/series/measure-series";

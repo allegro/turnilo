@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DatasetRequest, isLoaded } from "../../../../common/models/dataset-request/dataset-request";
 import { PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT } from "../../../config/constants";
 

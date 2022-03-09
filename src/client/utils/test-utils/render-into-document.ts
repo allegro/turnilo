@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 
 // TODO: remove when included in official @types/react-dom package

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ReactElement } from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { findMeasureByName } from "../../../common/models/measure/measures";
