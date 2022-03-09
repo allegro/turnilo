@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const commonConfig = require('./webpack.common');
+const {config: commonConfig, toTranspilePattern} = require('./webpack.common');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -59,13 +59,7 @@ const prodConfig = {
 const es5Config = {
   module: {
     rules: [{
-      test: /\.[jt]sx?$/,
-      exclude: {
-        and: [/node_modules/],
-        not: [
-          /react-syntax-highlighter/,
-        ]
-      },
+      ...toTranspilePattern,
       use: [{
         loader: "babel-loader",
         options: {
