@@ -36,7 +36,7 @@ const BigNumbers: React.SFC<ChartProps> = ({ essence, data }) => {
   </div>;
 };
 
-export function TotalsVisualization(props: VisualizationProps) {
+export default function TotalsVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BigNumbers}/>
