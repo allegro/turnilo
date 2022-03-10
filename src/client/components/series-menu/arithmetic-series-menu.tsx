@@ -64,7 +64,7 @@ function expressionSeriesTitle(series: ExpressionSeries, measure: ClientMeasure,
   return concreteSeries.title();
 }
 
-export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = props => {
+export const ArithmeticSeriesMenu: React.FunctionComponent<ArithmeticOperationSeriesMenuProps> = props => {
   const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
   function isSeriesValid({ expression }: ExpressionSeries): boolean {

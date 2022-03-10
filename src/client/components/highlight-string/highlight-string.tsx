@@ -48,6 +48,6 @@ function highlightBy(text: string, highlight: string | RegExp): string | JSX.Ele
   return highlightByIndex(text, startIndex, startIndex + match[0].length);
 }
 
-export const HighlightString: React.SFC<HighlightStringProps> = ({ className, text, highlight }) => {
+export const HighlightString: React.FunctionComponent<HighlightStringProps> = ({ className, text, highlight }) => {
   return <span className={classNames("highlight-string", className)}>{highlightBy(text, highlight)}</span>;
 };

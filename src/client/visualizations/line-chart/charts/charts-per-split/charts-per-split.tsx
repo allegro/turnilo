@@ -51,7 +51,7 @@ function getChartsSelectors(essence: Essence, dataset: Dataset): Array<Unary<Dat
   });
 }
 
-export const ChartsPerSplit: React.SFC<ChartsPerSplit> = props => {
+export const ChartsPerSplit: React.FunctionComponent<ChartsPerSplit> = props => {
   const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const hasMultipleSeries = essence.series.count() > 1;

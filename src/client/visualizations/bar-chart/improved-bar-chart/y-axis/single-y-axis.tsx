@@ -28,7 +28,7 @@ interface SingleYAxisProps {
   stage: Stage;
 }
 
-export const SingleYAxis: React.SFC<SingleYAxisProps> = props => {
+export const SingleYAxis: React.FunctionComponent<SingleYAxisProps> = props => {
   const { scale, series, stage } = props;
   return <div>
     <svg viewBox={stage.getViewBox()}>

@@ -24,7 +24,7 @@ interface ErrorViewActionProps {
   label: string;
 }
 
-export const MessagePanelAction: React.SFC<ErrorViewActionProps> = ({ action, label }) =>
+export const MessagePanelAction: React.FunctionComponent<ErrorViewActionProps> = ({ action, label }) =>
     <Button type="primary" onClick={action} title={label} />;
 
 interface ErrorViewProps {
@@ -32,7 +32,7 @@ interface ErrorViewProps {
   title: string;
 }
 
-export const MessagePanel: React.SFC<ErrorViewProps> = ({ message, title, children }) => {
+export const MessagePanel: React.FunctionComponent<ErrorViewProps> = ({ message, title, children }) => {
   return <div className="message-panel">
     <div className="message-panel__container">
       <div className="message-panel__title">{title}</div>

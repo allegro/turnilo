@@ -22,7 +22,7 @@ import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "..
 import { Total } from "./total";
 import "./totals.scss";
 
-const BigNumbers: React.SFC<ChartProps> = ({ essence, data }) => {
+const BigNumbers: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
   const series = essence.getConcreteSeries().toArray();
   const datum = data.data[0];
   return <div className="total-container">

@@ -43,7 +43,7 @@ function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
 
-const TabSelector: React.SFC<TabSelectorProps> = props => {
+const TabSelector: React.FunctionComponent<TabSelectorProps> = props => {
   const { selectedTab, onTabSelect } = props;
   const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map(tab => {
     return {

@@ -20,6 +20,6 @@ import { SeriesChartLine, SeriesChartLineProps } from "./series-chart-line";
 
 type SingletonSeriesChartLineProps = Omit<SeriesChartLineProps, "color" | "showArea">;
 
-export const SingletonSeriesChartLine: React.SFC<SingletonSeriesChartLineProps> = props => {
+export const SingletonSeriesChartLine: React.FunctionComponent<SingletonSeriesChartLineProps> = props => {
   return <SeriesChartLine {...props} showArea={true} />;
 };

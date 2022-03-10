@@ -31,7 +31,7 @@ interface SingleTimeShiftBar {
   model: BaseBarChartModel;
 }
 
-export const SingleTimeShiftBar: React.SFC<SingleTimeShiftBar> = props => {
+export const SingleTimeShiftBar: React.FunctionComponent<SingleTimeShiftBar> = props => {
   const { datum, xScale, yScale, model: { continuousSplit }, series } = props;
   const [maxHeight] = yScale.range();
   const x = continuousSplit.selectValue<DomainValue>(datum);

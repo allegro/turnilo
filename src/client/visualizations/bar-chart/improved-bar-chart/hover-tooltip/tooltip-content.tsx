@@ -44,7 +44,7 @@ function colorEntries(datum: Datum, series: ConcreteSeries, model: StackedBarCha
   });
 }
 
-export const Content: React.SFC<ContentProps> = props => {
+export const Content: React.FunctionComponent<ContentProps> = props => {
   const { model, series, datum } = props;
   if (isStacked(model)) {
     const entries = colorEntries(datum, series, model);

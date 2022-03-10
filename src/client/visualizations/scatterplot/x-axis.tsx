@@ -32,7 +32,7 @@ interface XAxisProps {
   formatter: Unary<number, string>;
 }
 
-export const XAxis: React.SFC<XAxisProps> = ({ stage, ticks, scale, formatter, tickSize }) => {
+export const XAxis: React.FunctionComponent<XAxisProps> = ({ stage, ticks, scale, formatter, tickSize }) => {
   const labelY = tickSize + TEXT_OFFSET_X;
   const linePositionY = roundToHalfPx(0);
   const lines = ticks.map((tick: number) => {

@@ -28,7 +28,7 @@ interface AddSplitProps {
   essence: Essence;
 }
 
-export const AddSplit: React.SFC<AddSplitProps> = props => {
+export const AddSplit: React.FunctionComponent<AddSplitProps> = props => {
   const { appendSplit, menuStage, essence: { dataCube, splits } } = props;
   const tiles = allDimensions(dataCube.dimensions)
     .filter(d => splits.findSplitForDimension(d) === undefined)

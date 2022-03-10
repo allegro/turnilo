@@ -47,7 +47,7 @@ export interface MeasureActionsProps {
   onClose: Fn;
 }
 
-export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = props => {
+export const MeasureActionsMenu: React.FunctionComponent<MeasureActionsMenuProps & MeasureActionsProps> = props => {
   const { direction, containerStage, openOn, measure, onClose } = props;
   if (!measure) return null;
 

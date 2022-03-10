@@ -31,7 +31,7 @@ interface MeasureValueProps {
   highlight: boolean;
 }
 
-export const MeasureValue: React.SFC<MeasureValueProps> = props => {
+export const MeasureValue: React.FunctionComponent<MeasureValueProps> = props => {
   const { series, datum, barScale, highlight, showPrevious, cellWidth } = props;
 
   const currentValue = series.selectValue(datum);

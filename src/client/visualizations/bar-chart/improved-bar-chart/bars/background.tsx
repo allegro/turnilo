@@ -26,7 +26,7 @@ interface BackgroundProps {
   yScale: LinearScale;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.FunctionComponent<BackgroundProps> = props => {
   const { gridStage, yScale } = props;
   const ticks = pickTicks(yScale);
   return <React.Fragment>

@@ -43,7 +43,7 @@ export interface FilterMenuProps {
   onClose: Fn;
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
+export const FilterMenu: React.FunctionComponent<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
   if (!dimension) return null;
   switch (dimension.kind) {
     case "time":

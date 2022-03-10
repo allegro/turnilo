@@ -36,7 +36,7 @@ export interface MeasureItemProps {
   searchText: string;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureDragStart, measureClick, description, searchText, approximate, selected }) => {
+export const MeasureItem: React.FunctionComponent<MeasureItemProps> = ({ title, name, measureDragStart, measureClick, description, searchText, approximate, selected }) => {
 
   const infoBubbleClassName = "measure-info-icon";
   const handleClick = (e: MouseEvent<HTMLElement>) => {

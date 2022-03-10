@@ -48,7 +48,7 @@ interface SplitTilesRowState {
   overflowOpen?: boolean;
 }
 
-export const DefaultSplitTilesRow: React.SFC<SplitTilesRowBaseProps> = props =>
+export const DefaultSplitTilesRow: React.FunctionComponent<SplitTilesRowBaseProps> = props =>
   <SplitTilesRow {...props} splitTileComponent={DefaultSplitTile} />;
 
 export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTilesRowState> {

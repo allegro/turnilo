@@ -35,7 +35,7 @@ interface MeasureRowsProps {
   showBarPredicate: Predicate<Datum>;
 }
 
-export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
+export const MeasureRows: React.FunctionComponent<MeasureRowsProps> = props => {
   const { rowWidth, showBarPredicate, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex } = props;
 
   return <VisibleRows

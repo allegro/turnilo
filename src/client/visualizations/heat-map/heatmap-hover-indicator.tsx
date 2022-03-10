@@ -24,7 +24,7 @@ interface HeatmapHoverIndicator {
   hoverPosition: HoverPosition;
 }
 
-export const HeatmapHoverIndicator: React.SFC<HeatmapHoverIndicator> = ({ tileGap, tileSize, hoverPosition }) => {
+export const HeatmapHoverIndicator: React.FunctionComponent<HeatmapHoverIndicator> = ({ tileGap, tileSize, hoverPosition }) => {
   const { column, row } = hoverPosition;
   const top = row * tileSize;
   const left = column * tileSize + tileGap;

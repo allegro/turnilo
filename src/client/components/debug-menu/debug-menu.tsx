@@ -30,7 +30,7 @@ export interface DebugMenuProps {
   dataCube: ClientDataCube;
 }
 
-export const DebugMenu: React.SFC<DebugMenuProps> = ({ dataCube, openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {
+export const DebugMenu: React.FunctionComponent<DebugMenuProps> = ({ dataCube, openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {
 
   const isNativeCluster = dataCube.clusterName === "native";
 

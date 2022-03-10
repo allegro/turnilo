@@ -27,7 +27,7 @@ interface MeasureSeriesMenuProps {
   onChange: Binary<MeasureSeries, boolean, void>;
 }
 
-export const MeasureSeriesMenu: React.SFC<MeasureSeriesMenuProps> = ({ measure, series, onChange }) => {
+export const MeasureSeriesMenu: React.FunctionComponent<MeasureSeriesMenuProps> = ({ measure, series, onChange }) => {
 
   function onFormatChange(format: SeriesFormat) {
     onChange(series.set("format", format), true);

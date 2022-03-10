@@ -28,7 +28,7 @@ interface FlattenedSplitColumnsProps {
   timezone: Timezone;
 }
 
-export const FlattenedSplitColumns: React.SFC<FlattenedSplitColumnsProps> = ({ splits, datum, timezone }) =>
+export const FlattenedSplitColumns: React.FunctionComponent<FlattenedSplitColumnsProps> = ({ splits, datum, timezone }) =>
   <React.Fragment>
     {splits.map(split => {
       const { reference } = split;

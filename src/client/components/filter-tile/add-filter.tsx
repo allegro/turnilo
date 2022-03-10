@@ -28,7 +28,7 @@ interface AddFilterProps {
   essence: Essence;
 }
 
-export const AddFilter: React.SFC<AddFilterProps> = props => {
+export const AddFilter: React.FunctionComponent<AddFilterProps> = props => {
   const { appendFilter, menuStage, essence: { filter, dataCube } } = props;
   const tiles = allDimensions(dataCube.dimensions)
     .filter(dimension => !filter.getClauseForDimension(dimension))

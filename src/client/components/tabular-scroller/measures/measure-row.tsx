@@ -34,7 +34,7 @@ interface MeasureRowProps {
   showBar: boolean;
 }
 
-export const MeasureRow: React.SFC<MeasureRowProps> = props => {
+export const MeasureRow: React.FunctionComponent<MeasureRowProps> = props => {
   const { datum, showBar, scales, cellWidth, highlight, dimmed, style, essence } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();

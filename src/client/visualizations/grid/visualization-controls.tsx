@@ -22,6 +22,6 @@ function GridSplitTilesRow(props: SplitTilesRowBaseProps) {
   return <SplitTilesRow {...props} splitTileComponent={GridSplitTile} />;
 }
 
-export const GridVisualizationControls: React.SFC<VisualizationControlsBaseProps> = props => {
+export const GridVisualizationControls: React.FunctionComponent<VisualizationControlsBaseProps> = props => {
   return <VisualizationControls{...props} splitTilesRow={GridSplitTilesRow} />;
 };

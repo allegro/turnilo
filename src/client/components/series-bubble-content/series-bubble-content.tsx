@@ -25,7 +25,7 @@ interface SeriesBubbleContentProps {
   showPrevious: boolean;
 }
 
-export const SeriesBubbleContent: React.SFC<SeriesBubbleContentProps> = props => {
+export const SeriesBubbleContent: React.FunctionComponent<SeriesBubbleContentProps> = props => {
   const { series, datum, showPrevious } = props;
   if (!showPrevious) {
     return <React.Fragment>

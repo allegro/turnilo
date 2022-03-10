@@ -33,7 +33,7 @@ function noResultsMessage(searchText?: string): string {
   return searchText ? `No results for "${searchText}"` : "No results";
 }
 
-export const PinboardDataset: React.SFC<PinboardDatasetProps> = props => {
+export const PinboardDataset: React.FunctionComponent<PinboardDatasetProps> = props => {
   const { data, searchText } = props;
   const noResults = data.length === 0;
   return <div className="rows">

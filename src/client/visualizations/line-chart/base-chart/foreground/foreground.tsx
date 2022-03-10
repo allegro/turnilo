@@ -37,7 +37,7 @@ interface ForegroundProps {
   timezone: Timezone;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
+export const Foreground: React.FunctionComponent<ForegroundProps> = props => {
   const { stage, interaction, container, xScale, timezone, visualisationStage, hoverContent, dropHighlight, acceptHighlight } = props;
 
   return <React.Fragment>

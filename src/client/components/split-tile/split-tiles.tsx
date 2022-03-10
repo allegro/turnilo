@@ -42,7 +42,7 @@ interface SplitTilesProps {
   splitTileComponent: React.ComponentType<SplitTileBaseProps>;
 }
 
-export const SplitTiles: React.SFC<SplitTilesProps> = props => {
+export const SplitTiles: React.FunctionComponent<SplitTilesProps> = props => {
   const {
     splitTileComponent: SplitTile,
     overflowOpen,

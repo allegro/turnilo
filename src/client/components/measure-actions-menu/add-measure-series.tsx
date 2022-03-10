@@ -32,7 +32,7 @@ interface AddMeasureSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddMeasureSeriesButton: React.SFC<AddMeasureSeriesButtonProps> = props => {
+export const AddMeasureSeriesButton: React.FunctionComponent<AddMeasureSeriesButtonProps> = props => {
   const { series, measure, onClose, addSeries } = props;
   const measureDisabled = series.hasMeasure(measure);
 

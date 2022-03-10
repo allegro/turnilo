@@ -32,7 +32,7 @@ interface HoverTooltipProps {
   stage: Stage;
 }
 
-export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
+export const HoverTooltip: React.FunctionComponent<HoverTooltipProps> = props => {
   const { content, interaction, xScale, timezone, stage } = props;
   const { range } = interaction;
   const x = xScale(range.midpoint());

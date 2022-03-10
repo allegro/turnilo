@@ -65,7 +65,7 @@ function presets(dimension: TimeDimension): Array<Preset<string>> {
   ];
 }
 
-export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {
+export const TimeShiftSelector: React.FunctionComponent<TimeShiftSelectorProps> = props => {
   const { onShiftChange, dimension, shift: selectedTimeShift } = props;
   const timeShiftPreview = timeShiftPreviewForRange(props);
 

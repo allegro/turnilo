@@ -25,7 +25,7 @@ interface BubbleTitleProps {
   title: string;
 }
 
-export const BubbleTitle: React.SFC<BubbleTitleProps> = ({ title }) => {
+export const BubbleTitle: React.FunctionComponent<BubbleTitleProps> = ({ title }) => {
   const minWidth = clamp(title.length * PER_LETTER_PIXELS, MIN_TITLE_WIDTH, MAX_TITLE_WIDTH);
   return <div className="title" style={{ minWidth }}>{title}</div>;
 };

@@ -31,7 +31,7 @@ interface GridProps extends ChartProps {
   segmentWidth: number;
 }
 
-const Grid: React.SFC<GridProps> = props => {
+const Grid: React.FunctionComponent<GridProps> = props => {
   const { essence, segmentWidth, setSegmentWidth, stage, clicker, data } = props;
   const availableWidth = stage.width - MIN_DIMENSION_WIDTH;
 

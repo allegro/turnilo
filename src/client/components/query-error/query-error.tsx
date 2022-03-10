@@ -24,7 +24,7 @@ export interface QueryErrorProps {
   error: Error;
 }
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
+export const QueryError: React.FunctionComponent<QueryErrorProps> = ({ error }) => {
   if (isOauthError(error)) {
     throw error;
   }

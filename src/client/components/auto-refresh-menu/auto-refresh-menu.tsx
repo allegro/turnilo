@@ -84,7 +84,7 @@ function updatedText(dataCube: ClientDataCube, timekeeper: Timekeeper, timezone:
   }
 }
 
-export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
+export const AutoRefreshMenu: React.FunctionComponent<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
   <BubbleMenu
     className="auto-refresh-menu"
     direction="down"

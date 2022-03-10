@@ -38,7 +38,7 @@ interface ForegroundProps {
   stage: Stage;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
+export const Foreground: React.FunctionComponent<ForegroundProps> = props => {
   const { stage, dropHighlight, acceptHighlight, container, model, series, xScale, yScale, interaction } = props;
   const rect = container.current.getBoundingClientRect();
   return <React.Fragment>

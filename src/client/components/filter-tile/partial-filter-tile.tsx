@@ -41,7 +41,7 @@ interface PartialFilterTileProps {
   closeItem: Fn;
 }
 
-export const PartialFilterTile: React.SFC<PartialFilterTileProps> = props => {
+export const PartialFilterTile: React.FunctionComponent<PartialFilterTileProps> = props => {
   const { closeItem, saveClause, essence, timekeeper, locale, clicker, stage, dimension, style } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div

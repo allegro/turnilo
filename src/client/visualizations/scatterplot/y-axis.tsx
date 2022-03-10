@@ -32,7 +32,7 @@ interface YAxisProps {
   formatter: Unary<number, string>;
 }
 
-export const YAxis: React.SFC<YAxisProps> = ({ formatter, stage, tickSize, ticks, scale }) => {
+export const YAxis: React.FunctionComponent<YAxisProps> = ({ formatter, stage, tickSize, ticks, scale }) => {
   const linePositionX = roundToHalfPx(stage.width);
 
   const lines = ticks.map((tick: number) => {

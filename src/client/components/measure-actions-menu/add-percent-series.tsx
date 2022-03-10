@@ -39,7 +39,7 @@ interface AddPercentSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = props => {
+export const AddPercentSeriesButton: React.FunctionComponent<AddPercentSeriesButtonProps> = props => {
   const { series, measure, addSeries, onClose } = props;
 
   const percentSeries: Set<PercentOperation> = series

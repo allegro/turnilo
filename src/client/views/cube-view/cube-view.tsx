@@ -61,7 +61,7 @@ import "./cube-view.scss";
 import { DownloadableDatasetProvider } from "./downloadable-dataset-context";
 import { PartialTilesProvider } from "./partial-tiles-provider";
 
-const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
+const ToggleArrow: React.FunctionComponent<{ right: boolean }> = ({ right }) =>
   right
     ? <SvgIcon svg={require("../../icons/full-caret-small-right.svg")}/>
     : <SvgIcon svg={require("../../icons/full-caret-small-left.svg")}/>;

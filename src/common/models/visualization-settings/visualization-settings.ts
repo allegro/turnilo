@@ -23,7 +23,7 @@ interface VisualizationSettingsComponentProps<T> {
   settings: ImmutableRecord<T>;
 }
 
-export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsComponentProps<T>>;
+export type VisualizationSettingsComponent<T> = React.FunctionComponent<VisualizationSettingsComponentProps<T>>;
 
 interface VisualizationSettingsConverter<T> {
   print: Unary<T, object>;

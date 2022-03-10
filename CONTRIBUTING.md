@@ -45,7 +45,7 @@ Create a new file [src/client/visualizations/](https://github.com/allegro/turnil
 Here you want to add the basis for your component with the visualization panel at the top:
 
 ```
-const <visualizationName>: React.SFC<ChartProps> = () => {
+const <visualizationName>: React.FunctionComponent<ChartProps> = () => {
     return <div>
         <h2>New visualization will be here!</h2>
     </div>;

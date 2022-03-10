@@ -31,7 +31,7 @@ interface HeatmapHoverTooltip {
   scroll: { left: number, top: number };
 }
 
-export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
+export const HeatmapHoverTooltip: React.FunctionComponent<HeatmapHoverTooltip> = props => {
   const { dataset, essence, scroll, position: { column, row, top, left } } = props;
   const [, datum] = datumByPosition(dataset, { row, column });
   if (!datum) return null;

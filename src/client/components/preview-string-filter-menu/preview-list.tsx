@@ -56,7 +56,7 @@ function filterValues<T>(list: T[], filterMode: PreviewFilterMode, searchText: s
   return list.filter(predicate(filterMode, searchText));
 }
 
-export const PreviewList: React.SFC<PreviewListProps> = props => {
+export const PreviewList: React.FunctionComponent<PreviewListProps> = props => {
   const { regexErrorMessage, searchText, dataset, filterMode, dimension, limit } = props;
 
   if (regexErrorMessage) return errorNotice(regexErrorMessage);

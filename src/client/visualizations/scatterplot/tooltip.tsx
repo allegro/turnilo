@@ -43,7 +43,7 @@ interface TooltipProps {
 const TOOLTIP_OFFSET_Y = 50;
 const TOOLTIP_OFFSET_X = 100;
 
-export const Tooltip: React.SFC<TooltipProps> = ({
+export const Tooltip: React.FunctionComponent<TooltipProps> = ({
   datum,
   stage,
   xSeries,

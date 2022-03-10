@@ -27,7 +27,7 @@ interface HoverGuideProps {
   xScale: ContinuousScale;
 }
 
-export const HoverGuide: React.SFC<HoverGuideProps> = props => {
+export const HoverGuide: React.FunctionComponent<HoverGuideProps> = props => {
   const { stage, hover: { range }, yScale, xScale } = props;
   const midpoint = range.midpoint();
   const x = xScale(midpoint);

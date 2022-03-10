@@ -37,7 +37,7 @@ interface BarChartsProps {
   xScale: XScale;
 }
 
-export const BarCharts: React.SFC<BarChartsProps> = props => {
+export const BarCharts: React.FunctionComponent<BarChartsProps> = props => {
   const { dropHighlight, acceptHighlight, interaction, model, datums, xScale, scrollLeft, stage, totals } = props;
   const seriesList = model.series.toArray();
   return <React.Fragment>

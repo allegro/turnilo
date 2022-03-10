@@ -28,7 +28,7 @@ interface SplitLabelsProps {
   datum: Datum;
 }
 
-export const SplitLabels: React.SFC<SplitLabelsProps> = props => {
+export const SplitLabels: React.FunctionComponent<SplitLabelsProps> = props => {
   const { splits, datum, timezone } = props;
   if (isTotalDatum(datum)) {
     return <div key="totals" className="flattened-split-value">Total</div>;

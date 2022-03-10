@@ -29,7 +29,7 @@ interface SourceState {
 
 interface Teleporter {
   Source: typeof React.Component;
-  Target: React.SFC<{}>;
+  Target: React.FunctionComponent<{}>;
 }
 
 export function createTeleporter(): Teleporter {
@@ -42,7 +42,7 @@ export function createTeleporter(): Teleporter {
     }
   }
 
-  const Target: React.SFC<{}> = () => <div ref={saveTarget} />;
+  const Target: React.FunctionComponent<{}> = () => <div ref={saveTarget} />;
 
   class Source extends React.Component<{}, SourceState> {
 

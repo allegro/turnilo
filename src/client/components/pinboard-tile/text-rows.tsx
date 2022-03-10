@@ -28,7 +28,7 @@ interface TextRowsProps {
   onClick?: Unary<unknown, void>;
 }
 
-export const TextRows: React.SFC<TextRowsProps> = props => {
+export const TextRows: React.FunctionComponent<TextRowsProps> = props => {
   const { data, dimension, onClick, formatter, searchText } = props;
   return <React.Fragment>
     {data.map(datum => {

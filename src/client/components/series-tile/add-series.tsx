@@ -28,7 +28,7 @@ interface AddSeriesProps {
   essence: Essence;
 }
 
-export const AddSeries: React.SFC<AddSeriesProps> = props => {
+export const AddSeries: React.FunctionComponent<AddSeriesProps> = props => {
   const { appendMeasureSeries, menuStage, essence: { dataCube, series } } = props;
   const tiles = allMeasures(dataCube.measures)
     .filter(measure => !series.hasMeasure(measure))

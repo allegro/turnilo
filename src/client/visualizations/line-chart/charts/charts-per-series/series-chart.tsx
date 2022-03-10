@@ -45,7 +45,7 @@ interface SeriesChartProps {
   visualisationStage: Stage;
 }
 
-export const SeriesChart: React.SFC<SeriesChartProps> = props => {
+export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
   const { chartId, interactions, visualisationStage, chartStage, essence, series, xScale, xTicks, dataset } = props;
   const hasComparison = essence.hasComparison();
   const continuousSplitDataset = selectFirstSplitDataset(dataset);

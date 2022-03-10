@@ -38,7 +38,7 @@ interface PlaceholderSeriesTileProps {
   closeItem: Fn;
 }
 
-export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = props => {
+export const PlaceholderSeriesTile: React.FunctionComponent<PlaceholderSeriesTileProps> = props => {
   const { series, measures, seriesList, containerStage, saveSeries, closeItem, style, measure } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div

@@ -58,7 +58,7 @@ interface ScrolledTableProps {
   availableWidth: number;
 }
 
-export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
+export const ScrolledTable: React.FunctionComponent<ScrolledTableProps> = props => {
   const {
     essence,
     stage,
