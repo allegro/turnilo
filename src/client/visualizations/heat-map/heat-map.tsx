@@ -36,7 +36,7 @@ import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
 
-export function HeatMapVisualization(props: VisualizationProps) {
+export default function HeatMapVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={HeatMap}/>

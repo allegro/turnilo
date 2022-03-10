@@ -31,7 +31,7 @@ import { XAxis } from "./x-axis/x-axis";
 const Y_AXIS_WIDTH = 60;
 const X_AXIS_HEIGHT = 30;
 
-export function LineChartVisualization(props: VisualizationProps) {
+export default function LineChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={LineChart}/>

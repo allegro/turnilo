@@ -67,7 +67,7 @@ interface GridVisualizationState {
   segmentWidth: number;
 }
 
-export class GridVisualization extends React.Component<VisualizationProps, GridVisualizationState> {
+export default class GridVisualization extends React.Component<VisualizationProps, GridVisualizationState> {
   state: GridVisualizationState = {
     segmentWidth: SEGMENT_WIDTH
   };

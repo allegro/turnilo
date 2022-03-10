@@ -37,7 +37,7 @@ interface TableVisualizationState {
   segmentWidth: number;
 }
 
-export class TableVisualization extends React.Component<VisualizationProps, TableVisualizationState> {
+export default class TableVisualization extends React.Component<VisualizationProps, TableVisualizationState> {
   state: TableVisualizationState = {
     segmentWidth: SEGMENT_WIDTH
   };

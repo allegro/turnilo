@@ -53,7 +53,16 @@ const prodConfig = {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
   ],
-  stats: 'minimal'
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        default: {
+          // Minimum number of chunks that must share a module before splitting.
+          minChunks: 7,
+        },
+      },
+    },
+  },
 };
 
 const es5Config = {
