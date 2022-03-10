@@ -41,7 +41,7 @@ function saveFile(part: string | Buffer, fileName: string, fileFormat: FileForma
 
 function encodeContent(content: string, encoding: string): Promise<string | Buffer> {
   if (encoding === "utf-8") return Promise.resolve(content);
-  return import("iconv-lite").then(iconv => iconv.encode(content, encoding));
+  return import(/* webpackChunkName: "iconv-lite" */ "iconv-lite").then(iconv => iconv.encode(content, encoding));
 }
 
 export function download(dataset: Dataset, essence: Essence, fileFormat: FileFormat, fileName: string, fileEncoding: string) {
