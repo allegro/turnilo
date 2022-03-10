@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Datum } from "plywood";
-import React from "react";
+import React, { useState } from "react";
 
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import makeQuery from "../../../common/utils/query/visualization-query";
@@ -43,97 +43,88 @@ import { YAxis } from "./y-axis";
 
 const TICK_SIZE = 10;
 
-interface ScatterplotState {
-  hoveredPoint: Datum | null;
-}
+type HoveredPoint = Datum | null;
 
-export class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
-  state: ScatterplotState = {
-    hoveredPoint: null
-  };
+export const Scatterplot: React.FunctionComponent<ChartProps> = ({ data, essence, stage }) => {
+  const [hoveredPoint, setHoveredPoint] = useState<HoveredPoint>(null);
 
-  getPlottingData = memoizeOne(preparePlottingData);
+  const getPlottingData = memoizeOne(preparePlottingData);
 
-  setPointHover = (datum: Datum): void =>
-    this.setState({ hoveredPoint: datum });
+  const setPointHover = (datum: Datum): void => setHoveredPoint(datum);
 
-  resetPointHover = (): void =>
-    this.setState({ hoveredPoint: null });
+  const resetPointHover = (): void => setHoveredPoint(null);
 
-  render() {
-    const { data, essence, stage } = this.props;
-    const mainSplit = essence.splits.splits.first();
-    const showHeatmap = (essence.visualizationSettings as ScatterplotSettings).showSummary;
+  const mainSplit = essence.splits.splits.first();
+  const showHeatmap = (essence.visualizationSettings as ScatterplotSettings).showSummary;
 
-    const {
-      xTicks,
-      yTicks,
-      xScale,
-      yScale,
-      xSeries,
-      ySeries,
-      plottingStage,
-      scatterplotData
-    } = this.getPlottingData(data, essence, stage);
+  const {
+    xTicks,
+    yTicks,
+    xScale,
+    yScale,
+    xSeries,
+    ySeries,
+    plottingStage,
+    scatterplotData
+  } = getPlottingData(data, essence, stage);
 
-    const xAxisLabelPosition = getXAxisLabelPosition(stage, plottingStage);
+  const xAxisLabelPosition = getXAxisLabelPosition(stage, plottingStage);
 
-    return <div className="scatterplot-container" style={stage.getWidthHeight()}>
-      <span className="axis-title axis-title-y" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
-      <span className="axis-title axis-title-x" style={{ bottom: xAxisLabelPosition.bottom, right: xAxisLabelPosition.right }}>{xSeries.title()}</span>
-      <Tooltip
-        datum={this.state.hoveredPoint}
+  return <div className="scatterplot-container" style={stage.getWidthHeight()}>
+    <span className="axis-title axis-title-y" style={{ top: 10, left: 10 }}>{ySeries.title()}</span>
+    <span className="axis-title axis-title-x" style={{ bottom: xAxisLabelPosition.bottom, right: xAxisLabelPosition.right }}>{xSeries.title()}</span>
+    <Tooltip
+      datum={hoveredPoint}
+      stage={plottingStage}
+      ySeries={ySeries}
+      xSeries={xSeries}
+      yScale={yScale}
+      xScale={xScale}
+      split={mainSplit}
+      timezone={essence.timezone}
+      showPrevious={essence.hasComparison()}/>
+    <svg viewBox={stage.getViewBox()}>
+      {showHeatmap && <Heatmap
         stage={plottingStage}
-        ySeries={ySeries}
+        data={scatterplotData}
+        xBinCount={xTicks.length - 1}
+        yBinCount={yTicks.length - 1}
+        xScale={xScale}
         xSeries={xSeries}
         yScale={yScale}
-        xScale={xScale}
-        split={mainSplit}
-        timezone={essence.timezone}
-        showPrevious={essence.hasComparison()}/>
-      <svg viewBox={stage.getViewBox()}>
-        {showHeatmap && <Heatmap
-          stage={plottingStage}
-          data={scatterplotData}
-          xBinCount={xTicks.length - 1}
-          yBinCount={yTicks.length - 1}
-          xScale={xScale}
-          xSeries={xSeries}
-          yScale={yScale}
-          ySeries={ySeries}/>}
-        <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale}/>
-        <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale}/>
-        <XAxis
-          scale={xScale}
-          stage={calculateXAxisStage(plottingStage)}
-          ticks={getTicksForAvailableSpace(xTicks, plottingStage.width)}
-          formatter={xSeries.formatter()}
-          tickSize={TICK_SIZE}/>
-        <YAxis
-          stage={calculateYAxisStage(plottingStage)}
-          ticks={getTicksForAvailableSpace(yTicks, plottingStage.height)}
-          tickSize={TICK_SIZE}
-          scale={yScale}
-          formatter={ySeries.formatter()}/>
-        <g transform={plottingStage.getTransform()}>
-          {scatterplotData.map(datum => {
-            return (
-              <Point
-                key={`point-${mainSplit.selectValue(datum)}`}
-                datum={datum}
-                xScale={xScale}
-                yScale={yScale}
-                xSeries={xSeries}
-                ySeries={ySeries}
-                setHover={this.setPointHover}
-                resetHover={this.resetPointHover}/>
-            );
-          })}
-        </g>
-      </svg>
-    </div>;
-  }
-}
+        ySeries={ySeries}/>}
+      <GridLines orientation={"vertical"} stage={plottingStage} ticks={xTicks} scale={xScale}/>
+      <GridLines orientation={"horizontal"} stage={plottingStage} ticks={yTicks} scale={yScale}/>
+      <XAxis
+        scale={xScale}
+        stage={calculateXAxisStage(plottingStage)}
+        ticks={getTicksForAvailableSpace(xTicks, plottingStage.width)}
+        formatter={xSeries.formatter()}
+        tickSize={TICK_SIZE}/>
+      <YAxis
+        stage={calculateYAxisStage(plottingStage)}
+        ticks={getTicksForAvailableSpace(yTicks, plottingStage.height)}
+        tickSize={TICK_SIZE}
+        scale={yScale}
+        formatter={ySeries.formatter()}/>
+      <g transform={plottingStage.getTransform()}>
+        {scatterplotData.map(datum => {
+          return (
+            <Point
+              key={`point-${mainSplit.selectValue(datum)}`}
+              datum={datum}
+              xScale={xScale}
+              yScale={yScale}
+              xSeries={xSeries}
+              ySeries={ySeries}
+              setHover={setPointHover}
+              resetHover={resetPointHover}/>
+          );
+        })}
+      </g>
+    </svg>
+  </div>;
+};
 
 export function ScatterplotVisualization(props: VisualizationProps) {
   return <React.Fragment>

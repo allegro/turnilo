@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { useState } from "react";
 
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
@@ -34,40 +34,32 @@ interface SourceModalProps {
   source: string;
 }
 
-interface SourceModalState {
-  copied: boolean;
-}
+export const SourceModal: React.FunctionComponent<SourceModalProps> = ({ copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header }) => {
+  const [copied, setCopied] = useState(false);
 
-export class SourceModal extends React.Component<SourceModalProps, SourceModalState> {
+  const onCopy = () => setCopied(true);
 
-  state: SourceModalState = { copied: false };
+  const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
 
-  onCopy = () => this.setState({ copied: true });
-
-  render() {
-    const { copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header } = this.props;
-    const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
-
-    return <Modal
-      onClose={onClose}
-      title={title}
-      className={classNames("source-modal", className)}
-    >
-      <div className="content">
-        {header}
-        <React.Suspense fallback={Loader}>
-          <SyntaxHighlighter>
-            {source}
-          </SyntaxHighlighter>
-        </React.Suspense>
-        <div className="button-bar">
-          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
-          <SafeCopyToClipboard text={source} onCopy={this.onCopy}>
-            <Button type="secondary" title={copyLabel} />
-          </SafeCopyToClipboard>
-          {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
-        </div>
+  return <Modal
+    onClose={onClose}
+    title={title}
+    className={classNames("source-modal", className)}
+  >
+    <div className="content">
+      {header}
+      <React.Suspense fallback={Loader}>
+        <SyntaxHighlighter>
+          {source}
+        </SyntaxHighlighter>
+      </React.Suspense>
+      <div className="button-bar">
+        <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
+        <SafeCopyToClipboard text={source} onCopy={onCopy}>
+          <Button type="secondary" title={copyLabel} />
+        </SafeCopyToClipboard>
+        {copied && <div className="copied-hint">{STRINGS.copied}</div>}
       </div>
-    </Modal>;
-  }
-}
+    </div>
+  </Modal>;
+};
