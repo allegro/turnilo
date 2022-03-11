@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import memoizeOne from "memoize-one";
 import { Datum } from "plywood";
-import React, { useState } from "react";
-
+import React, { useCallback, useState } from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import makeQuery from "../../../common/utils/query/visualization-query";
+import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
+import { GridLines } from "../../components/grid-lines/grid-lines";
 import {
   ChartPanel,
   DefaultVisualizationControls,
   VisualizationProps
 } from "../../views/cube-view/center-panel/center-panel";
-
-import "./scatterplot.scss";
-
-import memoizeOne from "memoize-one";
-import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
-import { GridLines } from "../../components/grid-lines/grid-lines";
 import { Heatmap } from "./heatmap";
 import { Point } from "./point";
+import "./scatterplot.scss";
 import { Tooltip } from "./tooltip";
 import {
   calculateXAxisStage,
@@ -50,9 +47,9 @@ export const Scatterplot: React.FunctionComponent<ChartProps> = ({ data, essence
 
   const getPlottingData = memoizeOne(preparePlottingData);
 
-  const setPointHover = (datum: Datum): void => setHoveredPoint(datum);
+  const setPointHover = useCallback((datum: Datum): void => setHoveredPoint(datum), [setHoveredPoint]);
 
-  const resetPointHover = (): void => setHoveredPoint(null);
+  const resetPointHover = useCallback((): void => setHoveredPoint(null), [setHoveredPoint]);
 
   const mainSplit = essence.splits.splits.first();
   const showHeatmap = (essence.visualizationSettings as ScatterplotSettings).showSummary;

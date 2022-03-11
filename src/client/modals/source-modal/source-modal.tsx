@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
-
+import React, { useCallback, useState } from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Loader } from "../../components/loader/loader";
@@ -37,7 +36,7 @@ interface SourceModalProps {
 export const SourceModal: React.FunctionComponent<SourceModalProps> = ({ copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header }) => {
   const [copied, setCopied] = useState(false);
 
-  const onCopy = () => setCopied(true);
+  const onCopy = useCallback(() => setCopied(true), [setCopied]);
 
   const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
 
