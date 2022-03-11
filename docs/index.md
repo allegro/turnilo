@@ -32,4 +32,8 @@ How to customize Turnilo, plugins, query and request decorators.
 
 ## [OAuth integration](oauth.md)
 
-How to integrate Turnilo with OAuth provider
+How to integrate Turnilo with OAuth provider.
+
+## [Web performance](webperf.md)
+
+How to take care of a web performance.
