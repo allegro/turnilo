@@ -31,7 +31,7 @@ interface StringValueProps {
 
 const hasModKey = (e: React.MouseEvent<unknown>) => e.altKey || e.ctrlKey || e.metaKey;
 
-export const StringValue: React.SFC<StringValueProps> = props => {
+export const StringValue: React.FunctionComponent<StringValueProps> = props => {
   const { value, selected, checkboxStyle, highlight, onRowSelect } = props;
   const label = String(value);
 

@@ -43,7 +43,7 @@ function renderPrevious(datum: Datum, series: ConcreteSeries): JSX.Element {
   </React.Fragment>;
 }
 
-export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ series, datum, showPrevious }) => {
+export const VisMeasureLabel: React.FunctionComponent<VisMeasureLabelProps> = ({ series, datum, showPrevious }) => {
   return <div className="vis-measure-label">
     <span className="measure-title">{series.title()}</span>
     <span className="colon">: </span>

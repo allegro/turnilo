@@ -27,7 +27,7 @@ interface TextRowProps {
   searchText: string;
 }
 
-export const TextRow: React.SFC<TextRowProps> = props => {
+export const TextRow: React.FunctionComponent<TextRowProps> = props => {
   const { measure, value, searchText, onClick } = props;
   const strValue = String(value);
   const clickable = !!onClick;

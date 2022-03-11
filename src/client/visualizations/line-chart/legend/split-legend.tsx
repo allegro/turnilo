@@ -26,7 +26,7 @@ interface SplitLegendProps {
   essence: Essence;
 }
 
-export const SplitLegend: React.SFC<SplitLegendProps> = props => {
+export const SplitLegend: React.FunctionComponent<SplitLegendProps> = props => {
   const { essence, dataset } = props;
   const legendSplit = essence.splits.splits.first();
 

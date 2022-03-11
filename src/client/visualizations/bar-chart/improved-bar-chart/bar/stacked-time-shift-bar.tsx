@@ -34,7 +34,7 @@ interface StackedTimeShiftBarProps {
   series: ConcreteSeries;
 }
 
-export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props => {
+export const StackedTimeShiftBar: React.FunctionComponent<StackedTimeShiftBarProps> = props => {
   const { datum, xScale, yScale, series, model: { nominalSplit, continuousSplit, colors } } = props;
   const datums = selectSplitDatums(datum);
 

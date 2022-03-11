@@ -29,7 +29,7 @@ interface YAxisProps {
   model: BarChartModel;
 }
 
-export const YAxis: React.SFC<YAxisProps> = props => {
+export const YAxis: React.FunctionComponent<YAxisProps> = props => {
   const { model, stage, datums } = props;
   const axisStage = calculateYAxisStage(stage);
   const seriesList = model.series.toArray();

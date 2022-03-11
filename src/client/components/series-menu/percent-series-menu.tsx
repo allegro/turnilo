@@ -50,7 +50,7 @@ function operationToExpression(operation: PercentOperation): PercentExpression {
 
 const renderOperation = (op: Operation): string => op.label;
 
-export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
+export const PercentSeriesMenu: React.FunctionComponent<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
 
   const selectedOperations = seriesList
     .getExpressionSeriesFor(measure.name)

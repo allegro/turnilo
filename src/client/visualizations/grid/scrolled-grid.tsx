@@ -47,7 +47,7 @@ interface ScrolledGridProps {
   scrollTop: number;
 }
 
-export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
+export const ScrolledGrid: React.FunctionComponent<ScrolledGridProps> = props => {
   const {
     essence,
     data,

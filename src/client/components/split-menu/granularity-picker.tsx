@@ -28,7 +28,7 @@ export interface GranularityPickerProps {
   granularityChange: Unary<string, void>;
 }
 
-export const GranularityPicker: React.SFC<GranularityPickerProps> = ({ dimension, granularity, granularityChange }) => {
+export const GranularityPicker: React.FunctionComponent<GranularityPickerProps> = ({ dimension, granularity, granularityChange }) => {
   if (!isContinuous(dimension)) return null;
 
   const granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy);

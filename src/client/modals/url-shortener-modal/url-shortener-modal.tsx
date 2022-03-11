@@ -30,7 +30,7 @@ interface UrlProp {
   url: string;
 }
 
-export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
+export const UrlShortenerModal: React.FunctionComponent<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
   return <Modal
     className="short-url-modal"
     title={title}

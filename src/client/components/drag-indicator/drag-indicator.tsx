@@ -27,7 +27,7 @@ interface DragIndicatorProps {
   dragPosition?: DragPosition;
 }
 
-export const DragIndicator: React.SFC<DragIndicatorProps> = props => {
+export const DragIndicator: React.FunctionComponent<DragIndicatorProps> = props => {
   const { dragPosition, dragOver, drop, dragLeave } = props;
   if (!dragPosition) return null;
   return <React.Fragment>

@@ -40,7 +40,7 @@ function calculateTicks(domain: XDomain, { continuousSplit }: BarChartModel): Do
   return domain;
 }
 
-export const XAxis: React.SFC<XAxisProps> = props => {
+export const XAxis: React.FunctionComponent<XAxisProps> = props => {
   const { model, stage, scale } = props;
   const ticks = calculateTicks(scale.domain(), model);
   return <svg width={stage.width} height={stage.height}>

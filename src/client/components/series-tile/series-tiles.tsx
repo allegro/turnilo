@@ -50,7 +50,7 @@ interface SeriesTilesProps {
   openOverflowMenu: Fn;
 }
 
-export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
+export const SeriesTiles: React.FunctionComponent<SeriesTilesProps> = props => {
   const {
     openedSeriesMenu,
     menuStage,

@@ -34,7 +34,7 @@ interface FlattenedSplitsProps {
   splitLabel: React.ComponentType<SplitLabelProps>;
 }
 
-export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
+export const FlattenedSplits: React.FunctionComponent<FlattenedSplitsProps> = props => {
   const { splitLabel: SplitLabel, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="flattened-splits-rows">

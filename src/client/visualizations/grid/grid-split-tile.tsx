@@ -23,7 +23,7 @@ import { classNames } from "../../utils/dom/dom";
 import { GridSplitMenu } from "./grid-split-menu";
 import { mainSplit } from "./utils/main-split";
 
-export const GridSplitTile: React.SFC<SplitTileBaseProps> = props => {
+export const GridSplitTile: React.FunctionComponent<SplitTileBaseProps> = props => {
   const { essence, open: isOpened, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
 
   const enabled = split.equals(mainSplit(essence)) || isContinuous(dimension);

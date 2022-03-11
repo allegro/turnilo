@@ -33,7 +33,7 @@ interface StackedBarProps {
   series: ConcreteSeries;
 }
 
-export const StackedBar: React.SFC<StackedBarProps> = props => {
+export const StackedBar: React.FunctionComponent<StackedBarProps> = props => {
   const { datum, xScale, yScale, series, model: { colors, continuousSplit, nominalSplit } } = props;
   const datums = selectSplitDatums(datum);
 

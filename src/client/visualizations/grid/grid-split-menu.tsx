@@ -29,7 +29,7 @@ import { SplitMenuProps } from "../../components/split-menu/split-menu";
 import { createSplit, SplitMenuBase, validateSplit } from "../../components/split-menu/split-menu-base";
 import { mainSplit } from "./utils/main-split";
 
-export const GridSplitMenu: React.SFC<SplitMenuProps> = props => {
+export const GridSplitMenu: React.FunctionComponent<SplitMenuProps> = props => {
   const { essence, split, dimension } = props;
   const controlSplit = split.equals(mainSplit(essence));
   if (controlSplit) {

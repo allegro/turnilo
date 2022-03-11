@@ -17,6 +17,6 @@
 import React from "react";
 import "./spacer.scss";
 
-export const Spacer: React.SFC<{}> = props => {
+export const Spacer: React.FunctionComponent<{}> = props => {
  return <div className="spacer" />;
 };

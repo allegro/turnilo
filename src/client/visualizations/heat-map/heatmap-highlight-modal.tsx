@@ -32,7 +32,7 @@ export interface HeatmapHighlightModalProps {
   acceptHighlight: Fn;
 }
 
-export const HeatmapHighlightModal: React.SFC<HeatmapHighlightModalProps> = props => {
+export const HeatmapHighlightModal: React.FunctionComponent<HeatmapHighlightModalProps> = props => {
   const { title, children, acceptHighlight, dropHighlight } = props;
   return <HighlightModal
     title={title}

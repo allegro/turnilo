@@ -27,7 +27,7 @@ interface VisSelectorItemProps {
   onClick?: Unary<VisualizationManifest, void>;
 }
 
-export const VisSelectorItem: React.SFC<VisSelectorItemProps> = ({ visualization, selected, onClick }) =>
+export const VisSelectorItem: React.FunctionComponent<VisSelectorItemProps> = ({ visualization, selected, onClick }) =>
   <div
     className={classNames("vis-item", (selected ? "selected" : "not-selected"))}
     key={visualization.name}

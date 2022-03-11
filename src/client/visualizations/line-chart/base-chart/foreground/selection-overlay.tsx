@@ -45,7 +45,7 @@ function getHighlightRange(interaction: Interaction, timezone: Timezone): Contin
   return null;
 }
 
-export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
+export const SelectionOverlay: React.FunctionComponent<SelectionOverlayProps> = props => {
   const { stage, timezone, interaction, xScale } = props;
   const range = getHighlightRange(interaction, timezone);
   if (!range) return null;

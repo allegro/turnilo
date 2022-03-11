@@ -37,7 +37,7 @@ const stripeWidth = 30;
 const stripeHeight = 200;
 const panelWidth = 100;
 
-export const ColorLegend: React.SFC<ColorLegendProps> = ({ title, width = panelWidth, height = stripeHeight, formatter, colorScale }) => {
+export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({ title, width = panelWidth, height = stripeHeight, formatter, colorScale }) => {
   const [min, max] = colorScale.domain();
   if (isNaN(min) || isNaN(max)) return null;
 

@@ -29,7 +29,7 @@ interface DruidQueryModalProps {
   timekeeper: Timekeeper;
 }
 
-export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({ onClose, timekeeper, essence }) => {
+export const DruidQueryModal: React.FunctionComponent<DruidQueryModalProps> = ({ onClose, timekeeper, essence }) => {
   const { visualization, dataCube: { attributes, source, options: { customAggregations, customTransforms } } } = essence;
   const queryFn = visualization.name === "grid" ? gridQuery : standardQuery;
   const query = queryFn(essence, timekeeper);

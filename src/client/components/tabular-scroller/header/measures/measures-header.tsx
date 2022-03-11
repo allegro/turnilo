@@ -31,7 +31,7 @@ function sortDirection(commonSort: Sort, series: ConcreteSeries, period = Series
   return isSortedBy ? commonSort.direction : null;
 }
 
-export const MeasuresHeader: React.SFC<MeasuresHeaderProps> = props => {
+export const MeasuresHeader: React.FunctionComponent<MeasuresHeaderProps> = props => {
   const { cellWidth, series, sort, showPrevious } = props;
 
   return <React.Fragment>

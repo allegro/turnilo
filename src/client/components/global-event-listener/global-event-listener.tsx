@@ -50,7 +50,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     left: "keydown"
   };
 
-  componentWillReceiveProps(nextProps: GlobalEventListenerProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: GlobalEventListenerProps) {
     this.refreshListeners(nextProps, this.props);
   }
 

@@ -25,7 +25,7 @@ interface CombinedSplitsTitle {
   splits: Splits;
 }
 
-export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ dataCube, splits: { splits } }) => {
+export const CombinedSplitsTitle: React.FunctionComponent<CombinedSplitsTitle> = ({ dataCube, splits: { splits } }) => {
   const title = splits.map(split => findDimensionByName(dataCube.dimensions, split.reference).title).join(", ");
   return <Corner>{title}</Corner>;
 };

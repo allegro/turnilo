@@ -31,7 +31,7 @@ interface SplitRowsProps {
   highlightedRowIndex: number | null;
 }
 
-export const SplitRows: React.SFC<SplitRowsProps> = props => {
+export const SplitRows: React.FunctionComponent<SplitRowsProps> = props => {
   const { collapseRows, ...rest } = props;
   const { data, essence: { timezone, splits: { splits } } } = rest;
   if (!data) return null;

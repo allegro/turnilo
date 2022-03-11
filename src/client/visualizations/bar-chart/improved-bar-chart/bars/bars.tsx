@@ -36,7 +36,7 @@ interface BarProps {
   series: ConcreteSeries;
 }
 
-const Bar: React.SFC<BarProps> = props => {
+const Bar: React.FunctionComponent<BarProps> = props => {
   const { model, ...rest } = props;
   const showPrevious = model.hasComparison;
   if (isStacked(model)) {
@@ -57,7 +57,7 @@ interface BarsProps {
   datums: Datum[];
 }
 
-export const Bars: React.SFC<BarsProps> = props => {
+export const Bars: React.FunctionComponent<BarsProps> = props => {
   const { model, stage, xScale, series, datums } = props;
   const extent = yExtent(datums, series, model.hasComparison);
   const yScale = getScale(extent, stage.height);

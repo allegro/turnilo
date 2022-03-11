@@ -35,7 +35,7 @@ interface HighlightModalProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.FunctionComponent<HighlightModalProps> = props => {
   const {
     model: { timezone, continuousSplit },
     rect: { left, top },

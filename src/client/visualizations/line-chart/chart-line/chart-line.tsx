@@ -42,7 +42,7 @@ const stroke = (color: string, dashed: boolean): Pick<React.CSSProperties, "stro
   strokeDasharray: dashed ? "4 2" : undefined
 });
 
-export const ChartLine: React.SFC<ChartLineProps> = props => {
+export const ChartLine: React.FunctionComponent<ChartLineProps> = props => {
   const { color, dashed, getX, getY, dataset, showArea, stage, xScale, yScale } = props;
 
   const area = d3.area().y0(yScale(0));

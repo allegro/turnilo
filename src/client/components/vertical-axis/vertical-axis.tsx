@@ -33,7 +33,7 @@ export interface VerticalAxisProps {
   hideZero?: boolean;
 }
 
-export const VerticalAxis: React.SFC<VerticalAxisProps> = ({ formatter, stage, tickSize, ticks: inputTicks, scale, topLineExtend = 0, hideZero }) => {
+export const VerticalAxis: React.FunctionComponent<VerticalAxisProps> = ({ formatter, stage, tickSize, ticks: inputTicks, scale, topLineExtend = 0, hideZero }) => {
   const ticks = hideZero ? inputTicks.filter((tick: number) => tick !== 0) : inputTicks;
 
   const lines = ticks.map((tick: any) => {

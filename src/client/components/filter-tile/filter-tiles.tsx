@@ -54,7 +54,7 @@ interface FilterTilesProps {
   openOverflowMenu: Fn;
 }
 
-export const FilterTiles: React.SFC<FilterTilesProps> = props => {
+export const FilterTiles: React.FunctionComponent<FilterTilesProps> = props => {
   const {
     menuStage,
     maxItems,

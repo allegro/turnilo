@@ -38,7 +38,7 @@ interface HeatmapProps {
 const COLOR_SCALE_START = "#fff";
 const COLOR_SCALE_END = "#90b5d0";
 
-export const Heatmap: React.SFC<HeatmapProps> = ({ xBinCount, yBinCount, xScale, yScale, stage, data, xSeries, ySeries }) => {
+export const Heatmap: React.FunctionComponent<HeatmapProps> = ({ xBinCount, yBinCount, xScale, yScale, stage, data, xSeries, ySeries }) => {
   const xQuantile = d3.scaleQuantile<number>().domain(xScale.domain()).range(range(0, xBinCount));
   const yQuantile = d3.scaleQuantile<number>().domain(yScale.domain()).range(range(0, yBinCount));
 
@@ -99,7 +99,7 @@ interface RectangleProps {
   fillColor: string;
 }
 
-const Rectangle: React.SFC<RectangleProps> = ({
+const Rectangle: React.FunctionComponent<RectangleProps> = ({
   xRange,
   yRange,
   xScale,

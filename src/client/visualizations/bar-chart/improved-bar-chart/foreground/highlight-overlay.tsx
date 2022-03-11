@@ -42,7 +42,7 @@ function getYValue(datum: Datum, series: ConcreteSeries, includePrevious: boolea
   return Math.max(series.selectValue(datum), series.selectValue(datum, SeriesDerivation.PREVIOUS));
 }
 
-export const HighlightOverlay: React.SFC<HighlightOverlayProps> = props => {
+export const HighlightOverlay: React.FunctionComponent<HighlightOverlayProps> = props => {
   const { stage, yScale, series, xScale, model: { hasComparison, continuousSplit }, interaction: { datum } } = props;
   const xValue = continuousSplit.selectValue<DomainValue>(datum);
   const left = xScale.calculate(xValue);

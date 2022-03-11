@@ -44,7 +44,7 @@ function lineCoordinates(orientation: "horizontal" | "vertical", value: number, 
   }
 }
 
-export const GridLines: React.SFC<GridLinesProps> = props => {
+export const GridLines: React.FunctionComponent<GridLinesProps> = props => {
   const { orientation, stage, ticks, scale } = props;
 
   return <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>

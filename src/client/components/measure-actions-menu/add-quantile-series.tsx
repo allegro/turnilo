@@ -33,7 +33,7 @@ interface AddQuantileSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddQuantileSeriesButton: React.SFC<AddQuantileSeriesButtonProps> = props => {
+export const AddQuantileSeriesButton: React.FunctionComponent<AddQuantileSeriesButtonProps> = props => {
   const { series, measure, addPartialSeries, addSeries, onClose } = props;
 
   function onNewQuantileSeries() {

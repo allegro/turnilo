@@ -31,7 +31,7 @@ export interface TimezoneMenuProps {
   timezones?: Timezone[];
 }
 
-export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({ timezone, timezones, onClose, changeTimezone, openOn }) => {
+export const TimezoneMenu: React.FunctionComponent<TimezoneMenuProps> = ({ timezone, timezones, onClose, changeTimezone, openOn }) => {
 
   function selectTimezone(newTimezone: Timezone) {
     changeTimezone(newTimezone);

@@ -47,7 +47,7 @@ interface BarChartProps {
   acceptHighlight: Nullary<void>;
 }
 
-export const BarChart: React.SFC<BarChartProps> = props => {
+export const BarChart: React.FunctionComponent<BarChartProps> = props => {
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
   const { [SPLIT]: split, ...totals } = selectMainDatum(dataset);
   const model = create(essence, dataset);

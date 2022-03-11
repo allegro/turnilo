@@ -47,7 +47,7 @@ function labelFormatter(scale: ContinuousScale, timezone: Timezone): Unary<Date 
   return (value: number) => String(floatFormat(value));
 }
 
-export const XAxis: React.SFC<XAxisProps> = props => {
+export const XAxis: React.FunctionComponent<XAxisProps> = props => {
   const { width, ticks, scale, timezone } = props;
   const stage = Stage.fromSize(width, X_AXIS_HEIGHT);
   const format = labelFormatter(scale, timezone);

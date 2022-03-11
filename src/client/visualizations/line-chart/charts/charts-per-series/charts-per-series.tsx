@@ -36,7 +36,7 @@ interface ChartsPerSeriesProps {
   stage: Stage;
 }
 
-export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
+export const ChartsPerSeries: React.FunctionComponent<ChartsPerSeriesProps> = props => {
   const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();

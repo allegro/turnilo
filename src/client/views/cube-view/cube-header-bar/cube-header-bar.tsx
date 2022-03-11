@@ -75,7 +75,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     this.mounted = true;
   }
 
-  componentWillReceiveProps(nextProps: CubeHeaderBarProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: CubeHeaderBarProps) {
     if (!this.props.updatingMaxTime && nextProps.updatingMaxTime) {
       this.setState({ animating: true });
       setTimeout(() => {

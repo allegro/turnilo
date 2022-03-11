@@ -35,7 +35,7 @@ function sortDirection(split: Split, sort: Sort): SortDirection | null {
   return isCurrentSort ? sort.direction : null;
 }
 
-export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
+export const SplitColumnsHeader: React.FunctionComponent<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
   return <Corner>
     <div className="header-split-columns">
       {splits.splits.toArray().map(split => {

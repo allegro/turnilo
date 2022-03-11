@@ -75,7 +75,7 @@ function renderItem(item: NavItem, iconSvg: string, selectedName: string): JSX.E
   return isNavLink(item) ? renderLink(item, iconSvg, selected) : renderAction(item, iconSvg, selected);
 }
 
-export const NavList: React.SFC<NavListProps> = ({ title, navLinks, iconSvg, selected }) => {
+export const NavList: React.FunctionComponent<NavListProps> = ({ title, navLinks, iconSvg, selected }) => {
   return <div className={classNames("nav-list", { "no-title": !title })}>
     {title && <div className="group-title">{title}</div>}
     <div className="items">

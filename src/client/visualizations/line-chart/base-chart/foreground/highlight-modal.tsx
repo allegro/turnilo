@@ -32,7 +32,7 @@ interface HighlightModalProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.FunctionComponent<HighlightModalProps> = props => {
   const { rect: { left, top }, interaction, timezone, dropHighlight, acceptHighlight, xScale } = props;
   const range = toPlywoodRange(interaction.clause);
   const x = xScale(range.midpoint());

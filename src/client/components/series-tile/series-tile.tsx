@@ -42,7 +42,7 @@ interface SeriesTileProps {
   containerStage: Stage;
 }
 
-export const SeriesTile: React.SFC<SeriesTileProps> = props => {
+export const SeriesTile: React.FunctionComponent<SeriesTileProps> = props => {
   const { seriesList, measures, open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { definition, measure } = item;
   const title = item.title();

@@ -74,7 +74,7 @@ interface SeriesHoverContentProps {
   series: ConcreteSeries;
 }
 
-export const SeriesHoverContent: React.SFC<SeriesHoverContentProps> = props => {
+export const SeriesHoverContent: React.FunctionComponent<SeriesHoverContentProps> = props => {
   const { essence, range, series, dataset } = props;
   if (hasNominalSplit(essence)) {
     const entries = colorEntries(dataset, range, series, essence);

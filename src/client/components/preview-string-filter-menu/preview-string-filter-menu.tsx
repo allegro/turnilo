@@ -144,7 +144,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.loadRows();
   }
 

@@ -66,7 +66,7 @@ function printFormat(format: SeriesFormat, measureFormat: string): string {
   }
 }
 
-export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, formatChange }) => {
+export const FormatPicker: React.FunctionComponent<FormatPickerProps> = ({ format, measure, formatChange }) => {
   const measureFormat = measure.format;
 
   const formatPresets = concatTruthy(

@@ -29,7 +29,7 @@ interface SelectableRowProps {
   searchText: string;
 }
 
-export const SelectableRow: React.SFC<SelectableRowProps> = props => {
+export const SelectableRow: React.FunctionComponent<SelectableRowProps> = props => {
   const { measure, value, selected, searchText, onSelect } = props;
   const strValue = String(value);
   return <div

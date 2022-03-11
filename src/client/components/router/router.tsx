@@ -94,7 +94,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     return hash.replace(new RegExp("^#" + rootFragment, "gi"), "");
   }
 
-  componentWillReceiveProps(nextProps: RouterProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: RouterProps) {
     this.globalHashChangeListener();
   }
 

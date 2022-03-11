@@ -46,7 +46,7 @@ interface SplitChartProps {
   visualisationStage: Stage;
 }
 
-export const SplitChart: React.SFC<SplitChartProps> = props => {
+export const SplitChart: React.FunctionComponent<SplitChartProps> = props => {
   const { chartId, interactions, visualisationStage, chartStage, essence, xScale, xTicks, selectDatum, dataset } = props;
   const { interaction } = interactions;
   const splitDatum = selectDatum(dataset);

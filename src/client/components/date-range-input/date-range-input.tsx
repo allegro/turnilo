@@ -45,7 +45,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     this.updateStateFromTime(time, timezone);
   }
 
-  componentWillReceiveProps(nextProps: DateRangeInputProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: DateRangeInputProps) {
     const { time, timezone } = nextProps;
     this.updateStateFromTime(time, timezone);
   }

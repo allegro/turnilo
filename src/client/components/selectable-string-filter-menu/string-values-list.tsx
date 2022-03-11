@@ -46,7 +46,7 @@ interface RowsListProps {
   onRowSelect: Binary<unknown, boolean, void>;
 }
 
-export const StringValuesList: React.SFC<RowsListProps> = props => {
+export const StringValuesList: React.FunctionComponent<RowsListProps> = props => {
   const { onRowSelect, filterMode, dataset, dimension, searchText, promotedValues, selectedValues } = props;
   const rowValues: Array<unknown> = dataset.data.map(d => d[dimension.name]);
   const values = prependPromotedValues(rowValues, promotedValues);

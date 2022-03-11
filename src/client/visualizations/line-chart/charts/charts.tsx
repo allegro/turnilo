@@ -35,7 +35,7 @@ interface ChartsProps {
   stage: Stage;
 }
 
-export const Charts: React.SFC<ChartsProps> = props => {
+export const Charts: React.FunctionComponent<ChartsProps> = props => {
   const { essence } = props;
   const { groupSeries } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
 

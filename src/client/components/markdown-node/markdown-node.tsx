@@ -26,7 +26,7 @@ function innerMarkdown(input: string): { __html: string } {
   return { __html: snarkdown(input) };
 }
 
-export const MarkdownNode: React.SFC<MarkdownBubbleProps> = ({ markdown }) => {
+export const MarkdownNode: React.FunctionComponent<MarkdownBubbleProps> = ({ markdown }) => {
   return <div
     className="markdown-content"
     dangerouslySetInnerHTML={innerMarkdown(markdown)} />;

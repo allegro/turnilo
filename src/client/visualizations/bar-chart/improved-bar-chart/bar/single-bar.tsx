@@ -31,7 +31,7 @@ interface SingleBarProps {
   model: BaseBarChartModel;
 }
 
-export const SingleBar: React.SFC<SingleBarProps> = props => {
+export const SingleBar: React.FunctionComponent<SingleBarProps> = props => {
   const { datum, xScale, yScale, model: { continuousSplit }, series } = props;
   const [maxHeight] = yScale.range();
   const x = continuousSplit.selectValue<DomainValue>(datum);

@@ -51,7 +51,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     });
   }
 
-  componentWillReceiveProps(nextProps: NotificationCardProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: NotificationCardProps) {
     if (nextProps.model && nextProps.model.discarded) {
       this.disappear();
     }

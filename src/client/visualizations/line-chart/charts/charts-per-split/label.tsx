@@ -26,7 +26,7 @@ interface LabelProps {
   datum: Datum;
 }
 
-export const Label: React.SFC<LabelProps> = props => {
+export const Label: React.FunctionComponent<LabelProps> = props => {
   const { essence, datum } = props;
   if (hasNominalSplit(essence)) {
     const nominalSplit = getNominalSplit(essence);

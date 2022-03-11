@@ -80,7 +80,7 @@ interface FilterTileProps {
 
 export const FILTER_CLASS_NAME = "filter";
 
-export const FilterTile: React.SFC<FilterTileProps> = props => {
+export const FilterTile: React.FunctionComponent<FilterTileProps> = props => {
   const {
     clause,
     open,

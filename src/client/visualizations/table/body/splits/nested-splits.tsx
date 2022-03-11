@@ -32,7 +32,7 @@ interface NestedSplitsProps {
   highlightedRowIndex: number | null;
 }
 
-export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
+export const NestedSplits: React.FunctionComponent<NestedSplitsProps> = props => {
   const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="nested-splits-rows">

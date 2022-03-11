@@ -23,7 +23,7 @@ interface OauthMessageViewProps {
   oauth: OauthEnabled;
 }
 
-export const OauthMessageView: React.SFC<OauthMessageViewProps> = ({ oauth }) => {
+export const OauthMessageView: React.FunctionComponent<OauthMessageViewProps> = ({ oauth }) => {
   return <MessagePanel
     title="You are not logged in">
     <MessagePanelAction action={() => login(oauth)} label={"Login"} />

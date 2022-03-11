@@ -30,7 +30,7 @@ interface HighlightModalProps {
   acceptHighlight: Fn;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = ({ title, children, left, top, acceptHighlight, dropHighlight }) =>
+export const HighlightModal: React.FunctionComponent<HighlightModalProps> = ({ title, children, left, top, acceptHighlight, dropHighlight }) =>
   <ModalBubble className="highlight-modal" left={left} top={top} onClose={dropHighlight}>
     <BubbleTitle title={title} />
     <div className="value">{children}</div>
