@@ -1,5 +1,18 @@
-/// <reference types="Cypress" />
-
+/*
+ * Copyright 2017-2022 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 context("Relative Time Filter Menu", () => {
 
   // TODO: FIX references
@@ -8,14 +21,14 @@ context("Relative Time Filter Menu", () => {
   const tabSelector = () => timeFilter().find(".group-container");
   const filterMenuOkButton = () => timeFilter().find(".button.primary");
   const latestSelector = () => timeFilter().find(".button-group:contains('Latest')");
-  const latestPreset = (preset) => latestSelector().find(`.group-member:contains(${preset})`);
+  const latestPreset = (preset: string) => latestSelector().find(`.group-member:contains(${preset})`);
   const latestDayPreset = () => latestPreset("D").first();
   const currentSelector = () => timeFilter().find(".button-group:contains('Current')");
-  const currentPreset = (preset) => currentSelector().find(`.group-member:contains(${preset})`);
+  const currentPreset = (preset: string) => currentSelector().find(`.group-member:contains(${preset})`);
   const previousSelector = () => timeFilter().find(".button-group:contains('Previous')");
-  const previousPreset = (preset) => previousSelector().find(`.group-member:contains(${preset})`);
+  const previousPreset = (preset: string) => previousSelector().find(`.group-member:contains(${preset})`);
   const timeShiftSelector = () => timeFilter().find(".button-group:contains('Time shift')");
-  const timeShiftPreset = (preset) => timeShiftSelector().find(`.group-member:contains(${preset})`);
+  const timeShiftPreset = (preset: string) => timeShiftSelector().find(`.group-member:contains(${preset})`);
   const timeShiftPreview = () => timeFilter().find(".cont .preview:nth-of-type(6)");
   const overlappingError = () => timeFilter().find(".overlap-error-message");
 
