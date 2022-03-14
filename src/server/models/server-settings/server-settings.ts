@@ -16,6 +16,7 @@
  */
 
 import { Record } from "immutable";
+import { optionalEnsureOneOf } from "../../../common/utils/general/general";
 import { PluginSettings } from "../plugin-settings/plugin-settings";
 
 export type Iframe = "allow" | "deny";
@@ -87,15 +88,9 @@ export class ServerSettings extends Record<ServerSettingsValue>(defaultServerSet
       serverTimeout,
       serverHost
     } = parameters;
-    if (!IFRAME_VALUES.includes(iframe)) {
-      throw new Error(`ServerSettings: Incorrect iframe value: ${iframe}. Possible values: ${IFRAME_VALUES.join(", ")}`);
-    }
-    if (!TRUST_PROXY_VALUES.includes(trustProxy)) {
-      throw new Error(`ServerSettings: Incorrect trustProxy value: ${trustProxy}. Possible values: ${TRUST_PROXY_VALUES.join(", ")}`);
-    }
-    if (!STRICT_TRANSPORT_SECURITY_VALUES.includes(strictTransportSecurity)) {
-      throw new Error(`ServerSettings: Incorrect strictTransportSecurity value: ${strictTransportSecurity}. Possible values: ${STRICT_TRANSPORT_SECURITY_VALUES.join(", ")}`);
-    }
+    optionalEnsureOneOf(iframe, IFRAME_VALUES, "ServerSettings: iframe");
+    optionalEnsureOneOf(trustProxy, TRUST_PROXY_VALUES, "ServerSettings: trustProxy");
+    optionalEnsureOneOf(strictTransportSecurity, STRICT_TRANSPORT_SECURITY_VALUES, "ServerSettings: strictTransportSecurity");
 
     const readinessEndpoint = !parameters.readinessEndpoint && !!parameters.healthEndpoint ? parameters.healthEndpoint : parameters.readinessEndpoint;
     const verbose = Boolean(parameters.verbose);

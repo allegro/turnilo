@@ -21,7 +21,7 @@ import { External } from "plywood";
 import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions, RetryOptionsJS } from "../../../server/utils/retry-options/retry-options";
-import { isNil, isTruthy, verifyUrlSafeName } from "../../utils/general/general";
+import { isNil, isTruthy, optionalEnsureOneOf, verifyUrlSafeName } from "../../utils/general/general";
 
 export type SourceListScan = "disable" | "auto";
 
@@ -143,9 +143,7 @@ export class Cluster extends Record<ClusterValue>(defaultCluster) {
     verifyUrlSafeName(name);
     ensureNotNative(name);
 
-    if (!SOURCE_LIST_SCAN_VALUES.includes(sourceListScan)) {
-      throw new Error(`Cluster: Incorrect sourceListScane value : ${sourceListScan}. Possible values: ${SOURCE_LIST_SCAN_VALUES.join(", ")}`);
-    }
+    optionalEnsureOneOf(sourceListScan, SOURCE_LIST_SCAN_VALUES, "Cluster: sourceListScan");
 
     const sourceReintrospectInterval = typeof params.sourceReintrospectInterval === "string" ? parseInt(params.sourceReintrospectInterval, 10) : params.sourceListRefreshInterval;
     BaseImmutable.ensure.number(sourceReintrospectInterval);

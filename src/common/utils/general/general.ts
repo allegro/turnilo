@@ -115,7 +115,7 @@ export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (
 export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
   var biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
   var biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
-  return biggerArrayOrEqual.reduce((pV, cV, i, arr) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
+  return biggerArrayOrEqual.reduce((pV, cV) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
 }
 
 export function findExactIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
@@ -149,19 +149,25 @@ export function getNumberOfWholeDigits(n: number) {
 
 // replaces things like %{PORT_NAME}% with the value of vs.PORT_NAME
 export function inlineVars(obj: any, vs: Record<string, string>): any {
-  return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, varName => {
+  return JSON.parse(JSON.stringify(obj).replace(/%{[\w\-]+}%/g, varName => {
     varName = varName.substr(2, varName.length - 4);
-    var v = vs[varName];
+    let v = vs[varName];
     if (typeof v !== "string") throw new Error(`could not find variable '${varName}'`);
-    var v = JSON.stringify(v);
+    v = JSON.stringify(v);
     return v.substr(1, v.length - 2);
   }));
 }
 
-export function ensureOneOf(value: string, values: string[], messagePrefix: string): void {
+export function ensureOneOf(value: unknown, values: Array<unknown>, messagePrefix: string): void {
   if (values.indexOf(value) !== -1) return;
-  var isMessage = typeof value === "undefined" ? "not defined" : `'${value}'`;
+  const isMessage = isTruthy(value) ? "not defined" : `'${value}'`;
   throw new Error(`${messagePrefix} must be on of '${values.join("', '")}' (is ${isMessage})`);
+}
+
+export function optionalEnsureOneOf(value: unknown, values: Array<unknown>, messagePrefix: string): void {
+  if (!isTruthy(value)) return;
+  if (values.indexOf(value) !== -1) return;
+  throw new Error(`${messagePrefix} must be on of '${values.join("', '")}' (is ${value})`);
 }
 
 export function pluralIfNeeded(n: number, thing: string): string {
