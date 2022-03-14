@@ -44,16 +44,14 @@ const prodConfig = {
   entry: {
     main: "./src/client/main.tsx",
   },
-  optimization: {
-    minimize: true,
-    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
-  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
   ],
   optimization: {
+    minimize: true,
+    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
     splitChunks: {
       cacheGroups: {
         default: {
