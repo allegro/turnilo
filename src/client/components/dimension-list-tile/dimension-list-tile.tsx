@@ -84,7 +84,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     searchText: ""
   };
 
-  clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
+  private clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
     const target = findParentWithClass(e.currentTarget, DIMENSION_CLASS_NAME);
     if (menuOpenOn === target) {

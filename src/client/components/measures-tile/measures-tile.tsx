@@ -68,7 +68,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     menuMeasure: null
   };
 
-  measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
+  private measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
     const target = findParentWithClass(e.target as Element, MEASURE_CLASS_NAME);
     if (menuOpenOn === target) {
