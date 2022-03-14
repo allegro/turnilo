@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, PropertyType } from "immutable-class";
+import { Record } from "immutable";
 
 export interface TimeTagValue {
   name: string;
@@ -25,33 +25,34 @@ export interface TimeTagValue {
 
 export interface TimeTagJS {
   name: string;
-  time?: Date | string;
-  lastTimeChecked?: Date | string;
+  time?: string;
+  lastTimeChecked?: string;
 }
 
-export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
+const defaultTimeTag: TimeTagValue = {
+  name: "",
+  time: null,
+  lastTimeChecked: null
+};
+
+export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
 
   static isTimeTag(candidate: any): candidate is TimeTag {
     return candidate instanceof TimeTag;
   }
 
-  static PROPERTIES: Property[] = [
-    { name: "name" },
-    { name: "time", type: PropertyType.DATE, defaultValue: null },
-    { name: "lastTimeChecked", type: PropertyType.DATE, defaultValue: null }
-  ];
-
-  static fromJS(parameters: TimeTagJS): TimeTag {
-    return new TimeTag(BaseImmutable.jsToValue(TimeTag.PROPERTIES, parameters));
+  static fromJS({ name, time: timeJS, lastTimeChecked: lastTimeCheckedJS }: TimeTagJS): TimeTag {
+    const time = timeJS ? new Date(timeJS) : undefined;
+    const lastTimeChecked = lastTimeCheckedJS ? new Date(lastTimeCheckedJS) : time;
+    return new TimeTag({
+      name,
+      time,
+      lastTimeChecked
+    });
   }
-
-  public name: string;
-  public time: Date;
-  public lastTimeChecked: Date;
 
   constructor(parameters: TimeTagValue) {
     super(parameters);
-    if (this.time && !this.lastTimeChecked) this.lastTimeChecked = this.time;
   }
 
   public changeTime(time: Date, lastTimeChecked: Date): TimeTag {
@@ -62,5 +63,3 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
     });
   }
 }
-
-BaseImmutable.finalize(TimeTag);
