@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { BackCompat, BaseImmutable, Property, PropertyType } from "immutable-class";
+import { Record } from "immutable";
 import { PluginSettings } from "../plugin-settings/plugin-settings";
 
 export type Iframe = "allow" | "deny";
@@ -38,88 +38,83 @@ export interface ServerSettingsValue {
   plugins?: PluginSettings[];
 }
 
-export interface ServerSettingsJS extends ServerSettingsValue {
+export type ServerSettingsJS = ServerSettingsValue & {
+  port?: number | string;
   healthEndpoint?: string;
-}
+};
 
-export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
-  static DEFAULT_PORT = 9090;
-  static DEFAULT_SERVER_ROOT = "";
-  static DEFAULT_READINESS_ENDPOINT = "/health/ready";
-  static DEFAULT_LIVENESS_ENDPOINT = "/health/alive";
-  static DEFAULT_SERVER_TIMEOUT = 0;
-  static DEFAULT_REQUEST_LOG_FORMAT = "common";
-  static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
-  static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
-  static DEFAULT_IFRAME: Iframe = "allow";
-  static TRUST_PROXY_VALUES: TrustProxy[] = ["none", "always"];
-  static DEFAULT_TRUST_PROXY: TrustProxy = "none";
-  static STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
-  static DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
+export const DEFAULT_PORT = 9090;
+export const DEFAULT_SERVER_ROOT = "";
+const DEFAULT_READINESS_ENDPOINT = "/health/ready";
+const DEFAULT_LIVENESS_ENDPOINT = "/health/alive";
+const DEFAULT_SERVER_TIMEOUT = 0;
+const DEFAULT_REQUEST_LOG_FORMAT = "common";
+const DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
+const IFRAME_VALUES: Iframe[] = ["allow", "deny"];
+const DEFAULT_IFRAME: Iframe = "allow";
+const TRUST_PROXY_VALUES: TrustProxy[] = ["none", "always"];
+const DEFAULT_TRUST_PROXY: TrustProxy = "none";
+const STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
+const DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
+
+const defaultServerSettings: ServerSettingsValue = {
+  iframe: DEFAULT_IFRAME,
+  livenessEndpoint: DEFAULT_LIVENESS_ENDPOINT,
+  pageMustLoadTimeout: DEFAULT_PAGE_MUST_LOAD_TIMEOUT,
+  plugins: [],
+  port: DEFAULT_PORT,
+  readinessEndpoint: DEFAULT_READINESS_ENDPOINT,
+  requestLogFormat: DEFAULT_REQUEST_LOG_FORMAT,
+  serverHost: null,
+  serverRoot: DEFAULT_SERVER_ROOT,
+  serverTimeout: DEFAULT_SERVER_TIMEOUT,
+  strictTransportSecurity: DEFAULT_STRICT_TRANSPORT_SECURITY,
+  trustProxy: DEFAULT_TRUST_PROXY,
+  verbose: false
+};
+
+export class ServerSettings extends Record<ServerSettingsValue>(defaultServerSettings) {
 
   static fromJS(parameters: ServerSettingsJS): ServerSettings {
-    if (typeof parameters.port === "string") parameters.port = parseInt(parameters.port, 10);
-    return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters, ServerSettings.BACK_COMPATS));
-  }
-
-  // TODO, back to: static PROPERTIES: Property[] = [
-  static PROPERTIES: Property[] = [
-    { name: "port", defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
-    { name: "serverHost", defaultValue: null },
-    { name: "serverRoot", defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
-    { name: "serverTimeout", defaultValue: ServerSettings.DEFAULT_SERVER_TIMEOUT },
-    { name: "readinessEndpoint", defaultValue: ServerSettings.DEFAULT_READINESS_ENDPOINT },
-    { name: "livenessEndpoint", defaultValue: ServerSettings.DEFAULT_LIVENESS_ENDPOINT },
-    { name: "requestLogFormat", defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
-    { name: "pageMustLoadTimeout", defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
-    { name: "iframe", defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
-    { name: "verbose", defaultValue: false, possibleValues: [false, true] },
-    { name: "trustProxy", defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
-    {
-      name: "strictTransportSecurity",
-      defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY,
-      possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
-    },
-    { name: "plugins", defaultValue: [], type: PropertyType.ARRAY, immutableClassArray: PluginSettings }
-  ];
-
-  static BACK_COMPATS: BackCompat[] = [{
-    condition: (settings: ServerSettingsJS) =>
-      !settings.readinessEndpoint && !!settings.healthEndpoint,
-    action: (settings: ServerSettingsJS) => {
-      settings.readinessEndpoint = settings.healthEndpoint;
+    const {
+      iframe,
+      trustProxy,
+      strictTransportSecurity,
+      livenessEndpoint,
+      pageMustLoadTimeout,
+      requestLogFormat,
+      serverRoot,
+      serverTimeout,
+      serverHost
+    } = parameters;
+    if (!IFRAME_VALUES.includes(iframe)) {
+      throw new Error(`ServerSettings: Incorrect iframe value: ${iframe}. Possible values: ${IFRAME_VALUES.join(", ")}`);
     }
-  }];
+    if (!TRUST_PROXY_VALUES.includes(trustProxy)) {
+      throw new Error(`ServerSettings: Incorrect trustProxy value: ${trustProxy}. Possible values: ${TRUST_PROXY_VALUES.join(", ")}`);
+    }
+    if (!STRICT_TRANSPORT_SECURITY_VALUES.includes(strictTransportSecurity)) {
+      throw new Error(`ServerSettings: Incorrect strictTransportSecurity value: ${strictTransportSecurity}. Possible values: ${STRICT_TRANSPORT_SECURITY_VALUES.join(", ")}`);
+    }
 
-  public port: number;
-  public serverHost: string;
-  public serverRoot: string;
-  public serverTimeout: string;
-  public readinessEndpoint: string;
-  public livenessEndpoint: string;
-  public requestLogFormat: string;
-  public pageMustLoadTimeout: number;
-  public iframe: Iframe;
-  public verbose: boolean;
-  public trustProxy: TrustProxy;
-  public strictTransportSecurity: StrictTransportSecurity;
-  public plugins: PluginSettings[];
+    const readinessEndpoint = !parameters.readinessEndpoint && !!parameters.healthEndpoint ? parameters.healthEndpoint : parameters.readinessEndpoint;
+    const verbose = Boolean(parameters.verbose);
+    const plugins = parameters.plugins && parameters.plugins.map(pluginDefinition => PluginSettings.fromJS(pluginDefinition));
 
-  constructor(parameters: ServerSettingsValue) {
-    super(parameters);
+    return new ServerSettings({
+      port: typeof parameters.port === "string" ? parseInt(parameters.port, 10) : parameters.port,
+      plugins,
+      readinessEndpoint,
+      livenessEndpoint,
+      verbose,
+      iframe,
+      trustProxy,
+      strictTransportSecurity,
+      pageMustLoadTimeout,
+      requestLogFormat,
+      serverHost,
+      serverTimeout,
+      serverRoot
+    });
   }
-
-  public getPort: () => number;
-  public getServerHost: () => string;
-  public getServerRoot: () => string;
-  public getServerTimeout: () => number;
-  public getReadinessEndpoint: () => string;
-  public getLivenessEndpoint: () => string;
-  public getPageMustLoadTimeout: () => number;
-  public getIframe: () => Iframe;
-  public getTrustProxy: () => TrustProxy;
-  public getStrictTransportSecurity: () => StrictTransportSecurity;
-  public getPlugins: () => PluginSettings[];
 }
-
-BaseImmutable.finalize(ServerSettings);

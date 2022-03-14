@@ -45,20 +45,20 @@ let app = express();
 app.disable("x-powered-by");
 
 const isDev = app.get("env") === "development";
-const isTrustedProxy = SERVER_SETTINGS.getTrustProxy() === "always";
+const isTrustedProxy = SERVER_SETTINGS.trustProxy === "always";
 
 if (isTrustedProxy) {
   app.set("trust proxy", true); // trust X-Forwarded-*, use left-most entry as the client
 }
 
-const timeout = SERVER_SETTINGS.getServerTimeout();
+const timeout = SERVER_SETTINGS.serverTimeout;
 app.use((req, res, next) => {
   res.setTimeout(timeout);
   next();
 });
 
 function getRoutePath(route: string): string {
-  const serverRoot = SERVER_SETTINGS.getServerRoot();
+  const serverRoot = SERVER_SETTINGS.serverRoot;
   const prefix = serverRoot.length > 0 ? `/${serverRoot}` : "";
   return `${prefix}${route}`;
 }
@@ -71,7 +71,7 @@ function attachRouter(route: string, router: Router | Handler): void {
 app.use(compress());
 
 // Add Strict Transport Security
-if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
+if (SERVER_SETTINGS.strictTransportSecurity === "always") {
   app.use(hsts({
     maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
     includeSubdomains: true, // Must be enabled to be approved by Google
@@ -82,7 +82,7 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-if (SERVER_SETTINGS.getIframe() === "deny") {
+if (SERVER_SETTINGS.iframe === "deny") {
   app.use((req: Request, res: Response, next: Function) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
@@ -95,7 +95,7 @@ app.use((req: Request, res: Response, next: Function) => {
   next();
 });
 
-SERVER_SETTINGS.getPlugins().forEach(({ path, name, settings }: PluginSettings) => {
+SERVER_SETTINGS.plugins.forEach(({ path, name, settings }: PluginSettings) => {
   try {
     LOGGER.log(`Loading plugin ${name} module`);
     const module = loadPlugin(path, SETTINGS_MANAGER.anchorPath);
@@ -139,8 +139,8 @@ if (app.get("env") === "dev-hmr") {
 attachRouter("/", express.static(join(__dirname, "../../build/public")));
 attachRouter("/", express.static(join(__dirname, "../../assets")));
 
-attachRouter(SERVER_SETTINGS.getReadinessEndpoint(), readinessRouter(SETTINGS_MANAGER.sourcesGetter));
-attachRouter(SERVER_SETTINGS.getLivenessEndpoint(), livenessRouter);
+attachRouter(SERVER_SETTINGS.readinessEndpoint, readinessRouter(SETTINGS_MANAGER.sourcesGetter));
+attachRouter(SERVER_SETTINGS.livenessEndpoint, livenessRouter);
 
 // Data routes
 attachRouter("/sources", sourcesRouter(SETTINGS_MANAGER.sourcesGetter));

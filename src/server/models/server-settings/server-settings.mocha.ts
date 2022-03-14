@@ -55,7 +55,7 @@ describe("ServerSettings", () => {
     it("should interpret healthEndpoint as readinessEndpoint", () => {
       const healthEndpoint = "/health";
       const settings = ServerSettings.fromJS({ healthEndpoint });
-      expect(settings.getReadinessEndpoint()).to.be.eq(healthEndpoint);
+      expect(settings.readinessEndpoint).to.be.eq(healthEndpoint);
     });
   });
 
