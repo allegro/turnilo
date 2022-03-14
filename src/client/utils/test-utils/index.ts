@@ -19,7 +19,6 @@
 var ExecutionEnvironment = require("../../../../node_modules/fbjs/lib/ExecutionEnvironment");
 ExecutionEnvironment.canUseDOM = true;
 
-import "./jsdom-setup";
 import "./require-extensions";
 
 export * from "./mock-require-ensure";
