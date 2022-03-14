@@ -143,13 +143,13 @@ describe("General", () => {
     it("throws error if not one of", () => {
       expect(() => {
         ensureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
     });
 
     it("throws error if not defined", () => {
       expect(() => {
         ensureOneOf(undefined, ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is not defined)");
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is not defined)");
     });
   });
 
@@ -165,7 +165,7 @@ describe("General", () => {
     it("throw error not one of", () => {
       expect(() => {
         optionalEnsureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
     });
   });
 

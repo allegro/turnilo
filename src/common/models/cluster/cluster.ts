@@ -90,12 +90,13 @@ function readUrl(cluster: any): string {
   return HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
 }
 
-function readRequestDecorator(cluster: any): RequestDecorator {
+function readRequestDecorator(cluster: any): RequestDecorator | null {
   if (typeof cluster.requestDecorator === "string" || !isNil(cluster.decoratorOptions)) {
     console.warn(`Cluster ${cluster.name} : requestDecorator as string and decoratorOptions fields are deprecated. Use object with path and options fields`);
     return RequestDecorator.fromJS({ path: cluster.requestDecorator, options: cluster.decoratorOptions });
   }
-  return RequestDecorator.fromJS(cluster.requestDecorator);
+  if (isTruthy(cluster.requestDecorator)) return RequestDecorator.fromJS(cluster.requestDecorator);
+  return null;
 }
 
 const DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
@@ -146,12 +147,16 @@ export class Cluster extends Record<ClusterValue>(defaultCluster) {
     optionalEnsureOneOf(sourceListScan, SOURCE_LIST_SCAN_VALUES, "Cluster: sourceListScan");
 
     const sourceReintrospectInterval = typeof params.sourceReintrospectInterval === "string" ? parseInt(params.sourceReintrospectInterval, 10) : params.sourceListRefreshInterval;
-    BaseImmutable.ensure.number(sourceReintrospectInterval);
-    ensureNotTiny(sourceReintrospectInterval);
+    if (isTruthy(sourceReintrospectInterval)) {
+      BaseImmutable.ensure.number(sourceReintrospectInterval);
+      ensureNotTiny(sourceReintrospectInterval);
+    }
 
     const sourceListRefreshInterval = typeof params.sourceListRefreshInterval === "string" ? parseInt(params.sourceListRefreshInterval, 10) : params.sourceListRefreshInterval;
-    BaseImmutable.ensure.number(sourceListRefreshInterval);
-    ensureNotTiny(sourceListRefreshInterval);
+    if (isTruthy(sourceListRefreshInterval)) {
+      BaseImmutable.ensure.number(sourceListRefreshInterval);
+      ensureNotTiny(sourceListRefreshInterval);
+    }
 
     const retry = RetryOptions.fromJS(params.retry);
     const requestDecorator = readRequestDecorator(params);
@@ -201,5 +206,9 @@ export class Cluster extends Record<ClusterValue>(defaultCluster) {
 
   public shouldScanSources(): boolean {
     return this.sourceListScan === "auto";
+  }
+
+  public valueOf(): ClusterValue {
+    return this.toObject();
   }
 }

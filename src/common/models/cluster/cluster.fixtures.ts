@@ -55,7 +55,7 @@ export class ClusterFixtures {
     return Cluster.fromJS(ClusterFixtures.druidTwitterClusterJS());
   }
 
-  static druidTwitterClusterJSWithGuard(): Cluster {
+  static druidTwitterClusterJSWithGuard(guardDataCubes = true): Cluster {
     return Cluster.fromJS({
       name: "druid-custom",
       url: "http://192.168.99.101",
@@ -65,7 +65,7 @@ export class ClusterFixtures {
       sourceListScan: "auto",
       sourceListRefreshInterval: 10000,
       sourceReintrospectInterval: 10000,
-      guardDataCubes: true,
+      guardDataCubes,
 
       introspectionStrategy: "segment-metadata-fallback"
     });
