@@ -207,8 +207,4 @@ export class Cluster extends Record<ClusterValue>(defaultCluster) {
   public shouldScanSources(): boolean {
     return this.sourceListScan === "auto";
   }
-
-  public valueOf(): ClusterValue {
-    return this.toObject();
-  }
 }
