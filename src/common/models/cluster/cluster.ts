@@ -17,7 +17,6 @@
 
 import { BackCompat, BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
-import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
 import { isNil, isTruthy, verifyUrlSafeName } from "../../utils/general/general";

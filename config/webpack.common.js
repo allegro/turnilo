@@ -38,7 +38,12 @@ const config = {
     chunkFilename: "[name].[hash].js"
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json"],
+    fallback: { 
+      "buffer": require.resolve("buffer"),
+      "stream": require.resolve("stream-browserify"),
+      "crypto": require.resolve("crypto-browserify"),
+    }
   },
   plugins: [
     new MiniCssExtractPlugin(),
