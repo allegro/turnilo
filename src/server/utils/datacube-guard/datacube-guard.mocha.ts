@@ -26,14 +26,16 @@ function mockHeaders(allowedDataCubes: string): Request["headers"] {
 describe("Guard test", () => {
 
   it("Guard off -> header for cube A and accessing cube B", () => {
-    let dataCubeB = customCubeWithGuard();
+    const dataCubeB = customCubeWithGuard();
     dataCubeB.name = "cubeB";
+    // @ts-ignore
     dataCubeB.cluster.guardDataCubes = false;
     expect(checkAccess(dataCubeB, mockHeaders("cubeA"))).to.equal(true);
   });
 
   it("Guard off -> access to all dataCubes", () => {
     let dataCube = customCubeWithGuard();
+    // @ts-ignore
     dataCube.cluster.guardDataCubes = false;
     expect(checkAccess(dataCube, mockHeaders(""))).to.equal(true);
   });

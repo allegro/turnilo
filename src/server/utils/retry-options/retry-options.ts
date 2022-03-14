@@ -21,7 +21,7 @@ interface RetryOptionsValue {
   delay: number;
 }
 
-interface RetryOptionsJS {
+export interface RetryOptionsJS {
   maxAttempts: number;
   delay: number;
 }

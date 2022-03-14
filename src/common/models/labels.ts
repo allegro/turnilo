@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { Cluster } from "./cluster/cluster";
+import {
+  Cluster,
+  DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
+  DEFAULT_SOURCE_LIST_SCAN,
+  DEFAULT_SOURCE_REINTROSPECT_INTERVAL
+} from "./cluster/cluster";
 import {
   DEFAULT_DEFAULT_DURATION,
   DEFAULT_DEFAULT_TIMEZONE,
@@ -179,7 +184,7 @@ export const CLUSTER = {
   sourceListScan: {
     label: "Source List Scan",
     description: `Should the sources of this cluster be automatically scanned and new
-      sources added as data cubes. Default: <code>${Cluster.DEFAULT_SOURCE_LIST_SCAN}</code>`
+      sources added as data cubes. Default: <code>${DEFAULT_SOURCE_LIST_SCAN}</code>`
   },
   sourceListRefreshOnLoad: {
     label: "Source List Refresh On Load",
@@ -189,13 +194,13 @@ export const CLUSTER = {
   },
   sourceListRefreshInterval: {
     label: "Source List Refresh Interval",
-    description: `How often should sources be reloaded in ms. Default: <code>${Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL}</code>`
+    description: `How often should sources be reloaded in ms. Default: <code>${DEFAULT_SOURCE_LIST_REFRESH_INTERVAL}</code>`
   },
   sourceReintrospectOnLoad: {
     label: "Source Reintrospect On Load",
     description: `Should sources be scanned for additional dimensions every time that
       Turnilo is loaded. This will put additional load on the data store but will
-      ensure that dimension are visible in the UI as soon as they are created. Default: <code>${Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL}</code>`
+      ensure that dimension are visible in the UI as soon as they are created. Default: <code>${DEFAULT_SOURCE_REINTROSPECT_INTERVAL}</code>`
   },
   sourceReintrospectInterval: {
     label: "Source Reintrospect Interval",
