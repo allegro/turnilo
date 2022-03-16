@@ -154,15 +154,15 @@ describe("General", () => {
   });
 
   describe("optionalEnsureOneOF", () => {
-    it("does not thrown an error is one of", () => {
+    it("does not throw an error is one of", () => {
       optionalEnsureOneOf("Honda", ["Honda", "Toyota", "BMW"], "Car");
     });
 
-    it("does not thrown an error is not defined", () => {
+    it("does not throw an error is not defined", () => {
       optionalEnsureOneOf(null, ["Honda", "Toyota", "BMW"], "Car");
     });
 
-    it("throw error not one of", () => {
+    it("throws error not one of", () => {
       expect(() => {
         optionalEnsureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
       }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
