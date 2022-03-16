@@ -16,7 +16,14 @@
 
 import { NamedArray } from "immutable-class";
 import { isTruthy } from "../../utils/general/general";
-import { Cluster, ClusterJS } from "../cluster/cluster";
+import {
+  ClientCluster,
+  Cluster,
+  ClusterJS,
+  fromConfig as clusterFromConfig,
+  serialize as clusterSerialize,
+  SerializedCluster
+} from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
 import {
   ClientDataCube,
@@ -39,12 +46,12 @@ export interface Sources {
 }
 
 export interface SerializedSources {
-  clusters: ClusterJS[]; // SerializedCluster[]
+  clusters: SerializedCluster[];
   dataCubes: SerializedDataCube[];
 }
 
 export interface ClientSources {
-  readonly clusters: Cluster[];
+  readonly clusters: ClientCluster[];
   readonly dataCubes: ClientDataCube[];
 }
 
@@ -55,9 +62,9 @@ interface ClustersConfig {
 }
 
 function readClusters({ clusters, druidHost, brokerHost }: ClustersConfig): Cluster[] {
-  if (Array.isArray(clusters)) return clusters.map(cluster => Cluster.fromJS(cluster));
+  if (Array.isArray(clusters)) return clusters.map(clusterFromConfig);
   if (isTruthy(druidHost) || isTruthy(brokerHost)) {
-    return [Cluster.fromJS({
+    return [clusterFromConfig({
       name: "druid",
       url: druidHost || brokerHost
     })];
@@ -89,10 +96,10 @@ export function fromConfig(config: SourcesJS): Sources {
 }
 
 export function serialize({
-                                   clusters: serverClusters,
-                                   dataCubes: serverDataCubes
-                                 }: Sources): SerializedSources {
-  const clusters = serverClusters.map(c => c.toClientCluster().toJS());
+                            clusters: serverClusters,
+                            dataCubes: serverDataCubes
+                          }: Sources): SerializedSources {
+  const clusters = serverClusters.map(clusterSerialize);
 
   const dataCubes = serverDataCubes
     .filter(dc => isQueryable(dc))
