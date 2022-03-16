@@ -48,5 +48,8 @@ describe("Split", () => {
       expect(formatValueStub.calledWith(42, timezone)).to.be.true;
     });
 
+    afterEach(() => {
+      formatValueStub.restore();
+    });
   });
 });
