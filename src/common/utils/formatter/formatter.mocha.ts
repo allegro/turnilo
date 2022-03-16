@@ -69,6 +69,7 @@ describe("General", () => {
       const filterClause = FormatterFixtures.fixedTimeFilter(start, end);
       formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC);
       expect(formatTimeRange.calledWith({ start, end }, Timezone.UTC)).to.equal(true);
+      formatTimeRange.restore();
     });
 
     it("formats number", () => {
