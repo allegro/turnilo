@@ -96,11 +96,11 @@ export default function dataCubeToExternal(dataCube: DataCube): External {
   if (cluster.type === "druid") {
     externalValue.rollup = dataCube.rollup;
     externalValue.timeAttribute = dataCube.timeAttribute.name;
-    externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
+    externalValue.introspectionStrategy = cluster.introspectionStrategy;
     externalValue.allowSelectQueries = true;
 
     const externalContext: Record<string, unknown> = {
-      timeout: cluster.getTimeout(),
+      timeout: cluster.timeout,
       ...options.druidContext
     };
     externalValue.context = externalContext;

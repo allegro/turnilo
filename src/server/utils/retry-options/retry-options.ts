@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property } from "immutable-class";
+import { Record } from "immutable";
 
 interface RetryOptionsValue {
   maxAttempts: number;
   delay: number;
 }
 
-interface RetryOptionsJS {
+export interface RetryOptionsJS {
   maxAttempts: number;
   delay: number;
 }
 
-export class RetryOptions extends BaseImmutable<RetryOptionsValue, RetryOptionsJS> {
+const defaultRetryOptions: RetryOptionsValue = {
+  delay: 5000,
+  maxAttempts: 5
+};
 
-  static PROPERTIES: Property[] = [
-    { name: "maxAttempts", defaultValue: 5 },
-    { name: "delay", defaultValue: 5000 }
-  ];
+export class RetryOptions extends Record<RetryOptionsValue>(defaultRetryOptions) {
 
   static fromJS(options: RetryOptionsJS): RetryOptions {
-    return new RetryOptions(BaseImmutable.jsToValue(RetryOptions.PROPERTIES, options));
+    return new RetryOptions(options);
   }
-
-  public maxAttempts: number;
-  public delay: number;
 }

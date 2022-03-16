@@ -185,8 +185,8 @@ export class ClusterManager {
   private updateSourceListRefreshTimer() {
     const { logger, cluster } = this;
 
-    if (this.sourceListRefreshInterval !== cluster.getSourceListRefreshInterval()) {
-      this.sourceListRefreshInterval = cluster.getSourceListRefreshInterval();
+    if (this.sourceListRefreshInterval !== cluster.sourceListRefreshInterval) {
+      this.sourceListRefreshInterval = cluster.sourceListRefreshInterval;
 
       if (this.sourceListRefreshTimer) {
         logger.log(`Clearing sourceListRefresh timer in cluster '${cluster.name}'`);
@@ -212,8 +212,8 @@ export class ClusterManager {
   private updateSourceReintrospectTimer() {
     const { logger, cluster } = this;
 
-    if (this.sourceReintrospectInterval !== cluster.getSourceReintrospectInterval()) {
-      this.sourceReintrospectInterval = cluster.getSourceReintrospectInterval();
+    if (this.sourceReintrospectInterval !== cluster.sourceReintrospectInterval) {
+      this.sourceReintrospectInterval = cluster.sourceReintrospectInterval;
 
       if (this.sourceReintrospectTimer) {
         logger.log(`Clearing sourceReintrospect timer in cluster '${cluster.name}'`);

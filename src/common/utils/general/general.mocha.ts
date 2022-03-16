@@ -17,32 +17,47 @@
 
 import { expect } from "chai";
 import { List } from "immutable";
-import { ensureOneOf, inlineVars, isBlank, isDecimalInteger, isFiniteNumber, isNil, isNumber, isObject, isTruthy, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
+import {
+  ensureOneOf,
+  inlineVars,
+  isBlank,
+  isDecimalInteger,
+  isFiniteNumber,
+  isNil,
+  isNumber,
+  isObject,
+  isTruthy,
+  makeTitle,
+  moveInList,
+  optionalEnsureOneOf,
+  readNumber,
+  verifyUrlSafeName
+} from "./general";
 
 describe("General", () => {
   describe("moveInList", () => {
     it("works in simple case 0", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 0).join("")).to.equal("ABCD");
     });
 
     it("works in simple case 1", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 1).join("")).to.equal("ABCD");
     });
 
     it("works in simple case 2", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 2).join("")).to.equal("BACD");
     });
 
     it("works in simple case 3", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 3).join("")).to.equal("BCAD");
     });
 
     it("works in simple case 4", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 4).join("")).to.equal("BCDA");
     });
 
@@ -86,13 +101,13 @@ describe("General", () => {
 
   describe("inlineVars", () => {
     it("works in simple case", () => {
-      var json: any = {
+      const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Record<string, string> = {
+      const vars: Record<string, string> = {
         PORT: "1234",
         FOX_SAYS: "Meow"
       };
@@ -105,13 +120,13 @@ describe("General", () => {
     });
 
     it("throw error if can not find var", () => {
-      var json: any = {
+      const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Record<string, string> = {
+      const vars: Record<string, string> = {
         PORT: "1234"
       };
 
@@ -125,18 +140,33 @@ describe("General", () => {
       ensureOneOf("Honda", ["Honda", "Toyota", "BMW"], "Car");
     });
 
-    it("throw error not one of", () => {
+    it("throws error if not one of", () => {
       expect(() => {
         ensureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
     });
 
-    it("throw error not one of (undefined)", () => {
+    it("throws error if not defined", () => {
       expect(() => {
         ensureOneOf(undefined, ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is not defined)");
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is not defined)");
+    });
+  });
+
+  describe("optionalEnsureOneOF", () => {
+    it("does not throw an error is one of", () => {
+      optionalEnsureOneOf("Honda", ["Honda", "Toyota", "BMW"], "Car");
     });
 
+    it("does not throw an error is not defined", () => {
+      optionalEnsureOneOf(null, ["Honda", "Toyota", "BMW"], "Car");
+    });
+
+    it("throws error not one of", () => {
+      expect(() => {
+        optionalEnsureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
+    });
   });
 
   describe("isDecimalInteger", () => {
