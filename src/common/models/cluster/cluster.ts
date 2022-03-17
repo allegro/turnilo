@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { Record } from "immutable";
 import { BaseImmutable } from "immutable-class";
 import { External } from "plywood";
 import { URL } from "url";
@@ -25,9 +24,12 @@ import { isNil, isTruthy, optionalEnsureOneOf, verifyUrlSafeName } from "../../u
 
 export type SourceListScan = "disable" | "auto";
 
-export interface ClusterValue {
+export type ClusterType = "druid";
+
+export interface Cluster {
+  type: ClusterType;
   name: string;
-  url?: string;
+  url: string;
   title?: string;
   version?: string;
   timeout?: number;
@@ -46,7 +48,7 @@ export interface ClusterValue {
 export interface ClusterJS {
   name: string;
   title?: string;
-  url?: string;
+  url: string;
   version?: string;
   timeout?: number;
   healthCheckTimeout?: number;
@@ -59,6 +61,18 @@ export interface ClusterJS {
   introspectionStrategy?: string;
   requestDecorator?: RequestDecoratorJS;
   retry?: RetryOptionsJS;
+}
+
+export interface SerializedCluster {
+  type: ClusterType;
+  name: string;
+  timeout: number;
+}
+
+export interface ClientCluster {
+  type: ClusterType;
+  name: string;
+  timeout: number;
 }
 
 function ensureNotNative(name: string): void {
@@ -85,9 +99,17 @@ function validateUrl(url: string): void {
 const HTTP_PROTOCOL_TEST = /^http(s?):/;
 
 function readUrl(cluster: any): string {
-  if (isTruthy(cluster.url)) return cluster.url;
+  if (isTruthy(cluster.url)) {
+    validateUrl(cluster.url);
+    return cluster.url;
+  }
   const oldHost = cluster.host || cluster.druidHost || cluster.brokerHost;
-  return HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+  if (isTruthy(oldHost)) {
+    const url = HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+    validateUrl(url);
+    return url;
+  }
+  throw new Error("Cluster: missing url field");
 }
 
 function readRequestDecorator(cluster: any): RequestDecorator | null {
@@ -109,102 +131,79 @@ export const DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
 export const DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
 const DEFAULT_GUARD_DATA_CUBES = false;
 
-const defaultCluster: ClusterValue = {
-  guardDataCubes: DEFAULT_GUARD_DATA_CUBES,
-  healthCheckTimeout: DEFAULT_HEALTH_CHECK_TIMEOUT,
-  introspectionStrategy: DEFAULT_INTROSPECTION_STRATEGY,
-  name: "",
-  requestDecorator: undefined,
-  sourceListRefreshInterval: DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-  sourceListRefreshOnLoad: DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
-  sourceListScan: DEFAULT_SOURCE_LIST_SCAN,
-  sourceReintrospectInterval: DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-  sourceReintrospectOnLoad: DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
-  timeout: undefined,
-  title: "",
-  url: "",
-  version: null
-};
+function readInterval(value: number | string, defaultValue: number): number {
+  if (!isTruthy(value)) return defaultValue;
+  const numberValue = typeof value === "string" ? parseInt(value, 10) : value;
+  BaseImmutable.ensure.number(numberValue);
+  ensureNotTiny(numberValue);
+  return numberValue;
+}
 
-export class Cluster extends Record<ClusterValue>(defaultCluster) {
+export function fromConfig(params: ClusterJS): Cluster {
+  const {
+    name,
+    sourceListScan = DEFAULT_SOURCE_LIST_SCAN,
+    sourceListRefreshOnLoad = DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+    sourceReintrospectOnLoad = DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
+    version = null,
+    title = "",
+    guardDataCubes = DEFAULT_GUARD_DATA_CUBES,
+    introspectionStrategy = DEFAULT_INTROSPECTION_STRATEGY,
+    healthCheckTimeout = DEFAULT_HEALTH_CHECK_TIMEOUT
+  } = params;
 
-  static fromJS(params: ClusterJS): Cluster {
-    const {
-      name,
-      sourceListScan,
-      sourceListRefreshOnLoad,
-      sourceReintrospectOnLoad,
-      version,
-      title,
-      guardDataCubes,
-      introspectionStrategy,
-      healthCheckTimeout
-    } = params;
+  verifyUrlSafeName(name);
+  ensureNotNative(name);
 
-    verifyUrlSafeName(name);
-    ensureNotNative(name);
+  optionalEnsureOneOf(sourceListScan, SOURCE_LIST_SCAN_VALUES, "Cluster: sourceListScan");
 
-    optionalEnsureOneOf(sourceListScan, SOURCE_LIST_SCAN_VALUES, "Cluster: sourceListScan");
+  const sourceReintrospectInterval = readInterval(params.sourceReintrospectInterval, DEFAULT_SOURCE_REINTROSPECT_INTERVAL);
+  const sourceListRefreshInterval = readInterval(params.sourceListRefreshInterval, DEFAULT_SOURCE_LIST_REFRESH_INTERVAL);
+  const retry = RetryOptions.fromJS(params.retry);
+  const requestDecorator = readRequestDecorator(params);
 
-    const sourceReintrospectInterval = typeof params.sourceReintrospectInterval === "string" ? parseInt(params.sourceReintrospectInterval, 10) : params.sourceListRefreshInterval;
-    if (isTruthy(sourceReintrospectInterval)) {
-      BaseImmutable.ensure.number(sourceReintrospectInterval);
-      ensureNotTiny(sourceReintrospectInterval);
-    }
+  const url = readUrl(params);
 
-    const sourceListRefreshInterval = typeof params.sourceListRefreshInterval === "string" ? parseInt(params.sourceListRefreshInterval, 10) : params.sourceListRefreshInterval;
-    if (isTruthy(sourceListRefreshInterval)) {
-      BaseImmutable.ensure.number(sourceListRefreshInterval);
-      ensureNotTiny(sourceListRefreshInterval);
-    }
+  return {
+    type: "druid",
+    timeout: typeof params.timeout === "string" ? parseInt(params.timeout, 10) : params.timeout,
+    name,
+    url,
+    retry,
+    requestDecorator,
+    sourceListScan,
+    sourceListRefreshInterval,
+    sourceListRefreshOnLoad,
+    sourceReintrospectInterval,
+    sourceReintrospectOnLoad,
+    version,
+    title,
+    guardDataCubes,
+    introspectionStrategy,
+    healthCheckTimeout
+  };
+}
 
-    const retry = RetryOptions.fromJS(params.retry);
-    const requestDecorator = readRequestDecorator(params);
+export function serialize(cluster: Cluster): SerializedCluster {
+  return {
+    type: "druid",
+    name: cluster.name,
+    timeout: cluster.timeout
+  };
+}
 
-    const url = readUrl(params);
-    validateUrl(url);
+export function makeExternalFromSourceName(source: string, version?: string): External {
+  return External.fromValue({
+    engine: "druid",
+    source,
+    version,
+    suppress: true,
 
-    return new Cluster({
-      timeout: typeof params.timeout === "string" ? parseInt(params.timeout, 10) : params.timeout,
-      name,
-      url,
-      retry,
-      requestDecorator,
-      sourceListScan,
-      sourceListRefreshInterval,
-      sourceListRefreshOnLoad,
-      sourceReintrospectInterval,
-      sourceReintrospectOnLoad,
-      version,
-      title,
-      guardDataCubes,
-      introspectionStrategy,
-      healthCheckTimeout
-    });
-  }
+    allowSelectQueries: true,
+    allowEternity: false
+  });
+}
 
-  public type = "druid";
-
-  public toClientCluster(): Cluster {
-    return new Cluster({
-      name: this.name,
-      timeout: this.timeout
-    });
-  }
-
-  public makeExternalFromSourceName(source: string, version?: string): External {
-    return External.fromValue({
-      engine: "druid",
-      source,
-      version,
-      suppress: true,
-
-      allowSelectQueries: true,
-      allowEternity: false
-    });
-  }
-
-  public shouldScanSources(): boolean {
-    return this.sourceListScan === "auto";
-  }
+export function shouldScanSources(cluster: Cluster): boolean {
+  return cluster.sourceListScan === "auto";
 }

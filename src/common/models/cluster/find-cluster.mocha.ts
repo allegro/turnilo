@@ -15,12 +15,12 @@
  */
 
 import { expect } from "chai";
-import { Cluster } from "./cluster";
+import { fromConfig } from "./cluster";
 import { ClusterFixtures } from "./cluster.fixtures";
 import { findCluster } from "./find-cluster";
 
-const wikiCluster = Cluster.fromJS(ClusterFixtures.druidWikiClusterJS());
-const twitterCluster = Cluster.fromJS(ClusterFixtures.druidTwitterClusterJS());
+const wikiCluster = fromConfig(ClusterFixtures.druidWikiClusterJS());
+const twitterCluster = fromConfig(ClusterFixtures.druidTwitterClusterJS());
 
 const clusters = [
   wikiCluster,

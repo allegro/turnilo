@@ -24,11 +24,9 @@ import {
   fromConfig as appSettingsFromConfig
 } from "../common/models/app-settings/app-settings";
 import {
-  Cluster,
-  DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
-  DEFAULT_SOURCE_REINTROSPECT_INTERVAL, DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
+  fromConfig as clusterFromConfig
 } from "../common/models/cluster/cluster";
-import { fromConfig } from "../common/models/data-cube/data-cube";
+import { fromConfig as dataCubeFromConfig } from "../common/models/data-cube/data-cube";
 import { fromConfig as sourcesFromConfig, SourcesJS } from "../common/models/sources/sources";
 import { arraySum, isTruthy } from "../common/utils/general/general";
 import { appSettingsToYaml, printExtra, sourcesToYaml } from "../common/utils/yaml-helper/yaml-helper";
@@ -224,24 +222,19 @@ if (START_SERVER) {
 }
 
 function readConfig(config: AppSettingsJS & SourcesJS) {
-    return {
-      appSettings: appSettingsFromConfig(config),
-      sources: sourcesFromConfig(config)
-    };
+  return {
+    appSettings: appSettingsFromConfig(config),
+    sources: sourcesFromConfig(config)
+  };
 }
 
 function readArgs(file: string | undefined, url: string | undefined) {
   const sources = {
-    clusters: !isTruthy(url) ? [] : [new Cluster({
+    clusters: !isTruthy(url) ? [] : [clusterFromConfig({
       name: "druid",
-      url,
-      sourceListScan: "auto",
-      sourceListRefreshInterval: DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-      sourceListRefreshOnLoad: DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
-      sourceReintrospectInterval: DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-      sourceReintrospectOnLoad: DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
+      url
     })],
-    dataCubes: !isTruthy(file) ? [] : [fromConfig({
+    dataCubes: !isTruthy(file) ? [] : [dataCubeFromConfig({
       name: path.basename(file, path.extname(file)),
       clusterName: "native",
       source: file

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import { ClientMeasures, SerializedMeasures } from "../../common/models/measure/measures";
-import { mapValues } from "../../common/utils/object/object";
-import { deserialize as deserializeMeasure } from "./measure";
+import { ClientCluster, SerializedCluster } from "../../common/models/cluster/cluster";
 
-export function deserialize({ tree, byName }: SerializedMeasures): ClientMeasures {
-  return {
-    tree,
-    byName: mapValues(byName, deserializeMeasure)
-  };
+export function deserialize(cluster: SerializedCluster): ClientCluster {
+  return cluster;
 }

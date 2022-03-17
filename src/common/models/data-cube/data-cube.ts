@@ -42,7 +42,7 @@ import {
   findDimensionByName,
   fromConfig as dimensionsFromConfig,
   prepend,
-  serialize as dimensionsSerialize,
+  serialize as serializeDimensions,
   SerializedDimensions
 } from "../dimension/dimensions";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
@@ -54,7 +54,8 @@ import {
   hasMeasureWithName,
   MeasureOrGroupJS,
   Measures,
-  serialize as measuresSerialize, SerializedMeasures
+  serialize as serializeMeasures,
+  SerializedMeasures
 } from "../measure/measures";
 import { QueryDecoratorDefinition, QueryDecoratorDefinitionJS } from "../query-decorator/query-decorator";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
@@ -433,11 +434,11 @@ export function serialize(dataCube: DataCube): SerializedDataCube {
     defaultSplitDimensions,
     defaultTimezone: defaultTimezone.toJS(),
     description,
-    dimensions: dimensionsSerialize(dimensions),
+    dimensions: serializeDimensions(dimensions),
     extendedDescription,
     group,
     maxSplits,
-    measures: measuresSerialize(measures),
+    measures: serializeMeasures(measures),
     name,
     options,
     refreshRule: refreshRule.toJS(),
