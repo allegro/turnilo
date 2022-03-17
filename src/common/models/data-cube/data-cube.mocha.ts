@@ -30,7 +30,8 @@ use(equivalent);
 
 describe("DataCube", () => {
   const druidCluster = clusterFromConfig({
-    name: "druid"
+    name: "druid",
+    url: "http://driud"
   });
 
   describe("validates", () => {

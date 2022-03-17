@@ -15,51 +15,140 @@
  * limitations under the License.
  */
 
+import { expect, use } from "chai";
+import equivalent from "../../../client/utils/test-utils/equivalent";
+import { RequestDecorator } from "../../../server/utils/request-decorator/request-decorator";
+import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
+import { ClusterJS, fromConfig } from "./cluster";
+
+use(equivalent);
+
 describe("Cluster", () => {
-  // TODO: reimplement this test as simpler cases without immutable-class-tester - it checks too much
-  // it.skip("is an immutable class", () => {
-  //   testImmutableClass(Cluster, [
-  //     {
-  //       name: "my-druid-cluster"
-  //     },
-  //     {
-  //       name: "my-druid-cluster",
-  //       url: "https://192.168.99.100",
-  //       version: "0.9.1",
-  //       timeout: 30000,
-  //       healthCheckTimeout: 50,
-  //       sourceListScan: "auto",
-  //       sourceListRefreshOnLoad: true,
-  //       sourceListRefreshInterval: 10000,
-  //       sourceReintrospectInterval: 10000,
-  //
-  //       introspectionStrategy: "segment-metadata-fallback"
-  //     },
-  //     {
-  //       name: "my-mysql-cluster",
-  //       url: "http://192.168.99.100",
-  //       timeout: 30000,
-  //       sourceListScan: "auto"
-  //     },
-  //     {
-  //       name: "my-mysql-cluster",
-  //       url: "https://192.168.99.100",
-  //       timeout: 30000,
-  //       sourceListScan: "auto",
-  //       sourceListRefreshInterval: 0,
-  //       sourceReintrospectInterval: 0
-  //     }
-  //   ]);
-  // });
-  //
-  // describe.skip("backward compatibility", () => {
-  //   it("should read old host and assume http protocol", () => {
-  //     const cluster = fromConfig({
-  //       name: "old-host",
-  //       host: "broker-host.com"
-  //     } as ClusterJS);
-  //
-  //     expect(cluster.url).to.be.eq("http://broker-host.com");
-  //   });
-  // });
-});
+  describe("fromConfig", () => {
+    it("should load defaults", () => {
+      const cluster = fromConfig({
+        name: "foobar",
+        url: "http://bazz"
+      });
+
+      expect(cluster).to.be.deep.equal({
+        name: "foobar",
+        guardDataCubes: false,
+        healthCheckTimeout: 1000,
+        introspectionStrategy: "segment-metadata-fallback",
+        requestDecorator: null,
+        retry: new RetryOptions(),
+        sourceListRefreshInterval: 0,
+        sourceListRefreshOnLoad: false,
+        sourceListScan: "auto",
+        sourceReintrospectInterval: 0,
+        sourceReintrospectOnLoad: false,
+        timeout: undefined,
+        title: "",
+        type: "druid",
+        url: "http://bazz",
+        version: null
+      });
+    });
+
+    it("should throw with incorrect name type", () => {
+      expect(() => fromConfig({ name: 1 } as unknown as ClusterJS)).to.throw("must be a string");
+    });
+
+    it("should throw with incorrect empty name", () => {
+      expect(() => fromConfig({ name: "", url: "http://foobar" })).to.throw("empty name");
+    });
+
+    it("should throw with not url safe name", () => {
+      expect(() => fromConfig({ name: "foobar%bazz#", url: "http://foobar" })).to.throw("is not a URL safe name");
+    });
+
+    it("should throw with name equal to native", () => {
+      expect(() => fromConfig({ name: "native", url: "http://foobar" })).to.throw("name can not be 'native'");
+    });
+
+    it("should read retry options", () => {
+      const cluster = fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        retry: {
+          maxAttempts: 1,
+          delay: 42
+        }
+      });
+
+      expect(cluster.retry).to.be.equivalent(new RetryOptions({ maxAttempts: 1, delay: 42 }));
+    });
+
+    it("should read request decorator", () => {
+      const cluster = fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        requestDecorator: {
+          path: "foobar",
+          options: { bazz: true }
+        }
+      });
+
+      expect(cluster.requestDecorator).to.be.equivalent(new RequestDecorator("foobar", { bazz: true }));
+    });
+
+    it("should read request decorator old format", () => {
+      const cluster = fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        requestDecorator: "foobar",
+        decoratorOptions: { bazz: true }
+      } as unknown as ClusterJS);
+
+      expect(cluster.requestDecorator).to.be.equivalent(new RequestDecorator("foobar", { bazz: true }));
+    });
+
+    it("should read old host and assume http protocol", () => {
+      const cluster = fromConfig({
+        name: "old-host",
+        host: "broker-host.com"
+      } as unknown as ClusterJS);
+
+      expect(cluster.url).to.be.eq("http://broker-host.com");
+    });
+
+    it("should override default values", () => {
+      const cluster = fromConfig({
+        guardDataCubes: true,
+        healthCheckTimeout: 42,
+        introspectionStrategy: "introspection-introspection",
+        name: "cluster-name",
+        sourceListRefreshInterval: 1123,
+        sourceListRefreshOnLoad: true,
+        sourceListScan: "auto",
+        sourceReintrospectInterval: 1432,
+        sourceReintrospectOnLoad: true,
+        timeout: 581,
+        title: "foobar-title",
+        url: "http://url-bazz",
+        version: "new-version"
+      });
+
+      expect(cluster).to.be.deep.equal({
+        guardDataCubes: true,
+        healthCheckTimeout: 42,
+        introspectionStrategy: "introspection-introspection",
+        name: "cluster-name",
+        sourceListRefreshInterval: 1123,
+        sourceListRefreshOnLoad: true,
+        sourceListScan: "auto",
+        sourceReintrospectInterval: 1432,
+        sourceReintrospectOnLoad: true,
+        timeout: 581,
+        title: "foobar-title",
+        url: "http://url-bazz",
+        version: "new-version",
+        type: "druid",
+        requestDecorator: null,
+        retry: new RetryOptions()
+      });
+    });
+  });
+})
+;

@@ -29,7 +29,7 @@ export type ClusterType = "druid";
 export interface Cluster {
   type: ClusterType;
   name: string;
-  url?: string;
+  url: string;
   title?: string;
   version?: string;
   timeout?: number;
@@ -48,7 +48,7 @@ export interface Cluster {
 export interface ClusterJS {
   name: string;
   title?: string;
-  url?: string;
+  url: string;
   version?: string;
   timeout?: number;
   healthCheckTimeout?: number;
@@ -99,9 +99,17 @@ function validateUrl(url: string): void {
 const HTTP_PROTOCOL_TEST = /^http(s?):/;
 
 function readUrl(cluster: any): string {
-  if (isTruthy(cluster.url)) return cluster.url;
+  if (isTruthy(cluster.url)) {
+    validateUrl(cluster.url);
+    return cluster.url;
+  }
   const oldHost = cluster.host || cluster.druidHost || cluster.brokerHost;
-  return HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+  if (isTruthy(oldHost)) {
+    const url = HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+    validateUrl(url);
+    return url;
+  }
+  throw new Error("Cluster: missing url field");
 }
 
 function readRequestDecorator(cluster: any): RequestDecorator | null {
@@ -155,7 +163,6 @@ export function fromConfig(params: ClusterJS): Cluster {
   const requestDecorator = readRequestDecorator(params);
 
   const url = readUrl(params);
-  validateUrl(url);
 
   return {
     type: "druid",
