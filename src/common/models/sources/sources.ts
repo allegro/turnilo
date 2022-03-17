@@ -21,7 +21,7 @@ import {
   Cluster,
   ClusterJS,
   fromConfig as clusterFromConfig,
-  serialize as clusterSerialize,
+  serialize as serializeCluster,
   SerializedCluster
 } from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
@@ -30,7 +30,7 @@ import {
   DataCube,
   DataCubeJS,
   fromConfig as dataCubeFromConfig,
-  serialize as dataCubeSerialize,
+  serialize as serializeDataCube,
   SerializedDataCube
 } from "../data-cube/data-cube";
 import { isQueryable, QueryableDataCube } from "../data-cube/queryable-data-cube";
@@ -99,11 +99,11 @@ export function serialize({
                             clusters: serverClusters,
                             dataCubes: serverDataCubes
                           }: Sources): SerializedSources {
-  const clusters = serverClusters.map(clusterSerialize);
+  const clusters = serverClusters.map(serializeCluster);
 
   const dataCubes = serverDataCubes
     .filter(dc => isQueryable(dc))
-    .map(dataCubeSerialize);
+    .map(serializeDataCube);
 
   return {
     clusters,

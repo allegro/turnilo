@@ -16,11 +16,11 @@
 
 import { ClientDimensions, SerializedDimensions } from "../../common/models/dimension/dimensions";
 import { mapValues } from "../../common/utils/object/object";
-import { deserialize as dimensionDeserialize } from "./dimension";
+import { deserialize as deserializeDimension } from "./dimension";
 
 export function deserialize({ tree, byName }: SerializedDimensions): ClientDimensions {
   return {
     tree,
-    byName: mapValues(byName, dimensionDeserialize)
+    byName: mapValues(byName, deserializeDimension)
   };
 }

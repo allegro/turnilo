@@ -24,7 +24,7 @@ import {
   fromConfig as measureFromConfig,
   Measure,
   MeasureJS,
-  serialize as measureSerialize,
+  serialize as serializeMeasure,
   SerializedMeasure
 } from "./measure";
 
@@ -107,7 +107,7 @@ export type ClientMeasures = Measures;
 export function serialize({ tree, byName }: Measures): SerializedMeasures {
   return {
     tree,
-    byName: mapValues(byName, measureSerialize)
+    byName: mapValues(byName, serializeMeasure)
   };
 }
 

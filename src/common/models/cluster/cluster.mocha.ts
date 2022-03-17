@@ -25,7 +25,7 @@ use(equivalent);
 
 describe("Cluster", () => {
   describe("fromConfig", () => {
-    it("should load defaults", () => {
+    it("should load default values", () => {
       const cluster = fromConfig({
         name: "foobar",
         url: "http://bazz"

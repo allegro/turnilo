@@ -18,15 +18,15 @@ import { ClientAppSettings } from "../../common/models/app-settings/app-settings
 import { SerializedDataCube } from "../../common/models/data-cube/data-cube";
 import { ClientSources, SerializedSources } from "../../common/models/sources/sources";
 import { Ajax } from "../utils/ajax/ajax";
-import { deserialize as clusterDeserialize } from "./cluster";
-import { deserialize as dataCubeDeserialize } from "./data-cube";
+import { deserialize as deserializeCluster } from "./cluster";
+import { deserialize as deserializeDataCube } from "./data-cube";
 
 export function deserialize(settings: SerializedSources, appSettings: ClientAppSettings): ClientSources {
-  const clusters = settings.clusters.map(clusterDeserialize);
+  const clusters = settings.clusters.map(deserializeCluster);
 
   const dataCubes = settings.dataCubes.map((dataCube: SerializedDataCube) => {
     const executor = Ajax.queryUrlExecutorFactory(dataCube.name, appSettings);
-    return dataCubeDeserialize(dataCube, executor);
+    return deserializeDataCube(dataCube, executor);
   });
 
   return {

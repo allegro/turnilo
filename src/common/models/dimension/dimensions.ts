@@ -22,7 +22,7 @@ import {
   Dimension,
   DimensionJS,
   fromConfig as dimensionFromConfig,
-  serialize as dimensionSerialize,
+  serialize as serializeDimension,
   SerializedDimension
 } from "./dimension";
 
@@ -105,7 +105,7 @@ export interface SerializedDimensions {
 export function serialize({ tree, byName }: Dimensions): SerializedDimensions {
   return {
     tree,
-    byName: mapValues(byName, dimensionSerialize)
+    byName: mapValues(byName, serializeDimension)
   };
 }
 

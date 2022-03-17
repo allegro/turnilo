@@ -16,7 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import { ClientCustomization, SerializedCustomization } from "../../common/models/customization/customization";
-import { deserialize as localeDeserialize } from "../../common/models/locale/locale";
+import { deserialize as deserializeLocale } from "../../common/models/locale/locale";
 
 export function deserialize(customization: SerializedCustomization): ClientCustomization {
   const { headerBackground, locale, customLogoSvg, timezones, externalViews, hasUrlShortener, sentryDSN } = customization;
@@ -26,7 +26,7 @@ export function deserialize(customization: SerializedCustomization): ClientCusto
     externalViews,
     hasUrlShortener,
     sentryDSN,
-    locale: localeDeserialize(locale),
+    locale: deserializeLocale(locale),
     timezones: timezones.map(Timezone.fromJS)
   };
 }
