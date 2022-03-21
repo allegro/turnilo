@@ -38,7 +38,16 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
     const { plottingStage, scale, series, ticks, beeswarmData } = getBeeswarmData(data, essence, stage);
     const splitKey = essence.splits.splits.first().toKey();
 
+    const lowerThreshold = Math.round(plottingStage.height * 0.1);
+    const upperThreshold =  Math.round(plottingStage.height * 0.9);
+    const topPointPosition = lowerThreshold/2;
+    const bottomPointPosition = plottingStage.height - topPointPosition;
+
     const points = getPoints({ data: beeswarmData, series, scale, pointRadius: 3, stage: plottingStage });
+
+    const pointsAboveThreshold = points.map(point => point.y >= upperThreshold ? point : undefined).filter(Boolean); // high Y, lower on screen
+    const pointsBelowThreshold = points.map(point => point.y <= lowerThreshold ? point : undefined).filter(Boolean);
+    const pointsBetweenThresholds = points.map(point => (point.y > lowerThreshold && point.y < upperThreshold) ? point : undefined).filter(Boolean);
 
     return <div className="scatterplot-container" style={stage.getWidthHeight()}>
       <span className="axis-title axis-title-x" style={{ bottom: 150, right: 10 }}>{series.title()}</span>
@@ -58,9 +67,11 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
           formatter={series.formatter()}
           tickSize={TICK_SIZE}/>
         <g transform={plottingStage.getTransform()}>
-          {points.map((datum, index) =>
+          {pointsBetweenThresholds.map((datum, index) =>
             <Point key={index} datum={datum.data} x={datum.x} y={datum.y} r={datum.r} setHover={setPointHover} resetHover={resetPointHover}/>
           )}
+          <Point datum={pointsAboveThreshold[0].data} x={pointsAboveThreshold[0].x} y={bottomPointPosition} r={20} setHover={setPointHover} resetHover={resetPointHover} />
+          <Point datum={pointsBelowThreshold[0].data} x={pointsBelowThreshold[0].x} y={topPointPosition} r={20} setHover={setPointHover} resetHover={resetPointHover} />
         </g>
       </svg>
     </div>;
