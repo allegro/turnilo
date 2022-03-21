@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ClientDataCube } from "../../../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
 import { DimensionSort, Sort, SortDirection } from "../../../../../common/models/sort/sort";
@@ -35,7 +35,7 @@ function sortDirection(split: Split, sort: Sort): SortDirection | null {
   return isCurrentSort ? sort.direction : null;
 }
 
-export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
+export const SplitColumnsHeader: React.FunctionComponent<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
   return <Corner>
     <div className="header-split-columns">
       {splits.splits.toArray().map(split => {

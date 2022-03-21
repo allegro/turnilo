@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../common/utils/functional/functional";
@@ -29,7 +29,7 @@ interface OwnProps {
 
 export type SeriesChartLineProps = Pick<ChartLineProps, "showArea" | "getX" | "xScale" | "yScale" | "dataset" | "color" | "stage"> & OwnProps;
 
-export const SeriesChartLine: React.SFC<SeriesChartLineProps> = props => {
+export const SeriesChartLine: React.FunctionComponent<SeriesChartLineProps> = props => {
   const { showArea, essence, series, getX, stage, dataset, xScale, yScale, color } = props;
 
   const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));

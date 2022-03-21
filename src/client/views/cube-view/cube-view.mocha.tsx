@@ -17,12 +17,12 @@
 
 import { expect } from "chai";
 import { mount } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { clientAppSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiClientDataCube } from "../../../common/models/data-cube/data-cube.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { noop } from "../../../common/utils/functional/functional";
-import { TotalsVisualization } from "../../visualizations/totals/totals";
+import TotalsVisualization from "../../visualizations/totals/totals";
 import { CubeView } from "./cube-view";
 
 // TODO: skip this test till we resolve issue with esModuleInterop in ts-register in mocha. We should consider migrating to mochapack and test code processed by webpack

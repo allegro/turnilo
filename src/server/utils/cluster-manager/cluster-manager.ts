@@ -19,7 +19,7 @@ import { External } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator } from "plywood-druid-requester";
 import { Logger } from "../../../common/logger/logger";
-import { Cluster } from "../../../common/models/cluster/cluster";
+import { Cluster, makeExternalFromSourceName, shouldScanSources } from "../../../common/models/cluster/cluster";
 import { noop } from "../../../common/utils/functional/functional";
 import { loadModule } from "../module-loader/module-loader";
 import { DruidRequestDecoratorModule } from "../request-decorator/request-decorator";
@@ -185,8 +185,8 @@ export class ClusterManager {
   private updateSourceListRefreshTimer() {
     const { logger, cluster } = this;
 
-    if (this.sourceListRefreshInterval !== cluster.getSourceListRefreshInterval()) {
-      this.sourceListRefreshInterval = cluster.getSourceListRefreshInterval();
+    if (this.sourceListRefreshInterval !== cluster.sourceListRefreshInterval) {
+      this.sourceListRefreshInterval = cluster.sourceListRefreshInterval;
 
       if (this.sourceListRefreshTimer) {
         logger.log(`Clearing sourceListRefresh timer in cluster '${cluster.name}'`);
@@ -194,7 +194,7 @@ export class ClusterManager {
         this.sourceListRefreshTimer = null;
       }
 
-      if (this.sourceListRefreshInterval && cluster.shouldScanSources()) {
+      if (this.sourceListRefreshInterval && shouldScanSources(cluster)) {
         logger.log(`Setting up sourceListRefresh timer in cluster '${cluster.name}' (every ${this.sourceListRefreshInterval}ms)`);
         this.sourceListRefreshTimer = setInterval(
           () => {
@@ -212,8 +212,8 @@ export class ClusterManager {
   private updateSourceReintrospectTimer() {
     const { logger, cluster } = this;
 
-    if (this.sourceReintrospectInterval !== cluster.getSourceReintrospectInterval()) {
-      this.sourceReintrospectInterval = cluster.getSourceReintrospectInterval();
+    if (this.sourceReintrospectInterval !== cluster.sourceReintrospectInterval) {
+      this.sourceReintrospectInterval = cluster.sourceReintrospectInterval;
 
       if (this.sourceReintrospectTimer) {
         logger.log(`Clearing sourceReintrospect timer in cluster '${cluster.name}'`);
@@ -316,7 +316,7 @@ export class ClusterManager {
   // See if any new sources were added to the cluster
   public scanSourceList = (): Promise<void> => {
     const { logger, cluster, verbose } = this;
-    if (!cluster.shouldScanSources()) return Promise.resolve(null);
+    if (!shouldScanSources(cluster)) return Promise.resolve(null);
 
     logger.log(`Scanning cluster '${cluster.name}' for new sources`);
     return (External.getConstructorFor(cluster.type) as any).getSourceList(this.requester)
@@ -348,7 +348,7 @@ export class ClusterManager {
 
             } else {
               logger.log(`Cluster '${cluster.name}' making external for '${source}'`);
-              const external = cluster.makeExternalFromSourceName(source, this.version).attachRequester(this.requester);
+              const external = makeExternalFromSourceName(source, this.version).attachRequester(this.requester);
               const newManagedExternal: ManagedExternal = {
                 name: this.generateExternalName(external),
                 external,

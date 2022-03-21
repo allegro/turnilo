@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { STRINGS } from "../../config/constants";
 import { isOauthError } from "../../oauth/oauth";
 import { Message } from "../message/message";
@@ -24,7 +24,7 @@ export interface QueryErrorProps {
   error: Error;
 }
 
-export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
+export const QueryError: React.FunctionComponent<QueryErrorProps> = ({ error }) => {
   if (isOauthError(error)) {
     throw error;
   }

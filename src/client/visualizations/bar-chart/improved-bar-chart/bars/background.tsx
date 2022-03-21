@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { BottomBorder, RightBorder } from "../../../../components/grid-border/grid-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
@@ -26,7 +26,7 @@ interface BackgroundProps {
   yScale: LinearScale;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.FunctionComponent<BackgroundProps> = props => {
   const { gridStage, yScale } = props;
   const ticks = pickTicks(yScale);
   return <React.Fragment>

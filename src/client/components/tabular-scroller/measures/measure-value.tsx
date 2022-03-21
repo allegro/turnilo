@@ -16,7 +16,7 @@
 
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { Delta } from "../../delta/delta";
 import { MeasureBackground } from "./measure-background";
@@ -25,13 +25,13 @@ import { MeasureCell } from "./measure-cell";
 interface MeasureValueProps {
   series: ConcreteSeries;
   datum: Datum;
-  barScale?: d3.scale.Linear<number, number>;
+  barScale?: d3.ScaleLinear<number, number>;
   cellWidth: number;
   showPrevious: boolean;
   highlight: boolean;
 }
 
-export const MeasureValue: React.SFC<MeasureValueProps> = props => {
+export const MeasureValue: React.FunctionComponent<MeasureValueProps> = props => {
   const { series, datum, barScale, highlight, showPrevious, cellWidth } = props;
 
   const currentValue = series.selectValue(datum);

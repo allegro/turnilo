@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Unary } from "../../../common/utils/functional/functional";
 import { TextRow } from "./text-row";
@@ -28,7 +28,7 @@ interface TextRowsProps {
   onClick?: Unary<unknown, void>;
 }
 
-export const TextRows: React.SFC<TextRowsProps> = props => {
+export const TextRows: React.FunctionComponent<TextRowsProps> = props => {
   const { data, dimension, onClick, formatter, searchText } = props;
   return <React.Fragment>
     {data.map(datum => {

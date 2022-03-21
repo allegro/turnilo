@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Omit } from "../../../../common/utils/functional/functional";
 import { SeriesChartLine, SeriesChartLineProps } from "./series-chart-line";
 
 type ColoredSeriesChartLine = Omit<SeriesChartLineProps, "color"  | "showArea"> & { color: string };
 
-export const ColoredSeriesChartLine: React.SFC<ColoredSeriesChartLine> = props => {
+export const ColoredSeriesChartLine: React.FunctionComponent<ColoredSeriesChartLine> = props => {
   return <SeriesChartLine {...props} showArea={false}/>;
 };

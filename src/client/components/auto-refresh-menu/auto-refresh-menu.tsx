@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { ClientDataCube, getMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -84,7 +84,7 @@ function updatedText(dataCube: ClientDataCube, timekeeper: Timekeeper, timezone:
   }
 }
 
-export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
+export const AutoRefreshMenu: React.FunctionComponent<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
   <BubbleMenu
     className="auto-refresh-menu"
     direction="down"

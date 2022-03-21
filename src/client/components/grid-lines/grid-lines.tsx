@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames, roundToHalfPx } from "../../utils/dom/dom";
@@ -44,7 +44,7 @@ function lineCoordinates(orientation: "horizontal" | "vertical", value: number, 
   }
 }
 
-export const GridLines: React.SFC<GridLinesProps> = props => {
+export const GridLines: React.FunctionComponent<GridLinesProps> = props => {
   const { orientation, stage, ticks, scale } = props;
 
   return <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>

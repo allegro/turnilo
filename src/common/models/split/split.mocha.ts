@@ -15,7 +15,41 @@
  * limitations under the License.
  */
 
+import { expect } from "chai";
+import { Timezone } from "chronoshift";
+import * as sinon from "sinon";
+import * as formatterModule from "../../utils/formatter/formatter";
 import { Split } from "./split";
 
 describe("Split", () => {
+  describe("selectValue", () => {
+    it("should select property under own key", () => {
+      const split = new Split({ reference: "foobar" });
+      const datum = { foobar: 42 };
+
+      expect(split.selectValue(datum)).to.equal(42);
+    });
+  });
+
+  describe("formatValue", () => {
+    let formatValueStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      formatValueStub = sinon.stub(formatterModule, "formatValue");
+    });
+
+    it("should select property under own key and pass for formatValue", () => {
+      const timezone = "timezone-string" as unknown as Timezone;
+      const split = new Split({ reference: "foobar" });
+      const datum = { foobar: 42 };
+
+      split.formatValue(datum, timezone);
+
+      expect(formatValueStub.calledWith(42, timezone)).to.be.true;
+    });
+
+    afterEach(() => {
+      formatValueStub.restore();
+    });
+  });
 });

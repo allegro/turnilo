@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./clearable-input.scss";
 
@@ -36,7 +36,7 @@ export interface ClearableInputProps {
   onBlur?: React.FocusEventHandler<HTMLElement>;
 }
 
-export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, placeholder, focusOnMount, onBlur, onChange, value = "", type = "text" }) => {
+export const ClearableInput: React.FunctionComponent<ClearableInputProps> = ({ className, placeholder, focusOnMount, onBlur, onChange, value = "", type = "text" }) => {
   const change = (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value);
 
   const clear = () => onChange("");

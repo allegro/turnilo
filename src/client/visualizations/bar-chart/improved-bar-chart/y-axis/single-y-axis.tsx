@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
@@ -28,7 +28,7 @@ interface SingleYAxisProps {
   stage: Stage;
 }
 
-export const SingleYAxis: React.SFC<SingleYAxisProps> = props => {
+export const SingleYAxis: React.FunctionComponent<SingleYAxisProps> = props => {
   const { scale, series, stage } = props;
   return <div>
     <svg viewBox={stage.getViewBox()}>

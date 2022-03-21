@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
+import React from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 type SafeCopyToClipboardProps = Pick<CopyToClipboard.Props, "text" | "onCopy" | "children">;
 

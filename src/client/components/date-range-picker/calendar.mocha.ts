@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { expect, use } from "chai";
-import * as chaiDatetime from "chai-datetime";
+import chaiDatetime from "chai-datetime";
 import { Timezone } from "chronoshift";
 import { tz as getMomentWithTimezone } from "moment-timezone";
 import { LOCALES } from "../../../common/models/locale/locale";

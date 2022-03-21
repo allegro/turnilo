@@ -2,7 +2,7 @@
  * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 import { Datum } from "plywood";
-import * as React from "react";
-
+import React, { useCallback, useState } from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
-
-import "./scatterplot.scss";
-
 import { ScatterplotChart } from "./scatterplot-chart";
 
 import makeQuery from "../../../common/utils/query/visualization-query";
@@ -30,37 +26,29 @@ import {
 } from "../../views/cube-view/center-panel/center-panel";
 import { BeeswarmChart } from "./beeswarm-chart";
 
+import "./scatterplot.scss";
+
 export interface HoveredPoint {
   datum: Datum;
   x: number;
   y: number;
 }
 
-interface ScatterplotState {
-  hoveredPoint: HoveredPoint | null;
-}
+export const Scatterplot: React.FunctionComponent<ChartProps> = props => {
+  const [hoveredPoint, setHoveredPoint] = useState<HoveredPoint>(null);
 
-class Scatterplot extends React.Component<ChartProps, ScatterplotState> {
-  state: ScatterplotState = {
-    hoveredPoint: null
-  };
+  const setPointHover = useCallback((hoveredPoint: HoveredPoint): void => setHoveredPoint(hoveredPoint), [setHoveredPoint]);
 
-  setPointHover = (hoveredPoint: HoveredPoint): void =>
-    this.setState({ hoveredPoint });
+  const resetPointHover = useCallback((): void => setHoveredPoint(null), [setHoveredPoint]);
 
-  resetPointHover = (): void =>
-    this.setState({ hoveredPoint: null });
-
-  render() {
-    if (this.props.essence.series.count() === 1) {
-      return <BeeswarmChart {...this.props} setPointHover={this.setPointHover} resetPointHover={this.resetPointHover} hoveredPoint={this.state.hoveredPoint}/>;
+  if (props.essence.series.count() === 1) {
+      return <BeeswarmChart {...props} setPointHover={setPointHover} resetPointHover={resetPointHover} hoveredPoint={hoveredPoint}/>;
     }
 
-    return <ScatterplotChart {...this.props} setPointHover={this.setPointHover} resetPointHover={this.resetPointHover} hoveredPoint={this.state.hoveredPoint}/>;
-  }
-}
+  return <ScatterplotChart {...props} setPointHover={setPointHover} resetPointHover={resetPointHover} hoveredPoint={hoveredPoint}/>;
+};
 
-export function ScatterplotVisualization(props: VisualizationProps) {
+export default function ScatterplotVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Scatterplot}/>

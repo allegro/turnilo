@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Component, CSSProperties, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
@@ -84,7 +84,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     searchText: ""
   };
 
-  clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
+  private clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
     const target = findParentWithClass(e.currentTarget, DIMENSION_CLASS_NAME);
     if (menuOpenOn === target) {

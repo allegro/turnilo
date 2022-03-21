@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
@@ -31,7 +31,7 @@ import { XAxis } from "./x-axis/x-axis";
 const Y_AXIS_WIDTH = 60;
 const X_AXIS_HEIGHT = 30;
 
-export function LineChartVisualization(props: VisualizationProps) {
+export default function LineChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
     <ChartPanel {...props} queryFactory={makeQuery} chartComponent={LineChart}/>

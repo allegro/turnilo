@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { githubGist } from "react-syntax-highlighter/styles/hljs";
+import React, { useCallback, useState } from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
+import { Loader } from "../../components/loader/loader";
 import { Modal } from "../../components/modal/modal";
 import { SafeCopyToClipboard } from "../../components/safe-copy-to-clipboard/safe-copy-to-clipboard";
 import { STRINGS } from "../../config/constants";
@@ -34,37 +33,32 @@ interface SourceModalProps {
   source: string;
 }
 
-interface SourceModalState {
-  copied: boolean;
-}
+export const SourceModal: React.FunctionComponent<SourceModalProps> = ({ copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header }) => {
+  const [copied, setCopied] = useState(false);
 
-export class SourceModal extends React.Component<SourceModalProps, SourceModalState> {
+  const onCopy = useCallback(() => setCopied(true), [setCopied]);
 
-  state: SourceModalState = { copied: false };
+  const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
 
-  onCopy = () => this.setState({ copied: true });
-
-  render() {
-    const { copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header } = this.props;
-
-    return <Modal
-      onClose={onClose}
-      title={title}
-      className={classNames("source-modal", className)}
-    >
-      <div className="content">
-        {header}
-        <SyntaxHighlighter className="source-modal__source" language="json" style={githubGist}>
+  return <Modal
+    onClose={onClose}
+    title={title}
+    className={classNames("source-modal", className)}
+  >
+    <div className="content">
+      {header}
+      <React.Suspense fallback={Loader}>
+        <SyntaxHighlighter>
           {source}
         </SyntaxHighlighter>
-        <div className="button-bar">
-          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
-          <SafeCopyToClipboard text={source} onCopy={this.onCopy}>
-            <Button type="secondary" title={copyLabel} />
-          </SafeCopyToClipboard>
-          {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
-        </div>
+      </React.Suspense>
+      <div className="button-bar">
+        <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
+        <SafeCopyToClipboard text={source} onCopy={onCopy}>
+          <Button type="secondary" title={copyLabel} />
+        </SafeCopyToClipboard>
+        {copied && <div className="copied-hint">{STRINGS.copied}</div>}
       </div>
-    </Modal>;
-  }
-}
+    </div>
+  </Modal>;
+};

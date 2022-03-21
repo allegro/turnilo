@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { clamp, classNames } from "../../utils/dom/dom";
 import "./notification-card.scss";
 
@@ -51,7 +51,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     });
   }
 
-  componentWillReceiveProps(nextProps: NotificationCardProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: NotificationCardProps) {
     if (nextProps.model && nextProps.model.discarded) {
       this.disappear();
     }

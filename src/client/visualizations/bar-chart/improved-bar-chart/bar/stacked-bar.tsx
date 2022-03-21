@@ -15,9 +15,8 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { Unary } from "../../../../../common/utils/functional/functional";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { StackedBarChartModel } from "../utils/bar-chart-model";
@@ -32,21 +31,19 @@ interface StackedBarProps {
   yScale: LinearScale;
   xScale: XScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
 }
 
-export const StackedBar: React.SFC<StackedBarProps> = props => {
-  const { datum, xScale, yScale, getX, series, model } = props;
-  const ref = model.nominalSplit.reference;
+export const StackedBar: React.FunctionComponent<StackedBarProps> = props => {
+  const { datum, xScale, yScale, series, model: { colors, continuousSplit, nominalSplit } } = props;
   const datums = selectSplitDatums(datum);
 
-  const x = getX(datum);
+  const x = continuousSplit.selectValue<DomainValue>(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
-  const width = xScale.rangeBand() - (2 * SIDE_PADDING);
-  const color = (d: Datum) => model.colors.get(String(d[ref]));
+  const width = xScale.bandwidth() - (2 * SIDE_PADDING);
+  const color = (d: Datum) => colors.get(String(nominalSplit.selectValue(d)));
   return <React.Fragment>
     {datums.map(datum => {
-      const key = datum[ref];
+      const key = String(nominalSplit.selectValue(datum));
       const y = series.selectValue(datum);
       const y0 = selectBase(datum, series);
       const yPos = yScale(y + y0);

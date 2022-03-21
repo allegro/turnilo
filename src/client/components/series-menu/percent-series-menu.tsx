@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
@@ -50,7 +50,7 @@ function operationToExpression(operation: PercentOperation): PercentExpression {
 
 const renderOperation = (op: Operation): string => op.label;
 
-export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
+export const PercentSeriesMenu: React.FunctionComponent<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
 
   const selectedOperations = seriesList
     .getExpressionSeriesFor(measure.name)

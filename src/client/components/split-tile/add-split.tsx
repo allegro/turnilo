@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
@@ -28,7 +28,7 @@ interface AddSplitProps {
   essence: Essence;
 }
 
-export const AddSplit: React.SFC<AddSplitProps> = props => {
+export const AddSplit: React.FunctionComponent<AddSplitProps> = props => {
   const { appendSplit, menuStage, essence: { dataCube, splits } } = props;
   const tiles = allDimensions(dataCube.dimensions)
     .filter(d => splits.findSplitForDimension(d) === undefined)

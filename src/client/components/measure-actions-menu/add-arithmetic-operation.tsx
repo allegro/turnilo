@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { Measure } from "../../../common/models/measure/measure";
@@ -31,7 +31,7 @@ interface AddPercentSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = props => {
+export const AddArithmeticOperationButton: React.FunctionComponent<AddPercentSeriesButtonProps> = props => {
   const { measure, addPartialSeries, onClose } = props;
 
   function onNewOperation() {

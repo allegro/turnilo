@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom/server";
 
 import "../../utils/test-utils";

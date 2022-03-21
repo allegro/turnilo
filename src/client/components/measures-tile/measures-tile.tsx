@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Component, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Essence } from "../../../common/models/essence/essence";
@@ -68,7 +68,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     menuMeasure: null
   };
 
-  measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
+  private measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
     const target = findParentWithClass(e.target as Element, MEASURE_CLASS_NAME);
     if (menuOpenOn === target) {

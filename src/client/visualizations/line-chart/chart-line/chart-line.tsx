@@ -16,14 +16,14 @@
 
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { ContinuousRange, ContinuousScale } from "../utils/continuous-types";
 import "./chart-line.scss";
 import { prepareDataPoints } from "./prepare-data-points";
 
-export type Scale = d3.scale.Linear<number, number>;
+export type Scale = d3.ScaleLinear<number, number>;
 
 export interface ChartLineProps {
   xScale: ContinuousScale;
@@ -42,11 +42,11 @@ const stroke = (color: string, dashed: boolean): Pick<React.CSSProperties, "stro
   strokeDasharray: dashed ? "4 2" : undefined
 });
 
-export const ChartLine: React.SFC<ChartLineProps> = props => {
+export const ChartLine: React.FunctionComponent<ChartLineProps> = props => {
   const { color, dashed, getX, getY, dataset, showArea, stage, xScale, yScale } = props;
 
-  const area = d3.svg.area().y0(yScale(0));
-  const line = d3.svg.line();
+  const area = d3.area().y0(yScale(0));
+  const line = d3.line();
 
   const points = prepareDataPoints(dataset, getX, getY);
   const scaledPoints = points.map(([x, y]) => [xScale(x), yScale(y)] as [number, number]);

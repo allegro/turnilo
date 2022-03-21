@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { identity, noop } from "../../../common/utils/functional/functional";
 import { ButtonGroup, GroupMember } from "../button-group/button-group";
 import { InputWithPresets, Preset } from "./input-with-presets";

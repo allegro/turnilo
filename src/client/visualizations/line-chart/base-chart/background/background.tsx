@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { BottomBorder } from "../../../../components/grid-border/grid-border";
@@ -35,7 +35,7 @@ interface BackgroundProps {
   formatter: Unary<number, string>;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.FunctionComponent<BackgroundProps> = props => {
   const { formatter, gridStage, axisStage, xScale, yScale, xTicks } = props;
 
   return <React.Fragment>

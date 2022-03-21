@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { clamp } from "../../utils/dom/dom";
 
 const PER_LETTER_PIXELS = 8;
@@ -25,7 +25,7 @@ interface BubbleTitleProps {
   title: string;
 }
 
-export const BubbleTitle: React.SFC<BubbleTitleProps> = ({ title }) => {
+export const BubbleTitle: React.FunctionComponent<BubbleTitleProps> = ({ title }) => {
   const minWidth = clamp(title.length * PER_LETTER_PIXELS, MIN_TITLE_WIDTH, MAX_TITLE_WIDTH);
   return <div className="title" style={{ minWidth }}>{title}</div>;
 };

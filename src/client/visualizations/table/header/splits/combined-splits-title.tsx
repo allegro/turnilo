@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ClientDataCube } from "../../../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../../../common/models/dimension/dimensions";
 import { Splits } from "../../../../../common/models/splits/splits";
@@ -25,7 +25,7 @@ interface CombinedSplitsTitle {
   splits: Splits;
 }
 
-export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ dataCube, splits: { splits } }) => {
+export const CombinedSplitsTitle: React.FunctionComponent<CombinedSplitsTitle> = ({ dataCube, splits: { splits } }) => {
   const title = splits.map(split => findDimensionByName(dataCube.dimensions, split.reference).title).join(", ");
   return <Corner>{title}</Corner>;
 };

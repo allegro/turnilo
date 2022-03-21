@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
@@ -45,7 +45,7 @@ function pinnedDimensions(essence: Essence): Dimension[] {
   return mapTruthy(pinnedDimensions.toArray(), dimensionName => findDimensionByName(dataCube.dimensions, dimensionName));
 }
 
-export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
+export const PinboardTiles: React.FunctionComponent<PinboardTilesProps> = props => {
   const { essence, timekeeper, clicker, hidePlaceholder, refreshRequestTimestamp } = props;
   const tileDimensions = pinnedDimensions(essence);
   const sortOn = pinnedSortOn(essence);

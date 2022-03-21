@@ -15,7 +15,7 @@
  */
 
 import { Dataset, Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
@@ -37,7 +37,7 @@ interface ColoredSeriesProps {
   hasComparison: boolean;
 }
 
-const ColoredSeries: React.SFC<ColoredSeriesProps> = props => {
+const ColoredSeries: React.FunctionComponent<ColoredSeriesProps> = props => {
   const { datum, hasComparison, series } = props;
   const colorEntries = series.map((series, index) => {
     const color = NORMAL_COLORS[index];
@@ -47,7 +47,7 @@ const ColoredSeries: React.SFC<ColoredSeriesProps> = props => {
   return <ColorSwabs colorEntries={colorEntries} />;
 };
 
-export const SplitHoverContent: React.SFC<SplitHoverContentProps> = props => {
+export const SplitHoverContent: React.FunctionComponent<SplitHoverContentProps> = props => {
   const { essence, dataset, interaction: { range } } = props;
   const series = essence.getConcreteSeries().toArray();
   const hasComparison = essence.hasComparison();

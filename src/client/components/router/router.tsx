@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { extend } from "../../../common/utils/object/object";
 import { replaceHash } from "../../utils/url/url";
 import "./router.scss";
@@ -94,7 +94,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     return hash.replace(new RegExp("^#" + rootFragment, "gi"), "");
   }
 
-  componentWillReceiveProps(nextProps: RouterProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: RouterProps) {
     this.globalHashChangeListener();
   }
 

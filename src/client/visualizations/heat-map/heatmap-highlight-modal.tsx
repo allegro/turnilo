@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
@@ -32,7 +32,7 @@ export interface HeatmapHighlightModalProps {
   acceptHighlight: Fn;
 }
 
-export const HeatmapHighlightModal: React.SFC<HeatmapHighlightModalProps> = props => {
+export const HeatmapHighlightModal: React.FunctionComponent<HeatmapHighlightModalProps> = props => {
   const { title, children, acceptHighlight, dropHighlight } = props;
   return <HighlightModal
     title={title}

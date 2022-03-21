@@ -16,11 +16,12 @@
 
 import { List } from "immutable";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Binary, Nullary } from "../../../../common/utils/functional/functional";
+import { MessageCard } from "../../../components/message-card/message-card";
 import { Scroller } from "../../../components/scroller/scroller";
 import { SPLIT } from "../../../config/constants";
 import { selectMainDatum } from "../../../utils/dataset/selectors/selectors";
@@ -47,11 +48,16 @@ interface BarChartProps {
   acceptHighlight: Nullary<void>;
 }
 
-export const BarChart: React.SFC<BarChartProps> = props => {
+export const BarChart: React.FunctionComponent<BarChartProps> = props => {
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
-  const { [SPLIT]: split, ...totals } = selectMainDatum(dataset);
   const model = create(essence, dataset);
+
   const transposedDataset = transposeDataset(dataset, model);
+  if (transposedDataset.length === 0) {
+    return <MessageCard title="No data found. Try different filters."/>;
+  }
+
+  const { [SPLIT]: split, ...totals } = selectMainDatum(dataset);
   const data = isStacked(model) ? stackDataset(transposedDataset, model) : transposedDataset;
   const seriesCount = model.series.count();
   const domain = getXDomain(data, model);

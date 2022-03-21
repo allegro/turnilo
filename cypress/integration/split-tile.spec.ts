@@ -1,10 +1,23 @@
-/// <reference types="Cypress" />
-
+/*
+ * Copyright 2017-2022 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 context("Split Tile", () => {
 
   const splitsContainer = () => cy.get(".split-tile");
   const dragMask = () => cy.get(".drag-mask");
-  const splitTile = (dimension) => cy.get(`.split-tile .split.dimension:contains(${dimension})`);
+  const splitTile = (dimension: string) => cy.get(`.split-tile .split.dimension:contains(${dimension})`);
   const addSplitButton = () => cy.get(".split-tile .add-tile");
   const splitItemsRow = () => cy.get(".split-tile .items");
   const splitItems = () => cy.get(".split-tile .items .split.dimension");
@@ -13,7 +26,7 @@ context("Split Tile", () => {
   const addSplitMenu = () => cy.get(".add-tile-menu");
   const splitMenu = () => cy.get(".split-menu");
   const dimensionsList = () => cy.get(".dimension-list-tile");
-  const dimensionTile = (dimension) => cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
+  const dimensionTile = (dimension: string) => cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
   const dimensionAddSplitAction = () => cy.get(".dimension-actions-menu .subsplit.action");
   const dimensionReplaceSplitAction = () => cy.get(".dimension-actions-menu .split.action");
 
@@ -196,7 +209,7 @@ context("Split Tile", () => {
 
     it("adds split by dropping dimension", () => {
       dimensionTile("Page")
-        .trigger("dragstart", {dataTransfer});
+        .trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
@@ -207,14 +220,15 @@ context("Split Tile", () => {
 
     it("replaces split by dropping dimension on existing split", () => {
       dimensionTile("Page")
-        .trigger("dragstart", {dataTransfer});
+        .trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
+      // @ts-ignore Fix types!
       splitTile("Channel").then(([channelSplit]) => {
-        const {x, width} = channelSplit.getBoundingClientRect();
+        const { x, width } = channelSplit.getBoundingClientRect();
 
-        dragMask().trigger("drop", {clientX: x + width / 2});
+        dragMask().trigger("drop", { clientX: x + width / 2 });
 
         shouldHaveSplits("Page");
       });
@@ -222,7 +236,7 @@ context("Split Tile", () => {
 
     it("can not drop dimension for which split already exists", () => {
       dimensionTile("Channel")
-        .trigger("dragstart", {dataTransfer});
+        .trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
@@ -233,15 +247,16 @@ context("Split Tile", () => {
       cy.visit(urls.threeStringSplits);
 
       splitTile("Channel")
-        .trigger("dragstart", {dataTransfer});
+        .trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
       splitTile("Page")
+        // @ts-ignore Fix types!
         .then(([timeSplit]) => {
-          const {x, width} = timeSplit.getBoundingClientRect();
+          const { x, width } = timeSplit.getBoundingClientRect();
 
-          dragMask().trigger("drop", {clientX: x + width});
+          dragMask().trigger("drop", { clientX: x + width });
 
           shouldHaveSplits("Page", "Channel", "City Name");
         });

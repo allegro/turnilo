@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
@@ -32,7 +32,7 @@ interface AddMeasureSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddMeasureSeriesButton: React.SFC<AddMeasureSeriesButtonProps> = props => {
+export const AddMeasureSeriesButton: React.FunctionComponent<AddMeasureSeriesButtonProps> = props => {
   const { series, measure, onClose, addSeries } = props;
   const measureDisabled = series.hasMeasure(measure);
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ChartProps } from "../../../../common/models/chart-props/chart-props";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../../common/models/customization/customization";
@@ -58,11 +58,11 @@ interface VisualizationControlsProps extends VisualizationControlsBaseProps {
   splitTilesRow: React.ComponentType<SplitTilesRowBaseProps>;
 }
 
-export const DefaultVisualizationControls: React.SFC<VisualizationControlsBaseProps> = props => {
+export const DefaultVisualizationControls: React.FunctionComponent<VisualizationControlsBaseProps> = props => {
   return <VisualizationControls {...props} splitTilesRow={DefaultSplitTilesRow} />;
 };
 
-export const VisualizationControls: React.SFC<VisualizationControlsProps> = props => {
+export const VisualizationControls: React.FunctionComponent<VisualizationControlsProps> = props => {
   const {
     splitTilesRow: SplitTilesRow,
     addSeries,
@@ -116,7 +116,7 @@ interface ChartPanelProps {
   drop: Unary<React.DragEvent<HTMLElement>, void>;
 }
 
-export const ChartPanel: React.SFC<ChartPanelProps> = props => {
+export const ChartPanel: React.FunctionComponent<ChartPanelProps> = props => {
   const {
     chartComponent,
     queryFactory,

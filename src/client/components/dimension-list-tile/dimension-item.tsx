@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DragEvent, MouseEvent } from "react";
 import { DimensionKind } from "../../../common/models/dimension/dimension";
 import { classNames } from "../../utils/dom/dom";
@@ -39,7 +39,7 @@ export interface DimensionItemProps {
 export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
-export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, searchText, kind, selected }) => {
+export const DimensionItem: React.FunctionComponent<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, searchText, kind, selected }) => {
   const infoBubbleClassName = "info-icon";
   const className = classNames(DIMENSION_CLASS_NAME, { selected });
 

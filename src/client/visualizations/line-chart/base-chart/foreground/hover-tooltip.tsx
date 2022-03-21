@@ -15,7 +15,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
@@ -32,7 +32,7 @@ interface HoverTooltipProps {
   stage: Stage;
 }
 
-export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
+export const HoverTooltip: React.FunctionComponent<HoverTooltipProps> = props => {
   const { content, interaction, xScale, timezone, stage } = props;
   const { range } = interaction;
   const x = xScale(range.midpoint());

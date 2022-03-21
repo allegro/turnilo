@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { STRINGS } from "../../config/constants";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./empty-data-cube-list.scss";

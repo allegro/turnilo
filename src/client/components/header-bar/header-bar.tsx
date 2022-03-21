@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import "./header-bar.scss";
 
@@ -24,7 +24,7 @@ export interface HeaderBarProps {
   title?: string;
 }
 
-export const HeaderBar: React.SFC<HeaderBarProps> = props => {
+export const HeaderBar: React.FunctionComponent<HeaderBarProps> = props => {
   const { customization, title } = props;
 
   const headerStyle: React.CSSProperties = customization && customization.headerBackground && { background: customization.headerBackground };

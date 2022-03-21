@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { OauthEnabled } from "../../common/models/oauth/oauth";
 import { MessagePanel, MessagePanelAction } from "../components/message-panel/message-panel";
 import { login } from "./oauth";
@@ -23,7 +23,7 @@ interface OauthMessageViewProps {
   oauth: OauthEnabled;
 }
 
-export const OauthMessageView: React.SFC<OauthMessageViewProps> = ({ oauth }) => {
+export const OauthMessageView: React.FunctionComponent<OauthMessageViewProps> = ({ oauth }) => {
   return <MessagePanel
     title="You are not logged in">
     <MessagePanelAction action={() => login(oauth)} label={"Login"} />

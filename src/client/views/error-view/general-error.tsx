@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { MessagePanel, MessagePanelAction } from "../../components/message-panel/message-panel";
 
 const reload = () => window.location.reload();
@@ -26,7 +26,7 @@ interface GeneralErrorProps {
   errorId: string | null;
 }
 
-export const GeneralError: React.SFC<GeneralErrorProps> = ({ errorId }) => {
+export const GeneralError: React.FunctionComponent<GeneralErrorProps> = ({ errorId }) => {
   const message = errorId !== null ? recordedErrorMsg(errorId) : defaultErrorMsg;
   return <MessagePanel message={message} title="General error">
     <MessagePanelAction action={reload} label="Reload View" />

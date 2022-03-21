@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Sort, SortDirection } from "../../../common/models/sort/sort";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -30,7 +30,7 @@ export interface SortDropdownProps {
   onChange: Unary<Sort, void>;
 }
 
-export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options, selected, onChange }) => {
+export const SortDropdown: React.FunctionComponent<SortDropdownProps> = ({ direction, options, selected, onChange }) => {
 
   function toggleDirection() {
     const newDirection = direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;

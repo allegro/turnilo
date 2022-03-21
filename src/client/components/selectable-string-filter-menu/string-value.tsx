@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Binary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox, CheckboxType } from "../checkbox/checkbox";
@@ -31,7 +31,7 @@ interface StringValueProps {
 
 const hasModKey = (e: React.MouseEvent<unknown>) => e.altKey || e.ctrlKey || e.metaKey;
 
-export const StringValue: React.SFC<StringValueProps> = props => {
+export const StringValue: React.FunctionComponent<StringValueProps> = props => {
   const { value, selected, checkboxStyle, highlight, onRowSelect } = props;
   const label = String(value);
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { SplitTilesRow, SplitTilesRowBaseProps } from "../../components/split-tile/split-tiles-row";
 import { VisualizationControls, VisualizationControlsBaseProps } from "../../views/cube-view/center-panel/center-panel";
 import { GridSplitTile } from "./grid-split-tile";
@@ -22,6 +22,6 @@ function GridSplitTilesRow(props: SplitTilesRowBaseProps) {
   return <SplitTilesRow {...props} splitTileComponent={GridSplitTile} />;
 }
 
-export const GridVisualizationControls: React.SFC<VisualizationControlsBaseProps> = props => {
+export const GridVisualizationControls: React.FunctionComponent<VisualizationControlsBaseProps> = props => {
   return <VisualizationControls{...props} splitTilesRow={GridSplitTilesRow} />;
 };

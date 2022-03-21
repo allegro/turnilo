@@ -14,25 +14,74 @@
  * limitations under the License.
  */
 
-const common = require('./webpack.common');
+const {config: commonConfig, toTranspilePattern} = require('./webpack.common');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { default: StatoscopeWebpackPlugin } = require("@statoscope/webpack-plugin");
 
-module.exports = merge.smart(common, {
+const bundleAnalyzerConfig = {
+  plugins: [
+    new StatoscopeWebpackPlugin({
+      open: false,
+      saveReportTo: "./build/report-[name].html",
+      saveStatsTo: "./build/report-[name].json",
+    }),
+  ]
+}
+
+const polyfillsConfig = {
+  entry: {
+    polyfills: "./src/client/polyfills.ts",
+    dnd: "./src/client/drag-and-drop-polyfill.ts",
+  }
+};
+
+const prodConfig = {
+  name: "client-modern",
   mode: "production",
   entry: {
     main: "./src/client/main.tsx",
-    polyfills: "./src/client/polyfills.ts",
-  },
-  optimization: {
-    minimize: true,
-    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-  ]
-});
+  ],
+  optimization: {
+    minimize: true,
+    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+    splitChunks: {
+      cacheGroups: {
+        default: {
+          // Minimum number of chunks that must share a module before splitting.
+          minChunks: 7,
+        },
+      },
+    },
+  },
+};
+
+const es5Config = {
+  module: {
+    rules: [{
+      ...toTranspilePattern,
+      use: [{
+        loader: "babel-loader",
+        options: {
+          envName: "legacy",
+        },
+      }],
+    }]
+  },
+  name: "client-legacy",
+  output: {
+    filename: "[name].es5.js",
+  }
+};
+
+module.exports = [
+  merge.smart(commonConfig, prodConfig, bundleAnalyzerConfig),
+  merge.smart(commonConfig, prodConfig, es5Config, polyfillsConfig),
+]

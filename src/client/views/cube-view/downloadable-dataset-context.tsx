@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { Nullary, Unary } from "../../../common/utils/functional/functional";
 

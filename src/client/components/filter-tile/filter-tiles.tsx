@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ReactElement } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
@@ -54,7 +54,7 @@ interface FilterTilesProps {
   openOverflowMenu: Fn;
 }
 
-export const FilterTiles: React.SFC<FilterTilesProps> = props => {
+export const FilterTiles: React.FunctionComponent<FilterTilesProps> = props => {
   const {
     menuStage,
     maxItems,

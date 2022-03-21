@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Fn, makeTitle } from "../../../common/utils/general/general";
 import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter } from "../../../common/view-definitions";
@@ -31,7 +31,7 @@ const header = <React.Fragment>
   View definition for <a className="mkurl-link" target="_blank" href="https://github.com/allegro/turnilo/blob/master/docs/generating-links.md">mkurl</a>
 </React.Fragment>;
 
-export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({ essence, onClose }) => {
+export const ViewDefinitionModal: React.FunctionComponent<ViewDefinitionModalProps> = ({ essence, onClose }) => {
 
   const viewDefinition = {
     dataCubeName: essence.dataCube.name,

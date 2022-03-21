@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
+import { Nullary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { HoverTooltip } from "../hover-tooltip/hover-tooltip";
 import { Interaction, isHighlight, isHover } from "../interactions/interaction";
 import { BarChartModel } from "../utils/bar-chart-model";
-import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { HighlightModal } from "./highlight-modal";
 import { HighlightOverlay } from "./highlight-overlay";
@@ -36,13 +34,12 @@ interface ForegroundProps {
   xScale: XScale;
   yScale: LinearScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
   model: BarChartModel;
   stage: Stage;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, dropHighlight, acceptHighlight, container, getX, model, series, xScale, yScale, interaction } = props;
+export const Foreground: React.FunctionComponent<ForegroundProps> = props => {
+  const { stage, dropHighlight, acceptHighlight, container, model, series, xScale, yScale, interaction } = props;
   const rect = container.current.getBoundingClientRect();
   return <React.Fragment>
     {isHighlight(interaction) && <React.Fragment>
@@ -50,27 +47,24 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
         interaction={interaction}
         dropHighlight={dropHighlight}
         acceptHighlight={acceptHighlight}
-        timezone={model.timezone}
         xScale={xScale}
         yScale={yScale}
-        getX={getX}
+        model={model}
         series={series}
         rect={rect} />
       <HighlightOverlay
         interaction={interaction}
-        showPrevious={model.hasComparison}
         stage={stage}
         xScale={xScale}
         yScale={yScale}
         series={series}
-        getX={getX} />
+        model={model} />
     </React.Fragment>}
     {isHover(interaction) && <HoverTooltip
       rect={rect}
       interaction={interaction}
       xScale={xScale}
       yScale={yScale}
-      getX={getX}
       series={series}
       model={model} />}
   </React.Fragment>;

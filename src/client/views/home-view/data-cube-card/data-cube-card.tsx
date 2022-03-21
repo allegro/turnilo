@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { MarkdownNode } from "../../../components/markdown-node/markdown-node";
 import { SvgIcon } from "../../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../../config/constants";

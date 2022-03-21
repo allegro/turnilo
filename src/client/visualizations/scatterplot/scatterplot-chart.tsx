@@ -45,7 +45,7 @@ export class ScatterplotChart extends React.Component<ScatterplotChartProps, {}>
   render() {
     const { data, essence, stage, hoveredPoint, setPointHover, resetPointHover } = this.props;
 
-    const splitKey = essence.splits.splits.first().toKey();
+    const mainSplit = essence.splits.splits.first();
     const showHeatmap = (essence.visualizationSettings as ScatterplotSettings).showSummary;
 
     const {
@@ -69,7 +69,7 @@ export class ScatterplotChart extends React.Component<ScatterplotChartProps, {}>
         stage={plottingStage}
         ySeries={ySeries}
         xSeries={xSeries}
-        splitKey={splitKey}
+        split={mainSplit}
         timezone={essence.timezone}
         showPrevious={essence.hasComparison()}/>
       <svg viewBox={stage.getViewBox()}>
@@ -100,7 +100,7 @@ export class ScatterplotChart extends React.Component<ScatterplotChartProps, {}>
             {scatterplotData.map(datum => {
               return (
                 <ScatterplotPoint
-                  key={`point-${datum[splitKey]}`}
+                key={`point-${mainSplit.selectValue(datum)}`}
                   datum={datum}
                   xScale={xScale}
                   yScale={yScale}

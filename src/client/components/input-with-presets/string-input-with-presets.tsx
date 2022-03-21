@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { identity, Omit } from "../../../common/utils/functional/functional";
 import { InputWithPresets, InputWithPresetsProps } from "./input-with-presets";
 
 type StringInputWithPresetsProps = Omit<InputWithPresetsProps<string>, "parseCustomValue" | "formatCustomValue">;
 
-export const StringInputWithPresets: React.SFC<StringInputWithPresetsProps> = props =>
+export const StringInputWithPresets: React.FunctionComponent<StringInputWithPresetsProps> = props =>
   <InputWithPresets<string> {...props} parseCustomValue={identity} formatCustomValue={identity} />;

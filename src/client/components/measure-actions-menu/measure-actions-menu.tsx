@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { isApproximate, isQuantile, Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
@@ -47,7 +47,7 @@ export interface MeasureActionsProps {
   onClose: Fn;
 }
 
-export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = props => {
+export const MeasureActionsMenu: React.FunctionComponent<MeasureActionsMenuProps & MeasureActionsProps> = props => {
   const { direction, containerStage, openOn, measure, onClose } = props;
   if (!measure) return null;
 

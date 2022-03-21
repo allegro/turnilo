@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { NORMAL_COLORS } from "../../../../common/models/colors/colors";
 import "./legend.scss";
 
@@ -27,7 +27,7 @@ interface LegendValuesProps {
   values: string[];
 }
 
-const LegendValues: React.SFC<LegendValuesProps> = props => {
+const LegendValues: React.FunctionComponent<LegendValuesProps> = props => {
   const { values } = props;
   return <div className="legend-values">
     <table className="legend-values-table">
@@ -48,7 +48,7 @@ const LegendValues: React.SFC<LegendValuesProps> = props => {
   </div>;
 };
 
-export const Legend: React.SFC<LegendProps> = props => {
+export const Legend: React.FunctionComponent<LegendProps> = props => {
   const { values, title } = props;
 
   return <div className="line-chart-legend">

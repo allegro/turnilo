@@ -1,4 +1,18 @@
-/// <reference types="Cypress" />
+/*
+ * Copyright 2017-2022 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 context("Boolean Filter Menu", () => {
 
@@ -12,10 +26,10 @@ context("Boolean Filter Menu", () => {
   const booleanMenuCancelButton = () => booleanMenu().find(".button.secondary");
 
   const urls = {
-    // tslint:disable-next-line:max-line-length
+    // tslint:disable:max-line-length
     isRobotAllValues: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTfU2ACvqwATI6E8w96Fi4BK4AjAAi6lC65vgAtKECFlYgCOhM0SAAvgC6WeQmyRIARpiYCExwuHYOEtAASpilaOpgiDAZ+IZoeh3kGqRMOZTYxPgDCFBMuZRQ5khoRsMgU3oQnXjGIPYa+kzYMilwnp5MnuoamHqC6PiFlhKnA7wtlG0IHRLZSQ8EwnCwezZZbmCDYbBncIQYTYKBBIwgGQACyqEIQ6mwcGEczgh3UDSaYxBYIhngYVxaBGOp3OWSAA==",
-    // tslint:disable-next-line:max-line-length
     isRobotOnlyTrueValues: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbVBoAngAcmBDHSGTaw5hqaV9ABSlYAJjPkgzMSeiy4CRgIwARIVAnL8AWmeGVNRAEdFpPEABfAF0I8gVA5gAjTEwEWjhcSm1dAmgAJUxktCEwRBgw/Fk0SXKoymxifGFSWmjKKGUkNEs6kChTCrlQbKlabHYguDMzWjMhYUxJanR8eNVmGeaYcRKyoMiA9YI6OFhtSN7lCGxsWdcaMagHSxB2AAsM24QhbDg6DrgEyE+UKjUu11uZgAyotigQpjM5pQ0gBzMZzPDYbYIShvCAot5IAlwrEIBARIA==="
+    // tslint:enable:max-line-length
   };
 
   function assertSelection(isTrueOptionSelected, isFalseOptionSelected) {

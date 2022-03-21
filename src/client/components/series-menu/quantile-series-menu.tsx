@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { QuantileSeries } from "../../../common/models/series/quantile-series";
@@ -42,7 +42,7 @@ const percentiles: Array<Preset<number>> = [
   { identity: 99, name: "99" }
 ];
 
-export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesList, initialSeries, measure, series, onChange }) => {
+export const QuantileSeriesMenu: React.FunctionComponent<QuantileSeriesMenuProps> = ({ seriesList, initialSeries, measure, series, onChange }) => {
 
   const otherSeries = seriesList.removeSeries(initialSeries);
 

@@ -16,7 +16,7 @@
 
 import { Set } from "immutable";
 import { Dataset, Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DatasetRequest, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/dataset-request/dataset-request";
 import { Dimension } from "../../../common/models/dimension/dimension";

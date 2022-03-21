@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Stage } from "../../../../common/models/stage/stage";
 import { ImmutableRecord } from "../../../../common/utils/immutable-utils/immutable-utils";
@@ -35,7 +35,7 @@ interface ChartsProps {
   stage: Stage;
 }
 
-export const Charts: React.SFC<ChartsProps> = props => {
+export const Charts: React.FunctionComponent<ChartsProps> = props => {
   const { essence } = props;
   const { groupSeries } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
 

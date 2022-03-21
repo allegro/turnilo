@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
 import { PercentExpression } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";

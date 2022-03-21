@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./message-card.scss";
 
 interface MessageCardProps {
   title: string;
 }
 
-export const MessageCard: React.SFC<MessageCardProps> = props => {
+export const MessageCard: React.FunctionComponent<MessageCardProps> = props => {
   const { title, children } = props;
   return <div className="message-card">
     <div className="message-card-title">{title}</div>

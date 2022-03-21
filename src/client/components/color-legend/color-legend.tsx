@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import "./color-legend.scss";
 
@@ -24,7 +24,7 @@ interface ColorLegendProps {
   height?: number;
   title: string;
   formatter: Unary<number, string>;
-  colorScale: d3.scale.Linear<string, string>;
+  colorScale: d3.ScaleLinear<string, string>;
 }
 
 const leftMargin = 5;
@@ -37,7 +37,7 @@ const stripeWidth = 30;
 const stripeHeight = 200;
 const panelWidth = 100;
 
-export const ColorLegend: React.SFC<ColorLegendProps> = ({ title, width = panelWidth, height = stripeHeight, formatter, colorScale }) => {
+export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({ title, width = panelWidth, height = stripeHeight, formatter, colorScale }) => {
   const [min, max] = colorScale.domain();
   if (isNaN(min) || isNaN(max)) return null;
 

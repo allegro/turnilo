@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Hover } from "../../interactions/interaction";
 import { ContinuousScale } from "../../utils/continuous-types";
@@ -23,11 +23,11 @@ import { ContinuousScale } from "../../utils/continuous-types";
 interface HoverGuideProps {
   hover: Hover;
   stage: Stage;
-  yScale: d3.scale.Linear<number, number>;
+  yScale: d3.ScaleLinear<number, number>;
   xScale: ContinuousScale;
 }
 
-export const HoverGuide: React.SFC<HoverGuideProps> = props => {
+export const HoverGuide: React.FunctionComponent<HoverGuideProps> = props => {
   const { stage, hover: { range }, yScale, xScale } = props;
   const midpoint = range.midpoint();
   const x = xScale(midpoint);

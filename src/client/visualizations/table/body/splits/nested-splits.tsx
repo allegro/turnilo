@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { INDENT_WIDTH } from "../../../../components/tabular-scroller/dimensions";
 import { SplitValue } from "../../../../components/tabular-scroller/splits/split-value";
@@ -32,7 +32,7 @@ interface NestedSplitsProps {
   highlightedRowIndex: number | null;
 }
 
-export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
+export const NestedSplits: React.FunctionComponent<NestedSplitsProps> = props => {
   const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="nested-splits-rows">

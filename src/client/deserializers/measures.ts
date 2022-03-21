@@ -16,11 +16,11 @@
 
 import { ClientMeasures, SerializedMeasures } from "../../common/models/measure/measures";
 import { mapValues } from "../../common/utils/object/object";
-import { deserialize as measureDeserialize } from "./measure";
+import { deserialize as deserializeMeasure } from "./measure";
 
 export function deserialize({ tree, byName }: SerializedMeasures): ClientMeasures {
   return {
     tree,
-    byName: mapValues(byName, measureDeserialize)
+    byName: mapValues(byName, deserializeMeasure)
   };
 }

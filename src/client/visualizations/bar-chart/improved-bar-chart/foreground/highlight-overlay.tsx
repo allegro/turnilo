@@ -15,14 +15,14 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { Unary } from "../../../../../common/utils/functional/functional";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { TOP_PADDING } from "../bar/padding";
 import { Highlight } from "../interactions/interaction";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 
@@ -31,9 +31,8 @@ interface HighlightOverlayProps {
   xScale: XScale;
   yScale: LinearScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
   stage: Stage;
-  showPrevious: boolean;
+  model: BarChartModel;
 }
 
 function getYValue(datum: Datum, series: ConcreteSeries, includePrevious: boolean): number {
@@ -43,12 +42,12 @@ function getYValue(datum: Datum, series: ConcreteSeries, includePrevious: boolea
   return Math.max(series.selectValue(datum), series.selectValue(datum, SeriesDerivation.PREVIOUS));
 }
 
-export const HighlightOverlay: React.SFC<HighlightOverlayProps> = props => {
-  const { stage, yScale, series, xScale, showPrevious, interaction: { datum }, getX } = props;
-  const xValue = getX(datum);
+export const HighlightOverlay: React.FunctionComponent<HighlightOverlayProps> = props => {
+  const { stage, yScale, series, xScale, model: { hasComparison, continuousSplit }, interaction: { datum } } = props;
+  const xValue = continuousSplit.selectValue<DomainValue>(datum);
   const left = xScale.calculate(xValue);
-  const right = left + xScale.rangeBand();
-  const yValue = getYValue(datum, series, showPrevious);
+  const right = left + xScale.bandwidth();
+  const yValue = getYValue(datum, series, hasComparison);
   const top = yScale(yValue) + stage.y - TOP_PADDING;
   return <Highlighter left={left} right={right} top={top} />;
 };

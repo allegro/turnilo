@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
 import { $ } from "plywood";
-import * as React from "react";
+import React from "react";
 import { CSSTransition } from "react-transition-group";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
@@ -44,6 +44,7 @@ import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
+import { Loader } from "../../components/loader/loader";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
@@ -61,7 +62,7 @@ import "./cube-view.scss";
 import { DownloadableDatasetProvider } from "./downloadable-dataset-context";
 import { PartialTilesProvider } from "./partial-tiles-provider";
 
-const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
+const ToggleArrow: React.FunctionComponent<{ right: boolean }> = ({ right }) =>
   right
     ? <SvgIcon svg={require("../../icons/full-caret-small-right.svg")}/>
     : <SvgIcon svg={require("../../icons/full-caret-small-left.svg")}/>;
@@ -222,7 +223,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       });
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
     if (!dataCube) {
       throw new Error("Data cube is required.");
@@ -240,7 +241,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
   }
 
-  componentWillReceiveProps(nextProps: CubeViewProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: CubeViewProps) {
     const { hash, dataCube } = this.props;
     if (!nextProps.dataCube) {
       throw new Error("Data cube is required.");
@@ -251,7 +252,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
   }
 
-  componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
+  UNSAFE_componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
     const { changeCubeAndEssence, dataCube } = this.props;
     const { essence } = this.state;
     if (!nextState.essence.equals(essence)) {
@@ -563,7 +564,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       updatingMaxTime={updatingMaxTime}
     />;
 
-    const Visualization = getVisualizationComponent(essence.visualization);
+    const Visualization = React.lazy(getVisualizationComponent(essence.visualization));
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>
@@ -598,24 +599,26 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                      onClick={this.toggleFactPanel}>
                   <ToggleArrow right={layout.factPanel.hidden}/>
                 </div>
-                <Visualization
-                  essence={essence}
-                  clicker={clicker}
-                  timekeeper={timekeeper}
-                  stage={this.chartStage()}
-                  customization={customization}
-                  addSeries={addSeries}
-                  addFilter={addFilter}
-                  lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
-                  partialFilter={filter}
-                  partialSeries={series}
-                  removeTile={removeTile}
-                  dragEnter={this.dragEnter}
-                  dragOver={this.dragOver}
-                  isDraggedOver={dragOver}
-                  dragLeave={this.dragLeave}
-                  drop={this.drop}
-                />
+                <React.Suspense fallback={Loader}>
+                  <Visualization
+                    essence={essence}
+                    clicker={clicker}
+                    timekeeper={timekeeper}
+                    stage={this.chartStage()}
+                    customization={customization}
+                    addSeries={addSeries}
+                    addFilter={addFilter}
+                    lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
+                    partialFilter={filter}
+                    partialSeries={series}
+                    removeTile={removeTile}
+                    dragEnter={this.dragEnter}
+                    dragOver={this.dragOver}
+                    isDraggedOver={dragOver}
+                    dragLeave={this.dragLeave}
+                    drop={this.drop}
+                  />
+                </React.Suspense>
                 <div className="pinboard-toggle"
                      onClick={this.togglePinboard}>
                   <ToggleArrow right={!layout.pinboard.hidden}/>

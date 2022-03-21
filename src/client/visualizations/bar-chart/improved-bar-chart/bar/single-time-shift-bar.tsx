@@ -15,10 +15,10 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
+import { BaseBarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 import { SIDE_PADDING } from "./padding";
@@ -28,15 +28,15 @@ interface SingleTimeShiftBar {
   yScale: LinearScale;
   xScale: XScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
+  model: BaseBarChartModel;
 }
 
-export const SingleTimeShiftBar: React.SFC<SingleTimeShiftBar> = props => {
-  const { datum, xScale, yScale, getX, series } = props;
+export const SingleTimeShiftBar: React.FunctionComponent<SingleTimeShiftBar> = props => {
+  const { datum, xScale, yScale, model: { continuousSplit }, series } = props;
   const [maxHeight] = yScale.range();
-  const x = getX(datum);
+  const x = continuousSplit.selectValue<DomainValue>(datum);
   const xStart = xScale.calculate(x);
-  const rangeBand = xScale.rangeBand();
+  const rangeBand = xScale.bandwidth();
   const fullWidth = rangeBand - 2 * SIDE_PADDING;
   const barWidth = fullWidth * 2 / 3;
 

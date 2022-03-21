@@ -201,10 +201,10 @@ export function customClientCube(title: string, description: string, extendedDes
   };
 }
 
-export function customCubeWithGuard(): DataCube {
+export function customCubeWithGuard(name = "some-name", guardCubes = true): DataCube {
   return {
     clusterName: "druid-custom",
-    cluster: ClusterFixtures.druidTwitterClusterJSWithGuard(),
+    cluster: ClusterFixtures.druidTwitterClusterJSWithGuard(guardCubes),
     source: "custom",
     introspection: "none",
     defaultSplitDimensions: [],
@@ -218,7 +218,7 @@ export function customCubeWithGuard(): DataCube {
     refreshRule: RefreshRule.fromJS({
       rule: "realtime"
     }),
-    name: "some-name",
+    name,
     attributeOverrides: [],
     attributes: [],
     defaultPinnedDimensions: [],

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./nav-logo.scss";
 
@@ -23,7 +23,7 @@ export interface NavLogoProps {
   customLogoSvg: string;
 }
 
-export const NavLogo: React.SFC<NavLogoProps> = ({ customLogoSvg }) =>
+export const NavLogo: React.FunctionComponent<NavLogoProps> = ({ customLogoSvg }) =>
   <div className="nav-logo">
     <div className="logo">
       <SvgIcon svg={customLogoSvg} />

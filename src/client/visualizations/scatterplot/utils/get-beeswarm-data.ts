@@ -56,7 +56,7 @@ export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): 
   const extent = getExtent(beeswarmData, series);
 
   const plottingStage = calculateBeeswarmPlottingStage(stage);
-  const scale = d3.scale.linear().domain(extent).nice().range([0, plottingStage.width]);
+  const scale = d3.scaleLinear().domain(extent).nice().range([0, plottingStage.width]);
 
   const ticks = getTicksForAvailableSpace(scale.ticks(TICK_COUNT), plottingStage.width);
 

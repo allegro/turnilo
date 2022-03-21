@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./measure-cell.scss";
 
 interface MeasureCellProps {
@@ -22,7 +22,7 @@ interface MeasureCellProps {
   value: string | JSX.Element;
 }
 
-export const MeasureCell: React.SFC<MeasureCellProps> = props => {
+export const MeasureCell: React.FunctionComponent<MeasureCellProps> = props => {
   const { width, value, children } = props;
   return <div className="measure-cell" style={{ width }}>
     {children}

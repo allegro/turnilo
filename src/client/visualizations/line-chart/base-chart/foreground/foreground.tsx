@@ -15,7 +15,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
@@ -37,7 +37,7 @@ interface ForegroundProps {
   timezone: Timezone;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
+export const Foreground: React.FunctionComponent<ForegroundProps> = props => {
   const { stage, interaction, container, xScale, timezone, visualisationStage, hoverContent, dropHighlight, acceptHighlight } = props;
 
   return <React.Fragment>

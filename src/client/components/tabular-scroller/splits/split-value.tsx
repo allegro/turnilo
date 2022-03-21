@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../../utils/dom/dom";
 import "./split-value.scss";
 
@@ -25,7 +25,7 @@ interface SplitValueProps {
   style: React.CSSProperties;
 }
 
-export const SplitValue: React.SFC<SplitValueProps> = ({ className, highlight, dimmed, children, style }) =>
+export const SplitValue: React.FunctionComponent<SplitValueProps> = ({ className, highlight, dimmed, children, style }) =>
   <div
     className={classNames("split-value", className, { dimmed, highlight })}
     style={style}

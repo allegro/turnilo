@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import { Clicker } from "../../../common/models/clicker/clicker";

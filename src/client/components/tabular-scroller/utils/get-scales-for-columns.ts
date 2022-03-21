@@ -18,7 +18,7 @@ import { Map } from "immutable";
 import { Datum, PseudoDatum } from "plywood";
 import { Essence } from "../../../../common/models/essence/essence";
 
-export function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Map<string, d3.scale.Linear<number, number>> {
+export function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Map<string, d3.ScaleLinear<number, number>> {
   return essence.getConcreteSeries()
     .groupBy(series => series.reactKey())
     .map(seriesCollection => seriesCollection.first())
@@ -26,7 +26,7 @@ export function getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): 
     .map(series => {
     const measureValues = flatData.map((d: Datum) => series.selectValue(d));
 
-    return d3.scale.linear()
+    return d3.scaleLinear()
       // Ensure that 0 is in there
       .domain(d3.extent([0, ...measureValues]))
       .range([0, 100]);

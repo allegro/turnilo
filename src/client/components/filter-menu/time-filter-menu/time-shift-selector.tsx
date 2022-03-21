@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { DateRange } from "../../../../common/models/date-range/date-range";
 import { TimeDimension } from "../../../../common/models/dimension/dimension";
 import { isValidTimeShift } from "../../../../common/models/time-shift/time-shift";
@@ -65,7 +65,7 @@ function presets(dimension: TimeDimension): Array<Preset<string>> {
   ];
 }
 
-export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {
+export const TimeShiftSelector: React.FunctionComponent<TimeShiftSelectorProps> = props => {
   const { onShiftChange, dimension, shift: selectedTimeShift } = props;
   const timeShiftPreview = timeShiftPreviewForRange(props);
 

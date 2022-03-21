@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
@@ -42,7 +42,7 @@ interface SeriesTileProps {
   containerStage: Stage;
 }
 
-export const SeriesTile: React.SFC<SeriesTileProps> = props => {
+export const SeriesTile: React.FunctionComponent<SeriesTileProps> = props => {
   const { seriesList, measures, open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { definition, measure } = item;
   const title = item.title();

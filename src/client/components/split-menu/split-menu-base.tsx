@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { coerceGranularity, isGranularityValid } from "../../../common/models/granularity/granularity";
 import { Sort } from "../../../common/models/sort/sort";

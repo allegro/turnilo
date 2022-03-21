@@ -16,9 +16,8 @@
 
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { Unary } from "../../../../../common/utils/functional/functional";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { StackedBarChartModel } from "../utils/bar-chart-model";
@@ -33,24 +32,22 @@ interface StackedTimeShiftBarProps {
   yScale: LinearScale;
   xScale: XScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
 }
 
-export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props => {
-  const { datum, xScale, yScale, getX, series, model } = props;
-  const { reference: nominalReference } = model.nominalSplit;
+export const StackedTimeShiftBar: React.FunctionComponent<StackedTimeShiftBarProps> = props => {
+  const { datum, xScale, yScale, series, model: { nominalSplit, continuousSplit, colors } } = props;
   const datums = selectSplitDatums(datum);
 
-  const x = getX(datum);
+  const x = continuousSplit.selectValue<DomainValue>(datum);
 
   const xStart = xScale.calculate(x);
-  const rangeBand = xScale.rangeBand();
+  const rangeBand = xScale.bandwidth();
   const fullWidth = rangeBand - 2 * SIDE_PADDING;
   const barWidth = fullWidth * 2 / 3;
-  const color = (d: Datum) => model.colors.get(String(d[nominalReference]));
+  const color = (d: Datum) => colors.get(String(nominalSplit.selectValue(d)));
   return <React.Fragment>
     {datums.map(datum => {
-      const key = `${datum[nominalReference]}--previous`;
+      const key = `${nominalSplit.selectValue(datum)}--previous`;
       const yPrevious = series.selectValue(datum, SeriesDerivation.PREVIOUS);
       const yPreviousBase = selectBase(datum, series, SeriesDerivation.PREVIOUS);
       const yPreviousPos = yScale(yPrevious + yPreviousBase);
@@ -70,7 +67,7 @@ export const StackedTimeShiftBar: React.SFC<StackedTimeShiftBarProps> = props =>
         />;
     })}
     {datums.map(datum => {
-      const key = `${datum[nominalReference]}--current`;
+      const key = `${nominalSplit.selectValue(datum)}--current`;
       const yCurrent = series.selectValue(datum);
       const yCurrentBase = selectBase(datum, series);
       const yCurrentPos = yScale(yCurrent + yCurrentBase);

@@ -15,7 +15,7 @@
  */
 
 import { Set } from "immutable";
-import * as React from "react";
+import React from "react";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
@@ -39,7 +39,7 @@ interface AddPercentSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddPercentSeriesButton: React.SFC<AddPercentSeriesButtonProps> = props => {
+export const AddPercentSeriesButton: React.FunctionComponent<AddPercentSeriesButtonProps> = props => {
   const { series, measure, addSeries, onClose } = props;
 
   const percentSeries: Set<PercentOperation> = series

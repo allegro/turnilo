@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { QuantileSeries } from "../../../common/models/series/quantile-series";
@@ -33,7 +33,7 @@ interface AddQuantileSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddQuantileSeriesButton: React.SFC<AddQuantileSeriesButtonProps> = props => {
+export const AddQuantileSeriesButton: React.FunctionComponent<AddQuantileSeriesButtonProps> = props => {
   const { series, measure, addPartialSeries, addSeries, onClose } = props;
 
   function onNewQuantileSeries() {

@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { mount, shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import * as sinon from "sinon";
 import { SinonStub } from "sinon";
 import { Modal } from "../../components/modal/modal";

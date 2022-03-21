@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { navigateToHome } from "../../applications/turnilo-application/view";
 import { MessagePanel, MessagePanelAction } from "../message-panel/message-panel";
 
-export const DataCubeNotFound: React.SFC<{}> = () => {
+export const DataCubeNotFound: React.FunctionComponent<{}> = () => {
   return <MessagePanel title="DataCube not found">
     <MessagePanelAction action={navigateToHome}
                         label="Go back to data cubes list"/>

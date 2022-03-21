@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";
@@ -27,7 +27,7 @@ interface TextRowProps {
   searchText: string;
 }
 
-export const TextRow: React.SFC<TextRowProps> = props => {
+export const TextRow: React.FunctionComponent<TextRowProps> = props => {
   const { measure, value, searchText, onClick } = props;
   const strValue = String(value);
   const clickable = !!onClick;

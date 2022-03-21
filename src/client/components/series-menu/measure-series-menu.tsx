@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { SeriesFormat } from "../../../common/models/series/series-format";
@@ -27,7 +27,7 @@ interface MeasureSeriesMenuProps {
   onChange: Binary<MeasureSeries, boolean, void>;
 }
 
-export const MeasureSeriesMenu: React.SFC<MeasureSeriesMenuProps> = ({ measure, series, onChange }) => {
+export const MeasureSeriesMenu: React.FunctionComponent<MeasureSeriesMenuProps> = ({ measure, series, onChange }) => {
 
   function onFormatChange(format: SeriesFormat) {
     onChange(series.set("format", format), true);

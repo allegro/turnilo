@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { isTimeAttribute } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
@@ -80,7 +80,7 @@ interface FilterTileProps {
 
 export const FILTER_CLASS_NAME = "filter";
 
-export const FilterTile: React.SFC<FilterTileProps> = props => {
+export const FilterTile: React.FunctionComponent<FilterTileProps> = props => {
   const {
     clause,
     open,

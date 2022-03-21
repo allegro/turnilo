@@ -16,9 +16,9 @@
  */
 
 import * as bodyParser from "body-parser";
-import * as express from "express";
+import express from "express";
 import { $ } from "plywood";
-import * as supertest from "supertest";
+import supertest from "supertest";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { plywoodRouter } from "./plywood";
 

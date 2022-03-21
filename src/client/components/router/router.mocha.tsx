@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as sinon from "sinon";
 import { findDOMNode } from "../../utils/test-utils";
@@ -87,7 +87,7 @@ describe("Router", () => {
           {children.map((c, i) => React.cloneElement(c, { key: i }))}
         </Router>,
         node
-      ) as React.Component;
+      ) as unknown as React.Component;
     };
 
     isActiveRoute = (route: string) => {

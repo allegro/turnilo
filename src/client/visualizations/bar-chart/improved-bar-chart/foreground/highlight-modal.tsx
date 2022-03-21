@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
-import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { formatValue } from "../../../../../common/utils/formatter/formatter";
-import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
+import { Nullary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Highlight } from "../interactions/interaction";
+import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
 
@@ -30,31 +28,29 @@ interface HighlightModalProps {
   interaction: Highlight;
   dropHighlight: Nullary<void>;
   acceptHighlight: Nullary<void>;
-  timezone: Timezone;
   xScale: XScale;
   yScale: LinearScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
+  model: BarChartModel;
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.FunctionComponent<HighlightModalProps> = props => {
   const {
-    timezone,
+    model: { timezone, continuousSplit },
     rect: { left, top },
     interaction: { datum },
     dropHighlight,
     acceptHighlight,
     yScale,
-    getX,
     series,
     xScale } = props;
-  const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
+  const xValue = continuousSplit.selectValue<DomainValue>(datum);
+  const x = xScale.calculate(xValue) + (xScale.bandwidth() / 2);
   const yValue = series.selectValue(datum);
   const y = yScale(yValue);
   return <BaseHighlightModal
-    title={formatValue(xValue, timezone)}
+    title={continuousSplit.formatValue(datum, timezone)}
     left={left + x}
     top={top + y}
     dropHighlight={dropHighlight}

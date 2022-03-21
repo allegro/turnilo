@@ -17,7 +17,7 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Split } from "../../../../common/models/split/split";
 import { formatSegment } from "../../../../common/utils/formatter/formatter";
 import "./flattened-split-columns.scss";
@@ -28,11 +28,11 @@ interface FlattenedSplitColumnsProps {
   timezone: Timezone;
 }
 
-export const FlattenedSplitColumns: React.SFC<FlattenedSplitColumnsProps> = ({ splits, datum, timezone }) =>
+export const FlattenedSplitColumns: React.FunctionComponent<FlattenedSplitColumnsProps> = ({ splits, datum, timezone }) =>
   <React.Fragment>
     {splits.map(split => {
       const { reference } = split;
-      const value = datum[reference];
+      const value = split.selectValue(datum);
       return <div key={reference} className="flattened-split-value">{formatSegment(value, timezone)}</div>;
     })}
   </React.Fragment>;

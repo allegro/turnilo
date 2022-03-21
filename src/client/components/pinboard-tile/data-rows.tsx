@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Omit, Unary } from "../../../common/utils/functional/functional";
 import { SelectableRows } from "./selectable-rows";
@@ -33,7 +33,7 @@ interface DataRowsProps {
 type EditableRowsProps = { rowMode: ReadyToEditMode | InEditMode } & Omit<DataRowsProps, "mode">;
 
 // This component is for guiding typescript through nested tagged union. Probably it could be inlined on ts 3.7
-const EditableRows: React.SFC<EditableRowsProps> = props => {
+const EditableRows: React.FunctionComponent<EditableRowsProps> = props => {
   const { rowMode, ...commonProps } = props;
   switch (rowMode.state) {
     case EditState.READY:
@@ -48,7 +48,7 @@ const EditableRows: React.SFC<EditableRowsProps> = props => {
   }
 };
 
-export const DataRows: React.SFC<DataRowsProps> = ({ rowMode, ...commonProps }) => {
+export const DataRows: React.FunctionComponent<DataRowsProps> = ({ rowMode, ...commonProps }) => {
   switch (rowMode.mode) {
     case RowModeId.READONLY:
       return <TextRows {...commonProps} />;

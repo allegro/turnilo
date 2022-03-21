@@ -17,19 +17,20 @@
 const path = require("path");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { IgnorePlugin } = require('webpack');
 
-const babelLoader = {
-  loader: "babel-loader",
-  options: {
-    presets: [
-      ["@babel/preset-env", {
-        modules: false
-      }]
+const toTranspilePattern = {
+  test: /\.[jt]sx?$/,
+  exclude: {
+    and: [/node_modules/],
+    not: [
+      /* List of node modules to transpile */
+      /react-syntax-highlighter/ // imported from "react-syntax-highlighter/src"
     ]
   }
-};
+}
 
-module.exports = {
+const config = {
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, '../build/public'),
@@ -41,6 +42,10 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
   ],
   module: {
     rules: [
@@ -50,22 +55,13 @@ module.exports = {
         use: ["source-map-loader"]
       },
       {
-        test: /\.js?$/,
-        use: [
-          babelLoader
-        ]
-      },
-      {
-        test: /\.tsx?$/,
-        use: [
-          babelLoader,
-          {
-            loader: "ts-loader",
-            options: {
-              configFile: "src/client/tsconfig.json"
-            }
+        ...toTranspilePattern,
+        use: [{
+          loader: "babel-loader",
+          options: {
+            envName: "modern"
           }
-        ]
+        }]
       },
       {
         test: /\.css$/,
@@ -84,12 +80,7 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2)$/i,
-        loader: "url-loader",
-        options: {
-          // Returns a data-url (data:font/woff;charset=utf-8;base64,...)
-          // if the file is smaller than a byte limit.
-          limit: 8192,
-        },
+        loader: "file-loader",
       },
       {
         test: /\.svg$/,
@@ -98,3 +89,6 @@ module.exports = {
     ]
   }
 };
+
+module.exports.config = config;
+module.exports.toTranspilePattern = toTranspilePattern;

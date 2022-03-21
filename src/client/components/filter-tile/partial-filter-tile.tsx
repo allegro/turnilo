@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
@@ -41,7 +41,7 @@ interface PartialFilterTileProps {
   closeItem: Fn;
 }
 
-export const PartialFilterTile: React.SFC<PartialFilterTileProps> = props => {
+export const PartialFilterTile: React.FunctionComponent<PartialFilterTileProps> = props => {
   const { closeItem, saveClause, essence, timekeeper, locale, clicker, stage, dimension, style } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div

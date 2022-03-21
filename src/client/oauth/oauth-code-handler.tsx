@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { OauthEnabled } from "../../common/models/oauth/oauth";
 import { Loader } from "../components/loader/loader";
 import { MessagePanel, MessagePanelAction } from "../components/message-panel/message-panel";

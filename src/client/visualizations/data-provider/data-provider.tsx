@@ -15,7 +15,7 @@
  */
 
 import { Dataset, Expression } from "plywood";
-import * as React from "react";
+import React from "react";
 import {
   DatasetRequest,
   DatasetRequestStatus,
@@ -67,7 +67,7 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
     this.debouncedCallExecutor.cancel();
   }
 
-  componentWillReceiveProps(nextProps: DataProviderProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: DataProviderProps) {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
       const { essence, timekeeper, queryFactory } = nextProps;
       const hadDataLoaded = isLoaded(this.state.dataset);

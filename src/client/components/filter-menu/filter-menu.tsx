@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
@@ -43,7 +43,7 @@ export interface FilterMenuProps {
   onClose: Fn;
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
+export const FilterMenu: React.FunctionComponent<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
   if (!dimension) return null;
   switch (dimension.kind) {
     case "time":

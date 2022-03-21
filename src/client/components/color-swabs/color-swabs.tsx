@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ColorEntry } from "./color-entry";
 import "./color-swabs.scss";
 
@@ -22,7 +22,7 @@ interface ColorSwabsProps {
   colorEntries: ColorEntry[];
 }
 
-export const ColorSwabs: React.SFC<ColorSwabsProps> = ({ colorEntries }) => {
+export const ColorSwabs: React.FunctionComponent<ColorSwabsProps> = ({ colorEntries }) => {
   const colorSwabs = colorEntries.map(({ color, name, value, previous, delta }: ColorEntry) => {
     const swabStyle = { background: color };
     return <tr key={name}>

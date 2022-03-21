@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../utils/functional/functional";
 import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
@@ -23,7 +23,7 @@ interface VisualizationSettingsComponentProps<T> {
   settings: ImmutableRecord<T>;
 }
 
-export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsComponentProps<T>>;
+export type VisualizationSettingsComponent<T> = React.FunctionComponent<VisualizationSettingsComponentProps<T>>;
 
 interface VisualizationSettingsConverter<T> {
   print: Unary<T, object>;

@@ -15,10 +15,10 @@
  */
 
 import * as bodyParser from "body-parser";
-import * as express from "express";
+import express from "express";
 import { Express } from "express";
 import * as http from "http";
-import * as supertest from "supertest";
+import supertest from "supertest";
 import { fromConfig } from "../../../common/models/customization/customization";
 import { UrlShortenerDef } from "../../../common/models/url-shortener/url-shortener";
 import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "../../../common/models/url-shortener/url-shortener.fixtures";

@@ -16,7 +16,7 @@
 
 import { TooltipWithBounds } from "@vx/tooltip";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import { SeriesBubbleContent } from "../../components/series-bubble-content/series-bubble-content";
@@ -31,7 +31,7 @@ interface HeatmapHoverTooltip {
   scroll: { left: number, top: number };
 }
 
-export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
+export const HeatmapHoverTooltip: React.FunctionComponent<HeatmapHoverTooltip> = props => {
   const { dataset, essence, scroll, position: { column, row, top, left } } = props;
   const [, datum] = datumByPosition(dataset, { row, column });
   if (!datum) return null;

@@ -16,7 +16,7 @@
  */
 
 import { Class, Instance } from "immutable-class";
-import * as React from "react";
+import React from "react";
 
 export interface MarginParameters {
   left?: number;

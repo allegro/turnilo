@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SortDirection } from "../../../../common/models/sort/sort";
 import { classNames } from "../../../utils/dom/dom";
 import { SvgIcon } from "../../svg-icon/svg-icon";
@@ -26,5 +26,5 @@ interface SortIconProps {
   direction: SortDirection;
 }
 
-export const SortIcon: React.SFC<SortIconProps> = ({ direction }) =>
+export const SortIcon: React.FunctionComponent<SortIconProps> = ({ direction }) =>
   <SvgIcon svg={sortArrow} className={classNames("sort-arrow", direction)} />;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DragEvent, MouseEvent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";
@@ -36,7 +36,7 @@ export interface MeasureItemProps {
   searchText: string;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureDragStart, measureClick, description, searchText, approximate, selected }) => {
+export const MeasureItem: React.FunctionComponent<MeasureItemProps> = ({ title, name, measureDragStart, measureClick, description, searchText, approximate, selected }) => {
 
   const infoBubbleClassName = "measure-info-icon";
   const handleClick = (e: MouseEvent<HTMLElement>) => {

@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { wikiClientDataCube } from "../../../common/models/data-cube/data-cube.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";

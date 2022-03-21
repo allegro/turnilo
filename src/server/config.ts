@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as nopt from "nopt";
+import nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
 import {
@@ -23,12 +23,19 @@ import {
   EMPTY_APP_SETTINGS,
   fromConfig as appSettingsFromConfig
 } from "../common/models/app-settings/app-settings";
-import { Cluster } from "../common/models/cluster/cluster";
-import { fromConfig } from "../common/models/data-cube/data-cube";
+import {
+  fromConfig as clusterFromConfig
+} from "../common/models/cluster/cluster";
+import { fromConfig as dataCubeFromConfig } from "../common/models/data-cube/data-cube";
 import { fromConfig as sourcesFromConfig, SourcesJS } from "../common/models/sources/sources";
 import { arraySum, isTruthy } from "../common/utils/general/general";
 import { appSettingsToYaml, printExtra, sourcesToYaml } from "../common/utils/yaml-helper/yaml-helper";
-import { ServerSettings, ServerSettingsJS } from "./models/server-settings/server-settings";
+import {
+  DEFAULT_PORT,
+  DEFAULT_SERVER_ROOT,
+  ServerSettings,
+  ServerSettingsJS
+} from "./models/server-settings/server-settings";
 import { loadFileSync } from "./utils/file/file";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
 
@@ -79,9 +86,9 @@ General arguments:
 
 Server arguments:
 
-  -p, --port <port-number>     The port turnilo will run on (default: ${ServerSettings.DEFAULT_PORT})
+  -p, --port <port-number>     The port turnilo will run on (default: ${DEFAULT_PORT})
       --server-host <host>     The host on which to listen on (default: all hosts)
-      --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT})
+      --server-root <root>     A custom server root to listen on (default ${DEFAULT_SERVER_ROOT})
 
 Data connection options:
 
@@ -215,24 +222,19 @@ if (START_SERVER) {
 }
 
 function readConfig(config: AppSettingsJS & SourcesJS) {
-    return {
-      appSettings: appSettingsFromConfig(config),
-      sources: sourcesFromConfig(config)
-    };
+  return {
+    appSettings: appSettingsFromConfig(config),
+    sources: sourcesFromConfig(config)
+  };
 }
 
 function readArgs(file: string | undefined, url: string | undefined) {
   const sources = {
-    clusters: !isTruthy(url) ? [] : [new Cluster({
+    clusters: !isTruthy(url) ? [] : [clusterFromConfig({
       name: "druid",
-      url,
-      sourceListScan: "auto",
-      sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-      sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
-      sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-      sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD
+      url
     })],
-    dataCubes: !isTruthy(file) ? [] : [fromConfig({
+    dataCubes: !isTruthy(file) ? [] : [dataCubeFromConfig({
       name: path.basename(file, path.extname(file)),
       clusterName: "native",
       source: file
@@ -254,7 +256,7 @@ export const SETTINGS_MANAGER = new SettingsManager(appSettings, sources, {
   logger,
   verbose: VERBOSE,
   anchorPath: configDirPath,
-  initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
+  initialLoadTimeout: SERVER_SETTINGS.pageMustLoadTimeout
 });
 
 // --- Printing -------------------------------
@@ -269,7 +271,7 @@ if (PRINT_CONFIG) {
       header: true,
       version: VERSION,
       verbose: VERBOSE,
-      port: SERVER_SETTINGS.getPort()
+      port: SERVER_SETTINGS.port
     };
     const config = [
       printExtra(extra, withComments),

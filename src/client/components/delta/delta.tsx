@@ -15,7 +15,7 @@
  */
 
 import { format } from "d3";
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { isNil } from "../../../common/utils/general/general";
 import "./delta.scss";
@@ -76,7 +76,7 @@ export interface DeltaProps {
   lowerIsBetter?: boolean;
 }
 
-export const Delta: React.SFC<DeltaProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
+export const Delta: React.FunctionComponent<DeltaProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
   const formattedDelta = formatDelta(currentValue, previousValue);
   if (formattedDelta === null) {
     return <span className="delta-neutral">-</span>;

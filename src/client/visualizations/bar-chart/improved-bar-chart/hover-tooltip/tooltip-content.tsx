@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { createColorEntry } from "../../../../components/color-swabs/color-entry";
 import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
@@ -31,11 +31,10 @@ interface ContentProps {
 
 function colorEntries(datum: Datum, series: ConcreteSeries, model: StackedBarChartModel) {
   const { nominalSplit, colors, hasComparison } = model;
-  const { reference } = nominalSplit;
   const datums = selectSplitDatums(datum);
   const colorEntries = colors.entrySeq().toArray();
   return colorEntries.map(([name, color]) => {
-    const datum = datums.find(d => String(d[reference]) === name);
+    const datum = datums.find(d => String(nominalSplit.selectValue(d)) === name);
 
     if (!datum) {
       return { color, name, value: "-" };
@@ -45,7 +44,7 @@ function colorEntries(datum: Datum, series: ConcreteSeries, model: StackedBarCha
   });
 }
 
-export const Content: React.SFC<ContentProps> = props => {
+export const Content: React.FunctionComponent<ContentProps> = props => {
   const { model, series, datum } = props;
   if (isStacked(model)) {
     const entries = colorEntries(datum, series, model);

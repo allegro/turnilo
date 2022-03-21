@@ -16,7 +16,7 @@
  */
 
 import { FlattenOptions, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { Unary } from "../../../common/utils/functional/functional";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
@@ -37,7 +37,7 @@ interface TableVisualizationState {
   segmentWidth: number;
 }
 
-export class TableVisualization extends React.Component<VisualizationProps, TableVisualizationState> {
+export default class TableVisualization extends React.Component<VisualizationProps, TableVisualizationState> {
   state: TableVisualizationState = {
     segmentWidth: SEGMENT_WIDTH
   };

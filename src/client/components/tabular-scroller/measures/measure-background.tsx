@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../../utils/dom/dom";
 import "./measure-background.scss";
 
@@ -22,7 +22,7 @@ interface MeasureBackgroundProps {
   highlight: boolean;
 }
 
-export const MeasureBackground: React.SFC<MeasureBackgroundProps> = ({ highlight, width }) =>
+export const MeasureBackground: React.FunctionComponent<MeasureBackgroundProps> = ({ highlight, width }) =>
   <div className="measure-background-container">
     <div className={classNames("measure-background", { highlight })} style={{ width: width + "%" }} />
   </div>;

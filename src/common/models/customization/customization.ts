@@ -20,7 +20,7 @@ import { LOGGER } from "../../logger/logger";
 import { assoc } from "../../utils/functional/functional";
 import { isTruthy } from "../../utils/general/general";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
-import { fromConfig as localeFromConfig, Locale, LocaleJS, serialize as localeSerialize } from "../locale/locale";
+import { fromConfig as localeFromConfig, Locale, LocaleJS, serialize as serializeLocale } from "../locale/locale";
 import { fromConfig as urlShortenerFromConfig, UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 export const DEFAULT_TITLE = "Turnilo (%v)";
@@ -184,7 +184,7 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     ? configExternalViews.map(ExternalView.fromJS)
     : [];
 
-  const customization = {
+  return {
     title,
     headerBackground,
     customLogoSvg,
@@ -195,8 +195,6 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     locale: localeFromConfig(locale),
     externalViews
   };
-
-  return customization;
 }
 
 export function serialize(customization: Customization): SerializedCustomization {
@@ -207,7 +205,7 @@ export function serialize(customization: Customization): SerializedCustomization
     hasUrlShortener: isTruthy(urlShortener),
     headerBackground,
     sentryDSN,
-    locale: localeSerialize(locale),
+    locale: serializeLocale(locale),
     timezones: timezones.map(t => t.toJS())
   };
 }

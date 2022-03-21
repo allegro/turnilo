@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import getScale from "../../../../utils/linear-scale/linear-scale";
 import { BarChartModel } from "../utils/bar-chart-model";
@@ -29,7 +29,7 @@ interface YAxisProps {
   model: BarChartModel;
 }
 
-export const YAxis: React.SFC<YAxisProps> = props => {
+export const YAxis: React.FunctionComponent<YAxisProps> = props => {
   const { model, stage, datums } = props;
   const axisStage = calculateYAxisStage(stage);
   const seriesList = model.series.toArray();

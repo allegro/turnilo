@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ArithmeticExpression, ArithmeticOperation } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { ClientMeasure, isApproximate } from "../../../common/models/measure/measure";
@@ -64,7 +64,7 @@ function expressionSeriesTitle(series: ExpressionSeries, measure: ClientMeasure,
   return concreteSeries.title();
 }
 
-export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = props => {
+export const ArithmeticSeriesMenu: React.FunctionComponent<ArithmeticOperationSeriesMenuProps> = props => {
   const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
   function isSeriesValid({ expression }: ExpressionSeries): boolean {

@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
@@ -37,7 +37,7 @@ interface BarChartsProps {
   xScale: XScale;
 }
 
-export const BarCharts: React.SFC<BarChartsProps> = props => {
+export const BarCharts: React.FunctionComponent<BarChartsProps> = props => {
   const { dropHighlight, acceptHighlight, interaction, model, datums, xScale, scrollLeft, stage, totals } = props;
   const seriesList = model.series.toArray();
   return <React.Fragment>

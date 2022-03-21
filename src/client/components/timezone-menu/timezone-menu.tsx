@@ -15,7 +15,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -31,7 +31,7 @@ export interface TimezoneMenuProps {
   timezones?: Timezone[];
 }
 
-export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({ timezone, timezones, onClose, changeTimezone, openOn }) => {
+export const TimezoneMenu: React.FunctionComponent<TimezoneMenuProps> = ({ timezone, timezones, onClose, changeTimezone, openOn }) => {
 
   function selectTimezone(newTimezone: Timezone) {
     changeTimezone(newTimezone);

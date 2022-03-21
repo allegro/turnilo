@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-import { BackCompat, BaseImmutable, Property } from "immutable-class";
+import { BaseImmutable } from "immutable-class";
 import { External } from "plywood";
 import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
-import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
-import { isNil, isTruthy, verifyUrlSafeName } from "../../utils/general/general";
+import { RetryOptions, RetryOptionsJS } from "../../../server/utils/retry-options/retry-options";
+import { isNil, isTruthy, optionalEnsureOneOf, verifyUrlSafeName } from "../../utils/general/general";
 
 export type SourceListScan = "disable" | "auto";
 
-export interface ClusterValue {
+export type ClusterType = "druid";
+
+export interface Cluster {
+  type: ClusterType;
   name: string;
-  url?: string;
+  url: string;
   title?: string;
   version?: string;
   timeout?: number;
@@ -37,15 +40,15 @@ export interface ClusterValue {
   sourceReintrospectOnLoad?: boolean;
   sourceReintrospectInterval?: number;
   guardDataCubes?: boolean;
-
   introspectionStrategy?: string;
   requestDecorator?: RequestDecorator;
+  retry?: RetryOptions;
 }
 
 export interface ClusterJS {
   name: string;
   title?: string;
-  url?: string;
+  url: string;
   version?: string;
   timeout?: number;
   healthCheckTimeout?: number;
@@ -55,21 +58,33 @@ export interface ClusterJS {
   sourceReintrospectOnLoad?: boolean;
   sourceReintrospectInterval?: number;
   guardDataCubes?: boolean;
-
   introspectionStrategy?: string;
   requestDecorator?: RequestDecoratorJS;
+  retry?: RetryOptionsJS;
+}
+
+export interface SerializedCluster {
+  type: ClusterType;
+  name: string;
+  timeout: number;
+}
+
+export interface ClientCluster {
+  type: ClusterType;
+  name: string;
+  timeout: number;
 }
 
 function ensureNotNative(name: string): void {
   if (name === "native") {
-    throw new Error("can not be 'native'");
+    throw new Error("Cluster name can not be 'native'");
   }
 }
 
 function ensureNotTiny(v: number): void {
   if (v === 0) return;
   if (v < 1000) {
-    throw new Error(`can not be < 1000 (is ${v})`);
+    throw new Error(`Interval can not be < 1000 (is ${v})`);
   }
 }
 
@@ -81,130 +96,114 @@ function validateUrl(url: string): void {
   }
 }
 
-function oldHostParameter(cluster: any): string {
-  return cluster.host || cluster.druidHost || cluster.brokerHost;
+const HTTP_PROTOCOL_TEST = /^http(s?):/;
+
+function readUrl(cluster: any): string {
+  if (isTruthy(cluster.url)) {
+    validateUrl(cluster.url);
+    return cluster.url;
+  }
+  const oldHost = cluster.host || cluster.druidHost || cluster.brokerHost;
+  if (isTruthy(oldHost)) {
+    const url = HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
+    validateUrl(url);
+    return url;
+  }
+  throw new Error("Cluster: missing url field");
 }
 
-export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
-  static DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
-  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = "auto";
-  static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ["disable", "auto"];
-  static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
-  static DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = false;
-  static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
-  static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
-  static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
-  static DEFAULT_GUARD_DATA_CUBES = false;
-
-  static fromJS(parameters: ClusterJS): Cluster {
-    if (typeof parameters.timeout === "string") {
-      parameters.timeout = parseInt(parameters.timeout, 10);
-    }
-    if (typeof parameters.sourceListRefreshInterval === "string") {
-      parameters.sourceListRefreshInterval = parseInt(parameters.sourceListRefreshInterval, 10);
-    }
-    if (typeof parameters.sourceReintrospectInterval === "string") {
-      parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
-    }
-    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters, Cluster.BACKWARD_COMPATIBILITY));
+function readRequestDecorator(cluster: any): RequestDecorator | null {
+  if (typeof cluster.requestDecorator === "string" || !isNil(cluster.decoratorOptions)) {
+    console.warn(`Cluster ${cluster.name} : requestDecorator as string and decoratorOptions fields are deprecated. Use object with path and options fields`);
+    return RequestDecorator.fromJS({ path: cluster.requestDecorator, options: cluster.decoratorOptions });
   }
-
-  static PROPERTIES: Property[] = [
-    { name: "name", validate: [verifyUrlSafeName, ensureNotNative] },
-    { name: "url", defaultValue: null, validate: [validateUrl] },
-    { name: "title", defaultValue: "" },
-    { name: "version", defaultValue: null },
-    { name: "timeout", defaultValue: undefined },
-    { name: "retry", defaultValue: null, immutableClass: RetryOptions },
-    { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
-    { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
-    { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
-    {
-      name: "sourceListRefreshInterval",
-      defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-      validate: [BaseImmutable.ensure.number, ensureNotTiny]
-    },
-    { name: "sourceReintrospectOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
-    {
-      name: "sourceReintrospectInterval",
-      defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-      validate: [BaseImmutable.ensure.number, ensureNotTiny]
-    },
-    { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
-    { name: "requestDecorator", defaultValue: null, immutableClass: RequestDecorator },
-    { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
-  ];
-
-  static HTTP_PROTOCOL_TEST = /^http(s?):/;
-
-  static BACKWARD_COMPATIBILITY: BackCompat[] = [{
-    condition: cluster => !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
-    action: cluster => {
-      const oldHost = oldHostParameter(cluster);
-      cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
-    }
-  }, {
-    condition: cluster => typeof cluster.requestDecorator === "string" || !isNil(cluster.decoratorOptions),
-    action: cluster => {
-      console.warn(`Cluster ${cluster.name} : requestDecorator as string and decoratorOptions fields are deprecated. Use object with path and options fields`);
-      cluster.requestDecorator = {
-        path: cluster.requestDecorator,
-        options: cluster.decoratorOptions
-      };
-    }
-  }];
-
-  public type = "druid";
-
-  public name: string;
-  public url: string;
-  public title: string;
-  public version: string;
-  public timeout: number;
-  public retry: RetryOptions;
-  public healthCheckTimeout: number;
-  public sourceListScan: SourceListScan;
-  public sourceListRefreshOnLoad: boolean;
-  public sourceListRefreshInterval: number;
-  public sourceReintrospectOnLoad: boolean;
-  public sourceReintrospectInterval: number;
-  public guardDataCubes: boolean;
-
-  // Druid
-  public introspectionStrategy: string;
-  public requestDecorator: RequestDecorator;
-
-  public getTimeout: () => number;
-  public getSourceListScan: () => SourceListScan;
-  public getSourceListRefreshInterval: () => number;
-  public getSourceReintrospectInterval: () => number;
-  public getIntrospectionStrategy: () => string;
-  public changeUrl: (newUrl: string) => Cluster;
-  public changeTimeout: (newTimeout: string) => Cluster;
-  public changeSourceListRefreshInterval: (newSourceListRefreshInterval: string) => Cluster;
-
-  public toClientCluster(): Cluster {
-    return new Cluster({
-      name: this.name,
-      timeout: this.timeout
-    });
-  }
-
-  public makeExternalFromSourceName(source: string, version?: string): External {
-    return External.fromValue({
-      engine: "druid",
-      source,
-      version,
-      suppress: true,
-
-      allowSelectQueries: true,
-      allowEternity: false
-    });
-  }
-
-  public shouldScanSources(): boolean {
-    return this.getSourceListScan() === "auto";
-  }
+  if (isTruthy(cluster.requestDecorator)) return RequestDecorator.fromJS(cluster.requestDecorator);
+  return null;
 }
 
-BaseImmutable.finalize(Cluster);
+const DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
+export const DEFAULT_SOURCE_LIST_SCAN: SourceListScan = "auto";
+const SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ["disable", "auto"];
+export const DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
+export const DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = false;
+export const DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
+export const DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
+export const DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
+const DEFAULT_GUARD_DATA_CUBES = false;
+
+function readInterval(value: number | string, defaultValue: number): number {
+  if (!isTruthy(value)) return defaultValue;
+  const numberValue = typeof value === "string" ? parseInt(value, 10) : value;
+  BaseImmutable.ensure.number(numberValue);
+  ensureNotTiny(numberValue);
+  return numberValue;
+}
+
+export function fromConfig(params: ClusterJS): Cluster {
+  const {
+    name,
+    sourceListScan = DEFAULT_SOURCE_LIST_SCAN,
+    sourceListRefreshOnLoad = DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+    sourceReintrospectOnLoad = DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
+    version = null,
+    title = "",
+    guardDataCubes = DEFAULT_GUARD_DATA_CUBES,
+    introspectionStrategy = DEFAULT_INTROSPECTION_STRATEGY,
+    healthCheckTimeout = DEFAULT_HEALTH_CHECK_TIMEOUT
+  } = params;
+
+  verifyUrlSafeName(name);
+  ensureNotNative(name);
+
+  optionalEnsureOneOf(sourceListScan, SOURCE_LIST_SCAN_VALUES, "Cluster: sourceListScan");
+
+  const sourceReintrospectInterval = readInterval(params.sourceReintrospectInterval, DEFAULT_SOURCE_REINTROSPECT_INTERVAL);
+  const sourceListRefreshInterval = readInterval(params.sourceListRefreshInterval, DEFAULT_SOURCE_LIST_REFRESH_INTERVAL);
+  const retry = RetryOptions.fromJS(params.retry);
+  const requestDecorator = readRequestDecorator(params);
+
+  const url = readUrl(params);
+
+  return {
+    type: "druid",
+    timeout: typeof params.timeout === "string" ? parseInt(params.timeout, 10) : params.timeout,
+    name,
+    url,
+    retry,
+    requestDecorator,
+    sourceListScan,
+    sourceListRefreshInterval,
+    sourceListRefreshOnLoad,
+    sourceReintrospectInterval,
+    sourceReintrospectOnLoad,
+    version,
+    title,
+    guardDataCubes,
+    introspectionStrategy,
+    healthCheckTimeout
+  };
+}
+
+export function serialize(cluster: Cluster): SerializedCluster {
+  return {
+    type: "druid",
+    name: cluster.name,
+    timeout: cluster.timeout
+  };
+}
+
+export function makeExternalFromSourceName(source: string, version?: string): External {
+  return External.fromValue({
+    engine: "druid",
+    source,
+    version,
+    suppress: true,
+
+    allowSelectQueries: true,
+    allowEternity: false
+  });
+}
+
+export function shouldScanSources(cluster: Cluster): boolean {
+  return cluster.sourceListScan === "auto";
+}

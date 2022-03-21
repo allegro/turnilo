@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary, complement, Ternary, Unary } from "../../../common/utils/functional/functional";
@@ -47,7 +47,7 @@ interface ScrolledGridProps {
   scrollTop: number;
 }
 
-export const ScrolledGrid: React.SFC<ScrolledGridProps> = props => {
+export const ScrolledGrid: React.FunctionComponent<ScrolledGridProps> = props => {
   const {
     essence,
     data,

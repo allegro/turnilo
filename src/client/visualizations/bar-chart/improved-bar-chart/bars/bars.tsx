@@ -15,17 +15,15 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { Unary } from "../../../../../common/utils/functional/functional";
 import getScale, { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { SingleBar } from "../bar/single-bar";
 import { SingleTimeShiftBar } from "../bar/single-time-shift-bar";
 import { StackedBar } from "../bar/stacked-bar";
 import { StackedTimeShiftBar } from "../bar/stacked-time-shift-bar";
-import { BarChartModel, isStacked, StackedBarChartModel } from "../utils/bar-chart-model";
-import { DomainValue } from "../utils/x-domain";
+import { BarChartModel, isStacked } from "../utils/bar-chart-model";
 import { XScale } from "../utils/x-scale";
 import { yExtent } from "../utils/y-extent";
 import { Background } from "./background";
@@ -36,10 +34,9 @@ interface BarProps {
   yScale: LinearScale;
   xScale: XScale;
   series: ConcreteSeries;
-  getX: Unary<Datum, DomainValue>;
 }
 
-const Bar: React.SFC<BarProps> = props => {
+const Bar: React.FunctionComponent<BarProps> = props => {
   const { model, ...rest } = props;
   const showPrevious = model.hasComparison;
   if (isStacked(model)) {
@@ -48,21 +45,20 @@ const Bar: React.SFC<BarProps> = props => {
       : <StackedBar {...rest} model={model} />;
   }
   return showPrevious
-    ? <SingleTimeShiftBar {...rest} />
-    : <SingleBar {...rest} />;
+    ? <SingleTimeShiftBar {...rest} model={model} />
+    : <SingleBar {...rest} model={model} />;
 };
 
 interface BarsProps {
   model: BarChartModel;
   stage: Stage;
   xScale: XScale;
-  getX: Unary<Datum, DomainValue>;
   series: ConcreteSeries;
   datums: Datum[];
 }
 
-export const Bars: React.SFC<BarsProps> = props => {
-  const { model, stage, getX, xScale, series, datums } = props;
+export const Bars: React.FunctionComponent<BarsProps> = props => {
+  const { model, stage, xScale, series, datums } = props;
   const extent = yExtent(datums, series, model.hasComparison);
   const yScale = getScale(extent, stage.height);
   if (!yScale) return null;
@@ -77,7 +73,7 @@ export const Bars: React.SFC<BarsProps> = props => {
           yScale={yScale}
           xScale={xScale}
           series={series}
-          getX={getX} />)}
+        />)}
       </g>
     </svg>
   </React.Fragment>;

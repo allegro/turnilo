@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Legend } from "./legend";
 
@@ -22,7 +22,7 @@ interface SeriesLegend {
   essence: Essence;
 }
 
-export const SeriesLegend: React.SFC<SeriesLegend> = props => {
+export const SeriesLegend: React.FunctionComponent<SeriesLegend> = props => {
   const { essence } = props;
   const series = essence.getConcreteSeries().toArray();
   const values = series.map(series => series.title());

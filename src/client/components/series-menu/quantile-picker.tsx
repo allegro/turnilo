@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Omit } from "../../../common/utils/functional/functional";
 import { InputWithPresets, InputWithPresetsProps } from "../input-with-presets/input-with-presets";
 
@@ -29,5 +29,5 @@ function format(n: number): string {
   return n.toString();
 }
 
-export const QuantilePicker: React.SFC<QuantilePickerProps> = props =>
+export const QuantilePicker: React.FunctionComponent<QuantilePickerProps> = props =>
   <InputWithPresets<number> {...props} parseCustomValue={parse} formatCustomValue={format} />;

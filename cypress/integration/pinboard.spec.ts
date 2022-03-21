@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2022 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 context("Pinboard", () => {
 
   const pinboardPanel = () => cy.get(".pinboard-panel");
@@ -6,11 +21,11 @@ context("Pinboard", () => {
   const pinboardSortError = () => pinboardMeasureTile().find(".pinboard-sort-error");
   const pinboardSortSelected = () => pinboardSort().find(".selected-item");
   const pinboardTiles = () => pinboardPanel().find(".pinboard-tile");
-  const measureTile = (title) => cy.get(`.series.measure:contains(${title})`);
+  const measureTile = (title: string) => cy.get(`.series.measure:contains(${title})`);
 
   describe("Pinboard", () => {
     const urls = {
-      wiki: "http://localhost:9090/#wiki",
+      wiki: "http://localhost:9090/#wiki"
     };
 
     beforeEach(() => {

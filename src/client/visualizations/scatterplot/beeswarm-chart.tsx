@@ -36,11 +36,11 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
   render() {
     const { data, essence, stage, setPointHover, resetPointHover, hoveredPoint } = this.props;
     const { plottingStage, scale, series, ticks, beeswarmData } = getBeeswarmData(data, essence, stage);
-    const splitKey = essence.splits.splits.first().toKey();
+    const mainSplit = essence.splits.splits.first();
 
     const lowerThreshold = Math.round(plottingStage.height * 0.1);
     const upperThreshold =  Math.round(plottingStage.height * 0.9);
-    const topPointPosition = lowerThreshold/2;
+    const topPointPosition = lowerThreshold / 2;
     const bottomPointPosition = plottingStage.height - topPointPosition;
 
     const points = getPoints({ data: beeswarmData, series, scale, pointRadius: 3, stage: plottingStage });
@@ -55,7 +55,7 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
         hoveredPoint={hoveredPoint}
         stage={plottingStage}
         xSeries={series}
-        splitKey={splitKey}
+        split={mainSplit}
         timezone={essence.timezone}
         showPrevious={essence.hasComparison()}/>
       <svg viewBox={stage.getViewBox()}>
@@ -68,7 +68,7 @@ export class BeeswarmChart extends React.Component<BeeswarmChartProps, {}> {
           tickSize={TICK_SIZE}/>
         <g transform={plottingStage.getTransform()}>
           {pointsBetweenThresholds.map((datum, index) =>
-            <Point key={index} datum={datum.data} x={datum.x} y={datum.y} r={datum.r} setHover={setPointHover} resetHover={resetPointHover}/>
+            <Point key={`point-${mainSplit.selectValue(datum.data)}`} datum={datum.data} x={datum.x} y={datum.y} r={datum.r} setHover={setPointHover} resetHover={resetPointHover}/>
           )}
           <Point datum={pointsAboveThreshold[0].data} x={pointsAboveThreshold[0].x} y={bottomPointPosition} r={20} setHover={setPointHover} resetHover={resetPointHover} />
           <Point datum={pointsBelowThreshold[0].data} x={pointsBelowThreshold[0].x} y={topPointPosition} r={20} setHover={setPointHover} resetHover={resetPointHover} />

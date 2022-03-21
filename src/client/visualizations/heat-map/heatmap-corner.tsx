@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import "./heatmap-corner.scss";
@@ -29,7 +29,7 @@ const labelMargin = 20;
 // Around half of font-size with handpicked offset to accommodate rounding errors and rotation artifacts
 const rotationAxisOffset = 7;
 
-export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ width, height, essence }) => {
+export const HeatmapCorner: React.FunctionComponent<HeatmapCornerProps> = ({ width, height, essence }) => {
   const { dataCube, splits: { splits } } = essence;
 
   const row = splits.get(0);

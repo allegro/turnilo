@@ -15,7 +15,7 @@
  */
 
 import { Dataset, Datum, PlywoodRange } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
@@ -41,11 +41,11 @@ function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSer
 
 function colorEntries(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ColorEntry[] {
   const { data } = dataset;
-  const { reference: nominalRef } = getNominalSplit(essence);
+  const nominalSplit = getNominalSplit(essence);
   const continuousRef = getContinuousReference(essence);
   const hasComparison = essence.hasComparison();
   return data.map((datum, i) => {
-    const name = String(datum[nominalRef]);
+    const name = String(nominalSplit.selectValue(datum));
     const color = NORMAL_COLORS[i];
     const hoverDatum = findSplitDatumByAttribute(datum, continuousRef, range);
 
@@ -74,7 +74,7 @@ interface SeriesHoverContentProps {
   series: ConcreteSeries;
 }
 
-export const SeriesHoverContent: React.SFC<SeriesHoverContentProps> = props => {
+export const SeriesHoverContent: React.FunctionComponent<SeriesHoverContentProps> = props => {
   const { essence, range, series, dataset } = props;
   if (hasNominalSplit(essence)) {
     const entries = colorEntries(dataset, range, series, essence);

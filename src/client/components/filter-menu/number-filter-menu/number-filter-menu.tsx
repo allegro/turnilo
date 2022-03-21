@@ -16,7 +16,7 @@
  */
 
 import { List } from "immutable";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause, NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
@@ -73,7 +73,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     end: ANY_VALUE
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { essence, dimension } = this.props;
     const clause = essence.filter.getClauseForDimension(dimension);
     if (!clause) return;

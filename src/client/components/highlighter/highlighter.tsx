@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./highlighter.scss";
 
 export interface HighlighterProps {

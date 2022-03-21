@@ -17,7 +17,11 @@
 
 import { AttributeInfo } from "plywood";
 import { AppSettings } from "../../models/app-settings/app-settings";
-import { Cluster } from "../../models/cluster/cluster";
+import {
+  Cluster, DEFAULT_INTROSPECTION_STRATEGY,
+  DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, DEFAULT_SOURCE_LIST_SCAN,
+  DEFAULT_SOURCE_REINTROSPECT_INTERVAL
+} from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
 import { DataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
@@ -160,11 +164,11 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
     .add("url")
     .add("version")
     .add("timeout", { defaultValue: undefined })
-    .add("sourceListScan", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN })
+    .add("sourceListScan", { defaultValue: DEFAULT_SOURCE_LIST_SCAN })
     .add("sourceListRefreshOnLoad", { defaultValue: false })
-    .add("sourceListRefreshInterval", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
+    .add("sourceListRefreshInterval", { defaultValue: DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
     .add("sourceReintrospectOnLoad", { defaultValue: false })
-    .add("sourceReintrospectInterval", { defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
+    .add("sourceReintrospectInterval", { defaultValue: DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
   ;
 
   if (withComments) {
@@ -176,7 +180,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   switch (cluster.type) {
     case "druid":
       props
-        .add("introspectionStrategy", { defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY })
+        .add("introspectionStrategy", { defaultValue: DEFAULT_INTROSPECTION_STRATEGY })
         .add("requestDecorator")
       ;
       break;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import "./message.scss";
 
@@ -26,7 +26,7 @@ interface ErrorProps {
   level?: MessageLevel;
 }
 
-export const Message: React.SFC<ErrorProps> = props => {
+export const Message: React.FunctionComponent<ErrorProps> = props => {
   const { content, title, level = "notice" } = props;
   return <div className={classNames("message", level)}>
     <div className="whiteout" />

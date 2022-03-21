@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { SPACE_LEFT } from "../dimensions";
 import { VisibleRows } from "../visible-rows/visible-rows";
 import "./flattened-splits.scss";
@@ -34,7 +34,7 @@ interface FlattenedSplitsProps {
   splitLabel: React.ComponentType<SplitLabelProps>;
 }
 
-export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
+export const FlattenedSplits: React.FunctionComponent<FlattenedSplitsProps> = props => {
   const { splitLabel: SplitLabel, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="flattened-splits-rows">

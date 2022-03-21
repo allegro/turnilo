@@ -17,12 +17,12 @@
 import { Duration, Timezone } from "chronoshift";
 import { AttributeInfo, Executor } from "plywood";
 import { ClientDataCube, SerializedDataCube } from "../../common/models/data-cube/data-cube";
-import { serialize as dimensionsSerialize } from "../../common/models/dimension/dimensions";
+import { serialize as serializeDimensions } from "../../common/models/dimension/dimensions";
 import { Filter } from "../../common/models/filter/filter";
-import { serialize as measuresSerialize } from "../../common/models/measure/measures";
+import { serialize as serializeMeasures } from "../../common/models/measure/measures";
 import { RefreshRule } from "../../common/models/refresh-rule/refresh-rule";
-import { deserialize as dimensionsDeserialize } from "./dimensions";
-import { deserialize as measuresDeserialize } from "./measures";
+import { deserialize as deserializeDimensions } from "./dimensions";
+import { deserialize as deserializeMeasures } from "./measures";
 
 export function deserialize(dataCube: SerializedDataCube, executor: Executor): ClientDataCube {
   const {
@@ -60,12 +60,12 @@ export function deserialize(dataCube: SerializedDataCube, executor: Executor): C
     defaultSplitDimensions,
     defaultTimezone: Timezone.fromJS(defaultTimezone),
     description,
-    dimensions: dimensionsDeserialize(dimensions),
+    dimensions: deserializeDimensions(dimensions),
     executor,
     extendedDescription,
     group,
     maxSplits,
-    measures: measuresDeserialize(measures),
+    measures: deserializeMeasures(measures),
     name,
     options,
     refreshRule: RefreshRule.fromJS(refreshRule),
@@ -116,11 +116,11 @@ export function serialize(dataCube: ClientDataCube): SerializedDataCube {
     defaultSplitDimensions,
     defaultTimezone: defaultTimezone.toJS(),
     description,
-    dimensions: dimensionsSerialize(dimensions),
+    dimensions: serializeDimensions(dimensions),
     extendedDescription,
     group,
     maxSplits,
-    measures: measuresSerialize(measures),
+    measures: serializeMeasures(measures),
     name,
     options,
     refreshRule: RefreshRule.fromJS(refreshRule),

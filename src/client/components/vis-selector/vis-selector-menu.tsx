@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Binary } from "../../../common/utils/functional/functional";

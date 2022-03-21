@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -44,7 +44,7 @@ export interface DimensionActionsProps {
   addPartialFilter: (dimension: Dimension) => void;
 }
 
-export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionActionsMenuProps> =
+export const DimensionActionsMenu: React.FunctionComponent<DimensionActionsProps & DimensionActionsMenuProps> =
   (props: DimensionActionsMenuProps & DimensionActionsProps) => {
     const { addPartialFilter, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
     return <BubbleMenu
@@ -65,7 +65,7 @@ export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionAc
     </BubbleMenu>;
   };
 
-export const DimensionActions: React.SFC<DimensionActionsProps> = (props: DimensionActionsProps) => {
+export const DimensionActions: React.FunctionComponent<DimensionActionsProps> = (props: DimensionActionsProps) => {
   const { onClose, addPartialFilter, clicker, essence: { splits, filter }, dimension } = props;
   if (!dimension) return null;
 

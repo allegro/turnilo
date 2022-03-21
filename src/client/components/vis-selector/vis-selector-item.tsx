@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
@@ -27,7 +27,7 @@ interface VisSelectorItemProps {
   onClick?: Unary<VisualizationManifest, void>;
 }
 
-export const VisSelectorItem: React.SFC<VisSelectorItemProps> = ({ visualization, selected, onClick }) =>
+export const VisSelectorItem: React.FunctionComponent<VisSelectorItemProps> = ({ visualization, selected, onClick }) =>
   <div
     className={classNames("vis-item", (selected ? "selected" : "not-selected"))}
     key={visualization.name}

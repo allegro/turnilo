@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { CORE_ITEM_GAP } from "../../config/constants";
@@ -30,7 +30,7 @@ interface TileOverflowContainerMenuProps {
 
 const SEGMENT_HEIGHT = 29 + CORE_ITEM_GAP;
 
-const TileOverflowContainerMenu: React.SFC<TileOverflowContainerMenuProps> = props => {
+const TileOverflowContainerMenu: React.FunctionComponent<TileOverflowContainerMenuProps> = props => {
   const { items, openOn, closeOverflowMenu } = props;
 
   const positionedItems = items.map((item, idx) =>
@@ -57,7 +57,7 @@ interface TileOverflowContainerProps {
   closeOverflowMenu: Fn;
 }
 
-export const TileOverflowContainer: React.SFC<TileOverflowContainerProps> = props => {
+export const TileOverflowContainer: React.FunctionComponent<TileOverflowContainerProps> = props => {
   const { x, items, open, openOverflowMenu, className, closeOverflowMenu } = props;
 
   const style = transformStyle(x, 0);

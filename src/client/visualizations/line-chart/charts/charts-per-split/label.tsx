@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Datum, PlywoodValue } from "plywood";
-import * as React from "react";
+import { Datum } from "plywood";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
-import { getNominalDimension, hasNominalSplit } from "../../utils/splits";
+import { getNominalDimension, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import "./label.scss";
 
 interface LabelProps {
@@ -26,11 +26,12 @@ interface LabelProps {
   datum: Datum;
 }
 
-export const Label: React.SFC<LabelProps> = props => {
+export const Label: React.FunctionComponent<LabelProps> = props => {
   const { essence, datum } = props;
   if (hasNominalSplit(essence)) {
+    const nominalSplit = getNominalSplit(essence);
     const nominalDimension = getNominalDimension(essence);
-    const splitValue = datum[nominalDimension.name] as PlywoodValue;
+    const splitValue = nominalSplit.selectValue(datum);
     return <div className="split-chart-label">
     <span className="split-chart-dimension-title">
       {nominalDimension.title}

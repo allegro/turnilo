@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 
 function getBoundingClientOffset(element: HTMLElement | Window): { left: number, top: number } {
   if (element === window) {

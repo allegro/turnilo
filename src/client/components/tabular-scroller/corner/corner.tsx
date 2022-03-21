@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./corner.scss";
 
-export const Corner: React.SFC<{}> = ({ children }) =>
+export const Corner: React.FunctionComponent<{}> = ({ children }) =>
   <div className="corner">
     {children}
   </div>;

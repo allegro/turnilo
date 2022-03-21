@@ -17,7 +17,7 @@
 
 import { Set } from "immutable";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import {
   DatasetRequest,
   error,
@@ -144,7 +144,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.loadRows();
   }
 

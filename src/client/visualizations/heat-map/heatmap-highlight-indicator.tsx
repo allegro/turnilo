@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./heatmap-highlight-indicator.scss";
 import { HighlightPosition } from "./utils/get-highlight-position";
 
@@ -24,7 +24,7 @@ interface RowHighlightProps {
   tileSize: number;
 }
 
-const RowHighlight: React.SFC<RowHighlightProps> = props => {
+const RowHighlight: React.FunctionComponent<RowHighlightProps> = props => {
   const { row, width, tileSize } = props;
   const top = row * tileSize;
   return <div className="heatmap-highlighter heatmap-highlighter-row" style={{
@@ -40,7 +40,7 @@ interface ColumnHighlightProps {
   tileGap: number;
 }
 
-const ColumnHighlight: React.SFC<ColumnHighlightProps> = props => {
+const ColumnHighlight: React.FunctionComponent<ColumnHighlightProps> = props => {
   const { column, tileSize, height, tileGap } = props;
   const left = column * tileSize + tileGap;
   return <div className="heatmap-highlighter heatmap-highlighter-column" style={{
@@ -57,7 +57,7 @@ interface HeatmapHighlightIndicatorProps {
   height: number;
 }
 
-export const HeatmapHighlightIndicator: React.SFC<HeatmapHighlightIndicatorProps> = props => {
+export const HeatmapHighlightIndicator: React.FunctionComponent<HeatmapHighlightIndicatorProps> = props => {
   const { position: { row, column }, width, height, tileGap, tileSize } = props;
 
   return <React.Fragment>

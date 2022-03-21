@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension, isContinuous } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { granularityToString } from "../../../common/models/granularity/granularity";
@@ -51,7 +51,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   state: SplitMenuState = {};
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { split } = this.props;
     const { bucket, sort, limit } = split;
 

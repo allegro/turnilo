@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Binary, Nullary, Ternary, Unary } from "../../../../common/utils/functional/functional";
@@ -58,7 +58,7 @@ interface ScrolledTableProps {
   availableWidth: number;
 }
 
-export const ScrolledTable: React.SFC<ScrolledTableProps> = props => {
+export const ScrolledTable: React.FunctionComponent<ScrolledTableProps> = props => {
   const {
     essence,
     stage,

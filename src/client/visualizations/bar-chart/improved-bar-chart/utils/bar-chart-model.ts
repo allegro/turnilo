@@ -71,10 +71,9 @@ function readCommons(essence: Essence): Omit<BarChartModelCommons, "variant"> {
 }
 
 function createColorMap(nominalSplit: Split, dataset: Dataset): ColorMap {
-  const { reference } = nominalSplit;
   const datums = selectFirstSplitDatums(dataset);
   return datums.reduce<ColorMap>((map: ColorMap, datum: Datum, i: number) => {
-    const key = String(datum[reference]);
+    const key = String(nominalSplit.selectValue(datum));
     const colorIndex = i % NORMAL_COLORS.length;
     const color = NORMAL_COLORS[colorIndex];
     return map.set(key, color);

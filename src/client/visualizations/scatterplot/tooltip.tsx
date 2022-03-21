@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
 import { Timezone } from "chronoshift";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { isTruthy } from "../../../common/utils/general/general";
@@ -31,33 +32,31 @@ const TOOLTIP_OFFSET_Y = 50;
 const TOOLTIP_OFFSET_X = 100;
 
 interface TooltipProps {
+  split: Split;
   hoveredPoint: HoveredPoint;
   stage: Stage;
   xSeries: ConcreteSeries;
   ySeries?: ConcreteSeries;
   showPrevious: boolean;
   timezone: Timezone;
-  splitKey: string;
 }
 
-export const Tooltip: React.SFC<TooltipProps> = ({
+export const Tooltip: React.FunctionComponent<TooltipProps> = ({
   hoveredPoint,
   stage,
   xSeries,
   ySeries,
+  split,
   showPrevious,
-  timezone,
-  splitKey
+  timezone
 }) => {
   if (!isTruthy(hoveredPoint)) return null;
 
   const { datum, x, y } = hoveredPoint;
 
-  const title = formatValue(datum[splitKey], timezone);
-
   return <TooltipWithinStage top={y + TOOLTIP_OFFSET_Y} left={x + TOOLTIP_OFFSET_X} stage={stage}>
     <SegmentBubbleContent
-      title={title}
+      title={split.formatValue(datum, timezone)}
       content={<>
         <strong className="series-title">{xSeries.title()}</strong>
         <br/>

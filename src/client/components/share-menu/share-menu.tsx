@@ -16,7 +16,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { isFunction } from "util";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";

@@ -17,7 +17,7 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Split } from "../../../common/models/split/split";
 import { FlattenedSplitColumns } from "../../components/tabular-scroller/splits/flattened-split-columns";
 import { isTotalDatum } from "./utils/total-datum";
@@ -28,7 +28,7 @@ interface SplitLabelsProps {
   datum: Datum;
 }
 
-export const SplitLabels: React.SFC<SplitLabelsProps> = props => {
+export const SplitLabels: React.FunctionComponent<SplitLabelsProps> = props => {
   const { splits, datum, timezone } = props;
   if (isTotalDatum(datum)) {
     return <div key="totals" className="flattened-split-value">Total</div>;

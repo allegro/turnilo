@@ -16,9 +16,9 @@
  */
 
 import * as bodyParser from "body-parser";
-import * as express from "express";
+import express from "express";
 import { $ } from "plywood";
-import * as supertest from "supertest";
+import supertest from "supertest";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
 import { mkurlRouter } from "./mkurl";

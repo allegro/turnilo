@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
@@ -29,7 +29,7 @@ interface SelectableRowProps {
   searchText: string;
 }
 
-export const SelectableRow: React.SFC<SelectableRowProps> = props => {
+export const SelectableRow: React.FunctionComponent<SelectableRowProps> = props => {
   const { measure, value, selected, searchText, onSelect } = props;
   const strValue = String(value);
   return <div

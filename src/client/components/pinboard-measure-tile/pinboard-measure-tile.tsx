@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
@@ -33,7 +33,7 @@ export interface PinboardMeasureTileProps {
 
 const renderSelectedItem = (item: SortOn) => item ? SortOn.getTitle(item) : "---";
 
-export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props => {
+export const PinboardMeasureTile: React.FunctionComponent<PinboardMeasureTileProps> = props => {
   const { essence, title, dimension, sortOn, onSelect } = props;
 
   const sortOns = concatTruthy(

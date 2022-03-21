@@ -20,18 +20,18 @@ import { $, AttributeInfo } from "plywood";
 import { SinonSpy, spy } from "sinon";
 import equivalent from "../../../client/utils/test-utils/equivalent";
 import { deduceAttributes } from "../../utils/external/datacube-to-external";
-import { Cluster } from "../cluster/cluster";
+import { fromConfig as clusterFromConfig } from "../cluster/cluster";
 import { createDimension, DimensionJS, timeDimension } from "../dimension/dimension";
-import { fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
-import { allDimensions, findDimensionByExpression } from "../dimension/dimensions";
+import { allDimensions, fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
 import { DataCube, DataCubeJS, fromConfig } from "./data-cube";
 import { addAttributes } from "./queryable-data-cube";
 
 use(equivalent);
 
 describe("DataCube", () => {
-  const druidCluster = Cluster.fromJS({
-    name: "druid"
+  const druidCluster = clusterFromConfig({
+    name: "druid",
+    url: "http://driud"
   });
 
   describe("validates", () => {

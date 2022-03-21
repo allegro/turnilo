@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { allMeasures } from "../../../common/models/measure/measures";
@@ -28,7 +28,7 @@ interface AddSeriesProps {
   essence: Essence;
 }
 
-export const AddSeries: React.SFC<AddSeriesProps> = props => {
+export const AddSeries: React.FunctionComponent<AddSeriesProps> = props => {
   const { appendMeasureSeries, menuStage, essence: { dataCube, series } } = props;
   const tiles = allMeasures(dataCube.measures)
     .filter(measure => !series.hasMeasure(measure))

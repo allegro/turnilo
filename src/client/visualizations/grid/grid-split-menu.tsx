@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { isContinuous } from "../../../common/models/dimension/dimension";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { granularityToString } from "../../../common/models/granularity/granularity";
@@ -29,7 +29,7 @@ import { SplitMenuProps } from "../../components/split-menu/split-menu";
 import { createSplit, SplitMenuBase, validateSplit } from "../../components/split-menu/split-menu-base";
 import { mainSplit } from "./utils/main-split";
 
-export const GridSplitMenu: React.SFC<SplitMenuProps> = props => {
+export const GridSplitMenu: React.FunctionComponent<SplitMenuProps> = props => {
   const { essence, split, dimension } = props;
   const controlSplit = split.equals(mainSplit(essence));
   if (controlSplit) {

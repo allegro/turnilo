@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-export default function dragAndDropPolyfill() {
-  const div = document.createElement("div");
-  const dragDiv = "draggable" in div;
-  const evts = "ondragstart" in div && "ondrop" in div;
+const div = document.createElement("div");
+const dragDiv = "draggable" in div;
+const evts = "ondragstart" in div && "ondrop" in div;
 
-  const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
-  if (needsPatch) {
-    Promise.all([
-      // @ts-ignore
-      import("../../lib/polyfill/drag-drop-polyfill.min.js"),
-      // @ts-ignore
-      import("../../lib/polyfill/drag-drop-polyfill.css")
-    ]).then(([DragDropPolyfill, _]) => {
-      DragDropPolyfill.Initialize({});
-    });
-  }
+if (needsPatch) {
+  Promise.all([
+    // @ts-ignore
+    import(/* webpackChunkName: "dnd-js" */ "../../lib/polyfill/drag-drop-polyfill.min.js"),
+    // @ts-ignore
+    import(/* webpackChunkName: "dnd-css" */"../../lib/polyfill/drag-drop-polyfill.css")
+  ]).then(([DragDropPolyfill, _]) => {
+    DragDropPolyfill.Initialize({});
+  });
 }

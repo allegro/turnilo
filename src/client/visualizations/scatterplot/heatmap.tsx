@@ -15,9 +15,8 @@
  */
 
 import * as d3 from "d3";
-import { scale } from "d3";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Stage } from "../../../common/models/stage/stage";
 import { range } from "../../../common/utils/functional/functional";
@@ -39,15 +38,15 @@ interface HeatmapProps {
 const COLOR_SCALE_START = "#fff";
 const COLOR_SCALE_END = "#90b5d0";
 
-export const Heatmap: React.SFC<HeatmapProps> = ({ xBinCount, yBinCount, xScale, yScale, stage, data, xSeries, ySeries }) => {
-  const xQuantile = d3.scale.quantile<number>().domain(xScale.domain()).range(range(0, xBinCount));
-  const yQuantile = d3.scale.quantile<number>().domain(yScale.domain()).range(range(0, yBinCount));
+export const Heatmap: React.FunctionComponent<HeatmapProps> = ({ xBinCount, yBinCount, xScale, yScale, stage, data, xSeries, ySeries }) => {
+  const xQuantile = d3.scaleQuantile<number>().domain(xScale.domain()).range(range(0, xBinCount));
+  const yQuantile = d3.scaleQuantile<number>().domain(yScale.domain()).range(range(0, yBinCount));
 
   const counts = getCounts({ xBinCount, yBinCount, data, xQuantile, xSeries, yQuantile, ySeries });
 
   const countExtent = [0, d3.max(counts, c => d3.max(c))];
 
-  const colorScale = d3.scale.linear<string>().domain(countExtent).range([COLOR_SCALE_START, COLOR_SCALE_END]);
+  const colorScale = d3.scaleLinear<string>().domain(countExtent).range([COLOR_SCALE_START, COLOR_SCALE_END]);
 
   return <React.Fragment>
     <LegendSpot>
@@ -73,8 +72,8 @@ interface GetCounts {
   yBinCount: number;
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
-  xQuantile: scale.Quantile<number>;
-  yQuantile: scale.Quantile<number>;
+  xQuantile: d3.ScaleQuantile<number>;
+  yQuantile: d3.ScaleQuantile<number>;
   data: Datum[];
 }
 
@@ -100,7 +99,7 @@ interface RectangleProps {
   fillColor: string;
 }
 
-const Rectangle: React.SFC<RectangleProps> = ({
+const Rectangle: React.FunctionComponent<RectangleProps> = ({
   xRange,
   yRange,
   xScale,

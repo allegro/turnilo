@@ -16,9 +16,9 @@
  */
 
 import * as bodyParser from "body-parser";
-import * as express from "express";
-import * as mime from "mime";
-import * as supertest from "supertest";
+import express from "express";
+import mime from "mime";
+import supertest from "supertest";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { plyqlRouter } from "./plyql";
 

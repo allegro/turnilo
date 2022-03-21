@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
@@ -34,7 +34,7 @@ interface PointProps {
 const POINT_RADIUS = 3;
 const HOVER_AREA_MARGIN = 3;
 
-export const Point: React.SFC<PointProps> = ({ datum, x, y, r = POINT_RADIUS, setHover, resetHover }) => {
+export const Point: React.FunctionComponent<PointProps> =  ({ datum, x, y, r = POINT_RADIUS, setHover, resetHover }) => {
   return (
     <>
       <circle
@@ -66,7 +66,7 @@ interface ScatterplotPointProps {
   resetHover(): void;
 }
 
-export const ScatterplotPoint: React.SFC<ScatterplotPointProps> = ({ datum, xScale, yScale, xSeries, ySeries, setHover, resetHover }) => {
+export const ScatterplotPoint: React.FC<ScatterplotPointProps> = ({ datum, xScale, yScale, xSeries, ySeries, setHover, resetHover }) => {
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
 

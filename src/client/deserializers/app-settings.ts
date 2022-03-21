@@ -15,14 +15,14 @@
  */
 
 import { ClientAppSettings, SerializedAppSettings } from "../../common/models/app-settings/app-settings";
-import { deserialize as customizationDeserialize } from "./customization";
-import { deserialize as oauthDeserialize } from "./oauth";
+import { deserialize as deserializeCustomization } from "./customization";
+import { deserialize as deserializeOauth } from "./oauth";
 
 export function deserialize({ oauth, clientTimeout, customization, version }: SerializedAppSettings): ClientAppSettings {
   return {
     clientTimeout,
     version,
-    customization: customizationDeserialize(customization),
-    oauth: oauthDeserialize(oauth)
+    customization: deserializeCustomization(customization),
+    oauth: deserializeOauth(oauth)
   };
 }

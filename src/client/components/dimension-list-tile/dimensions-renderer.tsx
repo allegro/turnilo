@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { DimensionClickHandler, DimensionItem } from "./dimension-item";
 import { DimensionForView, DimensionForViewType, DimensionGroupForView, DimensionOrGroupForView } from "./dimensions-converter";

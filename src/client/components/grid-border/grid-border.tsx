@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import "./grid-border.scss";
@@ -24,7 +24,7 @@ interface BottomBorderProps {
   tickLength: number;
 }
 
-export const BottomBorder: React.SFC<BottomBorderProps> = ({ stage, tickLength }) => {
+export const BottomBorder: React.FunctionComponent<BottomBorderProps> = ({ stage, tickLength }) => {
   return <line
     className="grid-border grid-bottom-border"
     transform={stage.getTransform()}
@@ -39,7 +39,7 @@ interface RightBorderProps {
  stage: Stage;
 }
 
-export const RightBorder: React.SFC<RightBorderProps> = ({ stage }) => {
+export const RightBorder: React.FunctionComponent<RightBorderProps> = ({ stage }) => {
   return <line
     className="grid-border grid-right-border"
     transform={stage.getTransform()}
