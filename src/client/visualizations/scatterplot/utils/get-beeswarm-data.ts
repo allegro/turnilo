@@ -63,7 +63,7 @@ export function getBeeswarmData(data: Dataset, essence: Essence, stage: Stage): 
   return { plottingStage, scale, series, ticks, beeswarmData };
 }
 
-interface Point {
+export interface Point {
   r: number;
   x: number;
   y: number;

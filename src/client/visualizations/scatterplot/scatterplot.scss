@@ -52,6 +52,11 @@
     @include css-variable(fill, item-dimension);
   }
 
+  .area {
+    @include css-variable(fill, item-dimension);
+    cursor: pointer;
+  }
+
   .axis-title {
     position: absolute;
     font-weight: $bold;
