@@ -58,7 +58,7 @@
     "watch:types:e2e": "tsc -p cypress/tsconfig.json -w --pretty --noEmit",
     "watch:types:common": "tsc -p src/common/tsconfig.json -w --pretty --noEmit",
     "lint": "npm-run-all -p lint:*",
-    "lint:types": "npm run tsc -- --noEmit -p src/client/tsconfig.json",
+    "lint:types": "tsc -- --noEmit -p src/client/tsconfig.json",
     "lint:ts": "tslint -p . --format verbose",
     "lint:sass": "sass-lint -v",
     "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
