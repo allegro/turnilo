@@ -224,11 +224,10 @@ context("Split Tile", () => {
 
       splitsContainer().trigger("dragenter");
 
-      // @ts-ignore Fix types!
       splitTile("Channel").then(([channelSplit]) => {
-        const { x, width } = channelSplit.getBoundingClientRect();
+        const { left, width } = channelSplit.getBoundingClientRect();
 
-        dragMask().trigger("drop", { clientX: x + width / 2 });
+        dragMask().trigger("drop", { clientX: left + width / 2 });
 
         shouldHaveSplits("Page");
       });
@@ -252,11 +251,10 @@ context("Split Tile", () => {
       splitsContainer().trigger("dragenter");
 
       splitTile("Page")
-        // @ts-ignore Fix types!
         .then(([timeSplit]) => {
-          const { x, width } = timeSplit.getBoundingClientRect();
+          const { left, width } = timeSplit.getBoundingClientRect();
 
-          dragMask().trigger("drop", { clientX: x + width });
+          dragMask().trigger("drop", { clientX: left + width });
 
           shouldHaveSplits("Page", "Channel", "City Name");
         });
