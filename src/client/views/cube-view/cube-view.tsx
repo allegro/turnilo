@@ -44,7 +44,6 @@ import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
-import { Loader } from "../../components/loader/loader";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
@@ -564,7 +563,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       updatingMaxTime={updatingMaxTime}
     />;
 
-    const Visualization = React.lazy(getVisualizationComponent(essence.visualization));
+    const Visualization = getVisualizationComponent(essence.visualization);
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>
@@ -599,26 +598,24 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                      onClick={this.toggleFactPanel}>
                   <ToggleArrow right={layout.factPanel.hidden}/>
                 </div>
-                <React.Suspense fallback={Loader}>
-                  <Visualization
-                    essence={essence}
-                    clicker={clicker}
-                    timekeeper={timekeeper}
-                    stage={this.chartStage()}
-                    customization={customization}
-                    addSeries={addSeries}
-                    addFilter={addFilter}
-                    lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
-                    partialFilter={filter}
-                    partialSeries={series}
-                    removeTile={removeTile}
-                    dragEnter={this.dragEnter}
-                    dragOver={this.dragOver}
-                    isDraggedOver={dragOver}
-                    dragLeave={this.dragLeave}
-                    drop={this.drop}
-                  />
-                </React.Suspense>
+                <Visualization
+                  essence={essence}
+                  clicker={clicker}
+                  timekeeper={timekeeper}
+                  stage={this.chartStage()}
+                  customization={customization}
+                  addSeries={addSeries}
+                  addFilter={addFilter}
+                  lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
+                  partialFilter={filter}
+                  partialSeries={series}
+                  removeTile={removeTile}
+                  dragEnter={this.dragEnter}
+                  dragOver={this.dragOver}
+                  isDraggedOver={dragOver}
+                  dragLeave={this.dragLeave}
+                  drop={this.drop}
+                />
                 <div className="pinboard-toggle"
                      onClick={this.togglePinboard}>
                   <ToggleArrow right={!layout.pinboard.hidden}/>
