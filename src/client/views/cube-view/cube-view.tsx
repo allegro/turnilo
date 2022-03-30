@@ -36,7 +36,10 @@ import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
+import {
+  Visualization,
+  VisualizationManifest
+} from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
 import { Binary, Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
@@ -530,6 +533,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     ([nextEssence, nextClicker]: [Essence, Clicker], [prevEssence, prevClicker]: [Essence, Clicker]) =>
       nextEssence.equals(prevEssence) && nextClicker === prevClicker);
 
+  private getVisualization = memoizeOne((name: Visualization) => React.lazy(getVisualizationComponent(name)));
+
   render() {
     const clicker = this.clicker;
 
@@ -564,7 +569,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       updatingMaxTime={updatingMaxTime}
     />;
 
-    const Visualization = React.lazy(getVisualizationComponent(essence.visualization));
+    const Visualization = this.getVisualization(essence.visualization.name);
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>
