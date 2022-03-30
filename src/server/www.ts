@@ -17,6 +17,7 @@
 
 import * as http from "http";
 
+import { AddressInfo } from "net";
 import app from "./app";
 import { SERVER_SETTINGS, START_SERVER } from "./config";
 
@@ -46,7 +47,7 @@ if (START_SERVER) {
   });
 
   server.on("listening", () => {
-    var address = server.address();
+    const address = server.address() as AddressInfo;
     console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 

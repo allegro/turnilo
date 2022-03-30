@@ -37,10 +37,6 @@ const defaultTimeTag: TimeTagValue = {
 
 export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
 
-  static isTimeTag(candidate: any): candidate is TimeTag {
-    return candidate instanceof TimeTag;
-  }
-
   static fromJS({ name, time: timeJS, lastTimeChecked: lastTimeCheckedJS }: TimeTagJS): TimeTag {
     const time = timeJS ? new Date(timeJS) : undefined;
     const lastTimeChecked = lastTimeCheckedJS ? new Date(lastTimeCheckedJS) : time;
@@ -56,10 +52,6 @@ export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
   }
 
   public changeTime(time: Date, lastTimeChecked: Date): TimeTag {
-    return new TimeTag({
-      name: this.name,
-      time,
-      lastTimeChecked
-    });
+    return this.set("time", time).set("lastTimeChecked", lastTimeChecked);
   }
 }
