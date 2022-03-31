@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
+import { Visualization } from "../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../views/cube-view/center-panel/center-panel";
 
 const VISUALIZATIONS  = {
@@ -28,7 +28,7 @@ const VISUALIZATIONS  = {
   "scatterplot": () => import(/* webpackChunkName: "scatterplot" */ "./scatterplot/scatterplot")
 };
 
-export function getVisualizationComponent({ name }: VisualizationManifest): () => Promise<{
+export function getVisualizationComponent(name: Visualization): () => Promise<{
   default: React.ComponentType<VisualizationProps>;
 }> {
   return VISUALIZATIONS[name];
