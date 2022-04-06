@@ -17,6 +17,7 @@
 @import '../../imports';
 
 .markdown-content {
+  word-break: break-word;
 
   a {
     @include css-variable(color, brand);
