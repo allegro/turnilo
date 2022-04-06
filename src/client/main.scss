@@ -41,6 +41,10 @@ svg {
     user-select: none;
   }
 
+  .visualization * {
+    user-select: text;
+  }
+
   // Pin my loader
   & > .loader {
     @include pin-full;

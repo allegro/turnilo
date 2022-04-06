@@ -91,7 +91,6 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     [Scroller.BOTTOM_LEFT_CORNER, Scroller.BOTTOM_GUTTER, Scroller.BOTTOM_RIGHT_CORNER]
   ];
 
-  private container = React.createRef<HTMLDivElement>();
   // TODO: fix with React.forwardRef?
   public scroller = React.createRef<HTMLDivElement>();
 
@@ -196,13 +195,12 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
   getBodyStyle(): React.CSSProperties {
     const { layout } = this.props;
-    const { scrollTop, scrollLeft } = this.state;
 
     return {
-      top: layout.top - scrollTop,
+      top: layout.top,
       right: layout.right,
       bottom: layout.bottom,
-      left: layout.left - scrollLeft
+      left: layout.left
     };
   }
 
@@ -216,31 +214,25 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   }
 
   private onScroll = (e: React.UIEvent<HTMLElement>) => {
-    const { bodyWidth, bodyHeight } = this.props.layout;
+    const { onScroll, layout: { bodyHeight, bodyWidth } } = this.props;
     const { viewportWidth, viewportHeight } = this.state;
-    var target = e.target as Element;
+    const target = e.target as Element;
+    console.log("scroll", target.scrollTop);
 
-    var scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
-    var scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
+    const scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
+    const scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
 
-    if (this.props.onScroll !== undefined) {
-      this.setState({
-        scrollTop,
-        scrollLeft
-      }, () => this.props.onScroll(scrollTop, scrollLeft));
-    } else {
-      this.setState({
-        scrollTop,
-        scrollLeft
-      });
-    }
+    this.setState({
+      scrollTop,
+      scrollLeft
+    }, onScroll ? () => this.props.onScroll(scrollTop, scrollLeft) : undefined);
   };
 
   getRelativeMouseCoordinates(event: React.MouseEvent<HTMLElement>): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
-    const container = this.container.current;
+    const scroller = this.scroller.current;
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
-    const rect = container.getBoundingClientRect();
+    const rect = scroller.getBoundingClientRect();
 
     var i = 0;
     var j = 0;
@@ -308,7 +300,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (!(this.props.layout as any)[side]) return null; // no gutter ? no shadow.
     if (!this.shouldHaveShadow(side)) return null;
 
-    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)} />;
+    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)}/>;
   }
 
   renderCorner(yPos: YSide, xPos: XSide): JSX.Element {
@@ -362,8 +354,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     let blockHorizontalScroll = bodyWidth <= viewportWidth;
     let blockVerticalScroll = bodyHeight <= viewportHeight;
 
-    const eventContainerClasses = classNames(
-      "event-container",
+    const spacerClasses = classNames(
+      "scroller-spacer",
       {
         "no-x-scroll": blockHorizontalScroll,
         "no-y-scroll": blockVerticalScroll
@@ -377,38 +369,36 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       }
     );
 
-    return <div className={scrollerClasses} ref={this.scroller}>
-
-      <div className="body" style={this.getBodyStyle()}>{body}</div>
-
-      {this.renderGutter("top")}
-      {this.renderGutter("right")}
-      {this.renderGutter("bottom")}
-      {this.renderGutter("left")}
-
-      {this.renderCorner("top", "left")}
-      {this.renderCorner("top", "right")}
-      {this.renderCorner("bottom", "left")}
-      {this.renderCorner("bottom", "right")}
-
-      {this.renderShadow("top")}
-      {this.renderShadow("right")}
-      {this.renderShadow("bottom")}
-      {this.renderShadow("left")}
-
-      {overlay ? <div className="overlay">{overlay}</div> : null}
-
+    return <div
+      onClick={this.onClick}
+      onMouseMove={this.onMouseMove}
+      onMouseLeave={onMouseLeave || null}
+      className={scrollerClasses}
+      ref={this.scroller}
+      onScroll={this.onScroll}
+    >
       <div
-        className={eventContainerClasses}
-        ref={this.container}
-        onScroll={this.onScroll}
-        onClick={this.onClick}
-        onMouseMove={this.onMouseMove}
-        onMouseLeave={onMouseLeave || null}
-      >
-        <div className="event-target" style={this.getTargetStyle()} />
-      </div>
+        className={spacerClasses}
+        style={this.getTargetStyle()}>
+        <div className="body" style={this.getBodyStyle()}>{body}</div>
 
+        {this.renderGutter("top")}
+        {this.renderGutter("right")}
+        {this.renderGutter("bottom")}
+        {this.renderGutter("left")}
+
+        {this.renderCorner("top", "left")}
+        {this.renderCorner("top", "right")}
+        {this.renderCorner("bottom", "left")}
+        {this.renderCorner("bottom", "right")}
+
+        {this.renderShadow("top")}
+        {this.renderShadow("right")}
+        {this.renderShadow("bottom")}
+        {this.renderShadow("left")}
+
+        {overlay ? <div className="overlay">{overlay}</div> : null}
+      </div>
     </div>;
   }
 }

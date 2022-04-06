@@ -18,37 +18,27 @@
 @import '../../imports';
 
 .scroller {
-  overflow: hidden;
+  overflow: auto;
   cursor: pointer;
+  white-space: nowrap;
 
-  > * {
+  .scroller-spacer {
     position: absolute;
-    overflow: hidden;
-    white-space: nowrap;
-  }
 
-  > .event-container {
-    overflow: auto;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &.no-x-scroll {
-      overflow-x: hidden;
-    }
-
-    &.no-y-scroll {
-      overflow-y: hidden;
-    }
-
-    > .event-target {
-      background: $white;
-      opacity: 0.001;
+    > * {
+      position: absolute;
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 
+  &.no-x-scroll {
+    overflow-x: hidden;
+  }
 
+  &.no-y-scroll {
+    overflow-y: hidden;
+  }
 
   .left-shadow {
     box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.2);
@@ -69,4 +59,5 @@
   .overlay {
     @include pin-full;
   }
+
 }
