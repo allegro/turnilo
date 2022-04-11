@@ -105,7 +105,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       return Resolve.automatic(5 + continuousBoost, { splits: newSplits });
     }
 
-    return Resolve.ready(isSelectedVisualization ? 10 : 7 + continuousBoost);
+    return Resolve.ready(isSelectedVisualization ? 10 : 6 + continuousBoost);
   })
 
   .otherwise(({ dataCube }) => {
