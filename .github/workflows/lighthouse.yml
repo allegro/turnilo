@@ -1,10 +1,9 @@
 name: Lighthouse CI
 
 on:
-  push:
+  pull_request:
     branches:
       - master
-  pull_request: ~
   workflow_dispatch: ~
 
 jobs:
@@ -49,7 +48,6 @@ jobs:
           echo ::set-output name=report_url::$(cat ./.lighthouseci/links.json | jq -r '."http://localhost:9090/"')
 
       - name: Print report URL
-        if: ${{ github.ref != 'refs/heads/master' }}
         uses: actions/github-script@v6
         env:
           REPORT_URL: ${{ steps.report-url.outputs.report_url }}
