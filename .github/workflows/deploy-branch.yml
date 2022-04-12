@@ -56,6 +56,7 @@ jobs:
         env:
           APP_URL: ${{ steps.app-url.outputs.app_url }}
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
