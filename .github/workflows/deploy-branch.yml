@@ -13,6 +13,10 @@ jobs:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
       REF_NAME: ${{ github.head_ref }}
 
+    # add permission to comment PR created by dependantbot
+    permissions:
+      issues: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -56,7 +60,6 @@ jobs:
         env:
           APP_URL: ${{ steps.app-url.outputs.app_url }}
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,

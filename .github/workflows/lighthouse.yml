@@ -11,6 +11,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # add permission to comment PR created by dependantbot
+    permissions:
+      issues: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -52,7 +56,6 @@ jobs:
         env:
           REPORT_URL: ${{ steps.report-url.outputs.report_url }}
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
