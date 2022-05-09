@@ -1,7 +1,7 @@
 #
 # BUILD stage
 #
-FROM node:14.15.4 AS build
+FROM node:16.15.0 AS build
 
 WORKDIR /usr/src/app
 
@@ -21,7 +21,7 @@ RUN npm prune --production
 #
 # RUNTIME stage
 #
-FROM gcr.io/distroless/nodejs:14 as runtime
+FROM gcr.io/distroless/nodejs:16 as runtime
 
 WORKDIR /app
 
