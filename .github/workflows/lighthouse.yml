@@ -11,10 +11,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # add permission to comment PR created by dependantbot
-    permissions:
-      issues: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -52,17 +48,10 @@ jobs:
           echo ::set-output name=report_url::$(cat ./.lighthouseci/links.json | jq -r '."http://localhost:9090/"')
 
       - name: Print report URL
-        uses: actions/github-script@v6
         env:
           REPORT_URL: ${{ steps.report-url.outputs.report_url }}
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: ':stopwatch: Lighthouse report: ' + process.env.REPORT_URL
-            })
+        run: |
+          echo ":stopwatch: Lighthouse report: $REPORT_URL" >> $GITHUB_STEP_SUMMARY
 
       - name: Copy bundle analysis report
         run: cp build/report-*.{html,json} ./.lighthouseci

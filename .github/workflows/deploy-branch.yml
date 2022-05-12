@@ -13,10 +13,6 @@ jobs:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
       REF_NAME: ${{ github.head_ref }}
 
-    # add permission to comment PR created by dependantbot
-    permissions:
-      issues: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -56,17 +52,10 @@ jobs:
           echo ::set-output name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z0-9]/-} --region europe-west1 --format 'value(status.url)')
 
       - name: Print app URL
-        uses: actions/github-script@v6
         env:
           APP_URL: ${{ steps.app-url.outputs.app_url }}
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: ':white_check_mark: Deployed successfully to: ' + process.env.APP_URL
-            })
+        run: |
+          echo ":white_check_mark: Deployed successfully to: $APP_URL" >> $GITHUB_STEP_SUMMARY
 
       - name: Delete previous Docker image(s)
         run: |
