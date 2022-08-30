@@ -87,7 +87,7 @@
     "immutable-class": "0.9.8",
     "js-yaml": "3.13.1",
     "lz-string": "1.4.4",
-    "moment-timezone": "0.5.27",
+    "moment-timezone": "0.5.35",
     "node-spawn-server": "1.0.1",
     "nopt": "4.0.1",
     "numbro": "2.3.6",
