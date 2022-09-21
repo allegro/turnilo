@@ -52,7 +52,13 @@ or join the chat on [Slack](https://join.slack.com/t/turnilo/shared_invite/enQtO
 * [Node.js](https://nodejs.org/) - 14.x or 16.x version
 
 :warning:
-PLACEHOLDER FOR 16.15.0 warning, right now I'm just testing actions!
+We test builds with 14.20.0 and 16.15.0
+
+:warning:
+Turnilo build works only up to 16.15.0 node version. 
+Due to new npm dependency resolving algorithm and old peer dependencies around sass Turnilo can't be built with newer node versions.
+Relevant [npm issue](https://github.com/npm/cli/issues/4998).
+We would be happy to accept any help with updating dependencies!
 
 :warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.
