@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import axios from "axios";
 import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { Modal } from "../../components/modal/modal";
@@ -59,14 +60,9 @@ export class UrlShortenerPrompt extends React.Component<UrlProp, UrlShortenerPro
   }
 
   shortenUrl() {
-    return fetch("shorten?url=" + encodeURIComponent(this.props.url))
-      .then(response => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response;
-      })
-      .then(response => response.json());
+    // NOTE: When replacing axios, please remember that native fetch doesn't reject on 4xx/5xx errors!
+    return axios("shorten?url=" + encodeURIComponent(this.props.url))
+      .then(response => response.data);
   }
 
   renderShortUrl() {
