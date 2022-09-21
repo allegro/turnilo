@@ -1,5 +1,6 @@
 #
 # BUILD stage
+# Use last supported node version (16.15.0) for build
 #
 FROM node:16.15.0 AS build
 
@@ -20,6 +21,7 @@ RUN npm prune --production
 
 #
 # RUNTIME stage
+# We pick last node 16.x to get recommended security updates. Any 16.x node should work as runtime.
 #
 FROM gcr.io/distroless/nodejs:16 as runtime
 
