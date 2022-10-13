@@ -16,7 +16,6 @@
 
 import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { isTimeAttribute } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
@@ -30,29 +29,8 @@ import { classNames } from "../../utils/dom/dom";
 import { FilterMenu } from "../filter-menu/filter-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
-
-function timeShiftLabel(dimension: Dimension, essence: Essence) {
-  if (!isTimeAttribute(essence.dataCube, dimension.expression)) return null;
-  if (!essence.hasComparison()) return null;
-  return `(Shift: ${essence.timeShift.getDescription(true)})`;
-}
-
-interface LabelProps {
-  dimension: Dimension;
-  clause: FilterClause;
-  essence: Essence;
-}
-
-export function FilterClauseLabel(props: LabelProps) {
-  const { dimension, clause, essence } = props;
-  const { title, values } = getFormattedClause(dimension, clause, essence.timezone);
-  const timeShift = timeShiftLabel(dimension, essence);
-
-  return <div className="reading">
-    {title ? <span className="dimension-title">{title}</span> : null}
-    <span className="values">{values} {timeShift}</span>
-  </div>;
-}
+import { FilterClauseLabel } from "./filter-clause-label";
+import timeShiftLabel from "./time-shift-label";
 
 function tileTitle(dimension: Dimension, clause: FilterClause, essence: Essence): string {
   const { title, values } = getFormattedClause(dimension, clause, essence.timezone);

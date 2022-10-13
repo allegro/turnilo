@@ -24,7 +24,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { STRINGS } from "../../config/constants"; // white background
 import { classNames, transformStyle } from "../../utils/dom/dom";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
-import { FilterClauseLabel } from "../filter-tile/filter-tile";
+import { FilterClauseLabel } from "../filter-tile/filter-clause-label";
 import { Loader } from "../loader/loader";
 import { VisSelectorItem } from "../vis-selector/vis-selector-item";
 import VisualizationControlsLayout from "../visualization-controls-layout/visualization-controls-layout";
