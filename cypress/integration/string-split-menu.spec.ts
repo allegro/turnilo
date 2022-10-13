@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 context("String Split Menu", () => {
-  const channelTile = () => cy.get(".split-tile .split.dimension:contains(Channel)");
+  const splitTiles = () => cy.get(".center-top-bar:not(.fallback) .split-tile-row");
+  const channelTile = () => splitTiles().find(".tile.dimension:contains(Channel)");
   const openChannelMenu = () => channelTile().click();
   const splitMenu = () => cy.get(".split-menu");
   const limitDropdown = () => splitMenu().find(".dropdown.down:nth-child(2)");

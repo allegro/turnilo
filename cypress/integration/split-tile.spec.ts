@@ -15,13 +15,13 @@
  */
 context("Split Tile", () => {
 
-  const splitsContainer = () => cy.get(".split-tile");
+  const splitsContainer = () => cy.get(".center-top-bar:not(.fallback) .split-tile-row");
   const dragMask = () => cy.get(".drag-mask");
-  const splitTile = (dimension: string) => cy.get(`.split-tile .split.dimension:contains(${dimension})`);
-  const addSplitButton = () => cy.get(".split-tile .add-tile");
-  const splitItemsRow = () => cy.get(".split-tile .items");
-  const splitItems = () => cy.get(".split-tile .items .split.dimension");
-  const splitOverflow = () => cy.get(".split-tile .items .overflow.dimension");
+  const splitTile = (dimension: string) => splitsContainer().find(`.tile.dimension:contains(${dimension})`);
+  const addSplitButton = () => splitsContainer().find(".add-tile");
+  const splitItemsRow = () => splitsContainer().find(".items");
+  const splitItems = () => splitsContainer().find(".items .tile.dimension");
+  const splitOverflow = () => splitsContainer().find(".items .overflow.dimension");
   const splitOverflowMenu = () => cy.get(".overflow-menu");
   const addSplitMenu = () => cy.get(".add-tile-menu");
   const splitMenu = () => cy.get(".split-menu");
@@ -43,7 +43,7 @@ context("Split Tile", () => {
     splitItems().should("have.length", splits.length);
     splitItemsRow().within(() => {
       splits.forEach((split, idx) => {
-        cy.get(`.split.dimension:nth-child(${idx + 1})`)
+        cy.get(`.tile.dimension:nth-child(${idx + 1})`)
           .should("contain", split);
       });
     });
@@ -174,14 +174,14 @@ context("Split Tile", () => {
     it("should show overflowed split after clicking tile", () => {
       splitOverflow().click();
 
-      splitOverflowMenu().find(".split.dimension")
+      splitOverflowMenu().find(".tile.dimension")
         .should("contain", "City Name");
     });
 
     it("should open split menu inside overflow tile", () => {
       splitOverflow().click();
 
-      splitOverflowMenu().find(".split.dimension")
+      splitOverflowMenu().find(".tile.dimension")
         .click();
 
       splitMenu().should("exist");

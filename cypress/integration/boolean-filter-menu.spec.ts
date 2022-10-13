@@ -17,7 +17,8 @@
 context("Boolean Filter Menu", () => {
 
   // TODO: FIX references
-  const booleanTile = () => cy.get(".filter-tile .items .filter:nth-child(2)");
+  const filterTiles = () => cy.get(".center-top-bar:not(.fallback) .filter-tile-row");
+  const booleanTile = () => filterTiles().find(".items .tile:nth-child(2)");
   const booleanMenu = () => cy.get(".boolean-filter-menu");
   const booleanMenuTable = () => booleanMenu().find(".menu-table");
   const falseOption = () => booleanMenuTable().find(".row:contains('false')");

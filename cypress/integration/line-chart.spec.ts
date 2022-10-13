@@ -16,7 +16,9 @@
 context("Line Chart", () => {
 
   const header = () => cy.get(".cube-header-bar");
-  const timeFilter = () => cy.get(".filter-tile .filter:first");
+  const topBar = () => cy.get(".center-top-bar:not(.fallback)");
+  const filterTiles = () => topBar().find(".filter-tile-row");
+  const timeFilter = () => filterTiles().get(".tile:first");
   const lineChart = () => cy.get(".line-base-chart");
   const chartLine = () => lineChart().find(".chart-line");
   const highlighter = () => lineChart().find(".highlighter");
@@ -24,7 +26,7 @@ context("Line Chart", () => {
   const highlightModal = () => cy.get(".highlight-modal");
   const acceptHighlight = () => highlightModal().find(".accept");
   const dropHighlight = () => highlightModal().find(".drop");
-  const visSelector = () => cy.get(".vis-item");
+  const visSelector = () => topBar().find(".vis-item");
   const visSelectorMenu = () => cy.get(".vis-selector-menu");
   const visSelectorOk = () => visSelectorMenu().find(".button.primary");
   const visSettings = () => cy.get(".vis-settings");
