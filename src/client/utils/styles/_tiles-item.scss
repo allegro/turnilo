@@ -26,6 +26,10 @@
   transition: transform 0.1s ease-in-out;
   width: $item-width;
 
+  &.disabled {
+    cursor: wait;
+  }
+
   &.dimension {
     @include css-variable(background-color, item-dimension);
     @include css-variable(color, item-dimension-text);
