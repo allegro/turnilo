@@ -47,11 +47,11 @@ import { maxTimeQuery } from "../../../common/utils/query/max-time-query";
 import { datesEqual } from "../../../common/utils/time/time";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
-import { Loader } from "../../components/loader/loader";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
 import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
+import { VisSkeleton } from "../../components/vis-skeleton/vis-skeleton";
 import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { UrlShortenerModal } from "../../modals/url-shortener-modal/url-shortener-modal";
@@ -570,6 +570,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     />;
 
     const Visualization = this.getVisualization(essence.visualization.name);
+    const chartStage = this.chartStage();
 
     return <CubeContext.Provider value={this.getCubeContext()}>
       <DownloadableDatasetProvider>
@@ -604,12 +605,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                      onClick={this.toggleFactPanel}>
                   <ToggleArrow right={layout.factPanel.hidden}/>
                 </div>
-                <React.Suspense fallback={Loader}>
+                <React.Suspense
+                  fallback={<VisSkeleton essence={essence}
+                                         stage={chartStage}
+                                         timekeeper={timekeeper}
+                                         customization={customization}/>}>
                   <Visualization
                     essence={essence}
                     clicker={clicker}
                     timekeeper={timekeeper}
-                    stage={this.chartStage()}
+                    stage={chartStage}
                     customization={customization}
                     addSeries={addSeries}
                     addFilter={addFilter}
