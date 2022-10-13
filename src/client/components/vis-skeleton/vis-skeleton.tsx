@@ -123,6 +123,7 @@ function SeriesTiles({ stage, essence }: TilesProps) {
 function VisualizationControlsSkeleton({ essence, stage }: VisSkeletonProps) {
 
   return <VisualizationControlsLayout
+    className="fallback"
     tiles={
       <>
         <div className="tile-row filter-tile-row">

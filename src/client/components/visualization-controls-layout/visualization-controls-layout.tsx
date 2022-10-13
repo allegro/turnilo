@@ -15,21 +15,24 @@
  */
 
 import React from "react";
+import { classNames } from "../../utils/dom/dom";
 import "./visualization-controls-layout.scss";
 
 interface VisualizationControlsLayoutProps {
   tiles: React.ReactNode;
   selector: React.ReactNode;
+  className?: string;
 }
 
 export default function VisualizationControlsLayout({
+                                                      className,
                                                       selector,
                                                       tiles
                                                     }: VisualizationControlsLayoutProps) {
 
-  return <div className="center-top-bar">
+  return <div className={classNames("center-top-bar", className)}>
     <div className="filter-split-section">
-          {tiles}
+      {tiles}
     </div>
     {selector}
   </div>;
