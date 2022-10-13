@@ -43,7 +43,7 @@ interface LabelProps {
   essence: Essence;
 }
 
-function Label(props: LabelProps) {
+export function FilterClauseLabel(props: LabelProps) {
   const { dimension, clause, essence } = props;
   const { title, values } = getFormattedClause(dimension, clause, essence.timezone);
   const timeShift = timeShiftLabel(dimension, essence);
@@ -102,7 +102,7 @@ export const FilterTile: React.FunctionComponent<FilterTileProps> = props => {
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className={classNames(FILTER_CLASS_NAME, "dimension", {
+        className={classNames("tile dimension", {
           selected: open,
           excluded,
           included: !excluded
@@ -114,7 +114,7 @@ export const FilterTile: React.FunctionComponent<FilterTileProps> = props => {
         style={style}
         title={tileTitle(dimension, clause, essence)}
       >
-        <Label dimension={dimension} clause={clause} essence={essence} />
+        <FilterClauseLabel dimension={dimension} clause={clause} essence={essence} />
         {removeClause && <div className="remove" onClick={() => removeClause(clause)}>
           <SvgIcon svg={require("../../icons/x.svg")} />
         </div>}

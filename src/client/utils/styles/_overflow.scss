@@ -32,9 +32,7 @@
 }
 
 %overflow-menu {
-  .split,
-  .series,
-  .filter {
+  .tile {
     @extend %tiles-item;
     position: absolute;
     left: 8px;

@@ -43,7 +43,7 @@ export const GridSplitTile: React.FunctionComponent<SplitTileBaseProps> = props 
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className={classNames(SPLIT_CLASS_NAME, { disabled: !enabled }, "dimension")}
+        className={classNames("tile dimension", { disabled: !enabled })}
         key={split.toKey()}
         ref={setRef}
         draggable={true}

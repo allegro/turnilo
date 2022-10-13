@@ -45,7 +45,7 @@ export const PartialFilterTile: React.FunctionComponent<PartialFilterTileProps> 
   const { closeItem, saveClause, essence, timekeeper, locale, clicker, stage, dimension, style } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div
-      className={classNames(FILTER_CLASS_NAME, "dimension", "selected", "included")}
+      className={"tile dimension selected included"}
       ref={setRef}
       style={style}>
       <div className="reading">{dimension.title}</div>
