@@ -24,6 +24,8 @@ import { ColorLegend } from "../../components/color-legend/color-legend";
 import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 
+import visualizationColors from "../../utils/styles/visualization-colors/colors.module.scss";
+
 interface HeatmapProps {
   xSeries: ConcreteSeries;
   ySeries: ConcreteSeries;
@@ -36,7 +38,7 @@ interface HeatmapProps {
 }
 
 const COLOR_SCALE_START = "#fff";
-const COLOR_SCALE_END = "#90b5d0";
+const COLOR_SCALE_END = visualizationColors.blue;
 
 export const Heatmap: React.FunctionComponent<HeatmapProps> = ({ xBinCount, yBinCount, xScale, yScale, stage, data, xSeries, ySeries }) => {
   const xQuantile = d3.scaleQuantile<number>().domain(xScale.domain()).range(range(0, xBinCount));

@@ -15,6 +15,7 @@
  */
 
 @import '../../imports';
+@import '../../utils/styles/visualization-colors/colors.module.scss';
 
 .scatterplot {
   .scatterplot-container {
@@ -48,8 +49,10 @@
   }
 
   .point {
-    @include css-variable(stroke, brand);
-    @include css-variable(fill, item-dimension);
+    // @include css-variable(stroke, brand);
+    // @include css-variable(fill, item-dimension);
+    stroke: $orange;
+    fill: lighten($orange, 25%);
   }
 
   .axis-title {
