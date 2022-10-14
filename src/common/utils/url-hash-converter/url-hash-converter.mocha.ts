@@ -65,7 +65,7 @@ describe("urlHashConverter", () => {
     });
   });
 
-  describe("version 4", () => {
+  describe("version 4", () => { // THIS FAILS
     const ver4: HashEssenceCase[] = [
       { version: "4", hash: UrlHashConverterFixtures.tableHashVersion4(), essence: EssenceFixtures.wikiTable() },
       { version: "4", hash: UrlHashConverterFixtures.lineChartVersion4(), essence: EssenceFixtures.wikiLineChart() }

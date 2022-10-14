@@ -47,7 +47,7 @@ describe("scales", () => {
       expect(color.domain()).to.deep.equal([0, 10000]);
     });
 
-    it("should create color scale with correct range", () => {
+    it("should create color scale with correct range", () => { // THIS FAILS
       expect(color.range()).to.deep.equal(["#fff", "#ff5a00"]);
     });
   });
@@ -75,7 +75,7 @@ describe("scales", () => {
       expect(color.domain()).to.deep.equal([NaN, NaN]);
     });
 
-    it("should create color scale with correct range", () => {
+    it("should create color scale with correct range", () => { // THIS FAILS
       expect(color.range()).to.deep.equal(["#fff", "#ff5a00"]);
     });
   });

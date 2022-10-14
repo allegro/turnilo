@@ -112,7 +112,7 @@ describe("Split adjustment utilities", () => {
   });
 
   describe("adjustColorSplit", () => {
-    it("should adjust limit with predefined limits (5, 10)", () => {
+    it("should adjust limit with predefined limits (5, 10)", () => { // THIS FAILS
       const dimension: Dimension = {
         ...createDimension("string", "foobar", $("foobar")),
         limits: [42, 100]
