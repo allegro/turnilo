@@ -22,10 +22,12 @@ import { Unary } from "../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 import { nestedDataset } from "./nested-dataset";
 
+import styles from "../../../utils/styles/visualization-colors/colors.module.scss";
+
 export type ColorScale = d3.ScaleLinear<string, string>;
 
 const white = "#fff";
-const orange = "#ff5a00";
+const orange = styles.orange;
 
 interface Scales {
   x: LinearScale;
