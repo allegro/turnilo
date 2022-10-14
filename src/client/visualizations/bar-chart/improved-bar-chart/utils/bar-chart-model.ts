@@ -17,7 +17,7 @@
 import { Timezone } from "chronoshift";
 import { List, OrderedMap } from "immutable";
 import { Dataset, Datum } from "plywood";
-import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
+import { NORMAL_COLORS } from "../../../../../client/utils/styles/visualization-colors/colors";
 import { Dimension } from "../../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";

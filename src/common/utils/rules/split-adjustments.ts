@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NORMAL_COLORS } from "../../models/colors/colors";
+import { NORMAL_COLORS } from "../../../client/utils/styles/visualization-colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { SeriesList } from "../../models/series-list/series-list";
 import { DimensionSort, SeriesSort, SortDirection } from "../../models/sort/sort";

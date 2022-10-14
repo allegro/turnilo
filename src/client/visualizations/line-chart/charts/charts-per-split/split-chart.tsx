@@ -16,7 +16,7 @@
 
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import React from "react";
-import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
+import { NORMAL_COLORS } from "../../../../../client/utils/styles/visualization-colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { defaultFormatter } from "../../../../../common/models/series/series-format";
 import { Stage } from "../../../../../common/models/stage/stage";

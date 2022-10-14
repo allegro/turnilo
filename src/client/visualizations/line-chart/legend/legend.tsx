@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import { NORMAL_COLORS } from "../../../../common/models/colors/colors";
+import { NORMAL_COLORS } from "../../../../client/utils/styles/visualization-colors/colors";
 import "./legend.scss";
 
 export interface LegendProps {

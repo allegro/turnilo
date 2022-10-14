@@ -17,17 +17,3 @@
 import styles from "./colors.module.scss";
 
 export const NORMAL_COLORS = Object.values(styles);
-
-// TODO: Remove below ones, the above array should be the same
-// export const NORMAL_COLORS = [
-//     "#2D95CA",
-//     "#EFB925",
-//     "#DA4E99",
-//     "#4CC873",
-//     "#745CBD",
-//     "#EA7136",
-//     "#E68EE0",
-//     "#218C35",
-//     "#B0B510",
-//     "#904064"
-//   ];
