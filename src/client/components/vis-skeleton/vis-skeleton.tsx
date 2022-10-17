@@ -21,7 +21,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { STRINGS } from "../../config/constants"; // white background
+import { STRINGS } from "../../config/constants";
 import { classNames, transformStyle } from "../../utils/dom/dom";
 import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { FilterClauseLabel } from "../filter-tile/filter-clause-label";
@@ -78,13 +78,6 @@ function FilterTiles({ essence, stage }: TilesProps) {
   </>;
 }
 
-interface VisSkeletonProps {
-  essence: Essence;
-  stage?: Stage;
-  timekeeper: Timekeeper;
-  customization: ClientCustomization;
-}
-
 function SplitTiles({ stage, essence }: TilesProps) {
   if (!stage) return null;
   const { splits, dataCube } = essence;
@@ -120,8 +113,14 @@ function SeriesTiles({ stage, essence }: TilesProps) {
   </>;
 }
 
-function VisualizationControlsSkeleton({ essence, stage }: VisSkeletonProps) {
+interface VisSkeletonProps {
+  essence: Essence;
+  stage?: Stage;
+  timekeeper: Timekeeper;
+  customization: ClientCustomization;
+}
 
+function VisualizationControlsSkeleton({ essence, stage }: VisSkeletonProps) {
   return <VisualizationControlsLayout
     className="fallback"
     tiles={
