@@ -196,7 +196,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           {({ sources }) => {
             const dataCube = NamedArray.findByName(sources.dataCubes, view.cubeName);
             if (dataCube === undefined) {
-              return <DataCubeNotFound/>;
+              return <DataCubeNotFound customization={customization}/>;
             }
             return <CubeView
               key={view.cubeName}
