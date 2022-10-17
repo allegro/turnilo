@@ -1,7 +1,8 @@
-# Configuring Data Cubes
-
-* TOC
-{:toc}
+---
+title: Configuration - data cubes
+nav_order: 3
+layout: page
+---
 
 ## Overview
 
@@ -25,7 +26,7 @@ The user visible name that will be used to describe this data cube in the UI. It
 
 **description** (markdown)
 
-The description of the data cube in markdown format. Description is shown on home page. 
+The description of the data cube in Markdown format. Description is shown on home page. 
 If description contains horizontal line (markdown: ` --- `) it will split description and 
 later part will be visible after clicking "Show more" button on UI.
 
@@ -70,7 +71,7 @@ A filter defined as [Plywood expression](https://plywood.imply.io/expressions) t
 
 **refreshRule**
 
-Refresh rule defining how the information about latest data in a data source is obtained.
+Refresh rule defining how the information about the latest data in a data source is obtained.
 
 **maxSplits** (number)
 
@@ -82,14 +83,14 @@ Number of queries that can be issued to druid. Defaults to 500.
 
 ## Refresh rules
 
-The `refreshRule:` section of the data cube allows the customisation of latest data discovery mechanism.
+The `refreshRule:` section of the data cube allows the customisation of the latest data discovery mechanism.
 
 **rule** ("query" \| "realtime" \| "fixed" ), default: "query"
 
 The name of the rule which will be used to obtain information about the latest data. Following rules are available:
 
 - `query`: best suited for batch data sources. The data source will be queried every minute to obtain the maximum value from time dimension.
-- `realtime`: best suited for realtime data sources. The data source will not be queried and the value of *now* is assumed as a latest data time.
+- `realtime`: best suited for realtime data sources. The data source will not be queried and the value of *now* is assumed as the latest data time.
 - `fixed`: best suited for constant data sources. The data source will not be queried and the value of `refreshRule.time` property will be used.
 
 **time** (string - date with time instant)
@@ -134,7 +135,7 @@ You should add:
 
 To the `attributeOverrides` to tell Turnilo that this is numeric.
 
-You can now use `$age` in numeric expressions. For example you could create a dimension with the formula
+You can now use `$age` in numeric expressions. For example, you could create a dimension with the formula
 `$age / 2 + 7`.
 
 
@@ -168,7 +169,7 @@ The description of the dimension in the UI. Accepts Markdown format.
 
 **url** (string)
 
-A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate
+An url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate
 a link specific to each value.
 
 **granularities** (string[5] or number[5]), default: ["PT1M", "PT5M", "PT1H", "P1D", "P1W"]`
@@ -187,7 +188,7 @@ For number dimensions you can just provide 5 bucket sizes as integers.
 
 **bucketingStrategy** ("defaultBucket" \| "defaultNoBucket")
 
-Specify whether or not the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
+Specify whether the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
 
 **sortStrategy** ("self" \| `someMeasureName`)
 
@@ -204,7 +205,7 @@ Set to true if dimension holds multiple values. [Druid Multi-Value Dimensions](h
 **formula** (string - plywood expression)
 
 The [Plywood expression](https://plywood.imply.io/expressions) for this dimension.
-By default it is `$name` where *name* is the name of the dimension.
+By default, it is `$name` where *name* is the name of the dimension.
 You can create derived dimensions by using non-trivial formulas.
 
 Here are some common use cases for derived dimensions:
@@ -262,18 +263,18 @@ Now my account would represent a custom filter boolean dimension.
 #### Quantiles
 
 If you have dimension defined as histogram, you can add quantile measure. Use plywood method quantile on desired histogram and provide required parameters.
-Percentile parameter would be used as default percentile and could be adjusted on UI. Tunning parameters will be passed as is to Druid. 
+Percentile parameter would be used as default percentile and could be adjusted on UI. Tuning parameters will be passed as is to Druid. 
 
 ```yaml
 - name: clicks_percentile
   formula: $main.quantile($response_time_ms, 0.99, 'k=128')
 ```
 
-Turnilo can handle percentiles only as top level operation in expression so it is impossible to nest quantile expression inside let's say division. 
+Turnilo can handle percentiles only as top level operation in expression, so it is impossible to nest quantile expression inside let's say division. 
 
 ```yaml
 - name: opaque_percentile_formula
-  forumla: $main.quantile($response_time_ms, 0.9, 'k=128') * 1000
+  formula: $main.quantile($response_time_ms, 0.9, 'k=128') * 1000
 ```
 
 If turnilo encounters such formula, it would assume it is simple measure. User would be able to use this measure as is, but won't be able to picking percentile. 
@@ -283,7 +284,7 @@ If turnilo encounters such formula, it would assume it is simple measure. User w
 If no existing plywood function meets your needs, you could also define your own custom transformation.
 The transformation could be any supported [Druid extraction function](https://druid.apache.org/docs/latest/querying/dimensionspecs.html).
 
-For example you could apply any number of javascript functions to a string.
+For example, you could apply any number of javascript functions to a string.
 
 To use that in Turnilo define following `options` at data cube level:
 
@@ -365,7 +366,8 @@ Default format for measure as string in [numbro format](https://numbrojs.com/old
 
 **formula** (string - plywood expression)
 
-The [Plywood expression](https://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.
+The [Plywood expression](https://plywood.imply.io/expressions) for this dimension. 
+By default, it is `$main.sum($name)` where *name* is the name of the measure.
 
 The `$main` part of the measure expressions serves as a placeholder for the data segment.
 In Plywood every aggregate is a function that acts on a data segment.
@@ -386,8 +388,8 @@ One can also create derived measures by using non-trivial expressions in **formu
 Ratios are generally considered fun.
 
 ```yaml
-- name: ecpm
-  title: eCPM
+- name: cpm
+  title: CPM
   formula: $main.sum($revenue) / $main.sum($impressions) * 1000
 ```
 
@@ -447,12 +449,12 @@ This functionality can be used to access any custom aggregations that might be l
 
 #### Switching metric columns
 
-If you switch how you ingest you underlying metric and can't (or do not want to) recalculate all of the previous data,
+If you switch how you ingest you underlying metric and can't (or do not want to) recalculate all the previous data,
 you could use a derived measure to seemly merge these two metrics in the UI.
 
 Let's say you had a metric called `revenue_in_dollars` and for some reason you will now be ingesting it as `revenue_in_cents`.
 
-Furthermore right now your users are using Turnilo with the measure:
+Furthermore, right now your users are using Turnilo with the measure:
 
 ```yaml
 - name: revenue
@@ -471,7 +473,7 @@ If your data had a 'clean break' where all events have ether `revenue_in_dollars
 If instead there was a period where you were ingesting both metrics then the above solution would double count that interval.
 You can 'splice' these two metrics together at a specific time point.
 
-Logically you should be able leverage the [Filtered aggregations](#filtered-aggregations-formula) to do:
+Logically you should be able to leverage the [Filtered aggregations](#filtered-aggregations-formula) to do:
 
 ```yaml
 - name: revenue  # DO NOT DO THIS IT WILL NOT WORK WITH DRUID < 0.9.2
@@ -483,7 +485,7 @@ Logically you should be able leverage the [Filtered aggregations](#filtered-aggr
 
 But the above will not work because, as of this writing, [Druid can not filter on time in measures](https://github.com/druid-io/druid/issues/2816).
 
-Instead you can leverage [Custom aggregations](#custom-aggregations) and the `javascript` aggregation to achieve essentially the same thing:
+Instead, you can leverage [Custom aggregations](#custom-aggregations) and the `javascript` aggregation to achieve essentially the same thing:
 
 ```yaml
 # Add this to the data cube options
@@ -546,7 +548,7 @@ Custom dimension transformations definition. See [custom transformations](#custo
 
 **druidContext**
 
-Context to be send to Druid with every query executed on the data cube defined as yaml key / value mappings.
+Context to be sent to Druid with every query executed on the data cube defined as yaml key / value mappings.
 See [Druid context](https://druid.apache.org/docs/latest/querying/query-context.html).
 
 Advanced options example:

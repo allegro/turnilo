@@ -1,10 +1,16 @@
-# Generating Turnilo links
+---
+title: Generating links
+nav_order: 5
+layout: page
+---
+
+## Overview
 
 If you want to generate links pointing to Turnilo's view from external systems you can do so by posting
 view definition to `/mkurl` or `<serverRoot>/mkurl` endpoint and appending returned `hash` property
 to the base URI of Turnilo instance.
 
-The view definition can be acquired by clicking "Display view definition" in the settings menu at the top-right corner.
+The view definition can be acquired by clicking "Display view definition" in the settings menu in the top-right corner.
 
 The post body must include 3 keys:
 
@@ -18,14 +24,14 @@ The version of the view definition passed for url generation. Currently supporte
 
 **viewDefinition** (ViewDefinition3 \| Essence)
 
-The JSON view definition that describes the state of the Turnilo view. Currently the latest and greatest view definition
+The JSON view definition that describes the state of the Turnilo view. Currently, the latest and greatest view definition
 structure is "ViewDefinition4". Be aware that older versions are kept for backwards compatibility only and will be
 removed at some point.
 
-# Examples
+## Examples
 
 Here are a few examples that you can try out by yourself.
-All the examples run on the built in example dataset that comes with Turnilo.
+All the examples run on the built-in example dataset that comes with Turnilo.
 
 To follow along please start Turnilo in `--examples` mode like so:
  
@@ -50,7 +56,7 @@ curl -X POST --header "Content-Type:application/json" --data '
 Returned `hash` property value needs to be appended to `http://localhost:9090/` base URI in this example instance
 to produce a complete URI.
 
-## Example 1
+### Example 1
 
 Here is an example that will show the `totals` visualization filtered on `2015-09-10Z` - `2015-09-20Z` with `count` and `added` metrics selected,
 the `page` dimension pinned.
@@ -95,11 +101,11 @@ Posting this will produce:
 ```
 
 
-## Example 2
+### Example 2
 
 Here is an example that will display the `line-chart` visualization filtered on: the last 1 day of data (`P1D`),
 comment lengths not between 20 and 30, and city name being one of "London" or "Rome", split on `channel`
-and `time` (bucketed by hour - `PT1H`) with `count` measure selected. Additionally Is Robot dimension is pinned,
+and `time` (bucketed by hour - `PT1H`) with `count` measure selected. Additionally, "Is Robot" dimension is pinned,
 channels: "en" and "it" are the only visible plots on a line chart and a period between 12pm and 1pm
 is highlighted on a graph.
 

@@ -36,7 +36,7 @@ this is how Turnilo emerged.
 * Unified view for historical and real-time data.
 * Blazingly fast.
 
-![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/showcase.gif)
+![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/assets/images/showcase.gif)
 
 ## Try it!
 
@@ -206,24 +206,11 @@ You can find more infrmation [here](https://www.jetbrains.com/help/webstorm/runn
 * [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
 * [Bundler](https://bundler.io)
 
-Go to docs directory.
+Go to the docs folder and:
 
-```
-cd docs
-```
-
-Install dependencies.
-
-```
-bundle install 
-```
-
-Run your Jekyll site locally and open [http://localhost:4000/](http://localhost:4000/)
-
-```
-bundle exec jekyll serve --incremental
-```
-
+1. Install `bundle install` or `update bundle` update dependencies
+2. Run `bundle exec jekyll serve --livereload`
+3. Open [http://localhost:4000/](http://localhost:4000/)
 
 ## License
 

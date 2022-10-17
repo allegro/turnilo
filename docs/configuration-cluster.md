@@ -1,7 +1,8 @@
-# Configuring Turnilo
-
-* TOC
-{:toc}
+---
+title: Configuration - cluster
+nav_order: 2
+layout: page
+---
 
 ## Overview
 
@@ -90,8 +91,8 @@ Should the server trust the `X-Forwarded-*` headers.  If "always", Turnilo will 
 
 Specify that Turnilo should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
 
-Note that Turnilo can itself only run an http server.
-This option is intended to be used when when Turnilo is running behind a HTTPS terminator like AWS ELB.
+Note that Turnilo can itself only run a http server.
+This option is intended to be used when Turnilo is running behind an HTTPS terminator like AWS ELB.
 
 
 ## Configuring the Clusters
@@ -131,7 +132,7 @@ The timeout to set on the Druid queries in ms. See [documentation](https://druid
 **retry** (object)
 
 Options for retries on Druid native queries. If no object is provided Turnilo will not retry failed queries.
-Object should have following structure:
+Object should have the following structure:
 
 ```yaml
 retry:

@@ -1,8 +1,9 @@
-# OAuth integration
-
-* TOC
-  {:toc}
-  
+---
+title: OAuth integration
+nav_order: 9
+layout: page
+---
+ 
 ## Overview
 
 Turnilo can integrate with your OAuth provider. 
@@ -34,4 +35,4 @@ oauth:
 
 ## Further reading
 
-Please refer to our [github discussion](https://github.com/allegro/turnilo/discussions/734) for our use case. 
+Please refer to our [GitHub discussion](https://github.com/allegro/turnilo/discussions/734) for our use case. 
