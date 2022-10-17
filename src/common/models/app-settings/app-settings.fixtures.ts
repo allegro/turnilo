@@ -24,7 +24,8 @@ export const clientAppSettings: ClientAppSettings = {
     hasUrlShortener: false,
     externalViews: [],
     timezones: [],
-    locale: LOCALES["en-US"]
+    locale: LOCALES["en-US"],
+    messages: {}
   },
   oauth: { status: "disabled" },
   clientTimeout: 1000
@@ -36,7 +37,8 @@ export const appSettings: AppSettings = {
     timezones: [],
     locale: LOCALES["en-US"],
     externalViews: [],
-    cssVariables: {}
+    cssVariables: {},
+    messages: {}
   },
   oauth: { status: "disabled" },
   version: 0
