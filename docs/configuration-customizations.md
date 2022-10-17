@@ -1,7 +1,8 @@
-# Customization
-
-* TOC
-{:toc}
+---
+title: Configuration - customization
+nav_order: 4
+layout: page
+---
 
 ## Overview
 
@@ -76,7 +77,7 @@ customization:
 
 These custom links will appear in the share menu.
 
-By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
+By default, external views are opened in a new tab, but you can disable this by setting `sameWindow: true`
 
 ## Timezones
 

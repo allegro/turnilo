@@ -1,7 +1,8 @@
-# Web performance
-
-* TOC
-  {:toc}
+---
+title: Application performance
+nav_order: 10
+layout: page
+---
   
 ## Overview
 
@@ -18,7 +19,7 @@ Tools like [Bundlephobia](https://bundlephobia.com/) will help to recon cost of 
 
 ### Size-limit
 
-[Size-limit Github Action](https://github.com/marketplace/actions/size-limit-action) will help to stay with assets size in the budget.
+[Size-limit GitHub Action](https://github.com/marketplace/actions/size-limit-action) will help to stay with assets size in the budget.
 On each pull request this action will post a comment with current bundle size and its delta.
 
 **Each time budgets are exceeded CI will fail.**
@@ -29,8 +30,8 @@ You can adjust budgets in `size-limit` section of `package.json`.
 
 On every build a report about Webpack's bundle is made by [Statoscope](https://statoscope.tech/).
 You can find these under `build/report-*.html`.
-Among others it offers detailed tree-map of the client bundle.
-For example it helps to figure out which dependencies are the heaviest.
+Among others, it offers detailed tree-map of the client bundle.
+For example, it helps to figure out which dependencies are the heaviest.
 
 ### Transpiling dependencies
 
@@ -40,7 +41,7 @@ Any dependency that has to be transpiled should be [listed within Webpack config
 
 ### Manual (dead) code elimination
 
-Sometimes we can't rely on libraries' authors or on Webpack in terms of tree-shaking aka dead-code-elimantion and we have to take matters into our own hands.
+Sometimes we can't rely on libraries' authors or on Webpack in terms of tree-shaking aka dead-code-elimination, and we have to take matters into our own hands.
 
 Webpack by [`IgnorePlugin`](https://webpack.js.org/plugins/ignore-plugin/) allows to drop selected modules and this [how Moment's locales are not included in the final bundle](../config/webpack.common.js#45).
 

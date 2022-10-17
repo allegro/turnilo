@@ -1,7 +1,8 @@
-# Extending Turnilo
-
-* TOC
-{:toc}
+---
+title: Extending Turnilo
+nav_order: 8
+layout: page
+---
 
 ## Overview
 
@@ -60,11 +61,11 @@ exports.druidRequestDecoratorFactory = function (logger, params) {
 };
 ```
 
-You can find this example with additional comments and example config in the [./example](./example/request-decoration) folder.
+You can find this example with additional comments and example config in the [example](example/request-decoration) folder.
 
 This would result in all Druid requests being tagged as:
 
-![decoration example](./example/request-decoration/result.png)
+![decoration example](example/request-decoration/result.png)
 
 ## Query decorator
 
@@ -112,7 +113,7 @@ You need to add your plugin as entry under `plugins` field.
 Plugin need to have two fields:
     - `name` - name for debug purposes
     - `path` - path to the js file
-It can define additional field `settings`. Content of this field would be passed to plugin so it is good place for additional parameters.
+It can define additional field `settings`. Content of this field would be passed to plugin, so it is good place for additional parameters.
 
 ```yaml
 plugins:

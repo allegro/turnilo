@@ -1,4 +1,10 @@
-# Checking health of Turnilo instance
+---
+title: Health checking
+nav_order: 6
+layout: page
+---
+
+## Overview
 
 Turnilo instance's health is defined in terms of being able to communicate with all configured Druid brokers
 and those brokers knowing about all segments in Zookeeper.
@@ -14,7 +20,7 @@ individually defined cluster timeout (`healthCheckTimeout` property in [cluster 
 and that the response body contains `inventoryInitialized` flag set to `true`.
 If any of the requests to brokers fail to meet the criteria defined above the Turnilo instance is marked as unhealthy.
 
-# Response examples
+## Response examples
 
 Healthy response example:
 ```

@@ -1,14 +1,38 @@
-theme: jekyll-theme-minimal
+title: "Turnilo documentation"
+url: https://allegro.github.io/turnilo/
+logo: assets/images/turnilo-logo.png
+footer_content: "Copyright &copy; 2017-2022 Allegro.pl"
 
-markdown: kramdown
+remote_theme: just-the-docs/just-the-docs
 
-kramdown:
-  toc_levels: 2..6
-  input: GFM
+# color configuration for {: .note } and {: .important }
+callouts:
+  note:
+    color: blue
+  important:
+    color: red
 
-plugins:
-  - jemoji
+# enable mermaid graphs
+mermaid:
+  version: "9.1.7"
 
-title: Turnilo
-logo: images/turnilo-logo.png
-show_downloads: false
+# enable footer link for easy navigation to the top of the page
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# enable footer link to the GitHub editor for the page
+gh_edit_link: true
+gh_edit_repository: https://github.com/allegro/turnilo
+gh_edit_link_text: "Edit this page on GitHub"
+gh_edit_source: "docs"
+gh_edit_branch: "master"
+gh_edit_view_mode: "edit"
+
+
+# header links
+aux_links:
+  "Application demo":
+    - "https://turnilo.app"
+  "Project history":
+    - "https://blog.allegro.tech/2018/10/turnilo-lets-change-the-way-people-explore-big-data.html"
+aux_links_new_tab: true

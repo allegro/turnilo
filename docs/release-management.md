@@ -1,7 +1,8 @@
-# Turnilo Release Management
-
-* TOC 
-{:toc}
+---
+title: Release management
+nav_order: 7
+layout: page
+---
 
 ## Overview
   
@@ -10,12 +11,12 @@ Release management is automated by [Release It](https://github.com/release-it/re
 * Build & Test
 * Bump version in package.json
 * Commit, push and tag Git repository
-* Create Github [release](https://github.com/allegro/turnilo/releases) with generated changelog
+* Create GitHub [release](https://github.com/allegro/turnilo/releases) with generated changelog
 * Publish Turnilo package to the [npm](https://www.npmjs.com/package/turnilo) registry
 
 ## Final Release
 
-:point_up: Final release must be done on the master branch
+Final release must be done on the master branch
 
 Use [Final Release](https://github.com/allegro/turnilo/actions/workflows/release-final.yml) action and select "Run Workflow"
 
