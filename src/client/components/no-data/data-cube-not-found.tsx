@@ -17,6 +17,7 @@
 import React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import { navigateToHome } from "../../applications/turnilo-application/view";
+import { STRINGS } from "../../config/constants";
 import { MarkdownNode } from "../markdown-node/markdown-node";
 import { MessagePanel, MessagePanelAction } from "../message-panel/message-panel";
 
@@ -27,7 +28,7 @@ interface DataCubeNotFoundProps {
 export const DataCubeNotFound: React.FunctionComponent<DataCubeNotFoundProps> = ({ customization }) => {
   const { dataCubeNotFound } = customization.messages;
   const message = dataCubeNotFound && <MarkdownNode markdown={dataCubeNotFound} />;
-  return <MessagePanel title="DataCube not found" message={message}>
+  return <MessagePanel title={STRINGS.noDataCube} message={message}>
     <MessagePanelAction action={navigateToHome}
                         label="Go back to data cubes list"/>
   </MessagePanel>;
