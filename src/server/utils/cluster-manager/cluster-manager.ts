@@ -181,10 +181,10 @@ export class ClusterManager {
       }
     }
 
+    if (isNil(authHeaders) ) return requestDecorator;
+
     return (request: DecoratorRequest, context: object) => {
       const decoration = requestDecorator(request, context);
-      if (isNil(authHeaders)) return decoration;
-
       const mergeAuthHeaders = (d: Decoration): Decoration => Object.assign(d, authHeaders);
 
       if ("then" in decoration && typeof decoration.then === "function") {
