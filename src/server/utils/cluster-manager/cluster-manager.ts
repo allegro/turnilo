@@ -17,7 +17,7 @@
 
 import { External } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
-import { Decoration, DecoratorRequest, DruidRequestDecorator } from "plywood-druid-requester";
+import { DecoratorRequest, DruidRequestDecorator } from "plywood-druid-requester";
 import { Logger } from "../../../common/logger/logger";
 import { Cluster, makeExternalFromSourceName, shouldScanSources } from "../../../common/models/cluster/cluster";
 import { constant, noop } from "../../../common/utils/functional/functional";
@@ -185,13 +185,7 @@ export class ClusterManager {
 
     return (request: DecoratorRequest, context: object) => {
       const decoration = requestDecorator(request, context);
-      const mergeAuthHeaders = (d: Decoration): Decoration => Object.assign(d, authHeaders);
-
-      if ("then" in decoration && typeof decoration.then === "function") {
-        return decoration.then(mergeAuthHeaders);
-      }
-
-      return mergeAuthHeaders(decoration as Decoration);
+      return Promise.resolve(decoration).then(d => Object.assign(d, authHeaders));
     };
 
   }
