@@ -169,6 +169,25 @@ This will put additional load on the data store but will ensure that dimension a
 
 How often should source schema be reloaded in ms. Default value of 0 disables periodical source refresh.
 
+**auth** 
+
+The cluster authorization strategy.
+
+* Http Basic authorization
+
+Strategy will add `Authorization` header to each request to cluster and encode passed username and password with base64.
+
+```yaml
+auth:
+  type: "http-basic"
+  username: Aladdin
+  password: OpenSesame
+```
+
+This would result in all Druid request having added headers 
+
+![](assets/images/basic-auth-headers.png)
+
 
 ### Druid specific properties
 
