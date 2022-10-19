@@ -19,6 +19,7 @@ import { expect, use } from "chai";
 import equivalent from "../../../client/utils/test-utils/equivalent";
 import { RequestDecorator } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
+import { ClusterAuthJS } from "../cluster-auth/cluster-auth";
 import { ClusterJS, fromConfig } from "./cluster";
 
 use(equivalent);
@@ -47,7 +48,8 @@ describe("Cluster", () => {
         title: "",
         type: "druid",
         url: "http://bazz",
-        version: null
+        version: null,
+        auth: undefined
       });
     });
 
@@ -65,6 +67,42 @@ describe("Cluster", () => {
 
     it("should throw with name equal to native", () => {
       expect(() => fromConfig({ name: "native", url: "http://foobar" })).to.throw("name can not be 'native'");
+    });
+
+    it("should read auth options", () => {
+      const cluster = fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        auth: { type: "http-basic", password: "pass", username: "foobar" }
+      });
+
+      expect(cluster.auth).to.be.deep.equal({
+        type: "http-basic", password: "pass", username: "foobar"
+      });
+    });
+
+    it("should throw on unrecognized auth type", () => {
+      expect(() => fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        auth: { type: "unknown-method" } as any as ClusterAuthJS
+      })).to.throw("Unrecognized authorization type: unknown-method");
+    });
+
+    it("should throw on missing username", () => {
+      expect(() => fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        auth: { type: "http-basic", username: undefined, password: "pass" }
+      })).to.throw("username field is required");
+    });
+
+    it("should throw on missing password", () => {
+      expect(() => fromConfig({
+        name: "foobar",
+        url: "http://foobar",
+        auth: { type: "http-basic", username: "foobar", password: undefined }
+      })).to.throw("password field is required");
     });
 
     it("should read retry options", () => {
@@ -146,7 +184,8 @@ describe("Cluster", () => {
         version: "new-version",
         type: "druid",
         requestDecorator: null,
-        retry: new RetryOptions()
+        retry: new RetryOptions(),
+        auth: undefined
       });
     });
   });
