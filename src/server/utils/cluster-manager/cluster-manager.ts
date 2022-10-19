@@ -17,10 +17,11 @@
 
 import { External } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
-import { DruidRequestDecorator } from "plywood-druid-requester";
+import { Decoration, DecoratorRequest, DruidRequestDecorator } from "plywood-druid-requester";
 import { Logger } from "../../../common/logger/logger";
 import { Cluster, makeExternalFromSourceName, shouldScanSources } from "../../../common/models/cluster/cluster";
-import { noop } from "../../../common/utils/functional/functional";
+import { constant, noop } from "../../../common/utils/functional/functional";
+import { isNil } from "../../../common/utils/general/general";
 import { loadModule } from "../module-loader/module-loader";
 import { DruidRequestDecoratorModule } from "../request-decorator/request-decorator";
 import { properRequesterFactory } from "../requester/requester";
@@ -149,7 +150,7 @@ export class ClusterManager {
 
   private initRequester(): PlywoodRequester<any> {
     const { cluster } = this;
-    const druidRequestDecorator = this.loadRequestDecorator();
+    const druidRequestDecorator = this.createDruidRequestDecorator();
 
     return properRequesterFactory({
       cluster,
@@ -159,7 +160,43 @@ export class ClusterManager {
     });
   }
 
-  private loadRequestDecorator(): DruidRequestDecorator | undefined {
+  private clusterAuthHeaders(): Record<"Authorization", string> | undefined {
+    const { auth } = this.cluster;
+    if (isNil(auth)) return undefined;
+    switch (auth.type) {
+      case "http-basic": {
+        return  { Authorization: Buffer.from(`${auth.username}:${auth.password}`).toString("base64") };
+      }
+    }
+  }
+
+  private createDruidRequestDecorator(): DruidRequestDecorator | undefined {
+    const requestDecorator = this.loadRequestDecoratorModule();
+    const authHeaders = this.clusterAuthHeaders();
+    if (isNil(requestDecorator)) {
+      if (isNil(authHeaders)) {
+        return undefined;
+      } else {
+        return constant({ headers: authHeaders });
+      }
+    }
+
+    return (request: DecoratorRequest, context: object) => {
+      const decoration = requestDecorator(request, context);
+      if (isNil(authHeaders)) return decoration;
+
+      const mergeAuthHeaders = (d: Decoration): Decoration => Object.assign(d, authHeaders);
+
+      if ("then" in decoration && typeof decoration.then === "function") {
+        return decoration.then(mergeAuthHeaders);
+      }
+
+      return mergeAuthHeaders(decoration as Decoration);
+    };
+
+  }
+
+  private loadRequestDecoratorModule(): DruidRequestDecorator | undefined {
     const { cluster, logger, anchorPath } = this;
     if (!cluster.requestDecorator) return undefined;
     try {
