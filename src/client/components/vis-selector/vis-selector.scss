@@ -18,8 +18,6 @@
 @import '../../imports';
 
 .vis-selector {
-  @extend %module;
-
   &::before {
     @include pin-full;
     content: '';

@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +14,12 @@
  * limitations under the License.
  */
 
-%overflow {
-  @extend %tiles-item;
-  @extend %tiles-item-h;
-  position: absolute;
-  left: 0;
-  padding: 0 10px;
-  width: 40px;
+import { isTimeAttribute } from "../../../common/models/data-cube/data-cube";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
 
-  .count {
-    pointer-events: none;
-    white-space: nowrap;
-    height: 16px;
-    margin-top: 7px;
-  }
-}
-
-%overflow-menu {
-  .tile {
-    @extend %tiles-item;
-    position: absolute;
-    left: 8px;
-    top: 0; // It gets vertical position from the JS
-    height: 29px;
-  }
+export default function timeShiftLabel(dimension: Dimension, essence: Essence) {
+  if (!isTimeAttribute(essence.dataCube, dimension.expression)) return null;
+  if (!essence.hasComparison()) return null;
+  return `(Shift: ${essence.timeShift.getDescription(true)})`;
 }

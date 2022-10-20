@@ -34,7 +34,6 @@ import { CubeContext, CubeContextValue } from "../../views/cube-view/cube-contex
 import { PartialFilter } from "../../views/cube-view/partial-tiles-provider";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddFilter } from "./add-filter";
-import "./filter-tile.scss";
 import { FilterTiles } from "./filter-tiles";
 
 interface FilterTilesRowProps {
@@ -199,7 +198,7 @@ export class FilterTilesRow extends React.Component<FilterTilesRowProps, FilterT
     const { dragPosition, openedClause, overflowOpen } = this.state;
     const { menuStage, timekeeper, locale, partialFilter, removePartialFilter } = this.props;
     const { essence, clicker } = this.context;
-    return <div className="filter-tile" onDragEnter={this.dragEnter}>
+    return <div className="tile-row filter-tile-row" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.filter}</div>
       <div className="items" ref={this.items}>
         <FilterTiles

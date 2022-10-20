@@ -56,7 +56,7 @@ export const SeriesTile: React.FunctionComponent<SeriesTileProps> = props => {
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className={classNames(SERIES_CLASS_NAME, "measure")}
+        className="tile measure"
         draggable={true}
         ref={setRef}
         onClick={() => openSeriesMenu(definition)}

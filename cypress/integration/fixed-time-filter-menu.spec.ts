@@ -16,7 +16,8 @@
 context("Fixed Time Filter Menu", () => {
 
   // TODO: FIX references
-  const filterTile = () => cy.get(".filter-tile .items .filter:first");
+  const filterTiles = () => cy.get(".center-top-bar:not(.fallback) .filter-tile-row");
+  const filterTile = () => filterTiles().get(".items .tile:first");
   const timeFilter = () => cy.get(".time-filter-menu");
   const tabSelector = () => timeFilter().find(".group-container");
   const datePicker = () => timeFilter().find(".date-range-picker");

@@ -21,7 +21,8 @@ context("Pinboard", () => {
   const pinboardSortError = () => pinboardMeasureTile().find(".pinboard-sort-error");
   const pinboardSortSelected = () => pinboardSort().find(".selected-item");
   const pinboardTiles = () => pinboardPanel().find(".pinboard-tile");
-  const measureTile = (title: string) => cy.get(`.series.measure:contains(${title})`);
+  const seriesTiles = () => cy.get(".center-top-bar:not(.fallback) .series-tile-row");
+  const measureTile = (title: string) => seriesTiles().find(`.tile.measure:contains(${title})`);
 
   describe("Pinboard", () => {
     const urls = {

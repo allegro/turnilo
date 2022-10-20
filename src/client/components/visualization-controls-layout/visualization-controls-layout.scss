@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +16,7 @@
 
 @import '../../imports';
 
-$overflow-width: 40px;
-
-.filter-tile {
+.tile-row {
   @extend %module;
   @extend %module-h-title;
 
@@ -32,20 +29,16 @@ $overflow-width: 40px;
     transition: height 0.1s ease-in-out;
     overflow: hidden;
 
-    .filter {
+    .tile {
       @extend %tiles-item;
       @extend %tiles-item-h;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
+    }
 
-      .dimension-title {
-        margin-right: 5px;
-      }
-
-      &.excluded {
-        .values {
-          text-decoration: line-through;
-        }
+    &.excluded {
+      .values {
+        text-decoration: line-through;
       }
     }
   }
@@ -67,3 +60,8 @@ $overflow-width: 40px;
 .overflow-menu {
   @extend %overflow-menu
 }
+
+.vis-selector {
+  @extend %module;
+}
+

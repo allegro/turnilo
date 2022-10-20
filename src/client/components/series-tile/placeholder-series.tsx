@@ -42,7 +42,7 @@ export const PlaceholderSeriesTile: React.FunctionComponent<PlaceholderSeriesTil
   const { series, measures, seriesList, containerStage, saveSeries, closeItem, style, measure } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div
-      className={classNames(SERIES_CLASS_NAME, "measure")}
+      className="tile measure"
       ref={setRef}
       style={style}>
       <div className="reading">{measure.title}</div>

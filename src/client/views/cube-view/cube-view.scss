@@ -85,22 +85,22 @@ $control-panel-height: 3 * $control-tile-height + 2px;
       .filter-split-section {
         @include unpin-full(0, $vis-selector-width + 1px, 0, 0);
 
-        .filter-tile,
-        .series-tile,
-        .split-tile {
+        .filter-tile-row,
+        .series-tile-row,
+        .split-tile-row {
           height: $control-tile-height;
         }
 
-        .filter-tile,
-        .split-tile {
+        .filter-tile-row,
+        .split-tile-row {
           margin-bottom: 1px;
         }
 
-        .series-tile {
+        .series-tile-row {
           border-radius: $corner 0 0 0;
         }
 
-        .filter-tile {
+        .filter-tile-row {
           border-radius: 0 0 0 $corner;
         }
       }

@@ -36,6 +36,7 @@ import {
   SplitTilesRowBaseProps
 } from "../../../components/split-tile/split-tiles-row";
 import { VisSelector } from "../../../components/vis-selector/vis-selector";
+import VisualizationControlsLayout from "../../../components/visualization-controls-layout/visualization-controls-layout";
 import { classNames } from "../../../utils/dom/dom";
 import { DataProvider, QueryFactory } from "../../../visualizations/data-provider/data-provider";
 import { HighlightController } from "../../../visualizations/highlight-controller/highlight-controller";
@@ -59,7 +60,7 @@ interface VisualizationControlsProps extends VisualizationControlsBaseProps {
 }
 
 export const DefaultVisualizationControls: React.FunctionComponent<VisualizationControlsBaseProps> = props => {
-  return <VisualizationControls {...props} splitTilesRow={DefaultSplitTilesRow} />;
+  return <VisualizationControls {...props} splitTilesRow={DefaultSplitTilesRow}/>;
 };
 
 export const VisualizationControls: React.FunctionComponent<VisualizationControlsProps> = props => {
@@ -76,29 +77,31 @@ export const VisualizationControls: React.FunctionComponent<VisualizationControl
     partialFilter,
     removeTile
   } = props;
-  return <div className="center-top-bar">
-    <div className="filter-split-section">
-      <FilterTilesRow
-        locale={customization.locale}
-        timekeeper={timekeeper}
-        menuStage={stage}
-        partialFilter={partialFilter}
-        removePartialFilter={removeTile}
-        addPartialFilter={addFilter}
-      />
-      <SplitTilesRow
-        clicker={clicker}
-        essence={essence}
-        menuStage={stage}
-      />
-      <SeriesTilesRow
-        removePartialSeries={removeTile}
-        partialSeries={partialSeries}
-        menuStage={stage}
-        addPartialSeries={addSeries}/>
-    </div>
-    <VisSelector clicker={clicker} essence={essence}/>
-  </div>;
+  return <VisualizationControlsLayout
+    tiles={
+      <>
+        <FilterTilesRow
+          locale={customization.locale}
+          timekeeper={timekeeper}
+          menuStage={stage}
+          partialFilter={partialFilter}
+          removePartialFilter={removeTile}
+          addPartialFilter={addFilter}
+        />
+        <SplitTilesRow
+          clicker={clicker}
+          essence={essence}
+          menuStage={stage}
+        />
+        <SeriesTilesRow
+          removePartialSeries={removeTile}
+          partialSeries={partialSeries}
+          menuStage={stage}
+          addPartialSeries={addSeries}/>
+      </>
+    }
+    selector={
+      <VisSelector clicker={clicker} essence={essence}/>}/>;
 };
 
 interface ChartPanelProps {
@@ -169,7 +172,15 @@ type ChartWrapperProps = Pick<ChartPanelProps,
   "chartComponent">;
 
 function ChartWrapper(props: ChartWrapperProps) {
-  const { chartComponent: ChartComponent, queryFactory, essence, clicker, timekeeper, stage, lastRefreshRequestTimestamp } = props;
+  const {
+    chartComponent: ChartComponent,
+    queryFactory,
+    essence,
+    clicker,
+    timekeeper,
+    stage,
+    lastRefreshRequestTimestamp
+  } = props;
   if (essence.visResolve.isManual()) {
     return <ManualFallback clicker={clicker} essence={essence}/>;
   }

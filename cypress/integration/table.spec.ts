@@ -16,8 +16,8 @@
 context("Table", () => {
 
   const header = () => cy.get(".cube-header-bar");
-  const filterTileRow = () => cy.get(".filter-tile");
-  const filterTile = (i: number) => filterTileRow().find(`.filter:nth-child(${i})`);
+  const filterTiles = () => cy.get(".center-top-bar:not(.fallback) .filter-tile-row");
+  const filterTile = (i: number) => filterTiles().find(`.tile:nth-child(${i})`);
   const table = () => cy.get(".table");
   const clickTarget = () => table().find(".event-target");
   const highlightModal = () => cy.get(".highlight-modal");

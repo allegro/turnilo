@@ -14,33 +14,39 @@
  * limitations under the License.
  */
 context("Totals", () => {
+
+  const topBar = () => cy.get(".center-top-bar:not(.fallback)");
+  const filters = () => topBar().find(".filter-tile-row .tile");
+  const series = () => topBar().find(".series-tile-row .tile");
+  const visualization = () => cy.get(".visualization-root");
+
   beforeEach(() => {
     cy.visit("http://localhost:9090/#wiki");
   });
 
   it("should load Totals visualisation", () => {
-    cy.get(".visualization-root")
+    visualization()
       .should("have.class", "totals");
   });
 
   it("should set Latest day time filter", () => {
-    cy.get(".filter-tile .filter")
+    filters()
       .should("have.length", 1)
       .should("contain", "Latest day");
   });
 
   it('should set default series "Added"', () => {
-    cy.get(".series-tile .series")
+    series()
       .should("have.length", 1)
       .should("contain", "Added");
   });
 
   it("should load data for defined filters and measures", () => {
-    cy.get(".visualization .total .measure-name")
+    visualization().find(".measure-name")
       .should("have.length", 1)
       .should("contain", "Added");
 
-    cy.get(".visualization .total .measure-value")
+    visualization().find(".measure-value")
       .should("have.length", 1)
       .should("contain", "9.4 m");
   });

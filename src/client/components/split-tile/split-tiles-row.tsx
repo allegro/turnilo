@@ -29,7 +29,6 @@ import { getMaxItems } from "../../utils/pill-tile/pill-tile";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSplit } from "./add-split";
 import { DefaultSplitTile, SplitTileBaseProps } from "./split-tile";
-import "./split-tile.scss";
 import { SplitTiles } from "./split-tiles";
 
 export interface SplitTilesRowBaseProps {
@@ -199,7 +198,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   render() {
     const { essence, menuStage, splitTileComponent } = this.props;
     const { dragPosition, overflowOpen, openedSplit } = this.state;
-    return <div className="split-tile" onDragEnter={this.dragEnter}>
+    return <div className="tile-row split-tile-row" onDragEnter={this.dragEnter}>
       <div className="title">{STRINGS.split}</div>
       <div className="items" ref={this.items}>
         <SplitTiles

@@ -22,7 +22,6 @@ import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
 import { SplitMenu, SplitMenuProps } from "../split-menu/split-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
@@ -64,7 +63,7 @@ export const SplitTile: React.FunctionComponent<SplitTileProps> = props => {
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className={classNames(SPLIT_CLASS_NAME, "dimension")}
+        className="tile dimension"
         key={split.toKey()}
         ref={setRef}
         draggable={true}
