@@ -17,7 +17,6 @@
 @import '../../imports';
 
 $measure-width: 80px;
-$checkbox-width: 20px;
 
 .pinboard-selectable-row {
   @include css-variable(color, text-lighterish);

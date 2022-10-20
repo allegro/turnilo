@@ -34,7 +34,12 @@ interface PreviewListProps {
 
 const errorNotice = (content: string) => <div className="error-notice">{content}</div>;
 
-export const row = (content: string, highlight: string) => <div className="row no-select" key={content} title={content}>
+interface RowProps {
+  content: string;
+  highlight: string;
+}
+
+const Row: React.FunctionComponent<RowProps> = ({ content, highlight }) => <div className="row no-select" title={content}>
   <div className="row-wrapper">
     <HighlightString className="label" text={content} highlight={highlight} />
   </div>
@@ -69,6 +74,6 @@ export const PreviewList: React.FunctionComponent<PreviewListProps> = props => {
 
   return <React.Fragment>
     {searchText && <div className="matching-values-message">Matching Values</div>}
-    {filtered.map(value => row(String(value), searchText))}
+    {filtered.map(value => <Row content={String(value)} highlight={searchText} key={String(value)} />)}
   </React.Fragment>;
 };

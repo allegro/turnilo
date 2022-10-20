@@ -16,10 +16,8 @@
  */
 @import '../../imports';
 
-$checkbox-width: 20px;
-
 .string-value {
-  height: 24px;
+  height: $string-label-height;
   cursor: pointer;
   padding: 0 $padding-compact;
 
@@ -34,9 +32,14 @@ $checkbox-width: 20px;
   .value-wrapper {
     @include ellipsis;
     height: 100%;
+
+    .checkbox {
+      top: 1px;
+    }
   }
 
   .label {
+    line-height: $string-label-height;
     vertical-align: middle;
   }
 }
