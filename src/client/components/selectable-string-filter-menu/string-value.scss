@@ -16,10 +16,8 @@
  */
 @import '../../imports';
 
-$label-height: 24px;
-
 .string-value {
-  height: $label-height;
+  height: $string-label-height;
   cursor: pointer;
   padding: 0 $padding-compact;
 
@@ -41,7 +39,7 @@ $label-height: 24px;
   }
 
   .label {
-    line-height: $label-height;
+    line-height: $string-label-height;
     vertical-align: middle;
   }
 }
