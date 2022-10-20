@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { Nullary } from "../../../common/utils/functional/functional";
 import { Button } from "../button/button";
 import "./message-panel.scss";
@@ -28,7 +28,7 @@ export const MessagePanelAction: React.FunctionComponent<ErrorViewActionProps> =
     <Button type="primary" onClick={action} title={label} />;
 
 interface ErrorViewProps {
-  message?: string;
+  message?: string | ReactNode;
   title: string;
 }
 

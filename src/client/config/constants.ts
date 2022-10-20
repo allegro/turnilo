@@ -76,6 +76,7 @@ export const STRINGS: any = {
   create: "Create",
   cubes: "cubes",
   dataCubes: "Data Cubes",
+  noDataCube: "DataCube not found",
   noDataCubes: "No Data Cubes present",
   noDataCubesFound: "No Data Cubes found for query: ",
   delete: "Delete",

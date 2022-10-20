@@ -137,3 +137,19 @@ Add Sentry DSN to report errors to Sentry. [Sentry documentation](https://docs.s
 customization:
   sentryDSN: https://<key>@sentry.io/<project>
 ```
+
+## Messages
+
+You can customize various messages that Turnilo displays in user interface. 
+All messages are optional and will be treated as markdown code.
+
+```yaml
+customization:
+  messages:
+    dataCubeNotFound: "**This DataCube does not exist**"
+```
+
+List of supported fields:
+
+- `dataCubeNotFound` - message displayed when Turnilo cannot find DataCube. 
+Please note that if you have `guardDataCubes` setting turn on, Turnilo will treat cubes that are not in `x-turnilo-allow-datacubes` as not existing.

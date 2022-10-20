@@ -629,6 +629,9 @@ dataCubes:
 pageMustLoadTimeout: 5000
 
 customization:
+  messages:
+    dataCubeNotFound: |
+      Oh no! We looked hard but couldn't find your data cube. Sorry.
   urlShortener: |
     // also available: context.clientIp
     return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))

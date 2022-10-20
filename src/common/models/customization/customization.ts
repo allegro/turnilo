@@ -105,6 +105,10 @@ const availableCssVariables = [
 // Note: We could use some TS magick to link this type to availableCssVariables
 type CssVariables = Record<string, string>;
 
+interface Messages {
+  dataCubeNotFound?: string;
+}
+
 export interface Customization {
   title?: string;
   headerBackground?: string;
@@ -115,6 +119,7 @@ export interface Customization {
   sentryDSN?: string;
   cssVariables: CssVariables;
   locale: Locale;
+  messages: Messages;
 }
 
 export interface CustomizationJS {
@@ -127,6 +132,7 @@ export interface CustomizationJS {
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
   cssVariables?: Record<string, string>;
+  messages?: Messages;
 }
 
 export interface SerializedCustomization {
@@ -137,6 +143,7 @@ export interface SerializedCustomization {
   hasUrlShortener: boolean;
   sentryDSN?: string;
   locale: Locale;
+  messages: Messages;
 }
 
 export interface ClientCustomization {
@@ -147,6 +154,7 @@ export interface ClientCustomization {
   hasUrlShortener: boolean;
   sentryDSN?: string;
   locale: Locale;
+  messages: Messages;
 }
 
 function verifyCssVariables(cssVariables: Record<string, string>): CssVariables {
@@ -173,7 +181,8 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     urlShortener,
     sentryDSN,
     cssVariables = {},
-    locale
+    locale,
+    messages = {}
   } = config;
 
   const timezones = Array.isArray(configTimezones)
@@ -193,12 +202,13 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     urlShortener: urlShortenerFromConfig(urlShortener),
     timezones,
     locale: localeFromConfig(locale),
+    messages,
     externalViews
   };
 }
 
 export function serialize(customization: Customization): SerializedCustomization {
-  const { customLogoSvg, timezones, headerBackground, locale, externalViews, sentryDSN, urlShortener } = customization;
+  const { customLogoSvg, timezones, headerBackground, locale, externalViews, sentryDSN, urlShortener, messages } = customization;
   return {
     customLogoSvg,
     externalViews,
@@ -206,7 +216,8 @@ export function serialize(customization: Customization): SerializedCustomization
     headerBackground,
     sentryDSN,
     locale: serializeLocale(locale),
-    timezones: timezones.map(t => t.toJS())
+    timezones: timezones.map(t => t.toJS()),
+    messages
   };
 }
 
