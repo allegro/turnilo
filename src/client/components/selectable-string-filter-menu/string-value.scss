@@ -16,9 +16,10 @@
  */
 @import '../../imports';
 
+$label-height: 24px;
 
 .string-value {
-  height: 24px;
+  height: $label-height;
   cursor: pointer;
   padding: 0 $padding-compact;
 
@@ -33,9 +34,14 @@
   .value-wrapper {
     @include ellipsis;
     height: 100%;
+
+    .checkbox {
+      top: 1px;
+    }
   }
 
   .label {
+    line-height: $label-height;
     vertical-align: middle;
   }
 }

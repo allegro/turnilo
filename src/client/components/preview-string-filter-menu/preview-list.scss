@@ -15,6 +15,7 @@
  */
 @import '../../imports';
 
+$label-height: 24px;
 
 .preview-string-filter-menu {
 
@@ -30,7 +31,7 @@
   }
 
   .row {
-    height: 24px;
+    height: $label-height;
     cursor: pointer;
     padding: 0 $padding-compact;
 
@@ -40,6 +41,7 @@
       height: 100%;
 
       .label {
+        line-height: $label-height;
         vertical-align: middle;
       }
     }

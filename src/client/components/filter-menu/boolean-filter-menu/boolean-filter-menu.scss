@@ -18,6 +18,7 @@
 @import '../../../imports';
 
 $table-height: 80px;
+$label-height: 24px;
 
 .boolean-filter-menu {
   .menu-table {
@@ -40,17 +41,20 @@ $table-height: 80px;
     }
 
     .row {
-      height: 24px;
+      height: $label-height;
       cursor: pointer;
       padding: 0 $padding-compact;
 
       .row-wrapper {
         height: 100%;
 
+        .checkbox {
+          top: 1px;
+        }
+
         .label {
-          display: inline-block;
-          vertical-align: top;
-          padding-top: 4px;
+          line-height: $label-height;
+          vertical-align: middle;
         }
       }
 
