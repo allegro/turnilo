@@ -31,6 +31,7 @@ import { SortDirection } from "../sort/sort";
 import { booleanSplitCombine, numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
+import { VisualizationManifest } from "../visualization-manifest/visualization-manifest";
 import { Essence, EssenceValue, VisStrategy } from "./essence";
 
 const defaultEssence: EssenceValue = {
@@ -70,7 +71,7 @@ export class EssenceFixtures {
   static lineChart(): EssenceValue {
     return {
       ...defaultEssence,
-      visualization: LINE_CHART_MANIFEST
+      visualization: LINE_CHART_MANIFEST as unknown as VisualizationManifest
     };
   }
 
@@ -130,7 +131,7 @@ export class EssenceFixtures {
     ];
     return new Essence({
       dataCube: wikiClientDataCube,
-      visualization: TABLE_MANIFEST,
+      visualization: TABLE_MANIFEST as unknown as VisualizationManifest,
       visualizationSettings: TABLE_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
@@ -158,7 +159,7 @@ export class EssenceFixtures {
     ];
     return new Essence({
       dataCube: wikiClientDataCube,
-      visualization: LINE_CHART_MANIFEST,
+      visualization: LINE_CHART_MANIFEST as unknown as VisualizationManifest,
       visualizationSettings: LINE_CHART_MANIFEST.visualizationSettings.defaults,
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
