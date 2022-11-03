@@ -171,7 +171,7 @@ if (numSettingsInputs > 1) {
   process.exit(1);
 }
 
-export const PRINT_CONFIG = Boolean(parsedArgs["print-config"]);
+const PRINT_CONFIG = Boolean(parsedArgs["print-config"]);
 export const START_SERVER = !PRINT_CONFIG;
 const logger = START_SERVER ? LOGGER : NULL_LOGGER;
 
@@ -212,8 +212,7 @@ if (parsedArgs["verbose"]) {
   serverSettingsJS.verbose = parsedArgs["verbose"];
 }
 
-// TODO: Remove this export
-export const VERBOSE = Boolean(serverSettingsJS.verbose);
+const verbose = Boolean(serverSettingsJS.verbose);
 export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 
 // --- Sign of Life -------------------------------
@@ -254,7 +253,7 @@ const { appSettings, sources } = configContent
 
 export const SETTINGS_MANAGER = new SettingsManager(appSettings, sources, {
   logger,
-  verbose: VERBOSE,
+  verbose,
   anchorPath: configDirPath,
   initialLoadTimeout: SERVER_SETTINGS.pageMustLoadTimeout
 });
@@ -270,7 +269,7 @@ if (PRINT_CONFIG) {
     const extra = {
       header: true,
       version: VERSION,
-      verbose: VERBOSE,
+      verbose,
       port: SERVER_SETTINGS.port
     };
     const config = [
