@@ -18,13 +18,12 @@
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 
-export function loadFileSync(filepath: string, postProcess: string = null): any {
-  var fileData = fs.readFileSync(filepath, "utf-8");
-  if (postProcess === "json") {
-    fileData = JSON.parse(fileData);
-  } else if (postProcess === "yaml") {
-    fileData = yaml.safeLoad(fileData);
+export function loadFileSync(filepath: string, postProcess: "json" | "yaml"): object {
+  const fileData = fs.readFileSync(filepath, "utf-8");
+  switch (postProcess) {
+    case "json":
+      return JSON.parse(fileData);
+    case "yaml":
+      return yaml.safeLoad(fileData);
   }
-
-  return fileData;
 }
