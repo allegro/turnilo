@@ -29,13 +29,23 @@ describe("Timekeeper", () => {
       },
       {
         timeTags: {
-          lol: { name: "lol", time: new Date("2016-01-01T01:02:03Z"), lastTimeChecked: new Date("2016-01-01T01:02:03Z") }
+          lol: {
+            name: "lol",
+            time: new Date("2016-01-01T01:02:03Z"),
+            lastTimeChecked: new Date("2016-01-01T01:02:03Z"),
+            checkInterval: 42000
+          }
         },
         nowOverride: null
       },
       {
         timeTags: {
-          lol: { name: "lol", time: new Date("2016-01-01T01:02:03Z"), lastTimeChecked: new Date("2016-01-01T01:02:03Z") }
+          lol: {
+            name: "lol",
+            time: new Date("2016-01-01T01:02:03Z"),
+            lastTimeChecked: new Date("2016-01-01T01:02:03Z"),
+            checkInterval: 42000
+          }
         },
         nowOverride: new Date("2016-01-01T01:02:03Z")
       }
