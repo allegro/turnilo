@@ -171,7 +171,7 @@ How often should source schema be reloaded in ms. Default value of 0 disables pe
 
 **sourceTimeBoundaryRefreshInterval** (number), minimum: 1000, default: 60000
 
-How often should source max time be refreshed in ms. 
+How often should source max time be refreshed in ms. Turnilo sends [time boundary query](https://druid.apache.org/docs/latest/querying/timeboundaryquery.html) to Druid cluster to get source max time.
 Smaller values will ensure that turnilo is aware of freshly added data but also would put load on the data store with additional queries.
 
 
