@@ -169,6 +169,11 @@ This will put additional load on the data store but will ensure that dimension a
 
 How often should source schema be reloaded in ms. Default value of 0 disables periodical source refresh.
 
+**sourceTimeBoundaryRefreshInterval** (number), minimum: 1000, default: 60000
+
+How often should source max time be refreshed in ms. 
+Smaller values will ensure that turnilo is aware of freshly added data but also would put load on the data store with additional queries.
+
 
 ### Druid specific properties
 
