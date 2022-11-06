@@ -25,7 +25,6 @@ import { maxTimeQueryForCube } from "../query/max-time-query";
 
 export class TimeMonitor {
   public timekeeper: Timekeeper;
-  private regularCheckInterval: number;
   private checks: Map<string, Nullary<Promise<Date>>>;
   private logger: Logger;
   private doingChecks = false;
@@ -33,7 +32,6 @@ export class TimeMonitor {
   constructor(logger: Logger) {
     this.logger = logger.addPrefix("TimeMonitor");
     this.checks = new Map();
-    this.regularCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
     setInterval(this.doChecks, 1000);
   }
@@ -44,10 +42,11 @@ export class TimeMonitor {
     return this;
   }
 
-  addCheck(cube: QueryableDataCube): this {
+  // NOTE: We should pass whole Cluster here, but we still don't have Cluster class for "native" cluster type.
+  addCheck(cube: QueryableDataCube, sourceTimeBoundaryRefreshInterval: number): this {
     const { name } = cube;
     this.checks.set(name, () => maxTimeQueryForCube(cube));
-    this.timekeeper = this.timekeeper.addTimeTagFor(name);
+    this.timekeeper = this.timekeeper.addTimeTagFor(name, sourceTimeBoundaryRefreshInterval);
     return this;
   }
 
@@ -65,10 +64,10 @@ export class TimeMonitor {
     );
   }
 
-  private isStale = (timeTag: TimeTag): boolean => {
-    const { timekeeper, regularCheckInterval } = this;
+  private isStale = ({ time, lastTimeChecked, checkInterval }: TimeTag): boolean => {
+    const { timekeeper } = this;
     const now = timekeeper.now().valueOf();
-    return !timeTag.time || now - timeTag.lastTimeChecked.valueOf() > regularCheckInterval;
+    return !time || now - lastTimeChecked.valueOf() > checkInterval;
   }
 
   private doChecks = (): void => {
