@@ -33,12 +33,12 @@ export interface Cluster {
   title?: string;
   version?: string;
   timeout?: number;
-  healthCheckTimeout?: number;
-  sourceListScan?: SourceListScan;
-  sourceListRefreshOnLoad?: boolean;
-  sourceListRefreshInterval?: number;
-  sourceReintrospectOnLoad?: boolean;
-  sourceReintrospectInterval?: number;
+  healthCheckTimeout: number;
+  sourceListScan: SourceListScan;
+  sourceListRefreshOnLoad: boolean;
+  sourceListRefreshInterval: number;
+  sourceReintrospectOnLoad: boolean;
+  sourceReintrospectInterval: number;
   guardDataCubes?: boolean;
   introspectionStrategy?: string;
   requestDecorator?: RequestDecorator;
