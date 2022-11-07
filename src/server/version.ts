@@ -18,12 +18,10 @@ import { loadFileSync } from "./utils/file/file";
 
 const PACKAGE_FILE = path.join(__dirname, "../../package.json");
 
-let packageObj: any = null;
-try {
-  packageObj = loadFileSync(PACKAGE_FILE, "json");
-} catch (e) {
-  console.error(`Could not read package.json: ${e.message}`);
-  process.exit(1); // TODO: common tool for exit?
-}
-
-export const VERSION = packageObj.version;
+export const readVersion = (): string => {
+  const packageObj = loadFileSync(PACKAGE_FILE, "json");
+  if (!("version" in packageObj)) {
+    throw new Error("Couldn't read version from package.json");
+  }
+  return (packageObj as any).version;
+};

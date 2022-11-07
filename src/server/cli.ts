@@ -24,7 +24,7 @@ import printIntrospectedSettings from "./cli/introspect-cluster";
 import { loadConfigFile } from "./cli/load-config-file";
 import { assertCredentials, parseInteger } from "./cli/utils";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
-import { VERSION } from "./version";
+import { readVersion } from "./version";
 
 const portOption = new Option("-p, --port <number>", "port number").argParser(parseInteger);
 const serverRootOption = new Option("--server-root <root>", "server root");
@@ -33,7 +33,12 @@ const verboseOption = new Option("--verbose", "verbose mode");
 const usernameOption = new Option("--username <username>", "username");
 const passwordOption = new Option("--password <password>", "password");
 
-const version = VERSION;
+let version: string;
+try {
+  version = readVersion();
+} catch (e) {
+  program.error(`?Failed to read turnilo version. Error: ${e.message}`);
+}
 
 program
   .name("turnilo")
@@ -152,7 +157,8 @@ program
       serverSettings,
       appSettings,
       sources,
-      verbose
+      verbose,
+      version
     ).catch((e: Error) => {
       program.error("There was an error generating a config: " + e.message);
     });

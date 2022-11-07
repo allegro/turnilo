@@ -20,13 +20,13 @@ import { Sources } from "../../common/models/sources/sources";
 import { appSettingsToYaml, printExtra, sourcesToYaml } from "../../common/utils/yaml-helper/yaml-helper";
 import { ServerSettings } from "../models/server-settings/server-settings";
 import { SettingsManager } from "../utils/settings-manager/settings-manager";
-import { VERSION } from "../version";
 
 export default function printIntrospectedSettings(
   serverSettings: ServerSettings,
   appSettings: AppSettings,
   sources: Sources,
-  verbose: boolean
+  verbose: boolean,
+  version: string
 ) {
   const settingsManager = new SettingsManager(appSettings, sources, {
     anchorPath: process.cwd(),
@@ -40,7 +40,7 @@ export default function printIntrospectedSettings(
   }).then(sources => {
     const extra = {
       header: true,
-      version: VERSION,
+      version,
       verbose
       // Why port here? We don't start server so port is meaningless
       // port: SERVER_SETTINGS.port
