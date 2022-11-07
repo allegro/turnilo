@@ -69,10 +69,10 @@ declare module "@vx/tooltip" {
   const TooltipWithBounds: React.ComponentType<TooltipWithBoundsProps>;
 }
 
-declare module 'react-syntax-highlighter/src/light' {
-  export { default } from 'react-syntax-highlighter/dist/esm/light'
+declare module "react-syntax-highlighter/src/light" {
+  export { default } from "react-syntax-highlighter/dist/esm/light";
 }
 
-declare module 'react-syntax-highlighter/src/styles/hljs/github-gist' {
-  export { default } from 'react-syntax-highlighter/dist/esm/styles/hljs/github-gist';
+declare module "react-syntax-highlighter/src/styles/hljs/github-gist" {
+  export { default } from "react-syntax-highlighter/dist/esm/styles/hljs/github-gist";
 }

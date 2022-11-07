@@ -37,5 +37,5 @@ export const settings: TableConfig = {
     print: (settings: ImmutableRecord<TableSettings>) => settings.toJS(),
     read: (input: TableSettings) => createSettings({ collapseRows: !!input.collapseRows })
   },
-  defaults: createSettings({})
+  defaults: createSettings({}) as ImmutableRecord<object>
 };
