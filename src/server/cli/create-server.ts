@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Command } from "commander";
 import { Express } from "express";
 import http from "http";
 import { AddressInfo } from "net";
 import { ServerSettings } from "../models/server-settings/server-settings";
 
-export default function createServer(serverSettings: ServerSettings, app: Express) {
+export default function createServer(serverSettings: ServerSettings, app: Express, program: Command) {
 
   const server = http.createServer(app);
 
@@ -30,15 +31,11 @@ export default function createServer(serverSettings: ServerSettings, app: Expres
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case "EACCES":
-        // TODO: this should do something that commander understands
-        console.error(`Port ${serverSettings.port} requires elevated privileges`);
-        process.exit(1);
+        program.error(`Port ${serverSettings.port} requires elevated privileges`);
         break;
 
       case "EADDRINUSE":
-        // TODO: this should do something that commander understands
-        console.error(`Port ${serverSettings.port} is already in use`);
-        process.exit(1);
+        program.error(`Port ${serverSettings.port} is already in use`);
         break;
 
       default:

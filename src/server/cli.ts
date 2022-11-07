@@ -66,7 +66,7 @@ program
       verbose,
       logger: LOGGER
     });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version));
+    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
   });
 
 program
@@ -86,7 +86,7 @@ program
       verbose,
       logger: LOGGER
     });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version));
+    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
   });
 
 program
@@ -108,7 +108,7 @@ program
       verbose,
       logger: LOGGER
     });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version));
+    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
   });
 
 program
@@ -127,7 +127,7 @@ program
       verbose,
       logger: LOGGER
     });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version));
+    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
   });
 
 program
