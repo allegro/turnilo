@@ -19,6 +19,6 @@ export function loadConfigFile(configPath: string): object {
   try {
     return loadFileSync(configPath, "yaml");
   } catch (e) {
-    throw new Error("SOMETHING"); // something that commander can handle
+    throw new Error("SOMETHING"); // TODO: something that commander can handle
   }
 }

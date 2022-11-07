@@ -195,16 +195,16 @@ program
   .command("verify-config")
   .argument("<file>", "path to config file")
   .addOption(verboseOption)
-  .action(file => {
+  .action((file, { verbose }) => {
     // 1. load yaml
     const config = loadConfigFile(file);
     try {
       // 2. create server settings
-    const serverSettings = ServerSettings.fromJS(config);
-    // 3. create app settings
-    const appSettings = appSettingsFromConfig(config);
-    // 4. create sources
-    const sources = sourcesFromConfig(config);
+      const serverSettings = ServerSettings.fromJS({ ...config, verbose });
+      // 3. create app settings
+      const appSettings = appSettingsFromConfig(config);
+      // 4. create sources
+      const sources = sourcesFromConfig(config);
       // 5. catch and log all errors
     } catch (e) {
       program.error("Config verification error: ", e.message);
