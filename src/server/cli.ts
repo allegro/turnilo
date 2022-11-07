@@ -17,16 +17,12 @@
 import { Option, program } from "commander";
 import path from "path";
 import { LOGGER } from "../common/logger/logger";
-import { EMPTY_APP_SETTINGS, fromConfig as appSettingsFromConfig } from "../common/models/app-settings/app-settings";
-import { fromConfig as clusterFromConfig } from "../common/models/cluster/cluster";
-import { fromConfig as dataCubeFromConfig } from "../common/models/data-cube/data-cube";
-import { fromConfig as sourcesFromConfig, Sources } from "../common/models/sources/sources";
-import { appSettingsToYaml, printExtra, sourcesToYaml } from "../common/utils/yaml-helper/yaml-helper";
 import createApp from "./app";
+import buildSettings, { settingsForDatasetFile, settingsForDruidConnection } from "./cli/build-settings";
 import createServer from "./cli/create-server";
+import printIntrospectedSettings from "./cli/introspect-cluster";
 import { loadConfigFile } from "./cli/load-config-file";
 import { assertCredentials, parseInteger } from "./cli/utils";
-import { ServerSettings, ServerSettingsJS } from "./models/server-settings/server-settings";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
 import { VERSION } from "./version";
 
@@ -54,33 +50,18 @@ program
   .addOption(passwordOption)
   .addOption(verboseOption)
   .action((configPath, { username, password, serverRoot, serverHost, port, verbose }) => {
+    const anchorPath = path.dirname(configPath);
     assertCredentials(username, password);
-    // 1. load yml file as config
     const config = loadConfigFile(configPath);
-    // 2. override config with all existing options
-    const serverSettingsJS: ServerSettingsJS = {
-      ...config,
-      port,
-      verbose,
-      serverHost,
-      serverRoot
-    };
-    // 3. create ServerSettings from 2
-    const serverSettings = ServerSettings.fromJS(serverSettingsJS);
-    // 4. create AppSettings and Sources from 2
     // TODO: pass credentials somewhere
-    const appSettings = appSettingsFromConfig(config);
-    const sources = sourcesFromConfig(config);
-    // 5. create SettingsManager with 4, logger, verbose option, anchorPath (config path) and initialLoadTimeout (ServerSettings.pageMustLoadTimeout)
+    const { appSettings, sources, serverSettings } = buildSettings(config, { serverRoot, serverHost, verbose, port });
     const settingsManager = new SettingsManager(appSettings, sources, {
-      anchorPath: path.dirname(configPath),
+      anchorPath,
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
       verbose,
       logger: LOGGER
     });
-    // 6. start ./app.ts with ServerSettings and code from ./www.ts
     createServer(serverSettings, createApp(serverSettings, settingsManager, version));
-    console.log("run config with", configPath, "and options");
   });
 
 program
@@ -90,30 +71,16 @@ program
   .addOption(serverHostOption)
   .addOption(verboseOption)
   .action(({ port, verbose, serverRoot, serverHost }) => {
-    // 1. load config-examples.yaml file as config
     const configPath = path.join(__dirname, "../../config-examples.yaml");
+    const anchorPath = path.dirname(configPath);
     const config = loadConfigFile(configPath);
-    // 2. override config with all existing options
-    const serverSettingsJS: ServerSettingsJS = {
-      ...config,
-      port,
-      verbose,
-      serverHost,
-      serverRoot
-    };
-    // 3. create ServerSettings from 2
-    const serverSettings = ServerSettings.fromJS(serverSettingsJS);
-    // 4. create AppSettings and Sources from 2
-    const appSettings = appSettingsFromConfig(config);
-    const sources = sourcesFromConfig(config);
-    // 5. create SettingsManager with 4, logger, verbose option, anchorPath (config path) and initialLoadTimeout (ServerSettings.pageMustLoadTimeout)
+    const { sources, serverSettings, appSettings } = buildSettings(config, { port, verbose, serverHost, serverRoot });
     const settingsManager = new SettingsManager(appSettings, sources, {
-      anchorPath: path.dirname(configPath),
+      anchorPath,
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
       verbose,
       logger: LOGGER
     });
-    // 6. start ./app.ts with ServerSettings and code from ./www.ts
     createServer(serverSettings, createApp(serverSettings, settingsManager, version));
   });
 
@@ -128,27 +95,14 @@ program
   .addOption(passwordOption)
   .action((url, { port, verbose, username, password, serverRoot, serverHost }) => {
     assertCredentials(username, password);
-    // 1. create cluster from name: druid and passed url and empty dataCubes list
     // TODO: pass credentials somewhere
-    const sources: Sources = {
-      dataCubes: [],
-      clusters: [clusterFromConfig({
-        name: "druid",
-        url
-      })]
-    };
-    // 2. create appSettings from EMPTY_APP_SETTINGS
-    const appSettings = EMPTY_APP_SETTINGS;
-    // 3. create ServerSettings from options
-    const serverSettings = ServerSettings.fromJS({ serverRoot, serverHost, port, verbose });
-    // 4. create SettingsManager with 4, logger, verbose option, anchorPath (config path) and initialLoadTimeout (ServerSettings.pageMustLoadTimeout)
+    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { port, verbose, serverHost, serverRoot });
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath: process.cwd(),
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
       verbose,
       logger: LOGGER
     });
-    // 5. start ./app.ts with ServerSettings and code from ./www.ts
     createServer(serverSettings, createApp(serverSettings, settingsManager, version));
   });
 
@@ -161,33 +115,13 @@ program
   .addOption(serverHostOption)
   .addOption(verboseOption)
   .action((file, { timeAttribute, port, verbose, serverHost, serverRoot }) => {
-    // 1. create empty cluster list and dataCube:
-    //  dataCubeFromConfig({
-    //    name: path.basename(file, path.extname(file)),
-    //    clusterName: "native",
-    //    source: file
-    //  }, undefined
-    const sources: Sources = {
-      dataCubes: [dataCubeFromConfig({
-        name: path.basename(file, path.extname(file)),
-        clusterName: "native",
-        source: file,
-        timeAttribute
-      }, undefined)],
-      clusters: []
-    };
-    // 2. create appSettings from EMPTY_APP_SETTINGS
-    const appSettings = EMPTY_APP_SETTINGS;
-    // 3. create ServerSettings from options
-    const serverSettings = ServerSettings.fromJS({ serverRoot, serverHost, port, verbose });
-    // 4. create SettingsManager with 4, logger, verbose option, anchorPath (config path) and initialLoadTimeout (ServerSettings.pageMustLoadTimeout)
+    const { appSettings, sources, serverSettings } = settingsForDatasetFile(file, timeAttribute, { serverRoot, serverHost, verbose, port });
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath: process.cwd(),
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
       verbose,
       logger: LOGGER
     });
-    // 5. start ./app.ts with ServerSettings and code from ./www.ts
     createServer(serverSettings, createApp(serverSettings, settingsManager, version));
   });
 
@@ -196,16 +130,9 @@ program
   .argument("<file>", "path to config file")
   .addOption(verboseOption)
   .action((file, { verbose }) => {
-    // 1. load yaml
-    const config = loadConfigFile(file);
     try {
-      // 2. create server settings
-      const serverSettings = ServerSettings.fromJS({ ...config, verbose });
-      // 3. create app settings
-      const appSettings = appSettingsFromConfig(config);
-      // 4. create sources
-      const sources = sourcesFromConfig(config);
-      // 5. catch and log all errors
+      const config = loadConfigFile(file);
+      buildSettings(config, { verbose });
     } catch (e) {
       program.error("Config verification error: ", e.message);
     }
@@ -217,48 +144,16 @@ program
   .addOption(verboseOption)
   .addOption(usernameOption)
   .addOption(passwordOption)
-  .option("--with-comments", "print comments")
-  .action((url, { verbose, username, password, withComments }) => {
+  .action((url, { verbose, username, password }) => {
     assertCredentials(username, password);
-    // 1. create cluster from name: druid and passed url and empty dataCubes list
     // TODO: pass credentials somewhere
-    const sources: Sources = {
-      dataCubes: [],
-      clusters: [clusterFromConfig({
-        name: "druid",
-        url
-      })]
-    };
-    // 2. create appSettings from EMPTY_APP_SETTINGS
-    const appSettings = EMPTY_APP_SETTINGS;
-    // 3. create ServerSettings from options
-    const serverSettings = ServerSettings.fromJS({ verbose });
-    // 4. create SettingsManager with 4, logger, verbose option, anchorPath (config path) and initialLoadTimeout (ServerSettings.pageMustLoadTimeout)
-    const settingsManager = new SettingsManager(appSettings, sources, {
-      anchorPath: process.cwd(),
-      initialLoadTimeout: serverSettings.pageMustLoadTimeout,
-      verbose,
-      logger: LOGGER
-    });
-    // 5. call SettingsManager.getFreshSources with timeout 1000
-    // 6. using yaml-helper print out appSettings, fetched sources and "Extra"
-    settingsManager.getFreshSources({
-      timeout: 10000
-    }).then(sources => {
-      const extra = {
-        header: true,
-        version: VERSION,
-        verbose
-        // Why port here? We don't start server so port is meaningless
-        // port: SERVER_SETTINGS.port
-      };
-      const config = [
-        printExtra(extra, withComments),
-        appSettingsToYaml(appSettings, withComments),
-        sourcesToYaml(sources, withComments)
-      ].join("\n");
-      process.stdout.write(config, () => process.exit());
-    }).catch((e: Error) => {
+    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { verbose });
+    printIntrospectedSettings(
+      serverSettings,
+      appSettings,
+      sources,
+      verbose
+    ).catch((e: Error) => {
       program.error("There was an error generating a config: " + e.message);
     });
   });
