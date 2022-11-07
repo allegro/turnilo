@@ -151,7 +151,7 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   attachRouter("/mkurl", mkurlRouter(settingsManager.sourcesGetter));
   attachRouter("/shorten", shortenRouter(settingsManager.appSettings, isTrustedProxy));
 
-  attachRouter("/", turniloRouter(settingsManager.appSettings, settingsManager.getTimekeeper, version));
+  attachRouter("/", turniloRouter(settingsManager.appSettings, () => settingsManager.getTimekeeper(), version));
 
   // Catch 404 and redirect to /
   app.use((req: Request, res: Response) => {
