@@ -155,11 +155,12 @@ program
 program
   .command("load-file")
   .argument("<file>", "json file")
+  .requiredOption("-t, --time-attribute <attribute>", "time attribute")
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
   .addOption(verboseOption)
-  .action((file, { port, verbose, serverHost, serverRoot }) => {
+  .action((file, { timeAttribute, port, verbose, serverHost, serverRoot }) => {
     // 1. create empty cluster list and dataCube:
     //  dataCubeFromConfig({
     //    name: path.basename(file, path.extname(file)),
@@ -170,7 +171,8 @@ program
       dataCubes: [dataCubeFromConfig({
         name: path.basename(file, path.extname(file)),
         clusterName: "native",
-        source: file
+        source: file,
+        timeAttribute
       }, undefined)],
       clusters: []
     };
