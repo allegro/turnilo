@@ -20,17 +20,26 @@ import equivalent from "../../../client/utils/test-utils/equivalent";
 import { RequestDecorator } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
 import { ClusterAuthJS } from "../cluster-auth/cluster-auth";
-import { ClusterJS, fromConfig } from "./cluster";
+import { Cluster, ClusterJS, fromConfig } from "./cluster";
+
+const baseConfig: ClusterJS = {
+  name: "foobar",
+  url: "https://foobar.com"
+};
+
+function buildCluster(options: Partial<ClusterJS> = {}): Cluster {
+  return fromConfig({
+    ...baseConfig,
+    ...options
+  });
+}
 
 use(equivalent);
 
 describe("Cluster", () => {
   describe("fromConfig", () => {
     it("should load default values", () => {
-      const cluster = fromConfig({
-        name: "foobar",
-        url: "http://bazz"
-      });
+      const cluster = fromConfig(baseConfig);
 
       expect(cluster).to.be.deep.equal({
         name: "foobar",
@@ -47,32 +56,30 @@ describe("Cluster", () => {
         timeout: undefined,
         title: "",
         type: "druid",
-        url: "http://bazz",
+        url: "https://foobar.com",
         version: null,
         auth: undefined
       });
     });
 
     it("should throw with incorrect name type", () => {
-      expect(() => fromConfig({ name: 1 } as unknown as ClusterJS)).to.throw("must be a string");
+      expect(() => fromConfig({ ...baseConfig, name: 1 } as unknown as ClusterJS)).to.throw("must be a string");
     });
 
     it("should throw with incorrect empty name", () => {
-      expect(() => fromConfig({ name: "", url: "http://foobar" })).to.throw("empty name");
+      expect(() => fromConfig({ ...baseConfig, name: "" })).to.throw("empty name");
     });
 
     it("should throw with not url safe name", () => {
-      expect(() => fromConfig({ name: "foobar%bazz#", url: "http://foobar" })).to.throw("is not a URL safe name");
+      expect(() => fromConfig({ ...baseConfig, name: "foobar%bazz#" })).to.throw("is not a URL safe name");
     });
 
     it("should throw with name equal to native", () => {
-      expect(() => fromConfig({ name: "native", url: "http://foobar" })).to.throw("name can not be 'native'");
+      expect(() => fromConfig({ ...baseConfig, name: "native" })).to.throw("name can not be 'native'");
     });
 
     it("should read auth options", () => {
-      const cluster = fromConfig({
-        name: "foobar",
-        url: "http://foobar",
+      const cluster = buildCluster({
         auth: { type: "http-basic", password: "pass", username: "foobar" }
       });
 
@@ -82,33 +89,25 @@ describe("Cluster", () => {
     });
 
     it("should throw on unrecognized auth type", () => {
-      expect(() => fromConfig({
-        name: "foobar",
-        url: "http://foobar",
+      expect(() => buildCluster({
         auth: { type: "unknown-method" } as any as ClusterAuthJS
       })).to.throw("Unrecognized authorization type: unknown-method");
     });
 
     it("should throw on missing username", () => {
-      expect(() => fromConfig({
-        name: "foobar",
-        url: "http://foobar",
+      expect(() => buildCluster({
         auth: { type: "http-basic", username: undefined, password: "pass" }
       })).to.throw("username field is required");
     });
 
     it("should throw on missing password", () => {
-      expect(() => fromConfig({
-        name: "foobar",
-        url: "http://foobar",
+      expect(() => buildCluster({
         auth: { type: "http-basic", username: "foobar", password: undefined }
       })).to.throw("password field is required");
     });
 
     it("should read retry options", () => {
-      const cluster = fromConfig({
-        name: "foobar",
-        url: "http://foobar",
+      const cluster = buildCluster({
         retry: {
           maxAttempts: 1,
           delay: 42
@@ -132,9 +131,7 @@ describe("Cluster", () => {
     });
 
     it("should read request decorator old format", () => {
-      const cluster = fromConfig({
-        name: "foobar",
-        url: "http://foobar",
+      const cluster = buildCluster({
         requestDecorator: "foobar",
         decoratorOptions: { bazz: true }
       } as unknown as ClusterJS);
@@ -152,11 +149,10 @@ describe("Cluster", () => {
     });
 
     it("should override default values", () => {
-      const cluster = fromConfig({
+      const cluster = buildCluster({
         guardDataCubes: true,
         healthCheckTimeout: 42,
         introspectionStrategy: "introspection-introspection",
-        name: "cluster-name",
         sourceListRefreshInterval: 1123,
         sourceListRefreshOnLoad: true,
         sourceListScan: "auto",
@@ -164,7 +160,6 @@ describe("Cluster", () => {
         sourceReintrospectOnLoad: true,
         timeout: 581,
         title: "foobar-title",
-        url: "http://url-bazz",
         version: "new-version"
       });
 
@@ -172,7 +167,7 @@ describe("Cluster", () => {
         guardDataCubes: true,
         healthCheckTimeout: 42,
         introspectionStrategy: "introspection-introspection",
-        name: "cluster-name",
+        name: "foobar",
         sourceListRefreshInterval: 1123,
         sourceListRefreshOnLoad: true,
         sourceListScan: "auto",
@@ -180,7 +175,7 @@ describe("Cluster", () => {
         sourceReintrospectOnLoad: true,
         timeout: 581,
         title: "foobar-title",
-        url: "http://url-bazz",
+        url: "https://foobar.com",
         version: "new-version",
         type: "druid",
         requestDecorator: null,
