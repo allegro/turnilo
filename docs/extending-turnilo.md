@@ -28,10 +28,10 @@ to your `druidRequestDecoratorFactory` under `options` key in second parameter.
 druidRequestDecorator: 
     path: './druid-request-decorator.js'
     options:
-        keyA: valueA
-        keyB:
-          - firstElement
-          - secondElement
+        base: Pancakes
+        extras:
+          - maple-syrup
+          - blueberries
 ```
 
 The contract is that your module should export a function `druidRequestDecoratorFactory` that has to return a decorator.
@@ -46,15 +46,14 @@ exports.version = 1;
 
 exports.druidRequestDecoratorFactory = function (logger, params) {
   const options = params.options;
-  const username = options.username;
-  const password = options.password;
+  const extras = options.extras.join(", ");
 
-  const auth = "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
+  const like = `${options.base} with ${extras}`;
 
   return function () {
     return {
       headers: {
-        "Authorization": auth
+        "X-I-Like": auth
       },
     };
   };
@@ -63,9 +62,7 @@ exports.druidRequestDecoratorFactory = function (logger, params) {
 
 You can find this example with additional comments and example config in the [example](example/request-decoration) folder.
 
-This would result in all Druid requests being tagged as:
-
-![decoration example](example/request-decoration/result.png)
+Please note that your object will be merged with [Cluster Authorization](configuration-cluster.md) headers.
 
 ## Query decorator
 

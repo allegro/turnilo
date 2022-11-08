@@ -9,6 +9,7 @@ clusters:
     requestDecorator:
       path: './druid-request-decorator.js'
       options:
-        username: Aladdin
-        password: OpenSesame
+        base: Pancakes
+        extras:
+          - Blueberries
 

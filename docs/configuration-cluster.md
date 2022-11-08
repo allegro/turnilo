@@ -120,6 +120,25 @@ The url address (http[s]://hostname[:port]) of the cluster. If no port, 80 is as
 
 The host (hostname:port) of the cluster, http protocol is assumed. Deprecated, use **url** field
 
+**auth**
+
+The cluster authorization strategy.
+
+* Http Basic authorization
+
+Strategy will add `Authorization` header to each request to cluster and encode passed username and password with base64.
+
+```yaml
+auth:
+  type: "http-basic"
+  username: Aladdin
+  password: OpenSesame
+```
+
+This would result in all Druid request having added headers
+
+![](assets/images/basic-auth-headers.png)
+
 **version** (string)
 
 The explicit version to use for this cluster.
@@ -168,7 +187,6 @@ This will put additional load on the data store but will ensure that dimension a
 **sourceReintrospectInterval** (number), minimum: 1000, default: 0
 
 How often should source schema be reloaded in ms. Default value of 0 disables periodical source refresh.
-
 
 ### Druid specific properties
 
