@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import path from "path";
 import {
   AppSettings,
   EMPTY_APP_SETTINGS,
   fromConfig as appSettingsFromConfig
 } from "../../common/models/app-settings/app-settings";
-import { fromConfig as sourcesFromConfig, Sources } from "../../common/models/sources/sources";
-import { ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
 import { fromConfig as clusterFromConfig } from "../../common/models/cluster/cluster";
 import { fromConfig as dataCubeFromConfig } from "../../common/models/data-cube/data-cube";
-import path from "path";
+import { fromConfig as sourcesFromConfig, Sources } from "../../common/models/sources/sources";
+import { ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
 
 interface Settings {
   serverSettings: ServerSettings;
