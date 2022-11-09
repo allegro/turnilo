@@ -56,9 +56,7 @@ export default function buildSettings(config: object, options: Options, auth?: C
     ...config,
     ...options
   };
-  // 3. create ServerSettings from 2
   const serverSettings = ServerSettings.fromJS(serverSettingsJS);
-  // 4. create AppSettings and Sources from 2
   const appSettings = appSettingsFromConfig(config);
   const sourcesJS = isNil(auth) ? config : overrideClustersAuth(config, auth);
   const sources = sourcesFromConfig(sourcesJS);
