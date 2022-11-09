@@ -165,7 +165,9 @@ export class ClusterManager {
     if (isNil(auth)) return undefined;
     switch (auth.type) {
       case "http-basic": {
-        return  { Authorization: Buffer.from(`${auth.username}:${auth.password}`).toString("base64") };
+        const credentials = `${auth.username}:${auth.password}`;
+        const Authorization = `Basic ${Buffer.from(credentials).toString("base64")}`;
+        return  { Authorization };
       }
     }
   }
@@ -177,7 +179,7 @@ export class ClusterManager {
       if (isNil(authHeaders)) {
         return undefined;
       } else {
-        return constant({ headers: authHeaders });
+        return constant( { headers: authHeaders });
       }
     }
 
