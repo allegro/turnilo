@@ -44,7 +44,7 @@ export interface Cluster {
   introspectionStrategy?: string;
   requestDecorator?: RequestDecorator;
   retry?: RetryOptions;
-  auth: ClusterAuth;
+  auth?: ClusterAuth;
 }
 
 export interface ClusterJS {
