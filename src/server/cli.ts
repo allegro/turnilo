@@ -22,7 +22,7 @@ import buildSettings, { settingsForDatasetFile, settingsForDruidConnection } fro
 import createServer from "./cli/create-server";
 import printIntrospectedSettings from "./cli/introspect-cluster";
 import { loadConfigFile } from "./cli/load-config-file";
-import { assertCredentials, parseInteger } from "./cli/utils";
+import { parseCredentials, parseInteger } from "./cli/utils";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
 import { readVersion } from "./version";
 
@@ -56,10 +56,9 @@ program
   .addOption(verboseOption)
   .action((configPath, { username, password, serverRoot, serverHost, port, verbose }) => {
     const anchorPath = path.dirname(configPath);
-    assertCredentials(username, password);
+    const auth = parseCredentials(username, password);
     const config = loadConfigFile(configPath);
-    // TODO: pass credentials somewhere
-    const { appSettings, sources, serverSettings } = buildSettings(config, { serverRoot, serverHost, verbose, port });
+    const { appSettings, sources, serverSettings } = buildSettings(config, { serverRoot, serverHost, verbose, port }, auth);
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath,
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
@@ -99,9 +98,8 @@ program
   .addOption(usernameOption)
   .addOption(passwordOption)
   .action((url, { port, verbose, username, password, serverRoot, serverHost }) => {
-    assertCredentials(username, password);
-    // TODO: pass credentials somewhere
-    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { port, verbose, serverHost, serverRoot });
+    const auth = parseCredentials(username, password);
+    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { port, verbose, serverHost, serverRoot }, auth);
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath: process.cwd(),
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
@@ -150,9 +148,8 @@ program
   .addOption(usernameOption)
   .addOption(passwordOption)
   .action((url, { verbose, username, password }) => {
-    assertCredentials(username, password);
-    // TODO: pass credentials somewhere
-    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { verbose });
+    const auth = parseCredentials(username, password);
+    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { verbose }, auth);
     printIntrospectedSettings(
       serverSettings,
       appSettings,

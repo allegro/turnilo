@@ -20,9 +20,11 @@ import {
   EMPTY_APP_SETTINGS,
   fromConfig as appSettingsFromConfig
 } from "../../common/models/app-settings/app-settings";
+import { ClusterAuthJS } from "../../common/models/cluster-auth/cluster-auth";
 import { fromConfig as clusterFromConfig } from "../../common/models/cluster/cluster";
 import { fromConfig as dataCubeFromConfig } from "../../common/models/data-cube/data-cube";
-import { fromConfig as sourcesFromConfig, Sources } from "../../common/models/sources/sources";
+import { fromConfig as sourcesFromConfig, Sources, SourcesJS } from "../../common/models/sources/sources";
+import { isNil } from "../../common/utils/general/general";
 import { ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
 
 interface Settings {
@@ -38,7 +40,18 @@ interface Options {
   serverRoot?: string;
 }
 
-export default function buildSettings(config: object, options: Options = {}): Settings {
+function overrideClustersAuth(config: SourcesJS, auth: ClusterAuthJS): SourcesJS {
+  if (!config.clusters) return config;
+  return {
+    ...config,
+    clusters: config.clusters.map(cluster => ({
+      ...cluster,
+      auth
+    }))
+  };
+}
+
+export default function buildSettings(config: object, options: Options, auth?: ClusterAuthJS): Settings {
   const serverSettingsJS: ServerSettingsJS = {
     ...config,
     ...options
@@ -47,7 +60,8 @@ export default function buildSettings(config: object, options: Options = {}): Se
   const serverSettings = ServerSettings.fromJS(serverSettingsJS);
   // 4. create AppSettings and Sources from 2
   const appSettings = appSettingsFromConfig(config);
-  const sources = sourcesFromConfig(config);
+  const sourcesJS = isNil(auth) ? config : overrideClustersAuth(config, auth);
+  const sources = sourcesFromConfig(sourcesJS);
 
   return {
     serverSettings,
@@ -56,13 +70,13 @@ export default function buildSettings(config: object, options: Options = {}): Se
   };
 }
 
-export function settingsForDruidConnection(url: string, options: Options = {}): Settings {
-  // TODO: pass credentials somewhere
+export function settingsForDruidConnection(url: string, options: Options, auth?: ClusterAuthJS): Settings {
   const sources: Sources = {
     dataCubes: [],
     clusters: [clusterFromConfig({
       name: "druid",
-      url
+      url,
+      auth
     })]
   };
   const appSettings = EMPTY_APP_SETTINGS;
@@ -75,8 +89,7 @@ export function settingsForDruidConnection(url: string, options: Options = {}): 
   };
 }
 
-export function settingsForDatasetFile(datasetPath: string, timeAttribute: string, options: Options = {}): Settings {
-  // TODO: pass credentials somewhere
+export function settingsForDatasetFile(datasetPath: string, timeAttribute: string, options: Options): Settings {
   const sources: Sources = {
     dataCubes: [dataCubeFromConfig({
       name: path.basename(datasetPath, path.extname(datasetPath)),

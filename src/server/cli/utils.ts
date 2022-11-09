@@ -15,18 +15,28 @@
  */
 
 import { InvalidArgumentError } from "commander";
+import { ClusterAuthJS } from "../../common/models/cluster-auth/cluster-auth";
 import { isNil } from "../../common/utils/general/general";
 
 export function parseInteger(value: string): number {
   const parsed = parseInt(value, 10);
-  invariant(!isNaN(parsed), "Must be an integer");
+  if (isNaN(parsed)) {
+    throw new InvalidArgumentError("Must be an integer");
+  }
   return parsed;
 }
 
-export function assertCredentials(username: string | undefined, password: string | undefined) {
-  invariant(isNil(password) && isNil(username) || !isNil(username) && !isNil(password), "You need to pass both username and password");
-}
-
-function invariant(condition: boolean, message: string) {
-  if (!condition) throw new InvalidArgumentError(message);
+export function parseCredentials(username: string | undefined, password: string | undefined): ClusterAuthJS | undefined {
+  if (isNil(password) && isNil(username)) return undefined;
+  if (isNil(username)) {
+    throw new InvalidArgumentError("You need to pass username if you pass password");
+  }
+  if (isNil(password)) {
+    throw new InvalidArgumentError("You need to pass password if you pass username");
+  }
+  return {
+    type: "http-basic",
+    username,
+    password
+  };
 }
