@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Command } from "commander";
 import { loadFileSync } from "../utils/file/file";
 
-export function loadConfigFile(configPath: string): object {
+export function loadConfigFile(configPath: string, program: Command): object {
   try {
     return loadFileSync(configPath, "yaml");
   } catch (e) {
-    throw new Error("SOMETHING"); // TODO: something that commander can handle
+    program.error(`Loading config file (${configPath}) failed: ${e.message}`);
+    return {};
   }
 }

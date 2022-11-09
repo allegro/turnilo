@@ -37,7 +37,7 @@ let version: string;
 try {
   version = readVersion();
 } catch (e) {
-  program.error(`?Failed to read turnilo version. Error: ${e.message}`);
+  program.error(`Failed to read turnilo version. Error: ${e.message}`);
 }
 
 program
@@ -57,7 +57,7 @@ program
   .action((configPath, { username, password, serverRoot, serverHost, port, verbose }) => {
     const anchorPath = path.dirname(configPath);
     const auth = parseCredentials(username, password);
-    const config = loadConfigFile(configPath);
+    const config = loadConfigFile(configPath, program);
     const { appSettings, sources, serverSettings } = buildSettings(config, { serverRoot, serverHost, verbose, port }, auth);
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath,
@@ -77,7 +77,7 @@ program
   .action(({ port, verbose, serverRoot, serverHost }) => {
     const configPath = path.join(__dirname, "../../config-examples.yaml");
     const anchorPath = path.dirname(configPath);
-    const config = loadConfigFile(configPath);
+    const config = loadConfigFile(configPath, program);
     const { sources, serverSettings, appSettings } = buildSettings(config, { port, verbose, serverHost, serverRoot });
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath,
@@ -134,7 +134,7 @@ program
   .addOption(verboseOption)
   .action((file, { verbose }) => {
     try {
-      const config = loadConfigFile(file);
+      const config = loadConfigFile(file, program);
       buildSettings(config, { verbose });
     } catch (e) {
       program.error("Config verification error: ", e.message);
