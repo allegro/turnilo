@@ -45,9 +45,11 @@
     "watch:test:client": "npm run test:client -- --watch --watch-files 'src/client/**/*.mocha.tsx' --watch-files 'src/client/**/*.mocha.ts'",
     "watch:test:server": "npm run test:server -- --watch --watch-files 'src/server/**/*.mocha.ts'",
     "start": "./bin/turnilo",
-    "start:examples": "npm run start -- --examples",
-    "start:dev": "NODE_ENV=dev-hmr ./bin/turnilo",
-    "start:dev:examples": "npm run start:dev -- --examples",
+    // Remove start command because it requires a command and config path, not really a "start" script
+    // Probably that would lead to changes of services that call turnilo
+    "start:examples": "npm run start -- --examples", // FIX to run-examples command
+    "start:dev": "NODE_ENV=dev-hmr ./bin/turnilo", // Same here
+    "start:dev:examples": "npm run start:dev -- --examples", // Same here
     "build:client": "webpack --config config/webpack.prod.js",
     "build:server": "tsc -p src/server/tsconfig.json",
     "build": "npm-run-all -s clean build:server build:client",
@@ -62,7 +64,7 @@
     "lint:sass": "sass-lint -v",
     "fix": "npm-run-all -s fix:*",
     "fix:ts": "tslint -p . --fix",
-    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
+    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'", // Check if server starts correctly
     "e2e:dev": "cypress open",
     "check": "npm-run-all -c -p lint test build e2e"
   },

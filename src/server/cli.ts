@@ -26,12 +26,12 @@ import { parseCredentials, parseInteger } from "./cli/utils";
 import { SettingsManager } from "./utils/settings-manager/settings-manager";
 import { readVersion } from "./version";
 
-const portOption = new Option("-p, --port <number>", "port number").argParser(parseInteger);
-const serverRootOption = new Option("--server-root <root>", "server root");
-const serverHostOption = new Option("--server-host <host>", "server host");
+const portOption = new Option("-p, --port <number>", "port number").argParser(parseInteger); // TODO: better param handle and description
+const serverRootOption = new Option("--server-root <root>", "server root"); // TODO: better param handle and description
+const serverHostOption = new Option("--server-host <host>", "server host"); // TODO: better param handle and description
 const verboseOption = new Option("--verbose", "verbose mode");
-const usernameOption = new Option("--username <username>", "username");
-const passwordOption = new Option("--password <password>", "password");
+const usernameOption = new Option("--username <username>", "username"); // TODO: better param handle and description
+const passwordOption = new Option("--password <password>", "password"); // TODO: better param handle and description
 
 let version: string;
 try {
@@ -47,7 +47,8 @@ program
 
 program
   .command("run-config")
-  .argument("<file>", "path of config file")
+  .description("TODO: description")
+  .argument("<file>", "path of config file") // TODO: better param handle and description
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -70,6 +71,7 @@ program
 
 program
   .command("run-examples")
+  .description("TODO: description")
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -90,7 +92,8 @@ program
 
 program
   .command("connect-druid")
-  .argument("<url>", "druid url")
+  .description("TODO: description")
+  .argument("<url>", "druid url") // TODO: better param handle and description
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -111,7 +114,8 @@ program
 
 program
   .command("load-file")
-  .argument("<file>", "json file")
+  .description("TODO: description")
+  .argument("<file>", "json file") // TODO: better param handle and description
   .requiredOption("-t, --time-attribute <attribute>", "time attribute")
   .addOption(portOption)
   .addOption(serverRootOption)
@@ -130,7 +134,8 @@ program
 
 program
   .command("verify-config")
-  .argument("<file>", "path to config file")
+  .description("TODO: description")
+  .argument("<file>", "path to config file") // TODO: better param handle and description
   .addOption(verboseOption)
   .action((file, { verbose }) => {
     try {
@@ -143,7 +148,8 @@ program
 
 program
   .command("introspect-druid")
-  .argument("<url>", "druid url")
+  .description("TODO: description")
+  .argument("<url>", "druid url") // TODO: better param handle and description
   .addOption(verboseOption)
   .addOption(usernameOption)
   .addOption(passwordOption)

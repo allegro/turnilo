@@ -66,6 +66,8 @@ With `npm` builds are reproducible (thanks to package-lock.json) and even faster
 
 ## Usage
 
+TODO: Fix all commands here
+
 Install Turnilo distribution using [npm](https://www.npmjs.com/).
 
 ```
@@ -92,6 +94,8 @@ Learn how to configure and customize Turnilo:
 [https://allegro.github.io/turnilo/](https://allegro.github.io/turnilo/)
 
 ## Development
+
+TODO: Fix scripts here
 
 ### Install project dependencies.
 
@@ -192,6 +196,8 @@ npm run e2e:dev
 ## Debugging 
 
 ### Server module
+
+TODO: add correct examples of "Application parameters"
 
 In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
 Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo" 
