@@ -29,10 +29,10 @@ export function parseInteger(value: string): number {
 export function parseCredentials(username: string | undefined, password: string | undefined, type: ClusterAuthType): ClusterAuthJS | undefined {
   if (isNil(password) && isNil(username)) return undefined;
   if (isNil(username)) {
-    throw new InvalidArgumentError("You need to pass username if you pass password");
+    throw new InvalidArgumentError("Expected username for password");
   }
   if (isNil(password)) {
-    throw new InvalidArgumentError("You need to pass password if you pass username");
+    throw new InvalidArgumentError("Expected password for username");
   }
   return {
     type,
