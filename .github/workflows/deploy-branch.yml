@@ -48,7 +48,7 @@ jobs:
             --quiet \
             --port 9090 \
             --cpu 1 --memory 1G --max-instances 1 --concurrency 80 \
-            --args="--examples"
+            --args="run-examples"
 
 
       - name: Get app URL
