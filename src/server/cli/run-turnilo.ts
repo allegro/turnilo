@@ -14,40 +14,34 @@
  * limitations under the License.
  */
 
+import { Command } from "commander";
 import { LOGGER } from "../../common/logger/logger";
 import { AppSettings } from "../../common/models/app-settings/app-settings";
 import { Sources } from "../../common/models/sources/sources";
-import { appSettingsToYaml, printExtra, sourcesToYaml } from "../../common/utils/yaml-helper/yaml-helper";
+import createApp from "../app";
 import { ServerSettings } from "../models/server-settings/server-settings";
 import { SettingsManager } from "../utils/settings-manager/settings-manager";
+import createServer from "./create-server";
 
-export default function printIntrospectedSettings(
-  serverSettings: ServerSettings,
-  appSettings: AppSettings,
-  sources: Sources,
+export interface TurniloSettings {
+  serverSettings: ServerSettings;
+  appSettings: AppSettings;
+  sources: Sources;
+}
+
+export default function runTurnilo(
+  { serverSettings, sources, appSettings }: TurniloSettings,
+  anchorPath: string,
   verbose: boolean,
-  version: string
+  version: string,
+  program: Command
 ) {
+
   const settingsManager = new SettingsManager(appSettings, sources, {
-    anchorPath: process.cwd(),
+    anchorPath,
     initialLoadTimeout: serverSettings.pageMustLoadTimeout,
     verbose,
     logger: LOGGER
   });
-
-  return settingsManager.getFreshSources({
-    timeout: 10000
-  }).then(sources => {
-    const extra = {
-      header: true,
-      version,
-      verbose
-    };
-    const config = [
-      printExtra(extra, verbose),
-      appSettingsToYaml(appSettings, verbose),
-      sourcesToYaml(sources, verbose)
-    ].join("\n");
-    process.stdout.write(config);
-  });
+  createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
 }
