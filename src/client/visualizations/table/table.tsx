@@ -24,21 +24,18 @@ import makeQuery from "../../../common/utils/query/visualization-query";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { SEGMENT_WIDTH } from "../../components/tabular-scroller/dimensions";
 import { withProps } from "../../utils/react/with-props";
-import {
-  ChartPanel,
-  DefaultVisualizationControls,
-  VisualizationProps
-} from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { InteractionController } from "./interactions/interaction-controller";
 import { ScrolledTable } from "./scrolled-table/scrolled-table";
-import "./table.scss";
 
-interface TableVisualizationState {
+const MIN_DIMENSION_WIDTH = 100;
+
+interface TableState {
   segmentWidth: number;
 }
 
-export default class TableVisualization extends React.Component<VisualizationProps, TableVisualizationState> {
-  state: TableVisualizationState = {
+export default class Table extends React.Component<VisualizationProps, TableState> {
+  state: TableState = {
     segmentWidth: SEGMENT_WIDTH
   };
 
@@ -48,25 +45,19 @@ export default class TableVisualization extends React.Component<VisualizationPro
 
   render() {
     const { segmentWidth } = this.state;
-    return <React.Fragment>
-      <DefaultVisualizationControls {...this.props} />
-      <ChartPanel
+    return <ChartPanel
         {...this.props}
         queryFactory={makeQuery}
-        chartComponent={withProps(Table, { segmentWidth, setSegmentWidth: this.setSegmentWidth })}/>
-    </React.Fragment>;
+        chartComponent={withProps(TableComponent, { segmentWidth, setSegmentWidth: this.setSegmentWidth })} />;
   }
 }
-
-const MIN_DIMENSION_WIDTH = 100;
 
 interface TableProps extends ChartProps {
   setSegmentWidth: Unary<number, void>;
   segmentWidth: number;
 }
 
-class Table extends React.Component<TableProps> {
-
+class TableComponent extends React.Component<TableProps> {
   private shouldCollapseRows(): boolean {
     const { essence: { visualizationSettings } } = this.props;
     const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;

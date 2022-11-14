@@ -31,19 +31,16 @@ import makeQuery from "../../../common/utils/query/visualization-query";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
-import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
 
-export default function HeatMapVisualization(props: VisualizationProps) {
-  return <React.Fragment>
-    <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={HeatMap}/>
-  </React.Fragment>;
+export default function HeatMap(props: VisualizationProps) {
+  return <ChartPanel {...props} queryFactory={makeQuery} chartComponent={HeatMapComponent} />;
 }
 
-class HeatMap extends React.Component<ChartProps> {
+class HeatMapComponent extends React.Component<ChartProps> {
   protected className = HEAT_MAP_MANIFEST.name;
 
   getScales = memoizeOne(scales);

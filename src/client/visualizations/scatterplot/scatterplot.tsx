@@ -20,11 +20,7 @@ import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { GridLines } from "../../components/grid-lines/grid-lines";
-import {
-  ChartPanel,
-  DefaultVisualizationControls,
-  VisualizationProps
-} from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { Heatmap } from "./heatmap";
 import { Point } from "./point";
 import "./scatterplot.scss";
@@ -42,7 +38,7 @@ const TICK_SIZE = 10;
 
 type HoveredPoint = Datum | null;
 
-export const Scatterplot: React.FunctionComponent<ChartProps> = ({ data, essence, stage }) => {
+const ScatterplotComponent: React.FunctionComponent<ChartProps> = ({ data, essence, stage }) => {
   const [hoveredPoint, setHoveredPoint] = useState<HoveredPoint>(null);
 
   const getPlottingData = memoizeOne(preparePlottingData);
@@ -123,9 +119,6 @@ export const Scatterplot: React.FunctionComponent<ChartProps> = ({ data, essence
   </div>;
 };
 
-export default function ScatterplotVisualization(props: VisualizationProps) {
-  return <React.Fragment>
-    <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Scatterplot}/>
-  </React.Fragment>;
+export default function Scatterplot(props: VisualizationProps) {
+  return <ChartPanel {...props} queryFactory={makeQuery} chartComponent={ScatterplotComponent} />;
 }

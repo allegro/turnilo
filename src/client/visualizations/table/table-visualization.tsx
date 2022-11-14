@@ -16,21 +16,16 @@
  */
 
 import React from "react";
-import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import { Total } from "./total";
+import {
+  DefaultVisualizationControls,
+  VisualizationProps
+} from "../../views/cube-view/center-panel/center-panel";
+import Table from "./table";
+import "./table.scss";
 
-const Totals: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
-  const series = essence.getConcreteSeries().toArray();
-  const datum = data.data[0];
-  return <div className="total-container">
-    {series.map(series =>
-    <Total
-      key={series.reactKey()}
-      series={series}
-      datum={datum}
-      showPrevious={essence.hasComparison()}
-    />)}
-  </div>;
-};
-
-export default Totals;
+export default function TableVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <DefaultVisualizationControls {...this.props} />
+    <Table {...props} />
+  </React.Fragment>;
+}

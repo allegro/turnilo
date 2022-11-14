@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from "react";
-import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import { Total } from "./total";
+import {
+  DefaultVisualizationControls,
+  VisualizationProps
+} from "../../views/cube-view/center-panel/center-panel";
+import Scatterplot from "./scatterplot";
 
-const Totals: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
-  const series = essence.getConcreteSeries().toArray();
-  const datum = data.data[0];
-  return <div className="total-container">
-    {series.map(series =>
-    <Total
-      key={series.reactKey()}
-      series={series}
-      datum={datum}
-      showPrevious={essence.hasComparison()}
-    />)}
-  </div>;
-};
-
-export default Totals;
+export default function ScatterplotVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <DefaultVisualizationControls {...props} />
+    <Scatterplot {...props} />
+  </React.Fragment>;
+}

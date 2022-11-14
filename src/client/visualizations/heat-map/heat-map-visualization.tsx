@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
+// For some reason tsc compiler does not see this file.
+// Remove when issue is identified.
+// tslint:disable-next-line: no-reference
+/// <reference path="../../index.d.ts" />
+
 import React from "react";
-import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import { Total } from "./total";
+import { DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import HeatMap from "./heat-map";
 
-const Totals: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
-  const series = essence.getConcreteSeries().toArray();
-  const datum = data.data[0];
-  return <div className="total-container">
-    {series.map(series =>
-    <Total
-      key={series.reactKey()}
-      series={series}
-      datum={datum}
-      showPrevious={essence.hasComparison()}
-    />)}
-  </div>;
-};
-
-export default Totals;
+export default function HeatMapVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <DefaultVisualizationControls {...props} />
+    <HeatMap {...props} />
+  </React.Fragment>;
+}

@@ -53,7 +53,7 @@ import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
 import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
-import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { hasHighlightOn } from "../highlight-controller/highlight-controller";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -92,6 +92,10 @@ export interface BarChartState {
   // Precalculated stuff
   flatData?: PseudoDatum[];
   maxNumberOfLeaves?: number[];
+}
+
+export default function BarChart(props: VisualizationProps) {
+  return <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BarChartComponent}/>;
 }
 
 function getFilterFromDatum(splits: Splits, dataPath: Datum[]): List<FilterClause> {
@@ -160,14 +164,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   return new Dataset(value);
 }
 
-export default function BarChartVisualization(props: VisualizationProps) {
-  return <React.Fragment>
-    <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BarChart}/>
-  </React.Fragment>;
-}
-
-class BarChart extends React.Component<ChartProps, BarChartState> {
+class BarChartComponent extends React.Component<ChartProps, BarChartState> {
   protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
