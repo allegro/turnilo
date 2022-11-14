@@ -15,11 +15,32 @@
  */
 
 import { Option } from "commander";
+import { DEFAULT_PORT } from "../models/server-settings/server-settings";
 import { parseInteger } from "./utils";
 
-export const portOption = new Option("-p, --port <number>", "port number").argParser(parseInteger);
-export const serverRootOption = new Option("--server-root <root>", "server root");
-export const serverHostOption = new Option("--server-host <host>", "server host");
-export const verboseOption = new Option("--verbose", "verbose mode");
-export const usernameOption = new Option("--username <username>", "username");
-export const passwordOption = new Option("--password <password>", "password");
+export const portOption = new Option(
+  "-p, --port <number>",
+  `Port number to start server on. Default: ${DEFAULT_PORT}`
+).argParser(parseInteger);
+
+export const serverRootOption = new Option(
+  "--server-root <path>",
+  "Custom path to act as turnilo root"
+);
+export const serverHostOption = new Option(
+  "--server-host <hostname>",
+  "Hast that server will bind to"
+);
+export const verboseOption = new Option(
+  "--verbose",
+  "Verbose mode"
+);
+
+export const usernameOption = new Option(
+  "--username <username>",
+  "Username that will be used in HTTP Basic authentication to Druid cluster"
+);
+export const passwordOption = new Option(
+  "--password <password>",
+  "Password that will be used in HTTP Basic authentication to Druid cluster"
+);

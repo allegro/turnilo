@@ -72,18 +72,18 @@ Install Turnilo distribution using [npm](https://www.npmjs.com/).
 npm install -g turnilo
 ```
 
-Start off by running an example with Covid-19 and Wikipedia datasets
+Start off by running turnilo with example datasets
 and open [http://localhost:9090/](http://localhost:9090/).
 
 ```
-turnilo --examples
+turnilo run-examples
 ```
 
-Or connect to the existing Druid broker using `--druid` command line option.
+Or connect to the existing Druid broker using `connect-druid` command.
 Turnilo will automatically introspect your Druid broker and figure out available datasets.
 
 ```
-turnilo --druid http[s]://druid-broker-hostname[:port]
+turnilo connect-druid http[s]://druid-broker-hostname[:port]
 ```
 
 ## Documentation
@@ -107,7 +107,7 @@ npm run build
 
 ### Run project
 
-Run Covid-19 and Wikipedia examples.
+Run example datasets.
 
 ```
 npm run start:examples
@@ -116,20 +116,20 @@ npm run start:examples
 Connect to the existing Druid broker.
 
 ```
-npm run start -- --druid http[s]://druid-broker-hostname[:port]
+npm run start -- connect-druid http[s]://druid-broker-hostname[:port]
 ```
 
 Connect to the existing Druid broker using your config file.
 
 ```
-npm run start -- --config path/to/config.yml
+npm run start -- run-config path/to/config.yml
 ```
 
 ### Run project in developer mode
 
 Every change in frontend code would recompile project and reload page.
 
-Run Covid-19 and Wikipedia examples.
+Run example datasets.
 
 ```
 npm run start:dev:examples
@@ -138,13 +138,13 @@ npm run start:dev:examples
 Connect to the existing Druid broker.
 
 ```
-npm run start:dev -- --druid http[s]://druid-broker-hostname[:port]
+npm run start:dev -- connect-druid http[s]://druid-broker-hostname[:port]
 ```
 
 Connect to the existing Druid broker using your config file.
 
 ```
-npm run start:dev -- --config path/to/config.yml
+npm run start:dev -- run-config path/to/config.yml
 ```
 
 
