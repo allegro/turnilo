@@ -56,7 +56,7 @@ program
   .addOption(verboseOption)
   .action((configPath, { username, password, serverRoot, serverHost, port, verbose }) => {
     const anchorPath = path.dirname(configPath);
-    const auth = parseCredentials(username, password);
+    const auth = parseCredentials(username, password, "http-basic");
     const config = loadConfigFile(configPath, program);
     const { appSettings, sources, serverSettings } = buildSettings(config, { serverRoot, serverHost, verbose, port }, auth);
     const settingsManager = new SettingsManager(appSettings, sources, {
@@ -98,11 +98,11 @@ program
   .addOption(usernameOption)
   .addOption(passwordOption)
   .action((url, { port, verbose, username, password, serverRoot, serverHost }) => {
-    const auth = parseCredentials(username, password);
     const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { port, verbose, serverHost, serverRoot }, auth);
     const settingsManager = new SettingsManager(appSettings, sources, {
       anchorPath: process.cwd(),
       initialLoadTimeout: serverSettings.pageMustLoadTimeout,
+    const auth = parseCredentials(username, password, "http-basic");
       verbose,
       logger: LOGGER
     });
@@ -148,7 +148,6 @@ program
   .addOption(usernameOption)
   .addOption(passwordOption)
   .action((url, { verbose, username, password }) => {
-    const auth = parseCredentials(username, password);
     const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { verbose }, auth);
     printIntrospectedSettings(
       serverSettings,

@@ -16,7 +16,7 @@
 
 import { isNil } from "../../utils/general/general";
 
-type ClusterAuthType = "http-basic";
+export type ClusterAuthType = "http-basic";
 
 interface BasicHttpClusterAuth {
   type: "http-basic";

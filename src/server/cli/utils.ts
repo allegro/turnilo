@@ -15,7 +15,7 @@
  */
 
 import { InvalidArgumentError } from "commander";
-import { ClusterAuthJS } from "../../common/models/cluster-auth/cluster-auth";
+import { ClusterAuthJS, ClusterAuthType } from "../../common/models/cluster-auth/cluster-auth";
 import { isNil } from "../../common/utils/general/general";
 
 export function parseInteger(value: string): number {
@@ -26,7 +26,7 @@ export function parseInteger(value: string): number {
   return parsed;
 }
 
-export function parseCredentials(username: string | undefined, password: string | undefined): ClusterAuthJS | undefined {
+export function parseCredentials(username: string | undefined, password: string | undefined, type: ClusterAuthType): ClusterAuthJS | undefined {
   if (isNil(password) && isNil(username)) return undefined;
   if (isNil(username)) {
     throw new InvalidArgumentError("You need to pass username if you pass password");
@@ -35,7 +35,7 @@ export function parseCredentials(username: string | undefined, password: string 
     throw new InvalidArgumentError("You need to pass password if you pass username");
   }
   return {
-    type: "http-basic",
+    type,
     username,
     password
   };
