@@ -1,8 +1,5 @@
-#!/usr/bin/env node
-
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Command } from "commander";
+import { loadFileSync } from "../utils/file/file";
 
-var path = require('path');
-var fs   = require('fs');
-var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../build/server/cli.js');
-
-require(lib);
+export function loadConfigFile(configPath: string, program: Command): object {
+  try {
+    return loadFileSync(configPath, "yaml");
+  } catch (e) {
+    program.error(`Loading config file (${configPath}) failed: ${e.message}`);
+    return {};
+  }
+}

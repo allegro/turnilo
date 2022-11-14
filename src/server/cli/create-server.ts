@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as http from "http";
-
+import { Command } from "commander";
+import { Express } from "express";
+import http from "http";
 import { AddressInfo } from "net";
-import app from "./app";
-import { SERVER_SETTINGS, START_SERVER } from "./config";
+import { ServerSettings } from "../models/server-settings/server-settings";
 
-if (START_SERVER) {
-  var server = http.createServer(app);
+export default function createServer(serverSettings: ServerSettings, app: Express, program: Command) {
+
+  const server = http.createServer(app);
 
   server.on("error", (error: any) => {
     if (error.syscall !== "listen") {
@@ -32,13 +31,11 @@ if (START_SERVER) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case "EACCES":
-        console.error(`Port ${SERVER_SETTINGS.port} requires elevated privileges`);
-        process.exit(1);
+        program.error(`Port ${serverSettings.port} requires elevated privileges`);
         break;
 
       case "EADDRINUSE":
-        console.error(`Port ${SERVER_SETTINGS.port} is already in use`);
-        process.exit(1);
+        program.error(`Port ${serverSettings.port} is already in use`);
         break;
 
       default:
@@ -51,6 +48,6 @@ if (START_SERVER) {
     console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 
-  app.set("port", SERVER_SETTINGS.port);
-  server.listen(SERVER_SETTINGS.port, SERVER_SETTINGS.serverHost);
+  app.set("port", serverSettings.port);
+  server.listen(serverSettings.port, serverSettings.serverHost);
 }

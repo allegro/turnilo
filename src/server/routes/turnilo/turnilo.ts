@@ -18,10 +18,11 @@
 import { Request, Response, Router } from "express";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { getTitle } from "../../../common/models/customization/customization";
-import { SETTINGS_MANAGER } from "../../config";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { Nullary } from "../../../common/utils/functional/functional";
 import { mainLayout } from "../../views";
 
-export function turniloRouter(appSettings: AppSettings, version: string) {
+export function turniloRouter(appSettings: AppSettings, getTimekeeper: Nullary<Timekeeper>, version: string) {
 
   const router = Router();
 
@@ -31,7 +32,7 @@ export function turniloRouter(appSettings: AppSettings, version: string) {
         version,
         title: getTitle(appSettings.customization, version),
         appSettings,
-        timekeeper: SETTINGS_MANAGER.getTimekeeper()
+        timekeeper: getTimekeeper()
       }));
     } catch (e) {
       res.status(400).send({ error: "Couldn't load Turnilo Application" });

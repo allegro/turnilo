@@ -1,8 +1,5 @@
-#!/usr/bin/env node
-
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import path from "path";
+import { loadFileSync } from "./utils/file/file";
 
-var path = require('path');
-var fs   = require('fs');
-var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../build/server/cli.js');
+const PACKAGE_FILE = path.join(__dirname, "../../package.json");
 
-require(lib);
+export const readVersion = (): string => {
+  const packageObj = loadFileSync(PACKAGE_FILE, "json");
+  if (!("version" in packageObj)) {
+    throw new Error("Couldn't read version from package.json");
+  }
+  return (packageObj as any).version;
+};

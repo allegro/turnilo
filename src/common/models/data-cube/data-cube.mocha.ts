@@ -783,10 +783,6 @@ describe("DataCube", () => {
         expect(() => fromConfig({ ...baseCube })).to.throw("DataCube \"medals\" must have defined timeAttribute property");
       });
 
-      it("should throw with timeAttribute property pointing to non-existing dimension", () => {
-        expect(() => fromConfig({ ...baseCube, timeAttribute: "foobar", dimensions: [] })).to.throw("In DataCube \"medals\" could not find dimension for supplied timeAttribute \"foobar\"");
-      });
-
       it("should pass well defined dimensions and timeAttribute", () => {
         const cube = fromConfig({ ...baseCube, timeAttribute: "time_column", dimensions: [timeDimensionJS] });
         const timeAttribute = $("time_column");

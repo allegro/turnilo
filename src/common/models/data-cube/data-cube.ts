@@ -302,10 +302,6 @@ function readTimeAttribute(config: DataCubeJS, cluster: Cluster | undefined, dim
       throw new Error(`DataCube "${config.name}" must have defined timeAttribute property`);
     }
     const timeAttribute = $(config.timeAttribute);
-    const timeDimension = findDimensionByExpression(dimensions, timeAttribute);
-    if (!isTruthy(timeDimension)) {
-      throw new Error(`In DataCube "${config.name}" could not find dimension for supplied timeAttribute "${config.timeAttribute}" (must match)`);
-    }
     return {
       timeAttribute,
       dimensions
