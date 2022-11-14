@@ -13,3 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Option } from "commander";
+import { parseInteger } from "./utils";
+
+export const portOption = new Option("-p, --port <number>", "port number").argParser(parseInteger);
+export const serverRootOption = new Option("--server-root <root>", "server root");
+export const serverHostOption = new Option("--server-host <host>", "server host");
+export const verboseOption = new Option("--verbose", "verbose mode");
+export const usernameOption = new Option("--username <username>", "username");
+export const passwordOption = new Option("--password <password>", "password");

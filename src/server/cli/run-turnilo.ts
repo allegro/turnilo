@@ -13,3 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Command } from "commander";
+import { LOGGER } from "../../common/logger/logger";
+import { AppSettings } from "../../common/models/app-settings/app-settings";
+import { Sources } from "../../common/models/sources/sources";
+import createApp from "../app";
+import { ServerSettings } from "../models/server-settings/server-settings";
+import { SettingsManager } from "../utils/settings-manager/settings-manager";
+import createServer from "./create-server";
+
+export interface TurniloSettings {
+  serverSettings: ServerSettings;
+  appSettings: AppSettings;
+  sources: Sources;
+}
+
+export default function runTurnilo(
+  { serverSettings, sources, appSettings }: TurniloSettings,
+  anchorPath: string,
+  verbose: boolean,
+  version: string,
+  program: Command
+) {
+
+  const settingsManager = new SettingsManager(appSettings, sources, {
+    anchorPath,
+    initialLoadTimeout: serverSettings.pageMustLoadTimeout,
+    verbose,
+    logger: LOGGER
+  });
+  createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+}

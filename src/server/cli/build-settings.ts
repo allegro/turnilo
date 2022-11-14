@@ -15,25 +15,16 @@
  */
 
 import path from "path";
-import {
-  AppSettings,
-  EMPTY_APP_SETTINGS,
-  fromConfig as appSettingsFromConfig
-} from "../../common/models/app-settings/app-settings";
+import { EMPTY_APP_SETTINGS, fromConfig as appSettingsFromConfig } from "../../common/models/app-settings/app-settings";
 import { ClusterAuthJS } from "../../common/models/cluster-auth/cluster-auth";
 import { fromConfig as clusterFromConfig } from "../../common/models/cluster/cluster";
 import { fromConfig as dataCubeFromConfig } from "../../common/models/data-cube/data-cube";
 import { fromConfig as sourcesFromConfig, Sources, SourcesJS } from "../../common/models/sources/sources";
 import { isNil } from "../../common/utils/general/general";
 import { ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
+import { TurniloSettings } from "./run-turnilo";
 
-interface Settings {
-  serverSettings: ServerSettings;
-  appSettings: AppSettings;
-  sources: Sources;
-}
-
-interface Options {
+export interface ServerOptions {
   port?: number;
   verbose?: boolean;
   serverHost?: string;
@@ -51,7 +42,7 @@ function overrideClustersAuth(config: SourcesJS, auth: ClusterAuthJS): SourcesJS
   };
 }
 
-export default function buildSettings(config: object, options: Options, auth?: ClusterAuthJS): Settings {
+export default function buildSettings(config: object, options: ServerOptions, auth?: ClusterAuthJS): TurniloSettings {
   const serverSettingsJS: ServerSettingsJS = {
     ...config,
     ...options
@@ -68,7 +59,7 @@ export default function buildSettings(config: object, options: Options, auth?: C
   };
 }
 
-export function settingsForDruidConnection(url: string, options: Options, auth?: ClusterAuthJS): Settings {
+export function settingsForDruidConnection(url: string, options: ServerOptions, auth?: ClusterAuthJS): TurniloSettings {
   const sources: Sources = {
     dataCubes: [],
     clusters: [clusterFromConfig({
@@ -87,7 +78,7 @@ export function settingsForDruidConnection(url: string, options: Options, auth?:
   };
 }
 
-export function settingsForDatasetFile(datasetPath: string, timeAttribute: string, options: Options): Settings {
+export function settingsForDatasetFile(datasetPath: string, timeAttribute: string, options: ServerOptions): TurniloSettings {
   const sources: Sources = {
     dataCubes: [dataCubeFromConfig({
       name: path.basename(datasetPath, path.extname(datasetPath)),

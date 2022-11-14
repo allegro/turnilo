@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import { Option, program } from "commander";
+import { program } from "commander";
 import path from "path";
-import { LOGGER } from "../common/logger/logger";
-import createApp from "./app";
 import buildSettings, { settingsForDatasetFile, settingsForDruidConnection } from "./cli/build-settings";
-import createServer from "./cli/create-server";
 import printIntrospectedSettings from "./cli/introspect-cluster";
 import { loadConfigFile } from "./cli/load-config-file";
-import { parseCredentials, parseInteger } from "./cli/utils";
-import { SettingsManager } from "./utils/settings-manager/settings-manager";
+import {
+  passwordOption,
+  portOption,
+  serverHostOption,
+  serverRootOption,
+  usernameOption,
+  verboseOption
+} from "./cli/options";
+import runTurnilo from "./cli/run-turnilo";
+import { parseCredentials } from "./cli/utils";
 import { readVersion } from "./version";
-
-const portOption = new Option("-p, --port <number>", "port number").argParser(parseInteger);
-const serverRootOption = new Option("--server-root <root>", "server root");
-const serverHostOption = new Option("--server-host <host>", "server host");
-const verboseOption = new Option("--verbose", "verbose mode");
-const usernameOption = new Option("--username <username>", "username");
-const passwordOption = new Option("--password <password>", "password");
 
 let version: string;
 try {
@@ -58,14 +56,20 @@ program
     const anchorPath = path.dirname(configPath);
     const auth = parseCredentials(username, password, "http-basic");
     const config = loadConfigFile(configPath, program);
-    const { appSettings, sources, serverSettings } = buildSettings(config, { serverRoot, serverHost, verbose, port }, auth);
-    const settingsManager = new SettingsManager(appSettings, sources, {
-      anchorPath,
-      initialLoadTimeout: serverSettings.pageMustLoadTimeout,
+    const options = {
+      serverRoot,
+      serverHost,
       verbose,
-      logger: LOGGER
-    });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+      port
+    };
+
+    runTurnilo(
+      buildSettings(config, options, auth),
+      anchorPath,
+      verbose,
+      version,
+      program
+    );
   });
 
 program
@@ -78,14 +82,15 @@ program
     const configPath = path.join(__dirname, "../../config-examples.yaml");
     const anchorPath = path.dirname(configPath);
     const config = loadConfigFile(configPath, program);
-    const { sources, serverSettings, appSettings } = buildSettings(config, { port, verbose, serverHost, serverRoot });
-    const settingsManager = new SettingsManager(appSettings, sources, {
+    const options = { port, verbose, serverHost, serverRoot };
+
+    runTurnilo(
+      buildSettings(config, options),
       anchorPath,
-      initialLoadTimeout: serverSettings.pageMustLoadTimeout,
       verbose,
-      logger: LOGGER
-    });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+      version,
+      program
+    );
   });
 
 program
@@ -98,15 +103,15 @@ program
   .addOption(usernameOption)
   .addOption(passwordOption)
   .action((url, { port, verbose, username, password, serverRoot, serverHost }) => {
-    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { port, verbose, serverHost, serverRoot }, auth);
-    const settingsManager = new SettingsManager(appSettings, sources, {
-      anchorPath: process.cwd(),
-      initialLoadTimeout: serverSettings.pageMustLoadTimeout,
     const auth = parseCredentials(username, password, "http-basic");
+    const options = { port, verbose, serverHost, serverRoot };
+    runTurnilo(
+      settingsForDruidConnection(url, options, auth),
+      process.cwd(),
       verbose,
-      logger: LOGGER
-    });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+      version,
+      program
+    );
   });
 
 program
@@ -118,14 +123,19 @@ program
   .addOption(serverHostOption)
   .addOption(verboseOption)
   .action((file, { timeAttribute, port, verbose, serverHost, serverRoot }) => {
-    const { appSettings, sources, serverSettings } = settingsForDatasetFile(file, timeAttribute, { serverRoot, serverHost, verbose, port });
-    const settingsManager = new SettingsManager(appSettings, sources, {
-      anchorPath: process.cwd(),
-      initialLoadTimeout: serverSettings.pageMustLoadTimeout,
+    const options = {
+      serverRoot,
+      serverHost,
       verbose,
-      logger: LOGGER
-    });
-    createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+      port
+    };
+    runTurnilo(
+      settingsForDatasetFile(file, timeAttribute, options),
+      process.cwd(),
+      verbose,
+      version,
+      program
+    );
   });
 
 program
@@ -148,6 +158,7 @@ program
   .addOption(usernameOption)
   .addOption(passwordOption)
   .action((url, { verbose, username, password }) => {
+    const auth = parseCredentials(username, password, "http-basic");
     const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { verbose }, auth);
     printIntrospectedSettings(
       serverSettings,
