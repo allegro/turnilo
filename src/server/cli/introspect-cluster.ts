@@ -42,8 +42,6 @@ export default function printIntrospectedSettings(
       header: true,
       version,
       verbose
-      // Why port here? We don't start server so port is meaningless
-      // port: SERVER_SETTINGS.port
     };
     const config = [
       printExtra(extra, verbose),
