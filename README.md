@@ -72,7 +72,7 @@ Install Turnilo distribution using [npm](https://www.npmjs.com/).
 npm install -g turnilo
 ```
 
-Start off by running turnilo with example datasets
+Start off by running Turnilo with example datasets
 and open [http://localhost:9090/](http://localhost:9090/).
 
 ```
