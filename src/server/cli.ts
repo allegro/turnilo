@@ -165,16 +165,13 @@ program
   .addOption(passwordOption)
   .action((url, { verbose, username, password }) => {
     const auth = parseCredentials(username, password, "http-basic");
-    const { appSettings, serverSettings, sources } = settingsForDruidConnection(url, { verbose }, auth);
     printIntrospectedSettings(
-      serverSettings,
-      appSettings,
-      sources,
+      settingsForDruidConnection(url, { verbose }, auth),
       verbose,
       version
     ).catch((e: Error) => {
-      program.error("There was an error generating a config: " + e.message);
-    });
+        program.error("There was an error generating a config: " + e.message);
+      });
   });
 
 program.showHelpAfterError();
