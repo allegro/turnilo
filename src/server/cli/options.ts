@@ -29,7 +29,7 @@ export const serverRootOption = new Option(
 );
 export const serverHostOption = new Option(
   "--server-host <hostname>",
-  "Hast that server will bind to"
+  "Host that server will bind to"
 );
 export const verboseOption = new Option(
   "--verbose",
