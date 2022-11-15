@@ -1,6 +1,7 @@
 /*
  * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2019 Allegro.pl
+ * Copyright 2022-2024 DMG Media
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,9 @@
  */
 
 import React from "react";
-import { DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
-import BarChart from "./bar-chart";
 
-export default function BarChartVisualization(props: VisualizationProps) {
-  return <React.Fragment>
-    <DefaultVisualizationControls {...props} />
-    <BarChart {...props} />
-  </React.Fragment>;
+export default class ChartView extends React.Component {
+  render() {
+    return <p>Hello</p>;
+  }
 }

@@ -33,11 +33,12 @@ import { OauthMessageView } from "../../oauth/oauth-message-view";
 import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { replaceHash } from "../../utils/url/url";
+import ChartView from "../../views/chart-view/chart-view";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { GeneralError } from "../../views/error-view/general-error";
 import { HomeView } from "../../views/home-view/home-view";
 import "./turnilo-application.scss";
-import { cube, generalError, home, oauthCodeHandler, oauthMessageView, View } from "./view";
+import { chart, cube, generalError, home, oauthCodeHandler, oauthMessageView, View } from "./view";
 
 export interface TurniloApplicationProps {
   version: string;
@@ -125,7 +126,8 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     if (hash === "") return home;
 
     const { cubeName, definition } = this.parseCubeHash(hash);
-    return cube(cubeName, definition);
+    const search = new URLSearchParams(location.search);
+    return search.has("chart") ? chart(cubeName, definition) : cube(cubeName, definition);
   }
 
   changeHash(hash: string, force = false): void {
@@ -189,6 +191,17 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
             <HomeView onOpenAbout={this.openAboutModal}
                       customization={customization}
                       dataCubes={sources.dataCubes}/>}
+        </SourcesProvider>;
+
+      case "chart":
+        return <SourcesProvider appSettings={appSettings}>
+          {({ sources }) => {
+            const dataCube = NamedArray.findByName(sources.dataCubes, view.cubeName);
+            if (dataCube === undefined) {
+              return <DataCubeNotFound customization={customization}/>;
+            }
+            return <ChartView />;
+          }}
         </SourcesProvider>;
 
       case "cube":

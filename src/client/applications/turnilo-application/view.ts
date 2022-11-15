@@ -16,7 +16,7 @@
 
 import { OauthError } from "../../oauth/oauth";
 
-type ViewType = "home" | "cube" | "general-error" | "oauth-code-handler" | "oauth-message";
+type ViewType = "home" | "chart" | "cube" | "general-error" | "oauth-code-handler" | "oauth-message";
 
 interface ViewBase {
   viewType: ViewType;
@@ -24,6 +24,12 @@ interface ViewBase {
 
 interface Home extends ViewBase {
   viewType: "home";
+}
+
+interface Chart extends ViewBase {
+  viewType: "chart";
+  cubeName: string;
+  hash: string;
 }
 
 interface Cube extends ViewBase {
@@ -47,11 +53,17 @@ interface OauthMessage extends ViewBase {
   error: OauthError;
 }
 
-export type View = Home | Cube | GeneralError | OauthCodeHandler | OauthMessage;
+export type View = Home | Chart | Cube | GeneralError | OauthCodeHandler | OauthMessage;
 
 export const home: Home = {
   viewType: "home"
 };
+
+export const chart = (cubeName: string, hash: string): Chart => ({
+  viewType: "chart",
+  hash,
+  cubeName
+});
 
 export const cube = (cubeName: string, hash: string): Cube => ({
   viewType: "cube",
