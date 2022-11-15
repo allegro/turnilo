@@ -45,7 +45,8 @@ program
 
 program
   .command("run-config")
-  .argument("<file>", "path of config file")
+  .description("Runs Turnilo using config file")
+  .argument("<config-path>", "Path to config file")
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -74,6 +75,7 @@ program
 
 program
   .command("run-examples")
+  .description("Runs Turnilo with example datasets")
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -95,7 +97,8 @@ program
 
 program
   .command("connect-druid")
-  .argument("<url>", "druid url")
+  .description("Runs turnilo that connects to Druid cluster and introspects it for datasets")
+  .argument("<druid-url>", "Url of Druid cluster")
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -116,8 +119,9 @@ program
 
 program
   .command("load-file")
-  .argument("<file>", "json file")
-  .requiredOption("-t, --time-attribute <attribute>", "time attribute")
+  .description("Runs Turnilo and loads json file as a dataset")
+  .argument("<file-path>", "Path to json file with data")
+  .requiredOption("-t, --time-attribute <field-name>", "JSON field name with time column")
   .addOption(portOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
@@ -140,7 +144,8 @@ program
 
 program
   .command("verify-config")
-  .argument("<file>", "path to config file")
+  .description("Runs verification of provided config file")
+  .argument("<file-path>", "Path to config file to verify")
   .addOption(verboseOption)
   .action((file, { verbose }) => {
     try {
@@ -153,7 +158,8 @@ program
 
 program
   .command("introspect-druid")
-  .argument("<url>", "druid url")
+  .description("Connects to Druid cluster and prints introspected data in config file format")
+  .argument("<druid-url>", "Url of Druid cluster")
   .addOption(verboseOption)
   .addOption(usernameOption)
   .addOption(passwordOption)
