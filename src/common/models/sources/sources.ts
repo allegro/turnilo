@@ -130,6 +130,6 @@ export function addOrUpdateDataCube(sources: Sources, dataCube: QueryableDataCub
 export function deleteDataCube(sources: Sources, dataCube: DataCube): Sources {
   return {
     ...sources,
-    dataCubes: sources.dataCubes.filter(dc => dc.name === dataCube.name)
+    dataCubes: sources.dataCubes.filter(dc => dc.name !== dataCube.name)
   };
 }
