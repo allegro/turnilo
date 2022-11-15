@@ -533,7 +533,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     ([nextEssence, nextClicker]: [Essence, Clicker], [prevEssence, prevClicker]: [Essence, Clicker]) =>
       nextEssence.equals(prevEssence) && nextClicker === prevClicker);
 
-  private getVisualization = memoizeOne((name: Visualization) => React.lazy(getVisualizationComponent(name)));
+  private getVisualization = memoizeOne((name: Visualization) => getVisualizationComponent(name));
 
   render() {
     const clicker = this.clicker;

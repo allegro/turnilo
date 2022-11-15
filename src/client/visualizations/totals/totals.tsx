@@ -17,9 +17,12 @@
 
 import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
+import makeQuery from "../../../common/utils/query/visualization-query";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { Total } from "./total";
+import "./totals.scss";
 
-const Totals: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
+const TotalsComponent: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
   const series = essence.getConcreteSeries().toArray();
   const datum = data.data[0];
   return <div className="total-container">
@@ -33,4 +36,10 @@ const Totals: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
   </div>;
 };
 
-export default Totals;
+export default function Totals(props: VisualizationProps) {
+  return <ChartPanel
+    {...props}
+    queryFactory={makeQuery}
+    chartComponent={TotalsComponent}
+  />;
+}

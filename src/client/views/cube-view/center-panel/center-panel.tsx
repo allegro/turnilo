@@ -104,7 +104,7 @@ export const VisualizationControls: React.FunctionComponent<VisualizationControl
       <VisSelector clicker={clicker} essence={essence}/>}/>;
 };
 
-interface ChartPanelProps {
+export interface ChartPanelProps {
   essence: Essence;
   clicker: Clicker;
   stage: Stage;
