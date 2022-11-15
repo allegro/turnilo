@@ -119,7 +119,7 @@ program
 
 program
   .command("load-file")
-  .description("Runs turnilo and loads json file as a dataset")
+  .description("Runs Turnilo and loads json file as a dataset")
   .argument("<file-path>", "Path to json file with data")
   .requiredOption("-t, --time-attribute <field-name>", "JSON field name with time column")
   .addOption(portOption)
