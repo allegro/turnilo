@@ -79,7 +79,7 @@ and open [http://localhost:9090/](http://localhost:9090/).
 turnilo run-examples
 ```
 
-Or connect to the existing Druid broker using `connect-druid` command.
+Use `connect-druid` command to connect to the existing Druid broker.
 Turnilo will automatically introspect your Druid broker and figure out available datasets.
 
 ```
