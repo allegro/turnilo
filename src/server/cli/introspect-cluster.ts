@@ -14,40 +14,35 @@
  * limitations under the License.
  */
 
-import { LOGGER } from "../../common/logger/logger";
-import { AppSettings } from "../../common/models/app-settings/app-settings";
-import { Sources } from "../../common/models/sources/sources";
+import { NULL_LOGGER } from "../../common/logger/logger";
 import { appSettingsToYaml, printExtra, sourcesToYaml } from "../../common/utils/yaml-helper/yaml-helper";
-import { ServerSettings } from "../models/server-settings/server-settings";
 import { SettingsManager } from "../utils/settings-manager/settings-manager";
+import { TurniloSettings } from "./run-turnilo";
 
 export default function printIntrospectedSettings(
-  serverSettings: ServerSettings,
-  appSettings: AppSettings,
-  sources: Sources,
-  verbose: boolean,
+  { serverSettings, sources, appSettings }: TurniloSettings,
+  withComments: boolean,
   version: string
 ) {
   const settingsManager = new SettingsManager(appSettings, sources, {
     anchorPath: process.cwd(),
     initialLoadTimeout: serverSettings.pageMustLoadTimeout,
-    verbose,
-    logger: LOGGER
+    logger: NULL_LOGGER
   });
 
   return settingsManager.getFreshSources({
     timeout: 10000
   }).then(sources => {
-    const extra = {
-      header: true,
-      version,
-      verbose
-    };
     const config = [
-      printExtra(extra, verbose),
-      appSettingsToYaml(appSettings, verbose),
-      sourcesToYaml(sources, verbose)
-    ].join("\n");
-    process.stdout.write(config);
+      printExtra({
+        header: true,
+        version
+      }, withComments),
+      appSettingsToYaml(appSettings, withComments),
+      sourcesToYaml(sources, withComments)
+    ];
+
+    process.stdout.write(config.join("\n"));
+    process.exit();
   });
 }
