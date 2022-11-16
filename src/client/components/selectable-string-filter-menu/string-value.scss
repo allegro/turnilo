@@ -31,6 +31,7 @@
 
   .value-wrapper {
     @include ellipsis;
+    overflow-y: hidden;
     height: 100%;
 
     .checkbox {

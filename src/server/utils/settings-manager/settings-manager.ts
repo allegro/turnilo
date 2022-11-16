@@ -18,7 +18,7 @@
 import { Dataset, External } from "plywood";
 import { Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
-import { Cluster } from "../../../common/models/cluster/cluster";
+import { Cluster, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL } from "../../../common/models/cluster/cluster";
 import { DataCube, fromClusterAndExternal } from "../../../common/models/data-cube/data-cube";
 import { attachDatasetExecutor, attachExternalExecutor } from "../../../common/models/data-cube/queryable-data-cube";
 import {
@@ -205,7 +205,8 @@ export class SettingsManager {
     const queryableDataCube = attachDatasetExecutor(dataCube, changedDataset);
 
     if (queryableDataCube.refreshRule.isQuery()) {
-      this.timeMonitor.addCheck(queryableDataCube);
+      // TODO: Maybe we have better default for native clusters?
+      this.timeMonitor.addCheck(queryableDataCube, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL);
     }
 
     this.sources = addOrUpdateDataCube(sources, queryableDataCube);
@@ -224,7 +225,7 @@ export class SettingsManager {
     const queryableDataCube = attachExternalExecutor(dataCube, changedExternal);
 
     if (queryableDataCube.refreshRule.isQuery()) {
-      this.timeMonitor.addCheck(queryableDataCube);
+      this.timeMonitor.addCheck(queryableDataCube, cluster.sourceTimeBoundaryRefreshInterval);
     }
 
     this.sources = addOrUpdateDataCube(sources, queryableDataCube);

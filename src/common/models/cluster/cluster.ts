@@ -34,12 +34,13 @@ export interface Cluster {
   title?: string;
   version?: string;
   timeout?: number;
-  healthCheckTimeout?: number;
-  sourceListScan?: SourceListScan;
-  sourceListRefreshOnLoad?: boolean;
-  sourceListRefreshInterval?: number;
-  sourceReintrospectOnLoad?: boolean;
-  sourceReintrospectInterval?: number;
+  healthCheckTimeout: number;
+  sourceListScan: SourceListScan;
+  sourceListRefreshOnLoad: boolean;
+  sourceListRefreshInterval: number;
+  sourceReintrospectOnLoad: boolean;
+  sourceReintrospectInterval: number;
+  sourceTimeBoundaryRefreshInterval: number;
   guardDataCubes?: boolean;
   introspectionStrategy?: string;
   requestDecorator?: RequestDecorator;
@@ -59,6 +60,7 @@ export interface ClusterJS {
   sourceListRefreshInterval?: number;
   sourceReintrospectOnLoad?: boolean;
   sourceReintrospectInterval?: number;
+  sourceTimeBoundaryRefreshInterval?: number;
   guardDataCubes?: boolean;
   introspectionStrategy?: string;
   requestDecorator?: RequestDecoratorJS;
@@ -131,6 +133,7 @@ export const DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
 export const DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = false;
 export const DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
 export const DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
+export const DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL = 60000;
 export const DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
 const DEFAULT_GUARD_DATA_CUBES = false;
 
@@ -162,6 +165,7 @@ export function fromConfig(params: ClusterJS): Cluster {
 
   const sourceReintrospectInterval = readInterval(params.sourceReintrospectInterval, DEFAULT_SOURCE_REINTROSPECT_INTERVAL);
   const sourceListRefreshInterval = readInterval(params.sourceListRefreshInterval, DEFAULT_SOURCE_LIST_REFRESH_INTERVAL);
+  const sourceTimeBoundaryRefreshInterval = readInterval(params.sourceTimeBoundaryRefreshInterval, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL);
   const retry = RetryOptions.fromJS(params.retry);
   const requestDecorator = readRequestDecorator(params);
   const auth = readClusterAuth(params.auth);
@@ -180,6 +184,7 @@ export function fromConfig(params: ClusterJS): Cluster {
     sourceListRefreshOnLoad,
     sourceReintrospectInterval,
     sourceReintrospectOnLoad,
+    sourceTimeBoundaryRefreshInterval,
     version,
     title,
     guardDataCubes,

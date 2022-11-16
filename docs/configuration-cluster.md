@@ -188,6 +188,12 @@ This will put additional load on the data store but will ensure that dimension a
 
 How often should source schema be reloaded in ms. Default value of 0 disables periodical source refresh.
 
+**sourceTimeBoundaryRefreshInterval** (number), minimum: 1000, default: 60000
+
+How often should source max time be refreshed in ms. Turnilo sends [time boundary query](https://druid.apache.org/docs/latest/querying/timeboundaryquery.html) to Druid cluster to get source max time.
+Smaller values will ensure that turnilo is aware of freshly added data but also would put load on the data store with additional queries.
+
+
 ### Druid specific properties
 
 **introspectionStrategy** ("segment-metadata-fallback" \| "segment-metadata-only" \| "datasource-get"), default: "segment-metadata-fallback"

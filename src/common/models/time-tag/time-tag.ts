@@ -19,29 +19,34 @@ import { Record } from "immutable";
 
 export interface TimeTagValue {
   name: string;
+  checkInterval: number;
   time?: Date;
   lastTimeChecked?: Date;
 }
 
 export interface TimeTagJS {
   name: string;
+  checkInterval: number;
   time?: string;
   lastTimeChecked?: string;
 }
 
 const defaultTimeTag: TimeTagValue = {
   name: "",
+  // NOTE: this value won't be used ever. Immutable.Record type does not understand that non-nullable fields should be not required in default value.
+  checkInterval: 60000,
   time: null,
   lastTimeChecked: null
 };
 
 export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
 
-  static fromJS({ name, time: timeJS, lastTimeChecked: lastTimeCheckedJS }: TimeTagJS): TimeTag {
+  static fromJS({ name, checkInterval, time: timeJS, lastTimeChecked: lastTimeCheckedJS }: TimeTagJS): TimeTag {
     const time = timeJS ? new Date(timeJS) : undefined;
     const lastTimeChecked = lastTimeCheckedJS ? new Date(lastTimeCheckedJS) : time;
     return new TimeTag({
       name,
+      checkInterval,
       time,
       lastTimeChecked
     });

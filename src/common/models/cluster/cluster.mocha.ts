@@ -53,6 +53,7 @@ describe("Cluster", () => {
         sourceListScan: "auto",
         sourceReintrospectInterval: 0,
         sourceReintrospectOnLoad: false,
+        sourceTimeBoundaryRefreshInterval: 60000,
         timeout: undefined,
         title: "",
         type: "druid",
@@ -158,6 +159,7 @@ describe("Cluster", () => {
         sourceListScan: "auto",
         sourceReintrospectInterval: 1432,
         sourceReintrospectOnLoad: true,
+        sourceTimeBoundaryRefreshInterval: 4242,
         timeout: 581,
         title: "foobar-title",
         version: "new-version"
@@ -173,6 +175,7 @@ describe("Cluster", () => {
         sourceListScan: "auto",
         sourceReintrospectInterval: 1432,
         sourceReintrospectOnLoad: true,
+        sourceTimeBoundaryRefreshInterval: 4242,
         timeout: 581,
         title: "foobar-title",
         url: "https://foobar.com",
