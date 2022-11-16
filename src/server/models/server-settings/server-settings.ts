@@ -46,6 +46,7 @@ export type ServerSettingsJS = ServerSettingsValue & {
 
 export const DEFAULT_PORT = 9090;
 export const DEFAULT_SERVER_ROOT = "";
+export const DEFAULT_SERVER_HOST: string = null;
 const DEFAULT_READINESS_ENDPOINT = "/health/ready";
 const DEFAULT_LIVENESS_ENDPOINT = "/health/alive";
 const DEFAULT_SERVER_TIMEOUT = 0;
@@ -66,7 +67,7 @@ const defaultServerSettings: ServerSettingsValue = {
   port: DEFAULT_PORT,
   readinessEndpoint: DEFAULT_READINESS_ENDPOINT,
   requestLogFormat: DEFAULT_REQUEST_LOG_FORMAT,
-  serverHost: null,
+  serverHost: DEFAULT_SERVER_HOST,
   serverRoot: DEFAULT_SERVER_ROOT,
   serverTimeout: DEFAULT_SERVER_TIMEOUT,
   strictTransportSecurity: DEFAULT_STRICT_TRANSPORT_SECURITY,

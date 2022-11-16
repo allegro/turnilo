@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Command } from "commander";
+import { loadFileSync } from "../utils/file/file";
 
-function extend(obj1, obj2) {
-  var newObj = {};
-  for (var k in obj1) newObj[k] = obj1[k];
-  for (var k in obj2) newObj[k] = obj2[k];
-  return newObj;
+export function loadConfigFile(configPath: string, program: Command): object {
+  try {
+    return loadFileSync(configPath, "yaml");
+  } catch (e) {
+    program.error(`Loading config file (${configPath}) failed: ${e.message}`);
+    return {};
+  }
 }
-
-module.exports = extend;

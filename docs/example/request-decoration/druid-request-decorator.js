@@ -5,20 +5,13 @@ exports.version = 1;
 //   * options: the options field from the requestDecorator property
 //   * cluster: Cluster - the cluster object
 exports.druidRequestDecoratorFactory = function (logger, params) {
+
   const options = params.options;
-  const username = options.username; // pretend we store the username and password
-  const password = options.password; // in the config
+  const extras = options.extras.join(", ");
 
-  if (!username) {
-    throw new Error("must have username");
-  }
-  if (!password) {
-    throw new Error("must have password");
-  }
+  const like = `${options.base} with ${extras}`;
 
-  logger.log("Decorator init for username: " + username);
-
-  const auth = "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
+  logger.log("Decorator created with options:", { options });
 
   // decoratorRequest: DecoratorRequest - is an object that has the following keys:
   //   * method: string - the method that is used (POST or GET)
@@ -27,8 +20,7 @@ exports.druidRequestDecoratorFactory = function (logger, params) {
   return function (decoratorRequest) {
     const decoration = {
       headers: {
-        "Authorization": auth,
-        "X-I-Like": "Koalas",
+        "X-I-Like": like,
       },
     };
 

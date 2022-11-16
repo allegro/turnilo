@@ -21,6 +21,7 @@ import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions, RetryOptionsJS } from "../../../server/utils/retry-options/retry-options";
 import { isNil, isTruthy, optionalEnsureOneOf, verifyUrlSafeName } from "../../utils/general/general";
+import { ClusterAuth, ClusterAuthJS, readClusterAuth } from "../cluster-auth/cluster-auth";
 
 export type SourceListScan = "disable" | "auto";
 
@@ -44,6 +45,7 @@ export interface Cluster {
   introspectionStrategy?: string;
   requestDecorator?: RequestDecorator;
   retry?: RetryOptions;
+  auth?: ClusterAuth;
 }
 
 export interface ClusterJS {
@@ -63,6 +65,7 @@ export interface ClusterJS {
   introspectionStrategy?: string;
   requestDecorator?: RequestDecoratorJS;
   retry?: RetryOptionsJS;
+  auth?: ClusterAuthJS;
 }
 
 export interface SerializedCluster {
@@ -165,6 +168,7 @@ export function fromConfig(params: ClusterJS): Cluster {
   const sourceTimeBoundaryRefreshInterval = readInterval(params.sourceTimeBoundaryRefreshInterval, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL);
   const retry = RetryOptions.fromJS(params.retry);
   const requestDecorator = readRequestDecorator(params);
+  const auth = readClusterAuth(params.auth);
 
   const url = readUrl(params);
 
@@ -185,7 +189,8 @@ export function fromConfig(params: ClusterJS): Cluster {
     title,
     guardDataCubes,
     introspectionStrategy,
-    healthCheckTimeout
+    healthCheckTimeout,
+    auth
   };
 }
 

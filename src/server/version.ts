@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import path from "path";
+import { loadFileSync } from "./utils/file/file";
 
-const Expression = require('plywood').Expression;
+const PACKAGE_FILE = path.join(__dirname, "../../package.json");
 
-function basicString(thing) {
-  return thing.name + ' ~ ' + thing.formula;
-}
-
-module.exports = basicString;
+export const readVersion = (): string => {
+  const packageObj = loadFileSync(PACKAGE_FILE, "json");
+  if (!("version" in packageObj)) {
+    throw new Error("Couldn't read version from package.json");
+  }
+  return (packageObj as any).version;
+};

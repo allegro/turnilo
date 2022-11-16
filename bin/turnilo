@@ -19,6 +19,6 @@
 
 var path = require('path');
 var fs   = require('fs');
-var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../build/server/www.js');
+var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../build/server/cli.js');
 
 require(lib);

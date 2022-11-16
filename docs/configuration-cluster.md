@@ -6,7 +6,7 @@ layout: page
 
 ## Overview
 
-It is easy to start using Turnilo with Druid by pointing it at your Druid cluster: `turnilo --druid broker_host:broker_port`
+It is easy to start using Turnilo with Druid by pointing it at your Druid cluster: `turnilo connect-druid broker_host:broker_port`
 Turnilo will automatically introspect your Druid cluster and figure out available datasets.
 
 Turnilo can be configured with a *config* YAML file. While you could write one from scratch it is recommended to let
@@ -15,13 +15,13 @@ Turnilo give you a head start by using it to generate a config file for you usin
 Run:
 
 ```bash
-turnilo --druid broker_host:broker_port --print-config --with-comments > config.yaml
+turnilo introspect-druid broker_host:broker_port --verbose > config.yaml
 ```
 
 This will cause Turnilo to go through its normal startup and introspection routine and then dump the internally generated
 config (complete with comments) into the provided file.
 
-You can now run `turnilo --config config.yaml` to run Turnilo with your config.
+You can now run `turnilo run-config config.yaml` to run Turnilo with your config.
 
 The next step is to open the generated config file in your favourite text editor and configure Turnilo to your liking.
 Below we will go through a typical configuration flow. At any point you can save the config and re-launch Turnilo to load
@@ -119,6 +119,25 @@ The url address (http[s]://hostname[:port]) of the cluster. If no port, 80 is as
 **host** deprecated (string)
 
 The host (hostname:port) of the cluster, http protocol is assumed. Deprecated, use **url** field
+
+**auth**
+
+The cluster authorization strategy.
+
+* Http Basic authorization
+
+Strategy will add `Authorization` header to each request to cluster and encode passed username and password with base64.
+
+```yaml
+auth:
+  type: "http-basic"
+  username: Aladdin
+  password: OpenSesame
+```
+
+This would result in all Druid request having added headers
+
+![](assets/images/basic-auth-headers.png)
 
 **version** (string)
 

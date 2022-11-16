@@ -35,5 +35,5 @@ export const settings: ScatterplotVisualizationSettings = {
     print: (settings: ImmutableRecord<ScatterplotSettings>) => settings.toJS(),
     read: (input: ScatterplotSettings) => createSettings({ showSummary: Boolean(input.showSummary) })
   },
-  defaults: createSettings({})
+  defaults: createSettings({}) as ImmutableRecord<object>
 };
