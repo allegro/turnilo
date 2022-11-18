@@ -152,7 +152,7 @@ program
       const config = loadConfigFile(file, program);
       buildSettings(config, { verbose });
     } catch (e) {
-      program.error("Config verification error: ", e.message);
+      program.error(`Config verification error: ${e.message}`);
     }
   });
 
@@ -170,10 +170,8 @@ program
       verbose,
       version
     ).catch((e: Error) => {
-        program.error("There was an error generating a config: " + e.message);
+        program.error(`There was an error generating a config: ${e.message}`);
       });
   });
-
-program.showHelpAfterError();
 
 program.parse();
