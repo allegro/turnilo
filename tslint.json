@@ -120,6 +120,7 @@
     "no-var-keyword": false,
     "only-arrow-functions": false, // disallow anonymous functions (function() { })
     "prefer-const": false, // prefer consts where possible instead of lets
-    "variable-name": false // enforce consistent variable naming
+    "variable-name": false, // enforce consistent variable naming
+    "array-type": false // use either T[] or Array for arrays
   }
 }
