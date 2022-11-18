@@ -55,9 +55,6 @@ or join the chat on [Slack](https://join.slack.com/t/turnilo/shared_invite/enQtO
 We test builds with 14.21.1 and 16.18.1
 
 :warning:
-Turnilo build works only up to 16.18.1 node version.
-
-:warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.
 With `npm` builds are reproducible (thanks to package-lock.json) and even faster than with `yarn`.
 
