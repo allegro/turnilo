@@ -19,11 +19,11 @@ import { ClientMeasure } from "../../../common/models/measure/measure";
 import {
   customFormat,
   DEFAULT_FORMAT,
-  EXACT_FORMAT,
   exactFormat,
+  EXACT_FORMAT,
   measureDefaultFormat,
-  PERCENT_FORMAT,
   percentFormat,
+  PERCENT_FORMAT,
   SeriesFormat,
   seriesFormatter,
   SeriesFormatType
