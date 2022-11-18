@@ -16,16 +16,26 @@
 
 import React from "react";
 import { isContinuous } from "../../../common/models/dimension/dimension";
-import { SPLIT_CLASS_NAME, SplitTileBaseProps } from "../../components/split-tile/split-tile";
+import { SplitTileBaseProps } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { WithRef } from "../../components/with-ref/with-ref";
 import { classNames } from "../../utils/dom/dom";
 import { GridSplitMenu } from "./grid-split-menu";
 import { mainSplit } from "./utils/main-split";
 
-export const GridSplitTile: React.FunctionComponent<SplitTileBaseProps> = props => {
-  const { essence, open: isOpened, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
-
+export const GridSplitTile: React.FunctionComponent<SplitTileBaseProps> = ({
+  essence,
+  open: isOpened,
+  split,
+  dimension,
+  style,
+  removeSplit,
+  updateSplit,
+  openMenu,
+  closeMenu,
+  dragStart,
+  containerStage
+}) => {
   const enabled = split.equals(mainSplit(essence)) || isContinuous(dimension);
 
   const title = split.getTitle(dimension);
@@ -40,32 +50,38 @@ export const GridSplitTile: React.FunctionComponent<SplitTileBaseProps> = props 
     openMenu(split);
   };
 
-  return <WithRef>
-    {({ ref: openOn, setRef }) => <React.Fragment>
-      <div
-        className={classNames("tile dimension", { disabled: !enabled })}
-        key={split.toKey()}
-        ref={setRef}
-        draggable={true}
-        onClick={open}
-        onDragStart={e => dragStart(dimension.title, split, e)}
-        style={style}
-        title={title}
-      >
-        <div className="reading">{title}</div>
-        <div className="remove"
-             onClick={remove}>
-          <SvgIcon svg={require("../../icons/x.svg")} />
-        </div>
-      </div>
-      {enabled && isOpened && openOn && <GridSplitMenu
-        saveSplit={updateSplit}
-        essence={essence}
-        openOn={openOn}
-        containerStage={containerStage}
-        onClose={closeMenu}
-        dimension={dimension}
-        split={split} />}
-    </React.Fragment>}
-  </WithRef>;
+  return (
+    <WithRef>
+      {({ ref: openOn, setRef }) => (
+        <React.Fragment>
+          <div
+            className={classNames("tile dimension", { disabled: !enabled })}
+            key={split.toKey()}
+            ref={setRef}
+            draggable={true}
+            onClick={open}
+            onDragStart={(e) => dragStart(dimension.title, split, e)}
+            style={style}
+            title={title}
+          >
+            <div className="reading">{title}</div>
+            <div className="remove" onClick={remove}>
+              <SvgIcon svg={require("../../icons/x.svg")} />
+            </div>
+          </div>
+          {enabled && isOpened && openOn && (
+            <GridSplitMenu
+              saveSplit={updateSplit}
+              essence={essence}
+              openOn={openOn}
+              containerStage={containerStage}
+              onClose={closeMenu}
+              dimension={dimension}
+              split={split}
+            />
+          )}
+        </React.Fragment>
+      )}
+    </WithRef>
+  );
 };
