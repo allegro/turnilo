@@ -60,7 +60,7 @@ export const GridSplitTile: React.FunctionComponent<SplitTileBaseProps> = ({
             ref={setRef}
             draggable={true}
             onClick={open}
-            onDragStart={(e) => dragStart(dimension.title, split, e)}
+            onDragStart={e => dragStart(dimension.title, split, e)}
             style={style}
             title={title}
           >
