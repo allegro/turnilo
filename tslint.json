@@ -29,7 +29,8 @@
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "member-access": false, // don't require explicit member access declaration
     "member-ordering": [true,
-      "static-before-instance"],
+      "static-before-instance"
+    ],
     "no-console": [true,
       "debug",
       "info",
