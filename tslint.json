@@ -28,39 +28,8 @@
     "max-line-length": [true, 200],
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "member-access": false, // don't require explicit member access declaration
-    "member-ordering": [
-      {
-        "name": "static member",
-        "kinds": [
-          "public-static-field",
-          "protected-static-field",
-          "private-static-field",
-          "public-static-method",
-          "private-static-method",
-          "protected-static-method",
-          "public-static-accessor",
-          "protected-static-accessor",
-          "private-static-accessor"
-        ]
-      },
-      {
-        "name": "instance member",
-        "kinds": [
-          "public-instance-field",
-          "protected-instance-field",
-          "private-instance-field",
-          "public-constructor",
-          "protected-constructor",
-          "private-constructor",
-          "public-instance-method",
-          "protected-instance-method",
-          "private-instance-method",
-          "public-instance-accessor",
-          "protected-instance-accessor",
-          "private-instance-accessor"
-        ]
-      }
-    ],
+    "member-ordering": [true,
+      "static-before-instance"],
     "no-console": [true,
       "debug",
       "info",
