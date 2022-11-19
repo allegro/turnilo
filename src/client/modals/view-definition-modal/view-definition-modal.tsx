@@ -17,7 +17,7 @@
 import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Fn, makeTitle } from "../../../common/utils/general/general";
-import { defaultDefinitionConverter, DEFAULT_VIEW_DEFINITION_VERSION } from "../../../common/view-definitions";
+import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter } from "../../../common/view-definitions";
 import { STRINGS } from "../../config/constants";
 import { SourceModal } from "../source-modal/source-modal";
 import "./view-definition-modal.scss";
