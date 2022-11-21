@@ -1,6 +1,7 @@
 name: Undeploy Branch
 
 on:
+  workflow_dispatch: ~
   pull_request:
     types: [closed]
 
@@ -12,6 +13,9 @@ jobs:
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
       REF_NAME: ${{ github.head_ref }}
+
+    # disable for branches from forks
+    if: github.repository == 'allegro/turnilo'
 
     steps:
       - name: Checkout
