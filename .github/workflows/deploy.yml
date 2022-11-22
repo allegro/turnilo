@@ -13,7 +13,7 @@ jobs:
 
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
-      REF_NAME: ${{ github.head_ref || latest }}
+      REF_NAME: ${{ github.head_ref || 'latest' }}
 
     steps:
       - name: Checkout
