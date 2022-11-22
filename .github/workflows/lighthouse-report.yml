@@ -6,8 +6,9 @@ on:
 
 jobs:
   lighthouse-report:
-
     runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request'
 
     # add permission to comment PR created by dependantbot
     permissions:

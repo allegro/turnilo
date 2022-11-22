@@ -13,7 +13,7 @@ jobs:
 
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
-      REF_NAME: ${{ github.head_ref || 'latest' }}
+      TAG_NAME: ${{ github.head_ref || 'latest' }}
 
     steps:
       - name: Checkout
@@ -30,15 +30,15 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Docker image
-        run: docker build . -t $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-}
+        run: docker build . -t $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-}
 
       - name: Push Docker image
-        run: docker push $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-}
+        run: docker push $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-}
 
       - name: Deploy app
         run: |
-          gcloud run deploy turnilo-${REF_NAME//[^a-z0-9]/-} \
-            --image $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-} \
+          gcloud run deploy turnilo-${TAG_NAME//[^a-z0-9]/-} \
+            --image $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-} \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
@@ -52,7 +52,7 @@ jobs:
         if: ${{ github.head_ref }}
         id: app-url
         run: |
-          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z0-9]/-} --region europe-west1 --format 'value(status.url)')
+          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${TAG_NAME//[^a-z0-9]/-} --region europe-west1 --format 'value(status.url)')
 
       - name: Print app URL
         if: ${{ github.head_ref }}

@@ -7,6 +7,9 @@ on:
 jobs:
   size-report:
     runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request'
+
     env:
       CI_JOB_NUMBER: 1
     steps:
