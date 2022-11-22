@@ -50,6 +50,11 @@ jobs:
       - run: npm run build
       - run: npm run e2e
 
+  deploy:
+    needs: [lint, unit-test, e2e-test]
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+
   lighthouse-report:
     needs: [lint, unit-test, e2e-test]
     uses: ./.github/workflows/lighthouse-report.yml
