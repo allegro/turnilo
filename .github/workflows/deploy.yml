@@ -1,25 +1,23 @@
-name: Deploy Branch
+name: Deploy
 
 on:
   workflow_dispatch: ~
-  pull_request:
-    types: [ opened, synchronize, reopened ]
+  workflow_call: ~
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
-    env:
-      IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
-      REF_NAME: ${{ github.head_ref }}
 
     # disable for branches from forks
     if: github.repository == 'allegro/turnilo'
 
+    env:
+      IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
+      TAG_NAME: ${{ github.head_ref || 'latest' }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Authenticate on GCP
         uses: google-github-actions/setup-gcloud@v0
@@ -32,15 +30,15 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build Docker image
-        run: docker build . -t $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-}
+        run: docker build . -t $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-}
 
       - name: Push Docker image
-        run: docker push $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-}
+        run: docker push $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-}
 
       - name: Deploy app
         run: |
-          gcloud run deploy turnilo-${REF_NAME//[^a-z0-9]/-} \
-            --image $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-} \
+          gcloud run deploy turnilo-${TAG_NAME//[^a-z0-9]/-} \
+            --image $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-} \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
@@ -51,11 +49,13 @@ jobs:
 
 
       - name: Get app URL
+        if: ${{ github.head_ref }}
         id: app-url
         run: |
-          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${REF_NAME//[^a-z0-9]/-} --region europe-west1 --format 'value(status.url)')
+          echo ::set-output name=app_url::$(gcloud run services describe turnilo-${TAG_NAME//[^a-z0-9]/-} --region europe-west1 --format 'value(status.url)')
 
       - name: Print app URL
+        if: ${{ github.head_ref }}
         uses: actions/github-script@v6
         env:
           APP_URL: ${{ steps.app-url.outputs.app_url }}
@@ -70,5 +70,5 @@ jobs:
 
       - name: Delete previous Docker image(s)
         run: |
-          gcloud container images list-tags $IMAGE_NAME:$REF_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
+          gcloud container images list-tags $IMAGE_NAME --filter='-tags:*' --format='get(digest)' --limit=unlimited | \
           xargs -I {digest} gcloud container images delete "$IMAGE_NAME@{digest}" --quiet

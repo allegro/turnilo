@@ -7,8 +7,9 @@ on:
 jobs:
   size-report:
     runs-on: ubuntu-latest
-    env:
-      CI_JOB_NUMBER: 1
+
+    if: github.event_name == 'pull_request'
+
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup

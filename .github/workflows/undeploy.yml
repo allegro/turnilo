@@ -7,15 +7,14 @@ on:
 
 jobs:
   undeploy:
-
     runs-on: ubuntu-latest
+
+    # disable for branches from forks
+    if: github.repository == 'allegro/turnilo'
 
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
       REF_NAME: ${{ github.head_ref }}
-
-    # disable for branches from forks
-    if: github.repository == 'allegro/turnilo'
 
     steps:
       - name: Checkout
