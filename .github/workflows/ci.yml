@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  workflow_dispatch: ~
+  push:
+    branches:
+      - master
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - run: npm run lint
+
+  unit-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.20.0, 16.15.0]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run build
+      - run: npm run test
+
+  e2e-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.20.0, 16.15.0]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run build
+      - run: npm run e2e
+
+  lighthouse-report:
+    needs: [lint, unit-test, e2e-test]
+    uses: ./.github/workflows/lighthouse-report.yml
+    secrets: inherit
+
+  size-report:
+    needs: [lint, unit-test, e2e-test]
+    uses: ./.github/workflows/size-report.yml
+    secrets: inherit
