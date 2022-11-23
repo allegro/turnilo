@@ -25,7 +25,7 @@ jobs:
 
     if: github.event_name == 'pull_request'
 
-    # add permission to comment PR created by dependantbot
+    # add permission to comment PR created by dependabot
     permissions:
       issues: write
       pull-requests: write
