@@ -16,6 +16,8 @@
  */
 
 import { Request, Response, Router } from "express";
+import { deserialize } from "../../../client/deserializers/app-settings";
+import { AppSettings, ClientAppSettings, serialize } from "../../../common/models/app-settings/app-settings";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { Essence } from "../../../common/models/essence/essence";
@@ -24,7 +26,11 @@ import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-h
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
-export function mkurlRouter(sourcesGetter: SourcesGetter) {
+function convertAppSettings(appSettings: AppSettings): ClientAppSettings {
+  return deserialize(serialize(appSettings));
+}
+
+export function mkurlRouter(appSettings: AppSettings, sourcesGetter: SourcesGetter) {
 
   const router = Router();
 
@@ -79,7 +85,7 @@ export function mkurlRouter(sourcesGetter: SourcesGetter) {
     };
 
     try {
-      essence = definitionConverter.fromViewDefinition(viewDefinition, clientDataCube);
+      essence = definitionConverter.fromViewDefinition(viewDefinition, clientDataCube, convertAppSettings(appSettings));
     } catch ({ message }) {
       res.status(400).send({ error: "invalid viewDefinition object", message });
       return;
