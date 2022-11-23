@@ -18,6 +18,7 @@
 
 .bar-chart-bars {
   .bar-chart-bar {
+    // TODO: replace with visualisationColors.main
     @include css-variable(fill, brand);
   }
 

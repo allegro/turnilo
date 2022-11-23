@@ -25,6 +25,7 @@ import { nestedDataset } from "./nested-dataset";
 export type ColorScale = d3.ScaleLinear<string, string>;
 
 const white = "#fff";
+// TODO: replace with visualisationColors.main
 const orange = "#ff5a00";
 
 interface Scales {

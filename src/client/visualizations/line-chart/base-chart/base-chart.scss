@@ -36,6 +36,7 @@
   }
 
   .hover-guide {
+    // TODO: replace with visualisationColors.main
     @include css-variable(stroke, background-brand-light);
     stroke-width: 1;
   }
