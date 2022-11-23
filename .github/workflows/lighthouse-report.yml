@@ -20,6 +20,19 @@ jobs:
       - uses: ./.github/actions/setup
       - run: npm run build
       - uses: treosh/lighthouse-ci-action@v9
+        id: lighthouse
         with:
           uploadArtifacts: true
           temporaryPublicStorage: true
+      - uses: actions/github-script@v6
+        env:
+        with:
+          script: |
+            const lighthouse_links = ${{ steps.lighthouse.outputs.links }}
+            const lighthouse_link = Object.values(lighthouse_links)[0]
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: ':stopwatch: Lighthouse [report](' + lighthouse_link + ')' 
+            })
