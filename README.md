@@ -52,7 +52,7 @@ or join the chat on [Slack](https://join.slack.com/t/turnilo/shared_invite/enQtO
 * [Node.js](https://nodejs.org/) - 14.x or 16.x version
 
 :warning:
-We test builds with 14.20.0 and 16.15.0
+We test builds with latest 14.x and 16.x
 
 :warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.
