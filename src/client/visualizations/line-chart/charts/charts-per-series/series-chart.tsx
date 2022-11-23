@@ -21,6 +21,7 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Stage } from "../../../../../common/models/stage/stage";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
 import { selectFirstSplitDataset, selectMainDatum, selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
+import { useSettingsContext } from "../../../../views/cube-view/settings-context";
 import { BaseChart } from "../../base-chart/base-chart";
 import { ColoredSeriesChartLine } from "../../chart-line/colored-series-chart-line";
 import { SingletonSeriesChartLine } from "../../chart-line/singleton-series-chart-line";
@@ -31,7 +32,6 @@ import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import { SeriesHoverContent } from "./series-hover-content";
-import { useSettingsContext } from "../../../../views/cube-view/settings-context";
 
 interface SeriesChartProps {
   chartId: string;

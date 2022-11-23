@@ -15,6 +15,7 @@
  */
 
 import { expect } from "chai";
+import { clientAppSettings } from "../../models/app-settings/app-settings.fixtures";
 import { wikiClientDataCube } from "../../models/data-cube/data-cube.fixtures";
 import { Essence } from "../../models/essence/essence";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
@@ -22,7 +23,6 @@ import { ViewDefinitionVersion } from "../../view-definitions";
 import { hashToObject } from "../../view-definitions/hash-conversions";
 import { getHashSegments, urlHashConverter } from "./url-hash-converter";
 import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
-import { clientAppSettings } from "../../models/app-settings/app-settings.fixtures";
 
 interface HashEssenceCase {
   version: ViewDefinitionVersion;

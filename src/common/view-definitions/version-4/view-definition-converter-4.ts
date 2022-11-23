@@ -16,6 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
@@ -29,7 +30,6 @@ import { seriesDefinitionConverter } from "./series-definition";
 import { splitConverter } from "./split-definition";
 import { ViewDefinition4 } from "./view-definition-4";
 import { fromViewDefinition, toViewDefinition } from "./visualization-settings-converter";
-import { ClientAppSettings } from "../../models/app-settings/app-settings";
 
 export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
   version = 4;

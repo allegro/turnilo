@@ -16,6 +16,7 @@
 
 import { expect } from "chai";
 import { $ } from "plywood";
+import { DEFAULT_COLORS } from "../../models/colors/colors";
 import { createDimension, Dimension } from "../../models/dimension/dimension";
 import { SeriesList } from "../../models/series-list/series-list";
 import { measureSeries } from "../../models/series/series.fixtures";
@@ -28,7 +29,6 @@ import {
   adjustLimit,
   adjustSort
 } from "./split-adjustments";
-import { DEFAULT_COLORS } from "../../models/colors/colors";
 
 describe("Split adjustment utilities", () => {
   describe("adjustContinuousTimeSplit", () => {
