@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { ClientAppSettings } from "../models/app-settings/app-settings";
 import { ClientDataCube } from "../models/data-cube/data-cube";
 import { Essence } from "../models/essence/essence";
 
 export interface ViewDefinitionConverter<VD extends object, E extends Essence> {
   version: number;
 
-  fromViewDefinition(definition: VD, dataCube: ClientDataCube): E;
+  fromViewDefinition(definition: VD, dataCube: ClientDataCube, appSettings: ClientAppSettings): E;
 
   toViewDefinition(essence: E): VD;
 }

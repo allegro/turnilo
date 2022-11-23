@@ -28,6 +28,7 @@ import {
   adjustLimit,
   adjustSort
 } from "./split-adjustments";
+import { DEFAULT_COLORS } from "../../models/colors/colors";
 
 describe("Split adjustment utilities", () => {
   describe("adjustContinuousTimeSplit", () => {
@@ -118,7 +119,7 @@ describe("Split adjustment utilities", () => {
         limits: [42, 100]
       };
       const split = stringSplitCombine("foobar", { limit: 50 });
-      const adjusted = adjustColorSplit(split, dimension, SeriesList.fromSeries([]));
+      const adjusted = adjustColorSplit(split, dimension, SeriesList.fromSeries([]), DEFAULT_COLORS);
 
       expect(adjusted.limit).to.be.equal(10);
     });

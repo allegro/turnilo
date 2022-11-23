@@ -16,8 +16,10 @@
  */
 
 import { NamedArray } from "immutable-class";
+import memoizeOne from "memoize-one";
 import React from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
@@ -34,13 +36,11 @@ import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
+import { SettingsContext, SettingsValue } from "../../views/cube-view/settings-context";
 import { GeneralError } from "../../views/error-view/general-error";
 import { HomeView } from "../../views/home-view/home-view";
 import "./turnilo-application.scss";
 import { cube, generalError, home, oauthCodeHandler, oauthMessageView, View } from "./view";
-import { SettingsContext, SettingsValue } from "../../views/cube-view/settings-context";
-import memoizeOne from "memoize-one";
-import { ClientCustomization } from "../../../common/models/customization/customization";
 
 export interface TurniloApplicationProps {
   version: string;

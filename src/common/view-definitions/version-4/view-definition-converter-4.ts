@@ -29,11 +29,12 @@ import { seriesDefinitionConverter } from "./series-definition";
 import { splitConverter } from "./split-definition";
 import { ViewDefinition4 } from "./view-definition-4";
 import { fromViewDefinition, toViewDefinition } from "./visualization-settings-converter";
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
 
 export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
   version = 4;
 
-  fromViewDefinition(definition: ViewDefinition4, dataCube: ClientDataCube): Essence {
+  fromViewDefinition(definition: ViewDefinition4, dataCube: ClientDataCube, appSettings: ClientAppSettings): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);
@@ -69,6 +70,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const series = seriesDefinitionConverter.toEssenceSeries(definition.series, dataCube.measures);
 
     return new Essence({
+      appSettings,
       dataCube,
       visualization,
       visualizationSettings,

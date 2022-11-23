@@ -49,7 +49,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
-  .then(({ splits, series, dataCube }) => {
+  .then(({ splits, series, dataCube, appSettings }) => {
     const timeSplit = splits.getSplit(0);
     const nominalSplit = splits.getSplit(1);
     const nominalDimension = findDimensionByName(dataCube.dimensions, nominalSplit.reference);
@@ -58,21 +58,21 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       // Switch splits in place and conform
       splits: new Splits({
         splits: List([
-          adjustColorSplit(nominalSplit, nominalDimension, series),
+          adjustColorSplit(nominalSplit, nominalDimension, series, appSettings.customization.visualizationColors),
           adjustContinuousTimeSplit(timeSplit)
         ])
       })
     });
   })
   .when(Predicates.areExactSplitKinds("*", "time"))
-  .then(({ splits, series, dataCube, isSelectedVisualization }) => {
+  .then(({ splits, series, dataCube, isSelectedVisualization, appSettings }) => {
     const timeSplit = splits.getSplit(1);
     const nominalSplit = splits.getSplit(0);
     const nominalDimension = findDimensionByName(dataCube.dimensions, nominalSplit.reference);
 
     const newSplits = new Splits({
       splits: List([
-        adjustColorSplit(nominalSplit, nominalDimension, series),
+        adjustColorSplit(nominalSplit, nominalDimension, series, appSettings.customization.visualizationColors),
         adjustContinuousTimeSplit(timeSplit)
       ])
     });
