@@ -25,7 +25,6 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
       - uses: actions/github-script@v6
-        env:
         with:
           script: |
             const lighthouse_links = ${{ steps.lighthouse.outputs.links }}
