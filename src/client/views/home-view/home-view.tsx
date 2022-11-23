@@ -73,15 +73,12 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   }
 
   render() {
-    const { onOpenAbout, dataCubes, customization } = this.props;
+    const { onOpenAbout, dataCubes } = this.props;
     const { query } = this.state;
     const hasDataCubes = dataCubes.length > 0;
 
     return <div className="home-view">
-      <HeaderBar
-        customization={customization}
-        title={STRINGS.home}
-      >
+      <HeaderBar title={STRINGS.home}>
         <button className="text-button" onClick={onOpenAbout}>
           {STRINGS.infoAndFeedback}
         </button>
