@@ -12,61 +12,56 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-#  lint:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./.github/actions/setup
-#      - run: npm run lint
-#
-#  unit-test:
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        node-version: [14.20.0, 16.15.0]
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./.github/actions/setup
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#      - run: npm run build
-#      - run: npm run test
-#
-#  e2e-test:
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        node-version: [14.20.0, 16.15.0]
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: ./.github/actions/setup
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#      - run: npm run build
-#      - run: npm run e2e
-#
-#  required-checks:
-#    needs: [lint, unit-test, e2e-test]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - run: exit 0
-#
-#  deploy:
-#    needs: required-checks
-#    uses: ./.github/workflows/deploy.yml
-#    secrets: inherit
-#
-  lighthouse-report:
-#    needs: required-checks
-    uses: ./.github/workflows/lighthouse-report.yml
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - run: npm run lint
+
+  unit-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.20.0, 16.15.0]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run build
+      - run: npm run test
+
+  e2e-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.20.0, 16.15.0]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm run build
+      - run: npm run e2e
+
+  required-checks:
+    needs: [lint, unit-test, e2e-test]
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 0
+
+  deploy:
+    needs: required-checks
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
 
-#  size-report:
-#    needs: required-checks
-#    uses: ./.github/workflows/size-report.yml
-#    secrets: inherit
+  reports:
+    needs: required-checks
+    uses: ./.github/workflows/reports.yml
+    secrets: inherit
