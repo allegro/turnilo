@@ -20,5 +20,3 @@ jobs:
       - uses: ./.github/actions/setup
       - run: npm run build
       - uses: treosh/lighthouse-ci-action@v9
-        with:
-          serverToken: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
