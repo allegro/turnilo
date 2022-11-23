@@ -5,7 +5,7 @@ on:
   workflow_dispatch: ~
 
 jobs:
-  size-report:
+  size:
     runs-on: ubuntu-latest
 
     if: github.event_name == 'pull_request'
