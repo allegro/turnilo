@@ -20,3 +20,5 @@ jobs:
       - uses: ./.github/actions/setup
       - run: npm run build
       - uses: treosh/lighthouse-ci-action@v9
+        with:
+          uploadArtifacts: true
