@@ -19,37 +19,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
       - run: npm run build
-
-      - name: Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli@0.9.x
-          lhci autorun
-        env:
-            LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-
-      - name: Get app URL
-        id: report-url
-        run: |
-          echo ::set-output name=report_url::$(cat ./.lighthouseci/links.json | jq -r '."http://localhost:9090/"')
-
-      - name: Print report URL
-        uses: actions/github-script@v6
-        env:
-          REPORT_URL: ${{ steps.report-url.outputs.report_url }}
+      - uses: treosh/lighthouse-ci-action@v9
         with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: ':stopwatch: Lighthouse report: ' + process.env.REPORT_URL
-            })
-
-      - name: Copy bundle analysis report
-        run: cp build/report-*.{html,json} ./.lighthouseci
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: lighthouse-report
-          path: |
-            ./.lighthouseci/
+          serverToken: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
