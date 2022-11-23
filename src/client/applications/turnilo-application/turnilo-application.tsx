@@ -38,6 +38,9 @@ import { GeneralError } from "../../views/error-view/general-error";
 import { HomeView } from "../../views/home-view/home-view";
 import "./turnilo-application.scss";
 import { cube, generalError, home, oauthCodeHandler, oauthMessageView, View } from "./view";
+import { SettingsContext, SettingsValue } from "../../views/cube-view/settings-context";
+import memoizeOne from "memoize-one";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 
 export interface TurniloApplicationProps {
   version: string;
@@ -226,13 +229,22 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     }
   }
 
+  private getSettingsContext(): SettingsValue {
+    const { appSettings: { customization } } = this.props;
+    return this.constructSettingsContext(customization);
+  }
+
+  private constructSettingsContext = memoizeOne((customization: ClientCustomization) => ({ customization }));
+
   render() {
     return <React.StrictMode>
       <main className="turnilo-application">
+        <SettingsContext.Provider value={this.getSettingsContext()}>
         {this.renderView()}
         {this.renderAboutModal()}
         <Notifications/>
         <Questions/>
+        </SettingsContext.Provider>
       </main>
     </React.StrictMode>;
   }
