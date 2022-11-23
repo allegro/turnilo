@@ -16,7 +16,6 @@
 
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import React from "react";
-import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
@@ -32,6 +31,7 @@ import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import { SeriesHoverContent } from "./series-hover-content";
+import { useSettingsContext } from "../../../../views/cube-view/settings-context";
 
 interface SeriesChartProps {
   chartId: string;
@@ -46,6 +46,7 @@ interface SeriesChartProps {
 }
 
 export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
+  const { customization: { visualizationColors } } = useSettingsContext();
   const { chartId, interactions, visualisationStage, chartStage, essence, series, xScale, xTicks, dataset } = props;
   const hasComparison = essence.hasComparison();
   const continuousSplitDataset = selectFirstSplitDataset(dataset);
@@ -84,7 +85,7 @@ export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
       {({ yScale, lineStage }) => <React.Fragment>
         {continuousSplitDataset.data.map((datum, index) => {
           const splitKey = nominalSplit.selectValue(datum);
-          const color = NORMAL_COLORS[index];
+          const color = visualizationColors.series[index];
           return <ColoredSeriesChartLine
             key={String(splitKey)}
             xScale={xScale}

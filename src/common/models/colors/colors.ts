@@ -15,19 +15,6 @@
  * limitations under the License.
  */
 
-export const NORMAL_COLORS = [
-  "#2D95CA",
-  "#EFB925",
-  "#DA4E99",
-  "#4CC873",
-  "#745CBD",
-  "#EA7136",
-  "#E68EE0",
-  "#218C35",
-  "#B0B510",
-  "#904064"
-];
-
 export const DEFAULT_SERIES_COLORS = [
   "#2D95CA",
   "#EFB925",
@@ -46,7 +33,7 @@ export const DEFAULT_MAIN_COLOR = "#FF5900";
 export const DEFAULT_COLORS: VisualizationColors = {
   main: DEFAULT_MAIN_COLOR,
   series: DEFAULT_SERIES_COLORS
-}
+};
 
 export interface VisualizationColors {
   main: string;
