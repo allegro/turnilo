@@ -14,25 +14,23 @@ jobs:
 
     env:
       IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
-      REF_NAME: ${{ github.head_ref }}
+      TAG_NAME: ${{ github.head_ref }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Authenticate on GCP
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Setup GCloud
+        uses: ./.github/actions/gcloud
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Undeploy app
         run: |
-          gcloud run services delete turnilo-${REF_NAME//[^a-z0-9]/-} \
+          gcloud run services delete turnilo-${TAG_NAME//[^a-z0-9]/-} \
             --region europe-west1 \
             --quiet
 
       - name: Delete Docker image
         run: |
-          gcloud container images delete $IMAGE_NAME:${REF_NAME//[^a-z0-9]/-} --quiet
+          gcloud container images delete $IMAGE_NAME:${TAG_NAME//[^a-z0-9]/-} --quiet
