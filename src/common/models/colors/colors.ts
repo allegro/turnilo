@@ -43,7 +43,7 @@ export interface VisualizationColors {
 }
 
 export function lightMain(colors: VisualizationColors): string {
-  return hsl(colors.main).brighter(0.3).formatHex();
+  return hsl(colors.main).brighter(1.3).toString();
 }
 
 export function alphaMain(colors: VisualizationColors): string {
