@@ -67,7 +67,7 @@ jobs:
     secrets: inherit
 
   all-checks:
-    needs: [deploy, all-reports]
+    needs: [required-checks, deploy, all-reports]
     runs-on: ubuntu-latest
     steps:
       - run: exit 0
