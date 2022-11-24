@@ -17,8 +17,10 @@
 import * as d3 from "d3";
 import { Datum } from "plywood";
 import React from "react";
+import { alphaMain } from "../../../../common/models/colors/colors";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
+import { useSettingsContext } from "../../../views/cube-view/settings-context";
 import { ContinuousRange, ContinuousScale } from "../utils/continuous-types";
 import "./chart-line.scss";
 import { prepareDataPoints } from "./prepare-data-points";
@@ -37,13 +39,10 @@ export interface ChartLineProps {
   stage: Stage;
 }
 
-const stroke = (color: string, dashed: boolean): Pick<React.CSSProperties, "stroke" | "strokeDasharray"> => ({
-  stroke: color,
-  strokeDasharray: dashed ? "4 2" : undefined
-});
-
 export const ChartLine: React.FunctionComponent<ChartLineProps> = props => {
-  const { color, dashed, getX, getY, dataset, showArea, stage, xScale, yScale } = props;
+  const { customization: { visualizationColors } } = useSettingsContext();
+  const mainColor = visualizationColors.main;
+  const { color = mainColor, dashed, getX, getY, dataset, showArea, stage, xScale, yScale } = props;
 
   const area = d3.area().y0(yScale(0));
   const line = d3.line();
@@ -54,8 +53,15 @@ export const ChartLine: React.FunctionComponent<ChartLineProps> = props => {
   const hasSinglePoint = points.length === 1;
 
   return <g className="chart-line" transform={stage.getTransform()}>
-    {hasMultiplePoints && <path className="line" d={line(scaledPoints)} style={stroke(color, dashed)} />}
-    {hasMultiplePoints && showArea && <path className="area" d={area(scaledPoints)} />}
+    {hasMultiplePoints && <path
+      className="line"
+      d={line(scaledPoints)}
+      stroke={color}
+      strokeDasharray={dashed ? "4 2" : undefined}/>}
+    {hasMultiplePoints && showArea && <path
+      className="area"
+      fill={alphaMain(visualizationColors)}
+      d={area(scaledPoints)}/>}
     {hasSinglePoint && <circle
       className="singleton"
       cx={scaledPoints[0][0]}

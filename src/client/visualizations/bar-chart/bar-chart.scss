@@ -114,8 +114,6 @@
         }
 
         > rect.background {
-          // TODO: replace with visualisationColors.main
-          @include css-variable(fill, brand);
           pointer-events: none;
         }
 

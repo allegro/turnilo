@@ -18,6 +18,7 @@ import { Datum } from "plywood";
 import React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
+import { useSettingsContext } from "../../../../views/cube-view/settings-context";
 import { BaseBarChartModel } from "../utils/bar-chart-model";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
@@ -32,6 +33,7 @@ interface SingleBarProps {
 }
 
 export const SingleBar: React.FunctionComponent<SingleBarProps> = props => {
+  const { customization: { visualizationColors } } = useSettingsContext();
   const { datum, xScale, yScale, model: { continuousSplit }, series } = props;
   const [maxHeight] = yScale.range();
   const x = continuousSplit.selectValue<DomainValue>(datum);
@@ -40,11 +42,13 @@ export const SingleBar: React.FunctionComponent<SingleBarProps> = props => {
   const y = series.selectValue(datum);
   const yPos = yScale(y);
   const height = maxHeight - yPos;
+  const fill = visualizationColors.main;
 
   return <rect
     className="bar-chart-bar"
     x={xPos}
     y={yPos}
+    fill={fill}
     width={width}
     height={height} />;
 };

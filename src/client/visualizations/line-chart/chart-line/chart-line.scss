@@ -21,25 +21,16 @@
   pointer-events: none;
 
   .area {
-    @include css-variable(fill, main-time-area);
     stroke: none;
     fill-opacity: .9;
   }
 
   .line {
-    @include css-variable(stroke, main-time-line);
     fill: none;
     stroke-width: 1.6px;
   }
 
   .singleton {
-    @include css-variable(fill, main-time-line);
     stroke: none;
-  }
-
-  .hover {
-    @include css-variable(stroke, main-time-line);
-    fill: $white;
-    stroke-width: 2;
   }
 }
