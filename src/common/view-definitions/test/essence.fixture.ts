@@ -16,6 +16,7 @@
 
 import { day, Duration, Timezone } from "chronoshift";
 import { OrderedSet } from "immutable";
+import { clientAppSettings } from "../../models/app-settings/app-settings.fixtures";
 import { Essence, EssenceValue } from "../../models/essence/essence";
 import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
@@ -61,6 +62,7 @@ const defaults: EssenceOptions = {
 
 export function mockEssence(opts: Partial<EssenceOptions> = {}) {
   return new Essence({
+    appSettings: clientAppSettings,
     dataCube,
     ...defaults,
     ...opts
