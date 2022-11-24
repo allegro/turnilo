@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import { hsl, rgb } from "d3";
+
 export const DEFAULT_SERIES_COLORS = [
   "#2D95CA",
   "#EFB925",
@@ -38,4 +40,13 @@ export const DEFAULT_COLORS: VisualizationColors = {
 export interface VisualizationColors {
   main: string;
   series: Array<string>;
+}
+
+export function lightMain(colors: VisualizationColors): string {
+  return hsl(colors.main).brighter(0.3).formatHex();
+}
+
+export function alphaMain(colors: VisualizationColors): string {
+  const { r, g, b } = rgb(colors.main);
+  return `rgba(${r}, ${g}, ${b}, ${0.14})`;
 }
