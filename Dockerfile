@@ -1,8 +1,7 @@
 #
 # BUILD stage
-# Use last supported node version (16.15.0) for build
 #
-FROM node:16.15.0 AS build
+FROM node:16 AS build
 
 WORKDIR /usr/src/app
 
