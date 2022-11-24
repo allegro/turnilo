@@ -9,9 +9,8 @@ jobs:
   undeploy:
     runs-on: ubuntu-latest
 
-    # TODO: handle push to master
     # disable for branches from forks
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ !github.event.pull_request.head.repo.fork }}
 
     env:
       TAG_NAME: ${{ github.head_ref }}
