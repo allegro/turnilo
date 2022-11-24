@@ -12,7 +12,6 @@ jobs:
     if: github.repository == 'allegro/turnilo'
 
     env:
-      IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
       TAG_NAME: ${{ github.head_ref || 'latest' }}
 
     steps:
@@ -23,6 +22,9 @@ jobs:
         uses: ./.github/actions/gcloud
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set Docker image name
+        run: echo "IMAGE_NAME=eu.gcr.io/$GCP_PROJECT/turnilo" >> $GITHUB_ENV
 
       - name: Configure Docker
         run: gcloud auth configure-docker --quiet

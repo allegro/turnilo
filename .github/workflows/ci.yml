@@ -65,3 +65,9 @@ jobs:
     needs: required-checks
     uses: ./.github/workflows/reports.yml
     secrets: inherit
+
+  all-checks:
+    needs: [required-checks, deploy, reports]
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 0
