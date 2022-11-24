@@ -61,12 +61,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
 
-  lighthouse-report:
+  reports:
     needs: required-checks
-    uses: ./.github/workflows/lighthouse-report.yml
-    secrets: inherit
-
-  size-report:
-    needs: required-checks
-    uses: ./.github/workflows/size-report.yml
+    uses: ./.github/workflows/reports.yml
     secrets: inherit

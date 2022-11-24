@@ -1,0 +1,52 @@
+name: Reports
+
+on:
+  workflow_call: ~
+  workflow_dispatch: ~
+
+jobs:
+  size:
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+
+      - uses: andresz1/size-limit-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          build_script: build:client
+          skip_step: install
+
+  lighthouse:
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request'
+
+    # add permission to comment PR created by dependabot
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - run: npm run build
+      - uses: treosh/lighthouse-ci-action@v9
+        id: lighthouse
+        with:
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const lighthouse_links = ${{ steps.lighthouse.outputs.links }}
+            const lighthouse_link = Object.values(lighthouse_links)[0]
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: ':stopwatch: Lighthouse [report](' + lighthouse_link + ')' 
+            })
