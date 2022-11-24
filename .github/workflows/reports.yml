@@ -50,3 +50,9 @@ jobs:
               repo: context.repo.repo,
               body: ':stopwatch: Lighthouse [report](' + lighthouse_link + ')' 
             })
+
+  all-reports:
+    needs: [ size, lighthouse ]
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 0
