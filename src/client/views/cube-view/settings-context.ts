@@ -17,16 +17,16 @@
 import React, { useContext } from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 
-export interface SettingsValue {
+export interface SettingsContextValue {
   customization: ClientCustomization;
 }
 
-export const SettingsContext = React.createContext<SettingsValue>({
+export const SettingsContext = React.createContext<SettingsContextValue>({
   get customization(): ClientCustomization {
     throw new Error("Attempted to consume SettingsContext when there was no Provider in place.");
   }
 });
 
-export function useSettingsContext(): SettingsValue {
+export function useSettingsContext(): SettingsContextValue {
   return useContext(SettingsContext);
 }

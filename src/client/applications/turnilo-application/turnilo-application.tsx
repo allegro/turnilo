@@ -36,7 +36,7 @@ import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
-import { SettingsContext, SettingsValue } from "../../views/cube-view/settings-context";
+import { SettingsContext, SettingsContextValue } from "../../views/cube-view/settings-context";
 import { GeneralError } from "../../views/error-view/general-error";
 import { HomeView } from "../../views/home-view/home-view";
 import "./turnilo-application.scss";
@@ -229,21 +229,22 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     }
   }
 
-  private getSettingsContext(): SettingsValue {
+  private getSettingsContext(): SettingsContextValue {
     const { appSettings: { customization } } = this.props;
     return this.constructSettingsContext(customization);
   }
 
+  // NOTE: is memoization needed?
   private constructSettingsContext = memoizeOne((customization: ClientCustomization) => ({ customization }));
 
   render() {
     return <React.StrictMode>
       <main className="turnilo-application">
         <SettingsContext.Provider value={this.getSettingsContext()}>
-        {this.renderView()}
-        {this.renderAboutModal()}
-        <Notifications/>
-        <Questions/>
+          {this.renderView()}
+          {this.renderAboutModal()}
+          <Notifications/>
+          <Questions/>
         </SettingsContext.Provider>
       </main>
     </React.StrictMode>;
