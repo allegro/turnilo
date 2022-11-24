@@ -8,8 +8,6 @@ jobs:
   size:
     runs-on: ubuntu-latest
 
-    if: github.event_name == 'pull_request'
-
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
@@ -23,13 +21,6 @@ jobs:
   lighthouse:
     runs-on: ubuntu-latest
 
-    if: github.event_name == 'pull_request'
-
-    # add permission to comment PR created by dependabot
-    permissions:
-      issues: write
-      pull-requests: write
-
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
@@ -41,6 +32,7 @@ jobs:
           temporaryPublicStorage: true
       - uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const lighthouse_links = ${{ steps.lighthouse.outputs.links }}
             const lighthouse_link = Object.values(lighthouse_links)[0]

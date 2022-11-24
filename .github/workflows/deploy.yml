@@ -8,8 +8,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # TODO: handle push to master
     # disable for branches from forks
-    if: github.repository == 'allegro/turnilo'
+    if: github.event.pull_request.head.repo.full_name == github.repository
 
     env:
       TAG_NAME: ${{ github.head_ref || 'latest' }}
