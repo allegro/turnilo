@@ -19,15 +19,22 @@ import { Request, Response, Router } from "express";
 import { deserialize } from "../../../client/deserializers/app-settings";
 import { AppSettings, ClientAppSettings, serialize } from "../../../common/models/app-settings/app-settings";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
-import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
+import { isQueryable, QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { getDataCube, Sources } from "../../../common/models/sources/sources";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
 
-function convertAppSettings(appSettings: AppSettings): ClientAppSettings {
+function convertToClientAppSettings(appSettings: AppSettings): ClientAppSettings {
   return deserialize(serialize(appSettings));
+}
+
+function convertToClientDataCube(cube: QueryableDataCube): ClientDataCube {
+  return {
+    ...cube,
+    timeAttribute: cube.timeAttribute && cube.timeAttribute.name
+  };
 }
 
 export function mkurlRouter(appSettings: AppSettings, sourcesGetter: SourcesGetter) {
@@ -78,14 +85,12 @@ export function mkurlRouter(appSettings: AppSettings, sourcesGetter: SourcesGett
       return;
     }
 
-    let essence: Essence;
-    const clientDataCube: ClientDataCube = {
-      ...myDataCube,
-      timeAttribute: myDataCube.timeAttribute && myDataCube.timeAttribute.name
-    };
+    const clientDataCube = convertToClientDataCube(myDataCube);
+    const clientAppSettings = convertToClientAppSettings(appSettings);
 
+    let essence: Essence;
     try {
-      essence = definitionConverter.fromViewDefinition(viewDefinition, clientDataCube, convertAppSettings(appSettings));
+      essence = definitionConverter.fromViewDefinition(viewDefinition, clientAppSettings, clientDataCube);
     } catch ({ message }) {
       res.status(400).send({ error: "invalid viewDefinition object", message });
       return;
