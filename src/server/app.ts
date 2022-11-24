@@ -19,7 +19,6 @@ import * as bodyParser from "body-parser";
 import compress from "compression";
 import express, { Express } from "express";
 import { Handler, Request, Response, Router } from "express";
-import { hsts } from "hsts";
 import { join } from "path";
 import { PluginSettings } from "./models/plugin-settings/plugin-settings";
 import { ServerSettings } from "./models/server-settings/server-settings";
@@ -46,6 +45,7 @@ export default function createApp(
   settingsManager: SettingsManager,
   version: string
 ): Express {
+  const hsts = require("hsts");
   let app = express();
   app.disable("x-powered-by");
 
