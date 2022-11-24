@@ -66,7 +66,7 @@ export type FilterSelection = Expression | string;
 export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDefinition2, Essence> {
   version = 2;
 
-  fromViewDefinition(definition: ViewDefinition2, dataCube: ClientDataCube, appSettings: ClientAppSettings): Essence {
+  fromViewDefinition(definition: ViewDefinition2, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const visualization = manifestByName(definition.visualization);
     const visualizationSettings = visualization.visualizationSettings.defaults;
 

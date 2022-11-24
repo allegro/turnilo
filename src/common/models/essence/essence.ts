@@ -618,9 +618,10 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .resolveVisualizationAndUpdate();
   }
 
+  // NOTE: Pass appsettings to all callers. Probably all callers are from Clicker object
   public resolveVisualizationAndUpdate() {
     const { visualization, splits, dataCube, series, appSettings } = this;
-    const result = resolveVisualization({ appSettings, splits, dataCube, visualization, series });
+    const result = resolveVisualization({ appSettings, dataCube, visualization, splits, series });
     return this
       .set("visResolve", result.visResolve)
       .set("visualization", result.visualization)

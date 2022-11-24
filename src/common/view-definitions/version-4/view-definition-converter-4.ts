@@ -34,7 +34,7 @@ import { fromViewDefinition, toViewDefinition } from "./visualization-settings-c
 export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
   version = 4;
 
-  fromViewDefinition(definition: ViewDefinition4, dataCube: ClientDataCube, appSettings: ClientAppSettings): Essence {
+  fromViewDefinition(definition: ViewDefinition4, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);

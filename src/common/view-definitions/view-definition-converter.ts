@@ -21,7 +21,7 @@ import { Essence } from "../models/essence/essence";
 export interface ViewDefinitionConverter<VD extends object, E extends Essence> {
   version: number;
 
-  fromViewDefinition(definition: VD, dataCube: ClientDataCube, appSettings: ClientAppSettings): E;
+  fromViewDefinition(definition: VD, appSettings: ClientAppSettings, dataCube: ClientDataCube): E;
 
   toViewDefinition(essence: E): VD;
 }

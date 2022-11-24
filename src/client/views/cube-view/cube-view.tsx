@@ -92,7 +92,7 @@ export interface CubeViewProps {
   hash: string;
   changeCubeAndEssence: Ternary<ClientDataCube, Essence, boolean, void>;
   urlForCubeAndEssence: Binary<ClientDataCube, Essence, string>;
-  getEssenceFromHash: Ternary<string, ClientDataCube, ClientAppSettings, Essence>;
+  getEssenceFromHash: Ternary<string, ClientAppSettings, ClientDataCube, Essence>;
   dataCube: ClientDataCube;
   dataCubes: ClientDataCube[];
   openAboutModal: Fn;
@@ -306,7 +306,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
 
     const { getEssenceFromHash, appSettings } = this.props;
-    return getEssenceFromHash(hash, dataCube, appSettings);
+    return getEssenceFromHash(hash, appSettings, dataCube);
   }
 
   globalResizeListener = () => {

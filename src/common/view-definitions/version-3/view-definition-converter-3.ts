@@ -32,7 +32,7 @@ import { ViewDefinition3 } from "./view-definition-3";
 export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
   version = 3;
 
-  fromViewDefinition(definition: ViewDefinition3, dataCube: ClientDataCube, appSettings: ClientAppSettings): Essence {
+  fromViewDefinition(definition: ViewDefinition3, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);

@@ -31,7 +31,7 @@ const SEGMENT_SEPARATOR = "/";
 const MINIMAL_HASH_SEGMENTS_COUNT = 2;
 
 export interface UrlHashConverter {
-  essenceFromHash(hash: string, dataCube: ClientDataCube, appSettings: ClientAppSettings): Essence;
+  essenceFromHash(hash: string, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
@@ -86,14 +86,14 @@ export function getHashSegments(hash: string): HashSegments {
 }
 
 export const urlHashConverter: UrlHashConverter = {
-  essenceFromHash(hash: string, dataCube: ClientDataCube, appSettings: ClientAppSettings): Essence {
+  essenceFromHash(hash: string, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
-    return definitionConverter.fromViewDefinition(definition, dataCube, appSettings);
+    return definitionConverter.fromViewDefinition(definition, appSettings, dataCube);
   },
 
   toHash(essence: Essence, version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION): string {
