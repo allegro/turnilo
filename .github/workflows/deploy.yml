@@ -12,7 +12,7 @@ jobs:
     if: github.repository == 'allegro/turnilo'
 
     env:
-      IMAGE_NAME: eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/turnilo
+      IMAGE_NAME: eu.gcr.io/$GCP_PROJECT/turnilo
       TAG_NAME: ${{ github.head_ref || 'latest' }}
 
     steps:
