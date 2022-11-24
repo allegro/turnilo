@@ -19,7 +19,7 @@ import * as bodyParser from "body-parser";
 import compress from "compression";
 import express, { Express } from "express";
 import { Handler, Request, Response, Router } from "express";
-import { hsts } from "helmet";
+import { hsts } from "hsts";
 import { join } from "path";
 import { PluginSettings } from "./models/plugin-settings/plugin-settings";
 import { ServerSettings } from "./models/server-settings/server-settings";
@@ -41,8 +41,11 @@ declare module "express" {
   }
 }
 
-export default function createApp(serverSettings: ServerSettings, settingsManager: SettingsManager, version: string): Express {
-
+export default function createApp(
+  serverSettings: ServerSettings,
+  settingsManager: SettingsManager,
+  version: string
+): Express {
   let app = express();
   app.disable("x-powered-by");
 
@@ -74,11 +77,13 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
 
   // Add Strict Transport Security
   if (serverSettings.strictTransportSecurity === "always") {
-    app.use(hsts({
-      maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-      includeSubdomains: true, // Must be enabled to be approved by Google
-      preload: true
-    }));
+    app.use(
+      hsts({
+        maxAge: 10886400000, // Must be at least 18 weeks to be approved by Google
+        includeSubdomains: true, // Must be enabled to be approved by Google
+        preload: true,
+      })
+    );
   }
 
   app.use(bodyParser.json());
@@ -102,14 +107,18 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
       settingsManager.logger.log(`Loading plugin ${name} module`);
       const module = loadPlugin(path, settingsManager.anchorPath);
       settingsManager.logger.log(`Invoking plugin ${name}`);
-      module.plugin(app,
+      module.plugin(
+        app,
         settings,
         serverSettings,
         settingsManager.appSettings,
         settingsManager.sourcesGetter,
-        settingsManager.logger.addPrefix(name));
+        settingsManager.logger.addPrefix(name)
+      );
     } catch (e) {
-      settingsManager.logger.warn(`Plugin ${name} threw an error: ${e.message}`);
+      settingsManager.logger.warn(
+        `Plugin ${name} threw an error: ${e.message}`
+      );
     }
   });
 
@@ -125,23 +134,30 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
     if (webpack && webpackDevMiddleware && webpackHotMiddleware) {
       const webpackCompiler = webpack(webpackConfig);
 
-      app.use(webpackDevMiddleware(webpackCompiler, {
-        hot: true,
-        noInfo: true,
-        publicPath: webpackConfig.output.publicPath
-      }));
+      app.use(
+        webpackDevMiddleware(webpackCompiler, {
+          hot: true,
+          noInfo: true,
+          publicPath: webpackConfig.output.publicPath,
+        })
+      );
 
-      app.use(webpackHotMiddleware(webpackCompiler, {
-        log: console.log,
-        path: "/__webpack_hmr"
-      }));
+      app.use(
+        webpackHotMiddleware(webpackCompiler, {
+          log: console.log,
+          path: "/__webpack_hmr",
+        })
+      );
     }
   }
 
   attachRouter("/", express.static(join(__dirname, "../../build/public")));
   attachRouter("/", express.static(join(__dirname, "../../assets")));
 
-  attachRouter(serverSettings.readinessEndpoint, readinessRouter(settingsManager.sourcesGetter));
+  attachRouter(
+    serverSettings.readinessEndpoint,
+    readinessRouter(settingsManager.sourcesGetter)
+  );
   attachRouter(serverSettings.livenessEndpoint, livenessRouter);
 
   // Data routes
@@ -149,9 +165,19 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   attachRouter("/plywood", plywoodRouter(settingsManager));
   attachRouter("/plyql", plyqlRouter(settingsManager.sourcesGetter));
   attachRouter("/mkurl", mkurlRouter(settingsManager.sourcesGetter));
-  attachRouter("/shorten", shortenRouter(settingsManager.appSettings, isTrustedProxy));
+  attachRouter(
+    "/shorten",
+    shortenRouter(settingsManager.appSettings, isTrustedProxy)
+  );
 
-  attachRouter("/", turniloRouter(settingsManager.appSettings, () => settingsManager.getTimekeeper(), version));
+  attachRouter(
+    "/",
+    turniloRouter(
+      settingsManager.appSettings,
+      () => settingsManager.getTimekeeper(),
+      version
+    )
+  );
 
   // Catch 404 and redirect to /
   app.use((req: Request, res: Response) => {
