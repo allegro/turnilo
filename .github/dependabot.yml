@@ -10,14 +10,9 @@ updates:
     schedule:
       interval: "weekly"
       
-#
-#  Prototype for node ecosystem, needs to be configured
-#
-#  - package-ecosystem: "npm"
-#    directory: "/"
-#    schedule:
-#      interval: "daily"
-#    allow:
-#      # allow only production updates
-#      - dependency-name: "*"
-#        dependency-type: "production"
+ - package-ecosystem: "npm"
+   directory: "/"
+   schedule:
+     interval: "weekly"
+   allow:
+     - dependency-name: "plywood*"
