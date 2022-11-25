@@ -88,8 +88,6 @@ const availableCssVariables = [
   "item-measure-hover",
   "item-measure-text",
   "item-measure",
-  "main-time-area",
-  "main-time-line",
   "negative",
   "pinboard-icon",
   "positive",
