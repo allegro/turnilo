@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # disable for branches from forks
-    if: github.repository == 'allegro/turnilo'
+    if: ${{ !github.event.pull_request.head.repo.fork }}
 
     env:
       TAG_NAME: ${{ github.head_ref || 'latest' }}
@@ -46,7 +46,6 @@ jobs:
             --port 9090 \
             --cpu 1 --memory 1G --max-instances 1 --concurrency 80 \
             --args="run-examples"
-
 
       - name: Get app URL
         if: ${{ github.head_ref }}
