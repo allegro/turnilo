@@ -8,12 +8,21 @@ pull_request_rules:
     actions:
       merge:
         method: rebase
-  - name: automatic merge for Node dependencies
+  - name: automatic merge for Ruby Gems
     conditions:
       - author=dependabot[bot]
       - check-success=required-checks # check required actions only
-      - label=npm # label assigned by dependabot
+      - label=bundler # label assigned by dependabot
       - base=master
     actions:
       merge:
         method: rebase
+#  - name: automatic merge for Node dependencies
+#    conditions:
+#      - author=dependabot[bot]
+#      - check-success=required-checks # check required actions only
+#      - label=npm # label assigned by dependabot
+#      - base=master
+#    actions:
+#      merge:
+#        method: rebase

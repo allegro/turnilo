@@ -4,12 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      
+
   - package-ecosystem: "bundler"
     directory: "/docs"
     schedule:
       interval: "weekly"
-      
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
