@@ -9,7 +9,7 @@ jobs:
   undeploy:
     runs-on: ubuntu-latest
 
-    # disable for branches from forks
+    # disable for PRs from forks
     if: ${{ !github.event.pull_request.head.repo.fork }}
 
     env:
