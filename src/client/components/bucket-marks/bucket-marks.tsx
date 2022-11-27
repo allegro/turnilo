@@ -39,19 +39,19 @@ export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksSt
     const { stage, ticks, scale } = this.props;
     const stageWidth = stage.width;
 
-    let lines: JSX.Element[] = [];
+    const lines: JSX.Element[] = [];
 
     function addLine(x: number, key: string) {
       if (stageWidth < x) return;
       lines.push(<line key={key} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />);
     }
 
-    for (let tick of ticks) {
-      let x = roundToHalfPx(scale(tick));
+    for (const tick of ticks) {
+      const x = roundToHalfPx(scale(tick));
       addLine(x, "_" + tick);
     }
     if (ticks.length) {
-      let x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.bandwidth());
+      const x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.bandwidth());
       addLine(x, "last");
     }
 

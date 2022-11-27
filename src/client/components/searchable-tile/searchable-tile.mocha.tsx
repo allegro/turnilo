@@ -25,7 +25,7 @@ import { SearchableTile } from "./searchable-tile";
 
 describe("SearchableTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <SearchableTile
         toggleChangeFn={null}
         onSearchChange={null}

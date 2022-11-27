@@ -31,7 +31,7 @@ describe("Guard test", () => {
   });
 
   it("Guard off -> access to all dataCubes", () => {
-    let dataCube = customCubeWithGuard(null, false);
+    const dataCube = customCubeWithGuard(null, false);
     expect(checkAccess(dataCube, mockHeaders(""))).to.equal(true);
   });
 
@@ -44,12 +44,12 @@ describe("Guard test", () => {
   });
 
   it("Guard on -> access allowed: wildchar", () => {
-    let dataCube = customCubeWithGuard();
+    const dataCube = customCubeWithGuard();
     expect(checkAccess(dataCube, mockHeaders("*,some-other-name"))).to.equal(true);
   });
 
   it("Guard on -> access allowed: datacube allowed", () => {
-    let dataCube = customCubeWithGuard();
+    const dataCube = customCubeWithGuard();
     expect(checkAccess(dataCube, mockHeaders("some-name,some-other-name"))).to.equal(true);
   });
 });

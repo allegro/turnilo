@@ -25,7 +25,7 @@ import { Checkbox } from "./checkbox";
 
 describe("Checkbox", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Checkbox
         selected={true}
       />
@@ -36,13 +36,13 @@ describe("Checkbox", () => {
   });
 
   it("not checked + check", () => {
-    var onClick = sinon.spy();
+    const onClick = sinon.spy();
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Checkbox selected={false} onClick={onClick} />
     );
 
-    var svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent as React.Component, "svg");
+    const svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent as React.Component, "svg");
     expect(svgs.length).to.equal(0);
 
     expect(onClick.callCount).to.equal(0);

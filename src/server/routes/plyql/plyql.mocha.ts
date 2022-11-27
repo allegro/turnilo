@@ -22,7 +22,7 @@ import supertest from "supertest";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { plyqlRouter } from "./plyql";
 
-let app = express();
+const app = express();
 
 app.use(bodyParser.json());
 

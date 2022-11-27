@@ -95,8 +95,8 @@ export class Notifier {
   }
 
   public static removeSticker(id: number) {
-    var notification: Notification;
-    var index = -1;
+    let notification: Notification;
+    let index = -1;
 
     Notifier.notifications.forEach((n, i) => {
       if (n.id === id) {
@@ -182,7 +182,7 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
   };
 
   renderCards(): JSX.Element[] {
-    var cumuledHeight = 13;
+    let cumuledHeight = 13;
 
     return this.state.notifications.map((n, i) => {
       const { title, message, action } = n;

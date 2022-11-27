@@ -16,14 +16,14 @@
  */
 
 function getStack(): any[] {
-  let ErrorConstructor = <any> Error;
+  const ErrorConstructor = <any> Error;
 
-  var origPrepareStackTrace = ErrorConstructor.prepareStackTrace;
+  const origPrepareStackTrace = ErrorConstructor.prepareStackTrace;
 
   ErrorConstructor.prepareStackTrace = (_: any, stack: any) => stack;
 
-  var err = new Error() as any;
-  var stack = err["stack"] as any[];
+  const err = new Error() as any;
+  const stack = err["stack"] as any[];
   ErrorConstructor.prepareStackTrace = origPrepareStackTrace;
   stack.shift(); // getStack --> Error
 
@@ -31,7 +31,7 @@ function getStack(): any[] {
 }
 
 export function getCallerFile() {
-  var stack = getStack();
+  const stack = getStack();
 
   stack.shift(); // getCaller --> getStack
   stack.shift(); // caller of getCaller --> getCaller

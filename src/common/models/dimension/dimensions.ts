@@ -60,7 +60,7 @@ export interface Dimensions {
 }
 
 export function fromConfig(config: DimensionOrGroupJS[]): Dimensions {
-  let byName: Record<DimensionId, Dimension> = {};
+  const byName: Record<DimensionId, Dimension> = {};
 
   function readDimensionOrGroup(dimOrGroup: DimensionOrGroupJS): DimensionOrGroup {
     if (isDimensionGroupJS(dimOrGroup)) {

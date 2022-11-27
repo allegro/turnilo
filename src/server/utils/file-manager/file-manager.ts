@@ -78,7 +78,7 @@ export class FileManager {
       .then(
         rawData => {
           logger.log(`Loaded file ${filePath} (rows = ${rawData.length})`);
-          var dataset = Dataset.fromJS(rawData).hide();
+          let dataset = Dataset.fromJS(rawData).hide();
 
           if (this.subsetExpression) {
             dataset = dataset.filter(this.subsetExpression);

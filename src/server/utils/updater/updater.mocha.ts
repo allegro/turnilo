@@ -24,7 +24,7 @@ function valueEqual(a: any, b: any) {
 
 describe("updater", function() {
   it("one enter", () => {
-    var ops: string[] = [];
+    const ops: string[] = [];
 
     updater(
       [],
@@ -47,7 +47,7 @@ describe("updater", function() {
   });
 
   it("one exit", () => {
-    var ops: string[] = [];
+    const ops: string[] = [];
 
     updater(
       [{ name: "A" }],
@@ -70,7 +70,7 @@ describe("updater", function() {
   });
 
   it("enter / exit", () => {
-    var ops: string[] = [];
+    const ops: string[] = [];
 
     updater(
       [{ name: "A" }],
@@ -93,7 +93,7 @@ describe("updater", function() {
   });
 
   it("enter / update / exit", () => {
-    var ops: string[] = [];
+    const ops: string[] = [];
 
     updater(
       [{ name: "A", value: 1 }, { name: "B", value: 2 }],

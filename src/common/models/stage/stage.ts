@@ -39,7 +39,7 @@ export interface StageJS {
   height: number;
 }
 
-var check: Class<StageValue, StageJS>;
+let check: Class<StageValue, StageJS>;
 
 export class Stage implements Instance<StageValue, StageJS> {
   static isStage(candidate: any): candidate is Stage {
@@ -160,22 +160,22 @@ export class Stage implements Instance<StageValue, StageJS> {
   }
 
   public changeY(y: number): Stage {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.y = y;
 
     return Stage.fromJS(value);
   }
 
   public changeHeight(height: number): Stage {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.height = height;
 
     return Stage.fromJS(value);
   }
 
   public within(param: MarginParameters): Stage {
-    var value = this.sizeOnlyValue();
-    var { left, right, top, bottom } = param;
+    const value = this.sizeOnlyValue();
+    const { left, right, top, bottom } = param;
 
     if (left) {
       value.x = left;

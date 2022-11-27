@@ -26,7 +26,7 @@ import { Shpitz } from "./shpitz";
 
 describe("Shpitz", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Shpitz
         direction="up"
       />

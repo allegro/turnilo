@@ -40,7 +40,7 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
   render() {
     const { title, type, className, svg, active, disabled, onClick } = this.props;
 
-    var icon: JSX.Element = null;
+    let icon: JSX.Element = null;
     if (svg) {
       icon = <SvgIcon svg={svg} />;
     }

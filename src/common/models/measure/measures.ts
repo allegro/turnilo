@@ -60,7 +60,7 @@ export interface Measures {
 }
 
 export function fromConfig(config: MeasureOrGroupJS[]): Measures {
-  let byName: Record<MeasureId, Measure> = {};
+  const byName: Record<MeasureId, Measure> = {};
 
   function readMeasureOrGroup(measureOrGroup: MeasureOrGroupJS): MeasureOrGroup {
     if (isMeasureGroupJS(measureOrGroup)) {

@@ -43,7 +43,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
     const { icons } = this.props;
     if (!icons || !icons.length) return null;
 
-    var iconElements = icons.map(icon => {
+    const iconElements = icons.map(icon => {
       return <div
         className={classNames("icon", icon.name, { active: icon.active })}
         key={icon.name}

@@ -55,7 +55,7 @@ export function deduceAttributes(dataCube: DataCube): Attributes {
     const expression = dimension.expression;
     if (expression.equals(timeAttribute)) return;
     const references = expression.getFreeReferences();
-    for (let reference of references) {
+    for (const reference of references) {
       if (NamedArray.findByName(attributes, reference)) continue;
       attributes.push(AttributeInfo.fromJS({ name: reference, type: "STRING" }));
     }
@@ -63,7 +63,7 @@ export function deduceAttributes(dataCube: DataCube): Attributes {
 
   allMeasures(measures).forEach(measure => {
     const references = getReferences(measure.expression);
-    for (let reference of references) {
+    for (const reference of references) {
       if (NamedArray.findByName(attributes, reference)) continue;
       if (isApproximate(measure)) continue;
       attributes.push(AttributeInfo.fromJS({ name: reference, type: "NUMBER" }));
@@ -82,7 +82,7 @@ export default function dataCubeToExternal(dataCube: DataCube): External {
   const { cluster, options } = dataCube;
   if (!cluster) throw new Error("must have a cluster");
 
-  let externalValue: ExternalValue = {
+  const externalValue: ExternalValue = {
     engine: cluster.type,
     suppress: true,
     source: dataCube.source,

@@ -98,19 +98,19 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     const svgize = (iconName: string) => iconName ? <SvgIcon svg={require(`../../icons/${iconName}.svg`)} /> : null;
 
     return rows.map((row, i) => {
-      let { title, description, icon } = row;
+      const { title, description, icon } = row;
 
-      let dragHandle = <div className="drag-handle">
+      const dragHandle = <div className="drag-handle">
         <SvgIcon svg={require("../../icons/dragger.svg")} />
       </div>;
 
-      let svg = svgize(icon);
-      let text = <div className="text">
+      const svg = svgize(icon);
+      const text = <div className="text">
         <div className="title">{title}</div>
         <div className="description">{description}</div>
       </div>;
 
-      let actions = <div className="actions">
+      const actions = <div className="actions">
         <button onClick={onEdit.bind(this, i)}>{svgize("full-edit")}</button>
         <button onClick={onRemove.bind(this, i)}>{svgize("full-remove")}</button>
       </div>;

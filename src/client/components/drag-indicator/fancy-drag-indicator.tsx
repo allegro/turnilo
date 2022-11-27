@@ -42,7 +42,7 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
       ghostArrowLeft = dragPosition.insert * sectionWidth - CORE_ITEM_GAP / 2;
     } else {
       ghostArrowLeft = dragPosition.replace * sectionWidth + CORE_ITEM_WIDTH / 2;
-      let left = dragPosition.replace * sectionWidth;
+      const left = dragPosition.replace * sectionWidth;
       dragGhostElement = <div className="drag-ghost-element" style={{ left }}></div>;
     }
 

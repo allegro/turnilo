@@ -27,7 +27,7 @@ export function parseTSV(text: string): any[] {
 
 export function parseJSON(text: string): any[] {
   text = text.trim();
-  var firstChar = text[0];
+  const firstChar = text[0];
 
   if (firstChar[0] === "[") {
     try {

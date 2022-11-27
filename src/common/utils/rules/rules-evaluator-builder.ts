@@ -93,7 +93,7 @@ export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
 
   build(): RulesEvaluator<PredicateVars, ActionVars> {
     return (variables: PredicateVars & ActionVars): Resolve => {
-      for (let rule of this.rules) {
+      for (const rule of this.rules) {
         const { predicates, action } = rule;
         if (predicates.some(predicate => predicate(variables))) {
           return action(variables);

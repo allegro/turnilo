@@ -26,11 +26,11 @@ import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils";
 import { NumberFilterMenu } from "./number-filter-menu";
 
 describe("NumberFilterMenu", () => {
-  var div = document.createElement("div");
+  const div = document.createElement("div");
   div.setAttribute("id", "Div1");
 
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         saveClause={null}
         dimension={DimensionFixtures.wikiCommentLength()}

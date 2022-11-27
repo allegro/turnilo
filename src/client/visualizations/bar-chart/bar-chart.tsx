@@ -128,7 +128,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
 
   const filledData: Datum[] = [];
   data.forEach(d => {
-    let segmentValue = d[dimensionName];
+    const segmentValue = d[dimensionName];
     const segmentStart = (segmentValue as PlywoodRange).start;
     while (i < segmentStart) {
       filledData[j] = {};
@@ -178,7 +178,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
   componentDidUpdate() {
     const { scrollerYPosition, scrollerXPosition } = this.state;
 
-    let scrollerComponent = this.scroller.current;
+    const scrollerComponent = this.scroller.current;
     if (!scrollerComponent) return;
 
     const rect = scrollerComponent.scroller.current.getBoundingClientRect();
@@ -220,7 +220,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
     const path: Datum[] = [];
     let currentData: Dataset = mySplitDataset;
     indices.forEach(i => {
-      let datum = currentData.data[i];
+      const datum = currentData.data[i];
       path.push(datum);
       currentData = (datum[SPLIT] as Dataset);
     });
@@ -312,7 +312,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
   }
 
   hasValidYExtent(series: ConcreteSeries, data: Datum[]): boolean {
-    let [yMin, yMax] = this.getYExtent(data, series);
+    const [yMin, yMax] = this.getYExtent(data, series);
     return !isNaN(yMin) && !isNaN(yMax);
   }
 
@@ -492,32 +492,32 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
     const { essence } = this.props;
     const { timezone } = essence;
 
-    let bars: JSX.Element[] = [];
+    const bars: JSX.Element[] = [];
     let highlight: JSX.Element;
 
     const dimension = findDimensionByName(essence.dataCube.dimensions, essence.splits.splits.get(splitIndex).reference);
     const splitLength = essence.splits.length();
 
     data.forEach((d, i) => {
-      let segmentValue = d[dimension.name];
-      let segmentValueStr = formatValue(segmentValue, timezone);
-      let subPath = path.concat(d);
+      const segmentValue = d[dimension.name];
+      const segmentValueStr = formatValue(segmentValue, timezone);
+      const subPath = path.concat(d);
 
       let bar: any;
       let bubble: JSX.Element = null;
-      let subCoordinates = coordinates[i];
-      let { x, y, height, barWidth, barOffset } = coordinates[i];
+      const subCoordinates = coordinates[i];
+      const { x, y, height, barWidth, barOffset } = coordinates[i];
 
       if (splitIndex < splitLength - 1) {
-        let subData: Datum[] = (d[SPLIT] as Dataset).data;
-        let subRender = this.renderBars(subData, series, chartIndex, chartStage, xAxisStage, subCoordinates.children, splitIndex + 1, subPath);
+        const subData: Datum[] = (d[SPLIT] as Dataset).data;
+        const subRender = this.renderBars(subData, series, chartIndex, chartStage, xAxisStage, subCoordinates.children, splitIndex + 1, subPath);
 
         bar = subRender.bars;
         if (!highlight && subRender.highlight) highlight = subRender.highlight;
 
       } else {
 
-        let bubbleInfo: BubbleInfo = {
+        const bubbleInfo: BubbleInfo = {
           series,
           chartIndex,
           path: subPath,
@@ -526,13 +526,13 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
           splitIndex
         };
 
-        let isHovered = this.isHovered(subPath, series);
+        const isHovered = this.isHovered(subPath, series);
         if (isHovered) {
           bubble = this.renderHoverBubble(bubbleInfo);
         }
 
-        let selected = this.isSelected(subPath, series.definition);
-        let faded = this.isFaded();
+        const selected = this.isSelected(subPath, series.definition);
+        const faded = this.isFaded();
         if (selected) {
           bubble = this.renderSelectionBubble(bubbleInfo);
           if (bubble) highlight = this.renderSelectionHighlight(chartStage, subCoordinates, chartIndex);
@@ -594,9 +594,9 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
       const leftThing = ascending ? "start" : "end";
       const rightThing = ascending ? "end" : "start";
       data.forEach((d, i) => {
-        let segmentValue = d[dimension.name];
+        const segmentValue = d[dimension.name];
         let segmentValueStr = String(Range.isRange(segmentValue) ? (segmentValue as any)[leftThing] : "");
-        let coordinate = coordinates[i];
+        const coordinate = coordinates[i];
 
         labels.push(<div
           className="slanty-label continuous"
@@ -615,8 +615,8 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
       });
     } else {
       data.forEach((d, i) => {
-        let segmentValueStr = String(d[dimension.name]);
-        let coordinate = coordinates[i];
+        const segmentValueStr = String(d[dimension.name]);
+        const coordinate = coordinates[i];
 
         labels.push(<div
           className="slanty-label categorical"
@@ -709,14 +709,14 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
       };
     }
 
-    let { xAxisStage } = this.getAxisStages(chartStage);
+    const { xAxisStage } = this.getAxisStages(chartStage);
 
     const { yAxis, yGridLines } = this.getYAxisStuff(mySplitDataset, series, chartStage, chartIndex);
 
     let bars: JSX.Element[];
     let highlight: JSX.Element;
     if (this.isChartVisible(chartIndex, xAxisStage)) {
-      let renderedChart = this.renderBars(mySplitDataset.data, series, chartIndex, chartStage, xAxisStage, coordinates);
+      const renderedChart = this.renderBars(mySplitDataset.data, series, chartIndex, chartStage, xAxisStage, coordinates);
       bars = renderedChart.bars;
       highlight = renderedChart.highlight;
     }
@@ -766,7 +766,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
     maxima[level] = Math.max(maxima[level], data.length);
 
     if (data[0] && data[0][SPLIT] !== undefined) {
-      let n = data.length;
+      const n = data.length;
       for (let i = 0; i < n; i++) {
         this.maxNumberOfLeaves((data[i][SPLIT] as Dataset).data, maxima, level + 1);
       }
@@ -868,9 +868,9 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
     const { stepWidth, barWidth, barOffset } = this.getBarDimensions(xScale.bandwidth());
 
     const coordinates: BarCoordinates[] = data.map((d, i) => {
-      let x = xScale(getX(d, i));
-      let y = scaleY(series.selectValue(d));
-      let h = scaleY(0) - y;
+      const x = xScale(getX(d, i));
+      const y = scaleY(series.selectValue(d));
+      const h = scaleY(0) - y;
       const children: BarCoordinates[] = [];
       const coordinate = new BarCoordinates({
         x,
@@ -884,10 +884,10 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
       });
 
       if (splitIndex < essence.splits.length()) {
-        let subStage: Stage = new Stage({ x, y: chartStage.y, width: barWidth, height: chartStage.height });
-        let subGetX: any = (d: Datum, i: number) => String(i);
-        let subData: Datum[] = (d[SPLIT] as Dataset).data;
-        let subxScale = d3.scaleBand()
+        const subStage: Stage = new Stage({ x, y: chartStage.y, width: barWidth, height: chartStage.height });
+        const subGetX: any = (d: Datum, i: number) => String(i);
+        const subData: Datum[] = (d[SPLIT] as Dataset).data;
+        const subxScale = d3.scaleBand()
           .domain(d3.range(0, maxNumberOfLeaves[splitIndex]).map(String))
           .range([x + barOffset, x + subStage.width]);
 
@@ -937,7 +937,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
 
     if (splits.length()) {
       const xScale = this.getPrimaryXScale();
-      let yAxes: JSX.Element[] = [];
+      const yAxes: JSX.Element[] = [];
       const series = essence.getConcreteSeries();
 
       const chartStage = this.getSingleChartStage();

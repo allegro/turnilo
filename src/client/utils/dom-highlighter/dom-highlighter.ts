@@ -19,9 +19,9 @@ export class DOMHighlighter {
   private static timeoutsForElements: any = {};
 
   private static select(selector: string): HTMLElement {
-    var bits = selector.split(/\s+/);
-    var element: any = document;
-    var bit: string;
+    const bits = selector.split(/\s+/);
+    let element: any = document;
+    let bit: string;
 
     while (bits.length && element) {
       bit = bits.shift().replace(/^\./, "").replace(/\./, " ");
@@ -37,21 +37,21 @@ export class DOMHighlighter {
   }
 
   public static highlight(selector: string) {
-    var element = this.select(selector);
+    const element = this.select(selector);
     if (!element) return;
 
     element.classList.add("dom-highlighter-on");
   }
 
   public static unhighlight(selector: string) {
-    var element = this.select(selector);
+    const element = this.select(selector);
     if (!element) return;
 
     element.classList.remove("dom-highlighter-on");
   }
 
   public static wiggle(selector: string) {
-    var element = this.select(selector);
+    const element = this.select(selector);
     if (!element) return;
 
     element.classList.add("dom-highlighter-wiggle");

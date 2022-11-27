@@ -67,7 +67,7 @@ function makeCheckpoint(checkPoint: number, returnValue: Bucket): Checker {
 }
 
 function makeNumberBuckets(centerAround: number, count: number, coarse?: boolean): number[] {
-  let granularities: number[] = [];
+  const granularities: number[] = [];
   let logTen = Math.log(centerAround) / Math.LN10;
   const digits = getNumberOfWholeDigits(centerAround);
   const decimalBase = 10;
