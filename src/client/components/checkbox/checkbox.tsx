@@ -60,7 +60,7 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
     }
 
     return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
-      <div className="checkbox-body" style={style}></div>
+      <div className="checkbox-body" style={style} />
       {this.renderIcon()}
       {label ? <div className="label">{label}</div> : null}
     </div>;

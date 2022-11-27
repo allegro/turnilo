@@ -73,7 +73,6 @@
     "jsx-no-lambda": false, // disallow lambda in props (creates new function value and forces rerender of component)
     "jsx-no-multiline-js": false, // disallow multiline js in jsx (reduces readability)
     "jsx-no-string-ref": false, // passing string refs is discouraged in React now
-    "jsx-self-close": false, // enforce self closing of empty jsx elements
     "jsx-wrap-multiline": false, // enforce wrapping of multiline jsx elements in parens (React's de facto standard)
     "max-classes-per-file": false, // disallow multiple classes in a single file
     "no-angle-bracket-type-assertion": false, // enforce consistent "as X" type assertion style, "<X>" style is not compatible with TSX

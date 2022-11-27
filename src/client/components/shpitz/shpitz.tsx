@@ -33,7 +33,7 @@ export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
     const { direction, style } = this.props;
 
     return <div className={classNames("shpitz", direction)} style={style}>
-      <div className="rectangle"></div>
+      <div className="rectangle" />
     </div>;
   }
 }

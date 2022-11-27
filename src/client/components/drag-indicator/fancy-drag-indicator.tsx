@@ -43,7 +43,7 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
     } else {
       ghostArrowLeft = dragPosition.replace * sectionWidth + CORE_ITEM_WIDTH / 2;
       let left = dragPosition.replace * sectionWidth;
-      dragGhostElement = <div className="drag-ghost-element" style={{ left }}></div>;
+      dragGhostElement = <div className="drag-ghost-element" style={{ left }} />;
     }
 
     return <div className="fancy-drag-indicator">
