@@ -29,7 +29,7 @@ function stackBaseKey(series: ConcreteSeries, period = SeriesDerivation.CURRENT)
 }
 
 function stackBy(series: ConcreteSeries, period = SeriesDerivation.CURRENT) {
-  return function(datum: Datum): Datum {
+  return (datum: Datum): Datum => {
     const values = selectSplitDatums(datum);
     const { y0, stacked } = values.reduce(({ y0, stacked }, value) => {
       const y = series.selectValue(value, period);

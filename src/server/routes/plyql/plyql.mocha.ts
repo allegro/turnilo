@@ -82,7 +82,7 @@ function testPlyqlHelper(testName: string, contentType: string, queryStr: string
 }
 
 describe("plyql router", () => {
-  tests.forEach(function(test) {
+  tests.forEach(test => {
     testPlyqlHelper(test.testName, mime.getType(test.outputType), JSON.stringify(test, null, 2));
   });
 });

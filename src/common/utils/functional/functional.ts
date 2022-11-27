@@ -122,7 +122,7 @@ export function range(from: number, to: number): number[] {
 export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms: number): ((...args: any[]) => Promise<any>) & { cancel: Fn } {
   let timeoutId: any;
 
-  const debouncedFn = function(...args: any[]) {
+  const debouncedFn = (...args: any[]) => {
     let resolve: Function;
     const promise = new Promise(pResolve => {
       resolve = pResolve;
@@ -139,7 +139,7 @@ export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms
     timeoutId = setTimeout(callLater, ms);
 
     return promise;
-  } as any;
+  };
 
   debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
 

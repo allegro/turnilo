@@ -16,7 +16,5 @@
 import React from "react";
 
 export function withProps<ComponentProps, ExtraProps>(Component: React.ComponentType<ComponentProps>, extraProps: ExtraProps): React.ComponentType<ComponentProps & ExtraProps> {
-  return function(componentProps: ComponentProps) {
-    return <Component {...componentProps} {...extraProps} />;
-  };
+  return (componentProps: ComponentProps) => <Component {...componentProps} {...extraProps} />;
 }
