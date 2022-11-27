@@ -6,16 +6,21 @@
     "tslint-no-focused-test"
   ],
   "rules": {
-    "arrow-parens": [
-      true, // disallow parens around single argument arrow functions
+    "arrow-parens": [true, // disallow parens around single argument arrow functions
       "ban-single-arg-parens"
     ],
-    "ban": [true, ["_", "extend"], ["_", "isNull"], ["_", "isDefined"]],
-    "curly": [
-      true,
+    "ban": [true,
+      ["_", "extend"],
+      ["_", "isNull"],
+      ["_", "isDefined"]
+    ],
+    "curly": [true,
       "ignore-same-line" // don't enforce braces in single line conditionals
     ],
-    "file-header": [true, "Copyright \\d{4}-\\d{4} Allegro.pl"],
+    "file-header": [
+      true,
+      "Copyright \\d{4}-\\d{4} Allegro.pl"
+    ],
     "no-focused-test": true,
     "indent": [true, "spaces", 2],
     "interface-name": [true, "never-prefix"], // don't allow prefixing interface names with "I"
@@ -23,23 +28,29 @@
     "max-line-length": [true, 200],
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "member-access": false, // don't require explicit member access declaration
-    "member-ordering": [true, "static-before-instance"],
-    "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
+    "member-ordering": [true,
+      "static-before-instance"
+    ],
+    "no-console": [true,
+      "debug",
+      "info",
+      "time",
+      "timeEnd",
+      "trace"
+    ],
     "no-inferrable-types": true, // enforce const x = 1 instead of const x: number = 1
     "no-require-imports": false, // allow require() style imports
     "no-string-literal": false, // allow opj["property"] syntax
     "no-var-requires": false, // allow assignment of required modules
     "object-literal-sort-keys": false, // allow unordered keys in object literals
     "ordered-imports": true,
-    "quotemark": [
-      true, // enforce double quotes, single only to avoid escapes, disallow unnecessary templates
+    "quotemark": [true, // enforce double quotes, single only to avoid escapes, disallow unnecessary templates
       "double",
       "jsx-double",
       "avoid-escape",
       "avoid-template"
     ],
-    "trailing-comma": [
-      true, // disallow a trailing comma after last element of list like constructs
+    "trailing-comma": [true, // disallow a trailing comma after last element of list like constructs
       {
         "singleline": "never",
         "multiline": "never"
@@ -47,12 +58,10 @@
     ],
 
     // tslint-eslint-rules
-    "array-bracket-spacing": [
-      true, // disallow spaces after opening and before closing array brackets
+    "array-bracket-spacing": [true, // disallow spaces after opening and before closing array brackets
       "never"
     ],
-    "object-curly-spacing": [
-      true, // enforce spaces in curly braces in objects literals, imports and destructuring
+    "object-curly-spacing": [true, // enforce spaces in curly braces in objects literals, imports and destructuring
       "always"
     ],
 
