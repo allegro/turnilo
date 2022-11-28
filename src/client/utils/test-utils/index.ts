@@ -14,11 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// This needs to be required, otherwise React doesn't play nice with jsdom...
-const ExecutionEnvironment = require("../../../../node_modules/fbjs/lib/ExecutionEnvironment");
-ExecutionEnvironment.canUseDOM = true;
-
 import "./require-extensions";
 
 export * from "./mock-require-ensure";
