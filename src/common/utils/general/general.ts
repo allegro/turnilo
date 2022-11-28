@@ -77,11 +77,11 @@ export function makeTitle(name: string): string {
 
 export function collect(wait: number, fn: Fn): Fn {
   var timeout: any;
-  var later = function() {
+  var later = () => {
     timeout = null;
     fn();
   };
-  return function() {
+  return () => {
     if (!timeout) {
       timeout = setTimeout(later, wait);
     }

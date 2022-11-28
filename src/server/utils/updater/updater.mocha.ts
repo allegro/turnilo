@@ -22,7 +22,7 @@ function valueEqual(a: any, b: any) {
   return a.value === b.value;
 }
 
-describe("updater", function() {
+describe("updater", () => {
   it("one enter", () => {
     var ops: string[] = [];
 

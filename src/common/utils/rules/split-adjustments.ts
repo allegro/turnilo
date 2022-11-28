@@ -49,7 +49,7 @@ export function adjustLimit({ kind, limits }: Dimension) {
 }
 
 export function adjustFiniteLimit(availableLimits: number[], defaultLimit = availableLimits[0]) {
-  return function(split: Split): Split {
+  return (split: Split): Split => {
     const { limit } = split;
     return availableLimits.indexOf(limit) === -1
       ? split.changeLimit(defaultLimit)
@@ -58,7 +58,7 @@ export function adjustFiniteLimit(availableLimits: number[], defaultLimit = avai
 }
 
 export function adjustSort(dimension: Dimension, series: SeriesList, availableDimensions = [dimension.name]) {
-  return function(split: Split): Split {
+  return (split: Split): Split => {
     const { sort } = split;
     if (sort instanceof SeriesSort) return split;
     if (availableDimensions.indexOf(sort.reference) !== -1) return split;
