@@ -76,7 +76,7 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   if (serverSettings.strictTransportSecurity === "always") {
     app.use(hsts({
       maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-      includeSubdomains: true, // Must be enabled to be approved by Google
+      includeSubDomains: true, // Must be enabled to be approved by Google
       preload: true
     }));
   }
