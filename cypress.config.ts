@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { defineConfig } from "cypress";
 
-import React from "react";
-import { classNames } from "../../utils/dom/dom";
-import "./shpitz.scss";
-
-export interface ShpitzProps {
-  direction: string;
-  style?: any;
-}
-
-export interface ShpitzState {
-}
-
-export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
-
-  render() {
-    const { direction, style } = this.props;
-
-    return <div className={classNames("shpitz", direction)} style={style}>
-      <div className="rectangle" />
-    </div>;
+export default defineConfig({
+  video: false,
+  viewportWidth: 1280,
+  viewportHeight: 1024,
+  e2e: {
+    // We've imported your old cypress plugins here.
+    // You may want to clean this up later by importing these.
+    setupNodeEvents(on, config) {
+      return require("./cypress/plugins/index.js")(on, config);
+    }
   }
-}
+});

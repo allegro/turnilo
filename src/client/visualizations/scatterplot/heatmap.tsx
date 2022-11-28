@@ -118,6 +118,5 @@ const Rectangle: React.FunctionComponent<RectangleProps> = ({
     x={xPosition}
     width={width}
     y={yPosition}
-    height={height}>
-  </rect>;
+    height={height} />;
 };
