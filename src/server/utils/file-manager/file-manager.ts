@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as fs from "fs-promise";
+import * as fs from "mz/fs";
 import * as path from "path";
 import { Dataset, Expression, PseudoDatum } from "plywood";
 import { Logger } from "../../../common/logger/logger";
