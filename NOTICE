@@ -8,12 +8,6 @@ This software includes the font Open Sans, copyright (c) 2015, Google Inc.
   * HOMEPAGE:
     * https://www.google.com/fonts/specimen/Open+Sans
 
-This software includes the polyfill library ios-html5-drag-drop-shim, copyright (c) 2013 Tim Ruffles
-  * LICENSE:
-    * https://github.com/timruffles/ios-html5-drag-drop-shim/blob/rewrite/LICENSE (MIT)
-  * HOMEPAGE:
-    * https://github.com/timruffles/ios-html5-drag-drop-shim
-    
  This software is a fork from the last known open source version of the original "pivot" library from Imply Data
   * LICENSE:
     * https://github.com/yahoo/swiv/blob/7b4ea93dfea482d88ce23190d70cc2e332e5d6f1/LICENSE
