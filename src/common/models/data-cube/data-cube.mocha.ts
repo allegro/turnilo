@@ -220,7 +220,7 @@ describe("DataCube", () => {
         }
       };
 
-      var dataCube = fromConfig(legacyDataCubeJS, druidCluster);
+      const dataCube = fromConfig(legacyDataCubeJS, druidCluster);
 
       expect(dataCube).to.deep.equal({
         attributeOverrides: [
@@ -283,7 +283,7 @@ describe("DataCube", () => {
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      var dataCube = fromConfig({
+      const dataCube = fromConfig({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -353,7 +353,7 @@ describe("DataCube", () => {
     });
 
     it("omits unsupported expressions", () => {
-      var dataCube = fromConfig({
+      const dataCube = fromConfig({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",

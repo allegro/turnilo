@@ -27,7 +27,7 @@ const settingsManagerFixture = {
   anchorPath: "."
 };
 
-let app = express();
+const app = express();
 
 app.use(bodyParser.json());
 

@@ -24,7 +24,7 @@ import { AboutModal } from "./about-modal";
 describe("AboutModal", () => {
 
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <AboutModal
         version={"0.9.123"}
         onClose={null}

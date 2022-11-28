@@ -32,20 +32,20 @@ const KEY_CODES: any = {
 };
 
 function convertDOMStringListToArray(list: any): any[] {
-  var length = list.length;
-  var array: any[] = [];
-  for (var i = 0; i < length; i++) {
+  const length = list.length;
+  const array: any[] = [];
+  for (let i = 0; i < length; i++) {
     array.push(list.item(i));
   }
   return array;
 }
 
 export function isInside(child: Element, parent: Element | Text): boolean {
-  var altParent: Element;
+  let altParent: Element;
   while (child) {
     if (child === parent) return true;
 
-    var dataset = (child as HTMLElement).dataset;
+    const dataset = (child as HTMLElement).dataset;
     if (dataset && dataset["parent"] && (altParent = document.getElementById(dataset["parent"]))) {
       child = altParent;
     } else {
@@ -70,7 +70,7 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   }
 
   // Thanks to http://www.kryogenix.org/code/browser/custom-drag-image.html
-  var dragGhost = d3.select(document.body).append("div")
+  const dragGhost = d3.select(document.body).append("div")
     .attr("class", "drag-ghost")
     .text(text);
 
@@ -106,7 +106,7 @@ export function rightKey(e: KeyboardEvent): boolean {
   return e.which === KEY_CODES.RIGHT;
 }
 
-var lastID = 0;
+let lastID = 0;
 
 export function uniqueId(prefix: string): string {
   lastID++;
@@ -114,11 +114,11 @@ export function uniqueId(prefix: string): string {
 }
 
 export function transformStyle(x: number, y: number): any {
-  var xStr = String(x);
-  var yStr = String(y);
+  let xStr = String(x);
+  let yStr = String(y);
   if (xStr !== "0") xStr += "px";
   if (yStr !== "0") yStr += "px";
-  var transform = `translate(${xStr},${yStr})`;
+  const transform = `translate(${xStr},${yStr})`;
   return {
     transform,
     WebkitTransform: transform,
@@ -147,17 +147,17 @@ export function clamp(n: number, min: number, max: number): number {
 }
 
 export function classNames(...args: Array<string | Record<string, any>>): string {
-  var classes: string[] = [];
+  const classes: string[] = [];
 
-  for (var arg of args) {
+  for (const arg of args) {
     if (!arg) continue;
 
-    var argType = typeof arg;
+    const argType = typeof arg;
 
     if (argType === "string") {
       classes.push(arg as string);
     } else if (argType === "object") {
-      for (var key in (arg as Record<string, any>)) {
+      for (const key in (arg as Record<string, any>)) {
         if (hasOwnProperty(arg, key) && (arg as any)[key]) classes.push(key);
       }
     }

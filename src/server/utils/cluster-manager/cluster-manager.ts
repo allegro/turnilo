@@ -357,7 +357,7 @@ export class ClusterManager {
         (sources: string[]) => {
           if (verbose) logger.log(`For cluster '${cluster.name}' got sources: [${sources.join(", ")}]`);
           // For every un-accounted source: make an external and add it to the managed list.
-          let introspectionTasks: Array<Promise<void>> = [];
+          const introspectionTasks: Array<Promise<void>> = [];
 
           this.managedExternals.forEach(ex => {
             if (sources.find(src => src === String(ex.external.source)) == null) {
@@ -412,7 +412,7 @@ export class ClusterManager {
     return (External.getConstructorFor(cluster.type) as any).getSourceList(this.requester)
         .then(
             (sources: string[]) => {
-              let introspectionTasks: Array<Promise<void>> = [];
+              const introspectionTasks: Array<Promise<void>> = [];
               sources.forEach(source => {
                 const existingExternalsForSource = this.managedExternals.filter(managedExternal => externalContainsSource(managedExternal.external, source));
 

@@ -43,7 +43,7 @@ declare module "express" {
 
 export default function createApp(serverSettings: ServerSettings, settingsManager: SettingsManager, version: string): Express {
 
-  let app = express();
+  const app = express();
   app.disable("x-powered-by");
 
   const isDev = app.get("env") === "development";

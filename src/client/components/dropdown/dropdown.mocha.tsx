@@ -24,7 +24,7 @@ import { Dropdown } from "./dropdown";
 
 describe("Dropdown", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Dropdown
         items={null}
       />

@@ -25,7 +25,7 @@ import { FilterOptionsDropdown } from "./filter-options-dropdown";
 
 describe("FilterOptionsDropdown", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <FilterOptionsDropdown
         selectedOption={null}
         onSelectOption={() => {

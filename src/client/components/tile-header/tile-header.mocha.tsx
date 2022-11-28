@@ -24,7 +24,7 @@ import { TileHeader } from "./tile-header";
 
 describe("TileHeader", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <TileHeader
         onDragStart={null}
         title={null}

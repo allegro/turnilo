@@ -20,7 +20,7 @@ import { DataCube } from "../../../common/models/data-cube/data-cube";
 export const allowDataCubesHeaderName = "x-turnilo-allow-datacubes";
 
 export function checkAccess(dataCube: DataCube, headers: Request["headers"]) {
-  var guard = dataCube && dataCube.cluster && dataCube.cluster.guardDataCubes || false;
+  const guard = dataCube && dataCube.cluster && dataCube.cluster.guardDataCubes || false;
 
   if (!guard) {
     return true;

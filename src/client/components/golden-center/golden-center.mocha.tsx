@@ -26,7 +26,7 @@ import { GoldenCenter } from "./golden-center";
 
 describe("GoldenCenter", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <GoldenCenter>
         <div className="Hello">Is it me you're looking for?</div>
       </GoldenCenter>

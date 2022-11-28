@@ -24,7 +24,7 @@ import { DropIndicator } from "./drop-indicator";
 
 describe("DropIndicator", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DropIndicator />
     );
 

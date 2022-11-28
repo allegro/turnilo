@@ -21,12 +21,12 @@ export interface Positioning {
 }
 
 export function getVisibleSegments(segmentWidths: number[], offset: number, visibleSize: number): Positioning {
-  var startIndex = 0;
-  var shownColumns = 0;
+  let startIndex = 0;
+  let shownColumns = 0;
 
-  var curWidth = 0;
+  let curWidth = 0;
   for (const segmentWidth of segmentWidths) {
-    let afterWidth = curWidth + segmentWidth;
+    const afterWidth = curWidth + segmentWidth;
     if (afterWidth < offset) {
       startIndex++;
     } else if (curWidth < offset + visibleSize) {

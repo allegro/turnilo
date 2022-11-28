@@ -44,7 +44,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
   onGlobalMouseMove = (event: MouseEvent) => {
     const { onChange, leftBound, rightBound } = this.props;
     const { anchor } = this.state;
-    let newX = getXFromEvent(event) - anchor;
+    const newX = getXFromEvent(event) - anchor;
 
     onChange(clamp(newX, leftBound, rightBound));
   };
@@ -52,8 +52,8 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
   onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
     const { offset, positionLeft } = this.props;
 
-    let x = getXFromEvent(event);
-    var anchor = x - offset - positionLeft;
+    const x = getXFromEvent(event);
+    const anchor = x - offset - positionLeft;
 
     this.setState({
       anchor
@@ -72,7 +72,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
   render() {
     const { positionLeft, isAny, isBeyondMin, isBeyondMax } = this.props;
 
-    var style = { left: positionLeft };
+    const style = { left: positionLeft };
 
     return <div
       className={classNames("range-handle", { "empty": isAny, "beyond min": isBeyondMin, "beyond max": isBeyondMax })}

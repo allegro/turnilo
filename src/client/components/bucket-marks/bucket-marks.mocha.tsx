@@ -25,7 +25,7 @@ import { BucketMarks } from "./bucket-marks";
 
 describe("BucketMarks", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <BucketMarks
         stage={StageFixtures.defaultA()}
         ticks={[]}

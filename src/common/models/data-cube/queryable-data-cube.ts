@@ -52,7 +52,8 @@ export interface QueryableDataCube extends DataCube {
 }
 
 export function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube {
-  let { dimensions, measures, attributes, introspection } = dataCube;
+  const { attributes, introspection } = dataCube;
+  let { dimensions, measures } = dataCube;
   if (introspection === "none") return dataCube;
 
   const autofillDimensions = introspection === "autofill-dimensions-only" || introspection === "autofill-all";
@@ -60,7 +61,7 @@ export function addAttributes(dataCube: DataCube, newAttributes: Attributes): Da
 
   const $main = $("main");
 
-  for (let newAttribute of newAttributes) {
+  for (const newAttribute of newAttributes) {
     const { name, type, nativeType } = newAttribute;
 
     // Already exists as a current attribute

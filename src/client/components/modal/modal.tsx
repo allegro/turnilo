@@ -49,7 +49,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   }
 
   UNSAFE_componentWillMount() {
-    var { id } = this.props;
+    const { id } = this.props;
 
     this.setState({
       id: id || uniqueId("modal-")
@@ -70,12 +70,12 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     const n = children.length;
 
     for (let i = 0; i < n; i++) {
-      let child = children[i] as HTMLElement;
+      const child = children[i] as HTMLElement;
 
       if (child.getAttribute && child.getAttribute("id") === id) return child;
 
       if (child.childNodes) {
-        let foundChild = this.getChildByID(child.childNodes, id);
+        const foundChild = this.getChildByID(child.childNodes, id);
         if (foundChild) return foundChild;
       }
     }
@@ -85,9 +85,9 @@ export class Modal extends React.Component<ModalProps, ModalState> {
 
   maybeFocus() {
     if (this.props.startUpFocusOn) {
-      var myElement = document.getElementById(this.state.id) as Element;
+      const myElement = document.getElementById(this.state.id) as Element;
 
-      let target = this.getChildByID(
+      const target = this.getChildByID(
         myElement.childNodes,
         this.props.startUpFocusOn
       );
@@ -112,24 +112,24 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   };
 
   onMouseDown = (e: MouseEvent) => {
-    var { onClose, mandatory } = this.props;
+    const { onClose, mandatory } = this.props;
     if (mandatory) return;
 
-    var { id } = this.state;
+    const { id } = this.state;
     // can not use ReactDOM.findDOMNode(this) because portal?
-    var myElement = document.getElementById(id) as Element;
+    const myElement = document.getElementById(id) as Element;
     if (!myElement) return;
-    var target = e.target as Element;
+    const target = e.target as Element;
 
     if (isInside(target, myElement)) return;
     onClose();
   };
 
   render() {
-    var { className, title, children, onClose } = this.props;
-    var { id } = this.state;
+    const { className, title, children, onClose } = this.props;
+    const { id } = this.state;
 
-    var titleElement: JSX.Element = null;
+    let titleElement: JSX.Element = null;
     if (typeof title === "string") {
       titleElement = <div className="modal-title">
         <div className="text">{title}</div>

@@ -238,7 +238,7 @@ export class SettingsManager {
 
     logger.log(`Got external dataset removal for ${dataCubeName} in cluster ${cluster.name}`);
 
-    let dataCube = getDataCube(sources, dataCubeName);
+    const dataCube = getDataCube(sources, dataCubeName);
     if (dataCube) {
       this.sources = deleteDataCube(sources, dataCube);
       this.timeMonitor.removeCheck(dataCube);

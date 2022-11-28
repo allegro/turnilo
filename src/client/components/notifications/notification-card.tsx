@@ -60,7 +60,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
   appear = () => {
     const { title, message, duration, muted } = this.props.model;
 
-    var d = clamp(duration, -1, 10);
+    const d = clamp(duration, -1, 10);
 
     if (d === -1) {
       this.setState({ appearing: false });
@@ -123,7 +123,8 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
   render() {
     const { appearing, disappearing } = this.state;
-    var { model, top } = this.props;
+    const { model } = this.props;
+    let { top } = this.props;
 
     if (!model) return null;
 
@@ -131,9 +132,9 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
     if (appearing || disappearing) top = -100;
 
-    var rowsClass = `rows-${[title, message, action].filter(Boolean).length}`;
+    const rowsClass = `rows-${[title, message, action].filter(Boolean).length}`;
 
-    var onClick = () => {
+    const onClick = () => {
       action && action.callback();
       this.disappear();
     };

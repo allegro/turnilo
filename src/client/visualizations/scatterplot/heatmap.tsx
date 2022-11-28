@@ -80,7 +80,7 @@ interface GetCounts {
 type Counts = number[][];
 
 function getCounts({ xBinCount, yBinCount, xSeries, ySeries, xQuantile, yQuantile, data }: GetCounts): Counts {
-  let counts = Array.from({ length: xBinCount }, () => Array.from({ length: yBinCount }, () => 0));
+  const counts = Array.from({ length: xBinCount }, () => Array.from({ length: yBinCount }, () => 0));
 
   data.forEach(datum => {
     const i = xQuantile(xSeries.selectValue(datum));

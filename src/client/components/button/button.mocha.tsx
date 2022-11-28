@@ -26,7 +26,7 @@ import { Button } from "./button";
 
 describe("Button", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Button
         title="Important button"
         type="primary"

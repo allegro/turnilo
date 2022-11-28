@@ -52,10 +52,10 @@ export function isFiniteNumber(n: number): boolean {
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
-  var n = list.size;
+  const n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");
   if (insertPoint < 0 || insertPoint > n) throw new Error("insertPoint out of range");
-  var newArray: T[] = [];
+  const newArray: T[] = [];
   list.forEach((value, i) => {
     if (i === insertPoint) newArray.push(list.get(itemIndex));
     if (i !== itemIndex) newArray.push(value);
@@ -76,8 +76,8 @@ export function makeTitle(name: string): string {
 }
 
 export function collect(wait: number, fn: Fn): Fn {
-  var timeout: any;
-  var later = () => {
+  let timeout: any;
+  const later = () => {
     timeout = null;
     fn();
   };
@@ -97,7 +97,7 @@ export function makeUrlSafeName(name: string): string {
 export function verifyUrlSafeName(name: string): void {
   if (typeof name !== "string") throw new TypeError("name must be a string");
   if (!name.length) throw new Error("can not have empty name");
-  var urlSafeName = makeUrlSafeName(name);
+  const urlSafeName = makeUrlSafeName(name);
   if (name !== urlSafeName) {
     throw new Error(`'${name}' is not a URL safe name. Try '${urlSafeName}' instead?`);
   }
@@ -113,8 +113,8 @@ export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (
 }
 
 export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
-  var biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
-  var biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
+  const biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
+  const biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
   return biggerArrayOrEqual.reduce((pV, cV) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
 }
 
@@ -139,7 +139,7 @@ export function integerDivision(x: number, y: number): number {
 }
 
 export function toSignificantDigits(n: number, digits: number) {
-  var multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
+  const multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
   return Math.round(n * multiplier) / multiplier;
 }
 

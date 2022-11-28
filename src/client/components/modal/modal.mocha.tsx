@@ -27,7 +27,7 @@ import { Modal } from "./modal";
 
 describe("Modal", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Modal
         title="Modal"
         onClose={null}

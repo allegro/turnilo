@@ -54,7 +54,7 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   render() {
     const { onClick, type, color, selected, label, className } = this.props;
 
-    var style: React.CSSProperties = null;
+    let style: React.CSSProperties = null;
     if (color) {
       style = { background: color };
     }

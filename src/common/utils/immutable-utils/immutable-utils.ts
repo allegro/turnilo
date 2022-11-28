@@ -20,11 +20,11 @@ import { isObject } from "../general/general";
 
 export class ImmutableUtils {
   public static setProperty(instance: any, path: string, newValue: any): any {
-    var bits = path.split(".");
-    var lastObject = newValue;
-    var currentObject: any;
+    const bits = path.split(".");
+    let lastObject = newValue;
+    let currentObject: any;
 
-    var getLastObject = () => {
+    const getLastObject = () => {
       let o: any = instance;
 
       for (const bit of bits) {
@@ -35,13 +35,13 @@ export class ImmutableUtils {
     };
 
     while (bits.length) {
-      let bit = bits.pop();
+      const bit = bits.pop();
 
       currentObject = getLastObject();
       if (currentObject.change instanceof Function) {
         lastObject = currentObject.change(bit, lastObject);
       } else {
-        let message = "Can't find \`change()\` method on " + currentObject.constructor.name;
+        const message = "Can't find \`change()\` method on " + currentObject.constructor.name;
         console.error(message); // Leaving this console statement because the error might be caught and obfuscated
         throw new Error(message);
       }
@@ -51,16 +51,16 @@ export class ImmutableUtils {
   }
 
   public static getProperty(instance: any, path: string): any {
-    var value = instance;
-    var bits = path.split(".");
-    var bit: string;
+    let value = instance;
+    const bits = path.split(".");
+    let bit: string;
     while (bit = bits.shift()) value = value[bit];
 
     return value as any;
   }
 
   public static change<T>(instance: T, propertyName: string, newValue: any): T {
-    var v = instance.valueOf();
+    const v = instance.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
@@ -71,7 +71,7 @@ export class ImmutableUtils {
   }
 
   public static addInArray<T>(instance: T, propertyName: string, newItem: any, index = -1): T {
-    var newArray = (instance as any)[propertyName];
+    const newArray = (instance as any)[propertyName];
 
     if (index === -1) {
       newArray.push(newItem);

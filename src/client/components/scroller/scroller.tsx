@@ -153,7 +153,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   private getCornerStyle(yPos: YSide, xPos: XSide): React.CSSProperties {
     const { layout } = this.props;
 
-    var style: any = {};
+    const style: any = {};
     if (xPos === "left") {
       style.left = 0;
       style.width = layout.left;
@@ -218,10 +218,10 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   private onScroll = (e: React.UIEvent<HTMLElement>) => {
     const { bodyWidth, bodyHeight } = this.props.layout;
     const { viewportWidth, viewportHeight } = this.state;
-    var target = e.target as Element;
+    const target = e.target as Element;
 
-    var scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
-    var scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
+    const scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
+    const scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
 
     if (this.props.onScroll !== undefined) {
       this.setState({
@@ -242,11 +242,11 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
     const rect = container.getBoundingClientRect();
 
-    var i = 0;
-    var j = 0;
+    let i = 0;
+    let j = 0;
 
-    var x = getXFromEvent(event) - rect.left;
-    var y = getYFromEvent(event) - rect.top;
+    let x = getXFromEvent(event) - rect.left;
+    let y = getYFromEvent(event) - rect.top;
 
     if (x > left && x <= left + viewportWidth) {
       j = 1;
@@ -286,7 +286,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   };
 
   renderGutter(side: XSide | YSide): JSX.Element {
-    var element = (this.props as any)[`${side}Gutter`];
+    const element = (this.props as any)[`${side}Gutter`];
     if (!element) return null;
 
     return <div className={`${side}-gutter`} style={this.getGutterStyle(side)}>{element}</div>;
@@ -312,8 +312,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   }
 
   renderCorner(yPos: YSide, xPos: XSide): JSX.Element {
-    var style = this.getCornerStyle(yPos, xPos);
-    var element = (this.props as any)[yPos + firstUp(xPos) + "Corner"];
+    const style = this.getCornerStyle(yPos, xPos);
+    const element = (this.props as any)[yPos + firstUp(xPos) + "Corner"];
     if (!element) return null;
 
     return <div className={[yPos, xPos, "corner"].join("-")} style={style}>{element}</div>;
@@ -359,8 +359,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (!layout) return null;
 
     const { bodyWidth, bodyHeight } = layout;
-    let blockHorizontalScroll = bodyWidth <= viewportWidth;
-    let blockVerticalScroll = bodyHeight <= viewportHeight;
+    const blockHorizontalScroll = bodyWidth <= viewportWidth;
+    const blockVerticalScroll = bodyHeight <= viewportHeight;
 
     const eventContainerClasses = classNames(
       "event-container",

@@ -19,7 +19,7 @@ import { assoc, Unary } from "../functional/functional";
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
-  for (let key in source) {
+  for (const key in source) {
     target[key] = source[key];
   }
 

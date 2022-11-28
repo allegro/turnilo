@@ -26,7 +26,7 @@ export function firstUp(str: string): string {
 }
 
 export function pad(n: number, padding = 3): string {
-  var str = String(n);
+  let str = String(n);
 
   if (str.length > padding) return str;
 
@@ -36,9 +36,9 @@ export function pad(n: number, padding = 3): string {
 }
 
 export function generateUniqueName(prefix: string, isUnique: (name: string) => boolean) {
-  var i = 0;
+  let i = 0;
 
-  var name = prefix + pad(i);
+  let name = prefix + pad(i);
 
   while (!isUnique(name)) {
     name = prefix + pad(++i);

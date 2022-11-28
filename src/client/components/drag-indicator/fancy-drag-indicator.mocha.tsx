@@ -24,12 +24,12 @@ import { renderIntoDocument } from "../../utils/test-utils";
 import { FancyDragIndicator } from "./fancy-drag-indicator";
 
 describe("FancyDragIndicator", () => {
-  var dragPosition = DragPosition.fromJS({
+  const dragPosition = DragPosition.fromJS({
     insert: 0
   });
 
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <FancyDragIndicator
         dragPosition={dragPosition}
       />

@@ -245,7 +245,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           width: getColumnWidth(attribute)
         };
 
-        var displayValue = value;
+        let displayValue = value;
 
         if (isDate(datum[name])) {
           displayValue = (datum[name] as Date).toISOString();

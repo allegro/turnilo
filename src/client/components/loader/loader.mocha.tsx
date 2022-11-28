@@ -24,7 +24,7 @@ import { Loader } from "./loader";
 
 describe("Loader", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Loader />
     );
 
