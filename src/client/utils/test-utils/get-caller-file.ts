@@ -16,7 +16,7 @@
  */
 
 function getStack(): any[] {
-  const ErrorConstructor = <any> Error;
+  const ErrorConstructor = Error as any;
 
   const origPrepareStackTrace = ErrorConstructor.prepareStackTrace;
 

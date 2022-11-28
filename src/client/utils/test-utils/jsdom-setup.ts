@@ -18,17 +18,17 @@
 import * as jsdom from "jsdom";
 
 const kickstart = () => {
-  const g: any = <any> global;
+  const g: any = global as any;
   const document = jsdom.jsdom("<!doctype html><html><body></body></html>");
   g.document = document;
-  g.window = (<any> document).defaultView;
+  g.window = (document as any).defaultView;
   g.navigator = {
     userAgent: "testing"
   };
 };
 
 const cleanup = () => {
-  const g: any = <any> global;
+  const g: any = global as any;
   delete g.document;
   delete g.window;
   delete g.navigator;
