@@ -62,7 +62,8 @@
     "lint:sass": "sass-lint -v",
     "fix": "npm-run-all -s fix:*",
     "fix:ts": "tslint -p . --fix",
-    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready 'cypress run'",
+    "e2e": "start-server-and-test start:examples http://localhost:9090/health/ready e2e:test",
+    "e2e:test": "cypress run",
     "e2e:dev": "cypress open",
     "check": "npm-run-all -c -p lint test build e2e"
   },
@@ -181,7 +182,7 @@
     "size-limit": "7.0.8",
     "snarkdown": "2.0.0",
     "source-map-loader": "0.2.3",
-    "start-server-and-test": "1.10.0",
+    "start-server-and-test": "1.14.0",
     "supertest": "6.3.1",
     "svg-inline-loader": "0.8.0",
     "svg-loader": "0.0.2",
