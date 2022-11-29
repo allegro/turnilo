@@ -8,38 +8,12 @@ layout: page
 
 You can define a `customization:` section in the config to configure some aspects of the look and feel of Turnilo.
 
-## Visual
+## Theming Turnilo
 
-Can customize the header background color and logo icon by supplying a color string and SVG string respectively.
+Turnilo allows you to customize colors of user interface. You should keep in sync values in all subsections here. 
+For example brand CSS variable should match main visualization color.
 
-```yaml
-customization:
-    customLogoSvg: >
-      <svg width="300" height="200"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink">
-        <rect width="100%" height="100%" fill="green" />
-      </svg>
-
-    headerBackground: '#2D95CA'
-```
-
-## Url Shortener
-
-Turnilo supports url shorteners for generating short links for current view definitions. This is done by defining function body in configuration.
-Function will receive three arguments, `request` - [node request module](https://github.com/request/request-promise-native), `url` with current hash, and `context` which includes: `clientIp` (the ip of the original client, considering a possible XFF header). Function should return Promise with shortened url as string inside.
-
-
-
-For example:
-
-```yaml
-customization:
-  urlShortener: |
-    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
-```
-
-## CSS Variables
+### CSS Variables
 
 Turnilo allows you to override CSS variables to apply your own theming
 
@@ -58,37 +32,71 @@ customization:
     background-base: '#fbfbfb;'
 ```
 
-## Visualisation colors
+### Visualisation colors
 
-Turnilo allows you to define colors for charts.
+Turnilo allows you to override colors for charts to apply your own theming. Default values for each field are defined in [colors.ts](https://github.com/allegro/turnilo/blob/master/src/common/models/colors/colors.ts). 
 
-For example:
+* `main` property is used for drawing marks (lines, bars, points etc.) whenever Turnilo draws single series.
+
+* `series` is an array of colors used for drawing different series marks. For example line chart with two splits will use `series` colors to distinguish different values from second split.
+
+For example, we can override main color and use [Tableu10](https://www.tableau.com/blog/colors-upgrade-tableau-10-56782) color scheme for series:
 
 ```yaml
 customizaiton:
   visualizationColors: 
-    main: #FF5900
+    main: #829aa3
     series:
-      - #2D95CA
-      - #EFB925
-      - #DA4E99
-      - #4CC873
-      - #745CBD
-      - #EA7136
-      - #E68EE0
-      - #218C35
-      - #B0B510
-      - #904064
+      - #4e79a7
+      - #f28e2c
+      - #e15759
+      - #76b7b2
+      - #59a14f
+      - #edc949
+      - #af7aa1
+      - #ff9da7
+      - #9c755f
+      - #bab0ab
 ```
 
-Value is any CSS Color Module Level 3 specifier string. 
-Object is merged with default values, so it is possible to override just one key.
-
-`main` property is used for drawing marks (lines, bars, points etc.) whenever Turnilo draws single series. 
-`series` is an array of colors used for drawing different series marks. 
-For example line chart with two splits will use `series` colors to distinguish different values from second split.
 By default, Turnilo uses 10 different colors for series. But it is possible to define more and Turnilo will adjust necessary split limits.
 
+### Logo
+
+Turnilo allows you to set custom customize logo icon by supplying an SVG string respectively.
+
+```yaml
+customization:
+    customLogoSvg: >
+      <svg width="300" height="200"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect width="100%" height="100%" fill="green" />
+      </svg>
+```
+
+### Header color
+
+Turnilo allows you to set custom header background color supplying a string with CSS color.
+
+```yaml
+customization:
+  headerBackground: '#2D95CA'
+```
+
+## Url Shortener
+
+Turnilo supports url shorteners for generating short links for current view definitions. This is done by defining function body in configuration.
+Function will receive three arguments, `request` - [node request module](https://github.com/request/request-promise-native), `url` with current hash, and `context` which includes: `clientIp` (the ip of the original client, considering a possible XFF header). Function should return Promise with shortened url as string inside.
+
+
+For example:
+
+```yaml
+customization:
+  urlShortener: |
+    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
+```
 
 ## External links
 
