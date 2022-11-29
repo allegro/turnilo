@@ -26,7 +26,7 @@
   width: calc(100% - #{$space-left});
   height: $header-height;
   overflow: hidden;
-  padding: $header-padding-top 0 0 0;
+  padding: $header-padding-top 0 0;
   margin-left: $space-left;
 
   .resize-handle {
