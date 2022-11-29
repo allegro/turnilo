@@ -58,6 +58,38 @@ customization:
     background-base: '#fbfbfb;'
 ```
 
+## Visualisation colors
+
+Turnilo allows you to define colors for charts.
+
+For example:
+
+```yaml
+customizaiton:
+  visualizationColors: 
+    main: #FF5900
+    series:
+      - #2D95CA
+      - #EFB925
+      - #DA4E99
+      - #4CC873
+      - #745CBD
+      - #EA7136
+      - #E68EE0
+      - #218C35
+      - #B0B510
+      - #904064
+```
+
+Value is any CSS Color Module Level 3 specifier string. 
+Object is merged with default values, so it is possible to override just one key.
+
+`main` property is used for drawing marks (lines, bars, points etc.) whenever Turnilo draws single series. 
+`series` is an array of colors used for drawing different series marks. 
+For example line chart with two splits will use `series` colors to distinguish different values from second split.
+By default, Turnilo uses 10 different colors for series. But it is possible to define more and Turnilo will adjust necessary split limits.
+
+
 ## External links
 
 Turnilo supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.
