@@ -81,7 +81,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
-  .then(({ splits, series, dataCube }) => {
+  .then(({ splits, series, dataCube, appSettings }) => {
     const timeSplit = splits.getSplit(0);
 
     const newTimeSplit = timeSplit
@@ -91,7 +91,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const colorSplit = splits.getSplit(1);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
 
-    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series, appSettings.customization.visualizationColors);
 
     return Resolve.automatic(8, {
       splits: new Splits({ splits: List([newColorSplit, newTimeSplit]) })
@@ -99,20 +99,20 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .when(Predicates.areExactSplitKinds("*", "time"))
-  .then(({ splits, series, dataCube }) => {
+  .then(({ splits, series, dataCube, appSettings }) => {
     const timeSplit = splits.getSplit(1);
     const newTimeSplit = adjustContinuousTimeSplit(timeSplit);
 
     const colorSplit = splits.getSplit(0);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
-    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series, appSettings.customization.visualizationColors);
 
     const newSplits = new Splits({ splits: List([newColorSplit, newTimeSplit]) });
     if (newSplits.equals(splits)) return Resolve.ready(10);
     return Resolve.automatic(8, { splits: newSplits });
   })
   .when(Predicates.areExactSplitKinds("*", "number"))
-  .then(({ splits, dataCube, series }) => {
+  .then(({ splits, dataCube, series, appSettings }) => {
     const numberSplit = splits.getSplit(1);
     const numberDimension = findDimensionByName(dataCube.dimensions, numberSplit.reference);
 
@@ -120,7 +120,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const colorSplit = splits.getSplit(0);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
-    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series, appSettings.customization.visualizationColors);
 
     const newSplits = new Splits({ splits: List([newColorSplit, newNumberSplit]) });
     if (newSplits.equals(splits)) return Resolve.ready(10);

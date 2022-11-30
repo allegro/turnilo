@@ -17,7 +17,8 @@
 import { Timezone } from "chronoshift";
 import { List, OrderedMap } from "immutable";
 import { Dataset, Datum } from "plywood";
-import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
+import { VisualizationColors } from "../../../../../common/models/colors/colors";
+import { ClientCustomization } from "../../../../../common/models/customization/customization";
 import { Dimension } from "../../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
@@ -70,17 +71,18 @@ function readCommons(essence: Essence): Omit<BarChartModelCommons, "variant"> {
   };
 }
 
-function createColorMap(nominalSplit: Split, dataset: Dataset): ColorMap {
+function createColorMap(nominalSplit: Split, dataset: Dataset, colors: VisualizationColors): ColorMap {
   const datums = selectFirstSplitDatums(dataset);
   return datums.reduce<ColorMap>((map: ColorMap, datum: Datum, i: number) => {
     const key = String(nominalSplit.selectValue(datum));
-    const colorIndex = i % NORMAL_COLORS.length;
-    const color = NORMAL_COLORS[colorIndex];
+    const colorIndex = i % colors.series.length;
+    const color = colors.series[colorIndex];
     return map.set(key, color);
   }, OrderedMap<string, Color>());
 }
 
-export function create(essence: Essence, dataset: Dataset): BarChartModel {
+export function create(essence: Essence, dataset: Dataset, customization: ClientCustomization): BarChartModel {
+  const { visualizationColors } = customization;
   const commons = readCommons(essence);
   if (!hasNominalSplit(essence)) {
     return {
@@ -90,7 +92,7 @@ export function create(essence: Essence, dataset: Dataset): BarChartModel {
   }
   const nominalSplit = getNominalSplit(essence);
   const nominalDimension = getNominalDimension(essence);
-  const colors = createColorMap(nominalSplit, dataset);
+  const colors = createColorMap(nominalSplit, dataset, visualizationColors);
   return {
     ...commons,
     variant: ModelVariantId.STACKED,

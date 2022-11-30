@@ -37,6 +37,7 @@
     position: absolute;
 
     .selection-highlight {
+      // TODO: replace with visualisationColors.main
       @include css-variable(border-color, brand);
       pointer-events: none;
       border-width: 1px;
@@ -113,7 +114,6 @@
         }
 
         > rect.background {
-          @include css-variable(fill, brand);
           pointer-events: none;
         }
 

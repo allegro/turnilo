@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { SeriesList } from "../../models/series-list/series-list";
 import { Splits } from "../../models/splits/splits";
@@ -27,6 +28,7 @@ export interface PredicateVariables {
 }
 
 export interface ActionVariables {
+  appSettings: ClientAppSettings;
   dataCube: ClientDataCube;
   splits: Splits;
   series: SeriesList;

@@ -92,7 +92,7 @@ export interface CubeViewProps {
   hash: string;
   changeCubeAndEssence: Ternary<ClientDataCube, Essence, boolean, void>;
   urlForCubeAndEssence: Binary<ClientDataCube, Essence, string>;
-  getEssenceFromHash: Binary<string, ClientDataCube, Essence>;
+  getEssenceFromHash: Ternary<string, ClientAppSettings, ClientDataCube, Essence>;
   dataCube: ClientDataCube;
   dataCubes: ClientDataCube[];
   openAboutModal: Fn;
@@ -292,7 +292,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromDataCube(dataCube: ClientDataCube): Essence {
-    return Essence.fromDataCube(dataCube);
+    const { appSettings } = this.props;
+    return Essence.fromDataCube(dataCube, appSettings);
   }
 
   getEssenceFromHash(hash: string, dataCube: ClientDataCube): Essence {
@@ -304,8 +305,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       throw new Error("Hash is required.");
     }
 
-    const { getEssenceFromHash } = this.props;
-    return getEssenceFromHash(hash, dataCube);
+    const { getEssenceFromHash, appSettings } = this.props;
+    return getEssenceFromHash(hash, appSettings, dataCube);
   }
 
   globalResizeListener = () => {

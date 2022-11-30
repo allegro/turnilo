@@ -22,6 +22,7 @@ import { GRID_MANIFEST } from "../../visualization-manifests/grid/grid";
 import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
+import { clientAppSettings } from "../app-settings/app-settings.fixtures";
 import { twitterClientDataCube } from "../data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { timePeriod } from "../filter-clause/filter-clause.fixtures";
@@ -33,6 +34,7 @@ import { DimensionSort, SortDirection } from "../sort/sort";
 import { Split, SplitType } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
+import { VisualizationManifest } from "../visualization-manifest/visualization-manifest";
 import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
@@ -41,7 +43,7 @@ describe("EssenceProps", () => {
 
   describe(".fromDataCube", () => {
     it.skip("works in the base case", () => {
-      const essence = Essence.fromDataCube(dataCube);
+      const essence = Essence.fromDataCube(dataCube, clientAppSettings);
 
       // TODO: don't test toJS
       expect(essence.toJS()).to.deep.equal({
@@ -135,7 +137,7 @@ describe("EssenceProps", () => {
             sort: new DimensionSort({ reference: "time", direction: SortDirection.ascending })
           })],
           series,
-          current: null,
+          current: null as VisualizationManifest,
           expected: LINE_CHART_MANIFEST
         }
       ];
@@ -143,6 +145,7 @@ describe("EssenceProps", () => {
       tests.forEach(({ splits, current, series, expected }) => {
         it(`chooses ${expected.name} given splits: [${splits}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
+            clientAppSettings,
             twitterClientDataCube,
             Splits.fromSplits(splits),
             SeriesList.fromSeries(series),
@@ -269,7 +272,7 @@ describe("EssenceProps", () => {
     describe("#changeVisualisation", () => {
       [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach(manifest => {
         it("it sets visResolve to manual", () => {
-          const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest);
+          const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest as VisualizationManifest);
           expect(essence.visualization.name).to.deep.equal(manifest.name);
           expect(essence.visResolve.isManual()).to.be.true;
         });

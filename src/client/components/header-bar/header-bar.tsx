@@ -16,16 +16,16 @@
  */
 
 import React from "react";
-import { ClientCustomization } from "../../../common/models/customization/customization";
+import { useSettingsContext } from "../../views/cube-view/settings-context";
 import "./header-bar.scss";
 
 export interface HeaderBarProps {
-  customization?: ClientCustomization;
   title?: string;
 }
 
 export const HeaderBar: React.FunctionComponent<HeaderBarProps> = props => {
-  const { customization, title } = props;
+  const { title } = props;
+  const { customization } = useSettingsContext();
 
   const headerStyle: React.CSSProperties = customization && customization.headerBackground && { background: customization.headerBackground };
 

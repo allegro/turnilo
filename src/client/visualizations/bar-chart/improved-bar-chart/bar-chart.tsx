@@ -25,6 +25,7 @@ import { MessageCard } from "../../../components/message-card/message-card";
 import { Scroller } from "../../../components/scroller/scroller";
 import { SPLIT } from "../../../config/constants";
 import { selectMainDatum } from "../../../utils/dataset/selectors/selectors";
+import { useSettingsContext } from "../../../views/cube-view/settings-context";
 import { Highlight } from "../../highlight-controller/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
@@ -49,8 +50,9 @@ interface BarChartProps {
 }
 
 export const BarChart: React.FunctionComponent<BarChartProps> = props => {
+  const { customization } = useSettingsContext();
   const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
-  const model = create(essence, dataset);
+  const model = create(essence, dataset, customization);
 
   const transposedDataset = transposeDataset(dataset, model);
   if (transposedDataset.length === 0) {

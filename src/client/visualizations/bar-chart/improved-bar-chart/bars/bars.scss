@@ -17,15 +17,6 @@
 @import '../../../../imports';
 
 .bar-chart-bars {
-  .bar-chart-bar {
-    @include css-variable(fill, brand);
-  }
-
-  .bar-chart-bar-previous {
-    @include css-variable(fill, main-time-area);
-  }
-
-
   .bar-chart-total {
     position: absolute;
     top: 15px;

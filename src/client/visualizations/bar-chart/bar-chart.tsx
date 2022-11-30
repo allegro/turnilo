@@ -54,6 +54,7 @@ import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
 import { ChartPanel, DefaultVisualizationControls, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
+import { SettingsContext, SettingsContextValue } from "../../views/cube-view/settings-context";
 import { hasHighlightOn } from "../highlight-controller/highlight-controller";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -168,12 +169,15 @@ export default function BarChartVisualization(props: VisualizationProps) {
 }
 
 class BarChart extends React.Component<ChartProps, BarChartState> {
+  static contextType = SettingsContext;
   protected className = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
   private scroller = React.createRef<Scroller>();
 
   state: BarChartState = this.initState();
+
+  context: SettingsContextValue;
 
   componentDidUpdate() {
     const { scrollerYPosition, scrollerXPosition } = this.state;
@@ -491,6 +495,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
   ): { bars: JSX.Element[], highlight: JSX.Element } {
     const { essence } = this.props;
     const { timezone } = essence;
+    const { customization: { visualizationColors } } = this.context;
 
     const bars: JSX.Element[] = [];
     let highlight: JSX.Element;
@@ -547,6 +552,7 @@ class BarChart extends React.Component<ChartProps, BarChartState> {
             className="background"
             width={roundToPx(barWidth)}
             height={roundToPx(Math.abs(height))}
+            fill={visualizationColors.main}
             x={barOffset}
             y={roundToPx(y)}
           />
