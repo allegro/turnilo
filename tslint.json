@@ -75,13 +75,11 @@
     "jsx-no-string-ref": false, // passing string refs is discouraged in React now
     "jsx-wrap-multiline": false, // enforce wrapping of multiline jsx elements in parens (React's de facto standard)
     "max-classes-per-file": false, // disallow multiple classes in a single file
-    "no-angle-bracket-type-assertion": false, // enforce consistent "as X" type assertion style, "<X>" style is not compatible with TSX
     "no-conditional-assignment": false, // disallow assignment in conditional condition statements
     "no-empty": false, // disallow empty function / method bodies
     "no-empty-interface": false, // disallow empty named interfaces, replace with {}
     "no-shadowed-variable": false, // disallow variable shadowing
     "no-unused-expression": false, // disallow unused expressions, currently many "to.be.true" expectations trigger it
-    "variable-name": false, // enforce consistent variable naming
-    "array-type": false // use either T[] or Array for arrays
+    "variable-name": false // enforce consistent variable naming
   }
 }

@@ -23,13 +23,13 @@ import { Binary } from "../../../common/utils/functional/functional";
 import { StringValue } from "./string-value";
 import "./string-values-list.scss";
 
-function filterRows(rows: Array<unknown>, searchText: string): Array<unknown> {
+function filterRows(rows: unknown[], searchText: string): unknown[] {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
   return rows.filter(d => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
 }
 
-function prependPromotedValues(rows: Array<unknown>, promoted: Set<unknown>): Array<unknown> {
+function prependPromotedValues(rows: unknown[], promoted: Set<unknown>): unknown[] {
   return [
     ...promoted,
     ...rows.filter(value => !promoted.contains(value))
@@ -48,7 +48,7 @@ interface RowsListProps {
 
 export const StringValuesList: React.FunctionComponent<RowsListProps> = props => {
   const { onRowSelect, filterMode, dataset, dimension, searchText, promotedValues, selectedValues } = props;
-  const rowValues: Array<unknown> = dataset.data.map(d => d[dimension.name]);
+  const rowValues: unknown[] = dataset.data.map(d => d[dimension.name]);
   const values = prependPromotedValues(rowValues, promotedValues);
   const matchingValues = filterRows(values, searchText);
   if (searchText && matchingValues.length === 0) {

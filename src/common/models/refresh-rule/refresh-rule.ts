@@ -50,7 +50,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
       rule: parameters.rule
     };
     if (parameters.time) {
-      value.time = new Date(<any> parameters.time);
+      value.time = new Date(parameters.time as any);
     }
     return new RefreshRule(value);
   }

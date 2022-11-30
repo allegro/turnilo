@@ -158,13 +158,13 @@ export function inlineVars(obj: any, vs: Record<string, string>): any {
   }));
 }
 
-export function ensureOneOf(value: unknown, values: Array<unknown>, messagePrefix: string): void {
+export function ensureOneOf(value: unknown, values: unknown[], messagePrefix: string): void {
   if (values.indexOf(value) !== -1) return;
   const isMessage = isTruthy(value) ? `'${value}'` : "not defined";
   throw new Error(`${messagePrefix} must be one of '${values.join("', '")}' (is ${isMessage})`);
 }
 
-export function optionalEnsureOneOf(value: unknown, values: Array<unknown>, messagePrefix: string): void {
+export function optionalEnsureOneOf(value: unknown, values: unknown[], messagePrefix: string): void {
   if (!isTruthy(value)) return;
   if (values.indexOf(value) !== -1) return;
   throw new Error(`${messagePrefix} must be one of '${values.join("', '")}' (is '${value}')`);

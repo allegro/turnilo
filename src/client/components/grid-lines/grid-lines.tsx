@@ -24,7 +24,7 @@ import "./grid-lines.scss";
 export interface GridLinesProps {
   orientation: "horizontal" | "vertical";
   stage: Stage;
-  ticks: Array<unknown>;
+  ticks: unknown[];
   scale: Unary<unknown, number>;
 }
 
