@@ -18,6 +18,7 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as sinon from "sinon";
+import { DEFAULT_COLORS, DEFAULT_MAIN_COLOR, DEFAULT_SERIES_COLORS } from "../colors/colors";
 import * as localeModule from "../locale/locale";
 import * as urlShortenerModule from "../url-shortener/url-shortener";
 import { Customization, DEFAULT_TIMEZONES, DEFAULT_TITLE, fromConfig, serialize } from "./customization";
@@ -161,6 +162,44 @@ describe("Customization", () => {
         });
       });
     });
+
+    describe("visualizationColors", () => {
+      it("should set default colors if no colors are defined", () => {
+        const customization = fromConfig({ ...customizationJS, visualizationColors: undefined });
+
+        expect(customization).to.deep.contain({ visualizationColors: DEFAULT_COLORS });
+      });
+
+      it("should override default main color when property is defined", () => {
+        const customization = fromConfig({
+          ...customizationJS, visualizationColors: {
+            main: "foobar-color"
+          }
+        });
+
+        expect(customization).to.deep.contain({
+          visualizationColors: {
+            series: DEFAULT_SERIES_COLORS,
+            main: "foobar-color"
+          }
+        });
+      });
+
+      it("should override default series colors when property is defined", () => {
+        const customization = fromConfig({
+          ...customizationJS, visualizationColors: {
+            series: ["one fish", "two fish", "red fish", "blue fish"]
+          }
+        });
+
+        expect(customization).to.deep.contain({
+          visualizationColors: {
+            series: ["one fish", "two fish", "red fish", "blue fish"],
+            main: DEFAULT_MAIN_COLOR
+          }
+        });
+      });
+    });
   });
 
   describe("serialize", () => {
@@ -203,6 +242,16 @@ describe("Customization", () => {
       expect(serialized).to.deep.contain({ timezones: ["Europe/Warsaw", "Asia/Manila"] });
     });
 
+    it("should pass visualizationColors as is", () => {
+      const colors = { main: "fake-color", series: ["one series color"] };
+      const serialized = serialize({
+        ...customization,
+        visualizationColors: colors
+      });
+
+      expect(serialized).to.deep.contain({ visualizationColors: colors });
+    });
+
     describe("externalViews", () => {
       // TODO: Implement
     });
@@ -212,7 +261,8 @@ describe("Customization", () => {
       it("should return hasUrlShortener true if has url shortener", () => {
         const serialized = serialize({
           ...customization,
-          urlShortener: (() => {}) as any
+          urlShortener: (() => {
+          }) as any
         });
 
         expect(serialized).to.contain({ hasUrlShortener: true });

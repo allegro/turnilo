@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Visualization } from "../../models/visualization-manifest/visualization-manifest";
@@ -30,7 +31,7 @@ const SEGMENT_SEPARATOR = "/";
 const MINIMAL_HASH_SEGMENTS_COUNT = 2;
 
 export interface UrlHashConverter {
-  essenceFromHash(hash: string, dataCube: ClientDataCube): Essence;
+  essenceFromHash(hash: string, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
@@ -85,14 +86,14 @@ export function getHashSegments(hash: string): HashSegments {
 }
 
 export const urlHashConverter: UrlHashConverter = {
-  essenceFromHash(hash: string, dataCube: ClientDataCube): Essence {
+  essenceFromHash(hash: string, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
-    return definitionConverter.fromViewDefinition(definition, dataCube);
+    return definitionConverter.fromViewDefinition(definition, appSettings, dataCube);
   },
 
   toHash(essence: Essence, version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION): string {

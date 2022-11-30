@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import { DEFAULT_COLORS } from "../colors/colors";
 import { UrlShortenerContext } from "../url-shortener/url-shortener";
 import { Customization, CustomizationJS } from "./customization";
 
 export const customization: Customization = {
+  messages: {
+    dataCubeNotFound: "404: Data Cube Not Found"
+  },
+  visualizationColors: DEFAULT_COLORS,
   cssVariables: {
     "brand-selected": "orange",
     "brand": "red",

@@ -148,7 +148,7 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   attachRouter("/sources", sourcesRouter(settingsManager.sourcesGetter));
   attachRouter("/plywood", plywoodRouter(settingsManager));
   attachRouter("/plyql", plyqlRouter(settingsManager.sourcesGetter));
-  attachRouter("/mkurl", mkurlRouter(settingsManager.sourcesGetter));
+  attachRouter("/mkurl", mkurlRouter(settingsManager.appSettings, settingsManager.sourcesGetter));
   attachRouter("/shorten", shortenRouter(settingsManager.appSettings, isTrustedProxy));
 
   attachRouter("/", turniloRouter(settingsManager.appSettings, () => settingsManager.getTimekeeper(), version));

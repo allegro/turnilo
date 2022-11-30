@@ -47,11 +47,6 @@
     }
   }
 
-  .point {
-    @include css-variable(stroke, brand);
-    @include css-variable(fill, item-dimension);
-  }
-
   .axis-title {
     position: absolute;
     font-weight: $bold;

@@ -16,8 +16,10 @@
  */
 
 import { NamedArray } from "immutable-class";
+import memoizeOne from "memoize-one";
 import React from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { isEnabled as isOAuthEnabled } from "../../../common/models/oauth/oauth";
@@ -34,6 +36,7 @@ import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
+import { SettingsContext, SettingsContextValue } from "../../views/cube-view/settings-context";
 import { GeneralError } from "../../views/error-view/general-error";
 import { HomeView } from "../../views/home-view/home-view";
 import "./turnilo-application.scss";
@@ -226,13 +229,23 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     }
   }
 
+  private getSettingsContext(): SettingsContextValue {
+    const { appSettings: { customization } } = this.props;
+    return this.constructSettingsContext(customization);
+  }
+
+  // NOTE: is memoization needed?
+  private constructSettingsContext = memoizeOne((customization: ClientCustomization) => ({ customization }));
+
   render() {
     return <React.StrictMode>
       <main className="turnilo-application">
-        {this.renderView()}
-        {this.renderAboutModal()}
-        <Notifications/>
-        <Questions/>
+        <SettingsContext.Provider value={this.getSettingsContext()}>
+          {this.renderView()}
+          {this.renderAboutModal()}
+          <Notifications/>
+          <Questions/>
+        </SettingsContext.Provider>
       </main>
     </React.StrictMode>;
   }

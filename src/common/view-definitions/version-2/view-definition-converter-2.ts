@@ -33,6 +33,7 @@ import {
   TimeRange,
   TimeRangeExpression
 } from "plywood";
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
 import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
@@ -65,7 +66,7 @@ export type FilterSelection = Expression | string;
 export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDefinition2, Essence> {
   version = 2;
 
-  fromViewDefinition(definition: ViewDefinition2, dataCube: ClientDataCube): Essence {
+  fromViewDefinition(definition: ViewDefinition2, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const visualization = manifestByName(definition.visualization);
     const visualizationSettings = visualization.visualizationSettings.defaults;
 
@@ -79,6 +80,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
     const pinnedSort = definition.pinnedSort;
 
     return new Essence({
+      appSettings,
       dataCube,
       visualization,
       visualizationSettings,

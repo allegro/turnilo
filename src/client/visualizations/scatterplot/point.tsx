@@ -19,7 +19,9 @@ import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import "./scatterplot.scss";
 
+import { lightMain } from "../../../common/models/colors/colors";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
+import { useSettingsContext } from "../../views/cube-view/settings-context";
 
 interface PointProps {
   datum: Datum;
@@ -35,8 +37,12 @@ const POINT_RADIUS = 3;
 const HOVER_AREA_RADIUS = 6;
 
 export const Point: React.FunctionComponent<PointProps> = ({ datum, xScale, yScale, xSeries, ySeries, setHover, resetHover }) => {
+  const { customization: { visualizationColors } } = useSettingsContext();
   const xValue = xSeries.selectValue(datum);
   const yValue = ySeries.selectValue(datum);
+
+  const stroke = visualizationColors.main;
+  const fill = lightMain(visualizationColors);
 
   return (
     <>
@@ -45,6 +51,8 @@ export const Point: React.FunctionComponent<PointProps> = ({ datum, xScale, ySca
         cy={yScale(yValue)}
         r={POINT_RADIUS}
         className="point"
+        stroke={stroke}
+        fill={fill}
       />
       <circle
         onMouseEnter={() => setHover(datum)}

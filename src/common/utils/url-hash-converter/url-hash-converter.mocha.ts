@@ -15,6 +15,7 @@
  */
 
 import { expect } from "chai";
+import { clientAppSettings } from "../../models/app-settings/app-settings.fixtures";
 import { wikiClientDataCube } from "../../models/data-cube/data-cube.fixtures";
 import { Essence } from "../../models/essence/essence";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
@@ -41,7 +42,7 @@ describe("urlHashConverter", () => {
       const { visualization } = essence;
 
       it(`decodes ${visualization.name} version ${version} correctly`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, wikiClientDataCube);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, clientAppSettings, wikiClientDataCube);
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
@@ -58,7 +59,7 @@ describe("urlHashConverter", () => {
       const { visualization } = essence;
 
       it(`decodes ${visualization.name} version ${version} correctly`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, wikiClientDataCube);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, clientAppSettings, wikiClientDataCube);
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
@@ -75,14 +76,14 @@ describe("urlHashConverter", () => {
       const { visualization } = essence;
 
       it(`decodes ${visualization.name} version ${version} correctly`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, wikiClientDataCube);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, clientAppSettings, wikiClientDataCube);
 
         expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
       });
 
       it(`is symmetric in decode/encode for ${visualization.name} in version ${version}`, () => {
         const encodedHash = urlHashConverter.toHash(essence, version);
-        const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, wikiClientDataCube);
+        const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, clientAppSettings, wikiClientDataCube);
 
         expect(essence.toJS()).to.deep.equal(decodedEssence.toJS());
       });
@@ -93,7 +94,7 @@ describe("urlHashConverter", () => {
       }
 
       it(`is symmetric in encode/decode for ${visualization.name} in version ${version}`, () => {
-        const decodedEssence = urlHashConverter.essenceFromHash(hash, wikiClientDataCube);
+        const decodedEssence = urlHashConverter.essenceFromHash(hash, clientAppSettings, wikiClientDataCube);
         const encodedHash = urlHashConverter.toHash(decodedEssence, version);
 
         try {
@@ -115,7 +116,7 @@ describe("urlHashConverter", () => {
 
   minimalNumberOfSegmentsTests.forEach(({ version, hash }) => {
     it(`decodes version ${version} with minimal number of segments`, () => {
-      const decodedEssence = urlHashConverter.essenceFromHash(hash, wikiClientDataCube);
+      const decodedEssence = urlHashConverter.essenceFromHash(hash, clientAppSettings, wikiClientDataCube);
 
       expect(decodedEssence).to.be.an.instanceOf(Essence);
     });
@@ -130,7 +131,7 @@ describe("urlHashConverter", () => {
 
   wrongHashStructureTests.forEach(({ hash, errorMessage }) => {
     it(`throws error for hash: "${hash}" with wrong structure`, () => {
-      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, wikiClientDataCube);
+      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, clientAppSettings, wikiClientDataCube);
       expect(essenceFromHashCall).to.throw(errorMessage);
     });
   });
