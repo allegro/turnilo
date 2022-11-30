@@ -39,7 +39,7 @@ export const DEFAULT_COLORS: VisualizationColors = {
 
 export interface VisualizationColors {
   main: string;
-  series: Array<string>;
+  series: string[];
 }
 
 export function lightMain(colors: VisualizationColors): string {
