@@ -17,13 +17,13 @@
 @import '../../../imports';
 
 .data-cube-card {
-  padding: 5px 0 0 0;
+  padding: 5px 0 0;
 
   .inner-container {
     background-color: $white;
     box-shadow: 0 1px 1px 0 rgba($black, 0.1);
     width: 100%;
-    padding: 16px 16px;
+    padding: 16px;
     border-radius: $corner;
 
     white-space: nowrap;
