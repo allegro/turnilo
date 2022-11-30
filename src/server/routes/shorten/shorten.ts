@@ -36,7 +36,7 @@ export function shortenRouter(settings: Pick<AppSettings, "customization">, isTr
     } catch (error) {
       console.log("error:", error.message);
       if (error.hasOwnProperty("stack")) {
-        console.log((<any> error).stack);
+        console.log((error as any).stack);
       }
       res.status(500).send({
         error: "could not shorten url",

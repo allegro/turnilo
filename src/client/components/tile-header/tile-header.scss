@@ -20,7 +20,7 @@
 .tile-header {
   .title {
     @include css-variable(color, text-standard);
-    padding: 15px $padding-compact 10px $padding-compact;
+    padding: 15px $padding-compact 10px;
     font-size: 12px;
     text-transform: uppercase;
     cursor: default;

@@ -100,7 +100,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
     } catch (error) {
       console.log("error:", error.message);
       if (error.hasOwnProperty("stack")) {
-        console.log((<any> error).stack);
+        console.log((error as any).stack);
       }
       res.status(500).send({
         error: "could not compute",

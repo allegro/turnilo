@@ -56,7 +56,7 @@ import { Resolve, VisualizationManifest } from "../visualization-manifest/visual
 import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: ClientDataCube): OrderedSet<string> {
-  return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(findDimensionByName(dataCube.dimensions, dimensionName)));
+  return dimensions.filter(dimensionName => Boolean(findDimensionByName(dataCube.dimensions, dimensionName))) as OrderedSet<string>;
 }
 
 export interface VisualizationAndResolve {

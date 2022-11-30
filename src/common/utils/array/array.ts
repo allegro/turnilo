@@ -34,7 +34,7 @@ export function insert<T>(array: T[], index: number, element: T): T[] {
   return [...array.slice(0, index), element, ...array.slice(index)];
 }
 
-export function shallowEqualArrays(a: Array<unknown>, b: Array<unknown>): boolean {
+export function shallowEqualArrays(a: unknown[], b: unknown[]): boolean {
   if (a === b) return true;
   if (!a || !b) return false;
   if (b.length !== a.length) return false;

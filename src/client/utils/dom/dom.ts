@@ -58,7 +58,7 @@ export function isInside(child: Element, parent: Element | Text): boolean {
 export function findParentWithClass(child: Element, className: string): Element {
   while (child) {
     if (child.classList.contains(className)) return child;
-    child = <Element> child.parentNode;
+    child = (child.parentNode as Element);
   }
   return null;
 }
