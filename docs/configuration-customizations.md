@@ -45,18 +45,18 @@ For example, we can override main color and use [Tableu10](https://www.tableau.c
 ```yaml
 customizaiton:
   visualizationColors: 
-    main: #829aa3
+    main: "#829aa3"
     series:
-      - #4e79a7
-      - #f28e2c
-      - #e15759
-      - #76b7b2
-      - #59a14f
-      - #edc949
-      - #af7aa1
-      - #ff9da7
-      - #9c755f
-      - #bab0ab
+      - "#4e79a7"
+      - "#f28e2c"
+      - "#e15759"
+      - "#76b7b2"
+      - "#59a14f"
+      - "#edc949"
+      - "#af7aa1"
+      - "#ff9da7"
+      - "#9c755f"
+      - "#bab0ab"
 ```
 
 By default, Turnilo uses 10 different colors for series. But it is possible to define more and Turnilo will adjust necessary split limits.
