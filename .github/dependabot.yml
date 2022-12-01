@@ -15,4 +15,5 @@ updates:
     schedule:
       interval: "weekly"
     allow:
+      - dependency-name: "cypress"
       - dependency-name: "plywood*"
