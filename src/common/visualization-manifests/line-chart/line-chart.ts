@@ -77,7 +77,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const newContinuousSplit = fixNumberSplit(numberSplit, dimension);
 
     if (newContinuousSplit.equals(numberSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 4);
-    return Resolve.automatic(4, { splits: new Splits({ splits: List([numberSplit]) }) });
+    return Resolve.automatic(4, { splits: new Splits({ splits: List([newContinuousSplit]) }) });
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
