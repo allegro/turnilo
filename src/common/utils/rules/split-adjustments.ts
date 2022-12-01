@@ -23,11 +23,16 @@ import { thread } from "../functional/functional";
 
 export function adjustColorSplit(split: Split, dimension: Dimension, series: SeriesList, visualizationColors: VisualizationColors): Split {
   const colorsCount = visualizationColors.series.length;
+  const availableLimits = new Set([
+    // TODO: This magic 5 will disappear in #756
+    5,
+    Math.min(split.limit, colorsCount),
+    colorsCount
+  ]);
   return thread(
     split,
     adjustSort(dimension, series),
-    // TODO: This magic 5 will disappear in #756
-    adjustFiniteLimit([5, colorsCount], colorsCount)
+    adjustFiniteLimit([...availableLimits], colorsCount)
   );
 }
 
