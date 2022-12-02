@@ -16,7 +16,7 @@
 
 import React from "react";
 import { isContinuous } from "../../../common/models/dimension/dimension";
-import { SPLIT_CLASS_NAME, SplitTileBaseProps } from "../../components/split-tile/split-tile";
+import { SplitTileBaseProps } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { WithRef } from "../../components/with-ref/with-ref";
 import { classNames } from "../../utils/dom/dom";
