@@ -90,11 +90,25 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const colorSplit = splits.getSplit(1);
     const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
-
     const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series, appSettings.customization.visualizationColors);
 
     return Resolve.automatic(8, {
       splits: new Splits({ splits: List([newColorSplit, newTimeSplit]) })
+    });
+  })
+  .when(Predicates.areExactSplitKinds("number", "*"))
+  .then(({ splits, series, dataCube, appSettings }) => {
+    const numberSplit = splits.getSplit(0);
+    const dimension = findDimensionByName(dataCube.dimensions, numberSplit.reference);
+
+    const newNumberSplit = fixNumberSplit(numberSplit, dimension);
+
+    const colorSplit = splits.getSplit(1);
+    const colorDimension = findDimensionByName(dataCube.dimensions, colorSplit.reference);
+    const newColorSplit = adjustColorSplit(colorSplit, colorDimension, series, appSettings.customization.visualizationColors);
+
+    return Resolve.automatic(8, {
+      splits: new Splits({ splits: List([newColorSplit, newNumberSplit]) })
     });
   })
 
