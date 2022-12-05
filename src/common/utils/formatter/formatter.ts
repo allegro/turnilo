@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { NumberRange, TimeRange } from "plywood";
+import { NumberRange, PlywoodValue, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
@@ -45,6 +45,15 @@ export function formatValue(value: any, timezone?: Timezone): string {
   } else {
     return "" + value;
   }
+}
+
+export function formatShortSegment(value: PlywoodValue, timezone: Timezone): string {
+  if (TimeRange.isTimeRange(value)) {
+    return formatStartOfTimeRange(value, timezone);
+  } else if (NumberRange.isNumberRange(value)) {
+    return value.start.toString(10);
+  }
+  return String(value);
 }
 
 export function formatSegment(value: any, timezone: Timezone): string {
