@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as fs from "mz/fs";
+import * as fse from "fs-extra";
 import * as path from "path";
 import { Dataset, Expression, PseudoDatum } from "plywood";
 import { Logger } from "../../../common/logger/logger";
@@ -23,7 +23,7 @@ import { noop } from "../../../common/utils/functional/functional";
 import { parseData } from "../parser/parser";
 
 export function getFileData(filePath: string): Promise<any[]> {
-  return fs.readFile(filePath, "utf-8")
+  return fse.readFile(filePath, "utf-8")
     .then(fileData => {
       try {
         return parseData(fileData, path.extname(filePath));
