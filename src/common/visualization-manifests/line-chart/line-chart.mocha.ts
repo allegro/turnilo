@@ -14,40 +14,24 @@
  * limitations under the License.
  */
 
-import { expect } from "chai";
-import { VisStrategy } from "../models/essence/essence";
-import { EssenceFixtures } from "../models/essence/essence.fixtures";
-import { measureSeries } from "../models/series/series.fixtures";
-import { numberSplitCombine, timeSplitCombine } from "../models/split/split.fixtures";
-import { LINE_CHART_MANIFEST } from "./line-chart/line-chart";
+import { expect, use } from "chai";
+import { VisStrategy } from "../../models/essence/essence";
+import { measureSeries } from "../../models/series/series.fixtures";
+import { numberSplitCombine, timeSplitCombine } from "../../models/split/split.fixtures";
+import { totals, visualizationManifestResolvers } from "../test-utils";
+import { LINE_CHART_MANIFEST } from "./line-chart";
 
-const totals = EssenceFixtures
-  .wikiTotals()
-  .addSeries(measureSeries("added"));
+use(visualizationManifestResolvers);
 
-const emptyLineChart = EssenceFixtures
-  .wikiTotals()
+const emptyLineChart = totals
   .set("visualization", LINE_CHART_MANIFEST as any)
   .addSeries(measureSeries("added"));
 
-const timeLineChart = EssenceFixtures
-  .wikiTotals()
+const timeLineChart = totals
   .addSeries(measureSeries("added"))
   .addSplit(timeSplitCombine("time"), VisStrategy.FairGame);
 
 describe("Visualization Manifests", () => {
-  describe("Bar Chart", () => {
-    it("should switch to bar chart with single number split", () => {
-      const essence = totals.addSplit(
-        numberSplitCombine("commentLength"),
-        VisStrategy.FairGame
-      );
-
-      expect(essence.visResolve.state).to.be.equal("ready");
-      expect(essence.visualization.name).to.be.equal("bar-chart");
-    });
-  });
-
   describe("Line Chart", () => {
     describe("Starting from Totals", () => {
       it("should switch to line chart with single time split", () => {
@@ -56,8 +40,7 @@ describe("Visualization Manifests", () => {
           VisStrategy.FairGame
         );
 
-        expect(essence.visResolve.state).to.be.equal("ready");
-        expect(essence.visualization.name).to.be.equal("line-chart");
+        expect(essence).to.be.resolvedTo("line-chart");
       });
     });
 
@@ -68,8 +51,7 @@ describe("Visualization Manifests", () => {
           VisStrategy.FairGame
         );
 
-        expect(essence.visResolve.state).to.be.equal("ready");
-        expect(essence.visualization.name).to.be.equal("line-chart");
+        expect(essence).to.be.resolvedTo("line-chart");
       });
     });
 
@@ -80,8 +62,7 @@ describe("Visualization Manifests", () => {
           VisStrategy.FairGame
         );
 
-        expect(essence.visResolve.state).to.be.equal("ready");
-        expect(essence.visualization.name).to.be.equal("line-chart");
+        expect(essence).to.be.resolvedTo("line-chart");
       });
 
       it("should stick to line chart with single number split", () => {
@@ -90,8 +71,7 @@ describe("Visualization Manifests", () => {
           VisStrategy.FairGame
         );
 
-        expect(essence.visResolve.state).to.be.equal("ready");
-        expect(essence.visualization.name).to.be.equal("line-chart");
+        expect(essence).to.be.resolvedTo("line-chart");
       });
     });
   });
