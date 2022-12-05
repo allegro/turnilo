@@ -31,7 +31,12 @@ import "./bar-chart.scss";
 import { BarChart as ImprovedBarChart } from "./improved-bar-chart/bar-chart";
 import { BarChart } from "./old-bar-chart/old-bar-chart";
 
-const newVersionSupports = or(Predicates.areExactSplitKinds("time"), Predicates.areExactSplitKinds("*", "time"));
+const newVersionSupports = or(
+  Predicates.areExactSplitKinds("time"),
+  Predicates.areExactSplitKinds("*", "time"),
+  Predicates.areExactSplitKinds("number"),
+  Predicates.areExactSplitKinds("*", "number")
+);
 
 export default function BarChartVisualization(props: VisualizationProps) {
   if (newVersionSupports(props.essence)) {

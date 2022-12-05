@@ -29,7 +29,12 @@ import { emptySettingsConfig } from "../../models/visualization-settings/empty-s
 import { thread } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
-import { adjustColorSplit, adjustContinuousTimeSplit, adjustFiniteLimit, adjustSort } from "../../utils/rules/split-adjustments";
+import {
+  adjustColorSplit,
+  adjustContinuousSplit,
+  adjustFiniteLimit,
+  adjustSort
+} from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
@@ -37,59 +42,62 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .then(Actions.manualDimensionSelection("The Bar Chart requires at least one split"))
 
   .when(Predicates.areExactSplitKinds("time"))
+  .or(Predicates.areExactSplitKinds("number"))
   .then(({ splits, isSelectedVisualization }) => {
-    const timeSplit = splits.getSplit(0);
-    const newTimeSplit = adjustContinuousTimeSplit(timeSplit);
-    if (timeSplit.equals(newTimeSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
-    return Resolve.automatic(6, {
+    const continuousSplit = splits.getSplit(0);
+    const numberBoost = continuousSplit.type === SplitType.number ? 3 : 0;
+    const newContinuousSplit = adjustContinuousSplit(continuousSplit);
+    if (continuousSplit.equals(newContinuousSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6 + numberBoost, {
       splits: new Splits({
-        splits: List([newTimeSplit])
+        splits: List([newContinuousSplit])
       })
     });
   })
 
   .when(Predicates.areExactSplitKinds("time", "*"))
+  .or(Predicates.areExactSplitKinds("number", "*"))
   .then(({ splits, series, dataCube, appSettings }) => {
-    const timeSplit = splits.getSplit(0);
+    const continuousSplit = splits.getSplit(0);
+    const numberBoost = continuousSplit.type === SplitType.number ? 3 : 0;
     const nominalSplit = splits.getSplit(1);
     const nominalDimension = findDimensionByName(dataCube.dimensions, nominalSplit.reference);
 
-    return Resolve.automatic(6, {
+    return Resolve.automatic(6 + numberBoost, {
       // Switch splits in place and conform
       splits: new Splits({
         splits: List([
           adjustColorSplit(nominalSplit, nominalDimension, series, appSettings.customization.visualizationColors),
-          adjustContinuousTimeSplit(timeSplit)
+          adjustContinuousSplit(continuousSplit)
         ])
       })
     });
   })
   .when(Predicates.areExactSplitKinds("*", "time"))
+  .or(Predicates.areExactSplitKinds("*", "number"))
   .then(({ splits, series, dataCube, isSelectedVisualization, appSettings }) => {
-    const timeSplit = splits.getSplit(1);
+    const continuousSplit = splits.getSplit(1);
+    const numberBoost = continuousSplit.type === SplitType.number ? 3 : 0;
     const nominalSplit = splits.getSplit(0);
     const nominalDimension = findDimensionByName(dataCube.dimensions, nominalSplit.reference);
 
     const newSplits = new Splits({
       splits: List([
         adjustColorSplit(nominalSplit, nominalDimension, series, appSettings.customization.visualizationColors),
-        adjustContinuousTimeSplit(timeSplit)
+        adjustContinuousSplit(continuousSplit)
       ])
     });
 
     const changed = !splits.equals(newSplits);
     if (!changed) return Resolve.ready(isSelectedVisualization ? 10 : 3);
-    return Resolve.automatic(6, {
+    return Resolve.automatic(6 + numberBoost, {
       splits: newSplits
     });
-
   })
 
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))
   .then(({ splits, series, dataCube, isSelectedVisualization }) => {
-    const hasNumberSplits = splits.splits.some(split => split.type === SplitType.number);
-    const continuousBoost = hasNumberSplits ? 4 : 0;
 
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
       const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
@@ -102,10 +110,10 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     const changed = !splits.equals(newSplits);
     if (changed) {
-      return Resolve.automatic(5 + continuousBoost, { splits: newSplits });
+      return Resolve.automatic(5, { splits: newSplits });
     }
 
-    return Resolve.ready(isSelectedVisualization ? 10 : 6 + continuousBoost);
+    return Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
 
   .otherwise(({ dataCube }) => {
