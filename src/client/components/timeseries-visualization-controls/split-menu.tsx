@@ -105,6 +105,7 @@ export const TimeSeriesSplitMenu: React.FunctionComponent<SplitMenuProps> = prop
   const { essence, split } = props;
 
   const isContinuousSplit = split.equals(getContinuousSplit(essence));
+
   if (isContinuousSplit) {
     return <TimeSeriesContinuousSplitMenu {...props} />;
   } else {
