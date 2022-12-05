@@ -31,10 +31,17 @@ import {
   TimeFilterClause,
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
+import { isNil } from "../general/general";
 import { formatStartOfTimeRange, formatTimeRange } from "../time/time";
 
+function safeFormatNumber(value: number): string {
+  return isNil(value) ? "any" : value.toString(10);
+}
+
 export function formatNumberRange(value: NumberRange) {
-  return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
+  const start = safeFormatNumber(value.start);
+  const end = safeFormatNumber(value.end);
+  return `${start} to ${end}`;
 }
 
 export function formatValue(value: any, timezone?: Timezone): string {

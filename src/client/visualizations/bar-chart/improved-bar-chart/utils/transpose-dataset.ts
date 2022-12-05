@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
+import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Split } from "../../../../../common/models/split/split";
 import { Binary, cons, replaceAt, Unary } from "../../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../../config/constants";
