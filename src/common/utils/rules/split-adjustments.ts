@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { VisualizationColors } from "../../models/colors/colors";
+import { colorSplitLimits, VisualizationColors } from "../../models/colors/colors";
 import { Dimension } from "../../models/dimension/dimension";
 import { SeriesList } from "../../models/series-list/series-list";
 import { DimensionSort, SeriesSort, SortDirection } from "../../models/sort/sort";
@@ -23,16 +23,10 @@ import { thread } from "../functional/functional";
 
 export function adjustColorSplit(split: Split, dimension: Dimension, series: SeriesList, visualizationColors: VisualizationColors): Split {
   const colorsCount = visualizationColors.series.length;
-  const availableLimits = new Set([
-    // TODO: This magic 5 will disappear in #756
-    5,
-    Math.min(split.limit, colorsCount),
-    colorsCount
-  ]);
   return thread(
     split,
     adjustSort(dimension, series),
-    adjustFiniteLimit([...availableLimits], colorsCount)
+    adjustFiniteLimit(colorSplitLimits(colorsCount), colorsCount)
   );
 }
 

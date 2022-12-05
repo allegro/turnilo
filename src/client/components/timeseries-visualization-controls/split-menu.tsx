@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { range } from "d3";
 import React, { useMemo, useState } from "react";
+import { colorSplitLimits } from "../../../common/models/colors/colors";
 import { granularityToString } from "../../../common/models/granularity/granularity";
 import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { useSettingsContext } from "../../views/cube-view/settings-context";
@@ -55,14 +55,6 @@ const TimeSeriesContinuousSplitMenu: React.FunctionComponent<SplitMenuProps> = p
   </SplitMenuBase>;
 };
 
-function getLimitOptions(max: number): number[] {
-  const limits = range(5, max, 5);
-  if (limits[limits.length - 1] < max) {
-    return [...limits, max];
-  }
-  return limits;
-}
-
 const TimeSeriesCategorySplitMenu: React.FunctionComponent<SplitMenuProps> = props => {
   const { openOn, containerStage, onClose, dimension, saveSplit, split, essence } = props;
 
@@ -72,7 +64,7 @@ const TimeSeriesCategorySplitMenu: React.FunctionComponent<SplitMenuProps> = pro
   ];
 
   const { customization: { visualizationColors: { series } } } = useSettingsContext();
-  const limitOptions = useMemo(() => getLimitOptions(series.length), [series.length]);
+  const limitOptions = useMemo(() => colorSplitLimits(series.length), [series.length]);
 
   const [sort, setSort] = useState(split.sort);
   const [limit, setLimit] = useState(split.limit);
