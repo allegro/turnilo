@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dataset, Datum, TimeRange } from "plywood";
+import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
 import { Split } from "../../../../../common/models/split/split";
 import { Binary, cons, replaceAt, Unary } from "../../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../../config/constants";
@@ -23,6 +23,7 @@ import { BarChartModel, isStacked } from "./bar-chart-model";
 
 function rangeComparator(continuousSplit: Split): Binary<Datum, Datum, number> {
   return (a: Datum, b: Datum) => {
+    // TODO: Fix this TimeRange type. It is hard to distribute over union here
     const aRange = continuousSplit.selectValue<TimeRange>(a);
     const bRange = continuousSplit.selectValue<TimeRange>(b);
     return aRange.compare(bRange);
@@ -33,7 +34,13 @@ function equalBy(split: Split, datum: Datum): Unary<Datum, boolean> {
   const value = split.selectValue(datum);
   return (d: Datum) => {
     const range = split.selectValue(d);
-    return TimeRange.isTimeRange(value) && TimeRange.isTimeRange(range) && value.equals(range);
+    if (TimeRange.isTimeRange(value) && TimeRange.isTimeRange(range)) {
+      return value.equals(range);
+    }
+    if (NumberRange.isNumberRange(value) && NumberRange.isNumberRange(range)) {
+      return value.equals(range);
+    }
+    return false;
   };
 }
 

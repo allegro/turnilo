@@ -15,7 +15,7 @@
  */
 
 import { List } from "immutable";
-import { Datum, TimeRange } from "plywood";
+import { Datum, Range, TimeRange } from "plywood";
 import React from "react";
 import { DateRange } from "../../../../../common/models/date-range/date-range";
 import { FilterClause, FixedTimeFilterClause } from "../../../../../common/models/filter-clause/filter-clause";
@@ -73,7 +73,7 @@ export class InteractionController extends React.Component<InteractionController
     const { highlight } = this.props;
     if (highlight) return;
     const value = this.getValueFromEvent(x, part);
-    if (!TimeRange.isTimeRange(value)) return;
+    if (!Range.isRange(value)) return;
     const series = this.getSeriesFromEvent(y, part);
     if (series === null) return;
     const datum = this.findDatumByValue(value);
