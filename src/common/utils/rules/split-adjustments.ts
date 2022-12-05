@@ -30,7 +30,7 @@ export function adjustColorSplit(split: Split, dimension: Dimension, series: Ser
   );
 }
 
-export function adjustContinuousTimeSplit(split: Split): Split {
+export function adjustContinuousSplit(split: Split): Split {
   const { reference } = split;
   return split
     .changeLimit(null)
