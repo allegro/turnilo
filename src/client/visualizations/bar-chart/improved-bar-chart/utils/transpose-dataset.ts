@@ -23,10 +23,15 @@ import { BarChartModel, isStacked } from "./bar-chart-model";
 
 function rangeComparator(continuousSplit: Split): Binary<Datum, Datum, number> {
   return (a: Datum, b: Datum) => {
-    // TODO: Fix this TimeRange type. It is hard to distribute over union here
-    const aRange = continuousSplit.selectValue<TimeRange>(a);
-    const bRange = continuousSplit.selectValue<TimeRange>(b);
-    return aRange.compare(bRange);
+    const aRange = continuousSplit.selectValue<TimeRange | NumberRange>(a);
+    const bRange = continuousSplit.selectValue<TimeRange | NumberRange>(b);
+    /*
+      NOTE: Conflict of variance:
+      `aRange` has type `TimeRange | NumberRange` and as a result
+      argument of `aRange.compare` has type `TimeRange & NumberRange`.
+      Such type is impossible, thus error
+    */
+    return aRange.compare(bRange as TimeRange & NumberRange);
   };
 }
 

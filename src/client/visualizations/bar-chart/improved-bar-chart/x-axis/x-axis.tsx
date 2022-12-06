@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import { SplitType } from "../../../../../common/models/split/split";
+import { isContinuousSplit } from "../../../../../common/models/split/split";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { formatShortSegment } from "../../../../../common/utils/formatter/formatter";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
@@ -34,7 +34,7 @@ const TICK_HEIGHT = 10;
 const TICK_TEXT_OFFSET = 12;
 
 function calculateTicks(domain: XDomain, { continuousSplit }: BarChartModel): DomainValue[] {
-  if (continuousSplit.type === SplitType.time || continuousSplit.type === SplitType.number) {
+  if (isContinuousSplit(continuousSplit)) {
     return domain.filter((_, idx) => idx % 8 === 0);
   }
   return domain;

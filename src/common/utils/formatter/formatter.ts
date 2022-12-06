@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { NumberRange, PlywoodValue, TimeRange } from "plywood";
+import { Datum, NumberRange, PlywoodValue, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
@@ -54,7 +54,14 @@ export function formatValue(value: any, timezone?: Timezone): string {
   }
 }
 
-export function formatShortSegment(value: PlywoodValue, timezone: Timezone): string {
+/*
+   NOTE:
+   Datum is a Record of `PlywoodValue | Expression`, so DatumValue will be equivalent to `PlywoodValue | Expression`.
+   Don't know if there is a real possibility that Plywood query will ever return an Expression inside Datum, though.
+*/
+type DatumValue = Datum[string];
+
+export function formatShortSegment(value: DatumValue, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
     return formatStartOfTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
@@ -63,7 +70,7 @@ export function formatShortSegment(value: PlywoodValue, timezone: Timezone): str
   return String(value);
 }
 
-export function formatSegment(value: any, timezone: Timezone): string {
+export function formatSegment(value: DatumValue, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
     return formatStartOfTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
