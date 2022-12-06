@@ -1,22 +1,12 @@
 {
   "name": "turnilo",
-  "version": "1.39.0-beta.1",
-  "description": "A web-based exploratory visualization UI for Druid.io",
+  "version": "1.39.0-beta.2",
+  "description": "Business intelligence, data exploration and visualization web application for Druid, formerly known as Swiv and Pivot",
   "keywords": [
-    "imply",
-    "data",
-    "explorer",
     "turnilo",
-    "swiv",
-    "visualization",
-    "druid"
-  ],
-  "contributors": [
-    "Vadim Ogievetsky <vadim@ogievetsky.com>",
-    "Tomasz Rzeznik <rzeznik.tom@gmail.com>",
-    "Rafał Nowak <rafal.nowak@allegro.pl>",
-    "Marcin Kuthan <marcin.kuthan@gmail.com>",
-    "Michał Misiewicz <michal.misiewicz@datumo.pl>"
+    "druid",
+    "data-visualization",
+    "business-intelligence"
   ],
   "repository": {
     "type": "git",
@@ -25,13 +15,8 @@
   "bugs": {
     "url": "https://github.com/allegro/turnilo/issues"
   },
-  "homepage": "https://github.com/allegro/turnilo#readme",
+  "homepage": "https://allegro.github.io/turnilo",
   "license": "Apache-2.0",
-  "directories": {
-    "doc": "docs",
-    "lib": "lib",
-    "test": "test"
-  },
   "bin": {
     "turnilo": "./bin/turnilo"
   },

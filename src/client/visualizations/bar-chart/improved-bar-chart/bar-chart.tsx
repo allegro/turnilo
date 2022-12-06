@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import { List } from "immutable";
-import { Dataset } from "plywood";
 import React from "react";
-import { Essence } from "../../../../common/models/essence/essence";
-import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { ChartProps } from "../../../../common/models/chart-props/chart-props";
 import { Stage } from "../../../../common/models/stage/stage";
-import { Binary, Nullary } from "../../../../common/utils/functional/functional";
 import { MessageCard } from "../../../components/message-card/message-card";
 import { Scroller } from "../../../components/scroller/scroller";
 import { SPLIT } from "../../../config/constants";
 import { selectMainDatum } from "../../../utils/dataset/selectors/selectors";
 import { useSettingsContext } from "../../../views/cube-view/settings-context";
-import { Highlight } from "../../highlight-controller/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import { Spacer } from "./spacer/spacer";
@@ -39,19 +34,9 @@ import { createXScale } from "./utils/x-scale";
 import { XAxis } from "./x-axis/x-axis";
 import { YAxis } from "./y-axis/y-axis";
 
-interface BarChartProps {
-  essence: Essence;
-  stage: Stage;
-  dataset: Dataset;
-  highlight?: Highlight;
-  saveHighlight: Binary<List<FilterClause>, string, void>;
-  dropHighlight: Nullary<void>;
-  acceptHighlight: Nullary<void>;
-}
-
-export const BarChart: React.FunctionComponent<BarChartProps> = props => {
+export const BarChart: React.FunctionComponent<ChartProps> = props => {
   const { customization } = useSettingsContext();
-  const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
+  const { data: dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
   const model = create(essence, dataset, customization);
 
   const transposedDataset = transposeDataset(dataset, model);

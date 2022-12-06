@@ -23,18 +23,17 @@ import { measureSeries } from "../../models/series/series.fixtures";
 import { DimensionSort, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../../models/split/split.fixtures";
 import {
-  adjustColorSplit,
-  adjustContinuousTimeSplit,
+  adjustColorSplit, adjustContinuousSplit,
   adjustFiniteLimit,
   adjustLimit,
   adjustSort
 } from "./split-adjustments";
 
 describe("Split adjustment utilities", () => {
-  describe("adjustContinuousTimeSplit", () => {
+  describe("adjustContinuousSplit", () => {
     it("should set limit to null", () => {
       const timeSplit = timeSplitCombine("time", undefined, { limit: 500 });
-      const adjusted = adjustContinuousTimeSplit(timeSplit);
+      const adjusted = adjustContinuousSplit(timeSplit);
       expect(adjusted.limit).to.be.null;
     });
 
@@ -49,7 +48,7 @@ describe("Split adjustment utilities", () => {
         reference: "time",
         direction: SortDirection.ascending
       });
-      const adjusted = adjustContinuousTimeSplit(timeSplit);
+      const adjusted = adjustContinuousSplit(timeSplit);
       expect(adjusted.sort).to.be.equivalent(expectedSort);
     });
   });

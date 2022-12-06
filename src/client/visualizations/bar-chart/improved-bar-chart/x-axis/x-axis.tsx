@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { TimeRange } from "plywood";
 import React from "react";
+import { isContinuousSplit } from "../../../../../common/models/split/split";
 import { Stage } from "../../../../../common/models/stage/stage";
-import { formatStartOfTimeRange } from "../../../../../common/utils/time/time";
+import { formatShortSegment } from "../../../../../common/utils/formatter/formatter";
 import { roundToHalfPx } from "../../../../utils/dom/dom";
 import { BarChartModel } from "../utils/bar-chart-model";
 import { DomainValue, XDomain } from "../utils/x-domain";
@@ -34,7 +34,7 @@ const TICK_HEIGHT = 10;
 const TICK_TEXT_OFFSET = 12;
 
 function calculateTicks(domain: XDomain, { continuousSplit }: BarChartModel): DomainValue[] {
-  if (continuousSplit.type === "time") {
+  if (isContinuousSplit(continuousSplit)) {
     return domain.filter((_, idx) => idx % 8 === 0);
   }
   return domain;
@@ -51,7 +51,7 @@ export const XAxis: React.FunctionComponent<XAxisProps> = props => {
         return <g key={String(value)} transform={`translate(${x}, 0)`}>
           <line x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
           <text y={TICK_HEIGHT + TICK_TEXT_OFFSET} style={{ textAnchor }}>
-            {formatStartOfTimeRange(value as TimeRange, model.timezone)}
+            {formatShortSegment(value, model.timezone)}
           </text>
         </g>;
       })}
