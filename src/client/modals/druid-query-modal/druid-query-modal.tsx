@@ -34,12 +34,16 @@ export const DruidQueryModal: React.FunctionComponent<DruidQueryModalProps> = ({
   const queryFn = visualization.name === "grid" ? gridQuery : standardQuery;
   const query = queryFn(essence, timekeeper);
   const external = External.fromJS({ engine: "druid", attributes, source, customAggregations, customTransforms });
-  const plan = query.simulateQueryPlan({ main: external });
-  const planSource = JSON.stringify(plan, null, 2);
+  let plan;
+  try {
+    plan = JSON.stringify(query.simulateQueryPlan({ main: external }), null, 2);
+  } catch (e) {
+    plan = "Couldn't create Druid Query Plan.";
+  }
 
   return <SourceModal
     onClose={onClose}
     title="Druid query"
     copyLabel="Copy query"
-    source={planSource} />;
+    source={plan} />;
 };
