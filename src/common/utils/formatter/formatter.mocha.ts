@@ -17,10 +17,11 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
+import { NumberRange, TimeRange } from "plywood";
 import * as sinon from "sinon";
 import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
 import * as TimeModule from "../time/time";
-import { formatFilterClause } from "./formatter";
+import { formatFilterClause, formatSegment, formatShortSegment } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
 describe("General", () => {
@@ -80,6 +81,54 @@ describe("General", () => {
       expect(
         formatFilterClause(DimensionFixtures.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)
       ).to.equal("important countries: iceland");
+    });
+  });
+
+  describe("formatSegment", () => {
+    it("should convert number to string", () => {
+      expect(formatSegment(42, null)).to.be.equal("42");
+    });
+
+    it("should pass string as is", () => {
+      expect(formatSegment("foobar", null)).to.be.equal("foobar");
+    });
+
+    it("should return whole number range as string", () => {
+      expect(formatSegment(new NumberRange({
+        start: 42,
+        end: 120
+      }), null)).to.be.equal("42 to 120");
+    });
+
+    it("should return start of time range as string", () => {
+      expect(formatSegment(new TimeRange({
+        start: new Date("2016-11-11"),
+        end: new Date("2016-12-01")
+      }), Timezone.UTC)).to.be.equal("11 Nov 2016");
+    });
+  });
+
+  describe("formatShortSegment", () => {
+    it("should convert number to string", () => {
+      expect(formatShortSegment(42, null)).to.be.equal("42");
+    });
+
+    it("should pass string as is", () => {
+      expect(formatShortSegment("foobar", null)).to.be.equal("foobar");
+    });
+
+    it("should return start of number range as string", () => {
+      expect(formatShortSegment(new NumberRange({
+        start: 42,
+        end: 120
+      }), null)).to.be.equal("42");
+    });
+
+    it("should return start of time range as string", () => {
+      expect(formatShortSegment(new TimeRange({
+        start: new Date("2016-11-11"),
+        end: new Date("2016-12-01")
+      }), Timezone.UTC)).to.be.equal("11 Nov 2016");
     });
   });
 });

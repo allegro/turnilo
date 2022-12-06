@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dataset, Datum, TimeRange } from "plywood";
+import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Split } from "../../../../../common/models/split/split";
 import { Binary, cons, replaceAt, Unary } from "../../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../../config/constants";
@@ -23,9 +23,15 @@ import { BarChartModel, isStacked } from "./bar-chart-model";
 
 function rangeComparator(continuousSplit: Split): Binary<Datum, Datum, number> {
   return (a: Datum, b: Datum) => {
-    const aRange = continuousSplit.selectValue<TimeRange>(a);
-    const bRange = continuousSplit.selectValue<TimeRange>(b);
-    return aRange.compare(bRange);
+    const aRange = continuousSplit.selectValue<TimeRange | NumberRange>(a);
+    const bRange = continuousSplit.selectValue<TimeRange | NumberRange>(b);
+    /*
+      NOTE: Conflict of variance:
+      `aRange` has type `TimeRange | NumberRange` and as a result
+      argument of `aRange.compare` has type `TimeRange & NumberRange`.
+      Such type is impossible, thus error
+    */
+    return aRange.compare(bRange as TimeRange & NumberRange);
   };
 }
 
@@ -33,7 +39,13 @@ function equalBy(split: Split, datum: Datum): Unary<Datum, boolean> {
   const value = split.selectValue(datum);
   return (d: Datum) => {
     const range = split.selectValue(d);
-    return TimeRange.isTimeRange(value) && TimeRange.isTimeRange(range) && value.equals(range);
+    if (TimeRange.isTimeRange(value) && TimeRange.isTimeRange(range)) {
+      return value.equals(range);
+    }
+    if (NumberRange.isNumberRange(value) && NumberRange.isNumberRange(range)) {
+      return value.equals(range);
+    }
+    return false;
   };
 }
 

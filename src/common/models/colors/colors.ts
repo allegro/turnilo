@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { hsl, rgb } from "d3";
+import { hsl, range, rgb } from "d3";
 
 export const DEFAULT_SERIES_COLORS = [
   "#2D95CA",
@@ -49,4 +49,12 @@ export function lightMain(colors: VisualizationColors): string {
 export function alphaMain(colors: VisualizationColors): string {
   const { r, g, b } = rgb(colors.main);
   return `rgba(${r}, ${g}, ${b}, ${0.14})`;
+}
+
+export function colorSplitLimits(max: number): number[] {
+  const limits = range(5, max, 5);
+  if (limits[limits.length - 1] < max) {
+    return [...limits, max];
+  }
+  return limits;
 }

@@ -32,6 +32,10 @@ export enum SplitType {
   boolean = "boolean"
 }
 
+export function isContinuousSplit({ type }: Split): boolean {
+  return  type === SplitType.time || type === SplitType.number;
+}
+
 export type Bucket = number | Duration;
 
 export interface SplitValue {
