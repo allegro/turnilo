@@ -15,21 +15,20 @@
  */
 
 import { Request, Response, Router } from "express";
-import { LOGGER } from "../../../common/logger/logger";
 import { serialize } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
-import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-export function sourcesRouter(sourcesGetter: SourcesGetter) {
+export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
 
-  const logger = LOGGER.addPrefix("Settings Endpoint: ");
+  const logger = settings.logger.addPrefix("Settings Endpoint: ");
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
 
     try {
-      const { clusters, dataCubes } = await sourcesGetter();
+      const { clusters, dataCubes } = await settings.getSources();
       res.json(serialize({
         clusters,
         dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )

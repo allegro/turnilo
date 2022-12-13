@@ -19,6 +19,8 @@ import express from "express";
 import { Express } from "express";
 import * as http from "http";
 import supertest from "supertest";
+import { NOOP_LOGGER } from "../../../common/logger/logger";
+import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { fromConfig } from "../../../common/models/customization/customization";
 import { UrlShortenerDef } from "../../../common/models/url-shortener/url-shortener";
 import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "../../../common/models/url-shortener/url-shortener.fixtures";
@@ -27,9 +29,12 @@ import { shortenRouter } from "./shorten";
 const shortenPath = "/shorten";
 
 const settingsFactory = (urlShortener: UrlShortenerDef) => ({
-  customization: fromConfig({
-    urlShortener
-  })
+  appSettings: {
+    ...appSettings,
+    customization: fromConfig({
+      urlShortener
+    }, NOOP_LOGGER)
+  }
 });
 
 const callShortener = (app: Express) => supertest(app)

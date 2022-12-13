@@ -24,7 +24,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { getDataCube, Sources } from "../../../common/models/sources/sources";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
 function convertToClientAppSettings(appSettings: AppSettings): ClientAppSettings {
   return deserialize(serialize(appSettings));
@@ -37,7 +37,7 @@ function convertToClientDataCube(cube: QueryableDataCube): ClientDataCube {
   };
 }
 
-export function mkurlRouter(appSettings: AppSettings, sourcesGetter: SourcesGetter) {
+export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appSettings">) {
 
   const router = Router();
 
@@ -69,7 +69,7 @@ export function mkurlRouter(appSettings: AppSettings, sourcesGetter: SourcesGett
 
     let sources: Sources;
     try {
-      sources = await sourcesGetter();
+      sources = await settings.getSources();
     } catch (e) {
       res.status(400).send({ error: "Couldn't load settings" });
       return;
@@ -86,7 +86,7 @@ export function mkurlRouter(appSettings: AppSettings, sourcesGetter: SourcesGett
     }
 
     const clientDataCube = convertToClientDataCube(myDataCube);
-    const clientAppSettings = convertToClientAppSettings(appSettings);
+    const clientAppSettings = convertToClientAppSettings(settings.appSettings);
 
     let essence: Essence;
     try {

@@ -19,12 +19,14 @@ import * as bodyParser from "body-parser";
 import express from "express";
 import { $ } from "plywood";
 import supertest from "supertest";
+import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { plywoodRouter } from "./plywood";
 
 const settingsManagerFixture = {
   getSources: () => Promise.resolve(wikiSourcesWithExecutor),
-  anchorPath: "."
+  anchorPath: ".",
+  logger: NOOP_LOGGER
 };
 
 const app = express();
