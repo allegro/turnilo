@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { NULL_LOGGER } from "../../common/logger/logger";
 import { appSettingsToYaml, printExtra, sourcesToYaml } from "../../common/utils/yaml-helper/yaml-helper";
 import { SettingsManager } from "../utils/settings-manager/settings-manager";
 import { TurniloSettings } from "./run-turnilo";
@@ -27,7 +26,7 @@ export default function printIntrospectedSettings(
   const settingsManager = new SettingsManager(appSettings, sources, {
     anchorPath: process.cwd(),
     initialLoadTimeout: serverSettings.pageMustLoadTimeout,
-    logger: NULL_LOGGER
+    logger: "noop"
   });
 
   return settingsManager.getFreshSources({

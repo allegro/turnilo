@@ -45,7 +45,7 @@ export default function createServer(serverSettings: ServerSettings, app: Expres
 
   server.on("listening", () => {
     const address = server.address() as AddressInfo;
-    console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
+    process.stdout.write(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 
   app.set("port", serverSettings.port);
