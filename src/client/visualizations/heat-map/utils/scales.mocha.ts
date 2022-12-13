@@ -20,12 +20,13 @@ import { fromMeasure } from "../../../../common/models/series/measure-concrete-s
 import { dataset } from "./datum-fixtures";
 import scales from "./scales";
 
+const orange = "#ff5a00";
 const measure = MeasureFixtures.count();
 const concreteSeries = fromMeasure(measure);
 
 describe("scales", () => {
   describe("full data", () => {
-    const { x, y, color } = scales(dataset, 20, concreteSeries);
+    const { x, y, color } = scales(dataset, 20, orange, concreteSeries);
 
     it("should create x scale with correct domain", () => {
       expect(x.domain()).to.deep.equal([0, 6]);
@@ -53,7 +54,7 @@ describe("scales", () => {
   });
 
   describe("empty data", () => {
-    const { x, y, color } = scales([], 20, concreteSeries);
+    const { x, y, color } = scales([], 20, orange, concreteSeries);
 
     it("should create x scale with empty domain", () => {
       expect(x.domain()).to.deep.equal([0, 0]);
