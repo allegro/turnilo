@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerFormat } from "../../server/models/server-settings/server-settings";
 import { noop, Unary } from "../utils/functional/functional";
 
 export interface Logger {
@@ -21,6 +22,46 @@ export interface Logger {
   warn: Function;
   error: Function;
   addPrefix: Unary<String, Logger>;
+}
+
+class JSONLogger implements Logger {
+
+  constructor(private logger = "turnilo") {
+  }
+
+  log(message: string, extra: Record<string, string>) {
+    console.log(JSON.stringify({
+      message,
+      time: new Date().toISOString(),
+      level: "INFO",
+      logger: this.logger,
+      ...extra
+    }));
+  }
+
+  addPrefix(prefix: string): Logger {
+    return new JSONLogger(prefix);
+  }
+
+  error(message: string, extra: Record<string, string>) {
+    console.log(JSON.stringify({
+      message,
+      time: new Date().toISOString(),
+      level: "ERROR",
+      logger: this.logger,
+      ...extra
+    }));
+  }
+
+  warn(message: string, extra: Record<string, string>) {
+    console.log(JSON.stringify({
+      message,
+      time: new Date().toISOString(),
+      level: "WARN",
+      logger: this.logger,
+      ...extra
+    }));
+  }
 }
 
 class ConsoleLogger implements Logger {
@@ -44,11 +85,15 @@ class ConsoleLogger implements Logger {
   }
 }
 
-export const LOGGER: Logger = new ConsoleLogger();
-
-export const NULL_LOGGER: Logger = {
+export const NOOP_LOGGER: Logger = {
   error: noop,
   warn: noop,
   log: noop,
   addPrefix: noop
+};
+
+export const LOGGERS: Record<LoggerFormat, Logger> = {
+  noop: NOOP_LOGGER,
+  json: new JSONLogger(),
+  plain: new ConsoleLogger()
 };
