@@ -72,8 +72,7 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
       try {
         return linkGeneratorFnRaw(dataCube, dataCube, timezone, filter, splits);
       } catch (e) {
-        console.warn(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
-        return null;
+        throw new Error(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
       }
     };
 

@@ -16,10 +16,10 @@
  */
 
 import { Timezone } from "chronoshift";
-import { LOGGER } from "../../logger/logger";
+import { Logger } from "../../logger/logger";
 import { assoc } from "../../utils/functional/functional";
 import { isNil, isTruthy } from "../../utils/general/general";
-import { DEFAULT_COLORS, DEFAULT_MAIN_COLOR, DEFAULT_SERIES_COLORS, VisualizationColors } from "../colors/colors";
+import { DEFAULT_COLORS, VisualizationColors } from "../colors/colors";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 import { fromConfig as localeFromConfig, Locale, LocaleJS, serialize as serializeLocale } from "../locale/locale";
 import { fromConfig as urlShortenerFromConfig, UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
@@ -160,12 +160,12 @@ export interface ClientCustomization {
   visualizationColors: VisualizationColors;
 }
 
-function verifyCssVariables(cssVariables: Record<string, string>): CssVariables {
+function verifyCssVariables(cssVariables: Record<string, string>, logger: Logger): CssVariables {
   return Object.keys(cssVariables)
     .filter(variableName => {
       const valid = availableCssVariables.indexOf(variableName) > -1;
       if (!valid) {
-        LOGGER.warn(`Unsupported css variables "${variableName}" found.`);
+        logger.warn(`Unsupported css variables "${variableName}" found.`);
       }
       return valid;
     })
@@ -180,7 +180,7 @@ function readVisualizationColors(config: CustomizationJS): VisualizationColors {
   return { ...DEFAULT_COLORS, ...config.visualizationColors };
 }
 
-export function fromConfig(config: CustomizationJS = {}): Customization {
+export function fromConfig(config: CustomizationJS = {}, logger: Logger): Customization {
   const {
     title = DEFAULT_TITLE,
     headerBackground,
@@ -209,10 +209,10 @@ export function fromConfig(config: CustomizationJS = {}): Customization {
     headerBackground,
     customLogoSvg,
     sentryDSN,
-    cssVariables: verifyCssVariables(cssVariables),
+    cssVariables: verifyCssVariables(cssVariables, logger),
     urlShortener: urlShortenerFromConfig(urlShortener),
     timezones,
-    locale: localeFromConfig(locale),
+    locale: localeFromConfig(locale, logger),
     messages,
     externalViews,
     visualizationColors
