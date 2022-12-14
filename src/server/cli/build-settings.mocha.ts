@@ -150,7 +150,7 @@ describe("Build Settings", () => {
     });
 
     it("should pass auth object to all clusters", () => {
-      const makeCluster = (name: string) => fromConfig({ name, url: `https://${name}.com` });
+      const makeCluster = (name: string) => fromConfig({ name, url: `https://${name}.com` }, NOOP_LOGGER);
 
       const settings = buildSettings({
         clusters: [makeCluster("foobar-1"), makeCluster("foobar-2")]

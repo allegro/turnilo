@@ -221,7 +221,7 @@ export class SettingsManager {
 
     let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) {
-      dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal);
+      dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal, this.logger);
     }
     const queryableDataCube = attachExternalExecutor(dataCube, changedExternal);
 

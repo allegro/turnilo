@@ -53,7 +53,7 @@ export default function buildSettings(config: object, options: ServerOptions, au
   const logger = getLogger(serverSettings.loggerFormat);
   const appSettings = appSettingsFromConfig(config, logger);
   const sourcesJS = isNil(auth) ? config : overrideClustersAuth(config, auth);
-  const sources = sourcesFromConfig(sourcesJS);
+  const sources = sourcesFromConfig(sourcesJS, logger);
 
   return {
     serverSettings,
@@ -63,15 +63,16 @@ export default function buildSettings(config: object, options: ServerOptions, au
 }
 
 export function settingsForDruidConnection(url: string, options: ServerOptions, auth?: ClusterAuthJS): TurniloSettings {
+  const serverSettings = ServerSettings.fromJS(options);
+  const logger = getLogger(serverSettings.loggerFormat);
   const sources: Sources = {
     dataCubes: [],
     clusters: [clusterFromConfig({
       name: "druid",
       url,
       auth
-    })]
+    }, logger)]
   };
-  const serverSettings = ServerSettings.fromJS(options);
   const appSettings = emptySettings(getLogger(serverSettings.loggerFormat));
 
   return {
@@ -82,16 +83,17 @@ export function settingsForDruidConnection(url: string, options: ServerOptions, 
 }
 
 export function settingsForDatasetFile(datasetPath: string, timeAttribute: string, options: ServerOptions): TurniloSettings {
+  const serverSettings = ServerSettings.fromJS(options);
+  const logger = getLogger(serverSettings.loggerFormat);
   const sources: Sources = {
     dataCubes: [dataCubeFromConfig({
       name: path.basename(datasetPath, path.extname(datasetPath)),
       clusterName: "native",
       source: datasetPath,
       timeAttribute
-    }, undefined)],
+    }, undefined, logger)],
     clusters: []
   };
-  const serverSettings = ServerSettings.fromJS(options);
   const appSettings = emptySettings(getLogger(serverSettings.loggerFormat));
 
   return {

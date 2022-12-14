@@ -37,8 +37,8 @@ export default function printIntrospectedSettings(
         header: true,
         version
       }, withComments),
-      appSettingsToYaml(appSettings, withComments),
-      sourcesToYaml(sources, withComments)
+      appSettingsToYaml(appSettings, withComments, settingsManager.logger),
+      sourcesToYaml(sources, withComments, settingsManager.logger)
     ];
 
     process.stdout.write(config.join("\n"));
