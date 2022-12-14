@@ -29,6 +29,7 @@ import { shortenRouter } from "./shorten";
 const shortenPath = "/shorten";
 
 const settingsFactory = (urlShortener: UrlShortenerDef) => ({
+  logger: NOOP_LOGGER,
   appSettings: {
     ...appSettings,
     customization: fromConfig({
