@@ -35,10 +35,12 @@ export function shortenRouter(settings: Pick<SettingsManager, "appSettings" | "l
       const shortUrl = await shortener(request, url as string, context);
       res.json({ shortUrl });
     } catch (error) {
-      logger.log("error:", error.message);
+      let message = error.message;
       if (error.hasOwnProperty("stack")) {
-        logger.log((error as any).stack);
+        message += `\n ${error.stack}`;
       }
+      logger.error(message);
+
       res.status(500).send({
         error: "could not shorten url",
         message: error.message

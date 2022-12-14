@@ -34,10 +34,12 @@ export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "lo
         dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )
       }));
     } catch (error) {
-      logger.error(error.message);
+      let message = error.message;
       if (error.hasOwnProperty("stack")) {
-        logger.error(error.stack);
+        message += `\n ${error.stack}`;
       }
+      logger.error(message);
+
       res.status(500).send({
         error: "Can't fetch settings",
         message: error.message

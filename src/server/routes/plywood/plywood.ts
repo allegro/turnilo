@@ -97,10 +97,12 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       };
       res.json(reply);
     } catch (error) {
-      logger.log("error:", error.message);
+      let message = error.message;
       if (error.hasOwnProperty("stack")) {
-        logger.log((error as any).stack);
+        message += `\n ${error.stack}`;
       }
+      logger.error(message);
+
       res.status(500).send({
         error: "could not compute",
         message: error.message
