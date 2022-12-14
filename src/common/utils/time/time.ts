@@ -206,3 +206,7 @@ export function validateISOTime(time: string): boolean {
 export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): Moment {
   return tz(`${date}T${time}`, timezone.toString());
 }
+
+export function isoNow(): string {
+  return (new Date()).toISOString();
+}

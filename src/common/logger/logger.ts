@@ -16,6 +16,7 @@
 
 import { LoggerFormat } from "../../server/models/server-settings/server-settings";
 import { noop, Unary } from "../utils/functional/functional";
+import { isoNow } from "../utils/time/time";
 
 export interface Logger {
   log: Function;
@@ -32,7 +33,7 @@ class JSONLogger implements Logger {
   log(message: string, extra: Record<string, string>) {
     console.log(JSON.stringify({
       message,
-      time: new Date().toISOString(),
+      time: isoNow(),
       level: "INFO",
       logger: this.logger,
       ...extra
@@ -46,7 +47,7 @@ class JSONLogger implements Logger {
   error(message: string, extra: Record<string, string>) {
     console.log(JSON.stringify({
       message,
-      time: new Date().toISOString(),
+      time: isoNow(),
       level: "ERROR",
       logger: this.logger,
       ...extra
@@ -56,7 +57,7 @@ class JSONLogger implements Logger {
   warn(message: string, extra: Record<string, string>) {
     console.log(JSON.stringify({
       message,
-      time: new Date().toISOString(),
+      time: isoNow(),
       level: "WARN",
       logger: this.logger,
       ...extra
