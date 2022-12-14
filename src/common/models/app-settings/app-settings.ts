@@ -16,7 +16,7 @@
  */
 
 import { Executor } from "plywood";
-import { Logger, NOOP_LOGGER } from "../../logger/logger";
+import { Logger } from "../../logger/logger";
 import {
   ClientCustomization,
   Customization,
@@ -77,7 +77,7 @@ export function fromConfig(config: AppSettingsJS, logger: Logger): AppSettings {
   };
 }
 
-export const EMPTY_APP_SETTINGS = fromConfig({}, NOOP_LOGGER);
+export const emptySettings = (logger: Logger) => fromConfig({}, logger);
 
 export function serialize({ oauth, clientTimeout, customization, version }: AppSettings): SerializedAppSettings {
   return {

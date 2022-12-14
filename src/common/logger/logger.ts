@@ -92,8 +92,12 @@ export const NOOP_LOGGER: Logger = {
   addPrefix: noop
 };
 
-export const LOGGERS: Record<LoggerFormat, Logger> = {
+const LOGGERS: Record<LoggerFormat, Logger> = {
   noop: NOOP_LOGGER,
   json: new JSONLogger(),
   plain: new ConsoleLogger()
-};
+} as const;
+
+export function getLogger(format: LoggerFormat): Logger {
+  return LOGGERS[format];
+}

@@ -18,8 +18,9 @@ import { expect, use } from "chai";
 import { RefExpression } from "plywood";
 import sinon from "sinon";
 import equivalent from "../../client/utils/test-utils/equivalent";
+import { NOOP_LOGGER } from "../../common/logger/logger";
 import * as SourcesModule from "../../common/models/app-settings/app-settings";
-import { EMPTY_APP_SETTINGS } from "../../common/models/app-settings/app-settings";
+import { emptySettings } from "../../common/models/app-settings/app-settings";
 import { fromConfig } from "../../common/models/cluster/cluster";
 import * as AppSettingsModule from "../../common/models/sources/sources";
 import { ServerSettings } from "../models/server-settings/server-settings";
@@ -37,7 +38,7 @@ describe("Build Settings", () => {
     });
 
     it("should create empty app settings", () => {
-      expect(settings.appSettings).to.be.deep.equal(EMPTY_APP_SETTINGS);
+      expect(settings.appSettings).to.be.deep.equal(emptySettings(NOOP_LOGGER));
     });
 
     it("should create empty cluster array", () => {
@@ -89,7 +90,7 @@ describe("Build Settings", () => {
     });
 
     it("should create empty app settings", () => {
-      expect(settings.appSettings).to.be.deep.equal(EMPTY_APP_SETTINGS);
+      expect(settings.appSettings).to.be.deep.equal(emptySettings(NOOP_LOGGER));
     });
 
     it("should create empty data cubes array", () => {

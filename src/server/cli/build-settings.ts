@@ -15,8 +15,8 @@
  */
 
 import path from "path";
-import { LOGGERS } from "../../common/logger/logger";
-import { EMPTY_APP_SETTINGS, fromConfig as appSettingsFromConfig } from "../../common/models/app-settings/app-settings";
+import { getLogger } from "../../common/logger/logger";
+import { emptySettings, fromConfig as appSettingsFromConfig } from "../../common/models/app-settings/app-settings";
 import { ClusterAuthJS } from "../../common/models/cluster-auth/cluster-auth";
 import { fromConfig as clusterFromConfig } from "../../common/models/cluster/cluster";
 import { fromConfig as dataCubeFromConfig } from "../../common/models/data-cube/data-cube";
@@ -50,7 +50,7 @@ export default function buildSettings(config: object, options: ServerOptions, au
     ...options
   };
   const serverSettings = ServerSettings.fromJS(serverSettingsJS);
-  const logger = LOGGERS[serverSettings.loggerFormat];
+  const logger = getLogger(serverSettings.loggerFormat);
   const appSettings = appSettingsFromConfig(config, logger);
   const sourcesJS = isNil(auth) ? config : overrideClustersAuth(config, auth);
   const sources = sourcesFromConfig(sourcesJS);
@@ -71,8 +71,8 @@ export function settingsForDruidConnection(url: string, options: ServerOptions, 
       auth
     })]
   };
-  const appSettings = EMPTY_APP_SETTINGS;
   const serverSettings = ServerSettings.fromJS(options);
+  const appSettings = emptySettings(getLogger(serverSettings.loggerFormat));
 
   return {
     sources,
@@ -91,8 +91,8 @@ export function settingsForDatasetFile(datasetPath: string, timeAttribute: strin
     }, undefined)],
     clusters: []
   };
-  const appSettings = EMPTY_APP_SETTINGS;
   const serverSettings = ServerSettings.fromJS(options);
+  const appSettings = emptySettings(getLogger(serverSettings.loggerFormat));
 
   return {
     sources,

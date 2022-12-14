@@ -16,7 +16,7 @@
  */
 
 import { Dataset, External } from "plywood";
-import { Logger, LOGGERS } from "../../../common/logger/logger";
+import { getLogger, Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL } from "../../../common/models/cluster/cluster";
 import { DataCube, fromClusterAndExternal } from "../../../common/models/data-cube/data-cube";
@@ -66,7 +66,7 @@ export class SettingsManager {
   constructor(appSettings: AppSettings,
               sources: Sources,
               options: SettingsManagerOptions) {
-    const logger = LOGGERS[options.logger];
+    const logger = getLogger(options.logger);
     this.logger = logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
