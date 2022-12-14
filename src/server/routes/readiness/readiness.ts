@@ -75,7 +75,7 @@ function aggregateHealthStatus(clusterHealths: ClusterHealth[]): ClusterHealthSt
   return isSomeUnhealthy ? ClusterHealthStatus.unhealthy : ClusterHealthStatus.healthy;
 }
 
-function logUnhealthy(clusterHealths: ClusterHealth[], logger: Logger): void {
+function logUnhealthy(logger: Logger, clusterHealths: ClusterHealth[]): void {
   const unhealthyClusters = clusterHealths.filter(({ status }) => status === ClusterHealthStatus.unhealthy);
   unhealthyClusters.forEach(({ message, url }: ClusterHealth) => {
     logger.log(`Unhealthy cluster url: ${url}. Message: ${message}`);
@@ -91,7 +91,7 @@ export function readinessRouter(settings: Pick<SettingsManager, "getSources" | "
     try {
       const sources = await settings.getSources();
       const clusterHealths = await checkClusters(sources.clusters);
-      logUnhealthy(clusterHealths, logger);
+      logUnhealthy(logger, clusterHealths);
       const overallHealthStatus = aggregateHealthStatus(clusterHealths);
       const httpState = statusToHttpStatus(overallHealthStatus);
       res.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
