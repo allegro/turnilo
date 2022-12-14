@@ -20,6 +20,7 @@ import buildSettings, { settingsForDatasetFile, settingsForDruidConnection } fro
 import printIntrospectedSettings from "./cli/introspect-cluster";
 import { loadConfigFile } from "./cli/load-config-file";
 import {
+  loggerOption,
   passwordOption,
   portOption,
   serverHostOption,
@@ -48,16 +49,18 @@ program
   .description("Runs Turnilo using config file")
   .argument("<config-path>", "Path to config file")
   .addOption(portOption)
+  .addOption(loggerOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
   .addOption(usernameOption)
   .addOption(passwordOption)
   .addOption(verboseOption)
-  .action((configPath, { username, password, serverRoot, serverHost, port, verbose }) => {
+  .action((configPath, { username, password, loggerFormat, serverRoot, serverHost, port, verbose }) => {
     const anchorPath = path.dirname(configPath);
     const auth = parseCredentials(username, password, "http-basic");
     const config = loadConfigFile(configPath, program);
     const options = {
+      loggerFormat,
       serverRoot,
       serverHost,
       verbose,
@@ -77,14 +80,15 @@ program
   .command("run-examples")
   .description("Runs Turnilo with example datasets")
   .addOption(portOption)
+  .addOption(loggerOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
   .addOption(verboseOption)
-  .action(({ port, verbose, serverRoot, serverHost }) => {
+  .action(({ port, verbose, loggerFormat, serverRoot, serverHost }) => {
     const configPath = path.join(__dirname, "../../config-examples.yaml");
     const anchorPath = path.dirname(configPath);
     const config = loadConfigFile(configPath, program);
-    const options = { port, verbose, serverHost, serverRoot };
+    const options = { port, verbose, serverHost, serverRoot, loggerFormat };
 
     runTurnilo(
       buildSettings(config, options),
@@ -100,14 +104,15 @@ program
   .description("Runs turnilo that connects to Druid cluster and introspects it for datasets")
   .argument("<druid-url>", "Url of Druid cluster")
   .addOption(portOption)
+  .addOption(loggerOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
   .addOption(verboseOption)
   .addOption(usernameOption)
   .addOption(passwordOption)
-  .action((url, { port, verbose, username, password, serverRoot, serverHost }) => {
+  .action((url, { port, verbose, username, password, serverRoot, serverHost, loggerFormat }) => {
     const auth = parseCredentials(username, password, "http-basic");
-    const options = { port, verbose, serverHost, serverRoot };
+    const options = { port, verbose, serverHost, serverRoot, loggerFormat };
     runTurnilo(
       settingsForDruidConnection(url, options, auth),
       process.cwd(),
@@ -123,11 +128,13 @@ program
   .argument("<file-path>", "Path to json file with data")
   .requiredOption("-t, --time-attribute <field-name>", "JSON field name with time column")
   .addOption(portOption)
+  .addOption(loggerOption)
   .addOption(serverRootOption)
   .addOption(serverHostOption)
   .addOption(verboseOption)
-  .action((file, { timeAttribute, port, verbose, serverHost, serverRoot }) => {
+  .action((file, { timeAttribute, port, verbose, serverHost, serverRoot, loggerFormat }) => {
     const options = {
+      loggerFormat,
       serverRoot,
       serverHost,
       verbose,

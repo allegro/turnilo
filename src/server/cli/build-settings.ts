@@ -22,7 +22,7 @@ import { fromConfig as clusterFromConfig } from "../../common/models/cluster/clu
 import { fromConfig as dataCubeFromConfig } from "../../common/models/data-cube/data-cube";
 import { fromConfig as sourcesFromConfig, Sources, SourcesJS } from "../../common/models/sources/sources";
 import { isNil } from "../../common/utils/general/general";
-import { ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
+import { LoggerFormat, ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
 import { TurniloSettings } from "./run-turnilo";
 
 export interface ServerOptions {
@@ -30,6 +30,7 @@ export interface ServerOptions {
   verbose?: boolean;
   serverHost?: string;
   serverRoot?: string;
+  loggerFormat?: LoggerFormat;
 }
 
 function overrideClustersAuth(config: SourcesJS, auth: ClusterAuthJS): SourcesJS {
