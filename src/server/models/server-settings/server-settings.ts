@@ -60,7 +60,8 @@ const TRUST_PROXY_VALUES: TrustProxy[] = ["none", "always"];
 const DEFAULT_TRUST_PROXY: TrustProxy = "none";
 const STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
 const DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
-const DEFAULT_LOGGER_FORMAT: LoggerFormat = "plain";
+export const DEFAULT_LOGGER_FORMAT: LoggerFormat = "plain";
+const LOGGER_FORMAT_VALUES: LoggerFormat[] = ["plain", "json", "noop"];
 
 const defaultServerSettings: ServerSettingsValue = {
   iframe: DEFAULT_IFRAME,
@@ -97,6 +98,7 @@ export class ServerSettings extends Record<ServerSettingsValue>(defaultServerSet
     optionalEnsureOneOf(iframe, IFRAME_VALUES, "ServerSettings: iframe");
     optionalEnsureOneOf(trustProxy, TRUST_PROXY_VALUES, "ServerSettings: trustProxy");
     optionalEnsureOneOf(strictTransportSecurity, STRICT_TRANSPORT_SECURITY_VALUES, "ServerSettings: strictTransportSecurity");
+    optionalEnsureOneOf(loggerFormat, LOGGER_FORMAT_VALUES, "ServerSettings: loggerFormat");
 
     const readinessEndpoint = !parameters.readinessEndpoint && !!parameters.healthEndpoint ? parameters.healthEndpoint : parameters.readinessEndpoint;
     const verbose = Boolean(parameters.verbose);
