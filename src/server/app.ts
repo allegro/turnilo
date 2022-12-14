@@ -107,7 +107,7 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
         serverSettings,
         settingsManager.appSettings,
         settingsManager.sourcesGetter,
-        settingsManager.logger.addPrefix(name));
+        settingsManager.logger.setLoggerId(name));
     } catch (e) {
       settingsManager.logger.warn(`Plugin ${name} threw an error: ${e.message}`);
     }

@@ -18,11 +18,13 @@ import { LoggerFormat } from "../../server/models/server-settings/server-setting
 import { noop, Unary } from "../utils/functional/functional";
 import { isoNow } from "../utils/time/time";
 
+type LogFn = (msg: string, extra?: Record<string, string>) => void;
+
 export interface Logger {
-  log: Function;
-  warn: Function;
-  error: Function;
-  addPrefix: Unary<String, Logger>;
+  log: LogFn;
+  warn: LogFn;
+  error: LogFn;
+  setLoggerId: Unary<String, Logger>;
 }
 
 class JSONLogger implements Logger {
@@ -30,7 +32,7 @@ class JSONLogger implements Logger {
   constructor(private logger = "turnilo") {
   }
 
-  log(message: string, extra: Record<string, string>) {
+  log(message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
       time: isoNow(),
@@ -40,11 +42,11 @@ class JSONLogger implements Logger {
     }));
   }
 
-  addPrefix(prefix: string): Logger {
-    return new JSONLogger(prefix);
+  setLoggerId(loggerId: string): Logger {
+    return new JSONLogger(loggerId);
   }
 
-  error(message: string, extra: Record<string, string>) {
+  error(message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
       time: isoNow(),
@@ -54,7 +56,7 @@ class JSONLogger implements Logger {
     }));
   }
 
-  warn(message: string, extra: Record<string, string>) {
+  warn(message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
       time: isoNow(),
@@ -66,41 +68,41 @@ class JSONLogger implements Logger {
 }
 
 class ConsoleLogger implements Logger {
-  constructor(private prefixes: string[] = []) {
+  constructor(private prefix = "") {
   }
 
-  error(...args: any[]) {
-    console.error(...this.prefixes, ...args);
+  error(message: string) {
+    console.error(this.prefix, message);
   }
 
-  warn(...args: any[]) {
-    console.warn(...this.prefixes, ...args);
+  warn(message: string) {
+    console.warn(this.prefix, message);
   }
 
-  log(...args: any[]) {
-    console.log(...this.prefixes, ...args);
+  log(message: string) {
+    console.log(this.prefix, message);
   }
 
-  addPrefix(prefix: string): Logger {
-    return new ConsoleLogger([...this.prefixes, prefix]);
+  setLoggerId(loggerId: string): Logger {
+    return new ConsoleLogger(loggerId);
   }
 }
 
 class ErrorLogger implements Logger {
-  addPrefix(): Logger {
+  setLoggerId(): Logger {
     return this;
   }
 
-  error(...args: any[]) {
-    console.error(...args);
+  error(message: string) {
+    console.error(message);
   }
 
-  log(...args: any[]) {
-    console.error(...args);
+  log(message: string) {
+    console.error(message);
   }
 
-  warn(...args: any[]) {
-    console.error(...args);
+  warn(message: string) {
+    console.error(message);
   }
 }
 
@@ -108,7 +110,7 @@ export const NOOP_LOGGER: Logger = {
   error: noop,
   warn: noop,
   log: noop,
-  addPrefix: noop
+  setLoggerId: () => NOOP_LOGGER
 };
 
 const LOGGERS: Record<LoggerFormat, Logger> = {

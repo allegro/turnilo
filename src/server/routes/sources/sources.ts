@@ -21,7 +21,7 @@ import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
 export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
 
-  const logger = settings.logger.addPrefix("Settings Endpoint: ");
+  const logger = settings.logger.setLoggerId("Sources");
 
   const router = Router();
 
