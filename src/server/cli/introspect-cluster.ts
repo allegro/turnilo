@@ -26,7 +26,7 @@ export default function printIntrospectedSettings(
   const settingsManager = new SettingsManager(appSettings, sources, {
     anchorPath: process.cwd(),
     initialLoadTimeout: serverSettings.pageMustLoadTimeout,
-    logger: "noop"
+    logger: "error"
   });
 
   return settingsManager.getFreshSources({

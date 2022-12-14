@@ -22,7 +22,7 @@ import { PluginSettings } from "../plugin-settings/plugin-settings";
 export type Iframe = "allow" | "deny";
 export type TrustProxy = "none" | "always";
 export type StrictTransportSecurity = "none" | "always";
-export type LoggerFormat = "plain" | "json" | "noop";
+export type LoggerFormat = "plain" | "json" | "noop" | "error";
 
 export interface ServerSettingsValue {
   port?: number;
@@ -61,7 +61,7 @@ const DEFAULT_TRUST_PROXY: TrustProxy = "none";
 const STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
 const DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 export const DEFAULT_LOGGER_FORMAT: LoggerFormat = "plain";
-const LOGGER_FORMAT_VALUES: LoggerFormat[] = ["plain", "json", "noop"];
+const LOGGER_FORMAT_VALUES: LoggerFormat[] = ["plain", "json"];
 
 const defaultServerSettings: ServerSettingsValue = {
   iframe: DEFAULT_IFRAME,

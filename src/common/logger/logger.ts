@@ -85,6 +85,24 @@ class ConsoleLogger implements Logger {
   }
 }
 
+class ErrorLogger implements Logger {
+  addPrefix(): Logger {
+    return this;
+  }
+
+  error(...args: any[]) {
+    console.error(...args);
+  }
+
+  log(...args: any[]) {
+    console.error(...args);
+  }
+
+  warn(...args: any[]) {
+    console.error(...args);
+  }
+}
+
 export const NOOP_LOGGER: Logger = {
   error: noop,
   warn: noop,
@@ -95,7 +113,8 @@ export const NOOP_LOGGER: Logger = {
 const LOGGERS: Record<LoggerFormat, Logger> = {
   noop: NOOP_LOGGER,
   json: new JSONLogger(),
-  plain: new ConsoleLogger()
+  plain: new ConsoleLogger(),
+  error: new ErrorLogger()
 } as const;
 
 export function getLogger(format: LoggerFormat): Logger {
