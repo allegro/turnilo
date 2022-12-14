@@ -42,5 +42,5 @@ export default function runTurnilo(
     verbose,
     logger: serverSettings.loggerFormat
   });
-  createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+  createServer(serverSettings, createApp(serverSettings, settingsManager, version), settingsManager.logger, program);
 }
