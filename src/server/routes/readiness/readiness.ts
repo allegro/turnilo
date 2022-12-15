@@ -96,7 +96,7 @@ export function readinessRouter(settings: Pick<SettingsManager, "getSources" | "
       const httpState = statusToHttpStatus(overallHealthStatus);
       res.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
     } catch (reason) {
-      logger.log(`Readiness check error: ${reason.message}`);
+      logger.warn(`Readiness check error: ${reason.message}`);
       res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message });
     }
   });
