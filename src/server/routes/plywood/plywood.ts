@@ -18,6 +18,7 @@
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
+import { errorToMessage } from "../../../common/logger/logger";
 import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { getDataCube } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
@@ -97,11 +98,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       };
       res.json(reply);
     } catch (error) {
-      let message = error.message;
-      if (error.hasOwnProperty("stack")) {
-        message += `\n ${error.stack}`;
-      }
-      logger.error(message);
+      logger.error(errorToMessage(error));
 
       res.status(500).send({
         error: "could not compute",

@@ -15,6 +15,7 @@
  */
 
 import { Request, Response, Router } from "express";
+import { errorToMessage } from "../../../common/logger/logger";
 import { serialize } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
@@ -34,13 +35,9 @@ export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "lo
         dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )
       }));
     } catch (error) {
-      let message = error.message;
-      if (error.hasOwnProperty("stack")) {
-        message += `\n ${error.stack}`;
-      }
-      logger.error(message);
+     logger.error(errorToMessage(error));
 
-      res.status(500).send({
+     res.status(500).send({
         error: "Can't fetch settings",
         message: error.message
       });

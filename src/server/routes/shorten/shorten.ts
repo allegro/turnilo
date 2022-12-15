@@ -16,6 +16,7 @@
 
 import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
+import { errorToMessage } from "../../../common/logger/logger";
 import { UrlShortenerContext } from "../../../common/models/url-shortener/url-shortener";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
@@ -35,11 +36,7 @@ export function shortenRouter(settings: Pick<SettingsManager, "appSettings" | "l
       const shortUrl = await shortener(request, url as string, context);
       res.json({ shortUrl });
     } catch (error) {
-      let message = error.message;
-      if (error.hasOwnProperty("stack")) {
-        message += `\n ${error.stack}`;
-      }
-      logger.error(message);
+      logger.error(errorToMessage(error));
 
       res.status(500).send({
         error: "could not shorten url",

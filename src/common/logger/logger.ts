@@ -16,9 +16,16 @@
 
 import { LoggerFormat } from "../../server/models/server-settings/server-settings";
 import { noop, Unary } from "../utils/functional/functional";
+import { isNil } from "../utils/general/general";
 import { isoNow } from "../utils/time/time";
 
 type LogFn = (msg: string, extra?: Record<string, string>) => void;
+export function errorToMessage(error: Error): string {
+  if (isNil(error.stack)) {
+    return error.message;
+  }
+  return `${error.message}\n${error.stack}`;
+}
 
 export interface Logger {
   log: LogFn;
