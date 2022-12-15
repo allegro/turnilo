@@ -35,9 +35,9 @@ class JSONLogger implements Logger {
   log(message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
-      time: isoNow(),
-      level: "INFO",
-      logger: this.logger,
+      "@timestamp": isoNow(),
+      "level": "INFO",
+      "logger": this.logger,
       ...extra
     }));
   }
@@ -49,9 +49,9 @@ class JSONLogger implements Logger {
   error(message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
-      time: isoNow(),
-      level: "ERROR",
-      logger: this.logger,
+      "@timestamp": isoNow(),
+      "level": "ERROR",
+      "logger": this.logger,
       ...extra
     }));
   }
@@ -59,9 +59,9 @@ class JSONLogger implements Logger {
   warn(message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
-      time: isoNow(),
-      level: "WARN",
-      logger: this.logger,
+      "@timestamp": isoNow(),
+      "level": "WARN",
+      "logger": this.logger,
       ...extra
     }));
   }
