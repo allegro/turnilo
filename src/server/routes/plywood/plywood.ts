@@ -18,15 +18,15 @@
 import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
 import { Dataset, Expression } from "plywood";
-import { LOGGER } from "../../../common/logger/logger";
+import { errorToMessage } from "../../../common/logger/logger";
 import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { getDataCube } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { loadQueryDecorator } from "../../utils/query-decorator-loader/load-query-decorator";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath" | "getSources">) {
-
+export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath" | "getSources" | "logger">) {
+  const logger = settingsManager.logger;
   const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
@@ -89,7 +89,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
     }
 
     const maxQueries = myDataCube.maxQueries;
-    const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, LOGGER);
+    const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, logger);
     const expression = decorator(parsedExpression, req);
     try {
       const data = await myDataCube.executor(expression, { maxQueries, timezone: queryTimezone });
@@ -98,10 +98,8 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       };
       res.json(reply);
     } catch (error) {
-      console.log("error:", error.message);
-      if (error.hasOwnProperty("stack")) {
-        console.log((error as any).stack);
-      }
+      logger.error(errorToMessage(error));
+
       res.status(500).send({
         error: "could not compute",
         message: error.message

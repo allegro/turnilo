@@ -15,6 +15,7 @@
  */
 
 import { NamedArray } from "immutable-class";
+import { Logger } from "../../logger/logger";
 import { isTruthy } from "../../utils/general/general";
 import {
   ClientCluster,
@@ -61,13 +62,13 @@ interface ClustersConfig {
   brokerHost?: string;
 }
 
-function readClusters({ clusters, druidHost, brokerHost }: ClustersConfig): Cluster[] {
-  if (Array.isArray(clusters)) return clusters.map(clusterFromConfig);
+function readClusters({ clusters, druidHost, brokerHost }: ClustersConfig, logger: Logger): Cluster[] {
+  if (Array.isArray(clusters)) return clusters.map(cluster => clusterFromConfig(cluster, logger));
   if (isTruthy(druidHost) || isTruthy(brokerHost)) {
     return [clusterFromConfig({
       name: "druid",
       url: druidHost || brokerHost
-    })];
+    }, logger)];
   }
   return [];
 }
@@ -77,17 +78,17 @@ interface DataCubesConfig {
   dataSources?: DataCubeJS[];
 }
 
-function readDataCubes({ dataCubes, dataSources }: DataCubesConfig, clusters: Cluster[]): DataCube[] {
+function readDataCubes({ dataCubes, dataSources }: DataCubesConfig, clusters: Cluster[], logger: Logger): DataCube[] {
   const cubes = dataCubes || dataSources || [];
   return cubes.map(cube => {
     const cluster = findCluster(cube, clusters);
-    return dataCubeFromConfig(cube, cluster);
+    return dataCubeFromConfig(cube, cluster, logger);
   });
 }
 
-export function fromConfig(config: SourcesJS): Sources {
-  const clusters = readClusters(config);
-  const dataCubes = readDataCubes(config, clusters);
+export function fromConfig(config: SourcesJS, logger: Logger): Sources {
+  const clusters = readClusters(config, logger);
+  const dataCubes = readDataCubes(config, clusters, logger);
 
   return {
     clusters,

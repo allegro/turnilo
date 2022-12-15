@@ -18,41 +18,51 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as sinon from "sinon";
+import { NOOP_LOGGER } from "../../logger/logger";
 import { DEFAULT_COLORS, DEFAULT_MAIN_COLOR, DEFAULT_SERIES_COLORS } from "../colors/colors";
 import * as localeModule from "../locale/locale";
 import * as urlShortenerModule from "../url-shortener/url-shortener";
-import { Customization, DEFAULT_TIMEZONES, DEFAULT_TITLE, fromConfig, serialize } from "./customization";
+import {
+  Customization,
+  CustomizationJS,
+  DEFAULT_TIMEZONES,
+  DEFAULT_TITLE,
+  fromConfig,
+  serialize
+} from "./customization";
 import { customization, customizationJS } from "./customization.fixtures";
+
+const build = (customization: CustomizationJS) => fromConfig(customization, NOOP_LOGGER);
 
 describe("Customization", () => {
   describe("fromConfig", () => {
     it("should pass headerBackground", () => {
-      const customization = fromConfig({ ...customizationJS, headerBackground: "foobar" });
+      const customization = build({ ...customizationJS, headerBackground: "foobar" });
 
       expect(customization).to.contain({ headerBackground: "foobar" });
     });
 
     it("should pass customLogoSvg", () => {
-      const customization = fromConfig({ ...customizationJS, customLogoSvg: "foobar" });
+      const customization = build({ ...customizationJS, customLogoSvg: "foobar" });
 
       expect(customization).to.contain({ customLogoSvg: "foobar" });
     });
 
     it("should pass sentryDSN", () => {
-      const customization = fromConfig({ ...customizationJS, sentryDSN: "foobar" });
+      const customization = build({ ...customizationJS, sentryDSN: "foobar" });
 
       expect(customization).to.contain({ sentryDSN: "foobar" });
     });
 
     describe("title", () => {
       it("should pass title", () => {
-        const customization = fromConfig({ ...customizationJS, title: "foobar" });
+        const customization = build({ ...customizationJS, title: "foobar" });
 
         expect(customization).to.contain({ title: "foobar" });
       });
 
       it("should use default title", () => {
-        const customization = fromConfig({ ...customizationJS, title: undefined });
+        const customization = build({ ...customizationJS, title: undefined });
 
         expect(customization).to.contain({ title: DEFAULT_TITLE });
       });
@@ -60,7 +70,7 @@ describe("Customization", () => {
 
     describe("timezones", () => {
       it("should create timezone objects from strings", () => {
-        const customization = fromConfig({
+        const customization = build({
           ...customizationJS,
           timezones: ["Europe/Warsaw", "Asia/Manila"]
         });
@@ -71,7 +81,7 @@ describe("Customization", () => {
       });
 
       it("should use default timezones if empty", () => {
-        const customization = fromConfig({ ...customizationJS, timezones: undefined });
+        const customization = build({ ...customizationJS, timezones: undefined });
 
         expect(customization.timezones).to.deep.equal(DEFAULT_TIMEZONES);
       });
@@ -95,13 +105,13 @@ describe("Customization", () => {
       });
 
       it("should call urlShortener fromConfig", () => {
-        fromConfig({ urlShortener: { input: 42 } } as any);
+        build({ urlShortener: { input: 42 } } as any);
 
         expect(urlShortenerFromConfig.calledWith({ input: 42 })).to.be.true;
       });
 
       it("should use result of urlShortener fromConfig", () => {
-        const settings = fromConfig({ urlShortener: { input: 42 } } as any);
+        const settings = build({ urlShortener: { input: 42 } } as any);
 
         expect(settings).to.deep.contain({
           urlShortener: "foobar"
@@ -123,13 +133,13 @@ describe("Customization", () => {
       });
 
       it("should call locale fromConfig", () => {
-        fromConfig({ locale: { input: 42 } } as any);
+        build({ locale: { input: 42 } } as any);
 
         expect(localeFromConfig.calledWith({ input: 42 })).to.be.true;
       });
 
       it("should use result of locale fromConfig", () => {
-        const settings = fromConfig({ locale: { input: 42 } } as any);
+        const settings = build({ locale: { input: 42 } } as any);
 
         expect(settings).to.deep.contain({
           locale: "foobar"
@@ -139,13 +149,13 @@ describe("Customization", () => {
 
     describe("cssVariables", () => {
       it("should create empty object as default", () => {
-        const customization = fromConfig({ ...customizationJS, cssVariables: undefined });
+        const customization = build({ ...customizationJS, cssVariables: undefined });
 
         expect(customization).to.deep.contain({ cssVariables: {} });
       });
 
       it("should pass only valid variables", () => {
-        const customization = fromConfig({
+        const customization = build({
           ...customizationJS,
           cssVariables: {
             "brand": "foobar",
@@ -165,13 +175,13 @@ describe("Customization", () => {
 
     describe("visualizationColors", () => {
       it("should set default colors if no colors are defined", () => {
-        const customization = fromConfig({ ...customizationJS, visualizationColors: undefined });
+        const customization = build({ ...customizationJS, visualizationColors: undefined });
 
         expect(customization).to.deep.contain({ visualizationColors: DEFAULT_COLORS });
       });
 
       it("should override default main color when property is defined", () => {
-        const customization = fromConfig({
+        const customization = build({
           ...customizationJS, visualizationColors: {
             main: "foobar-color"
           }
@@ -186,7 +196,7 @@ describe("Customization", () => {
       });
 
       it("should override default series colors when property is defined", () => {
-        const customization = fromConfig({
+        const customization = build({
           ...customizationJS, visualizationColors: {
             series: ["one fish", "two fish", "red fish", "blue fish"]
           }

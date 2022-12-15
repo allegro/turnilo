@@ -15,31 +15,29 @@
  */
 
 import { Request, Response, Router } from "express";
-import { LOGGER } from "../../../common/logger/logger";
+import { errorToMessage } from "../../../common/logger/logger";
 import { serialize } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
-import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-export function sourcesRouter(sourcesGetter: SourcesGetter) {
+export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
 
-  const logger = LOGGER.addPrefix("Settings Endpoint: ");
+  const logger = settings.logger.setLoggerId("Sources");
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
 
     try {
-      const { clusters, dataCubes } = await sourcesGetter();
+      const { clusters, dataCubes } = await settings.getSources();
       res.json(serialize({
         clusters,
         dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )
       }));
     } catch (error) {
-      logger.error(error.message);
-      if (error.hasOwnProperty("stack")) {
-        logger.error(error.stack);
-      }
-      res.status(500).send({
+     logger.error(errorToMessage(error));
+
+     res.status(500).send({
         error: "Can't fetch settings",
         message: error.message
       });

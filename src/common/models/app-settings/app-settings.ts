@@ -16,6 +16,7 @@
  */
 
 import { Executor } from "plywood";
+import { Logger } from "../../logger/logger";
 import {
   ClientCustomization,
   Customization,
@@ -62,10 +63,10 @@ export interface ClientAppSettings {
   readonly oauth: Oauth;
 }
 
-export function fromConfig(config: AppSettingsJS): AppSettings {
+export function fromConfig(config: AppSettingsJS, logger: Logger): AppSettings {
   const clientTimeout = config.clientTimeout === undefined ? DEFAULT_CLIENT_TIMEOUT : config.clientTimeout;
   const version = config.version || 0;
-  const customization = customizationFromConfig(config.customization);
+  const customization = customizationFromConfig(config.customization, logger);
   const oauth = oauthFromConfig(config.oauth);
 
   return {
@@ -76,7 +77,7 @@ export function fromConfig(config: AppSettingsJS): AppSettings {
   };
 }
 
-export const EMPTY_APP_SETTINGS = fromConfig({});
+export const emptySettings = (logger: Logger) => fromConfig({}, logger);
 
 export function serialize({ oauth, clientTimeout, customization, version }: AppSettings): SerializedAppSettings {
   return {
