@@ -15,7 +15,7 @@
  */
 
 import { Option } from "commander";
-import { DEFAULT_LOGGER_FORMAT, DEFAULT_PORT } from "../models/server-settings/server-settings";
+import { DEFAULT_LOGGER_FORMAT, DEFAULT_PORT, LOGGER_FORMAT_VALUES } from "../models/server-settings/server-settings";
 import { parseInteger } from "./utils";
 
 export const portOption = new Option(
@@ -26,7 +26,7 @@ export const portOption = new Option(
 export const loggerOption = new Option(
   "--logger-format <format>",
   `Format for logger. Default: ${DEFAULT_LOGGER_FORMAT}`
-);
+).choices(LOGGER_FORMAT_VALUES);
 
 export const serverRootOption = new Option(
   "--server-root <path>",

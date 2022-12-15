@@ -61,7 +61,7 @@ const DEFAULT_TRUST_PROXY: TrustProxy = "none";
 const STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
 const DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 export const DEFAULT_LOGGER_FORMAT: LoggerFormat = "plain";
-const LOGGER_FORMAT_VALUES: LoggerFormat[] = ["plain", "json"];
+export const LOGGER_FORMAT_VALUES: LoggerFormat[] = ["plain", "json"];
 
 const defaultServerSettings: ServerSettingsValue = {
   iframe: DEFAULT_IFRAME,
