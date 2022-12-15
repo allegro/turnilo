@@ -20,6 +20,8 @@ import { isNil } from "../utils/general/general";
 import { isoNow } from "../utils/time/time";
 
 type LogFn = (msg: string, extra?: Record<string, string>) => void;
+type LogLevel = "INFO" | "WARN" | "ERROR";
+
 export function errorToMessage(error: Error): string {
   if (isNil(error.stack)) {
     return error.message;
@@ -39,38 +41,30 @@ class JSONLogger implements Logger {
   constructor(private logger = "turnilo") {
   }
 
-  log(message: string, extra: Record<string, string> = {}) {
+  private logMessage(level: LogLevel, message: string, extra: Record<string, string> = {}) {
     console.log(JSON.stringify({
       message,
+      level,
       "@timestamp": isoNow(),
-      "level": "INFO",
       "logger": this.logger,
       ...extra
     }));
+  }
+
+  log(message: string, extra: Record<string, string> = {}) {
+    this.logMessage("INFO", message, extra);
+  }
+
+  error(message: string, extra: Record<string, string> = {}) {
+    this.logMessage("ERROR", message, extra);
+  }
+
+  warn(message: string, extra: Record<string, string> = {}) {
+    this.logMessage("WARN", message, extra);
   }
 
   setLoggerId(loggerId: string): Logger {
     return new JSONLogger(loggerId);
-  }
-
-  error(message: string, extra: Record<string, string> = {}) {
-    console.log(JSON.stringify({
-      message,
-      "@timestamp": isoNow(),
-      "level": "ERROR",
-      "logger": this.logger,
-      ...extra
-    }));
-  }
-
-  warn(message: string, extra: Record<string, string> = {}) {
-    console.log(JSON.stringify({
-      message,
-      "@timestamp": isoNow(),
-      "level": "WARN",
-      "logger": this.logger,
-      ...extra
-    }));
   }
 }
 
@@ -95,7 +89,7 @@ class ConsoleLogger implements Logger {
   }
 }
 
-class ErrorLogger implements Logger {
+class AlwaysStdErrLogger implements Logger {
   setLoggerId(): Logger {
     return this;
   }
@@ -124,7 +118,7 @@ const LOGGERS: Record<LoggerFormat, Logger> = {
   noop: NOOP_LOGGER,
   json: new JSONLogger(),
   plain: new ConsoleLogger(),
-  error: new ErrorLogger()
+  error: new AlwaysStdErrLogger()
 } as const;
 
 export function getLogger(format: LoggerFormat): Logger {
