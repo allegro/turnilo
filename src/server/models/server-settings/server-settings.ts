@@ -22,6 +22,7 @@ import { PluginSettings } from "../plugin-settings/plugin-settings";
 export type Iframe = "allow" | "deny";
 export type TrustProxy = "none" | "always";
 export type StrictTransportSecurity = "none" | "always";
+export type LoggerFormat = "plain" | "json" | "noop" | "error";
 
 export interface ServerSettingsValue {
   port?: number;
@@ -37,6 +38,7 @@ export interface ServerSettingsValue {
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
   plugins?: PluginSettings[];
+  loggerFormat?: LoggerFormat;
 }
 
 export type ServerSettingsJS = ServerSettingsValue & {
@@ -58,6 +60,8 @@ const TRUST_PROXY_VALUES: TrustProxy[] = ["none", "always"];
 const DEFAULT_TRUST_PROXY: TrustProxy = "none";
 const STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
 const DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
+export const DEFAULT_LOGGER_FORMAT: LoggerFormat = "plain";
+export const LOGGER_FORMAT_VALUES: LoggerFormat[] = ["plain", "json"];
 
 const defaultServerSettings: ServerSettingsValue = {
   iframe: DEFAULT_IFRAME,
@@ -72,7 +76,8 @@ const defaultServerSettings: ServerSettingsValue = {
   serverTimeout: DEFAULT_SERVER_TIMEOUT,
   strictTransportSecurity: DEFAULT_STRICT_TRANSPORT_SECURITY,
   trustProxy: DEFAULT_TRUST_PROXY,
-  verbose: false
+  verbose: false,
+  loggerFormat: DEFAULT_LOGGER_FORMAT
 };
 
 export class ServerSettings extends Record<ServerSettingsValue>(defaultServerSettings) {
@@ -87,11 +92,13 @@ export class ServerSettings extends Record<ServerSettingsValue>(defaultServerSet
       requestLogFormat,
       serverRoot,
       serverTimeout,
-      serverHost
+      serverHost,
+      loggerFormat
     } = parameters;
     optionalEnsureOneOf(iframe, IFRAME_VALUES, "ServerSettings: iframe");
     optionalEnsureOneOf(trustProxy, TRUST_PROXY_VALUES, "ServerSettings: trustProxy");
     optionalEnsureOneOf(strictTransportSecurity, STRICT_TRANSPORT_SECURITY_VALUES, "ServerSettings: strictTransportSecurity");
+    optionalEnsureOneOf(loggerFormat, LOGGER_FORMAT_VALUES, "ServerSettings: loggerFormat");
 
     const readinessEndpoint = !parameters.readinessEndpoint && !!parameters.healthEndpoint ? parameters.healthEndpoint : parameters.readinessEndpoint;
     const verbose = Boolean(parameters.verbose);
@@ -99,6 +106,7 @@ export class ServerSettings extends Record<ServerSettingsValue>(defaultServerSet
 
     return new ServerSettings({
       port: typeof parameters.port === "string" ? parseInt(parameters.port, 10) : parameters.port,
+      loggerFormat,
       plugins,
       readinessEndpoint,
       livenessEndpoint,

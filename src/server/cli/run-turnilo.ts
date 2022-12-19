@@ -15,7 +15,6 @@
  */
 
 import { Command } from "commander";
-import { LOGGER } from "../../common/logger/logger";
 import { AppSettings } from "../../common/models/app-settings/app-settings";
 import { Sources } from "../../common/models/sources/sources";
 import createApp from "../app";
@@ -41,7 +40,7 @@ export default function runTurnilo(
     anchorPath,
     initialLoadTimeout: serverSettings.pageMustLoadTimeout,
     verbose,
-    logger: LOGGER
+    logger: serverSettings.loggerFormat
   });
-  createServer(serverSettings, createApp(serverSettings, settingsManager, version), program);
+  createServer(serverSettings, createApp(serverSettings, settingsManager, version), settingsManager.logger, program);
 }

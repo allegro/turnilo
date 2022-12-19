@@ -107,7 +107,7 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
         serverSettings,
         settingsManager.appSettings,
         settingsManager.sourcesGetter,
-        settingsManager.logger.addPrefix(name));
+        settingsManager.logger.setLoggerId(name));
     } catch (e) {
       settingsManager.logger.warn(`Plugin ${name} threw an error: ${e.message}`);
     }
@@ -141,17 +141,17 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   attachRouter("/", express.static(join(__dirname, "../../build/public")));
   attachRouter("/", express.static(join(__dirname, "../../assets")));
 
-  attachRouter(serverSettings.readinessEndpoint, readinessRouter(settingsManager.sourcesGetter));
+  attachRouter(serverSettings.readinessEndpoint, readinessRouter(settingsManager));
   attachRouter(serverSettings.livenessEndpoint, livenessRouter);
 
   // Data routes
-  attachRouter("/sources", sourcesRouter(settingsManager.sourcesGetter));
+  attachRouter("/sources", sourcesRouter(settingsManager));
   attachRouter("/plywood", plywoodRouter(settingsManager));
-  attachRouter("/plyql", plyqlRouter(settingsManager.sourcesGetter));
-  attachRouter("/mkurl", mkurlRouter(settingsManager.appSettings, settingsManager.sourcesGetter));
-  attachRouter("/shorten", shortenRouter(settingsManager.appSettings, isTrustedProxy));
+  attachRouter("/plyql", plyqlRouter(settingsManager));
+  attachRouter("/mkurl", mkurlRouter(settingsManager));
+  attachRouter("/shorten", shortenRouter(settingsManager, isTrustedProxy));
 
-  attachRouter("/", turniloRouter(settingsManager.appSettings, () => settingsManager.getTimekeeper(), version));
+  attachRouter("/", turniloRouter(settingsManager, version));
 
   // Catch 404 and redirect to /
   app.use((req: Request, res: Response) => {

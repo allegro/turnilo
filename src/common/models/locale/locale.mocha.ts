@@ -15,32 +15,35 @@
  */
 
 import { expect } from "chai";
-import { fromConfig, LOCALES } from "./locale";
+import { NOOP_LOGGER } from "../../logger/logger";
+import { fromConfig, LocaleJS, LOCALES } from "./locale";
+
+const build = (locale: LocaleJS) => fromConfig(locale, NOOP_LOGGER);
 
 const en_us = LOCALES["en-US"];
 
 describe("locale", () => {
   describe("fromConfig", () => {
     it("should return default locale if passed undefined", () => {
-      const locale = fromConfig();
+      const locale = build(undefined);
 
       expect(locale).to.deep.equal(en_us);
     });
 
     it("should use base locale", () => {
-      const locale = fromConfig({ base: "en-US", overrides: {} });
+      const locale = build({ base: "en-US", overrides: {} });
 
       expect(locale).to.deep.equal(en_us);
     });
 
     it("should return default locale if passed unrecognized base identifier", () => {
-      const locale = fromConfig({ base: "foobar" } as any);
+      const locale = build({ base: "foobar" } as any);
 
       expect(locale).to.deep.equal(en_us);
     });
 
     it("should use base locale and override desired fields", () => {
-      const locale = fromConfig({ base: "en-US", overrides: { weekStart: 42 } });
+      const locale = build({ base: "en-US", overrides: { weekStart: 42 } });
 
       expect(locale).to.deep.equal({
         ...en_us,

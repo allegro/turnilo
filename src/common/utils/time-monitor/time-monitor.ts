@@ -30,7 +30,7 @@ export class TimeMonitor {
   private doingChecks = false;
 
   constructor(logger: Logger) {
-    this.logger = logger.addPrefix("TimeMonitor");
+    this.logger = logger.setLoggerId("TimeMonitor");
     this.checks = new Map();
     this.timekeeper = Timekeeper.EMPTY;
     setInterval(this.doChecks, 1000);
@@ -58,7 +58,7 @@ export class TimeMonitor {
       logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
       this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
     }).catch(e => {
-        logger.error(`Failed getting time for '${name}', using previous time.`, `Error: ${e.message}`);
+        logger.error(`Failed getting time for '${name}', using previous time. Error: ${e.message}`);
         this.timekeeper = this.timekeeper.updateTime(name, previousTime);
       }
     );
