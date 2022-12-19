@@ -15,7 +15,7 @@
  */
 
 import { Option } from "commander";
-import { DEFAULT_PORT } from "../models/server-settings/server-settings";
+import { DEFAULT_LOGGER_FORMAT, DEFAULT_PORT, LOGGER_FORMAT_VALUES } from "../models/server-settings/server-settings";
 import { parseInteger } from "./utils";
 
 export const portOption = new Option(
@@ -23,14 +23,21 @@ export const portOption = new Option(
   `Port number to start server on. Default: ${DEFAULT_PORT}`
 ).argParser(parseInteger);
 
+export const loggerOption = new Option(
+  "--logger-format <format>",
+  `Format for logger. Default: ${DEFAULT_LOGGER_FORMAT}`
+).choices(LOGGER_FORMAT_VALUES);
+
 export const serverRootOption = new Option(
   "--server-root <path>",
   "Custom path to act as turnilo root"
 );
+
 export const serverHostOption = new Option(
   "--server-host <hostname>",
   "Host that server will bind to"
 );
+
 export const verboseOption = new Option(
   "--verbose",
   "Verbose mode"
@@ -40,6 +47,7 @@ export const usernameOption = new Option(
   "--username <username>",
   "Username that will be used in HTTP Basic authentication to Druid cluster"
 );
+
 export const passwordOption = new Option(
   "--password <password>",
   "Password that will be used in HTTP Basic authentication to Druid cluster"

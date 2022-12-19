@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NOOP_LOGGER } from "../../logger/logger";
 import { Cluster, ClusterJS, fromConfig } from "./cluster";
 
 export class ClusterFixtures {
@@ -33,7 +34,7 @@ export class ClusterFixtures {
   }
 
   static druidWikiCluster(): Cluster {
-    return fromConfig(ClusterFixtures.druidWikiClusterJS());
+    return fromConfig(ClusterFixtures.druidWikiClusterJS(), NOOP_LOGGER);
   }
 
   static druidTwitterClusterJS(): ClusterJS {
@@ -52,7 +53,7 @@ export class ClusterFixtures {
   }
 
   static druidTwitterCluster(): Cluster {
-    return fromConfig(ClusterFixtures.druidTwitterClusterJS());
+    return fromConfig(ClusterFixtures.druidTwitterClusterJS(), NOOP_LOGGER);
   }
 
   static druidTwitterClusterJSWithGuard(guardDataCubes = true): Cluster {
@@ -68,6 +69,6 @@ export class ClusterFixtures {
       guardDataCubes,
 
       introspectionStrategy: "segment-metadata-fallback"
-    });
+    }, NOOP_LOGGER);
   }
 }

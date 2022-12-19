@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LOGGER } from "../../logger/logger";
+import { Logger } from "../../logger/logger";
 import { isObject, isTruthy } from "../../utils/general/general";
 
 const enUS: Locale = {
@@ -46,11 +46,11 @@ export interface Locale {
   exportEncoding: string;
 }
 
-export function fromConfig(locale?: LocaleJS): Locale {
+export function fromConfig(locale: LocaleJS, logger: Logger): Locale {
   if (!isObject(locale)) return DEFAULT_LOCALE;
   const { base, overrides } = locale;
   if (!isTruthy(LOCALES[base])) {
-    LOGGER.warn(`Unsupported locale identifier: ${base}. Fallback to en-US.`);
+    logger.warn(`Unsupported locale identifier: ${base}. Fallback to en-US.`);
     return DEFAULT_LOCALE;
   }
   return {

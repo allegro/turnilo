@@ -205,7 +205,7 @@ export class ClusterManager {
       }
 
       logger.log(`Cluster ${cluster.name} creating requestDecorator`);
-      return module.druidRequestDecoratorFactory(logger.addPrefix("DruidRequestDecoratorFactory"), {
+      return module.druidRequestDecoratorFactory(logger.setLoggerId("DruidRequestDecoratorFactory"), {
         options: cluster.requestDecorator.options,
         cluster
       });

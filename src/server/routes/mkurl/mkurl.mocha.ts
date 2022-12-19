@@ -30,7 +30,10 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use(mkurlPath, mkurlRouter(appSettings, () => Promise.resolve(wikiSourcesWithExecutor)));
+app.use(mkurlPath, mkurlRouter({
+  appSettings,
+  getSources: () => Promise.resolve(wikiSourcesWithExecutor)
+}));
 
 describe("mkurl router", () => {
   it("gets a simple url back", (testComplete: any) => {

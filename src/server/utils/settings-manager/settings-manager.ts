@@ -16,7 +16,7 @@
  */
 
 import { Dataset, External } from "plywood";
-import { Logger } from "../../../common/logger/logger";
+import { getLogger, Logger } from "../../../common/logger/logger";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Cluster, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL } from "../../../common/models/cluster/cluster";
 import { DataCube, fromClusterAndExternal } from "../../../common/models/data-cube/data-cube";
@@ -34,11 +34,12 @@ import { noop, Unary } from "../../../common/utils/functional/functional";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { timeout } from "../../../common/utils/promise/promise";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
+import { LoggerFormat } from "../../models/server-settings/server-settings";
 import { ClusterManager } from "../cluster-manager/cluster-manager";
 import { FileManager } from "../file-manager/file-manager";
 
 export interface SettingsManagerOptions {
-  logger: Logger;
+  logger: LoggerFormat;
   verbose?: boolean;
   initialLoadTimeout?: number;
   anchorPath: string;
@@ -65,7 +66,7 @@ export class SettingsManager {
   constructor(appSettings: AppSettings,
               sources: Sources,
               options: SettingsManagerOptions) {
-    const logger = options.logger;
+    const logger = getLogger(options.logger);
     this.logger = logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
@@ -220,7 +221,7 @@ export class SettingsManager {
 
     let dataCube = getDataCube(sources, dataCubeName);
     if (!dataCube) {
-      dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal);
+      dataCube = fromClusterAndExternal(dataCubeName, cluster, changedExternal, this.logger);
     }
     const queryableDataCube = attachExternalExecutor(dataCube, changedExternal);
 

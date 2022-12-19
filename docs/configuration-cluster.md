@@ -38,6 +38,17 @@ The port that Turnilo should run on.
 
 Indicates that Turnilo should run in verbose mode. This will log all the queries done by Turnilo.
 
+**loggerFormat** *EXPERIMENTAL* (`plain` or `json`), default: `plain` 
+
+Format for logged message. 
+* `plain`: messages are logged as is.
+* `json`: messages are wrapped in object with additional metadata and logged as stringified JSON.
+
+Additional metadata for `json` format:
+* `@timestamp`: ISO 8601 timestamp of logged event
+* `level`: "INFO", "WARN", or "ERROR" string
+* `logger`: name of the logger
+
 **serverHost** (string), default: bind to all hosts
 
 The host that Turnilo will bind to.

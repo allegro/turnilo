@@ -19,6 +19,7 @@ import { expect, use } from "chai";
 import equivalent from "../../../client/utils/test-utils/equivalent";
 import { RequestDecorator } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
+import { NOOP_LOGGER } from "../../logger/logger";
 import { ClusterAuthJS } from "../cluster-auth/cluster-auth";
 import { Cluster, ClusterJS, fromConfig } from "./cluster";
 
@@ -31,7 +32,7 @@ function buildCluster(options: Partial<ClusterJS> = {}): Cluster {
   return fromConfig({
     ...baseConfig,
     ...options
-  });
+  }, NOOP_LOGGER);
 }
 
 use(equivalent);
@@ -39,7 +40,7 @@ use(equivalent);
 describe("Cluster", () => {
   describe("fromConfig", () => {
     it("should load default values", () => {
-      const cluster = fromConfig(baseConfig);
+      const cluster = buildCluster();
 
       expect(cluster).to.be.deep.equal({
         name: "foobar",
@@ -64,19 +65,19 @@ describe("Cluster", () => {
     });
 
     it("should throw with incorrect name type", () => {
-      expect(() => fromConfig({ ...baseConfig, name: 1 } as unknown as ClusterJS)).to.throw("must be a string");
+      expect(() => buildCluster({ name: 1 } as unknown as ClusterJS)).to.throw("must be a string");
     });
 
     it("should throw with incorrect empty name", () => {
-      expect(() => fromConfig({ ...baseConfig, name: "" })).to.throw("empty name");
+      expect(() => buildCluster({ name: "" })).to.throw("empty name");
     });
 
     it("should throw with not url safe name", () => {
-      expect(() => fromConfig({ ...baseConfig, name: "foobar%bazz#" })).to.throw("is not a URL safe name");
+      expect(() => buildCluster({ name: "foobar%bazz#" })).to.throw("is not a URL safe name");
     });
 
     it("should throw with name equal to native", () => {
-      expect(() => fromConfig({ ...baseConfig, name: "native" })).to.throw("name can not be 'native'");
+      expect(() => buildCluster({ name: "native" })).to.throw("name can not be 'native'");
     });
 
     it("should read auth options", () => {
@@ -119,7 +120,7 @@ describe("Cluster", () => {
     });
 
     it("should read request decorator", () => {
-      const cluster = fromConfig({
+      const cluster = buildCluster({
         name: "foobar",
         url: "http://foobar",
         requestDecorator: {
@@ -141,8 +142,10 @@ describe("Cluster", () => {
     });
 
     it("should read old host and assume http protocol", () => {
-      const cluster = fromConfig({
+      const cluster = buildCluster({
         name: "old-host",
+        // Set url to undefined, to force old format handling
+        url: undefined,
         host: "broker-host.com"
       } as unknown as ClusterJS);
 

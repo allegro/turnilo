@@ -19,12 +19,17 @@ import { expect, use } from "chai";
 import { $, AttributeInfo } from "plywood";
 import { SinonSpy, spy } from "sinon";
 import equivalent from "../../../client/utils/test-utils/equivalent";
+import { NOOP_LOGGER } from "../../logger/logger";
 import { deduceAttributes } from "../../utils/external/datacube-to-external";
-import { fromConfig as clusterFromConfig } from "../cluster/cluster";
+import { Cluster, fromConfig as clusterFromConfig } from "../cluster/cluster";
 import { createDimension, DimensionJS, timeDimension } from "../dimension/dimension";
 import { allDimensions, fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
 import { DataCube, DataCubeJS, fromConfig } from "./data-cube";
 import { addAttributes } from "./queryable-data-cube";
+
+const logger = NOOP_LOGGER;
+
+const build = (config: DataCubeJS, cluster: Cluster = undefined) => fromConfig(config, cluster, logger);
 
 use(equivalent);
 
@@ -32,12 +37,12 @@ describe("DataCube", () => {
   const druidCluster = clusterFromConfig({
     name: "druid",
     url: "http://driud"
-  });
+  }, logger);
 
   describe("validates", () => {
     it("throws an error if bad name is used", () => {
       expect(() => {
-        fromConfig({
+        build({
           name: "wiki hello",
           clusterName: "druid",
           source: "wiki",
@@ -64,7 +69,7 @@ describe("DataCube", () => {
 
     it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
-        fromConfig({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -92,7 +97,7 @@ describe("DataCube", () => {
 
     it("throws an error if duplicate name is used across measures and dimensions", () => {
       expect(() => {
-        fromConfig({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -119,7 +124,7 @@ describe("DataCube", () => {
 
     it("throws an error if duplicate name is used in measures", () => {
       expect(() => {
-        fromConfig({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -150,7 +155,7 @@ describe("DataCube", () => {
 
     it("throws an error if duplicate name is used in dimensions", () => {
       expect(() => {
-        fromConfig({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -220,7 +225,7 @@ describe("DataCube", () => {
         }
       };
 
-      const dataCube = fromConfig(legacyDataCubeJS, druidCluster);
+      const dataCube = build(legacyDataCubeJS, druidCluster);
 
       expect(dataCube).to.deep.equal({
         attributeOverrides: [
@@ -283,7 +288,7 @@ describe("DataCube", () => {
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      const dataCube = fromConfig({
+      const dataCube = build({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -353,7 +358,7 @@ describe("DataCube", () => {
     });
 
     it("omits unsupported expressions", () => {
-      const dataCube = fromConfig({
+      const dataCube = build({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -400,7 +405,7 @@ describe("DataCube", () => {
   });
 
   describe("#addAttributes", () => {
-    const dataCubeStub = fromConfig({
+    const dataCubeStub = build({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -640,7 +645,7 @@ describe("DataCube", () => {
         { name: "deleted", type: "NUMBER" }
       ]);
 
-      const dataCubeWithDim = fromConfig({
+      const dataCubeWithDim = build({
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -670,7 +675,7 @@ describe("DataCube", () => {
   });
 
   describe("#addAttributes (new dim)", () => {
-    const dataCube = fromConfig({
+    const dataCube = build({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -726,41 +731,41 @@ describe("DataCube", () => {
       };
 
       describe("timeAttribute property warnings", () => {
-        let consoleWarnSpy: SinonSpy;
+        let loggerWarnSpy: SinonSpy;
 
         beforeEach(() => {
-          consoleWarnSpy = spy(console, "warn");
+          loggerWarnSpy = spy(logger, "warn");
         });
 
         afterEach(() => {
-          consoleWarnSpy.restore();
+          loggerWarnSpy.restore();
         });
 
         it("should warn if timeAttribute is missing", () => {
-          fromConfig({ ...baseCube }, druidCluster);
-          expect(consoleWarnSpy.args[0][0]).to.be.equal("DataCube \"wiki\" should have property timeAttribute. Setting timeAttribute to default value \"__time\"");
+          build({ ...baseCube }, druidCluster);
+          expect(loggerWarnSpy.args[0][0]).to.be.equal("DataCube \"wiki\" should have property timeAttribute. Setting timeAttribute to default value \"__time\"");
         });
 
         it("should warn if timeAttribute has different value than \"__time\"", () => {
-          fromConfig({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
-          expect(consoleWarnSpy.args[0][0]).to.be.equal('timeAttribute in DataCube "wiki" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"');
+          build({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
+          expect(loggerWarnSpy.args[0][0]).to.be.equal('timeAttribute in DataCube "wiki" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"');
         });
       });
 
       it("should add timeAttribute", () => {
-        const cube = fromConfig({ ...baseCube, dimensions: [timeDimensionJS] }, druidCluster);
+        const cube = build({ ...baseCube, dimensions: [timeDimensionJS] }, druidCluster);
         expect(cube.timeAttribute).to.be.equivalent($("__time"));
       });
 
       it("should prepend time dimension if not defined", () => {
-        const cube = fromConfig({ ...baseCube, dimensions: [] }, druidCluster);
+        const cube = build({ ...baseCube, dimensions: [] }, druidCluster);
         const timeAttribute = $("__time");
         expect(cube.dimensions.byName.time).to.be.deep.equal(timeDimension(timeAttribute));
         expect(cube.dimensions.tree).to.be.deep.equal(["time"]);
       });
 
       it("should override invalid time Attribute", () => {
-        const cube = fromConfig({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
+        const cube = build({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
         const timeAttribute = $("__time");
         expect(cube.timeAttribute).to.be.equivalent(timeAttribute);
       });
@@ -780,11 +785,11 @@ describe("DataCube", () => {
       };
 
       it("should throw without timeAttribute property", () => {
-        expect(() => fromConfig({ ...baseCube })).to.throw("DataCube \"medals\" must have defined timeAttribute property");
+        expect(() => build({ ...baseCube })).to.throw("DataCube \"medals\" must have defined timeAttribute property");
       });
 
       it("should pass well defined dimensions and timeAttribute", () => {
-        const cube = fromConfig({ ...baseCube, timeAttribute: "time_column", dimensions: [timeDimensionJS] });
+        const cube = build({ ...baseCube, timeAttribute: "time_column", dimensions: [timeDimensionJS] });
         const timeAttribute = $("time_column");
         expect(cube.timeAttribute).to.be.equivalent(timeAttribute);
         expect(cube.dimensions).to.be.deep.equal(dimensionsFromConfig([timeDimensionJS]));

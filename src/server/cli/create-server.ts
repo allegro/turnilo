@@ -17,9 +17,10 @@ import { Command } from "commander";
 import { Express } from "express";
 import http from "http";
 import { AddressInfo } from "net";
+import { Logger } from "../../common/logger/logger";
 import { ServerSettings } from "../models/server-settings/server-settings";
 
-export default function createServer(serverSettings: ServerSettings, app: Express, program: Command) {
+export default function createServer(serverSettings: ServerSettings, app: Express, logger: Logger, program: Command) {
 
   const server = http.createServer(app);
 
@@ -45,7 +46,7 @@ export default function createServer(serverSettings: ServerSettings, app: Expres
 
   server.on("listening", () => {
     const address = server.address() as AddressInfo;
-    console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
+    logger.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 
   app.set("port", serverSettings.port);

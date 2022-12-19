@@ -20,6 +20,7 @@ import { External } from "plywood";
 import { URL } from "url";
 import { RequestDecorator, RequestDecoratorJS } from "../../../server/utils/request-decorator/request-decorator";
 import { RetryOptions, RetryOptionsJS } from "../../../server/utils/retry-options/retry-options";
+import { Logger } from "../../logger/logger";
 import { isNil, isTruthy, optionalEnsureOneOf, verifyUrlSafeName } from "../../utils/general/general";
 import { ClusterAuth, ClusterAuthJS, readClusterAuth } from "../cluster-auth/cluster-auth";
 
@@ -117,9 +118,9 @@ function readUrl(cluster: any): string {
   throw new Error("Cluster: missing url field");
 }
 
-function readRequestDecorator(cluster: any): RequestDecorator | null {
+function readRequestDecorator(cluster: any, logger: Logger): RequestDecorator | null {
   if (typeof cluster.requestDecorator === "string" || !isNil(cluster.decoratorOptions)) {
-    console.warn(`Cluster ${cluster.name} : requestDecorator as string and decoratorOptions fields are deprecated. Use object with path and options fields`);
+    logger.warn(`Cluster ${cluster.name} : requestDecorator as string and decoratorOptions fields are deprecated. Use object with path and options fields`);
     return RequestDecorator.fromJS({ path: cluster.requestDecorator, options: cluster.decoratorOptions });
   }
   if (isTruthy(cluster.requestDecorator)) return RequestDecorator.fromJS(cluster.requestDecorator);
@@ -145,7 +146,7 @@ function readInterval(value: number | string, defaultValue: number): number {
   return numberValue;
 }
 
-export function fromConfig(params: ClusterJS): Cluster {
+export function fromConfig(params: ClusterJS, logger: Logger): Cluster {
   const {
     name,
     sourceListScan = DEFAULT_SOURCE_LIST_SCAN,
@@ -167,7 +168,7 @@ export function fromConfig(params: ClusterJS): Cluster {
   const sourceListRefreshInterval = readInterval(params.sourceListRefreshInterval, DEFAULT_SOURCE_LIST_REFRESH_INTERVAL);
   const sourceTimeBoundaryRefreshInterval = readInterval(params.sourceTimeBoundaryRefreshInterval, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL);
   const retry = RetryOptions.fromJS(params.retry);
-  const requestDecorator = readRequestDecorator(params);
+  const requestDecorator = readRequestDecorator(params, logger);
   const auth = readClusterAuth(params.auth);
 
   const url = readUrl(params);

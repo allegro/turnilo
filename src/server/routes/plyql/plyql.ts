@@ -19,7 +19,7 @@ import { Request, Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
 import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { getDataCube } from "../../../common/models/sources/sources";
-import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;
@@ -35,7 +35,7 @@ const outputFunctions: PlyqlOutputFunctions = {
   tsv: (data: Dataset): string => data.toTSV()
 };
 
-export function plyqlRouter(sourcesGetter: SourcesGetter) {
+export function plyqlRouter(settings: Pick<SettingsManager, "getSources">) {
 
   const router = Router();
 
@@ -81,7 +81,7 @@ export function plyqlRouter(sourcesGetter: SourcesGetter) {
     });
 
     try {
-      const sources = await sourcesGetter();
+      const sources = await settings.getSources();
       const myDataCube = getDataCube(sources, dataCube);
 
       if (!myDataCube) {

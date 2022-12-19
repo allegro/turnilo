@@ -17,9 +17,9 @@
 
 import { Request, Response, Router } from "express";
 import * as request from "request-promise-native";
-import { LOGGER } from "../../../common/logger/logger";
+import { Logger } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/cluster/cluster";
-import { SourcesGetter } from "../../utils/settings-manager/settings-manager";
+import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
 const unhealthyHttpStatus = 503;
 const healthyHttpStatus = 200;
@@ -75,27 +75,28 @@ function aggregateHealthStatus(clusterHealths: ClusterHealth[]): ClusterHealthSt
   return isSomeUnhealthy ? ClusterHealthStatus.unhealthy : ClusterHealthStatus.healthy;
 }
 
-function logUnhealthy(clusterHealths: ClusterHealth[]): void {
+function logUnhealthy(logger: Logger, clusterHealths: ClusterHealth[]): void {
   const unhealthyClusters = clusterHealths.filter(({ status }) => status === ClusterHealthStatus.unhealthy);
   unhealthyClusters.forEach(({ message, url }: ClusterHealth) => {
-    LOGGER.log(`Unhealthy cluster url: ${url}. Message: ${message}`);
+    logger.log(`Unhealthy cluster url: ${url}. Message: ${message}`);
   });
 }
 
-export function readinessRouter(getSources: SourcesGetter) {
+export function readinessRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
+  const logger = settings.logger;
 
   const router = Router();
 
   router.get("/", async (req: Request, res: Response) => {
     try {
-      const sources = await getSources();
+      const sources = await settings.getSources();
       const clusterHealths = await checkClusters(sources.clusters);
-      logUnhealthy(clusterHealths);
+      logUnhealthy(logger, clusterHealths);
       const overallHealthStatus = aggregateHealthStatus(clusterHealths);
       const httpState = statusToHttpStatus(overallHealthStatus);
       res.status(httpState).send({ status: overallHealthStatus, clusters: clusterHealths });
     } catch (reason) {
-      LOGGER.log(`Readiness check error: ${reason.message}`);
+      logger.warn(`Readiness check error: ${reason.message}`);
       res.status(unhealthyHttpStatus).send({ status: ClusterHealthStatus.unhealthy, message: reason.message });
     }
   });

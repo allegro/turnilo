@@ -30,6 +30,7 @@ import {
   External,
   RefExpression
 } from "plywood";
+import { Logger } from "../../logger/logger";
 import { isTruthy, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { Cluster } from "../cluster/cluster";
 import { Dimension, DimensionKind, timeDimension as createTimeDimension } from "../dimension/dimension";
@@ -279,14 +280,14 @@ function readAttributes(config: DataCubeJS): Pick<DataCube, "attributes" | "attr
   };
 }
 
-function readTimeAttribute(config: DataCubeJS, cluster: Cluster | undefined, dimensions: Dimensions): { dimensions: Dimensions, timeAttribute: RefExpression } {
+function readTimeAttribute(config: DataCubeJS, cluster: Cluster | undefined, dimensions: Dimensions, logger: Logger): { dimensions: Dimensions, timeAttribute: RefExpression } {
   const isFromDruidCluster = config.clusterName !== "native" && cluster.type === "druid";
   if (isFromDruidCluster) {
     if (!isTruthy(config.timeAttribute)) {
-      console.warn(`DataCube "${config.name}" should have property timeAttribute. Setting timeAttribute to default value "__time"`);
+      logger.warn(`DataCube "${config.name}" should have property timeAttribute. Setting timeAttribute to default value "__time"`);
     }
     if (isTruthy(config.timeAttribute) && config.timeAttribute !== "__time") {
-      console.warn(`timeAttribute in DataCube "${config.name}" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"`);
+      logger.warn(`timeAttribute in DataCube "${config.name}" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"`);
     }
     const timeAttribute = $("__time");
     if (!isTruthy(findDimensionByExpression(dimensions, timeAttribute))) {
@@ -346,7 +347,7 @@ function readDefaultFilter(config: DataCubeJS): Filter | undefined {
   }
 }
 
-export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Cluster): DataCube {
+export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster: Cluster | undefined, logger: Logger): DataCube {
   const name = readName(config);
   const introspection = readIntrospection(config);
   verifyCluster(config, cluster);
@@ -354,7 +355,7 @@ export function fromConfig(config: DataCubeJS & LegacyDataCubeJS, cluster?: Clus
 
   const refreshRule = config.refreshRule ? RefreshRule.fromJS(config.refreshRule) : RefreshRule.query();
   const { dimensions: initialDimensions, measures } = readColumns(config);
-  const { timeAttribute, dimensions } = readTimeAttribute(config, cluster, initialDimensions);
+  const { timeAttribute, dimensions } = readTimeAttribute(config, cluster, initialDimensions, logger);
   verifyDefaultSortMeasure(config, measures);
   const subsetFormula = config.subsetFormula || config.subsetFilter;
   const defaultFilter = readDefaultFilter(config);
@@ -451,13 +452,13 @@ export interface DataCubeOptions {
   druidContext?: Record<string, unknown>;
 }
 
-export function fromClusterAndExternal(name: string, cluster: Cluster, external: External): QueryableDataCube {
+export function fromClusterAndExternal(name: string, cluster: Cluster, external: External, logger: Logger): QueryableDataCube {
   const dataCube = fromConfig({
     name,
     clusterName: cluster.name,
     source: String(external.source),
     refreshRule: RefreshRule.query().toJS()
-  }, cluster);
+  }, cluster, logger);
 
   return attachExternalExecutor(dataCube, external);
 }

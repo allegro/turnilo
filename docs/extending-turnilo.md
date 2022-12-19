@@ -53,7 +53,7 @@ exports.druidRequestDecoratorFactory = function (logger, params) {
   return function () {
     return {
       headers: {
-        "X-I-Like": auth
+        "X-I-Like": like
       },
     };
   };
