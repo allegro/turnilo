@@ -16,33 +16,57 @@
 
 import { Request, Response, Router } from "express";
 import { errorToMessage } from "../../../common/logger/logger";
-import { serialize } from "../../../common/models/sources/sources";
+import { serialize as serializeCluster } from "../../../common/models/cluster/cluster";
+import { serialize as serializeDataCube } from "../../../common/models/data-cube/data-cube";
+import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
 export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
 
-  const logger = settings.logger.setLoggerId("Sources");
+    const logger = settings.logger.setLoggerId("Sources");
 
-  const router = Router();
+    const router = Router();
+    const MAX_DATA_CUBES_IN_REQUEST = 1000;
+    router.get("/clusters", async (req: Request, res: Response) => {
+        try {
+            const { clusters } = await settings.getSources();
+            res.json(clusters.map(serializeCluster));
+        } catch (error) {
+            logger.error(errorToMessage(error));
 
-  router.get("/", async (req: Request, res: Response) => {
+            res.status(500).send({
+                error: "Can't fetch settings",
+                message: error.message
+            });
+        }
+    });
+    router.get("/dataCubes", async (req: Request, res: Response) => {
+        try {
+            const { dataCubes } = await settings.getSources();
+            const relevantDatasources = dataCubes.filter(dataCube => checkAccess(dataCube, req.headers))
+                .filter(dc => isQueryable(dc))
+                .map(serializeDataCube);
+            if (relevantDatasources.length < MAX_DATA_CUBES_IN_REQUEST) {
+                res.json({ dataCubes: relevantDatasources, isDone: true });
+            } else {
+                const currentBatchNumber = (req.query["batch"] && parseInt(req.query["batch"] as string, 10)) || 0;
+                const dataSourcesStart = currentBatchNumber * MAX_DATA_CUBES_IN_REQUEST;
+                const dataSourcesEnd = dataSourcesStart + MAX_DATA_CUBES_IN_REQUEST;
+                const isDone = dataSourcesEnd >= dataCubes.length;
+                res.json({
+                    dataCubes: relevantDatasources.slice(dataSourcesStart, dataSourcesEnd),
+                    isDone
+                });
+            }
+        } catch (error) {
+            logger.error(errorToMessage(error));
+            res.status(500).send({
+                error: "Can't fetch settings",
+                message: error.message
+            });
+        }
+    });
 
-    try {
-      const { clusters, dataCubes } = await settings.getSources();
-      res.json(serialize({
-        clusters,
-        dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )
-      }));
-    } catch (error) {
-     logger.error(errorToMessage(error));
-
-     res.status(500).send({
-        error: "Can't fetch settings",
-        message: error.message
-      });
-    }
-  });
-
-  return router;
+    return router;
 }
