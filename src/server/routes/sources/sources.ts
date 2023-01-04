@@ -17,8 +17,7 @@
 import { Request, Response, Router } from "express";
 import { errorToMessage } from "../../../common/logger/logger";
 import { serialize as serializeCluster } from "../../../common/models/cluster/cluster";
-import { serialize as serializeDataCube } from "../../../common/models/data-cube/data-cube";
-import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
+import { serializeDataCubes } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
@@ -44,18 +43,16 @@ export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "lo
     router.get("/dataCubes", async (req: Request, res: Response) => {
         try {
             const { dataCubes } = await settings.getSources();
-            const relevantDatasources = dataCubes.filter(dataCube => checkAccess(dataCube, req.headers))
-                .filter(dc => isQueryable(dc))
-                .map(serializeDataCube);
-            if (relevantDatasources.length < MAX_DATA_CUBES_IN_REQUEST) {
-                res.json({ dataCubes: relevantDatasources, isDone: true });
+            const relevantDataCubes = serializeDataCubes(dataCubes.filter(dataCube => checkAccess(dataCube, req.headers)));
+            if (relevantDataCubes.length < MAX_DATA_CUBES_IN_REQUEST) {
+                res.json({ dataCubes: relevantDataCubes, isDone: true });
             } else {
-                const currentBatchNumber = (req.query["batch"] && parseInt(req.query["batch"] as string, 10)) || 0;
-                const dataSourcesStart = currentBatchNumber * MAX_DATA_CUBES_IN_REQUEST;
+                const currentPageNumber = (req.query["page"] && parseInt(req.query["page"] as string, 10)) || 0;
+                const dataSourcesStart = currentPageNumber * MAX_DATA_CUBES_IN_REQUEST;
                 const dataSourcesEnd = dataSourcesStart + MAX_DATA_CUBES_IN_REQUEST;
                 const isDone = dataSourcesEnd >= dataCubes.length;
                 res.json({
-                    dataCubes: relevantDatasources.slice(dataSourcesStart, dataSourcesEnd),
+                    dataCubes: relevantDataCubes.slice(dataSourcesStart, dataSourcesEnd),
                     isDone
                 });
             }

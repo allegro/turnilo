@@ -77,19 +77,27 @@ export class Ajax {
   static async sources(appSettings: ClientAppSettings): Promise<ClientSources> {
     try {
       const headers = Ajax.headers(appSettings.oauth);
-      const clusters = (await axios.get("sources/clusters", { headers })).data;
-      let dataCubesResult: SerializedDataCube[] = [];
-      let isDone = false;
-      let batch = 0;
-      while (!isDone) {
-        const { dataCubes, isDone: isDoneResult } = (await axios.get(`sources/dataCubes?batch=${batch}`, { headers })).data;
-        dataCubesResult = [...dataCubesResult, ...dataCubes];
-        isDone = isDoneResult;
-        batch += 1;
-      }
-      return deserialize({  clusters, dataCubes: dataCubesResult }, appSettings);
+      const [clusters, dataCubesResult] = await Promise.all([this.fetchClusters(headers), this.fetchDataCubes(headers)]);
+      return deserialize({ clusters, dataCubes: dataCubesResult }, appSettings);
     } catch (e) {
       throw mapOauthError(appSettings.oauth, e);
     }
+  }
+
+  private static async fetchDataCubes(headers: {}) {
+    let dataCubesResult: SerializedDataCube[] = [];
+    let isDone = false;
+    let page = 0;
+    while (!isDone) {
+      const { dataCubes, isDone: isDoneResult } = (await axios.get(`sources/dataCubes?page=${page}`, { headers })).data;
+      dataCubesResult = [...dataCubesResult, ...dataCubes];
+      isDone = isDoneResult;
+      page += 1;
+    }
+    return dataCubesResult;
+  }
+
+  private static async fetchClusters(headers: {}) {
+    return (await axios.get("sources/clusters", { headers })).data;
   }
 }

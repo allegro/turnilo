@@ -30,9 +30,10 @@ import {
   DataCube,
   DataCubeJS,
   fromConfig as dataCubeFromConfig,
+  serialize as serializeDataCube,
   SerializedDataCube
 } from "../data-cube/data-cube";
-import { QueryableDataCube } from "../data-cube/queryable-data-cube";
+import { isQueryable, QueryableDataCube } from "../data-cube/queryable-data-cube";
 
 export interface SourcesJS {
   clusters?: ClusterJS[];
@@ -92,6 +93,12 @@ export function fromConfig(config: SourcesJS, logger: Logger): Sources {
     clusters,
     dataCubes
   };
+}
+
+export function serializeDataCubes(dataCubes: DataCube[]) {
+  return dataCubes
+      .filter(isQueryable)
+      .map(serializeDataCube);
 }
 
 export function getDataCubesForCluster(sources: Sources, clusterName: string): DataCube[] {
