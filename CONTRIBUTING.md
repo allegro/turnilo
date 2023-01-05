@@ -115,7 +115,7 @@ If you want to go straight to rendering a legend, check if `ColorSwabs` or `Colo
 
 _[Example code for scatterplot](https://github.com/allegro/turnilo/pull/834/files)_
 
-Currently Turnilo supports adding tooltips to visualizations in two ways (please disregard the `TooltipWithBounds` approach from the `@vx/tooltip` package). You will probably want to use `TooltipWithinStage`, where you can pass `stage` and the position to render the tooltip. Use `SegmentBubbleContent` to render content, like so:
+Currently Turnilo supports adding tooltips to visualizations in two ways (please disregard the `TooltipWithBounds` approach from the `@visx/tooltip` package). You will probably want to use `TooltipWithinStage`, where you can pass `stage` and the position to render the tooltip. Use `SegmentBubbleContent` to render content, like so:
 
 ```
 <TooltipWithinStage left={leftPostion} top={topPosition} stage={stage}>

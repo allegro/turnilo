@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { scaleLinear } from "@vx/scale";
+import { scaleLinear } from "@visx/scale";
 import { expect } from "chai";
 import getHoverPosition from "./get-hover-position";
 
