@@ -17,56 +17,67 @@
 import { Request, Response, Router } from "express";
 import { errorToMessage } from "../../../common/logger/logger";
 import { serialize as serializeCluster } from "../../../common/models/cluster/cluster";
-import { serialize as serializeDataCube } from "../../../common/models/data-cube/data-cube";
-import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
+import { SerializedDataCube } from "../../../common/models/data-cube/data-cube";
+import { serializeDataCubes } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
+const PAGE_SIZE = 10;
+
+interface DataCubesSlice {
+  dataCubes: SerializedDataCube[];
+  next?: number;
+}
+
+function getDataCubesPage(dataCubes: SerializedDataCube[], page: number): DataCubesSlice {
+  const sliceStart = page * PAGE_SIZE;
+  const sliceEnd = sliceStart + PAGE_SIZE;
+  const next = sliceEnd < dataCubes.length ? page + 1 : undefined;
+  return {
+    dataCubes: dataCubes.slice(sliceStart, sliceEnd),
+    next
+  };
+}
+
+function getPageNumber(page: unknown): number {
+  if (typeof page === "string") return parseInt(page, 10);
+  return 0;
+}
+
 export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
 
-    const logger = settings.logger.setLoggerId("Sources");
+  const logger = settings.logger.setLoggerId("Sources");
 
-    const router = Router();
-    const MAX_DATA_CUBES_IN_REQUEST = 1000;
-    router.get("/clusters", async (req: Request, res: Response) => {
-        try {
-            const { clusters } = await settings.getSources();
-            res.json(clusters.map(serializeCluster));
-        } catch (error) {
-            logger.error(errorToMessage(error));
+  const router = Router();
+  router.get("/clusters", async (req: Request, res: Response) => {
+    try {
+      const { clusters } = await settings.getSources();
+      res.json(clusters.map(serializeCluster));
+    } catch (error) {
+      logger.error(errorToMessage(error));
+      res.status(500).send({
+        error: "Can't fetch clusters",
+        message: error.message
+      });
+    }
+  });
 
-            res.status(500).send({
-                error: "Can't fetch settings",
-                message: error.message
-            });
-        }
-    });
-    router.get("/dataCubes", async (req: Request, res: Response) => {
-        try {
-            const { dataCubes } = await settings.getSources();
-            const relevantDatasources = dataCubes.filter(dataCube => checkAccess(dataCube, req.headers))
-                .filter(dc => isQueryable(dc))
-                .map(serializeDataCube);
-            if (relevantDatasources.length < MAX_DATA_CUBES_IN_REQUEST) {
-                res.json({ dataCubes: relevantDatasources, isDone: true });
-            } else {
-                const currentBatchNumber = (req.query["batch"] && parseInt(req.query["batch"] as string, 10)) || 0;
-                const dataSourcesStart = currentBatchNumber * MAX_DATA_CUBES_IN_REQUEST;
-                const dataSourcesEnd = dataSourcesStart + MAX_DATA_CUBES_IN_REQUEST;
-                const isDone = dataSourcesEnd >= dataCubes.length;
-                res.json({
-                    dataCubes: relevantDatasources.slice(dataSourcesStart, dataSourcesEnd),
-                    isDone
-                });
-            }
-        } catch (error) {
-            logger.error(errorToMessage(error));
-            res.status(500).send({
-                error: "Can't fetch settings",
-                message: error.message
-            });
-        }
-    });
+  router.get("/dataCubes", async (req: Request, res: Response) => {
+    try {
+      const sources = await settings.getSources();
+      const dataCubes = sources.dataCubes
+        .filter(dataCube => checkAccess(dataCube, req.headers));
+      const serializedDataCubes = serializeDataCubes(dataCubes);
+      const page = getPageNumber(req.query.page);
+      res.json(getDataCubesPage(serializedDataCubes, page));
+    } catch (error) {
+      logger.error(errorToMessage(error));
+      res.status(500).send({
+        error: "Can't fetch data cubes",
+        message: error.message
+      });
+    }
+  });
 
-    return router;
+  return router;
 }
