@@ -90,7 +90,7 @@ export class Resolve {
   }
 }
 
-export type Visualization = "heatmap" | "table" | "totals" | "bar-chart" | "line-chart" | "grid" | "scatterplot";
+export type Visualization = "heatmap" | "table" | "totals" | "bar-chart" | "line-chart" | "grid" | "scatterplot" | "marimekko";
 
 export class VisualizationManifest<T extends object = {}> {
   constructor(

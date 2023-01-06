@@ -509,7 +509,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return menuStage.within({
       left,
       right,
-      top: CONTROL_PANEL_HEIGHT
+      top: CONTROL_PANEL_HEIGHT,
+      bottom: 20 // TODO: from .cube-view .center-panel margins
     });
   }
 

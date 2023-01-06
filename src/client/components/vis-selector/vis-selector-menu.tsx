@@ -95,6 +95,8 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
         return null;
       case "bar-chart":
         return null;
+      case "marimekko":
+        return null;
       case "line-chart":
         const LineChartSettingsComponent = settingsComponent(visualization.name);
         return <LineChartSettingsComponent onChange={this.changeSettings as Unary<ImmutableRecord<LineChartSettings>, void>}

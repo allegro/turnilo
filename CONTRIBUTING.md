@@ -51,7 +51,7 @@ const <visualizationName>: React.FunctionComponent<ChartProps> = () => {
     </div>;
 };
 
-export function <visualizationName>Visualization(props: VisualizationProps) {
+export default function <visualizationName>Visualization(props: VisualizationProps) {
     return <React.Fragment>
         <DefaultVisualizationControls {...props} />
         <ChartPanel {...props} queryFactory={makeQuery} chartComponent={<visualizationName>}/>

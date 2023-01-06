@@ -24,6 +24,7 @@ const VISUALIZATIONS  = {
   "line-chart": () => import(/* webpackChunkName: "line-chart" */ "./line-chart/line-chart"),
   "bar-chart": () => import(/* webpackChunkName: "bar-chart" */ "./bar-chart/bar-chart"),
   "heatmap": () => import(/* webpackChunkName: "heatmap" */ "./heat-map/heat-map"),
+  "marimekko": () => import(/* webpackChunkName: "marimekko" */ "./marimekko/marimekko"),
   "grid": () => import(/* webpackChunkName: "grid" */ "./grid/grid"),
   "scatterplot": () => import(/* webpackChunkName: "scatterplot" */ "./scatterplot/scatterplot")
 };
