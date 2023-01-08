@@ -22,7 +22,6 @@
 
 .marimekko .rect {
   @include ellipsis;
-  color: white;
   padding: 8px;
-  border: 2px solid white;
+  border: 2px solid #fff;
 }
