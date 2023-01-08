@@ -17,11 +17,10 @@
 import * as d3 from "d3";
 import { sum } from "d3";
 import { Dataset, Datum } from "plywood";
-import React from "react";
+import React, { CSSProperties } from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
-import { ConcreteSeries } from "../../../common/models/series/concrete-series"; // import from different viz
 import { percentFormatter } from "../../../common/models/series/series-format";
 import { Stage } from "../../../common/models/stage/stage";
 import { flatMap } from "../../../common/utils/functional/functional";
@@ -36,6 +35,7 @@ import {
 } from "../../views/cube-view/center-panel/center-panel";
 import { useSettingsContext } from "../../views/cube-view/settings-context";
 import { Legend } from "../line-chart/legend/legend";
+import "./marimekko.scss";
 
 function prepareData(data: Dataset, essence: Essence) {
   const series = essence.getConcreteSeries().first();
@@ -50,12 +50,12 @@ function prepareData(data: Dataset, essence: Essence) {
   const xs: Record<string, Datum[]> = {};
 
   dataset.forEach(datum => {
-    const splitDatums = selectSplitDatums(datum);
+    const nested = selectSplitDatums(datum);
     const yValue = ySplit.selectValue(datum);
     const y = {
       [ySplit.reference]: yValue
     };
-    splitDatums.forEach(splitDatum => {
+    nested.forEach(splitDatum => {
       const x = String(xSplit.selectValue(splitDatum));
       if (xs[x] === undefined) {
         xs[x] = [];
@@ -88,7 +88,7 @@ function prepareData(data: Dataset, essence: Essence) {
 
       return {
         ...datum,
-        [x0Key(series)]: y0
+        y0
       };
     });
   }
@@ -100,17 +100,15 @@ function prepareData(data: Dataset, essence: Essence) {
       const stackedNest = stackYs((datum.nest as Dataset).data);
       return {
         ...datum,
-        [x0Key(series)]: x0,
+        x0,
         nest: Dataset.fromJS(stackedNest)
       };
     });
 
-  console.log(xs3);
-
   return xs3;
 }
 
-const x0Key = (series: ConcreteSeries) => `__${series.plywoodKey()}_0`;
+const X_AXIS_HEIGHT = 30;
 
 const Marimekko: React.FunctionComponent<ChartProps> = props => {
   const { stage, data: dataset, essence } = props;
@@ -142,75 +140,61 @@ const Marimekko: React.FunctionComponent<ChartProps> = props => {
     .range([0, chartStage.width])
     .domain([0, total]);
 
-  // TODO: magic 30!
-  const stackHeight = chartStage.height - 30;
+  const stackHeight = chartStage.height - X_AXIS_HEIGHT;
 
-  return <div className="marimekko-root">
+  return <>
     <LegendSpot>
-      <Legend values={colorValues} title={ySplit.getTitle(yDimension)} />
+      <Legend values={colorValues} title={ySplit.getTitle(yDimension)}/>
     </LegendSpot>
-    <svg viewBox={`0 0 ${stage.width} ${stage.height}`}>
-      <g transform={chartStage.getTransform()}>
-        {data.map(datum => {
-          const x = series.selectValue(datum);
-          const x0 = datum[x0Key(series)] as number;
-          const name = String(xSplit.selectValue(datum));
-          const xpx = xScale(x0);
-          const ys = (datum.nest as Dataset).data;
+    <div className="absolute" style={chartStage.getLeftTop()}>
+      {data.map(datum => {
+        const x = series.selectValue(datum);
+        const x0 = datum.x0 as number;
+        const name = String(xSplit.selectValue(datum));
+        const left = xScale(x0);
+        const width = xScale(x);
+        const ys = (datum.nest as Dataset).data;
 
-          const yScale = d3.scaleLinear()
-            .range([0, stackHeight])
-            .domain([0, x]);
+        const yScale = d3.scaleLinear()
+          .range([0, stackHeight])
+          .domain([0, x]);
 
-          return <g transform={`translate(${xpx}, 0)`} key={name}>
-            <text x={5} y={20}>
+        return (
+          <div className="absolute" style={{ left, width }} key={name}>
+            <span>
               {name}: {series.formatter()(x)} ({percentFormatter(x / total)})
-            </text>
-            <g transform="translate(0, 30)">
+            </span>
+            <div className="absolute" style={{ top: X_AXIS_HEIGHT }}>
               {ys.map(datum => {
                 const y = series.selectValue(datum);
-                const y0 = datum[x0Key(series)] as number;
+                const y0 = datum.y0 as number;
                 const name = String(ySplit.selectValue(datum));
 
-                const ypx = yScale(y0);
+                const top = yScale(y0);
                 const height = yScale(y);
-
                 const width = xScale(x);
-                return <g transform={`translate(0, ${ypx})`} key={name}>
-                  <rect x={0}
-                        y={0}
-                        width={width}
-                        height={height}
-                        fill={colorScale(name)}
-                        opacity={0.7}
-                        stroke="none"/>
-                  <text x={5} y={20}>{name}: {series.formatter()(y)} ({percentFormatter(y / x)})</text>
-                  {ypx === yScale(0) ? null : <line
-                    x1={0}
-                    x2={width}
-                    y1={0.5}
-                    y2={0.5}
-                    stroke="white"
-                    strokeWidth={2}
-                  />}
-                </g>;
-              })}
-              {xpx === 0 ? null :
-                <line
-                  x1={0.5}
-                  x2={0.5}
-                  y1={0}
-                  y2={stackHeight}
-                  stroke="white"
-                  strokeWidth={2}
-                />}
-            </g>
-          </g>;
-        })}
-      </g>
-    </svg>
 
-  </div>;
+                const styles: CSSProperties = {
+                  top,
+                  height,
+                  width,
+                  backgroundColor: colorScale(name)
+                };
+
+                return <div
+                  key={name}
+                  className="absolute rect"
+                  style={styles}
+                >
+                  <span>{name}: {series.formatter()(y)} ({percentFormatter(y / x)})</span>
+                </div>;
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </>;
 };
 
 export default function marimekkoVisualization(props: VisualizationProps) {
