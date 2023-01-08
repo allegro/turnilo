@@ -174,11 +174,15 @@ const Marimekko: React.FunctionComponent<ChartProps> = props => {
                 const height = yScale(y);
                 const width = xScale(x);
 
+                const backgroundColor = colorScale(name);
+                const textColor = d3.hsl(backgroundColor).l > 0.5 ? "#000" : "#fff";
+
                 const styles: CSSProperties = {
                   top,
                   height,
                   width,
-                  backgroundColor: colorScale(name)
+                  backgroundColor,
+                  color: textColor
                 };
 
                 return <div
