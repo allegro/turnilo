@@ -24,7 +24,7 @@ import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 const MARGIN = 40;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
-const BREAKPOINT_SMALL = 768;
+const BREAKPOINT_SMALL = 748;
 const TICK_COUNT = 10;
 const EXTENT_EXTEND_FACTOR = 0.05;
 const X_AXIS_LABEL_OFFSET = 55;

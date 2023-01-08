@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { assoc, Unary } from "../functional/functional";
+import { assoc, Binary, Unary } from "../functional/functional";
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
@@ -37,9 +37,9 @@ export function omitFalsyValues<T>(obj: T): Partial<T> {
 
 type Key = string;
 
-export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Unary<S, T>): Record<K, T> {
+export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Binary<S, K, T>): Record<K, T> {
   return Object.keys(obj).reduce((result: Record<K, T>, key: K) => {
-    result[key] = fn(obj[key]);
+    result[key] = fn(obj[key], key);
     return result;
   }, {} as Record<K, T>);
 }

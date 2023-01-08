@@ -60,12 +60,12 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
   .build();
 
-const suggestRemovingSplits = ({ splits }: ActionVariables) => [{
+export const suggestRemovingSplits = ({ splits }: ActionVariables) => [{
   description: splits.length() === 3 ? "Remove last split" : `Remove last ${splits.length() - 2} splits`,
   adjustment: { splits: splits.slice(0, 2) }
 }];
 
-const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
+export const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
   allDimensions(dataCube.dimensions)
     .filter(dimension => !splits.hasSplitOn(dimension))
     .slice(0, 2)
@@ -76,7 +76,7 @@ const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
       }
     }));
 
-const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => {
+export const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => {
   const firstMeasure = allMeasures(dataCube.measures)[0];
   return [{
     description: `Add measure ${firstMeasure.title}`,
@@ -86,7 +86,8 @@ const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => {
   }];
 };
 
-const suggestRemovingMeasures = ({ series }: ActionVariables) => [{
+// TODO: Move these exports to commons
+export const suggestRemovingMeasures = ({ series }: ActionVariables) => [{
   description: series.count() === 2 ? "Remove last measure" : `Remove last ${series.count() - 1} measures`,
   adjustment: {
     series: series.takeFirst()
