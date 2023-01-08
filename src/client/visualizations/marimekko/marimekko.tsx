@@ -21,6 +21,7 @@ import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
+import { ConcreteSeries } from "../../../common/models/series/concrete-series"; // import from different viz
 import { percentFormatter } from "../../../common/models/series/series-format";
 import { Stage } from "../../../common/models/stage/stage";
 import { flatMap } from "../../../common/utils/functional/functional";
@@ -34,7 +35,7 @@ import {
   VisualizationProps
 } from "../../views/cube-view/center-panel/center-panel";
 import { useSettingsContext } from "../../views/cube-view/settings-context";
-import { Legend } from "../line-chart/legend/legend"; // import from different viz
+import { Legend } from "../line-chart/legend/legend";
 
 function prepareData(data: Dataset, essence: Essence) {
   const series = essence.getConcreteSeries().first();
@@ -63,44 +64,53 @@ function prepareData(data: Dataset, essence: Essence) {
     });
   });
 
-  const xs2 = mapValues(xs, ys => {
-    const x = d3.sum(ys, datum => series.selectValue(datum));
+  const xs2 = mapValues(xs, (data, key): Datum => {
+    const measure = {
+      [series.plywoodKey()]: d3.sum(data, datum => series.selectValue(datum))
+    };
+    const x = {
+      [xSplit.toKey()]: key
+    };
     return {
-      x,
-      ys
+      ...x,
+      ...measure,
+      nest: Dataset.fromJS(data)
     };
   });
 
-  function stackYs(ys: Datum[]): Array<{ name: string, y: number, y0: number }> {
+  function stackYs(ys: Datum[]): Datum[] {
     const sorted = flatMap(baseYs, y => {
       const found = ys.find(datum => ySplit.selectValue(datum) === y);
       return found ? [found] : [];
     });
     return sorted.map((datum, index, coll) => {
-      const name = String(ySplit.selectValue(datum));
-      const y = series.selectValue(datum);
       const y0 = sum(coll.slice(0, index), datum => series.selectValue(datum));
 
       return {
-        name,
-        y,
-        y0
+        ...datum,
+        [x0Key(series)]: y0
       };
     });
   }
 
-  const xs3 = Object.entries(xs2)
-    .map(([name, value]) => ({ name, value }))
-    .sort(({ value: a }, { value: b }) => b.x - a.x)
-    .map(({ value, name }, index, coll) => {
-      const { x } = value;
-      const x0 = sum(coll.slice(0, index), ({ value: { x } }) => x);
-      const ys = stackYs(value.ys);
-      return { name, value: { x, x0, ys } };
+  const xs3 = Object.values(xs2)
+    .sort((a, b) => series.selectValue(b) - series.selectValue(a))
+    .map((datum, index, coll) => {
+      const x0 = sum(coll.slice(0, index), d => series.selectValue(d));
+      const stackedNest = stackYs((datum.nest as Dataset).data);
+      return {
+        ...datum,
+        [x0Key(series)]: x0,
+        nest: Dataset.fromJS(stackedNest)
+      };
     });
+
+  console.log(xs3);
 
   return xs3;
 }
+
+const x0Key = (series: ConcreteSeries) => `__${series.plywoodKey()}_0`;
 
 const Marimekko: React.FunctionComponent<ChartProps> = props => {
   const { stage, data: dataset, essence } = props;
@@ -117,6 +127,7 @@ const Marimekko: React.FunctionComponent<ChartProps> = props => {
   const series = essence.getConcreteSeries().first();
 
   const ySplit = essence.splits.getSplit(0);
+  const xSplit = essence.splits.getSplit(1);
   const yDimension = findDimensionByName(dimensions, ySplit.reference);
   const colorValues = selectFirstSplitDatums(dataset).map(datum => String(ySplit.selectValue(datum)));
 
@@ -126,7 +137,7 @@ const Marimekko: React.FunctionComponent<ChartProps> = props => {
 
   const data = prepareData(dataset, essence);
 
-  const total = sum(data, datum => datum.value.x);
+  const total = sum(data, datum => series.selectValue(datum));
   const xScale = d3.scaleLinear()
     .range([0, chartStage.width])
     .domain([0, total]);
@@ -141,8 +152,11 @@ const Marimekko: React.FunctionComponent<ChartProps> = props => {
     <svg viewBox={`0 0 ${stage.width} ${stage.height}`}>
       <g transform={chartStage.getTransform()}>
         {data.map(datum => {
-          const { name, value: { x, x0, ys } } = datum;
+          const x = series.selectValue(datum);
+          const x0 = datum[x0Key(series)] as number;
+          const name = String(xSplit.selectValue(datum));
           const xpx = xScale(x0);
+          const ys = (datum.nest as Dataset).data;
 
           const yScale = d3.scaleLinear()
             .range([0, stackHeight])
@@ -154,7 +168,10 @@ const Marimekko: React.FunctionComponent<ChartProps> = props => {
             </text>
             <g transform="translate(0, 30)">
               {ys.map(datum => {
-                const { name, y, y0 } = datum;
+                const y = series.selectValue(datum);
+                const y0 = datum[x0Key(series)] as number;
+                const name = String(ySplit.selectValue(datum));
+
                 const ypx = yScale(y0);
                 const height = yScale(y);
 
