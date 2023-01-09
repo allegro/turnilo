@@ -17,32 +17,10 @@
 import { Request, Response, Router } from "express";
 import { errorToMessage } from "../../../common/logger/logger";
 import { serialize as serializeCluster } from "../../../common/models/cluster/cluster";
-import { SerializedDataCube } from "../../../common/models/data-cube/data-cube";
 import { serializeDataCubes } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
+import { getDataCubesPage, getPageNumber } from "../../utils/datacubes/pagination";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
-
-const PAGE_SIZE = 10;
-
-interface DataCubesSlice {
-  dataCubes: SerializedDataCube[];
-  next?: number;
-}
-
-function getDataCubesPage(dataCubes: SerializedDataCube[], page: number): DataCubesSlice {
-  const sliceStart = page * PAGE_SIZE;
-  const sliceEnd = sliceStart + PAGE_SIZE;
-  const next = sliceEnd < dataCubes.length ? page + 1 : undefined;
-  return {
-    dataCubes: dataCubes.slice(sliceStart, sliceEnd),
-    next
-  };
-}
-
-function getPageNumber(page: unknown): number {
-  if (typeof page === "string") return parseInt(page, 10);
-  return 0;
-}
 
 export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
 
