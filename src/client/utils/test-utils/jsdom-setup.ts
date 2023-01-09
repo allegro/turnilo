@@ -19,9 +19,9 @@ import * as jsdom from "jsdom";
 
 const kickstart = () => {
   const g: any = global as any;
-  const document = new jsdom.JSDOM("<!doctype html><html><body></body></html>");
-  g.document = document.window.document;
-  g.window = document.window;
+  const document = jsdom.jsdom("<!doctype html><html><body></body></html>");
+  g.document = document;
+  g.window = (document as any).defaultView;
   g.navigator = {
     userAgent: "testing"
   };
