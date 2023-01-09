@@ -24,6 +24,6 @@ export function loadFileSync(filepath: string, postProcess: "json" | "yaml"): ob
     case "json":
       return JSON.parse(fileData);
     case "yaml":
-      return yaml.load(fileData);
+      return yaml.safeLoad(fileData);
   }
 }
