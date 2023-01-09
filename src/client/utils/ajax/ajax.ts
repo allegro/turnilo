@@ -93,7 +93,6 @@ export class Ajax {
       yield* fetchDataCubesPage(0);
     }
 
-    // TODO: if JS had something like AsyncSeq.collect()
     const dataCubes: SerializedDataCube[] = [];
     for await (const cubes of fetchAllPages()) {
       dataCubes.push(...cubes);

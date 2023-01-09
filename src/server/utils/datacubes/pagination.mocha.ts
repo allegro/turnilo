@@ -80,7 +80,5 @@ describe("DataCube Pagination", () => {
         });
       });
     });
-
   });
-
 });
