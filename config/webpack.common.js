@@ -19,6 +19,8 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { IgnorePlugin } = require('webpack');
 
+const { version } = require("../package.json");
+
 const toTranspilePattern = {
   test: /\.[jt]sx?$/,
   exclude: {
@@ -45,6 +47,9 @@ const config = {
     new IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
+    }),
+    new DefinePlugin({
+      VERSION: version,
     }),
   ],
   module: {

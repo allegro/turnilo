@@ -30,19 +30,13 @@ import {
 } from "./cli/options";
 import runTurnilo from "./cli/run-turnilo";
 import { parseCredentials } from "./cli/utils";
-import { readVersion } from "./version";
 
-let version: string;
-try {
-  version = readVersion();
-} catch (e) {
-  program.error(`Failed to read turnilo version. Error: ${e.message}`);
-}
+declare const VERSION: string;
 
 program
   .name("turnilo")
   .description("Turnilo is a data exploration tool that connects to Druid database")
-  .version(version, "--version");
+  .version(VERSION, "--version");
 
 program
   .command("run-config")
@@ -71,7 +65,7 @@ program
       buildSettings(config, options, auth),
       anchorPath,
       verbose,
-      version,
+      VERSION,
       program
     );
   });
@@ -94,7 +88,7 @@ program
       buildSettings(config, options),
       anchorPath,
       verbose,
-      version,
+      VERSION,
       program
     );
   });
@@ -117,7 +111,7 @@ program
       settingsForDruidConnection(url, options, auth),
       process.cwd(),
       verbose,
-      version,
+      VERSION,
       program
     );
   });
@@ -144,7 +138,7 @@ program
       settingsForDatasetFile(file, timeAttribute, options),
       process.cwd(),
       verbose,
-      version,
+      VERSION,
       program
     );
   });
@@ -175,7 +169,7 @@ program
     printIntrospectedSettings(
       settingsForDruidConnection(url, { verbose }, auth),
       verbose,
-      version
+      VERSION
     ).catch((e: Error) => {
         program.error(`There was an error generating a config: ${e.message}`);
       });
