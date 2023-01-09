@@ -18,7 +18,7 @@
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 
-export function loadFileSync(filepath: string, postProcess: "json" | "yaml"): object | string | number | null | undefined {
+export function loadFileSync(filepath: string, postProcess: "json" | "yaml"): object {
   const fileData = fs.readFileSync(filepath, "utf-8");
   switch (postProcess) {
     case "json":
