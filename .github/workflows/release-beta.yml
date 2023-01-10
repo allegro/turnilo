@@ -32,7 +32,7 @@ jobs:
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Install release-it
-        run: npm install -g release-it@15.5.1
+        run: npm install -g release-it@15
 
       - name: Beta Release
         env:
