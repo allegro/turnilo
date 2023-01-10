@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { assoc, Unary } from "../functional/functional";
+import { assoc, Predicate, Unary } from "../functional/functional";
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
@@ -27,12 +27,7 @@ export function extend(source: any, target: any): any {
 }
 
 export function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T & string) => {
-    if (isTruthy(obj[key])) {
-      res[key] = obj[key];
-    }
-    return res;
-  }, {});
+  return pickValues(obj, isTruthy);
 }
 
 type Key = string;
@@ -42,6 +37,16 @@ export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Unary<S, T
     result[key] = fn(obj[key]);
     return result;
   }, {} as Record<K, T>);
+}
+
+export function pickValues<T, K extends keyof T>(obj: T, predicate: Predicate<T[K]>): Partial<T> {
+  return (Object.keys(obj) as K[]).reduce((result: Partial<T>, key: K) => {
+    const value = obj[key];
+    if (predicate(value)) {
+      result[key] = value;
+    }
+    return result;
+  }, {} as Partial<T>);
 }
 
 export function fromEntries<K extends Key, T>(entries: Array<[K, T]>): Record<K, T> {

@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { fromEntries, mapValues, omitFalsyValues } from "./object";
+import { fromEntries, mapValues, omitFalsyValues, pickValues } from "./object";
 
 describe("Object utils", () => {
   describe("omitFalsyValues", () => {
@@ -70,6 +70,43 @@ describe("Object utils", () => {
         c: true,
         d: "qvux"
       });
+    });
+  });
+
+  describe("pickValues", () => {
+
+    const greaterThan10 = (n: number) => n > 10;
+
+    it("should left only values that pass predicate", () => {
+      const input: any = {
+        a: 9,
+        b: 10,
+        c: 11
+      };
+
+      const expected = {
+        c: 11
+      };
+
+      expect(pickValues(input, greaterThan10)).to.be.deep.equal(expected);
+    });
+
+    it("should handle empty object", () => {
+      expect(pickValues({}, greaterThan10)).to.be.deep.equal({});
+    });
+
+    it("should not modify input object", () => {
+      const input: any = {
+        a: 9,
+        b: 10,
+        c: 11
+      };
+
+      const inputCopy = Object.assign({}, input);
+
+      pickValues(input, greaterThan10);
+
+      expect(input).to.deep.equal(inputCopy);
     });
   });
 
