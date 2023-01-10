@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { Command } from "commander";
-import { loadJsonFileSync } from "../utils/file/file";
+import { loadFileSync } from "../utils/file/file";
 
 export function loadConfigFile(configPath: string, program: Command): object {
   try {
-    return loadJsonFileSync(configPath);
+    return loadFileSync(configPath);
   } catch (e) {
     program.error(`Loading config file (${configPath}) failed: ${e.message}`);
     return {};

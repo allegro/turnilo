@@ -16,8 +16,9 @@
  */
 
 import * as fs from "fs";
+import * as yaml from "js-yaml";
 
-export function loadJsonFileSync(filepath: string): object {
+export function loadFileSync(filepath: string): object {
   const fileData = fs.readFileSync(filepath, "utf-8");
-  return JSON.parse(fileData);
+  return yaml.safeLoad(fileData);
 }

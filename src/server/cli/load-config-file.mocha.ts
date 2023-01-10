@@ -20,18 +20,18 @@ import * as FileModule from "../utils/file/file";
 import { loadConfigFile } from "./load-config-file";
 
 describe("loadConfigFile", () => {
-  it("should pass path to loadJsonFileSync", () => {
-    const loadJsonFileSync = sinon.stub(FileModule, "loadJsonFileSync").returns("result");
+  it("should pass path to loadFileSync", () => {
+    const loadFileSync = sinon.stub(FileModule, "loadFileSync").returns("result");
     loadConfigFile("path", null as any);
-    expect(loadJsonFileSync.calledWith("path")).to.be.true;
-    loadJsonFileSync.restore();
+    expect(loadFileSync.calledWith("path")).to.be.true;
+    loadFileSync.restore();
   });
 
-  it("should call program.error with error message if loadJsonFileSync throws", () => {
-    const loadJsonFileSync = sinon.stub(FileModule, "loadJsonFileSync").throws(new Error("error-message"));
+  it("should call program.error with error message if loadFileSync throws", () => {
+    const loadFileSync = sinon.stub(FileModule, "loadFileSync").throws(new Error("error-message"));
     const programSpy = { error: sinon.spy() };
     loadConfigFile("path", programSpy as any);
     expect(programSpy.error.calledWithMatch("error-message")).to.be.true;
-    loadJsonFileSync.restore();
+    loadFileSync.restore();
   });
 });
