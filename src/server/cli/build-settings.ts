@@ -21,7 +21,9 @@ import { ClusterAuthJS } from "../../common/models/cluster-auth/cluster-auth";
 import { fromConfig as clusterFromConfig } from "../../common/models/cluster/cluster";
 import { fromConfig as dataCubeFromConfig } from "../../common/models/data-cube/data-cube";
 import { fromConfig as sourcesFromConfig, Sources, SourcesJS } from "../../common/models/sources/sources";
+import { complement } from "../../common/utils/functional/functional";
 import { isNil } from "../../common/utils/general/general";
+import { pickValues } from "../../common/utils/object/object";
 import { LoggerFormat, ServerSettings, ServerSettingsJS } from "../models/server-settings/server-settings";
 import { TurniloSettings } from "./run-turnilo";
 
@@ -45,10 +47,12 @@ function overrideClustersAuth(config: SourcesJS, auth: ClusterAuthJS): SourcesJS
 }
 
 export default function buildSettings(config: object, options: ServerOptions, auth?: ClusterAuthJS): TurniloSettings {
+  const definedOptions = pickValues(options, complement(isNil));
   const serverSettingsJS: ServerSettingsJS = {
     ...config,
-    ...options
+    ...definedOptions
   };
+
   const serverSettings = ServerSettings.fromJS(serverSettingsJS);
   const logger = getLogger(serverSettings.loggerFormat);
   const appSettings = appSettingsFromConfig(config, logger);
