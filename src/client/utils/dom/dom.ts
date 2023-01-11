@@ -31,15 +31,6 @@ const KEY_CODES: any = {
   RIGHT: 39
 };
 
-function convertDOMStringListToArray(list: any): any[] {
-  const length = list.length;
-  const array: any[] = [];
-  for (let i = 0; i < length; i++) {
-    array.push(list.item(i));
-  }
-  return array;
-}
-
 export function isInside(child: Element, parent: Element | Text): boolean {
   let altParent: Element;
   while (child) {

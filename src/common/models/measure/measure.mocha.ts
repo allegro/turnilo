@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import { $, AttributeInfo, Expression } from "plywood";
-import { fromConfig, Measure, measuresFromAttributeInfo } from "./measure";
+import { fromConfig, measuresFromAttributeInfo } from "./measure";
 import { createMeasure } from "./measures";
 
 describe("Measure", () => {

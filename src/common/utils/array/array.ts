@@ -15,21 +15,6 @@
  * limitations under the License.
  */
 
-export function move(array: any[], oldIndex: number, newIndex: number) {
-  array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
-}
-
-export function indexByAttribute(array: any[], key: string, value: string): any {
-  if (!array || !array.length) return -1;
-
-  const n = array.length;
-  for (let i = 0; i < n; i++) {
-    if (array[i][key] === value) return i;
-  }
-
-  return -1;
-}
-
 export function insert<T>(array: T[], index: number, element: T): T[] {
   return [...array.slice(0, index), element, ...array.slice(index)];
 }

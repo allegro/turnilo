@@ -251,11 +251,6 @@ export function granularityEquals(g1: Bucket, g2: Bucket) {
   return g1 === g2;
 }
 
-export function granularityToJS(input: Bucket): GranularityJS {
-  if (input instanceof Duration) return input.toJS();
-  return input;
-}
-
 export function getGranularities(kind: ContinuousDimensionKind, bucketedBy?: Bucket, coarse?: boolean): Bucket[] {
   const kindHelper = getHelperForKind(kind);
   const coarseGranularities = kindHelper.coarseGranularities;
@@ -269,10 +264,6 @@ export function getDefaultGranularityForKind(kind: ContinuousDimensionKind, buck
   if (bucketedBy) return bucketedBy;
   if (customGranularities) return customGranularities[2];
   return getHelperForKind(kind).defaultGranularity;
-}
-
-export function getBestGranularityForRange(inputRange: BucketableRange, bigChecker: boolean, bucketedBy?: Bucket, customGranularities?: Bucket[]): Bucket {
-  return getBestBucketUnitForRange(inputRange, bigChecker, bucketedBy, customGranularities);
 }
 
 export function getBestBucketUnitForRange(inputRange: BucketableRange, bigChecker: boolean, bucketedBy?: Bucket, customGranularities?: Bucket[]): Bucket {

@@ -15,6 +15,4 @@
  * limitations under the License.
  */
 
-import { SortOn } from "./sort-on";
-
 describe("SortOn", () => {});

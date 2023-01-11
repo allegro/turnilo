@@ -32,7 +32,6 @@ import { ManualFallback } from "../../../components/manual-fallback/manual-fallb
 import { SeriesTilesRow } from "../../../components/series-tile/series-tiles-row";
 import {
   DefaultSplitTilesRow,
-  SplitTilesRow,
   SplitTilesRowBaseProps
 } from "../../../components/split-tile/split-tiles-row";
 import { VisSelector } from "../../../components/vis-selector/vis-selector";

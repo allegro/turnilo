@@ -75,19 +75,6 @@ export function makeTitle(name: string): string {
     });
 }
 
-export function collect(wait: number, fn: Fn): Fn {
-  let timeout: any;
-  const later = () => {
-    timeout = null;
-    fn();
-  };
-  return () => {
-    if (!timeout) {
-      timeout = setTimeout(later, wait);
-    }
-  };
-}
-
 const URL_UNSAFE_CHARS = /[^\w.~\-]+/g;
 
 export function makeUrlSafeName(name: string): string {

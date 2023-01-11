@@ -24,10 +24,8 @@ import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
 import { FilterMenu } from "../filter-menu/filter-menu";
 import { WithRef } from "../with-ref/with-ref";
-import { FILTER_CLASS_NAME } from "./filter-tile";
 
 interface PartialFilterTileProps {
   dimension: Dimension;
