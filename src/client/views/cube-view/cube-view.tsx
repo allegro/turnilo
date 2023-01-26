@@ -539,7 +539,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     const clicker = this.clicker;
 
-    const { customization } = this.props;
+    const { customization, appSettings } = this.props;
     const {
       layout,
       essence,
@@ -613,6 +613,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                                          customization={customization}/>}>
                   <Visualization
                     essence={essence}
+                    appSettings={appSettings}
                     clicker={clicker}
                     timekeeper={timekeeper}
                     stage={chartStage}

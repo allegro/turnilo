@@ -18,8 +18,10 @@
 import axios from "axios";
 import { Dataset, DatasetJS, Environment, Executor, Expression } from "plywood";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
+import { Essence } from "../../../common/models/essence/essence";
 import { isEnabled, Oauth } from "../../../common/models/oauth/oauth";
 import { ClientSources, SerializedSources } from "../../../common/models/sources/sources";
+import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { deserialize } from "../../deserializers/sources";
 import { getToken, mapOauthError } from "../../oauth/oauth";
 
@@ -60,6 +62,24 @@ export class Ajax {
       .catch(error => {
         throw mapOauthError(oauth, error);
       });
+  }
+
+  static newQuery(essence: Essence, { clientTimeout: timeout, oauth }: ClientAppSettings): Promise<Dataset> {
+    const { dataCube: { name } } = essence;
+    const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
+    const viewDefinition = definitionConverters[viewDefinitionVersion].toViewDefinition(essence);
+    return Ajax.query<{ result: DatasetJS }>({
+      method: "POST",
+      url: "query",
+      timeout,
+      data: {
+        version: Ajax.version,
+        settingsVersion: Ajax.settingsVersionGetter(),
+        viewDefinitionVersion,
+        dataCube: name,
+        viewDefinition
+      }
+    }, oauth).then(res => Dataset.fromJS(res.result));
   }
 
   static queryUrlExecutorFactory(dataCubeName: string, { oauth, clientTimeout: timeout }: ClientAppSettings): Executor {

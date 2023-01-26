@@ -16,6 +16,7 @@
 
 import { Dataset, Expression } from "plywood";
 import React from "react";
+import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import {
   DatasetRequest,
   DatasetRequestStatus,
@@ -31,6 +32,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary, debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
+import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 
@@ -39,9 +41,10 @@ export type QueryFactory = Binary<Essence, Timekeeper, Expression>;
 interface DataProviderProps {
   refreshRequestTimestamp: number;
   essence: Essence;
-  timekeeper: Timekeeper;
+  appSettings: ClientAppSettings;
+  timekeeper: Timekeeper; // TODO: check if needed
   stage: Stage;
-  queryFactory: QueryFactory;
+  queryFactory: QueryFactory; // TODO: remove later
   children: Unary<Dataset, React.ReactNode>;
 }
 
@@ -58,8 +61,8 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
   private lastQueryEssence: Essence = null;
 
   componentDidMount() {
-    const { essence, timekeeper, queryFactory } = this.props;
-    this.loadData(essence, timekeeper, queryFactory);
+    const { essence, appSettings } = this.props;
+    this.loadData(essence, appSettings);
   }
 
   componentWillUnmount() {
@@ -69,16 +72,16 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
 
   UNSAFE_componentWillReceiveProps(nextProps: DataProviderProps) {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
-      const { essence, timekeeper, queryFactory } = nextProps;
+      const { essence, appSettings } = nextProps;
       const hadDataLoaded = isLoaded(this.state.dataset);
       const essenceChanged = !essence.equals(this.props.essence);
-      this.loadData(essence, timekeeper, queryFactory, hadDataLoaded && essenceChanged);
+      this.loadData(essence, appSettings, hadDataLoaded && essenceChanged);
     }
   }
 
-  private loadData(essence: Essence, timekeeper: Timekeeper, queryFactory: QueryFactory, showSpinner = true) {
+  private loadData(essence: Essence, appSettings: ClientAppSettings, showSpinner = true) {
     if (showSpinner) this.handleDatasetLoad(loading);
-    this.fetchData(essence, timekeeper, queryFactory)
+    this.fetchData(essence, appSettings)
       .then(loadedDataset => {
         // TODO: encode it better
         // null is here when we get out of order request, so we just ignore it
@@ -92,13 +95,14 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
       });
   }
 
-  private fetchData(essence: Essence, timekeeper: Timekeeper, queryFactory: QueryFactory): Promise<DatasetRequest | null> {
+  private fetchData(essence: Essence, appSettings: ClientAppSettings): Promise<DatasetRequest | null> {
     this.lastQueryEssence = essence;
-    return this.debouncedCallExecutor(essence, timekeeper, queryFactory);
+    return this.debouncedCallExecutor(essence, appSettings);
   }
 
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper, queryFactory: QueryFactory): Promise<DatasetRequest | null> =>
-    essence.dataCube.executor(queryFactory(essence, timekeeper), { timezone: essence.timezone })
+  private callExecutor = (essence: Essence, appSettings: ClientAppSettings): Promise<DatasetRequest | null> => {
+    return Ajax.newQuery(essence, appSettings)
+    // return essence.dataCube.executor(queryFactory(essence, timekeeper), { timezone: essence.timezone })
       .then((dataset: Dataset) => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
@@ -110,6 +114,7 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
           reportError(err);
           return error(err);
         });
+  };
 
   private wasUsedForLastQuery(essence: Essence) {
     return essence.equals(this.lastQueryEssence);

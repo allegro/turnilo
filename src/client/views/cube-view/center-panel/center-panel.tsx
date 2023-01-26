@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+import { ClientAppSettings } from "../../../../common/models/app-settings/app-settings";
 import { ChartProps } from "../../../../common/models/chart-props/chart-props";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { ClientCustomization } from "../../../../common/models/customization/customization";
@@ -106,6 +107,7 @@ export const VisualizationControls: React.FunctionComponent<VisualizationControl
 
 interface ChartPanelProps {
   essence: Essence;
+  appSettings: ClientAppSettings;
   clicker: Clicker;
   stage: Stage;
   chartComponent: React.ComponentType<ChartProps>;
@@ -124,6 +126,7 @@ export const ChartPanel: React.FunctionComponent<ChartPanelProps> = props => {
     chartComponent,
     queryFactory,
     essence,
+    appSettings,
     clicker,
     timekeeper,
     lastRefreshRequestTimestamp,
@@ -143,6 +146,8 @@ export const ChartPanel: React.FunctionComponent<ChartPanelProps> = props => {
         chartComponent={chartComponent}
         queryFactory={queryFactory}
         essence={essence}
+        appSettings={appSettings}
+
         clicker={clicker}
         timekeeper={timekeeper}
         lastRefreshRequestTimestamp={lastRefreshRequestTimestamp}
@@ -165,6 +170,7 @@ export const ChartPanel: React.FunctionComponent<ChartPanelProps> = props => {
 type ChartWrapperProps = Pick<ChartPanelProps,
   "timekeeper" |
   "essence" |
+  "appSettings" |
   "clicker" |
   "stage" |
   "lastRefreshRequestTimestamp" |
@@ -176,6 +182,7 @@ function ChartWrapper(props: ChartWrapperProps) {
     chartComponent: ChartComponent,
     queryFactory,
     essence,
+    appSettings,
     clicker,
     timekeeper,
     stage,
@@ -191,6 +198,7 @@ function ChartWrapper(props: ChartWrapperProps) {
         refreshRequestTimestamp={lastRefreshRequestTimestamp}
         queryFactory={queryFactory}
         essence={essence}
+        appSettings={appSettings}
         timekeeper={timekeeper}
         stage={stage}>
         {data => <div className={classNames("visualization-root", essence.visualization.name)}>
