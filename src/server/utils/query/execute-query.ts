@@ -20,7 +20,14 @@ import { QueryableDataCube } from "../../../common/models/data-cube/queryable-da
 import { loadQueryDecorator } from "../query-decorator-loader/load-query-decorator";
 import { SettingsManager } from "../settings-manager/settings-manager";
 
-export async function executeQuery(req: Request, dataCube: QueryableDataCube, query: Expression, timezone: Timezone, settings: Pick<SettingsManager, "logger" | "anchorPath">): Promise<DatasetJS> {
+// TODO: Too many parameters!
+export async function executeQuery(
+  req: Request,
+  dataCube: QueryableDataCube,
+  query: Expression,
+  timezone: Timezone | null,
+  settings: Pick<SettingsManager, "logger" | "anchorPath">
+): Promise<DatasetJS> {
   const maxQueries = dataCube.maxQueries;
   const decorator = loadQueryDecorator(dataCube, settings.anchorPath, settings.logger);
   const expression = decorator(query, req);
