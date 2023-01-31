@@ -23,6 +23,7 @@ import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { isQueryable, QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { getDataCube, Sources } from "../../../common/models/sources/sources";
+import { isNil } from "../../../common/utils/general/general";
 import { definitionConverters, ViewDefinition, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { ViewDefinitionConverter } from "../../../common/view-definitions/view-definition-converter";
 import { checkAccess } from "../datacube-guard/datacube-guard";
@@ -73,8 +74,9 @@ export function parseExpression(req: Request): Expression {
   }
 }
 
-export function parseTimezone(req: Request): Timezone {
+export function parseTimezone(req: Request): Timezone | null {
   const { timezone } = req.body;
+  if (isNil(timezone)) return null;
   if (typeof timezone !== "string") {
     throw new ValidationError("timezone must be a string");
   }
@@ -109,7 +111,7 @@ export function parseViewDefinition(req: Request): ViewDefinition {
 }
 
 export async function parseDataCube(req: Request, getSources: SettingsManager["getSources"]): Promise<QueryableDataCube> {
-  const dataCube = req.body.dataCube || req.body.dataSource; // back compatibility
+  const dataCube = req.body.dataCube || req.body.dataCubeName || req.body.dataSource; // back compatibility
   if (typeof dataCube !== "string") {
     throw new ValidationError("must have a dataCube");
   }
