@@ -19,6 +19,7 @@ import * as bodyParser from "body-parser";
 import express from "express";
 import { $ } from "plywood";
 import supertest from "supertest";
+import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
@@ -32,7 +33,8 @@ app.use(bodyParser.json());
 
 app.use(mkurlPath, mkurlRouter({
   appSettings,
-  getSources: () => Promise.resolve(wikiSourcesWithExecutor)
+  getSources: () => Promise.resolve(wikiSourcesWithExecutor),
+  logger: NOOP_LOGGER
 }));
 
 describe("mkurl router", () => {
