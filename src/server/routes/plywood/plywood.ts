@@ -15,89 +15,36 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
 import { Request, Response, Router } from "express";
-import { Dataset, Expression } from "plywood";
 import { errorToMessage } from "../../../common/logger/logger";
-import { isQueryable } from "../../../common/models/data-cube/queryable-data-cube";
-import { getDataCube } from "../../../common/models/sources/sources";
-import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
-import { loadQueryDecorator } from "../../utils/query-decorator-loader/load-query-decorator";
+import { executeQuery } from "../../utils/query/execute-query";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
+import {
+  isValidationError,
+  parseDataCube,
+  parseExpression,
+  parseTimezone
+} from "../../utils/validation/validators";
 
 export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath" | "getSources" | "logger">) {
   const logger = settingsManager.logger;
   const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
-    const { dataSource, expression: expressionRaw, timezone } = req.body;
-    const dataCube = req.body.dataCube || dataSource; // back compat
+    try {
 
-    if (typeof dataCube !== "string") {
-      res.status(400).send({
-        error: "must have a dataCube"
-      });
-      return;
-    }
+      const dataCube = await parseDataCube(req, settingsManager.getSources);
+      const timezone = parseTimezone(req);
+      const expression = parseExpression(req);
 
-    let queryTimezone: Timezone = null;
-    if (typeof timezone === "string") {
-      try {
-        queryTimezone = Timezone.fromJS(timezone);
-      } catch (e) {
-        res.status(400).send({
-          error: "bad timezone",
-          message: e.message
-        });
+      const result = await executeQuery(req, dataCube, expression, timezone, settingsManager);
+      res.json({ result });
+    } catch (error) {
+      if (isValidationError(error)) {
+        res.status(error.code).send({ error: error.message });
         return;
       }
-    }
 
-    let parsedExpression: Expression = null;
-    try {
-      parsedExpression = Expression.fromJS(expressionRaw);
-    } catch (e) {
-      res.status(400).send({
-        error: "bad expression",
-        message: e.message
-      });
-      return;
-    }
-
-    let sources;
-    try {
-      sources = await settingsManager.getSources();
-    } catch (e) {
-      res.status(400).send({ error: "failed to get sources" });
-      return;
-    }
-
-    const myDataCube = getDataCube(sources, dataCube);
-    if (!myDataCube) {
-      res.status(400).send({ error: "unknown data cube" });
-      return;
-    }
-
-    if (!isQueryable(myDataCube)) {
-      res.status(400).send({ error: "un queryable data cube" });
-      return;
-    }
-
-    if (!(checkAccess(myDataCube, req.headers))) {
-      res.status(403).send({ error: "access denied" });
-      return;
-    }
-
-    const maxQueries = myDataCube.maxQueries;
-    const decorator = loadQueryDecorator(myDataCube, settingsManager.anchorPath, logger);
-    const expression = decorator(parsedExpression, req);
-    try {
-      const data = await myDataCube.executor(expression, { maxQueries, timezone: queryTimezone });
-      const reply = {
-        result: Dataset.isDataset(data) ? data.toJS() : data
-      };
-      res.json(reply);
-    } catch (error) {
       logger.error(errorToMessage(error));
 
       res.status(500).send({

@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +15,13 @@
  */
 
 import { Request, Response, Router } from "express";
+import { Expression } from "plywood";
+import makeGridQuery from "../../../client/visualizations/grid/make-query";
 import { errorToMessage } from "../../../common/logger/logger";
-import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { Essence } from "../../../common/models/essence/essence";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import makeQuery from "../../../common/utils/query/visualization-query";
+import { executeQuery } from "../../utils/query/execute-query";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 import {
   createEssence,
@@ -27,7 +31,11 @@ import {
   parseViewDefinitionConverter
 } from "../../utils/validation/validators";
 
-export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appSettings" | "logger">) {
+function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+  return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
+}
+
+export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
 
   const router = Router();
 
@@ -39,9 +47,10 @@ export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appS
       const converter = parseViewDefinitionConverter(req);
 
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+      const query = getQuery(essence, settings.getTimekeeper());
+      const result = await executeQuery(req, dataCube, query, essence.timezone, settings);
+      res.json({ result });
 
-      const hash = `#${dataCube.name}/${urlHashConverter.toHash(essence)}`;
-      res.json({ hash });
     } catch (error) {
       if (isValidationError(error)) {
         res.status(error.code).send({ error: error.message });
@@ -55,6 +64,8 @@ export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appS
         message: error.message
       });
     }
+
   });
+
   return router;
 }
