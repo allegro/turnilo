@@ -32,7 +32,7 @@ export function handleRequestErrors(error: Error, res: Response, logger: Logger)
   logger.error(errorToMessage(error));
 
   res.status(500).send({
-    error: "could not compute",
+    error: "Unexpected error",
     message: error.message
   });
 }
