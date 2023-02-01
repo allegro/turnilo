@@ -17,12 +17,14 @@
 
 import * as bodyParser from "body-parser";
 import express from "express";
-import { $ } from "plywood";
 import supertest from "supertest";
 import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
+import {
+  ViewDefinitionConverter2Fixtures
+} from "../../../common/view-definitions/version-2/view-definition-converter-2.fixtures";
 import { mkurlRouter } from "./mkurl";
 
 const app = express();
@@ -87,15 +89,7 @@ describe("mkurl router", () => {
       .send({
         dataCubeName: "wiki",
         viewDefinitionVersion: "2",
-        viewDefinition: {
-          visualization: "totals",
-          timezone: "Etc/UTC",
-          filter: $("time").overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z")),
-          pinnedDimensions: [],
-          singleMeasure: "count",
-          selectedMeasures: [],
-          splits: []
-        }
+        viewDefinition: ViewDefinitionConverter2Fixtures.totals()
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
@@ -117,104 +111,7 @@ describe("mkurl router", () => {
       .send({
         dataCubeName: "wiki",
         viewDefinitionVersion: "2",
-        viewDefinition: {
-          visualization: "table",
-          timezone: "Etc/UTC",
-          filter:
-            $("time")
-              .overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z"))
-              .and($("channel").overlap(["en"]))
-              .and($("isRobot").overlap([true]).not())
-              .and($("page").contains("Jeremy"))
-              .and($("userChars").match("^A$"))
-              .and($("commentLength").overlap([{ start: 3, end: null, type: "NUMBER_RANGE" }]))
-              .toJS(),
-          pinnedDimensions: ["channel", "namespace", "isRobot"],
-          pinnedSort: "delta",
-          singleMeasure: "delta",
-          selectedMeasures: ["delta", "count", "added"],
-          multiMeasureMode: true,
-          splits: [
-            {
-              expression: {
-                op: "ref",
-                name: "channel"
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              },
-              limitAction: {
-                op: "limit",
-                value: 50
-              }
-            },
-            {
-              expression: {
-                op: "ref",
-                name: "isRobot"
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              },
-              limitAction: {
-                op: "limit",
-                value: 5
-              }
-            },
-            {
-              expression: {
-                op: "ref",
-                name: "commentLength"
-              },
-              bucketAction: {
-                op: "numberBucket",
-                size: 10,
-                offset: 0
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              },
-              limitAction: {
-                op: "limit",
-                value: 5
-              }
-            },
-            {
-              expression: {
-                op: "ref",
-                name: "time"
-              },
-              bucketAction: {
-                op: "timeBucket",
-                duration: "PT1H"
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              }
-            }
-
-          ]
-        }
+        viewDefinition: ViewDefinitionConverter2Fixtures.fullTable()
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
@@ -225,5 +122,4 @@ describe("mkurl router", () => {
         testComplete
       );
   });
-
 });
