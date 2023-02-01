@@ -25,22 +25,64 @@ import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
 import { mkurlRouter } from "./mkurl";
 
-const mkurlPath = "/mkurl";
-
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use(mkurlPath, mkurlRouter({
+app.use("/", mkurlRouter({
   appSettings,
   getSources: () => Promise.resolve(wikiSourcesWithExecutor),
   logger: NOOP_LOGGER
 }));
 
 describe("mkurl router", () => {
+  it("should require dataCube", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({})
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "must have a dataCube" })
+      .end(testComplete);
+  });
+
+  it("should validate viewDefinition", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({ dataCube: "wiki" })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "viewDefinition must be an object" })
+      .end(testComplete);
+  });
+
+  it("should require viewDefinitionVersion", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({ dataCube: "wiki", viewDefinition: {} })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "must have a viewDefinitionVersion" })
+      .end(testComplete);
+  });
+
+  it("should validate viewDefinitionVersion", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({ dataCube: "wiki", viewDefinition: {}, viewDefinitionVersion: "foobar" })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "unsupported viewDefinitionVersion value" })
+      .end(testComplete);
+  });
+
   it("gets a simple url back", (testComplete: any) => {
     supertest(app)
-      .post(mkurlPath)
+      .post("/")
       .set("Content-Type", "application/json")
       .send({
         dataCubeName: "wiki",
@@ -70,7 +112,7 @@ describe("mkurl router", () => {
 
   it("gets a complex url back", (testComplete: any) => {
     supertest(app)
-      .post(mkurlPath)
+      .post("/")
       .set("Content-Type", "application/json")
       .send({
         dataCubeName: "wiki",
