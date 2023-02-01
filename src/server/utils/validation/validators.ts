@@ -110,14 +110,14 @@ export function parseViewDefinition(req: Request): ViewDefinition {
   return viewDefinition;
 }
 
-export async function parseDataCube(req: Request, getSources: SettingsManager["getSources"]): Promise<QueryableDataCube> {
+export async function parseDataCube(req: Request, settings: Pick<SettingsManager, "getSources">): Promise<QueryableDataCube> {
   const dataCube = req.body.dataCube || req.body.dataCubeName || req.body.dataSource; // back compatibility
   if (typeof dataCube !== "string") {
     throw new ValidationError("must have a dataCube");
   }
   let sources: Sources;
   try {
-    sources = await getSources();
+    sources = await settings.getSources();
   } catch (e) {
     throw new ValidationError("Couldn't load settings");
   }

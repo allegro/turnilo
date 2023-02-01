@@ -33,7 +33,7 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
   router.post("/", async (req: Request, res: Response) => {
     try {
 
-      const dataCube = await parseDataCube(req, settingsManager.getSources);
+      const dataCube = await parseDataCube(req, settingsManager);
       const timezone = parseTimezone(req);
       const expression = parseExpression(req);
 

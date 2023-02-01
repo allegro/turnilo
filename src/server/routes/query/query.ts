@@ -42,7 +42,7 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
   router.post("/", async (req: Request, res: Response) => {
 
     try {
-      const dataCube = await parseDataCube(req, settings.getSources);
+      const dataCube = await parseDataCube(req, settings);
       const viewDefinition = parseViewDefinition(req);
       const converter = parseViewDefinitionConverter(req);
 
