@@ -17,7 +17,6 @@ import memoizeOne from "memoize-one";
 import { Datum } from "plywood";
 import React, { useCallback, useState } from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import makeQuery from "../../../common/utils/query/visualization-query";
 import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import {
@@ -126,6 +125,6 @@ export const Scatterplot: React.FunctionComponent<ChartProps> = ({ data, essence
 export default function ScatterplotVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={Scatterplot}/>
+    <ChartPanel {...props} chartComponent={Scatterplot}/>
   </React.Fragment>;
 }

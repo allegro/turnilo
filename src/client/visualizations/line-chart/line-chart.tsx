@@ -17,7 +17,6 @@
 
 import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
-import makeQuery from "../../../common/utils/query/visualization-query";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { MessageCard } from "../../components/message-card/message-card";
 import { TimeSeriesVisualizationControls } from "../../components/timeseries-visualization-controls/visualization-controls";
@@ -35,7 +34,7 @@ const X_AXIS_HEIGHT = 30;
 export default function LineChartVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <TimeSeriesVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={LineChart}/>
+    <ChartPanel {...props} chartComponent={LineChart}/>
   </React.Fragment>;
 }
 
