@@ -17,19 +17,16 @@
 import { Request, Response, Router } from "express";
 import { Expression } from "plywood";
 import makeGridQuery from "../../../client/visualizations/grid/make-query";
-import { errorToMessage } from "../../../common/logger/logger";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../common/utils/query/visualization-query";
+import { createEssence } from "../../utils/essence/create-essence";
 import { executeQuery } from "../../utils/query/execute-query";
+import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
+import { parseDataCube } from "../../utils/request-params/parse-data-cube";
+import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
+import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
-import {
-  createEssence,
-  isValidationError,
-  parseDataCube,
-  parseViewDefinition,
-  parseViewDefinitionConverter
-} from "../../utils/validation/validators";
 
 function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
@@ -52,17 +49,7 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       res.json({ result });
 
     } catch (error) {
-      if (isValidationError(error)) {
-        res.status(error.code).send({ error: error.message });
-        return;
-      }
-
-      settings.logger.error(errorToMessage(error));
-
-      res.status(500).send({
-        error: "could not compute",
-        message: error.message
-      });
+      handleRequestErrors(error, res, settings.logger);
     }
 
   });

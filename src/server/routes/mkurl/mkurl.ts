@@ -16,16 +16,13 @@
  */
 
 import { Request, Response, Router } from "express";
-import { errorToMessage } from "../../../common/logger/logger";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { createEssence } from "../../utils/essence/create-essence";
+import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
+import { parseDataCube } from "../../utils/request-params/parse-data-cube";
+import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
+import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
-import {
-  createEssence,
-  isValidationError,
-  parseDataCube,
-  parseViewDefinition,
-  parseViewDefinitionConverter
-} from "../../utils/validation/validators";
 
 export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appSettings" | "logger">) {
 
@@ -43,17 +40,7 @@ export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appS
       const hash = `#${dataCube.name}/${urlHashConverter.toHash(essence)}`;
       res.json({ hash });
     } catch (error) {
-      if (isValidationError(error)) {
-        res.status(error.code).send({ error: error.message });
-        return;
-      }
-
-      settings.logger.error(errorToMessage(error));
-
-      res.status(500).send({
-        error: "could not compute",
-        message: error.message
-      });
+      handleRequestErrors(error, res, settings.logger);
     }
   });
   return router;

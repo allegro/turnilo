@@ -16,15 +16,12 @@
  */
 
 import { Request, Response, Router } from "express";
-import { errorToMessage } from "../../../common/logger/logger";
 import { executeQuery } from "../../utils/query/execute-query";
+import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
+import { parseDataCube } from "../../utils/request-params/parse-data-cube";
+import { parseExpression } from "../../utils/request-params/parse-expression";
+import { parseTimezone } from "../../utils/request-params/parse-timezone";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
-import {
-  isValidationError,
-  parseDataCube,
-  parseExpression,
-  parseTimezone
-} from "../../utils/validation/validators";
 
 export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath" | "getSources" | "logger">) {
   const logger = settingsManager.logger;
@@ -39,18 +36,9 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
 
       const result = await executeQuery(req, dataCube, expression, timezone, settingsManager);
       res.json({ result });
+
     } catch (error) {
-      if (isValidationError(error)) {
-        res.status(error.code).send({ error: error.message });
-        return;
-      }
-
-      logger.error(errorToMessage(error));
-
-      res.status(500).send({
-        error: "could not compute",
-        message: error.message
-      });
+      handleRequestErrors(error, res, logger);
     }
   });
 
