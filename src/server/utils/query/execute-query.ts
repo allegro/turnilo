@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 import { Timezone } from "chronoshift";
-import { Request } from "express";
 import { Dataset, DatasetJS, Expression } from "plywood";
 import { QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
-import { loadQueryDecorator } from "../query-decorator-loader/load-query-decorator";
-import { SettingsManager } from "../settings-manager/settings-manager";
+import { AppliedQueryDecorator } from "../query-decorator-loader/get-query-decorator";
 
-// TODO: Too many parameters!
-export async function executeQuery(
-  req: Request,
-  dataCube: QueryableDataCube,
-  query: Expression,
-  timezone: Timezone | null,
-  settings: Pick<SettingsManager, "logger" | "anchorPath">
-): Promise<DatasetJS> {
+export async function executeQuery(dataCube: QueryableDataCube, query: Expression, timezone: Timezone | null, decorator: AppliedQueryDecorator): Promise<DatasetJS> {
   const maxQueries = dataCube.maxQueries;
-  const decorator = loadQueryDecorator(dataCube, settings.anchorPath, settings.logger);
-  const expression = decorator(query, req);
+  const expression = decorator(query);
   const data = await dataCube.executor(expression, { maxQueries, timezone });
   return Dataset.isDataset(data) ? data.toJS() : data as DatasetJS;
 }

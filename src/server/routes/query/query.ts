@@ -21,6 +21,7 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { createEssence } from "../../utils/essence/create-essence";
+import { getQueryDecorator } from "../../utils/query-decorator-loader/get-query-decorator";
 import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
@@ -44,14 +45,15 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const converter = parseViewDefinitionConverter(req);
 
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
       const query = getQuery(essence, settings.getTimekeeper());
-      const result = await executeQuery(req, dataCube, query, essence.timezone, settings);
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
 
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }
-
   });
 
   return router;

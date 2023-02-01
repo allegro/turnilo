@@ -16,6 +16,7 @@
  */
 
 import { Request, Response, Router } from "express";
+import { getQueryDecorator } from "../../utils/query-decorator-loader/get-query-decorator";
 import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
@@ -34,7 +35,8 @@ export function plywoodRouter(settingsManager: Pick<SettingsManager, "anchorPath
       const timezone = parseTimezone(req);
       const expression = parseExpression(req);
 
-      const result = await executeQuery(req, dataCube, expression, timezone, settingsManager);
+      const queryDecorator = getQueryDecorator(req, dataCube, settingsManager);
+      const result = await executeQuery(dataCube, expression, timezone, queryDecorator);
       res.json({ result });
 
     } catch (error) {
