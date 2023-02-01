@@ -13,3 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ViewDefinition4 } from "../version-4/view-definition-4";
+import { total } from "../version-4/view-definition-4.fixture";
+import { measures } from "./measure";
+
+const defaultSeries = measures.slice(0, 2).map(({ name }) => ({ reference: name }));
+
+export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
+  return {
+    ...total,
+    series: defaultSeries,
+    ...opts
+  };
+}

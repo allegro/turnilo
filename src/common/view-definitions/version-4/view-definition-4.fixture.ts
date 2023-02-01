@@ -19,15 +19,11 @@ import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { flooredTimeFilterDefinition } from "./filter-definition.fixtures";
 import { ViewDefinition4 } from "./view-definition-4";
 
-const defaults: ViewDefinition4 = {
+export const total: ViewDefinition4 = {
   filters: [flooredTimeFilterDefinition("time", -1, "P1D")],
   splits: [],
-  series: [{ reference: "count" }, { reference: "sum" }],
+  series: [{ reference: "count" }, { reference: "added" }],
   pinnedDimensions: ["string_a"],
   timezone: Timezone.UTC.toString(),
   visualization: TOTALS_MANIFEST.name
 };
-
-export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
-  return { ...defaults, ...opts };
-}
