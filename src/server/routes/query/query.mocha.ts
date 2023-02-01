@@ -22,13 +22,14 @@ import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
+import { total } from "../../../common/view-definitions/version-4/view-definition-4.fixture";
 import { queryRouter } from "./query";
 
 const settingsManagerFixture = {
   getSources: () => Promise.resolve(wikiSourcesWithExecutor),
   anchorPath: ".",
   logger: NOOP_LOGGER,
-  getTimekeeper: () => TimekeeperFixtures.fixed(),
+  getTimekeeper: () => TimekeeperFixtures.wiki(),
   appSettings
 };
 
@@ -90,39 +91,12 @@ describe("query router", () => {
       .send({
         dataCube: "wiki",
         viewDefinitionVersion: "4",
-        viewDefinition: {
-          visualization: "totals",
-          visualizationSettings: null,
-          timezone: "Etc/UTC",
-          filters: [
-            {
-              type: "time",
-              ref: "time",
-              timeRanges: [
-                {
-                  start: "2015-09-12T00:00:00.000Z",
-                  end: "2015-09-13T00:00:00.000Z"
-                }
-              ]
-            }
-          ],
-          splits: [],
-          series: [
-            {
-              reference: "added",
-              format: {
-                type: "default",
-                value: ""
-              },
-              type: "measure"
-            }
-          ]
-        }
+        viewDefinition: total
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
       .expect((res: Response) => {
-        expect(res.body.result.data[0]).to.include({ added: 591 });
+        expect(res.body.result.data[0]).to.include({ added: 591, count: 10 });
       })
       .end(testComplete);
   });
