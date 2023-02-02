@@ -31,12 +31,12 @@ import {
 import runTurnilo from "./cli/run-turnilo";
 import { parseCredentials } from "./cli/utils";
 
-declare const VERSION: string;
+declare const webpackGlobalVars: { version: string; };
 
 program
   .name("turnilo")
   .description("Turnilo is a data exploration tool that connects to Druid database")
-  .version(VERSION, "--version");
+  .version(webpackGlobalVars.version, "--version");
 
 program
   .command("run-config")
@@ -65,7 +65,7 @@ program
       buildSettings(config, options, auth),
       anchorPath,
       verbose,
-      VERSION,
+      webpackGlobalVars.version,
       program
     );
   });
@@ -88,7 +88,7 @@ program
       buildSettings(config, options),
       anchorPath,
       verbose,
-      VERSION,
+      webpackGlobalVars.version,
       program
     );
   });
@@ -111,7 +111,7 @@ program
       settingsForDruidConnection(url, options, auth),
       process.cwd(),
       verbose,
-      VERSION,
+      webpackGlobalVars.version,
       program
     );
   });
@@ -138,7 +138,7 @@ program
       settingsForDatasetFile(file, timeAttribute, options),
       process.cwd(),
       verbose,
-      VERSION,
+      webpackGlobalVars.version,
       program
     );
   });
@@ -169,7 +169,7 @@ program
     printIntrospectedSettings(
       settingsForDruidConnection(url, { verbose }, auth),
       verbose,
-      VERSION
+      webpackGlobalVars.version
     ).catch((e: Error) => {
         program.error(`There was an error generating a config: ${e.message}`);
       });

@@ -17,7 +17,7 @@
 const path = require("path");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { IgnorePlugin } = require('webpack');
+const { IgnorePlugin, DefinePlugin } = require('webpack');
 
 const { version } = require("../package.json");
 
@@ -49,7 +49,9 @@ const config = {
       contextRegExp: /moment$/,
     }),
     new DefinePlugin({
-      VERSION: version,
+      webpackGlobalVars: {
+        version
+      }
     }),
   ],
   module: {
