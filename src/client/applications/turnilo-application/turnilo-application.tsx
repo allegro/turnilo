@@ -35,7 +35,7 @@ import { OauthMessageView } from "../../oauth/oauth-message-view";
 import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { replaceHash } from "../../utils/url/url";
-import { ApiContext } from "../../views/cube-view/api-context";
+import { ApiContext, CreateApiContext } from "../../views/cube-view/api-context";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { SettingsContext, SettingsContextValue } from "../../views/cube-view/settings-context";
 import { GeneralError } from "../../views/error-view/general-error";
@@ -242,12 +242,12 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return <React.StrictMode>
       <main className="turnilo-application">
         <SettingsContext.Provider value={this.getSettingsContext()}>
-          <ApiContext.Provider appSettings={this.props.appSettings}>
+          <CreateApiContext appSettings={this.props.appSettings}>
             {this.renderView()}
             {this.renderAboutModal()}
             <Notifications/>
             <Questions/>
-          </ApiContext.Provider>
+          </CreateApiContext>
         </SettingsContext.Provider>
       </main>
     </React.StrictMode>;

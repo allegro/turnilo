@@ -17,28 +17,35 @@
 import { Dataset, DatasetJS } from "plywood";
 import React, { useContext } from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { Unary } from "../../../common/utils/functional/functional";
+import { Binary, Unary } from "../../../common/utils/functional/functional";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { Ajax } from "../../utils/ajax/ajax";
 
-export type QueryCall = Unary<Essence, Promise<Dataset>>;
+export type VisualizationQuery = Unary<Essence, Promise<Dataset>>;
 
-interface ApiContextValue {
-  query: QueryCall;
+export type BooleanFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
+
+export interface ApiContextValue {
+  visualizationQuery: VisualizationQuery;
+  booleanFilterQuery: BooleanFilterQuery;
 }
 
-const InternalApiContext = React.createContext<ApiContextValue>({
-  get query(): QueryCall {
+export const ApiContext = React.createContext<ApiContextValue>({
+  get booleanFilterQuery(): BooleanFilterQuery {
+    throw new Error("Attempted to consume ApiContext when there was no Provider");
+  },
+  get visualizationQuery(): VisualizationQuery {
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   }
 });
 
 export function useApiContext(): ApiContextValue {
-  return useContext(InternalApiContext);
+  return useContext(ApiContext);
 }
 
-function createQueryApi({ clientTimeout: timeout, oauth }: ClientAppSettings): QueryCall {
+function createVizQueryApi({ clientTimeout: timeout, oauth }: ClientAppSettings): VisualizationQuery {
   const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
   const converter = definitionConverters[viewDefinitionVersion];
   return (essence: Essence) => {
@@ -46,7 +53,7 @@ function createQueryApi({ clientTimeout: timeout, oauth }: ClientAppSettings): Q
     const viewDefinition = converter.toViewDefinition(essence);
     return Ajax.query<{ result: DatasetJS }>({
       method: "POST",
-      url: "query",
+      url: "query/visualization",
       timeout,
       data: {
         viewDefinitionVersion,
@@ -57,18 +64,40 @@ function createQueryApi({ clientTimeout: timeout, oauth }: ClientAppSettings): Q
   };
 }
 
+function createBooleanFilterQuery({ clientTimeout: timeout, oauth }: ClientAppSettings): BooleanFilterQuery {
+  const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
+  const converter = definitionConverters[viewDefinitionVersion];
+  return (essence: Essence, dimension: Dimension) => {
+    const { dataCube: { name } } = essence;
+    const viewDefinition = converter.toViewDefinition(essence);
+    return Ajax.query<{ result: DatasetJS }>({
+      method: "POST",
+      url: "query/boolean-filter",
+      timeout,
+      data: {
+        viewDefinitionVersion,
+        dimension: dimension.name,
+        dataCube: name,
+        viewDefinition
+      }
+    }, oauth).then(res => Dataset.fromJS(res.result));
+  };
+}
+
+function createApi(settings: ClientAppSettings): ApiContextValue {
+  return {
+    booleanFilterQuery: createBooleanFilterQuery(settings),
+    visualizationQuery: createVizQueryApi(settings)
+  };
+}
+
 interface ApiContextProviderProps {
   appSettings: ClientAppSettings;
 }
 
-const Provider: React.FunctionComponent<ApiContextProviderProps> = ({ children, appSettings }) => {
-  const value = { query: createQueryApi(appSettings) };
-  return <InternalApiContext.Provider value={value}>
+export const CreateApiContext: React.FunctionComponent<ApiContextProviderProps> = ({ children, appSettings }) => {
+  const value = createApi(appSettings);
+  return <ApiContext.Provider value={value}>
     {children}
-  </InternalApiContext.Provider>;
-};
-
-export const ApiContext = {
-  Provider,
-  Consumer: InternalApiContext.Consumer
+  </ApiContext.Provider>;
 };

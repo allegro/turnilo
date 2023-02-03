@@ -29,16 +29,15 @@ import { parseViewDefinition } from "../../utils/request-params/parse-view-defin
 import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-  return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
-}
-
 export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
 
   const router = Router();
 
-  router.post("/", async (req: Request, res: Response) => {
+  router.post("/visualization", async (req: Request, res: Response) => {
 
+    function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+      return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
+    }
     try {
       const dataCube = await parseDataCube(req, settings);
       const viewDefinition = parseViewDefinition(req);

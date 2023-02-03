@@ -32,7 +32,7 @@ import { debounceWithPromise, Unary } from "../../../common/utils/functional/fun
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
 import { reportError } from "../../utils/error-reporter/error-reporter";
-import { QueryCall } from "../../views/cube-view/api-context";
+import { VisualizationQuery } from "../../views/cube-view/api-context";
 import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 
 interface DataProviderProps {
@@ -40,7 +40,7 @@ interface DataProviderProps {
   essence: Essence;
   timekeeper: Timekeeper;
   stage: Stage;
-  query: QueryCall;
+  query: VisualizationQuery;
   children: Unary<Dataset, React.ReactNode>;
 }
 
