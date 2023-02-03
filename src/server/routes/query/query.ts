@@ -17,6 +17,7 @@
 import { Request, Response, Router } from "express";
 import { $, Expression } from "plywood";
 import makeGridQuery from "../../../client/visualizations/grid/make-query";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../common/utils/query/visualization-query";
@@ -25,11 +26,10 @@ import { getQueryDecorator } from "../../utils/query-decorator-loader/get-query-
 import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
+import { parseDimension } from "../../utils/request-params/parse-dimension";
 import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
 import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
-import { Dimension } from "../../../common/models/dimension/dimension";
-import { parseDimension } from "../../utils/request-params/parse-dimension";
 
 export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
 
