@@ -45,43 +45,47 @@ export function useApiContext(): ApiContextValue {
   return useContext(ApiContext);
 }
 
-function createVizQueryApi({ clientTimeout: timeout, oauth }: ClientAppSettings): VisualizationQuery {
+type QueryEndpoints = "visualization" | "boolean-filter";
+
+type ExtraParams = Record<string, unknown>;
+
+type SerializeExtraBase = (...args: any) => ExtraParams;
+type QueryFunction<T extends SerializeExtraBase> = (essence: Essence, ...args: Parameters<T>) => Promise<Dataset>;
+
+function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings, query: QueryEndpoints, serializeExtraParams: T): QueryFunction<T> {
+  const { oauth, clientTimeout: timeout } = settings;
   const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
   const converter = definitionConverters[viewDefinitionVersion];
-  return (essence: Essence) => {
+  return (essence: Essence, ...args: Parameters<T>) => {
+    const extra = serializeExtraParams(args);
     const { dataCube: { name } } = essence;
     const viewDefinition = converter.toViewDefinition(essence);
     return Ajax.query<{ result: DatasetJS }>({
       method: "POST",
-      url: "query/visualization",
+      url: `query/${query}`,
       timeout,
       data: {
         viewDefinitionVersion,
         dataCube: name,
-        viewDefinition
+        viewDefinition,
+        ...extra
       }
-    }, oauth).then(res => Dataset.fromJS(res.result));
+    }, oauth).then(constructDataset);
   };
 }
 
-function createBooleanFilterQuery({ clientTimeout: timeout, oauth }: ClientAppSettings): BooleanFilterQuery {
-  const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
-  const converter = definitionConverters[viewDefinitionVersion];
-  return (essence: Essence, dimension: Dimension) => {
-    const { dataCube: { name } } = essence;
-    const viewDefinition = converter.toViewDefinition(essence);
-    return Ajax.query<{ result: DatasetJS }>({
-      method: "POST",
-      url: "query/boolean-filter",
-      timeout,
-      data: {
-        viewDefinitionVersion,
-        dimension: dimension.name,
-        dataCube: name,
-        viewDefinition
-      }
-    }, oauth).then(res => Dataset.fromJS(res.result));
-  };
+interface QueryResponse {
+  result: DatasetJS;
+}
+
+const constructDataset = (res: QueryResponse) => Dataset.fromJS(res.result);
+
+function createVizQueryApi(settings: ClientAppSettings): VisualizationQuery {
+  return createApiCall(settings, "visualization", () => ({}));
+}
+
+function createBooleanFilterQuery(settings: ClientAppSettings): BooleanFilterQuery {
+  return createApiCall(settings, "boolean-filter", (dimension: Dimension) => ({ dimension: dimension.name }));
 }
 
 function createApi(settings: ClientAppSettings): ApiContextValue {
