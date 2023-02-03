@@ -53,7 +53,7 @@ type QueryEndpoints = "visualization" | "boolean-filter";
 
 type ExtraParams = Record<string, unknown>;
 
-type SerializeExtraBase = (...args: any) => ExtraParams;
+type SerializeExtraBase = (...args: any[]) => ExtraParams;
 type QueryFunction<T extends SerializeExtraBase> = (essence: Essence, ...args: Parameters<T>) => Promise<Dataset>;
 
 function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings, query: QueryEndpoints, serializeExtraParams: T): QueryFunction<T> {
@@ -61,7 +61,7 @@ function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings
   const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
   const converter = definitionConverters[viewDefinitionVersion];
   return (essence: Essence, ...args: Parameters<T>) => {
-    const extra = serializeExtraParams(args);
+    const extra = serializeExtraParams(...args);
     const { dataCube: { name } } = essence;
     const viewDefinition = converter.toViewDefinition(essence);
     return Ajax.query<QueryResponse>({
