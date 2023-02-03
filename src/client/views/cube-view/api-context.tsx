@@ -45,6 +45,10 @@ export function useApiContext(): ApiContextValue {
   return useContext(ApiContext);
 }
 
+interface QueryResponse {
+  result: DatasetJS;
+}
+
 type QueryEndpoints = "visualization" | "boolean-filter";
 
 type ExtraParams = Record<string, unknown>;
@@ -60,7 +64,7 @@ function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings
     const extra = serializeExtraParams(args);
     const { dataCube: { name } } = essence;
     const viewDefinition = converter.toViewDefinition(essence);
-    return Ajax.query<{ result: DatasetJS }>({
+    return Ajax.query<QueryResponse>({
       method: "POST",
       url: `query/${query}`,
       timeout,
@@ -72,10 +76,6 @@ function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings
       }
     }, oauth).then(constructDataset);
   };
-}
-
-interface QueryResponse {
-  result: DatasetJS;
 }
 
 const constructDataset = (res: QueryResponse) => Dataset.fromJS(res.result);
