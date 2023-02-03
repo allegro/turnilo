@@ -19,6 +19,7 @@ import { $, Expression } from "plywood";
 import makeGridQuery from "../../../client/visualizations/grid/make-query";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
+import { LIMIT } from "../../../common/models/raw-data-modal/raw-data-modal";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { createEssence } from "../../utils/essence/create-essence";
@@ -53,6 +54,32 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
 
+    } catch (error) {
+      handleRequestErrors(error, res, settings.logger);
+    }
+  });
+
+  router.post("/raw-data", async (req: Request, res: Response) => {
+    function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+      const { dataCube } = essence;
+      const $main = $("main");
+      const filterExpression = essence
+        .getEffectiveFilter(timekeeper)
+        .toExpression(dataCube);
+      return $main.filter(filterExpression).limit(LIMIT);
+    }
+
+    try {
+      const dataCube = await parseDataCube(req, settings);
+      const viewDefinition = parseViewDefinition(req);
+      const converter = parseViewDefinitionConverter(req);
+
+      const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
+      const query = getQuery(essence, settings.getTimekeeper());
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
+      res.json({ result });
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }
