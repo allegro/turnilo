@@ -46,13 +46,15 @@ function filterExpression(params: QueryParams): Expression {
   }
 }
 
+// TODO: remove this file!
 export function previewStringFilterQuery(params: QueryParams) {
   const { dimension, essence, limit } = params;
   const { dataCube } = essence;
   const nativeCount = findDimensionByName(dataCube.dimensions, "count");
-  const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
+  const $main = $("main");
+  const measureExpression = nativeCount ? nativeCount.expression : $main.count();
 
-  return $("main")
+  return $main
     .filter(filterExpression(params))
     .split(dimension.expression, dimension.name)
     .apply("MEASURE", measureExpression)

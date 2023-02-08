@@ -16,7 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
-import { ClientDataCube } from "../../models/data-cube/data-cube";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import { findDimensionByName } from "../../models/dimension/dimensions";
@@ -218,13 +218,13 @@ const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion
 };
 
 export interface FilterDefinitionConverter {
-  toFilterClause(filter: FilterClauseDefinition, dataCube: ClientDataCube): FilterClause;
+  toFilterClause(filter: FilterClauseDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): FilterClause;
 
   fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
 }
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
-  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: ClientDataCube): FilterClause {
+  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): FilterClause {
     if (clauseDefinition.ref == null) {
       throw new Error("Dimension name cannot be empty.");
     }

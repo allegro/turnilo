@@ -15,22 +15,27 @@
  */
 
 import { Request, Response, Router } from "express";
-import { $, Expression } from "plywood";
+import { $, Expression, ply, SortExpression } from "plywood";
 import makeGridQuery from "../../../client/visualizations/grid/make-query";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
+import { StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { LIMIT } from "../../../common/models/raw-data-modal/raw-data-modal";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../common/utils/query/visualization-query";
+import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { createEssence } from "../../utils/essence/create-essence";
 import { getQueryDecorator } from "../../utils/query-decorator-loader/get-query-decorator";
 import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
 import { parseDimension } from "../../utils/request-params/parse-dimension";
+import { parseStringFilterClause } from "../../utils/request-params/parse-string-filter-clause";
 import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
-import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
+
+const converter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
 
 export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
 
@@ -45,7 +50,6 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
     try {
       const dataCube = await parseDataCube(req, settings);
       const viewDefinition = parseViewDefinition(req);
-      const converter = parseViewDefinitionConverter(req);
 
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
 
@@ -72,7 +76,6 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
     try {
       const dataCube = await parseDataCube(req, settings);
       const viewDefinition = parseViewDefinition(req);
-      const converter = parseViewDefinitionConverter(req);
 
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
 
@@ -100,7 +103,6 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
     try {
       const dataCube = await parseDataCube(req, settings);
       const viewDefinition = parseViewDefinition(req);
-      const converter = parseViewDefinitionConverter(req);
       const dimension = parseDimension(req, dataCube);
 
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
@@ -114,5 +116,49 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       handleRequestErrors(error, res, settings.logger);
     }
   });
+
+  router.post("/string-filter", async (req: Request, res: Response) => {
+
+    // TODO: expose for UI
+    const TOP_N = 100;
+
+    function getQuery(essence: Essence, clause: StringFilterClause, timekeeper: Timekeeper): Expression {
+      const { dataCube } = essence;
+      const { reference: dimensionName } = clause;
+
+      const $main = $("main");
+      const dimension = findDimensionByName(dataCube.dimensions, dimensionName);
+      const nativeCount = findDimensionByName(dataCube.dimensions, "count");
+      const measureExpression = nativeCount ? nativeCount.expression : $main.count();
+
+      const filter = essence
+        .changeFilter(essence.filter.setClause(clause))
+        .getEffectiveFilter(timekeeper).toExpression(dataCube);
+
+      return $main
+        .filter(filter)
+        .split(dimension.expression, dimension.name)
+        .apply("MEASURE", measureExpression)
+        .sort($("MEASURE"), SortExpression.DESCENDING)
+        .limit(TOP_N);
+    }
+
+    try {
+      const dataCube = await parseDataCube(req, settings);
+      const viewDefinition = parseViewDefinition(req);
+      const clause = parseStringFilterClause(req, dataCube);
+
+      const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
+      const query = getQuery(essence, clause, settings.getTimekeeper());
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
+      res.json({ result });
+
+    } catch (error) {
+      handleRequestErrors(error, res, settings.logger);
+    }
+  });
+
   return router;
 }

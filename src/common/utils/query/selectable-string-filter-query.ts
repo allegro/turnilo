@@ -28,6 +28,7 @@ interface QueryParams {
   searchText: string;
 }
 
+// TODO: remove!
 export function stringFilterOptionsQuery({ essence, timekeeper, limit, dimension, searchText }: QueryParams): Expression {
   const { dataCube } = essence;
   const nativeCount = findDimensionByName(dataCube.dimensions, "count");
