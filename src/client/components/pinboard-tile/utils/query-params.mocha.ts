@@ -17,19 +17,19 @@
 import { expect } from "chai";
 import { DimensionFixtures } from "../../../../common/models/dimension/dimension.fixtures";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
+import { stringContains } from "../../../../common/models/filter-clause/filter-clause.fixtures";
 import { SortOnFixtures } from "../../../../common/models/sort-on/sort-on.fixtures";
+import { booleanSplitCombine, stringSplitCombine } from "../../../../common/models/split/split.fixtures";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { equalParams, QueryParams } from "./query-params";
 
-const wikiTime = DimensionFixtures.wikiTime();
+const wikiChannel = DimensionFixtures.wikiChannel();
 const wikiTotals = EssenceFixtures.wikiTotals();
 
 const mockQueryParams = (): QueryParams => ({
-  essence: wikiTotals,
-  dimension: wikiTime,
-  timekeeper: Timekeeper.EMPTY,
-  searchText: "search",
-  sortOn: SortOnFixtures.defaultA()
+  split: stringSplitCombine(wikiChannel.name),
+  clause: stringContains(wikiChannel.name, "e"),
+  essence: wikiTotals
 });
 
 describe("QueryParams", () => {
@@ -39,32 +39,22 @@ describe("QueryParams", () => {
       expect(equalParams(params, params)).to.be.true;
     });
 
-    it("should return false if dimension is different", () => {
+    it("should return false if split is different", () => {
       const params = mockQueryParams();
-      const changedDimension = { ...params, dimension: DimensionFixtures.countryURL() };
-      expect(equalParams(params, changedDimension)).to.be.false;
+      const changedSplit = { ...params, split: booleanSplitCombine(DimensionFixtures.wikiIsRobot().name) };
+      expect(equalParams(params, changedSplit)).to.be.false;
     });
 
-    it("should return false if timekeeper is different", () => {
-      const params = mockQueryParams();
-      const timekeeper = Timekeeper.fromJS({ timeTags: {} });
-      const changedTimekeeper = { ...params, timekeeper };
-      expect(equalParams(params, changedTimekeeper)).to.be.false;
-    });
     it("should return false if essence is different", () => {
       const params = mockQueryParams();
       const changedEssence = { ...params, essence: EssenceFixtures.wikiLineChart() };
       expect(equalParams(params, changedEssence)).to.be.false;
     });
-    it("should return false if searchText is different", () => {
+
+    it("should return false if clause is different", () => {
       const params = mockQueryParams();
-      const changedSearchText = { ...params, searchText: "foobar" };
-      expect(equalParams(params, changedSearchText)).to.be.false;
-    });
-    it("should return false if sortOn is different", () => {
-      const params = mockQueryParams();
-      const changedSortOn = { ...params, sortOn: SortOnFixtures.defaultC() };
-      expect(equalParams(params, changedSortOn)).to.be.false;
+      const changedClause = { ...params, clause: stringContains(wikiChannel.name, "a") };
+      expect(equalParams(params, changedClause)).to.be.false;
     });
   });
 });
