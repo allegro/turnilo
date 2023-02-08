@@ -16,27 +16,21 @@
 
 import { Request } from "express";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { FilterTypes, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Split } from "../../../common/models/split/split";
 import { isNil } from "../../../common/utils/general/general";
-import { filterDefinitionConverter } from "../../../common/view-definitions/version-4/filter-definition";
+import { splitConverter } from "../../../common/view-definitions/version-4/split-definition";
 import { InvalidRequestError } from "../request-errors/request-errors";
 
-export function parseStringFilterClause(req: Request, dataCube: DataCube): StringFilterClause {
-  const clauseJS = req.body.clause;
+export function parseSplit(req: Request, dataCube: DataCube): Split {
+  const splitJS = req.body.split;
 
-  if (isNil(clauseJS)) {
-    throw new InvalidRequestError("expected clause parameter");
+  if (isNil(splitJS)) {
+    throw new InvalidRequestError("expected split parameter");
   }
 
-  let clause;
   try {
-    clause = filterDefinitionConverter.toFilterClause(clauseJS, dataCube);
+    return splitConverter.toSplitCombine(splitJS, dataCube);
   } catch (error) {
     throw new InvalidRequestError(error.message);
   }
-  if (clause.type !== FilterTypes.STRING) {
-    throw new InvalidRequestError(`expected string filter clause, but got ${clause.type}`);
-  }
-  // TODO: write clause type-guard and avoid this assertion
-  return clause as StringFilterClause;
 }

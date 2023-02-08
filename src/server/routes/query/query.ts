@@ -22,7 +22,12 @@ import { findDimensionByName } from "../../../common/models/dimension/dimensions
 import { Essence } from "../../../common/models/essence/essence";
 import { StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { LIMIT } from "../../../common/models/raw-data-modal/raw-data-modal";
+import { Split } from "../../../common/models/split/split";
+import { TimeShiftEnvType } from "../../../common/models/time-shift/time-shift-env";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { CANONICAL_LENGTH_ID } from "../../../common/utils/canonical-length/query";
+import timeFilterCanonicalLength from "../../../common/utils/canonical-length/time-filter-canonical-length";
+import { isNil } from "../../../common/utils/general/general";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { createEssence } from "../../utils/essence/create-essence";
@@ -31,7 +36,11 @@ import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
 import { parseDimension } from "../../utils/request-params/parse-dimension";
-import { parseStringFilterClause } from "../../utils/request-params/parse-string-filter-clause";
+import {
+  parseOptionalStringFilterClause,
+  parseStringFilterClause
+} from "../../utils/request-params/parse-filter-clause";
+import { parseSplit } from "../../utils/request-params/parse-split";
 import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
@@ -57,7 +66,6 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const queryDecorator = getQueryDecorator(req, dataCube, settings);
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
-
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }
@@ -111,7 +119,6 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const queryDecorator = getQueryDecorator(req, dataCube, settings);
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
-
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }
@@ -184,6 +191,47 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const queryDecorator = getQueryDecorator(req, dataCube, settings);
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
+    } catch (error) {
+      handleRequestErrors(error, res, settings.logger);
+    }
+  });
+
+  router.post("/pinboard", async (req: Request, res: Response) => {
+
+    function getQuery(essence: Essence, clause: StringFilterClause | null, split: Split, timekeeper: Timekeeper): Expression {
+      const { dataCube } = essence;
+
+      const dimension = findDimensionByName(dataCube.dimensions, split.reference);
+      const sortSeries = essence.findConcreteSeries(split.sort.reference);
+      const canonicalLength = timeFilterCanonicalLength(essence, timekeeper);
+
+      const filter = essence
+        .changeFilter(isNil(clause) ? essence.filter.removeClause(split.reference) : essence.filter.setClause(clause))
+        .getEffectiveFilter(timekeeper)
+        .toExpression(dataCube);
+
+      return $("main")
+        .filter(filter)
+        .split(dimension.expression, dimension.name)
+        .apply(CANONICAL_LENGTH_ID, canonicalLength)
+        .performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }))
+        .performAction(split.sort.toExpression())
+        .limit(split.limit);
+    }
+
+    try {
+      const dataCube = await parseDataCube(req, settings);
+      const viewDefinition = parseViewDefinition(req);
+      const clause = parseOptionalStringFilterClause(req, dataCube);
+      const split = parseSplit(req, dataCube);
+
+      const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
+      const query = getQuery(essence, clause, split, settings.getTimekeeper());
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
+      res.json({ result });
+
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }

@@ -257,3 +257,11 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
     }
   }
 }
+
+export function isStringFilterClause(clause: FilterClause): clause is StringFilterClause {
+  return clause.type === FilterTypes.STRING;
+}
+
+export function isBooleanFilterClause(clause: FilterClause): clause is BooleanFilterClause {
+  return clause.type === FilterTypes.BOOLEAN;
+}

@@ -15,7 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
-import { ClientDataCube } from "../../models/data-cube/data-cube";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { findDimensionByName } from "../../models/dimension/dimensions";
 import { SeriesDerivation } from "../../models/series/concrete-series";
@@ -215,13 +215,13 @@ const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDe
 };
 
 export interface SplitDefinitionConverter {
-  toSplitCombine(split: SplitDefinition, dataCube: ClientDataCube): Split;
+  toSplitCombine(split: SplitDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): Split;
 
   fromSplitCombine(splitCombine: Split): SplitDefinition;
 }
 
 export const splitConverter: SplitDefinitionConverter = {
-  toSplitCombine(split: SplitDefinition, dataCube: ClientDataCube): Split {
+  toSplitCombine(split: SplitDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): Split {
     const dimension = findDimensionByName(dataCube.dimensions, split.dimension);
     if (dimension == null) {
       throw new Error(`Dimension ${split.dimension} not found in data cube ${dataCube.name}.`);

@@ -20,25 +20,32 @@ import { ClientAppSettings } from "../../../common/models/app-settings/app-setti
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Binary, Nullary, Unary } from "../../../common/utils/functional/functional";
+import { Split } from "../../../common/models/split/split";
+import { Binary, Nullary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { filterDefinitionConverter } from "../../../common/view-definitions/version-4/filter-definition";
+import { splitConverter } from "../../../common/view-definitions/version-4/split-definition";
 import { Ajax } from "../../utils/ajax/ajax";
 
 export type VisualizationQuery = Unary<Essence, Promise<Dataset>>;
+
+export type PinboardQuery = Ternary<Essence, StringFilterClause | null, Split, Promise<Dataset>>;
 
 export type RawDataQuery = Unary<Essence, Promise<Dataset>>;
 
 export type BooleanFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
 
 export type StringFilterQuery = Binary<Essence, StringFilterClause, Promise<Dataset>>;
+
 export type NumberFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
+
 export interface ApiContextValue {
   visualizationQuery: VisualizationQuery;
   booleanFilterQuery: BooleanFilterQuery;
   rawDataQuery: RawDataQuery;
   stringFilterQuery: StringFilterQuery;
   numberFilterQuery: NumberFilterQuery;
+  pinboardQuery: PinboardQuery;
 }
 
 export const ApiContext = React.createContext<ApiContextValue>({
@@ -52,6 +59,9 @@ export const ApiContext = React.createContext<ApiContextValue>({
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   },
   get rawDataQuery(): RawDataQuery {
+    throw new Error("Attempted to consume ApiContext when there was no Provider");
+  },
+  get pinboardQuery(): PinboardQuery {
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   },
   get stringFilterQuery(): StringFilterQuery {
@@ -117,12 +127,21 @@ function createStringFilterQuery(settings: ClientAppSettings): StringFilterQuery
   });
 }
 
+function createPinboardQuery(settings: ClientAppSettings): PinboardQuery {
+  return createApiCall(settings, "pinboard", (clause: StringFilterClause | null, split: Split) => {
+    const clauseJS = clause && filterDefinitionConverter.fromFilterClause(clause);
+    const splitJS = splitConverter.fromSplitCombine(split);
+    return ({ clause: clauseJS, split: splitJS });
+  });
+}
+
 function createRawDataQueryApi(settings: ClientAppSettings): RawDataQuery {
   return createApiCall(settings, "raw-data", emptyParams);
 }
 
 function createApi(settings: ClientAppSettings): ApiContextValue {
   return {
+    pinboardQuery: createPinboardQuery(settings),
     numberFilterQuery: createNumberFilterQuery(settings),
     booleanFilterQuery: createBooleanFilterQuery(settings),
     visualizationQuery: createVizQueryApi(settings),
