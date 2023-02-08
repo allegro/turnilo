@@ -32,14 +32,19 @@ export type RawDataQuery = Unary<Essence, Promise<Dataset>>;
 export type BooleanFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
 
 export type StringFilterQuery = Binary<Essence, StringFilterClause, Promise<Dataset>>;
+export type NumberFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
 export interface ApiContextValue {
   visualizationQuery: VisualizationQuery;
   booleanFilterQuery: BooleanFilterQuery;
   rawDataQuery: RawDataQuery;
   stringFilterQuery: StringFilterQuery;
+  numberFilterQuery: NumberFilterQuery;
 }
 
 export const ApiContext = React.createContext<ApiContextValue>({
+  get numberFilterQuery(): NumberFilterQuery {
+    throw new Error("Attempted to consume ApiContext when there was no Provider");
+  },
   get booleanFilterQuery(): BooleanFilterQuery {
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   },
@@ -62,7 +67,7 @@ interface QueryResponse {
   result: DatasetJS;
 }
 
-type QueryEndpoints = "visualization" | "boolean-filter" | "string-filter" | "number-filter" | "raw-data";
+type QueryEndpoints = "visualization" | "pinboard" | "boolean-filter" | "string-filter" | "number-filter" | "raw-data";
 
 type ExtraParams = Record<string, unknown>;
 
@@ -97,6 +102,10 @@ function createVizQueryApi(settings: ClientAppSettings): VisualizationQuery {
   return createApiCall(settings, "visualization", emptyParams);
 }
 
+function createNumberFilterQuery(settings: ClientAppSettings): BooleanFilterQuery {
+  return createApiCall(settings, "number-filter", (dimension: Dimension) => ({ dimension: dimension.name }));
+}
+
 function createBooleanFilterQuery(settings: ClientAppSettings): BooleanFilterQuery {
   return createApiCall(settings, "boolean-filter", (dimension: Dimension) => ({ dimension: dimension.name }));
 }
@@ -114,6 +123,7 @@ function createRawDataQueryApi(settings: ClientAppSettings): RawDataQuery {
 
 function createApi(settings: ClientAppSettings): ApiContextValue {
   return {
+    numberFilterQuery: createNumberFilterQuery(settings),
     booleanFilterQuery: createBooleanFilterQuery(settings),
     visualizationQuery: createVizQueryApi(settings),
     rawDataQuery: createRawDataQueryApi(settings),
