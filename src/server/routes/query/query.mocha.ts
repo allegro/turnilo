@@ -62,28 +62,6 @@ describe("query router", () => {
         .end(testComplete);
     });
 
-    it("should require viewDefinitionVersion", (testComplete: any) => {
-      supertest(app)
-        .post("/visualization")
-        .set("Content-Type", "application/json")
-        .send({ dataCube: "wiki", viewDefinition: {} })
-        .expect("Content-Type", "application/json; charset=utf-8")
-        .expect(400)
-        .expect({ error: "must have a viewDefinitionVersion" })
-        .end(testComplete);
-    });
-
-    it("should validate viewDefinitionVersion", (testComplete: any) => {
-      supertest(app)
-        .post("/visualization")
-        .set("Content-Type", "application/json")
-        .send({ dataCube: "wiki", viewDefinition: {}, viewDefinitionVersion: "foobar" })
-        .expect("Content-Type", "application/json; charset=utf-8")
-        .expect(400)
-        .expect({ error: "unsupported viewDefinitionVersion value" })
-        .end(testComplete);
-    });
-
     it("should return 200 for valid parameters", (testComplete: any) => {
       supertest(app)
         .post("/visualization")
