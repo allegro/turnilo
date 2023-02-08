@@ -27,7 +27,6 @@ import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Split } from "../../../common/models/split/split";
-import makeQuery from "../../../common/utils/query/visualization-query";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
@@ -36,7 +35,7 @@ import {
   DefaultVisualizationControls,
   VisualizationProps
 } from "../../views/cube-view/center-panel/center-panel";
-import { SettingsContext, SettingsContextValue  } from "../../views/cube-view/settings-context";
+import { SettingsContext, SettingsContextValue } from "../../views/cube-view/settings-context";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
@@ -44,7 +43,7 @@ import scales from "./utils/scales";
 export default function HeatMapVisualization(props: VisualizationProps) {
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={HeatMap}/>
+    <ChartPanel {...props} chartComponent={HeatMap}/>
   </React.Fragment>;
 }
 

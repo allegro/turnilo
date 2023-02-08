@@ -20,7 +20,6 @@ import React from "react";
 import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { Unary } from "../../../common/utils/functional/functional";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
-import makeQuery from "../../../common/utils/query/visualization-query";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { SEGMENT_WIDTH } from "../../components/tabular-scroller/dimensions";
 import { withProps } from "../../utils/react/with-props";
@@ -52,7 +51,6 @@ export default class TableVisualization extends React.Component<VisualizationPro
       <DefaultVisualizationControls {...this.props} />
       <ChartPanel
         {...this.props}
-        queryFactory={makeQuery}
         chartComponent={withProps(Table, { segmentWidth, setSegmentWidth: this.setSegmentWidth })}/>
     </React.Fragment>;
   }

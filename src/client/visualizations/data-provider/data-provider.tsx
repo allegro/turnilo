@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dataset, Expression } from "plywood";
+import { Dataset } from "plywood";
 import React from "react";
 import {
   DatasetRequest,
@@ -28,20 +28,19 @@ import {
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Binary, debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
+import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
 import { reportError } from "../../utils/error-reporter/error-reporter";
+import { QueryCall } from "../../views/cube-view/api-context";
 import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
-
-export type QueryFactory = Binary<Essence, Timekeeper, Expression>;
 
 interface DataProviderProps {
   refreshRequestTimestamp: number;
   essence: Essence;
   timekeeper: Timekeeper;
   stage: Stage;
-  queryFactory: QueryFactory;
+  query: QueryCall;
   children: Unary<Dataset, React.ReactNode>;
 }
 
@@ -58,8 +57,8 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
   private lastQueryEssence: Essence = null;
 
   componentDidMount() {
-    const { essence, timekeeper, queryFactory } = this.props;
-    this.loadData(essence, timekeeper, queryFactory);
+    const { essence } = this.props;
+    this.loadData(essence);
   }
 
   componentWillUnmount() {
@@ -69,16 +68,16 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
 
   UNSAFE_componentWillReceiveProps(nextProps: DataProviderProps) {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
-      const { essence, timekeeper, queryFactory } = nextProps;
+      const { essence } = nextProps;
       const hadDataLoaded = isLoaded(this.state.dataset);
       const essenceChanged = !essence.equals(this.props.essence);
-      this.loadData(essence, timekeeper, queryFactory, hadDataLoaded && essenceChanged);
+      this.loadData(essence, hadDataLoaded && essenceChanged);
     }
   }
 
-  private loadData(essence: Essence, timekeeper: Timekeeper, queryFactory: QueryFactory, showSpinner = true) {
+  private loadData(essence: Essence, showSpinner = true) {
     if (showSpinner) this.handleDatasetLoad(loading);
-    this.fetchData(essence, timekeeper, queryFactory)
+    this.fetchData(essence)
       .then(loadedDataset => {
         // TODO: encode it better
         // null is here when we get out of order request, so we just ignore it
@@ -92,13 +91,13 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
       });
   }
 
-  private fetchData(essence: Essence, timekeeper: Timekeeper, queryFactory: QueryFactory): Promise<DatasetRequest | null> {
+  private fetchData(essence: Essence): Promise<DatasetRequest | null> {
     this.lastQueryEssence = essence;
-    return this.debouncedCallExecutor(essence, timekeeper, queryFactory);
+    return this.debouncedCallExecutor(essence);
   }
 
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper, queryFactory: QueryFactory): Promise<DatasetRequest | null> =>
-    essence.dataCube.executor(queryFactory(essence, timekeeper), { timezone: essence.timezone })
+  private callExecutor = (essence: Essence): Promise<DatasetRequest | null> =>
+    this.props.query(essence)
       .then((dataset: Dataset) => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;

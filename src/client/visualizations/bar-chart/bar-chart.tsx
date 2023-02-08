@@ -17,7 +17,6 @@
 
 import React from "react";
 import { or } from "../../../common/utils/functional/functional";
-import makeQuery from "../../../common/utils/query/visualization-query";
 import { Predicates } from "../../../common/utils/rules/predicates";
 import {
   TimeSeriesVisualizationControls
@@ -42,11 +41,11 @@ export default function BarChartVisualization(props: VisualizationProps) {
   if (newVersionSupports(props.essence)) {
     return <React.Fragment>
       <TimeSeriesVisualizationControls {...props} />
-      <ChartPanel {...props} queryFactory={makeQuery} chartComponent={ImprovedBarChart} />
+      <ChartPanel {...props} chartComponent={ImprovedBarChart} />
     </React.Fragment>;
   }
   return <React.Fragment>
     <DefaultVisualizationControls {...props} />
-    <ChartPanel {...props} queryFactory={makeQuery} chartComponent={BarChart}/>
+    <ChartPanel {...props} chartComponent={BarChart}/>
   </React.Fragment>;
 }
