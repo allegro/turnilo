@@ -87,6 +87,5 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       handleRequestErrors(error, res, settings.logger);
     }
   });
-
   return router;
 }
