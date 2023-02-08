@@ -19,17 +19,20 @@ import React, { useContext } from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { Binary, Unary } from "../../../common/utils/functional/functional";
+import { Binary, Nullary, Unary } from "../../../common/utils/functional/functional";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { Ajax } from "../../utils/ajax/ajax";
 
 export type VisualizationQuery = Unary<Essence, Promise<Dataset>>;
+
+export type RawDataQuery = Unary<Essence, Promise<Dataset>>;
 
 export type BooleanFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
 
 export interface ApiContextValue {
   visualizationQuery: VisualizationQuery;
   booleanFilterQuery: BooleanFilterQuery;
+  rawDataQuery: RawDataQuery;
 }
 
 export const ApiContext = React.createContext<ApiContextValue>({
@@ -37,6 +40,9 @@ export const ApiContext = React.createContext<ApiContextValue>({
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   },
   get visualizationQuery(): VisualizationQuery {
+    throw new Error("Attempted to consume ApiContext when there was no Provider");
+  },
+  get rawDataQuery(): RawDataQuery {
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   }
 });
@@ -49,12 +55,14 @@ interface QueryResponse {
   result: DatasetJS;
 }
 
-type QueryEndpoints = "visualization" | "boolean-filter";
+type QueryEndpoints = "visualization" | "boolean-filter" | "raw-data";
 
 type ExtraParams = Record<string, unknown>;
 
 type SerializeExtraBase = (...args: any[]) => ExtraParams;
 type QueryFunction<T extends SerializeExtraBase> = (essence: Essence, ...args: Parameters<T>) => Promise<Dataset>;
+
+const emptyParams: Nullary<ExtraParams> = () => ({});
 
 function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings, query: QueryEndpoints, serializeExtraParams: T): QueryFunction<T> {
   const { oauth, clientTimeout: timeout } = settings;
@@ -81,17 +89,22 @@ function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings
 const constructDataset = (res: QueryResponse) => Dataset.fromJS(res.result);
 
 function createVizQueryApi(settings: ClientAppSettings): VisualizationQuery {
-  return createApiCall(settings, "visualization", () => ({}));
+  return createApiCall(settings, "visualization", emptyParams);
 }
 
 function createBooleanFilterQuery(settings: ClientAppSettings): BooleanFilterQuery {
   return createApiCall(settings, "boolean-filter", (dimension: Dimension) => ({ dimension: dimension.name }));
 }
 
+function createRawDataQueryApi(settings: ClientAppSettings): RawDataQuery {
+  return createApiCall(settings, "raw-data", emptyParams);
+}
+
 function createApi(settings: ClientAppSettings): ApiContextValue {
   return {
     booleanFilterQuery: createBooleanFilterQuery(settings),
-    visualizationQuery: createVizQueryApi(settings)
+    visualizationQuery: createVizQueryApi(settings),
+    rawDataQuery: createRawDataQueryApi(settings)
   };
 }
 
