@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +14,32 @@
  * limitations under the License.
  */
 
-import * as bodyParser from "body-parser";
+import bodyParser from "body-parser";
+import { expect } from "chai";
 import express from "express";
-import supertest from "supertest";
+import supertest, { Response } from "supertest";
 import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
-import {
-  ViewDefinitionConverter2Fixtures
-} from "../../../common/view-definitions/version-2/view-definition-converter-2.fixtures";
-import { mkurlRouter } from "./mkurl";
+import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
+import { total } from "../../../common/view-definitions/version-4/view-definition-4.fixture";
+import { queryRouter } from "./query";
+
+const settingsManagerFixture = {
+  getSources: () => Promise.resolve(wikiSourcesWithExecutor),
+  anchorPath: ".",
+  logger: NOOP_LOGGER,
+  getTimekeeper: () => TimekeeperFixtures.wiki(),
+  appSettings
+};
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use("/", mkurlRouter({
-  appSettings,
-  getSources: () => Promise.resolve(wikiSourcesWithExecutor),
-  logger: NOOP_LOGGER
-}));
+app.use("/", queryRouter(settingsManagerFixture));
 
-describe("mkurl router", () => {
+describe("query router", () => {
   it("should require dataCube", (testComplete: any) => {
     supertest(app)
       .post("/")
@@ -86,9 +89,9 @@ describe("mkurl router", () => {
       .post("/")
       .set("Content-Type", "application/json")
       .send({
-        dataCubeName: "wiki",
-        viewDefinitionVersion: "2",
-        viewDefinition: ViewDefinitionConverter2Fixtures.fullTable()
+        dataCube: "wiki",
+        viewDefinitionVersion: "4",
+        viewDefinition: total
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)

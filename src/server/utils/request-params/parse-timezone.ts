@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Timezone } from "chronoshift";
-import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
-import { flooredTimeFilterDefinition } from "./filter-definition.fixtures";
-import { ViewDefinition4 } from "./view-definition-4";
+import { Request } from "express";
+import { isNil } from "../../../common/utils/general/general";
+import { InvalidRequestError } from "../request-errors/request-errors";
 
-export const total: ViewDefinition4 = {
-  filters: [flooredTimeFilterDefinition("time", -1, "P1D")],
-  splits: [],
-  series: [{ reference: "count" }, { reference: "added" }],
-  pinnedDimensions: ["string_a"],
-  timezone: Timezone.UTC.toString(),
-  visualization: TOTALS_MANIFEST.name
-};
+export function parseTimezone(req: Request): Timezone | null {
+  const { timezone } = req.body;
+  if (isNil(timezone)) return null;
+  if (typeof timezone !== "string") {
+    throw new InvalidRequestError("timezone must be a string");
+  }
+  try {
+    return Timezone.fromJS(timezone);
+  } catch (e) {
+    throw new InvalidRequestError(`bad timezone: ${e.message}`);
+  }
+}

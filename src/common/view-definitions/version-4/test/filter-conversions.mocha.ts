@@ -18,6 +18,7 @@ import { FilterClause, StringFilterAction, TimeFilterPeriod } from "../../../mod
 import { boolean, numberRange, stringWithAction, timePeriod, timeRange } from "../../../models/filter-clause/filter-clause.fixtures";
 import { Filter } from "../../../models/filter/filter";
 import { defaultTimeClause, mockEssence } from "../../test/essence.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { FilterClauseDefinition, filterDefinitionConverter } from "../filter-definition";
 import {
   booleanFilterDefinition,
@@ -28,7 +29,6 @@ import {
   stringFilterDefinition,
   timeRangeFilterDefinition
 } from "../filter-definition.fixtures";
-import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
 const mockViewDefinitionWithFilters = (...filters: FilterClauseDefinition[]) =>

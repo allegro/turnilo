@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +15,25 @@
  */
 
 import { Request, Response, Router } from "express";
-import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { Expression } from "plywood";
+import makeGridQuery from "../../../client/visualizations/grid/make-query";
+import { Essence } from "../../../common/models/essence/essence";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { createEssence } from "../../utils/essence/create-essence";
+import { getQueryDecorator } from "../../utils/query-decorator-loader/get-query-decorator";
+import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
 import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
 import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appSettings" | "logger">) {
+function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+  return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
+}
+
+export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
 
   const router = Router();
 
@@ -37,11 +46,15 @@ export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appS
 
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
 
-      const hash = `#${dataCube.name}/${urlHashConverter.toHash(essence)}`;
-      res.json({ hash });
+      const query = getQuery(essence, settings.getTimekeeper());
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
+      res.json({ result });
+
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }
   });
+
   return router;
 }

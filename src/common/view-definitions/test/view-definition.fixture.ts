@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +14,16 @@
  * limitations under the License.
  */
 
-import { Timekeeper, TimekeeperJS } from "./timekeeper";
+import { ViewDefinition4 } from "../version-4/view-definition-4";
+import { total } from "../version-4/view-definition-4.fixture";
+import { measures } from "./measure";
 
-export class TimekeeperFixtures {
-  static fixedJS(): TimekeeperJS {
-    return {
-      timeTags: {},
-      nowOverride: new Date("2016-08-08T08:08:08Z")
-    };
-  }
+const defaultSeries = measures.slice(0, 2).map(({ name }) => ({ reference: name }));
 
-  static fixed() {
-    return Timekeeper.fromJS(TimekeeperFixtures.fixedJS());
-  }
-
-  static wiki() {
-    return Timekeeper.fromJS({
-      timeTags: {},
-      nowOverride: new Date("2015-09-13T00:00:00.000Z")
-    });
-  }
+export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
+  return {
+    ...total,
+    series: defaultSeries,
+    ...opts
+  };
 }

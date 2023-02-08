@@ -19,9 +19,9 @@ import { Series } from "../../../models/series/series";
 import { PERCENT_FORMAT } from "../../../models/series/series-format";
 import { measureSeries, quantileSeries } from "../../../models/series/series.fixtures";
 import { mockEssence } from "../../test/essence.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { SeriesDefinition } from "../series-definition";
 import { fromReference, measureSeriesDefinition, quantileSeriesDefinition } from "../series-definition.fixtures";
-import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("Series", () => {
