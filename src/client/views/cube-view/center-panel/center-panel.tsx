@@ -184,10 +184,10 @@ function ChartWrapper(props: ChartWrapperProps) {
   return <HighlightController essence={essence} clicker={clicker}>
     {highlightProps =>
       <ApiContext.Consumer>
-        {({ query }) =>
+        {({ visualizationQuery }) =>
           <DataProvider
             refreshRequestTimestamp={lastRefreshRequestTimestamp}
-            query={query}
+            query={visualizationQuery}
             essence={essence}
             timekeeper={timekeeper}
             stage={stage}>

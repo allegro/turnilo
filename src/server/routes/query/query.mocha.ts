@@ -15,9 +15,8 @@
  */
 
 import bodyParser from "body-parser";
-import { expect } from "chai";
 import express from "express";
-import supertest, { Response } from "supertest";
+import supertest from "supertest";
 import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
@@ -40,61 +39,63 @@ app.use(bodyParser.json());
 app.use("/", queryRouter(settingsManagerFixture));
 
 describe("query router", () => {
-  it("should require dataCube", (testComplete: any) => {
-    supertest(app)
-      .post("/")
-      .set("Content-Type", "application/json")
-      .send({})
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(400)
-      .expect({ error: "must have a dataCube" })
-      .end(testComplete);
-  });
+  describe("visualization endpoint", () => {
+    it("should require dataCube", (testComplete: any) => {
+      supertest(app)
+        .post("/visualization")
+        .set("Content-Type", "application/json")
+        .send({})
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .expect({ error: "must have a dataCube" })
+        .end(testComplete);
+    });
 
-  it("should validate viewDefinition", (testComplete: any) => {
-    supertest(app)
-      .post("/")
-      .set("Content-Type", "application/json")
-      .send({ dataCube: "wiki" })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(400)
-      .expect({ error: "viewDefinition must be an object" })
-      .end(testComplete);
-  });
+    it("should validate viewDefinition", (testComplete: any) => {
+      supertest(app)
+        .post("/visualization")
+        .set("Content-Type", "application/json")
+        .send({ dataCube: "wiki" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .expect({ error: "viewDefinition must be an object" })
+        .end(testComplete);
+    });
 
-  it("should require viewDefinitionVersion", (testComplete: any) => {
-    supertest(app)
-      .post("/")
-      .set("Content-Type", "application/json")
-      .send({ dataCube: "wiki", viewDefinition: {} })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(400)
-      .expect({ error: "must have a viewDefinitionVersion" })
-      .end(testComplete);
-  });
+    it("should require viewDefinitionVersion", (testComplete: any) => {
+      supertest(app)
+        .post("/visualization")
+        .set("Content-Type", "application/json")
+        .send({ dataCube: "wiki", viewDefinition: {} })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .expect({ error: "must have a viewDefinitionVersion" })
+        .end(testComplete);
+    });
 
-  it("should validate viewDefinitionVersion", (testComplete: any) => {
-    supertest(app)
-      .post("/")
-      .set("Content-Type", "application/json")
-      .send({ dataCube: "wiki", viewDefinition: {}, viewDefinitionVersion: "foobar" })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(400)
-      .expect({ error: "unsupported viewDefinitionVersion value" })
-      .end(testComplete);
-  });
+    it("should validate viewDefinitionVersion", (testComplete: any) => {
+      supertest(app)
+        .post("/visualization")
+        .set("Content-Type", "application/json")
+        .send({ dataCube: "wiki", viewDefinition: {}, viewDefinitionVersion: "foobar" })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(400)
+        .expect({ error: "unsupported viewDefinitionVersion value" })
+        .end(testComplete);
+    });
 
-  it("should return 200 for valid parameters", (testComplete: any) => {
-    supertest(app)
-      .post("/")
-      .set("Content-Type", "application/json")
-      .send({
-        dataCube: "wiki",
-        viewDefinitionVersion: "4",
-        viewDefinition: total
-      })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(200)
-      .end(testComplete);
+    it("should return 200 for valid parameters", (testComplete: any) => {
+      supertest(app)
+        .post("/visualization")
+        .set("Content-Type", "application/json")
+        .send({
+          dataCube: "wiki",
+          viewDefinitionVersion: "4",
+          viewDefinition: total
+        })
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(200)
+        .end(testComplete);
+    });
   });
 });

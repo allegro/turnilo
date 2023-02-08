@@ -15,8 +15,9 @@
  */
 
 import { Request, Response, Router } from "express";
-import { Expression } from "plywood";
+import { $, Expression } from "plywood";
 import makeGridQuery from "../../../client/visualizations/grid/make-query";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../common/utils/query/visualization-query";
@@ -25,19 +26,20 @@ import { getQueryDecorator } from "../../utils/query-decorator-loader/get-query-
 import { executeQuery } from "../../utils/query/execute-query";
 import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
 import { parseDataCube } from "../../utils/request-params/parse-data-cube";
+import { parseDimension } from "../../utils/request-params/parse-dimension";
 import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
 import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
-
-function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-  return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
-}
 
 export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
 
   const router = Router();
 
-  router.post("/", async (req: Request, res: Response) => {
+  router.post("/visualization", async (req: Request, res: Response) => {
+
+    function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+      return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
+    }
 
     try {
       const dataCube = await parseDataCube(req, settings);
@@ -56,5 +58,34 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
     }
   });
 
+  router.post("/boolean-filter", async (req: Request, res: Response) => {
+    function getQuery(essence: Essence, dimension: Dimension, timekeeper: Timekeeper): Expression {
+      const { dataCube } = essence;
+      const filterExpression = essence
+        .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
+        .toExpression(dataCube);
+
+      return $("main")
+        .filter(filterExpression)
+        .split(dimension.expression, dimension.name);
+    }
+
+    try {
+      const dataCube = await parseDataCube(req, settings);
+      const viewDefinition = parseViewDefinition(req);
+      const converter = parseViewDefinitionConverter(req);
+      const dimension = parseDimension(req, dataCube);
+
+      const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
+      const query = getQuery(essence, dimension, settings.getTimekeeper());
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
+      res.json({ result });
+
+    } catch (error) {
+      handleRequestErrors(error, res, settings.logger);
+    }
+  });
   return router;
 }
