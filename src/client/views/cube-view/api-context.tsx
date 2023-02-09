@@ -102,7 +102,7 @@ function createVizQueryApi(settings: ClientAppSettings): VisualizationQuery {
   return createApiCall(settings, "visualization", emptyParams);
 }
 
-function createNumberFilterQuery(settings: ClientAppSettings): BooleanFilterQuery {
+function createNumberFilterQuery(settings: ClientAppSettings): NumberFilterQuery {
   return createApiCall(settings, "number-filter", (dimension: Dimension) => ({ dimension: dimension.name }));
 }
 
