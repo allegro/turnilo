@@ -180,7 +180,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     return new StringFilterClause({
       action: StringFilterAction.CONTAINS,
       reference,
-      values: Set.of(searchText)
+      values: Set.of(searchText),
+      ignoreCase: true
     });
   }
 
