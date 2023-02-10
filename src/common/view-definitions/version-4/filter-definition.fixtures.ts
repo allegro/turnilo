@@ -33,13 +33,14 @@ export function booleanFilterDefinition(ref: string, values: Booleanish[], not =
   };
 }
 
-export function stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
+export function stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false, ignoreCase = false): StringFilterClauseDefinition {
   return {
     ref,
     type: FilterType.string,
     action,
     not,
-    values
+    values,
+    ignoreCase
   };
 }
 
