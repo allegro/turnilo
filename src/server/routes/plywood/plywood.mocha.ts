@@ -46,7 +46,7 @@ describe("plywood router", () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
-      .expect({ error: "must have a dataCube" }, testComplete);
+      .expect({ error: "Parameter dataCube is required" }, testComplete);
   });
 
   it("does a query (value)", (testComplete: any) => {

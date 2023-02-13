@@ -16,6 +16,7 @@
 import { Request } from "express";
 import { isQueryable, QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
 import { getDataCube, Sources } from "../../../common/models/sources/sources";
+import { isNil } from "../../../common/utils/general/general";
 import { checkAccess } from "../datacube-guard/datacube-guard";
 import { AccessDeniedError, InvalidRequestError } from "../request-errors/request-errors";
 import { SettingsManager } from "../settings-manager/settings-manager";
@@ -32,8 +33,11 @@ function verifyAccess(req: Request, dataCube: QueryableDataCube): boolean {
 
 export async function parseDataCube(req: Request, settings: Pick<SettingsManager, "getSources">): Promise<QueryableDataCube> {
   const dataCubeName = req.body.dataCube || req.body.dataCubeName || req.body.dataSource; // back compatibility
+  if (isNil(dataCubeName)) {
+    throw new InvalidRequestError("Parameter dataCube is required");
+  }
   if (typeof dataCubeName !== "string") {
-    throw new InvalidRequestError("must have a dataCube");
+    throw new InvalidRequestError(`Expected dataCube to be a string, got: ${typeof dataCubeName}`);
   }
   let sources: Sources;
   try {
@@ -43,15 +47,15 @@ export async function parseDataCube(req: Request, settings: Pick<SettingsManager
   }
   const dataCube = getDataCube(sources, dataCubeName);
   if (!dataCube) {
-    throw new InvalidRequestError("unknown data cube");
+    throw new InvalidRequestError(`Unknown Data Cube: ${dataCube.name}`);
   }
 
   if (!isQueryable(dataCube)) {
-    throw new InvalidRequestError("un queryable data cube");
+    throw new InvalidRequestError(`Data Cube ${dataCube.name} is not queryable`);
   }
 
   if (!verifyAccess(req, dataCube)) {
-    throw new AccessDeniedError("access denied");
+    throw new AccessDeniedError("Access denied");
   }
 
   return dataCube;
