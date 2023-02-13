@@ -188,6 +188,7 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
 
       const query = getQuery(essence, dimension, settings.getTimekeeper());
+
       const queryDecorator = getQueryDecorator(req, dataCube, settings);
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
@@ -231,7 +232,6 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const queryDecorator = getQueryDecorator(req, dataCube, settings);
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
-
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }

@@ -25,6 +25,7 @@ import { Binary, Nullary, Ternary, Unary } from "../../../common/utils/functiona
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { filterDefinitionConverter } from "../../../common/view-definitions/version-4/filter-definition";
 import { splitConverter } from "../../../common/view-definitions/version-4/split-definition";
+
 import { Ajax } from "../../utils/ajax/ajax";
 
 export type VisualizationQuery = Unary<Essence, Promise<Dataset>>;
