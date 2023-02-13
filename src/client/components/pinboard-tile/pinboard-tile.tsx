@@ -18,17 +18,32 @@ import { Set } from "immutable";
 import { Dataset, Datum } from "plywood";
 import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { DatasetRequest, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/dataset-request/dataset-request";
+import {
+  DatasetRequest,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading
+} from "../../../common/models/dataset-request/dataset-request";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { BooleanFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../common/models/filter-clause/filter-clause";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { SortDirection } from "../../../common/models/sort/sort";
+import { Split } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH } from "../../config/constants";
 import { setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { reportError } from "../../utils/error-reporter/error-reporter";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
@@ -37,7 +52,6 @@ import { pinboardIcons } from "./pinboard-icons";
 import "./pinboard-tile.scss";
 import { isClauseEditable } from "./utils/is-clause-editable";
 import { isDimensionPinnable } from "./utils/is-dimension-pinnable";
-import { makeQuery } from "./utils/make-query";
 import { isPinnableClause, PinnableClause } from "./utils/pinnable-clause";
 import { equalParams, QueryParams } from "./utils/query-params";
 import { EditState, RowMode, RowModeId } from "./utils/row-mode";
@@ -60,6 +74,9 @@ export interface PinboardTileState {
 }
 
 export class PinboardTile extends React.Component<PinboardTileProps, PinboardTileState> {
+  static contextType = ApiContext;
+
+  context: ApiContextValue;
 
   state: PinboardTileState = {
     searchText: "",
@@ -67,9 +84,9 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     datasetLoad: loading
   };
 
-  private loadData(params: QueryParams) {
+  private loadData() {
     this.setState({ datasetLoad: loading });
-    this.fetchData(params)
+    this.fetchData(this.constructQueryParams())
       .then(loadedDataset => {
         // TODO: encode it better
         // null is here when we get out of order request, so we just ignore it
@@ -86,8 +103,9 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   private lastQueryParams: Partial<QueryParams> = {};
 
   private callExecutor = (params: QueryParams): Promise<DatasetRequest | null> => {
-    const { essence: { timezone, dataCube } } = params;
-    return dataCube.executor(makeQuery(params), { timezone })
+    const { essence, clause, split } = params;
+    const { pinboardQuery } = this.context;
+    return pinboardQuery(essence, clause, split)
       .then((dataset: Dataset) => {
           // signal out of order requests with null
           if (!equalParams(params, this.lastQueryParams)) return null;
@@ -104,8 +122,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   private debouncedCallExecutor = debounceWithPromise(this.callExecutor, 500);
 
   componentDidMount() {
-    const { essence, timekeeper, dimension, sortOn } = this.props;
-    this.loadData({ essence, timekeeper, dimension, sortOn, searchText: "" });
+    this.loadData();
   }
 
   componentWillUnmount() {
@@ -114,9 +131,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
 
   componentDidUpdate(previousProps: PinboardTileProps, previousState: PinboardTileState) {
     if (shouldFetchData(this.props, previousProps, this.state, previousState)) {
-      const { essence, timekeeper, dimension, sortOn } = this.props;
-      const { searchText } = this.state;
-      this.loadData({ essence, timekeeper, dimension, sortOn, searchText });
+      this.loadData();
     }
   }
 
@@ -140,6 +155,39 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
     const searchText = text.substr(0, MAX_SEARCH_LENGTH);
     this.setState({ searchText });
   };
+
+  constructQueryParams(): QueryParams {
+    const { sortOn, essence, dimension } = this.props;
+    const split = new Split({
+      reference: dimension.name,
+      sort: sortOn.toSort(SortDirection.descending),
+      // TODO: magic number
+      limit: 100
+    });
+    return {
+      clause: this.constructSearchTextClause(),
+      essence,
+      split
+    };
+  }
+
+  constructSearchTextClause(): StringFilterClause | null {
+    const { dimension } = this.props;
+    switch (dimension.kind) {
+      case "boolean":
+        return null;
+      case "string":
+        const { name: reference } = dimension;
+        const { searchText } = this.state;
+        return new StringFilterClause({
+          action: StringFilterAction.CONTAINS,
+          reference,
+          values: Set.of(searchText)
+        });
+      default:
+        throw new Error(`Expected String or Boolean dimension kind, got ${dimension.kind}`);
+    }
+  }
 
   private getFormatter(): Unary<Datum, string> {
     const { sortOn, essence } = this.props;

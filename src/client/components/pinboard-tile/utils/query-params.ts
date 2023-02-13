@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { SortOn } from "../../../../common/models/sort-on/sort-on";
-import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
+import { StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Split } from "../../../../common/models/split/split";
+import { safeEquals } from "../../../../common/utils/immutable-utils/immutable-utils";
 
 export interface QueryParams {
   essence: Essence;
-  searchText: string;
-  sortOn: SortOn;
-  timekeeper: Timekeeper;
-  dimension: Dimension;
+  split: Split;
+  clause: StringFilterClause | null;
 }
 
 export function equalParams(params: QueryParams, otherParams: Partial<QueryParams>): boolean {
-  const { essence, searchText, sortOn, dimension, timekeeper } = params;
-  const { essence: otherEssence, searchText: otherSearchText, sortOn: otherSortOn, dimension: otherDimension, timekeeper: otherTimekeeper } = otherParams;
+  const { essence, split, clause } = params;
+  const { essence: otherEssence, clause: otherClause, split: otherSplit } = otherParams;
   return essence.equals(otherEssence) &&
-    searchText === otherSearchText &&
-    timekeeper === otherTimekeeper &&
-    dimension === otherDimension &&
-    sortOn.equals(otherSortOn);
+    safeEquals(clause, otherClause) &&
+    split.equals(otherSplit);
 }
