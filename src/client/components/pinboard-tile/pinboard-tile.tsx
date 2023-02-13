@@ -182,7 +182,8 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
         return new StringFilterClause({
           action: StringFilterAction.CONTAINS,
           reference,
-          values: Set.of(searchText)
+          values: Set.of(searchText),
+          ignoreCase: true
         });
       default:
         throw new Error(`Expected String or Boolean dimension kind, got ${dimension.kind}`);
