@@ -82,8 +82,8 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
 
   router.post("/pinboard", asyncHandler(pinboardRoute));
 
-  router.use((error: Error, { context }: QueryRouterRequest, res: Response, next: NextFunction) => {
-    handleRequestErrors(error, res, context.logger);
+  router.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+    handleRequestErrors(error, res, logger);
   });
 
   return router;
