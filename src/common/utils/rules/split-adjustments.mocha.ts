@@ -112,7 +112,7 @@ describe("Split adjustment utilities", () => {
   });
 
   describe("adjustColorSplit", () => {
-    it("should adjust limit with predefined limits (5, 10)", () => {
+    it("should adjust limit with limits based on available colours", () => {
       const dimension: Dimension = {
         ...createDimension("string", "foobar", $("foobar")),
         limits: [42, 100]
@@ -120,7 +120,7 @@ describe("Split adjustment utilities", () => {
       const split = stringSplitCombine("foobar", { limit: 50 });
       const adjusted = adjustColorSplit(split, dimension, SeriesList.fromSeries([]), DEFAULT_COLORS);
 
-      expect(adjusted.limit).to.be.equal(10);
+      expect(adjusted.limit).to.be.equal(20);
     });
   });
 
