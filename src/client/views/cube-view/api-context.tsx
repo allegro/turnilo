@@ -48,24 +48,30 @@ export interface ApiContextValue {
   pinboardQuery: PinboardQuery;
 }
 
+class ApiContextIllegalAccessError extends Error {
+  constructor() {
+    super("Attempted to consume ApiContext when there was no Provider");
+  }
+}
+
 export const ApiContext = React.createContext<ApiContextValue>({
   get numberFilterQuery(): NumberFilterQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get booleanFilterQuery(): BooleanFilterQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get visualizationQuery(): VisualizationQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get rawDataQuery(): RawDataQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get pinboardQuery(): PinboardQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get stringFilterQuery(): StringFilterQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   }
 });
 
