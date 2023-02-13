@@ -154,7 +154,36 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
       const queryDecorator = getQueryDecorator(req, dataCube, settings);
       const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
       res.json({ result });
+    } catch (error) {
+      handleRequestErrors(error, res, settings.logger);
+    }
+  });
 
+  router.post("/number-filter", async (req: Request, res: Response) => {
+
+    function getQuery(essence: Essence, dimension: Dimension, timekeeper: Timekeeper): Expression {
+      const { dataCube } = essence;
+      const filterExpression = essence
+        .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
+        .toExpression(dataCube);
+      const $main = $("main");
+      return ply()
+        .apply("main", $main.filter(filterExpression))
+        .apply("Min", $main.min($(dimension.name)))
+        .apply("Max", $main.max($(dimension.name)));
+    }
+
+    try {
+      const dataCube = await parseDataCube(req, settings);
+      const viewDefinition = parseViewDefinition(req);
+      const dimension = parseDimension(req, dataCube);
+
+      const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
+      const query = getQuery(essence, dimension, settings.getTimekeeper());
+      const queryDecorator = getQueryDecorator(req, dataCube, settings);
+      const result = await executeQuery(dataCube, query, essence.timezone, queryDecorator);
+      res.json({ result });
     } catch (error) {
       handleRequestErrors(error, res, settings.logger);
     }
