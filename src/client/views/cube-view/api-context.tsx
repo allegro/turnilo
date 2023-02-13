@@ -32,7 +32,9 @@ export type RawDataQuery = Unary<Essence, Promise<Dataset>>;
 export type BooleanFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
 
 export type StringFilterQuery = Binary<Essence, StringFilterClause, Promise<Dataset>>;
+
 export type NumberFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
+
 export interface ApiContextValue {
   visualizationQuery: VisualizationQuery;
   booleanFilterQuery: BooleanFilterQuery;
