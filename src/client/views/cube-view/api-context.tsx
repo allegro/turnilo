@@ -25,7 +25,6 @@ import { Binary, Nullary, Ternary, Unary } from "../../../common/utils/functiona
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
 import { filterDefinitionConverter } from "../../../common/view-definitions/version-4/filter-definition";
 import { splitConverter } from "../../../common/view-definitions/version-4/split-definition";
-
 import { Ajax } from "../../utils/ajax/ajax";
 
 export type VisualizationQuery = Unary<Essence, Promise<Dataset>>;
@@ -49,24 +48,30 @@ export interface ApiContextValue {
   pinboardQuery: PinboardQuery;
 }
 
+class ApiContextIllegalAccessError extends Error {
+  constructor() {
+    super("Attempted to consume ApiContext when there was no Provider");
+  }
+}
+
 export const ApiContext = React.createContext<ApiContextValue>({
   get numberFilterQuery(): NumberFilterQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get booleanFilterQuery(): BooleanFilterQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get visualizationQuery(): VisualizationQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get rawDataQuery(): RawDataQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get pinboardQuery(): PinboardQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   },
   get stringFilterQuery(): StringFilterQuery {
-    throw new Error("Attempted to consume ApiContext when there was no Provider");
+    throw new ApiContextIllegalAccessError();
   }
 });
 
