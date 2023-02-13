@@ -19,8 +19,10 @@ import React, { useContext } from "react";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
+import { StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Binary, Nullary, Unary } from "../../../common/utils/functional/functional";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters } from "../../../common/view-definitions";
+import { filterDefinitionConverter } from "../../../common/view-definitions/version-4/filter-definition";
 import { Ajax } from "../../utils/ajax/ajax";
 
 export type VisualizationQuery = Unary<Essence, Promise<Dataset>>;
@@ -29,10 +31,12 @@ export type RawDataQuery = Unary<Essence, Promise<Dataset>>;
 
 export type BooleanFilterQuery = Binary<Essence, Dimension, Promise<Dataset>>;
 
+export type StringFilterQuery = Binary<Essence, StringFilterClause, Promise<Dataset>>;
 export interface ApiContextValue {
   visualizationQuery: VisualizationQuery;
   booleanFilterQuery: BooleanFilterQuery;
   rawDataQuery: RawDataQuery;
+  stringFilterQuery: StringFilterQuery;
 }
 
 export const ApiContext = React.createContext<ApiContextValue>({
@@ -43,6 +47,9 @@ export const ApiContext = React.createContext<ApiContextValue>({
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   },
   get rawDataQuery(): RawDataQuery {
+    throw new Error("Attempted to consume ApiContext when there was no Provider");
+  },
+  get stringFilterQuery(): StringFilterQuery {
     throw new Error("Attempted to consume ApiContext when there was no Provider");
   }
 });
@@ -55,7 +62,7 @@ interface QueryResponse {
   result: DatasetJS;
 }
 
-type QueryEndpoints = "visualization" | "boolean-filter" | "raw-data";
+type QueryEndpoints = "visualization" | "boolean-filter" | "string-filter" | "number-filter" | "raw-data";
 
 type ExtraParams = Record<string, unknown>;
 
@@ -66,8 +73,7 @@ const emptyParams: Nullary<ExtraParams> = () => ({});
 
 function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings, query: QueryEndpoints, serializeExtraParams: T): QueryFunction<T> {
   const { oauth, clientTimeout: timeout } = settings;
-  const viewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION;
-  const converter = definitionConverters[viewDefinitionVersion];
+  const converter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
   return (essence: Essence, ...args: Parameters<T>) => {
     const extra = serializeExtraParams(...args);
     const { dataCube: { name } } = essence;
@@ -77,7 +83,6 @@ function createApiCall<T extends SerializeExtraBase>(settings: ClientAppSettings
       url: `query/${query}`,
       timeout,
       data: {
-        viewDefinitionVersion,
         dataCube: name,
         viewDefinition,
         ...extra
@@ -96,6 +101,13 @@ function createBooleanFilterQuery(settings: ClientAppSettings): BooleanFilterQue
   return createApiCall(settings, "boolean-filter", (dimension: Dimension) => ({ dimension: dimension.name }));
 }
 
+function createStringFilterQuery(settings: ClientAppSettings): StringFilterQuery {
+  return createApiCall(settings, "string-filter", (clause: StringFilterClause) => {
+    const clauseJS = filterDefinitionConverter.fromFilterClause(clause);
+    return ({ clause: clauseJS });
+  });
+}
+
 function createRawDataQueryApi(settings: ClientAppSettings): RawDataQuery {
   return createApiCall(settings, "raw-data", emptyParams);
 }
@@ -104,7 +116,8 @@ function createApi(settings: ClientAppSettings): ApiContextValue {
   return {
     booleanFilterQuery: createBooleanFilterQuery(settings),
     visualizationQuery: createVizQueryApi(settings),
-    rawDataQuery: createRawDataQueryApi(settings)
+    rawDataQuery: createRawDataQueryApi(settings),
+    stringFilterQuery: createStringFilterQuery(settings)
   };
 }
 

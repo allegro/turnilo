@@ -35,13 +35,12 @@ import {
   StringFilterClause
 } from "../../../common/models/filter-clause/filter-clause";
 import { FilterMode } from "../../../common/models/filter/filter";
-import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { previewStringFilterQuery } from "../../../common/utils/query/preview-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { reportError } from "../../utils/error-reporter/error-reporter";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import { Button } from "../button/button";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
@@ -66,7 +65,6 @@ export type PreviewFilterMode = FilterMode.CONTAINS | FilterMode.REGEX;
 export interface PreviewStringFilterMenuProps {
   dimension: Dimension;
   essence: Essence;
-  timekeeper: Timekeeper;
   onClose: Fn;
   filterMode: FilterMode.REGEX | FilterMode.CONTAINS;
   saveClause: Unary<FilterClause, void>;
@@ -77,14 +75,11 @@ export interface PreviewStringFilterMenuState {
   dataset: DatasetRequest;
 }
 
-interface QueryProps {
-  essence: Essence;
-  timekeeper: Timekeeper;
-  dimension: Dimension;
-  filterMode: PreviewFilterMode;
-}
-
 export class PreviewStringFilterMenu extends React.Component<PreviewStringFilterMenuProps, PreviewStringFilterMenuState> {
+  static contextType = ApiContext;
+
+  context: ApiContextValue;
+
   private lastSearchText: string;
 
   initialSearchText = (): string => {
@@ -115,7 +110,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   private sendQueryFilter(): Promise<DatasetRequest> {
     const { searchText } = this.state;
     this.lastSearchText = searchText;
-    return this.debouncedQueryFilter({ ...this.props, searchText });
+    return this.debouncedQueryFilter(this.props.essence, this.constructClause());
   }
 
   private regexErrorMessage(): string {
@@ -124,12 +119,11 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     return filterMode === FilterMode.REGEX && searchText && checkRegex(searchText);
   }
 
-  private queryFilter = (props: QueryProps): Promise<DatasetRequest> => {
-    const { essence } = props;
+  private queryFilter = (essence: Essence, clause: StringFilterClause): Promise<DatasetRequest> => {
+    const { stringFilterQuery } = this.context;
     const { searchText } = this.state;
-    const query = previewStringFilterQuery({ ...props, searchText, limit: TOP_N + 1 });
 
-    return essence.dataCube.executor(query, { timezone: essence.timezone })
+    return stringFilterQuery(essence, clause)
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
@@ -164,10 +158,9 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     }
   };
 
-  constructClause(): FilterClause {
+  constructClause(): StringFilterClause {
     const { dimension, filterMode } = this.props;
     const { searchText } = this.state;
-    if (!searchText) return null;
     const { name: reference } = dimension;
 
     switch (filterMode) {
@@ -201,8 +194,11 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const { essence: { filter }, dimension } = this.props;
     if (this.regexErrorMessage()) return false;
     const newClause = this.constructClause();
+    if (!newClause.values.first()) {
+      return false;
+    }
     const oldClause = filter.getClauseForDimension(dimension);
-    return newClause && !newClause.equals(oldClause);
+    return !newClause.equals(oldClause);
   }
 
   render() {
