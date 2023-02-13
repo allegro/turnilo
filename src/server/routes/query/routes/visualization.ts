@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { Duration } from "chronoshift";
 import { Response } from "express";
 import { Expression } from "plywood";
 import makeGridQuery from "../../../../client/visualizations/grid/make-query";
+import { Logger } from "../../../../common/logger/logger";
 import { Essence } from "../../../../common/models/essence/essence";
+import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../../common/utils/query/visualization-query";
 import { executeQuery } from "../../../utils/query/execute-query";
@@ -27,8 +30,52 @@ function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
 }
 
+function start(clause: FixedTimeFilterClause): string {
+  return clause.values.first().start.toUTCString();
+}
+
+function intervalLength(clause: FixedTimeFilterClause): number {
+  const timeRange = clause.values.first();
+  return timeRange.end.getTime() - timeRange.start.getTime();
+}
+
+function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string, unknown> {
+  const timeFilter = essence.currentTimeFilter(timekeeper);
+  const timeDimension = essence.getTimeDimension();
+  const timeSplit = essence.splits.findSplitForDimension(timeDimension);
+
+  const startTime = start(timeFilter);
+  const interval = intervalLength(timeFilter);
+
+  const variables: Record<string, unknown> = { startTime, interval };
+
+  if (timeSplit && timeSplit.bucket instanceof Duration) {
+    variables.granularity = timeSplit.bucket.getDescription();
+  }
+
+  if (essence.hasComparison()) {
+    const previousTimeFilter = essence.previousTimeFilter(timekeeper);
+    variables.shiftedTimeStart = start(previousTimeFilter);
+  }
+
+  return variables;
+}
+
+function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger) {
+  const nonTimeFilters = essence.filter.removeClause(essence.getTimeDimension().name);
+
+  logger.log("visualization query", {
+    ...timeVariables(essence, timekeeper),
+    visualization: essence.visualization.name,
+    filters: nonTimeFilters.clauses.map(clause => clause.reference).toArray(),
+    splits: essence.splits.splits.map(split => split.reference).toArray(),
+    series: essence.series.series.map(series => series.reference).toArray()
+  });
+}
+
 export default async function visualizationRoute({ context }: QueryRouterRequest, res: Response) {
-  const { dataCube, essence, decorator, timekeeper } = context;
+  const { dataCube, essence, decorator, timekeeper, logger } = context;
+  logQueryInfo(essence, timekeeper, logger);
   const query = getQuery(essence, timekeeper);
   const result = await executeQuery(dataCube, query, essence.timezone, decorator);
   res.json({ result });
