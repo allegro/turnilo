@@ -55,7 +55,7 @@ function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string,
 
   if (essence.hasComparison()) {
     const previousTimeFilter = essence.previousTimeFilter(timekeeper);
-    variables.shiftedTimeStart = start(previousTimeFilter);
+    variables.shiftedStartTime = start(previousTimeFilter);
   }
 
   return variables;
@@ -64,13 +64,13 @@ function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string,
 function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger) {
   const nonTimeFilters = essence.filter.removeClause(essence.getTimeDimension().name);
 
-  logger.log("visualization query", {
+  logger.log(`Visualization query ${essence.description(timekeeper)}`, {
     ...timeVariables(essence, timekeeper),
     dataCube: essence.dataCube.name,
     visualization: essence.visualization.name,
     filters: nonTimeFilters.clauses.map(clause => clause.reference).toArray(),
     splits: essence.splits.splits.map(split => split.reference).toArray(),
-    series: essence.series.series.map(series => series.reference).toArray()
+    measures: essence.series.series.flatMap(series => series.measures()).toSet().toArray()
   });
 }
 
