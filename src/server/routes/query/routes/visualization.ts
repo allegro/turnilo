@@ -66,6 +66,7 @@ function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger) 
 
   logger.log("visualization query", {
     ...timeVariables(essence, timekeeper),
+    dataCube: essence.dataCube.name,
     visualization: essence.visualization.name,
     filters: nonTimeFilters.clauses.map(clause => clause.reference).toArray(),
     splits: essence.splits.splits.map(split => split.reference).toArray(),
