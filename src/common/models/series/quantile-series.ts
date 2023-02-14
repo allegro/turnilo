@@ -71,4 +71,8 @@ export class QuantileSeries extends Record<QuantileSeriesValue>(defaultQuantileS
   plywoodKey(derivation = SeriesDerivation.CURRENT): string {
     return getNameWithDerivation(this.key(), derivation);
   }
+
+  measures(): string[] {
+    return [this.reference];
+  }
 }

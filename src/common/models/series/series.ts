@@ -30,6 +30,7 @@ export interface BasicSeriesValue {
 export interface SeriesBehaviours {
   key: () => string;
   plywoodKey: (period?: SeriesDerivation) => string;
+  measures: () => string[];
 }
 
 export type Series = MeasureSeries | ExpressionSeries | QuantileSeries;

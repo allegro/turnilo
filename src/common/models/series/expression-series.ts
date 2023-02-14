@@ -16,7 +16,7 @@
 
 import { Record } from "immutable";
 import { RequireOnly } from "../../utils/functional/functional";
-import { Expression, fromJS } from "../expression/expression";
+import { Expression, ExpressionSeriesOperation, fromJS } from "../expression/expression";
 import { getNameWithDerivation, SeriesDerivation } from "./concrete-series";
 import { BasicSeriesValue, SeriesBehaviours } from "./series";
 import { DEFAULT_FORMAT, SeriesFormat } from "./series-format";
@@ -57,5 +57,18 @@ export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSerie
 
   plywoodKey(period = SeriesDerivation.CURRENT): string {
     return getNameWithDerivation(this.key(), period);
+  }
+
+  measures(): string[] {
+    switch (this.expression.operation) {
+      case ExpressionSeriesOperation.PERCENT_OF_PARENT:
+      case ExpressionSeriesOperation.PERCENT_OF_TOTAL:
+        return [this.reference];
+      case ExpressionSeriesOperation.ADD:
+      case ExpressionSeriesOperation.SUBTRACT:
+      case ExpressionSeriesOperation.MULTIPLY:
+      case ExpressionSeriesOperation.DIVIDE:
+        return [this.reference, this.expression.reference];
+    }
   }
 }
