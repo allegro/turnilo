@@ -54,8 +54,4 @@ export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeri
   plywoodKey(derivation = SeriesDerivation.CURRENT): string {
     return getNameWithDerivation(this.reference, derivation);
   }
-
-  measures(): string[] {
-    return [this.reference];
-  }
 }

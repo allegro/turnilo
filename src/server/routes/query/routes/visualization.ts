@@ -21,6 +21,7 @@ import makeGridQuery from "../../../../client/visualizations/grid/make-query";
 import { Logger } from "../../../../common/logger/logger";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { usedMeasures } from "../../../../common/models/series/used-measures";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import makeQuery from "../../../../common/utils/query/visualization-query";
 import { executeQuery } from "../../../utils/query/execute-query";
@@ -70,7 +71,7 @@ function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger) 
     visualization: essence.visualization.name,
     filters: nonTimeFilters.clauses.map(clause => clause.reference).toArray(),
     splits: essence.splits.splits.map(split => split.reference).toArray(),
-    measures: essence.series.series.flatMap(series => series.measures()).toSet().toArray()
+    measures: essence.series.series.flatMap(usedMeasures).toSet().toArray()
   });
 }
 
