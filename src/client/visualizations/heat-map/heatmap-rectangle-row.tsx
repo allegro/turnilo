@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import { Bin } from "@vx/heatmap";
+import { RectCell } from "@visx/heatmap/lib/heatmaps/HeatmapRect";
+import { Datum } from "plywood";
 import React from "react";
 
 interface HeatMapRectangleRowProps {
-  bins: Bin[];
+  bins: Array<RectCell<Datum, Datum>>;
 }
 
 export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {

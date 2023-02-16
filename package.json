@@ -54,9 +54,9 @@
   },
   "dependencies": {
     "@sentry/browser": "5.0.6",
-    "@vx/heatmap": "0.0.183",
-    "@vx/scale": "0.0.182",
-    "@vx/tooltip": "0.0.184",
+    "@visx/heatmap": "1.0.0",
+    "@visx/scale": "1.0.0",
+    "@visx/tooltip": "1.0.0",
     "axios": "0.21.2",
     "body-parser": "1.18.2",
     "chronoshift": "0.9.6",
