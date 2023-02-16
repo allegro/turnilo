@@ -58,7 +58,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
   }
 
   appear = () => {
-    const { title, message, duration, muted } = this.props.model;
+    const { duration, muted } = this.props.model;
 
     const d = clamp(duration, -1, 10);
 

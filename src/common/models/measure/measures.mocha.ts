@@ -23,7 +23,6 @@ import {
   findMeasureByName,
   fromConfig,
   hasMeasureWithName,
-  Measures,
   prepend
 } from "./measures";
 import { MeasuresFixtures } from "./measures.fixtures";

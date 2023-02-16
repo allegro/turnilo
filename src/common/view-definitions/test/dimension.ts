@@ -19,8 +19,6 @@ import { createDimension } from "../../models/dimension/dimension";
 import { Dimensions } from "../../models/dimension/dimensions";
 import { DimensionsFixtures } from "../../models/dimension/dimensions.fixtures";
 
-export type DimensionRefs = "string_a" | "string_b" | "time" | "numeric" | "boolean";
-
 export const timeDimension = createDimension("time", "time", $("time"));
 
 export const dimensions: Dimensions = DimensionsFixtures.fromDimensions([

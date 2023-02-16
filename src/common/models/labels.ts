@@ -16,7 +16,6 @@
  */
 
 import {
-  Cluster,
   DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
   DEFAULT_SOURCE_LIST_SCAN,
   DEFAULT_SOURCE_REINTROSPECT_INTERVAL
@@ -26,109 +25,6 @@ import {
   DEFAULT_DEFAULT_TIMEZONE,
   DEFAULT_INTROSPECTION
 } from "./data-cube/data-cube";
-
-export const DIMENSION = {
-  name: {
-    label: "Name (you won't be able to change this later)",
-    description: `The name of the dimension. This does not have to correspond to the
-      attribute name (but the auto generated dimensions do). This should be a
-      URL safe string. Changing this property will break any URLs that someone
-      might have generated that include this dimension, that's why you can only
-      set it once`
-  },
-  title: {
-    label: "Title",
-    description: `The title for this dimension in the UI. Can be anything and is safe
-    to change at any time.`
-  },
-  kind: {
-    label: "Kind",
-    description: "The dimension's kind"
-  },
-  formula: {
-    label: "Formula",
-    description: `The formula for this dimension. By default it is <code>$name</code> where <em>name</em> is
-      the name of the dimension. You can create derived dimensions by using
-      non-trivial formulas.`
-  },
-  url: {
-    label: "URL",
-    description: `A url associated with the dimension, with optional token '%s' that
-    is replaced by the dimension value to generate a link specific to each value.`
-  },
-  granularities: {
-    label: "Granularities",
-    description: "A set of exactly 5 granularities that you want to be available for bucketing."
-  },
-  bucketingStrategy: {
-    label: "Default Bucketing",
-    description: "Specify whether or not the dimension should be bucketed by default."
-  }
-};
-
-export const COLLECTION = {
-  name: {
-    label: "Name (you won't be able to change this later)",
-    description: `The name of the collection. This should be a
-      URL safe string. Changing this property will break any URLs that someone
-      might have generated that include this dimension, that's why you can only
-      set it once`
-  },
-  title: {
-    label: "Title",
-    description: `The title for this collection in the UI. Can be anything and is safe
-    to change at any time.`
-  },
-  description: {
-    label: "Description",
-    description: "The description of the collection (shown the home view)."
-  }
-};
-
-export const COLLECTION_ITEM = {
-  name: {
-    label: "Name (you won't be able to change this later)",
-    description: `The name of the collection item. This should be a
-      URL safe string. Changing this property will break any URLs that someone
-      might have generated that include this dimension, that's why you can only
-      set it once`
-  },
-  title: {
-    label: "Title",
-    description: `The title for this item in the UI. Can be anything and is safe
-    to change at any time.`
-  },
-  description: {
-    label: "Description",
-    description: `The description of the collection item (shown in both the
-    overview and the detailed view.`
-  }
-};
-
-export const MEASURE = {
-  name: {
-    label: "Name (you won't be able to change this later)",
-    description: `The name of the measure. This should be a
-      URL safe string. Changing this property will break any URLs that someone
-      might have generated that include this dimension, that's why you can only
-      set it once`
-  },
-  title: {
-    label: "Title",
-    description: `The title for this measure in the UI. Can be anything and is safe
-    to change at any time.`
-  },
-  units: {
-    label: "Units",
-    description: "The units for this measure. To be shown alongside the title."
-  },
-  formula: {
-    label: "Formula",
-    description: `The <a href="http://plywood.imply.io/expressions" target="_blank">
-      Plywood expression</a> for this dimension. By default it is
-      <code>$main.sum($name)</code> where <em>name</em> is the name of the measure.`
-  }
-};
 
 export const CUSTOMIZATION = {
   customLogoSvg: {
@@ -230,18 +126,6 @@ export const CLUSTER = {
   password: {
     label: "Password",
     description: "The password to use with the provided user."
-  }
-};
-
-export const GENERAL = {
-  "customization.title": {
-    label: "Title",
-    description: "What will appear as the tab's title in your browser. Use <code>%v</code> as a placeholder for Turnilo's version."
-  },
-  "customization.timezones": {
-    label: "Timezones",
-    description: `You can customize the timezones that appear in the header bar
-      dropdown by providing an array of timezone strings.`
   }
 };
 

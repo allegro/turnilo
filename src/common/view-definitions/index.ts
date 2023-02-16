@@ -45,7 +45,6 @@ export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDe
 };
 
 export const defaultDefinitionConverter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
-export const defaultDefinitionUrlEncoder = definitionUrlEncoders[DEFAULT_VIEW_DEFINITION_VERSION];
 
 export const version2Visualizations = new Set<Visualization>([
   "totals",

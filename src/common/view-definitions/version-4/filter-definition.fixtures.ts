@@ -61,7 +61,7 @@ export function timeRangeFilterDefinition(ref: string, start: string, end: strin
   };
 }
 
-export function latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
+export function latestTimeFilterDefinition(ref: string, multiple: number, duration: string): TimeFilterClauseDefinition {
   return {
     ref,
     type: FilterType.time,

@@ -23,7 +23,6 @@ import { DEFAULT_COLORS, DEFAULT_MAIN_COLOR, DEFAULT_SERIES_COLORS } from "../co
 import * as localeModule from "../locale/locale";
 import * as urlShortenerModule from "../url-shortener/url-shortener";
 import {
-  Customization,
   CustomizationJS,
   DEFAULT_TIMEZONES,
   DEFAULT_TITLE,
