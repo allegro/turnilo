@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TooltipWithBounds } from "@vx/tooltip";
+import { TooltipWithBounds } from "@visx/tooltip";
 import { Datum } from "plywood";
 import React from "react";
 import { Essence } from "../../../common/models/essence/essence";

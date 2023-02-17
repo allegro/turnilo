@@ -22,6 +22,7 @@ import { serialize as serializeDataCube } from "../../../client/deserializers/da
 import { thread } from "../../utils/functional/functional";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
+import { formatUrlSafeDateTime } from "../../utils/time/time";
 import { MANIFESTS } from "../../visualization-manifests";
 import { ClientAppSettings } from "../app-settings/app-settings";
 import {
@@ -29,7 +30,8 @@ import {
   getDefaultFilter,
   getDefaultSeries,
   getDefaultSplits,
-  getMaxTime, getTimeDimension
+  getMaxTime,
+  getTimeDimension
 } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
@@ -655,5 +657,13 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public getPinnedSortSeries(): ConcreteSeries {
     return this.findConcreteSeries(this.pinnedSort);
+  }
+
+  public description(timekeeper: Timekeeper): string {
+    const timeFilter = this.currentTimeFilter(timekeeper);
+    const { start, end } = timeFilter.values.first();
+    const timezone = this.timezone;
+
+    return `${this.dataCube.name}_${formatUrlSafeDateTime(start, timezone)}_${formatUrlSafeDateTime(end, timezone)}`;
   }
 }

@@ -16,7 +16,7 @@
 
 import { TimeShift } from "../../../models/time-shift/time-shift";
 import { mockEssence } from "../../test/essence.fixture";
-import { mockViewDefinition } from "../view-definition-4.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("TimeShift", () => {

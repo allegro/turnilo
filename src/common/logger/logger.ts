@@ -19,7 +19,7 @@ import { noop, Unary } from "../utils/functional/functional";
 import { isNil } from "../utils/general/general";
 import { isoNow } from "../utils/time/time";
 
-type LogFn = (msg: string, extra?: Record<string, string>) => void;
+type LogFn = (msg: string, extra?: Record<string, unknown>) => void;
 type LogLevel = "INFO" | "WARN" | "ERROR";
 
 export function errorToMessage(error: Error): string {
@@ -41,7 +41,7 @@ class JSONLogger implements Logger {
   constructor(private logger = "turnilo") {
   }
 
-  private logMessage(level: LogLevel, message: string, extra: Record<string, string> = {}) {
+  private logMessage(level: LogLevel, message: string, extra: Record<string, unknown> = {}) {
     console.log(JSON.stringify({
       message,
       level,
@@ -51,15 +51,15 @@ class JSONLogger implements Logger {
     }));
   }
 
-  log(message: string, extra: Record<string, string> = {}) {
+  log(message: string, extra: Record<string, unknown> = {}) {
     this.logMessage("INFO", message, extra);
   }
 
-  error(message: string, extra: Record<string, string> = {}) {
+  error(message: string, extra: Record<string, unknown> = {}) {
     this.logMessage("ERROR", message, extra);
   }
 
-  warn(message: string, extra: Record<string, string> = {}) {
+  warn(message: string, extra: Record<string, unknown> = {}) {
     this.logMessage("WARN", message, extra);
   }
 

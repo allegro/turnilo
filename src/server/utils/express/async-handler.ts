@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NextFunction, Request, RequestHandler, Response } from "express";
 
-import React from "react";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
-import { GlobalEventListener } from "./global-event-listener";
-
-describe("GlobalEventListener", () => {
-  it("adds the correct class", () => {
-    const renderedComponent = renderIntoDocument(
-      <GlobalEventListener
-
-      />
-    );
-  });
-
-});
+// NOTE: Express 4.x can't handle rejected promises in handlers, so we need to wrap it in this function
+export const asyncHandler = (fn: RequestHandler) =>
+  (req: Request, res: Response, next: NextFunction) =>
+    Promise.resolve(fn(req, res, next)).catch(next);

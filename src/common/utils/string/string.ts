@@ -15,34 +15,6 @@
  * limitations under the License.
  */
 
-// Shamelessly stolen from http://stackoverflow.com/a/10006499
-// (well, traded for an upvote)
-export const IP_REGEX = /^(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))$/;
-
-export const NUM_REGEX = /^\d+$/;
-
 export function firstUp(str: string): string {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : undefined;
-}
-
-export function pad(n: number, padding = 3): string {
-  let str = String(n);
-
-  if (str.length > padding) return str;
-
-  while (str.length < padding) str = "0" + str;
-
-  return str;
-}
-
-export function generateUniqueName(prefix: string, isUnique: (name: string) => boolean) {
-  let i = 0;
-
-  let name = prefix + pad(i);
-
-  while (!isUnique(name)) {
-    name = prefix + pad(++i);
-  }
-
-  return name;
 }

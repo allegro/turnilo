@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +14,18 @@
  * limitations under the License.
  */
 
-import { Splits } from "./splits";
+export class AccessDeniedError extends Error {
+  code = 403;
+}
 
-describe("Splits", () => {
-});
+export class InvalidRequestError extends Error {
+  code = 400;
+}
+
+export function isAccessDeniedError(e: Error): e is AccessDeniedError {
+  return e instanceof AccessDeniedError;
+}
+
+export function isInvalidRequestError(e: Error): e is InvalidRequestError {
+  return e instanceof InvalidRequestError;
+}

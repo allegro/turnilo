@@ -15,16 +15,16 @@
  */
 
 import { Set } from "immutable";
-import { $, Dataset } from "plywood";
+import { Dataset } from "plywood";
 import React from "react";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { BooleanFilterClause, FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../../common/models/stage/stage";
-import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { STRINGS } from "../../../config/constants";
+import { ApiContext, ApiContextValue } from "../../../views/cube-view/api-context";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
 import { Button } from "../../button/button";
 import { Checkbox } from "../../checkbox/checkbox";
@@ -36,7 +36,6 @@ interface BooleanFilterMenuProps {
   dimension: Dimension;
   saveClause: Unary<FilterClause, void>;
   essence: Essence;
-  timekeeper: Timekeeper;
   onClose: Fn;
   containerStage?: Stage;
   openOn: Element;
@@ -52,6 +51,9 @@ interface BooleanFilterMenuState {
 }
 
 export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, BooleanFilterMenuState> {
+  static contextType = ApiContext;
+
+  context: ApiContextValue;
 
   state = this.initialValues();
 
@@ -72,16 +74,11 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
   }
 
   fetchData() {
-    const { essence, timekeeper, dimension } = this.props;
-    const { dataCube } = essence;
-    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
-
-    const query = $("main")
-      .filter(filterExpression)
-      .split(dimension.expression, dimension.name);
+    const { booleanFilterQuery } = this.context;
+    const { essence, dimension } = this.props;
 
     this.setState({ loading: true });
-    dataCube.executor(query, { timezone: essence.timezone })
+    booleanFilterQuery(essence, dimension)
       .then(
         (dataset: Dataset) => {
           this.setState({
