@@ -39,6 +39,10 @@ export class MeasureFixtures {
     return createMeasure("avg_delta", $("main").average($("delta")));
   }
 
+  static histogram(): Measure {
+    return createMeasure("histogram", $("main").quantile($("create_to_collect_duration_histogram"), 0.95, "k=128"));
+  }
+
   static wikiCountJS(): MeasureJS {
     return {
       name: "count",

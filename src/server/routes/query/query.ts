@@ -15,6 +15,7 @@
  */
 
 import { NextFunction, Request, Response, Router } from "express";
+import { Logger } from "../../../common/logger/logger";
 import { QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -40,6 +41,7 @@ interface QueryRouterContext {
   essence: Essence;
   decorator: AppliedQueryDecorator;
   timekeeper: Timekeeper;
+  logger: Logger;
 }
 
 export type QueryRouterRequest = Request & {
@@ -47,6 +49,7 @@ export type QueryRouterRequest = Request & {
 };
 
 export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSources" | "appSettings" | "anchorPath" | "getTimekeeper">) {
+  const logger = settings.logger;
 
   const router = Router();
 
@@ -57,6 +60,7 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
     const decorator = getQueryDecorator(req, dataCube, settings);
 
     (req as QueryRouterRequest).context = {
+      logger,
       dataCube,
       essence,
       decorator,
@@ -79,7 +83,7 @@ export function queryRouter(settings: Pick<SettingsManager, "logger" | "getSourc
   router.post("/pinboard", asyncHandler(pinboardRoute));
 
   router.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    handleRequestErrors(error, res, settings.logger);
+    handleRequestErrors(error, res, logger);
   });
 
   return router;
