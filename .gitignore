@@ -6,3 +6,4 @@
 *.tgz
 config.yml
 config.yaml
+/cypress/screenshots/*
