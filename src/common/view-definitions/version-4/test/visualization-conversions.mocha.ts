@@ -19,7 +19,7 @@ import { ImmutableRecord } from "../../../utils/immutable-utils/immutable-utils"
 import { TABLE_MANIFEST } from "../../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../../visualization-manifests/totals/totals";
 import { mockEssence } from "../../test/essence.fixture";
-import { mockViewDefinition } from "../view-definition-4.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("Visualization", () => {
@@ -38,7 +38,7 @@ describe("Visualization", () => {
   });
 
   describe("Table", () => {
-    const manifest = TABLE_MANIFEST;
+    const manifest = TABLE_MANIFEST as any as VisualizationManifest;
 
     it("reads table visualization and use default settings", () => {
       assertConversionToEssence(

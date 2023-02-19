@@ -16,7 +16,7 @@
 
 import { assertEqlEssence } from "../../test/assertions";
 import { mockEssence } from "../../test/essence.fixture";
-import { mockViewDefinition } from "../view-definition-4.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { ViewDefinitionConverter4 } from "../view-definition-converter-4";
 import { toEssence } from "./utils";
 

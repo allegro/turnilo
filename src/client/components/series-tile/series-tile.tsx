@@ -22,11 +22,9 @@ import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
 import { SeriesMenu } from "../series-menu/series-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
-import { SERIES_CLASS_NAME } from "./series-tiles";
 
 interface SeriesTileProps {
   item: ConcreteSeries;

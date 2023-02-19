@@ -32,14 +32,14 @@ import { ManualFallback } from "../../../components/manual-fallback/manual-fallb
 import { SeriesTilesRow } from "../../../components/series-tile/series-tiles-row";
 import {
   DefaultSplitTilesRow,
-  SplitTilesRow,
   SplitTilesRowBaseProps
 } from "../../../components/split-tile/split-tiles-row";
 import { VisSelector } from "../../../components/vis-selector/vis-selector";
 import VisualizationControlsLayout from "../../../components/visualization-controls-layout/visualization-controls-layout";
 import { classNames } from "../../../utils/dom/dom";
-import { DataProvider, QueryFactory } from "../../../visualizations/data-provider/data-provider";
+import { DataProvider } from "../../../visualizations/data-provider/data-provider";
 import { HighlightController } from "../../../visualizations/highlight-controller/highlight-controller";
+import { ApiContext } from "../api-context";
 import { PartialFilter, PartialSeries } from "../partial-tiles-provider";
 
 export interface VisualizationControlsBaseProps {
@@ -109,7 +109,6 @@ interface ChartPanelProps {
   clicker: Clicker;
   stage: Stage;
   chartComponent: React.ComponentType<ChartProps>;
-  queryFactory: QueryFactory;
   timekeeper: Timekeeper;
   lastRefreshRequestTimestamp: number;
   dragEnter: Unary<React.DragEvent<HTMLElement>, void>;
@@ -122,7 +121,6 @@ interface ChartPanelProps {
 export const ChartPanel: React.FunctionComponent<ChartPanelProps> = props => {
   const {
     chartComponent,
-    queryFactory,
     essence,
     clicker,
     timekeeper,
@@ -141,7 +139,6 @@ export const ChartPanel: React.FunctionComponent<ChartPanelProps> = props => {
     <div className="visualization">
       <ChartWrapper
         chartComponent={chartComponent}
-        queryFactory={queryFactory}
         essence={essence}
         clicker={clicker}
         timekeeper={timekeeper}
@@ -168,13 +165,11 @@ type ChartWrapperProps = Pick<ChartPanelProps,
   "clicker" |
   "stage" |
   "lastRefreshRequestTimestamp" |
-  "queryFactory" |
   "chartComponent">;
 
 function ChartWrapper(props: ChartWrapperProps) {
   const {
     chartComponent: ChartComponent,
-    queryFactory,
     essence,
     clicker,
     timekeeper,
@@ -187,22 +182,26 @@ function ChartWrapper(props: ChartWrapperProps) {
 
   return <HighlightController essence={essence} clicker={clicker}>
     {highlightProps =>
-      <DataProvider
-        refreshRequestTimestamp={lastRefreshRequestTimestamp}
-        queryFactory={queryFactory}
-        essence={essence}
-        timekeeper={timekeeper}
-        stage={stage}>
-        {data => <div className={classNames("visualization-root", essence.visualization.name)}>
-          <ChartComponent
-            data={data}
-            clicker={clicker}
+      <ApiContext.Consumer>
+        {({ visualizationQuery }) =>
+          <DataProvider
+            refreshRequestTimestamp={lastRefreshRequestTimestamp}
+            query={visualizationQuery}
             essence={essence}
             timekeeper={timekeeper}
-            stage={stage}
-            {...highlightProps} />
-        </div>}
-      </DataProvider>}
+            stage={stage}>
+            {data => <div className={classNames("visualization-root", essence.visualization.name)}>
+              <ChartComponent
+                data={data}
+                clicker={clicker}
+                essence={essence}
+                timekeeper={timekeeper}
+                stage={stage}
+                {...highlightProps} />
+            </div>}
+          </DataProvider>}
+      </ApiContext.Consumer>
+    }
   </HighlightController>;
 }
 

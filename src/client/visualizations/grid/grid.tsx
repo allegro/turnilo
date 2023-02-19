@@ -22,7 +22,6 @@ import { withProps } from "../../utils/react/with-props";
 import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import "./grid.scss";
 import { InteractionController } from "./interaction-controller";
-import makeQuery from "./make-query";
 import { ScrolledGrid } from "./scrolled-grid";
 import { GridVisualizationControls } from "./visualization-controls";
 
@@ -81,7 +80,6 @@ export default class GridVisualization extends React.Component<VisualizationProp
     return <React.Fragment>
       <GridVisualizationControls {...this.props} />
       <ChartPanel {...this.props}
-                  queryFactory={makeQuery}
                   chartComponent={withProps(Grid, { segmentWidth, setSegmentWidth: this.setSegmentWidth })}/>
     </React.Fragment>;
   }

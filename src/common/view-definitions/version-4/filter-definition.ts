@@ -16,7 +16,7 @@
 
 import { Duration } from "chronoshift";
 import { List, Set } from "immutable";
-import { ClientDataCube } from "../../models/data-cube/data-cube";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
 import { findDimensionByName } from "../../models/dimension/dimensions";
@@ -55,6 +55,7 @@ export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition
   type: FilterType.string;
   action: StringFilterAction;
   not: boolean;
+  ignoreCase: boolean;
   values: string[];
 }
 
@@ -103,7 +104,7 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClau
 };
 
 const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition, StringFilterClause> = {
-  toFilterClause({ action, not, values }: StringFilterClauseDefinition, dimension: Dimension): StringFilterClause {
+  toFilterClause({ action, not, values, ignoreCase }: StringFilterClauseDefinition, dimension: Dimension): StringFilterClause {
     if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
     }
@@ -119,17 +120,19 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       reference: name,
       action,
       not,
+      ignoreCase,
       values: Set(values)
     });
   },
 
-  fromFilterClause({ action, reference, not, values }: StringFilterClause): StringFilterClauseDefinition {
+  fromFilterClause({ action, reference, not, values, ignoreCase }: StringFilterClause): StringFilterClauseDefinition {
     return {
       type: FilterType.string,
       ref: reference,
       action,
       values: values.toArray(),
-      not
+      not,
+      ignoreCase
     };
   }
 };
@@ -218,13 +221,13 @@ const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion
 };
 
 export interface FilterDefinitionConverter {
-  toFilterClause(filter: FilterClauseDefinition, dataCube: ClientDataCube): FilterClause;
+  toFilterClause(filter: FilterClauseDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): FilterClause;
 
   fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
 }
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
-  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: ClientDataCube): FilterClause {
+  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): FilterClause {
     if (clauseDefinition.ref == null) {
       throw new Error("Dimension name cannot be empty.");
     }

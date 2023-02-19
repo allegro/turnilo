@@ -17,7 +17,15 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "plywood";
+import {
+  ContainsExpression,
+  Datum,
+  Expression,
+  NumberRange as PlywoodNumberRange,
+  r,
+  Set as PlywoodSet,
+  TimeRange
+} from "plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
@@ -91,6 +99,7 @@ interface StringFilterDefinition extends FilterDefinition {
   not: boolean;
   action: StringFilterAction;
   values: ImmutableSet<string>;
+  ignoreCase: boolean;
 }
 
 const defaultStringFilter: StringFilterDefinition = {
@@ -98,7 +107,8 @@ const defaultStringFilter: StringFilterDefinition = {
   type: FilterTypes.STRING,
   not: false,
   action: StringFilterAction.CONTAINS,
-  values: ImmutableSet([])
+  values: ImmutableSet([]),
+  ignoreCase: false
 };
 
 export class StringFilterClause extends Record<StringFilterDefinition>(defaultStringFilter) {
@@ -186,11 +196,11 @@ export function toExpression(clause: FilterClause, { expression }: Dimension): E
       return not ? numExp.not() : numExp;
     }
     case FilterTypes.STRING: {
-      const { not, action, values } = clause as StringFilterClause;
+      const { not, action, values, ignoreCase } = clause as StringFilterClause;
       let stringExp: Expression = null;
       switch (action) {
         case StringFilterAction.CONTAINS:
-          stringExp = expression.contains(r(values.first()));
+          stringExp = expression.contains(r(values.first()), ignoreCase ? ContainsExpression.IGNORE_CASE : ContainsExpression.NORMAL);
           break;
         case StringFilterAction.IN:
           stringExp = expression.overlap(r(values.toArray()));
@@ -256,4 +266,12 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
       });
     }
   }
+}
+
+export function isStringFilterClause(clause: FilterClause): clause is StringFilterClause {
+  return clause.type === FilterTypes.STRING;
+}
+
+export function isBooleanFilterClause(clause: FilterClause): clause is BooleanFilterClause {
+  return clause.type === FilterTypes.BOOLEAN;
 }

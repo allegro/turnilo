@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import * as customizationModule from "../customization/customization";
 import * as oauthModule from "../oauth/oauth";
-import { AppSettings, fromConfig, serialize } from "./app-settings";
+import { fromConfig, serialize } from "./app-settings";
 import { appSettings } from "./app-settings.fixtures";
 
 describe("AppSettings", () => {
