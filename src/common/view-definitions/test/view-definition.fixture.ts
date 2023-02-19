@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,16 @@
  * limitations under the License.
  */
 
-export enum Period {PREVIOUS = "previous__", CURRENT = ""}
+import { ViewDefinition4 } from "../version-4/view-definition-4";
+import { total } from "../version-4/view-definition-4.fixture";
+import { measures } from "./measure";
+
+const defaultSeries = measures.slice(0, 2).map(({ name }) => ({ reference: name }));
+
+export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
+  return {
+    ...total,
+    series: defaultSeries,
+    ...opts
+  };
+}

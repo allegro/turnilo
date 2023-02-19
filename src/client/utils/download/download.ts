@@ -19,7 +19,6 @@ import * as fileSaver from "file-saver";
 import { Dataset, TabulatorOptions } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { formatUrlSafeDateTime } from "../../../common/utils/time/time";
 import tabularOptions from "../tabular-options/tabular-options";
 
 export type FileFormat = "csv" | "tsv";
@@ -61,9 +60,5 @@ export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, op
 }
 
 export function fileNameBase(essence: Essence, timekeeper: Timekeeper): string {
-  const timeFilter = essence.currentTimeFilter(timekeeper);
-  const { start, end } = timeFilter.values.first();
-  const timezone = essence.timezone;
-
-  return `${essence.dataCube.name}_${formatUrlSafeDateTime(start, timezone)}_${formatUrlSafeDateTime(end, timezone)}`;
+  return essence.description(timekeeper);
 }

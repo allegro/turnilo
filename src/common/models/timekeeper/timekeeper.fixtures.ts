@@ -28,4 +28,11 @@ export class TimekeeperFixtures {
   static fixed() {
     return Timekeeper.fromJS(TimekeeperFixtures.fixedJS());
   }
+
+  static wiki() {
+    return Timekeeper.fromJS({
+      timeTags: {},
+      nowOverride: new Date("2015-09-13T00:00:00.000Z")
+    });
+  }
 }

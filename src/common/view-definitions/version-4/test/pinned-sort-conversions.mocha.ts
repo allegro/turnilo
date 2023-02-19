@@ -17,8 +17,8 @@
 import { EMPTY_SERIES, SeriesList } from "../../../models/series-list/series-list";
 import { measureSeries, quantileSeries } from "../../../models/series/series.fixtures";
 import { mockEssence } from "../../test/essence.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { fromReference, quantileSeriesDefinition } from "../series-definition.fixtures";
-import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("PinnedSort", () => {

@@ -17,22 +17,25 @@
 import { Request } from "express";
 import * as plywood from "plywood";
 import { isFunction } from "util";
-import { Logger } from "../../../common/logger/logger";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { QueryDecoratorOptions } from "../../../common/models/query-decorator/query-decorator";
-import { Binary, identity, Quaternary } from "../../../common/utils/functional/functional";
+import { Binary, identity, Quaternary, Unary } from "../../../common/utils/functional/functional";
 import { loadModule } from "../module-loader/module-loader";
+import { SettingsManager } from "../settings-manager/settings-manager";
 
 type Expression = plywood.Expression;
 
-export type QueryDecorator = Binary<Expression, Request, Expression>;
+type RawQueryDecorator = Binary<Expression, Request, Expression>;
+
 type QueryDecoratorWithOptions = Quaternary<Expression, Request, QueryDecoratorOptions, typeof plywood, Expression>;
 
 export interface QueryDecoratorModule {
-  decorator: QueryDecorator;
+  decorator: RawQueryDecorator;
 }
 
-export function loadQueryDecorator(dataCube: DataCube, anchorPath: string, logger: Logger): QueryDecorator {
+type Settings = Pick<SettingsManager, "logger" | "anchorPath">;
+
+function loadQueryDecorator(dataCube: DataCube, { anchorPath, logger }: Settings): RawQueryDecorator {
   const definition = dataCube.queryDecorator;
   if (!definition) return identity;
   try {
@@ -48,4 +51,12 @@ export function loadQueryDecorator(dataCube: DataCube, anchorPath: string, logge
     logger.warn(`Couldn't load query decorator for ${dataCube.name}. ${e.message}`);
     return identity;
   }
+}
+
+export type AppliedQueryDecorator = Unary<Expression, Expression>;
+
+// TODO: Can we cache somewhere these decorators? Inside SettingsManager perhaps?
+export function getQueryDecorator(req: Request, dataCube: DataCube, settings: Settings): AppliedQueryDecorator {
+  const decorator = loadQueryDecorator(dataCube, settings);
+  return (e: Expression) => decorator(e, req);
 }

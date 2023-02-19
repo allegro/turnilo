@@ -70,21 +70,6 @@ export function serialize(measure: Measure): SerializedMeasure {
   };
 }
 
-export function deserialize(measure: SerializedMeasure): ClientMeasure {
-  const { description, format, expression, lowerIsBetter, name, title, transformation, units } = measure;
-
-  return {
-    description,
-    expression: Expression.fromJS(expression),
-    format,
-    lowerIsBetter,
-    name,
-    title,
-    transformation,
-    units
-  };
-}
-
 interface LegacyMeasureJS {
   expression?: string;
 }

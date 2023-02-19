@@ -17,12 +17,13 @@
 
 import { isDate } from "chronoshift";
 import { List } from "immutable";
-import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
+import { AttributeInfo, Dataset, Datum, Expression } from "plywood";
 import React from "react";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Locale } from "../../../common/models/locale/locale";
+import { LIMIT } from "../../../common/models/raw-data-modal/raw-data-modal";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatFilterClause } from "../../../common/utils/formatter/formatter";
@@ -36,11 +37,11 @@ import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { download, FileFormat, fileNameBase } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import "./raw-data-modal.scss";
 
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
-const LIMIT = 100;
 const TIME_COL_WIDTH = 180;
 const BOOLEAN_COL_WIDTH = 100;
 const NUMBER_COL_WIDTH = 100;
@@ -83,7 +84,10 @@ function classFromAttribute(attribute: AttributeInfo): string {
 }
 
 export class RawDataModal extends React.Component<RawDataModalProps, RawDataModalState> {
+  static contextType = ApiContext;
+
   public mounted: boolean;
+  context: ApiContextValue;
 
   constructor(props: RawDataModalProps) {
     super(props);
@@ -100,20 +104,18 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   componentDidMount() {
     this.mounted = true;
-    const { essence, timekeeper } = this.props;
-    this.fetchData(essence, timekeeper);
+    const { essence } = this.props;
+    this.fetchData(essence);
   }
 
   componentWillUnmount() {
     this.mounted = false;
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    const { dataCube } = essence;
-    const $main = $("main");
-    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube)).limit(LIMIT);
+  fetchData(essence: Essence): void {
+    const { rawDataQuery } = this.context;
     this.setState({ loading: true });
-    dataCube.executor(query, { timezone: essence.timezone })
+    rawDataQuery(essence)
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;

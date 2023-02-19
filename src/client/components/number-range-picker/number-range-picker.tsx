@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-import { $, Dataset, ply } from "plywood";
+import { Dataset } from "plywood";
 import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getNumberOfWholeDigits, isTruthy, toSignificantDigits } from "../../../common/utils/general/general";
 import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
 import { RangeHandle } from "../range-handle/range-handle";
@@ -72,6 +73,9 @@ export interface NumberRangePickerState {
 }
 
 export class NumberRangePicker extends React.Component<NumberRangePickerProps, NumberRangePickerState> {
+  static contextType = ApiContext;
+
+  context: ApiContextValue;
   public mounted: boolean;
   private picker = React.createRef<HTMLDivElement>();
 
@@ -87,19 +91,12 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
-    const { dataCube } = essence;
-    const filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
-    const $main = $("main");
-    const query = ply()
-      .apply("main", $main.filter(filterExpression))
-      .apply("Min", $main.min($(dimension.name)))
-      .apply("Max", $main.max($(dimension.name)));
-
+    const { numberFilterQuery } = this.context;
     this.setState({
       loading: true
     });
 
-    dataCube.executor(query)
+    numberFilterQuery(essence, dimension)
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
