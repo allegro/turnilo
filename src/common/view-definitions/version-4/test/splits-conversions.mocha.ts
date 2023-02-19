@@ -23,9 +23,9 @@ import { Splits } from "../../../models/splits/splits";
 import { TABLE_MANIFEST } from "../../../visualization-manifests/table/table";
 import { assertEqlEssenceWithoutVisResolve } from "../../test/assertions";
 import { mockEssence } from "../../test/essence.fixture";
+import { mockViewDefinition } from "../../test/view-definition.fixture";
 import { SplitDefinition } from "../split-definition";
 import { numberSplitDefinition, stringSplitDefinition, timeSplitDefinition } from "../split-definition.fixtures";
-import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence, toEssence } from "./utils";
 
 describe("Splits", () => {

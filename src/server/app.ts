@@ -27,6 +27,7 @@ import { livenessRouter } from "./routes/liveness/liveness";
 import { mkurlRouter } from "./routes/mkurl/mkurl";
 import { plyqlRouter } from "./routes/plyql/plyql";
 import { plywoodRouter } from "./routes/plywood/plywood";
+import { queryRouter } from "./routes/query/query";
 import { readinessRouter } from "./routes/readiness/readiness";
 import { shortenRouter } from "./routes/shorten/shorten";
 import { sourcesRouter } from "./routes/sources/sources";
@@ -149,6 +150,7 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   attachRouter("/plywood", plywoodRouter(settingsManager));
   attachRouter("/plyql", plyqlRouter(settingsManager));
   attachRouter("/mkurl", mkurlRouter(settingsManager));
+  attachRouter("/query", queryRouter(settingsManager));
   attachRouter("/shorten", shortenRouter(settingsManager, isTrustedProxy));
 
   attachRouter("/", turniloRouter(settingsManager, version));

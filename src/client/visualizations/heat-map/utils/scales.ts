@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { scaleLinear } from "@vx/scale";
+import { scaleLinear } from "@visx/scale";
 import * as d3 from "d3";
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
@@ -58,7 +58,7 @@ export default function scales(dataset: Datum[], tileSize: number, mainColor: st
   const colorMin = d3.min(dataset, d => d3.min(nestedDataset(d), select));
   const colorMax = d3.max(dataset, d => d3.max(nestedDataset(d), select));
 
-  const color = scaleLinear<string, string>({
+  const color = scaleLinear<string>({
     range: [white, mainColor],
     domain: [Math.min(colorMin, 0), colorMax]
   });

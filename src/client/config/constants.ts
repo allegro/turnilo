@@ -17,11 +17,7 @@
 
 import { FileFormat } from "../utils/download/download";
 
-export const TITLE_HEIGHT = 36;
-
 // Core = filter + split
-export const DIMENSION_HEIGHT = 27;
-export const MEASURE_HEIGHT = 27;
 export const CORE_ITEM_WIDTH = 192;
 export const CORE_ITEM_GAP = 8;
 export const BAR_TITLE_WIDTH = 66;
@@ -166,15 +162,6 @@ export const STRINGS: any = {
   displayViewDefinition: "Display view definition",
   viewDefinition: "View definition",
   yes: "Yes"
-};
-
-// Data cubes introspection strategies
-export const DATA_CUBES_STRATEGIES_LABELS = {
-  "none": "None",
-  "no-autofill": "No autofill",
-  "autofill-dimensions-only": "Autofill dimensions only",
-  "autofill-measures-only": "Autofill measures only",
-  "autofill-all": "Autofill all"
 };
 
 export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [

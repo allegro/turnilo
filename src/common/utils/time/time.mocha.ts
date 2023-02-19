@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { tz } from "moment-timezone";
-import { datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, scaleTicksFormat, scaleTicksFormatter } from "./time";
+import { datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, scaleTicksFormat } from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {

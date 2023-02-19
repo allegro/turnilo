@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { Datum, NumberRange, PlywoodValue, TimeRange } from "plywood";
+import { Datum, NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";

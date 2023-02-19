@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { HeatmapRect } from "@vx/heatmap";
+import { HeatmapRect } from "@visx/heatmap";
 import { Dataset, Datum } from "plywood";
 import React from "react";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";

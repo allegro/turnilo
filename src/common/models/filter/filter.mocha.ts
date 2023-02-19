@@ -20,7 +20,7 @@ import { Set } from "immutable";
 import { $ } from "plywood";
 import { wikiClientDataCube } from "../data-cube/data-cube.fixtures";
 import { StringFilterAction, StringFilterClause } from "../filter-clause/filter-clause";
-import { EMPTY_FILTER, Filter } from "./filter";
+import { EMPTY_FILTER } from "./filter";
 
 describe("Filter", () => {
   it("works in empty case", () => {

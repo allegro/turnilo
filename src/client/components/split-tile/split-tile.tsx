@@ -44,8 +44,6 @@ interface SplitTileProps extends SplitTileBaseProps {
   splitMenuComponent: React.ComponentType<SplitMenuProps>;
 }
 
-export const SPLIT_CLASS_NAME = "split";
-
 export const DefaultSplitTile: React.FunctionComponent<SplitTileBaseProps> = props => {
   return <SplitTile {...props} splitMenuComponent={SplitMenu} />;
 };

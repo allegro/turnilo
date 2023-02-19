@@ -16,6 +16,9 @@
 import { SortOn } from "../../../../common/models/sort-on/sort-on";
 import { PinboardTileProps, PinboardTileState } from "../pinboard-tile";
 
+// TODO: there's mismatch between this method and QueryParams.
+//  Of course here we should have more properties (timekeeper, refreshRequestTimestamp)
+//  but we should operate on the same source of truth (clause vs searchText)
 export function shouldFetchData(
   { essence, timekeeper, dimension, sortOn, refreshRequestTimestamp }: PinboardTileProps,
   previousProps: PinboardTileProps,
