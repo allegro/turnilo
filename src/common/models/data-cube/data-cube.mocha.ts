@@ -24,7 +24,7 @@ import { deduceAttributes } from "../../utils/external/datacube-to-external";
 import { Cluster, fromConfig as clusterFromConfig } from "../cluster/cluster";
 import { createDimension, DimensionJS, timeDimension } from "../dimension/dimension";
 import { allDimensions, fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
-import { DataCube, DataCubeJS, fromConfig } from "./data-cube";
+import { DataCubeJS, fromConfig } from "./data-cube";
 import { addAttributes } from "./queryable-data-cube";
 
 const logger = NOOP_LOGGER;

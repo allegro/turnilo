@@ -17,169 +17,81 @@
 
 import * as bodyParser from "body-parser";
 import express from "express";
-import { $ } from "plywood";
 import supertest from "supertest";
+import { NOOP_LOGGER } from "../../../common/logger/logger";
 import { appSettings } from "../../../common/models/app-settings/app-settings.fixtures";
 import { wikiSourcesWithExecutor } from "../../../common/models/sources/sources.fixtures";
-import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
+import {
+  ViewDefinitionConverter2Fixtures
+} from "../../../common/view-definitions/version-2/view-definition-converter-2.fixtures";
 import { mkurlRouter } from "./mkurl";
-
-const mkurlPath = "/mkurl";
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use(mkurlPath, mkurlRouter({
+app.use("/", mkurlRouter({
   appSettings,
-  getSources: () => Promise.resolve(wikiSourcesWithExecutor)
+  getSources: () => Promise.resolve(wikiSourcesWithExecutor),
+  logger: NOOP_LOGGER
 }));
 
 describe("mkurl router", () => {
-  it("gets a simple url back", (testComplete: any) => {
+  it("should require dataCube", (testComplete: any) => {
     supertest(app)
-      .post(mkurlPath)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({})
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "must have a dataCube" })
+      .end(testComplete);
+  });
+
+  it("should validate viewDefinition", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({ dataCube: "wiki" })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "viewDefinition must be an object" })
+      .end(testComplete);
+  });
+
+  it("should require viewDefinitionVersion", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({ dataCube: "wiki", viewDefinition: {} })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "must have a viewDefinitionVersion" })
+      .end(testComplete);
+  });
+
+  it("should validate viewDefinitionVersion", (testComplete: any) => {
+    supertest(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send({ dataCube: "wiki", viewDefinition: {}, viewDefinitionVersion: "foobar" })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(400)
+      .expect({ error: "unsupported viewDefinitionVersion value" })
+      .end(testComplete);
+  });
+
+  it("should return 200 for valid parameters", (testComplete: any) => {
+    supertest(app)
+      .post("/")
       .set("Content-Type", "application/json")
       .send({
         dataCubeName: "wiki",
         viewDefinitionVersion: "2",
-        viewDefinition: {
-          visualization: "totals",
-          timezone: "Etc/UTC",
-          filter: $("time").overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z")),
-          pinnedDimensions: [],
-          singleMeasure: "count",
-          selectedMeasures: [],
-          splits: []
-        }
+        viewDefinition: ViewDefinitionConverter2Fixtures.fullTable()
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
-      .expect(
-        {
-          hash: "#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9" +
-            "AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTfU2ASnA5MjoKCT1oJACYABgBGAFYAWmCATkjQwKVg4Lxk1OCAOmT" +
-            "ggC11JmwAEyCwqNj4gGYklLTkrOS8gF8AXRbKKHMkNCNm9v0IL3xjEHsNfQKZKxAZTBhsAMoNTD1BdHwTCynChzheBfBEG" +
-            "CmQRoFNiWE4WHsT3pBzCGxsJkKAEQhhbCgsL6G7h6eLwYywCBBmcwCjSAA"
-        },
-        testComplete
-      );
+      .end(testComplete);
   });
-
-  it("gets a complex url back", (testComplete: any) => {
-    supertest(app)
-      .post(mkurlPath)
-      .set("Content-Type", "application/json")
-      .send({
-        dataCubeName: "wiki",
-        viewDefinitionVersion: "2",
-        viewDefinition: {
-          visualization: "table",
-          timezone: "Etc/UTC",
-          filter:
-            $("time")
-              .overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z"))
-              .and($("channel").overlap(["en"]))
-              .and($("isRobot").overlap([true]).not())
-              .and($("page").contains("Jeremy"))
-              .and($("userChars").match("^A$"))
-              .and($("commentLength").overlap([{ start: 3, end: null, type: "NUMBER_RANGE" }]))
-              .toJS(),
-          pinnedDimensions: ["channel", "namespace", "isRobot"],
-          pinnedSort: "delta",
-          singleMeasure: "delta",
-          selectedMeasures: ["delta", "count", "added"],
-          multiMeasureMode: true,
-          splits: [
-            {
-              expression: {
-                op: "ref",
-                name: "channel"
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              },
-              limitAction: {
-                op: "limit",
-                value: 50
-              }
-            },
-            {
-              expression: {
-                op: "ref",
-                name: "isRobot"
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              },
-              limitAction: {
-                op: "limit",
-                value: 5
-              }
-            },
-            {
-              expression: {
-                op: "ref",
-                name: "commentLength"
-              },
-              bucketAction: {
-                op: "numberBucket",
-                size: 10,
-                offset: 0
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              },
-              limitAction: {
-                op: "limit",
-                value: 5
-              }
-            },
-            {
-              expression: {
-                op: "ref",
-                name: "time"
-              },
-              bucketAction: {
-                op: "timeBucket",
-                duration: "PT1H"
-              },
-              sortAction: {
-                op: "sort",
-                expression: {
-                  op: "ref",
-                  name: "delta"
-                },
-                direction: "descending"
-              }
-            }
-
-          ]
-        }
-      })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(200)
-      .expect(
-        {
-          hash: "#wiki/" + UrlHashConverterFixtures.tableHashVersion4()
-        },
-        testComplete
-      );
-  });
-
 });

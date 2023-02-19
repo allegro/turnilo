@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Request } from "express";
+import { ViewDefinition } from "../../../common/view-definitions";
+import { InvalidRequestError } from "../request-errors/request-errors";
 
-export interface ListItem {
-  label: string;
-  value: any;
+export function parseViewDefinition(req: Request): ViewDefinition {
+  const { viewDefinition } = req.body;
+  if (typeof viewDefinition !== "object") {
+    throw new InvalidRequestError("viewDefinition must be an object");
+  }
+
+  return viewDefinition;
 }

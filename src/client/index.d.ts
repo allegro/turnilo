@@ -14,61 +14,6 @@
  * limitations under the License.
  */
 
-declare module "@vx/*";
-
-declare module "@vx/heatmap" {
-
-  import { ColorScale, LinearScale } from "./visualizations/heat-map/utils/scales";
-
-  interface Bin {
-    width: number;
-    height: number;
-    x: number;
-    y: number;
-    color: string;
-    opacity: number;
-    row: number;
-    column: number;
-  }
-
-  export interface HeatmapRectProps {
-    bins(rawDataPoint: any): any;
-    count(rawDataPoint: any): number;
-    data: any[];
-    xScale: LinearScale;
-    yScale: LinearScale;
-    colorScale: ColorScale;
-    binWidth: number;
-    binHeight: number;
-    gap: number;
-    children?: (heatmap: Bin[][]) => React.ReactNode;
-  }
-
-  export class HeatmapRect extends React.Component<HeatmapRectProps> {
-
-  }
-}
-
-declare module "@vx/scale" {
-
-  interface ScaleLinearOptions<Range, Output> {
-    range: [Range, Range];
-    domain: [number, number];
-  }
-
-  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => d3.ScaleLinear<Range, Output>;
-}
-
-declare module "@vx/tooltip" {
-  interface TooltipWithBoundsProps {
-    key: number | string;
-    top: number;
-    left: number;
-    children: React.ReactNode;
-  }
-  const TooltipWithBounds: React.ComponentType<TooltipWithBoundsProps>;
-}
-
 declare module "react-syntax-highlighter/src/light" {
   export { default } from "react-syntax-highlighter/dist/esm/light";
 }

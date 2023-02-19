@@ -38,10 +38,10 @@ import { FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { reportError } from "../../utils/error-reporter/error-reporter";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import { Button } from "../button/button";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
@@ -74,14 +74,10 @@ function toggle(set: Set<string>, value: string): Set<string> {
   return set.has(value) ? set.remove(value) : set.add(value);
 }
 
-interface QueryProps {
-  essence: Essence;
-  timekeeper: Timekeeper;
-  dimension: Dimension;
-  searchText: string;
-}
-
 export class SelectableStringFilterMenu extends React.Component<SelectableStringFilterMenuProps, SelectableStringFilterMenuState> {
+  static contextType = ApiContext;
+
+  context: ApiContextValue;
   private lastSearchText: string;
 
   state: SelectableStringFilterMenuState = {
@@ -109,14 +105,14 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   private sendQueryFilter(): Promise<DatasetRequest> {
     const { searchText } = this.state;
     this.lastSearchText = searchText;
-    return this.debouncedQueryFilter({ ...this.props, searchText });
+    return this.debouncedQueryFilter(this.props.essence, this.constructSearchTextClause());
   }
 
-  private queryFilter = (props: QueryProps): Promise<DatasetRequest> => {
-    const { essence, searchText } = props;
-    const query = stringFilterOptionsQuery({ ...props, limit: TOP_N + 1 });
+  private queryFilter = (essence: Essence, clause: StringFilterClause): Promise<DatasetRequest> => {
+    const { searchText } = this.state;
+    const { stringFilterQuery } = this.context;
 
-    return essence.dataCube.executor(query, { timezone: essence.timezone })
+    return stringFilterQuery(essence, clause)
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
@@ -163,7 +159,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   updateSearchText = (searchText: string) => this.setState({ searchText });
 
-  constructClause(): FilterClause | null {
+  constructClause(): StringFilterClause {
     const { dimension, filterMode } = this.props;
     const { selectedValues } = this.state;
     const { name } = dimension;
@@ -174,6 +170,18 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       reference: name,
       values: selectedValues,
       not: filterMode === FilterMode.EXCLUDE
+    });
+  }
+
+  constructSearchTextClause(): StringFilterClause {
+    const { dimension } = this.props;
+    const { name: reference } = dimension;
+    const { searchText } = this.state;
+    return new StringFilterClause({
+      action: StringFilterAction.CONTAINS,
+      reference,
+      values: Set.of(searchText),
+      ignoreCase: true
     });
   }
 

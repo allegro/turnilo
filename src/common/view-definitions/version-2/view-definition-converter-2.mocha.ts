@@ -64,7 +64,7 @@ describe("ViewDefinitionConverter2", () => {
     { label: "latest day", expression: latestDay, period: TimeFilterPeriod.LATEST }
   ].forEach(({ label, expression, period }) => {
     it(`converts ${label} bucket expression to time period`, () => {
-      const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression(expression);
+      const viewDefinition = ViewDefinitionConverter2Fixtures.tableWithFilterExpression(expression);
       const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, clientAppSettings, wikiClientDataCube);
       const convertedClause = essence.filter.clauses.first();
 
@@ -74,7 +74,7 @@ describe("ViewDefinitionConverter2", () => {
   });
 
   it("converts filter with lookup expressions", () => {
-    const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterActions([
+    const viewDefinition = ViewDefinitionConverter2Fixtures.tableWithFilterActions([
       {
         action: "in",
         expression: {
@@ -134,7 +134,7 @@ describe("ViewDefinitionConverter2", () => {
   });
 
   it("converts splits with lookup expressions", () => {
-    const viewDefinition = ViewDefinitionConverter2Fixtures.withSplits([{
+    const viewDefinition = ViewDefinitionConverter2Fixtures.tableWithSplits([{
       expression: {
         op: "chain",
         expression: {

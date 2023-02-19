@@ -16,89 +16,32 @@
  */
 
 import { Request, Response, Router } from "express";
-import { deserialize } from "../../../client/deserializers/app-settings";
-import { AppSettings, ClientAppSettings, serialize } from "../../../common/models/app-settings/app-settings";
-import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
-import { isQueryable, QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
-import { Essence } from "../../../common/models/essence/essence";
-import { getDataCube, Sources } from "../../../common/models/sources/sources";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
-import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
+import { createEssence } from "../../utils/essence/create-essence";
+import { handleRequestErrors } from "../../utils/request-errors/handle-request-errors";
+import { parseDataCube } from "../../utils/request-params/parse-data-cube";
+import { parseViewDefinition } from "../../utils/request-params/parse-view-definition";
+import { parseViewDefinitionConverter } from "../../utils/request-params/parse-view-definition-converter";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
-function convertToClientAppSettings(appSettings: AppSettings): ClientAppSettings {
-  return deserialize(serialize(appSettings));
-}
-
-function convertToClientDataCube(cube: QueryableDataCube): ClientDataCube {
-  return {
-    ...cube,
-    timeAttribute: cube.timeAttribute && cube.timeAttribute.name
-  };
-}
-
-export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appSettings">) {
+export function mkurlRouter(settings: Pick<SettingsManager, "getSources" | "appSettings" | "logger">) {
 
   const router = Router();
 
   router.post("/", async (req: Request, res: Response) => {
-    const { dataCubeName, viewDefinitionVersion, viewDefinition } = req.body;
 
-    if (typeof viewDefinitionVersion !== "string") {
-      res.status(400).send({ error: "must have a viewDefinitionVersion" });
-      return;
-    }
-
-    const definitionConverter = definitionConverters[viewDefinitionVersion as ViewDefinitionVersion];
-
-    if (definitionConverter == null) {
-      res.status(400).send({ error: "unsupported viewDefinitionVersion value"
-      });
-      return;
-    }
-
-    if (typeof dataCubeName !== "string") {
-      res.status(400).send({ error: "must have a dataCubeName" });
-      return;
-    }
-
-    if (typeof viewDefinition !== "object") {
-      res.status(400).send({ error: "viewDefinition must be an object" });
-      return;
-    }
-
-    let sources: Sources;
     try {
-      sources = await settings.getSources();
-    } catch (e) {
-      res.status(400).send({ error: "Couldn't load settings" });
-      return;
-    }
-    const myDataCube = getDataCube(sources, dataCubeName);
-    if (!myDataCube) {
-      res.status(400).send({ error: "unknown data cube" });
-      return;
-    }
+      const dataCube = await parseDataCube(req, settings);
+      const viewDefinition = parseViewDefinition(req);
+      const converter = parseViewDefinitionConverter(req);
 
-    if (!isQueryable(myDataCube)) {
-      res.status(400).send({ error: "un queryable data cube" });
-      return;
+      const essence = createEssence(viewDefinition, converter, dataCube, settings.appSettings);
+
+      const hash = `#${dataCube.name}/${urlHashConverter.toHash(essence)}`;
+      res.json({ hash });
+    } catch (error) {
+      handleRequestErrors(error, res, settings.logger);
     }
-
-    const clientDataCube = convertToClientDataCube(myDataCube);
-    const clientAppSettings = convertToClientAppSettings(settings.appSettings);
-
-    let essence: Essence;
-    try {
-      essence = definitionConverter.fromViewDefinition(viewDefinition, clientAppSettings, clientDataCube);
-    } catch ({ message }) {
-      res.status(400).send({ error: "invalid viewDefinition object", message });
-      return;
-    }
-
-    res.json({
-      hash: `#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
-    });
   });
   return router;
 }

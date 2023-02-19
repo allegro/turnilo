@@ -126,7 +126,6 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
   stripUnnecessaryFragments(path: QualifiedPath, crumbs: string[]) {
     const { rootFragment } = this.props;
-    const fragments = path.fragment.split(HASH_SEPARATOR);
 
     const parentFragment = crumbs.join("/").replace(path.crumbs.join("/"), "").replace(/\/$/, "");
     const strippedRouteCrumbs = path.crumbs.slice(0, path.fragment.split(HASH_SEPARATOR).length);

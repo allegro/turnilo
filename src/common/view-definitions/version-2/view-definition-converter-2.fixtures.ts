@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+import { $ } from "plywood";
 import { ViewDefinition2 } from "./view-definition-2";
 
-const baseViewDefinition: ViewDefinition2 = {
+const baseTableViewDefinition: ViewDefinition2 = {
   visualization: "table",
   timezone: "Etc/UTC",
   filter: {
@@ -45,9 +46,123 @@ const baseViewDefinition: ViewDefinition2 = {
 };
 
 export class ViewDefinitionConverter2Fixtures {
-  static withFilterExpression(expression: any): ViewDefinition2 {
+  static totals(): ViewDefinition2 {
     return {
-      ...baseViewDefinition,
+      visualization: "totals",
+      timezone: "Etc/UTC",
+      filter: $("time").overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z")),
+      pinnedDimensions: [],
+      singleMeasure: "count",
+      selectedMeasures: [],
+      splits: []   ,
+      multiMeasureMode: false
+    };
+  }
+
+  static fullTable(): ViewDefinition2 {
+    return {
+      visualization: "table",
+      timezone: "Etc/UTC",
+      filter:
+        $("time")
+          .overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z"))
+          .and($("channel").overlap(["en"]))
+          .and($("isRobot").overlap([true]).not())
+          .and($("page").contains("Jeremy"))
+          .and($("userChars").match("^A$"))
+          .and($("commentLength").overlap([{ start: 3, end: null, type: "NUMBER_RANGE" }]))
+          .toJS(),
+      pinnedDimensions: ["channel", "namespace", "isRobot"],
+      pinnedSort: "delta",
+      singleMeasure: "delta",
+      selectedMeasures: ["delta", "count", "added"],
+      multiMeasureMode: true,
+      splits: [
+        {
+          expression: {
+            op: "ref",
+            name: "channel"
+          },
+          sortAction: {
+            op: "sort",
+            expression: {
+              op: "ref",
+              name: "delta"
+            },
+            direction: "descending"
+          },
+          limitAction: {
+            op: "limit",
+            value: 50
+          }
+        },
+        {
+          expression: {
+            op: "ref",
+            name: "isRobot"
+          },
+          sortAction: {
+            op: "sort",
+            expression: {
+              op: "ref",
+              name: "delta"
+            },
+            direction: "descending"
+          },
+          limitAction: {
+            op: "limit",
+            value: 5
+          }
+        },
+        {
+          expression: {
+            op: "ref",
+            name: "commentLength"
+          },
+          bucketAction: {
+            op: "numberBucket",
+            size: 10,
+            offset: 0
+          },
+          sortAction: {
+            op: "sort",
+            expression: {
+              op: "ref",
+              name: "delta"
+            },
+            direction: "descending"
+          },
+          limitAction: {
+            op: "limit",
+            value: 5
+          }
+        },
+        {
+          expression: {
+            op: "ref",
+            name: "time"
+          },
+          bucketAction: {
+            op: "timeBucket",
+            duration: "PT1H"
+          },
+          sortAction: {
+            op: "sort",
+            expression: {
+              op: "ref",
+              name: "delta"
+            },
+            direction: "descending"
+          }
+        }
+
+      ]
+    };
+  }
+
+  static tableWithFilterExpression(expression: any): ViewDefinition2 {
+    return {
+      ...baseTableViewDefinition,
       filter: {
         op: "overlap",
         operand: {
@@ -59,9 +174,9 @@ export class ViewDefinitionConverter2Fixtures {
     };
   }
 
-  static withFilterActions(actions: any[]): ViewDefinition2 {
+  static tableWithFilterActions(actions: any[]): ViewDefinition2 {
     return {
-      ...baseViewDefinition,
+      ...baseTableViewDefinition,
       filter: {
         op: "chain",
         expression: {
@@ -73,9 +188,9 @@ export class ViewDefinitionConverter2Fixtures {
     };
   }
 
-  static withSplits(splits: any[]): ViewDefinition2 {
+  static tableWithSplits(splits: any[]): ViewDefinition2 {
     return {
-      ...baseViewDefinition,
+      ...baseTableViewDefinition,
       splits
     };
   }

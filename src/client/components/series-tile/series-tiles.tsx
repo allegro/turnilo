@@ -30,8 +30,6 @@ import { TileOverflowContainer } from "../tile-overflow-container/tile-overflow-
 import { PlaceholderSeriesTile } from "./placeholder-series";
 import { SeriesTile } from "./series-tile";
 
-export const SERIES_CLASS_NAME = "series";
-
 interface SeriesTilesProps {
   menuStage: Stage;
   maxItems: number;

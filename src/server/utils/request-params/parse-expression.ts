@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Request } from "express";
+import { Expression } from "plywood";
+import { InvalidRequestError } from "../request-errors/request-errors";
 
-import { Essence } from "../essence/essence";
-
-export interface ViewSupervisor {
-  cancel: () => void;
-
-  getConfirmationModal?: (newEssence: Essence) => JSX.Element;
-  save?: (newEssence: Essence) => void;
-
-  title?: string;
-
-  saveLabel?: string;
-
+export function parseExpression(req: Request): Expression {
+  try {
+    return Expression.fromJS(req.body.expression);
+  } catch (e) {
+    throw new InvalidRequestError(`bad expression: ${e.message}`);
+  }
 }

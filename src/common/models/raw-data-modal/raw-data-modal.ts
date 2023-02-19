@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export interface FunctionSlot<T> {
-  (...args: any[]): T;
-
-  fill?: (fn: (...args: any[]) => T) => void;
-  clear?: () => void;
-}
-
-export function createFunctionSlot<T>(): FunctionSlot<T> {
-  let myFn: (...args: any[]) => T;
-  const slot: FunctionSlot<T> = (...args: any[]) => {
-    if (myFn) return myFn.apply(this, args);
-    return undefined;
-  };
-  slot.fill = (fn: (...args: any[]) => T) => { myFn = fn; };
-  slot.clear = () => { myFn = null; };
-  return slot;
-}
+export const LIMIT = 100;
