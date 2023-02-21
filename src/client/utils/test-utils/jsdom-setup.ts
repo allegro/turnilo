@@ -25,6 +25,7 @@ const kickstart = () => {
   g.navigator = {
     userAgent: "testing"
   };
+  g.HTMLAnchorElement = window.HTMLAnchorElement;
 };
 
 const cleanup = () => {
@@ -32,6 +33,7 @@ const cleanup = () => {
   delete g.document;
   delete g.window;
   delete g.navigator;
+  delete g.HTMLAnchorElement;
 };
 
 // Initial kickstart is neede because of required modules
