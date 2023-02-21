@@ -20,9 +20,19 @@ import { checkAccess } from "../datacube-guard/datacube-guard";
 import { AccessDeniedError, InvalidRequestError } from "../request-errors/request-errors";
 import { SettingsManager } from "../settings-manager/settings-manager";
 
+const RESTRICTED_PATHS = ["/plywood", "/query"];
+
+function verifyAccess(req: Request, dataCube: QueryableDataCube): boolean {
+  const path = req.path;
+  const isRestrictedPath = RESTRICTED_PATHS.some(prefix => path.startsWith(prefix));
+  if (!isRestrictedPath) return true;
+
+  return checkAccess(dataCube, req.headers);
+}
+
 export async function parseDataCube(req: Request, settings: Pick<SettingsManager, "getSources">): Promise<QueryableDataCube> {
-  const dataCube = req.body.dataCube || req.body.dataCubeName || req.body.dataSource; // back compatibility
-  if (typeof dataCube !== "string") {
+  const dataCubeName = req.body.dataCube || req.body.dataCubeName || req.body.dataSource; // back compatibility
+  if (typeof dataCubeName !== "string") {
     throw new InvalidRequestError("must have a dataCube");
   }
   let sources: Sources;
@@ -31,18 +41,18 @@ export async function parseDataCube(req: Request, settings: Pick<SettingsManager
   } catch (e) {
     throw new InvalidRequestError("Couldn't load settings");
   }
-  const myDataCube = getDataCube(sources, dataCube);
-  if (!myDataCube) {
+  const dataCube = getDataCube(sources, dataCubeName);
+  if (!dataCube) {
     throw new InvalidRequestError("unknown data cube");
   }
 
-  if (!isQueryable(myDataCube)) {
+  if (!isQueryable(dataCube)) {
     throw new InvalidRequestError("un queryable data cube");
   }
 
-  if (!(checkAccess(myDataCube, req.headers))) {
+  if (!verifyAccess(req, dataCube)) {
     throw new AccessDeniedError("access denied");
   }
 
-  return myDataCube;
+  return dataCube;
 }
