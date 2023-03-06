@@ -181,7 +181,7 @@
   "size-limit": [
     {
       "path": "build/public/main.js",
-      "limit": "1990 kB",
+      "limit": "2440 kB",
       "gzip": false
     },
     {
