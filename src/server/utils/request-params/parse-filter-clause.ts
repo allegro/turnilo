@@ -32,7 +32,7 @@ function readStringClause(clauseJS: StringFilterClauseDefinition, dataCube: Data
     throw new InvalidRequestError(error.message);
   }
   if (!isStringFilterClause(clause)) {
-    throw new InvalidRequestError(`expected string filter clause, but got ${clause.type}`);
+    throw new InvalidRequestError(`Expected string filter clause, but got ${clause.type}`);
   }
   return clause;
 }
@@ -41,7 +41,7 @@ export function parseStringFilterClause(req: Request, dataCube: DataCube): Strin
   const clauseJS = req.body.clause;
 
   if (isNil(clauseJS)) {
-    throw new InvalidRequestError("expected clause parameter");
+    throw new InvalidRequestError("Parameter clause is required");
   }
 
   return readStringClause(clauseJS, dataCube);

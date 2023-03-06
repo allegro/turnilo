@@ -25,7 +25,7 @@ export function parseSplit(req: Request, dataCube: DataCube): Split {
   const splitJS = req.body.split;
 
   if (isNil(splitJS)) {
-    throw new InvalidRequestError("expected split parameter");
+    throw new InvalidRequestError("Parameter split is required");
   }
 
   try {

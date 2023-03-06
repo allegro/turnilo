@@ -24,14 +24,17 @@ import { InvalidRequestError } from "../request-errors/request-errors";
 export function parseDimension(req: Request, dataCube: DataCube): Dimension {
   const dimensionName = req.body.dimension;
 
+  if (isNil(dimensionName)) {
+    throw new InvalidRequestError("Parameter dimension is required");
+  }
   if (typeof dimensionName !== "string") {
-    throw new InvalidRequestError("dimension must be a string");
+    throw new InvalidRequestError(`Expected dimension to be a string, got: ${typeof dimensionName}`);
   }
 
   const dimension = findDimensionByName(dataCube.dimensions, dimensionName);
 
   if (isNil(dimension)) {
-    throw new InvalidRequestError("unknown dimension");
+    throw new InvalidRequestError(`Unknown dimension: ${dimensionName}`);
   }
 
   return dimension;
