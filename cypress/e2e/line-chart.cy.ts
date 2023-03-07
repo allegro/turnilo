@@ -215,7 +215,7 @@ context("Line Chart", () => {
   });
 
   describe("Highlight", () => {
-    const assertHighlighterPosition = (expectedLeft, expectedWidth) =>
+    const assertHighlighterPosition = (expectedLeft: number, expectedWidth: number) =>
       highlighterFrame().should($frame => {
         const frame = $frame.get(0);
         expect(frame.offsetLeft).to.eq(expectedLeft);

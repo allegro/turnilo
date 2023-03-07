@@ -22,11 +22,11 @@ export function parseTimezone(req: Request): Timezone | null {
   const { timezone } = req.body;
   if (isNil(timezone)) return null;
   if (typeof timezone !== "string") {
-    throw new InvalidRequestError("timezone must be a string");
+    throw new InvalidRequestError("Parameter timezone should be a string");
   }
   try {
     return Timezone.fromJS(timezone);
   } catch (e) {
-    throw new InvalidRequestError(`bad timezone: ${e.message}`);
+    throw new InvalidRequestError(`Bad timezone: ${e.message}`);
   }
 }
