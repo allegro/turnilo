@@ -39,14 +39,14 @@ context("Fixed Time Filter Menu", () => {
     fixedTimeFilter: "http://localhost:9090/#wiki/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbVBoAngAcmBDHSGTaw5hqaV9AJTjYA5rRnyQUEpLTMATAAYAjAFYAtM4Ccn1468zs54bqHOAHTBzgBaQrTYACZObl6+/gDMQSFhwVHBcQC+ALollFDKSGhWxeVSEJb41trCUgnsaiBwiYm0yZTCmJLU6PgKKp29wnAw4kJgiDCdIIWGE8x0cLDaK7UgyhDY2H0AIjQJUFjYViDsABamxwhC2HB0FXAdQtBGmABGxBAewORz6AGUhg4CN1ev0QAhaBYkvhsLMEJQ7hAzHckNioaiEAhCkA=="
   };
 
-  function assertInputValues(startDate, startTime, endDate, endTime) {
+  function assertInputValues(startDate: string, startTime: string, endDate: string, endTime: string) {
     startDateInput().should("have.value", startDate);
     startTimeInput().should("have.value", startTime);
     endDateInput().should("have.value", endDate);
     endTimeInput().should("have.value", endTime);
   }
 
-  function assertCalendarValues(date, startDay, endDay) {
+  function assertCalendarValues(date: string, startDay: number, endDay: number) {
     calendarHeader().should("contain", date);
     calendarDay(startDay).should("have.class", "selected");
     calendarDay(endDay).should("have.class", "selected");
