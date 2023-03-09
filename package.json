@@ -78,7 +78,7 @@
     "node-spawn-server": "1.0.1",
     "nopt": "5.0.0",
     "numbro": "2.3.6",
-    "plywood": "0.21.11",
+    "plywood": "0.30.4",
     "plywood-base-api": "0.2.9",
     "plywood-druid-requester": "2.6.13",
     "react": "16.14.0",
