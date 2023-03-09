@@ -33,6 +33,6 @@ export default async function visualizationRoute({ context }: QueryRouterRequest
   const query = getQuery(essence, timekeeper);
   const queryTimeStart = Date.now();
   const result = await executeQuery(dataCube, query, essence.timezone, decorator);
-  logQueryInfo(essence, timekeeper, logger, Date.now() - queryTimeStart);
+  logQueryInfo(essence, timekeeper, logger.setLoggerId("turnilo-visualization-query"), Date.now() - queryTimeStart);
   res.json({ result });
 }
