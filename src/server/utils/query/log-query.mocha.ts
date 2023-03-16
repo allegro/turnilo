@@ -39,7 +39,7 @@ describe("log-query-info", () => {
   const expectedMessage = "Visualization query wiki_2016-04-29-12-40_2016-04-30-12-40";
   const expectedBasicVariables: Record<string, unknown> = {
     executionTime: 42,
-    startTime: 1461933600000,
+    startTime: "2016-04-29T12:40:00.000Z",
     startTimeMsAgo: 86391350,
     interval: 86400000,
     dataCube: "wiki",
@@ -65,7 +65,7 @@ describe("log-query-info", () => {
       {
         ...expectedBasicVariables,
         timeShift: "P1D",
-        shiftedStartTime: 1461847200000,
+        shiftedStartTime: "2016-04-28T12:40:00.000Z",
         shiftedStartTimeMsAgo: 172791350
       }
     )).to.be.true;
