@@ -39,7 +39,7 @@ context("Split Tile", () => {
     // tslint:enable:max-line-length
   };
 
-  const shouldHaveSplits = (...splits) => {
+  const shouldHaveSplits = (...splits: string[]) => {
     splitItems().should("have.length", splits.length);
     splitItemsRow().within(() => {
       splits.forEach((split, idx) => {

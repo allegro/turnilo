@@ -44,7 +44,7 @@ describe("mkurl router", () => {
       .send({})
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
-      .expect({ error: "must have a dataCube" })
+      .expect({ error: "Parameter dataCube is required" })
       .end(testComplete);
   });
 
@@ -55,7 +55,7 @@ describe("mkurl router", () => {
       .send({ dataCube: "wiki" })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
-      .expect({ error: "viewDefinition must be an object" })
+      .expect({ error: "Parameter viewDefinition is required" })
       .end(testComplete);
   });
 
@@ -66,7 +66,7 @@ describe("mkurl router", () => {
       .send({ dataCube: "wiki", viewDefinition: {} })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
-      .expect({ error: "must have a viewDefinitionVersion" })
+      .expect({ error: "Parameter viewDefinitionVersion is required" })
       .end(testComplete);
   });
 
@@ -77,7 +77,7 @@ describe("mkurl router", () => {
       .send({ dataCube: "wiki", viewDefinition: {}, viewDefinitionVersion: "foobar" })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
-      .expect({ error: "unsupported viewDefinitionVersion value" })
+      .expect({ error: "Unsupported viewDefinitionVersion value: foobar" })
       .end(testComplete);
   });
 
