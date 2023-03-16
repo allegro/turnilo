@@ -45,7 +45,7 @@ function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string,
   const interval = clauseInterval(timeFilter);
 
   const variables: Record<string, unknown> = {
-    startTime: startTime.getTime(),
+    startTime: startTime.toISOString(),
     startTimeMsAgo: intervalLength(startTime, maxTime),
     interval
   };
@@ -57,7 +57,7 @@ function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string,
   if (essence.hasComparison()) {
     const previousTimeFilter = essence.previousTimeFilter(timekeeper);
     const shiftedStartTime = start(previousTimeFilter);
-    variables.shiftedStartTime = shiftedStartTime.getTime();
+    variables.shiftedStartTime = shiftedStartTime.toISOString();
     variables.shiftedStartTimeMsAgo = intervalLength(shiftedStartTime, maxTime);
     variables.timeShift = essence.timeShift.toString();
   }
