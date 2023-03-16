@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 import { Request } from "express";
+import { isNil } from "../../../common/utils/general/general";
 import { ViewDefinition } from "../../../common/view-definitions";
 import { InvalidRequestError } from "../request-errors/request-errors";
 
 export function parseViewDefinition(req: Request): ViewDefinition {
   const { viewDefinition } = req.body;
+  if (isNil(viewDefinition)) {
+    throw new InvalidRequestError("Parameter viewDefinition is required");
+  }
   if (typeof viewDefinition !== "object") {
-    throw new InvalidRequestError("viewDefinition must be an object");
+    throw new InvalidRequestError(`Expected viewDefinition to be an object, got: ${typeof viewDefinition}`);
   }
 
   return viewDefinition;

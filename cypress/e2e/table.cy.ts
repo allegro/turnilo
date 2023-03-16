@@ -23,8 +23,8 @@ context("Table", () => {
   const highlightModal = () => cy.get(".highlight-modal");
   const acceptHighlight = () => highlightModal().find(".accept");
   const dropHighlight = () => highlightModal().find(".drop");
-  const findSplitValue = label => table().find(`.split-value:contains("${label}")`);
-  const nthRow = n => table().find(`.measure-row:nth-child(${n})`);
+  const findSplitValue = (label: string) => table().find(`.split-value:contains("${label}")`);
+  const nthRow = (n: number) => table().find(`.measure-row:nth-child(${n})`);
 
   describe("Highlight", () => {
     const urls = {
@@ -37,7 +37,7 @@ context("Table", () => {
       clickSplitValue("Main");
     });
 
-    function clickSplitValue(label) {
+    function clickSplitValue(label: string) {
       return findSplitValue(label)
         .then($splitValue => {
           const { top: scrollerOffset } = $splitValue.closest(".scroller").offset();
@@ -48,7 +48,7 @@ context("Table", () => {
         });
     }
 
-    function assertSplitValueRowHighlight(label) {
+    function assertSplitValueRowHighlight(label: string) {
       const splitValue = findSplitValue(label);
       splitValue
         .should("have.class", "highlight")
@@ -63,7 +63,7 @@ context("Table", () => {
       table().find(".split-value.selected").should("not.exist");
     }
 
-    function assertFilterTileValues(values) {
+    function assertFilterTileValues(values: string[]) {
       values.forEach((value, idx) => {
         filterTile(idx + 1).should("contain", value);
       });

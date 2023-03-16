@@ -15,12 +15,17 @@
  */
 import { Request } from "express";
 import { Expression } from "plywood";
+import { isNil } from "../../../common/utils/general/general";
 import { InvalidRequestError } from "../request-errors/request-errors";
 
 export function parseExpression(req: Request): Expression {
+  const expression = req.body.expression;
+  if (isNil(expression)) {
+    throw new InvalidRequestError("Parameter expression is required");
+  }
   try {
-    return Expression.fromJS(req.body.expression);
+    return Expression.fromJS(expression);
   } catch (e) {
-    throw new InvalidRequestError(`bad expression: ${e.message}`);
+    throw new InvalidRequestError(`Bad expression: ${e.message}`);
   }
 }

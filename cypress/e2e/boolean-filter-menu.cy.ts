@@ -33,8 +33,8 @@ context("Boolean Filter Menu", () => {
     // tslint:enable:max-line-length
   };
 
-  function assertSelection(isTrueOptionSelected, isFalseOptionSelected) {
-    function selectionToPredicate(isSelected) {
+  function assertSelection(isTrueOptionSelected: boolean, isFalseOptionSelected: boolean) {
+    function selectionToPredicate(isSelected: boolean) {
       return isSelected ? "have.class" : "not.have.class";
     }
 

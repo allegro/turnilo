@@ -30,7 +30,7 @@ context("Line Chart Legend", () => {
     // tslint:enable:max-line-length
   };
 
-  function assertLegendRowsInOrder(...values) {
+  function assertLegendRowsInOrder(...values: string[]) {
     const rows = legendValues();
     rows.should("have.length", values.length);
 

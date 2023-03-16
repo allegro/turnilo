@@ -15,19 +15,20 @@
  */
 import { Request } from "express";
 import { Essence } from "../../../common/models/essence/essence";
+import { isNil } from "../../../common/utils/general/general";
 import { definitionConverters, ViewDefinition, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { ViewDefinitionConverter } from "../../../common/view-definitions/view-definition-converter";
 import { InvalidRequestError } from "../request-errors/request-errors";
 
 export function parseViewDefinitionConverter(req: Request): ViewDefinitionConverter<ViewDefinition, Essence> {
   const { viewDefinitionVersion } = req.body;
-  if (typeof viewDefinitionVersion !== "string") {
-    throw new InvalidRequestError("must have a viewDefinitionVersion");
+  if (isNil(viewDefinitionVersion)) {
+    throw new InvalidRequestError("Parameter viewDefinitionVersion is required");
   }
-  const converter = definitionConverters[viewDefinitionVersion as ViewDefinitionVersion];
+  const converter = definitionConverters[String(viewDefinitionVersion) as ViewDefinitionVersion];
 
   if (converter == null) {
-    throw new InvalidRequestError("unsupported viewDefinitionVersion value");
+    throw new InvalidRequestError(`Unsupported viewDefinitionVersion value: ${viewDefinitionVersion}`);
   }
 
   return converter;
