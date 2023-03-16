@@ -21,13 +21,13 @@ context("CSV Data Source", () => {
   const splitValue = (idx: number) => leftGutter().get(`.split-value:nth-child(${idx})`);
   const measureValue = (idx: number) => body().get(`.measure-row:nth-child(${idx}) .measure-label`);
 
-  function assertDates(...dates) {
+  function assertDates(...dates: string[]) {
     dates.forEach((date, idx) => {
       splitValue(idx + 1).should("contain", date);
     });
   }
 
-  function assertValues(...values) {
+  function assertValues(...values: string[]) {
     values.forEach((value, idx) => {
       measureValue(idx + 1).should("contain", value);
     });

@@ -87,7 +87,7 @@ context("Bar Chart", () => {
         legend().find(".legend-header").should("have.text", "Channel");
       });
 
-      function assertLegendRowsInOrder(...values) {
+      function assertLegendRowsInOrder(...values: string[]) {
         values.forEach((label, idx) => {
           legendValue(idx + 1).should("contain", label);
         });
