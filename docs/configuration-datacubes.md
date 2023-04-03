@@ -202,6 +202,10 @@ Specify kind of data inside dimension. It defaults to "string".
 
 Set to true if dimension holds multiple values. [Druid Multi-Value Dimensions](https://druid.apache.org/docs/latest/querying/multi-value-dimensions.html)
 
+**limits** (number[]), default: [5, 10, 25, 50, 100]
+
+Specify available limit values for dimension. Please note that specific visualisations can override chosen limit, for example line chart limits are driven by available [visualisation colors](configuration-customizations.md#visualisation-colors).
+
 **formula** (string - plywood expression)
 
 The [Plywood expression](https://plywood.imply.io/expressions) for this dimension.
