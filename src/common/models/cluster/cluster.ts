@@ -127,6 +127,11 @@ function readRequestDecorator(cluster: any, logger: Logger): RequestDecorator | 
   return null;
 }
 
+function readRetryOptions(options: RetryOptionsJS | undefined): RetryOptions | undefined {
+  if (isNil(options)) return undefined;
+  return new RetryOptions(options);
+}
+
 const DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
 export const DEFAULT_SOURCE_LIST_SCAN: SourceListScan = "auto";
 const SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ["disable", "auto"];
@@ -167,7 +172,7 @@ export function fromConfig(params: ClusterJS, logger: Logger): Cluster {
   const sourceReintrospectInterval = readInterval(params.sourceReintrospectInterval, DEFAULT_SOURCE_REINTROSPECT_INTERVAL);
   const sourceListRefreshInterval = readInterval(params.sourceListRefreshInterval, DEFAULT_SOURCE_LIST_REFRESH_INTERVAL);
   const sourceTimeBoundaryRefreshInterval = readInterval(params.sourceTimeBoundaryRefreshInterval, DEFAULT_SOURCE_TIME_BOUNDARY_REFRESH_INTERVAL);
-  const retry = RetryOptions.fromJS(params.retry);
+  const retry = readRetryOptions(params.retry);
   const requestDecorator = readRequestDecorator(params, logger);
   const auth = readClusterAuth(params.auth);
 
