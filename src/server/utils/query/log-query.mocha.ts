@@ -85,4 +85,15 @@ describe("log-query-info", () => {
     )).to.be.true;
   });
 
+  it("Should log additional logger context", () => {
+    logQueryInfo(baseEssence, timekeeper, logger, executionTime, { contextName: "context-value" });
+    expect(logger.log.calledWith(
+      expectedMessage,
+      {
+        ...expectedBasicVariables,
+        contextName: "context-value"
+      }
+    )).to.be.true;
+  });
+
 });
