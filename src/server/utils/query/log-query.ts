@@ -65,10 +65,11 @@ function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string,
   return variables;
 }
 
-export function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger, executionTime: number) {
+export function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger, executionTime: number, context: Record<string, unknown>) {
   const nonTimeFilters = essence.filter.removeClause(essence.getTimeDimension().name);
 
   logger.log(`Visualization query ${essence.description(timekeeper)}`, {
+    ...context,
     executionTime,
     ...timeVariables(essence, timekeeper),
     dataCube: essence.dataCube.name,
