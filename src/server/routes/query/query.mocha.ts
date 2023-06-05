@@ -47,6 +47,13 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req: any, res, next) => {
+  req.turniloMetadata = {
+    loggerContext: {}
+  };
+  next();
+});
+
 app.use("/", queryRouter(settingsManagerFixture));
 
 describe("query router", () => {

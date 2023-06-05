@@ -28,11 +28,11 @@ function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
 }
 
-export default async function visualizationRoute({ context }: QueryRouterRequest, res: Response) {
+export default async function visualizationRoute({ turniloMetadata, context }: QueryRouterRequest, res: Response) {
   const { dataCube, essence, decorator, timekeeper, logger } = context;
   const query = getQuery(essence, timekeeper);
   const queryTimeStart = Date.now();
   const result = await executeQuery(dataCube, query, essence.timezone, decorator);
-  logQueryInfo(essence, timekeeper, logger.setLoggerId("turnilo-visualization-query"), Date.now() - queryTimeStart);
+  logQueryInfo(essence, timekeeper, logger.setLoggerId("turnilo-visualization-query"), Date.now() - queryTimeStart, turniloMetadata.loggerContext);
   res.json({ result });
 }
