@@ -118,7 +118,7 @@ If Turnilo is not able to discover column type, it could be overridden with Drui
   nativeType: hyperUnique
 ```
 
-Supported native types: "hyperUnique", "thetaSketch" and "approximateHistogram".
+Supported native types: "hyperUnique", "thetaSketch", "HLLSketch", "approximateHistogram" and "quantilesDoublesSketch".
 
 ### Override numeric dimension
 
