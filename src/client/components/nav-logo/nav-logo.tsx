@@ -17,15 +17,27 @@
 
 import React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import { isNil } from "../../../common/utils/general/general";
 import "./nav-logo.scss";
 
 export interface NavLogoProps {
-  customLogoSvg: string;
+  customLogoSvg?: string;
+  customLogoText?: string;
 }
 
-export const NavLogo: React.FunctionComponent<NavLogoProps> = ({ customLogoSvg }) =>
+export const NavLogo: React.FunctionComponent<NavLogoProps> = ({ customLogoSvg, customLogoText }) => {
+  var logo;
+  if (!isNil(customLogoText)) {
+    logo = <span>{customLogoText}</span>
+  } else if (!isNil(customLogoSvg)) {
+    logo = <SvgIcon svg={customLogoSvg} />
+  } else {
+    return null;
+  }
+  return (
   <div className="nav-logo">
     <div className="logo">
-      <SvgIcon svg={customLogoSvg} />
+     {logo}
     </div>
-  </div>;
+  </div>);
+}
