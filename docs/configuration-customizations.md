@@ -88,7 +88,7 @@ You can also remove 'Turnilo' and use a custom header text instead of a SVG logo
 
 ```yaml
 customization:
-    customLogoText: Example Analytics UI
+    customLogoText: Analytics Demo
 ```
 
 ### Header color
