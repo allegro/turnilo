@@ -61,6 +61,15 @@ customizaiton:
 
 By default, Turnilo uses 10 different colors for series. But it is possible to define more and Turnilo will adjust necessary split limits.
 
+### Hide Info & Feedback Links
+
+Turnilo allows you to hide 'Info & Feedback' links from the header and the side nav bar using the following config.
+
+```yaml
+customization:
+    hideInfoAndFeedback: true
+```
+
 ### Logo
 
 Turnilo allows you to set custom customize logo icon by supplying an SVG string respectively.
@@ -73,6 +82,13 @@ customization:
         xmlns:xlink="http://www.w3.org/1999/xlink">
         <rect width="100%" height="100%" fill="green" />
       </svg>
+```
+
+You can also use set a custom header text instead of a SVG logo by supply just a logo string.
+
+```yaml
+customization:
+    customLogoText: Example Analytics UI
 ```
 
 ### Header color
