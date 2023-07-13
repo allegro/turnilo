@@ -84,7 +84,7 @@ customization:
       </svg>
 ```
 
-You can also use set a custom header text instead of a SVG logo by supply just a logo string.
+You can also remove 'Turnilo' and use a custom header text instead of a SVG logo by passing following string.
 
 ```yaml
 customization:
