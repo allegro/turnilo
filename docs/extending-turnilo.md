@@ -12,6 +12,28 @@ Turnilo lets you extend its behaviour in three ways:
 * Query decorator for all Plywood queries sent to Druid cluster
 * Plugins for backend application
 
+## turniloMetadata
+
+Turnilo adds `turniloMetadata` object to every `Request` object. 
+It is a namespace for you to keep any values necessary that live with requests.
+
+`turniloMetadata` has special properties:
+
+### `loggerContext` 
+
+It is a `Record` of values that will be added by logger for every message.
+
+You could use it to log User Agent of browser that requested view with a simple [plugin](#plugins):
+
+```javascript
+app.use(function(req, res, next) {
+  req.turniloMetadata.loggerContext.userAgent = req.get('User-Agent');
+  next();
+});
+```
+
+
+
 ## Request decorator
 
 In the cluster config add a key `druidRequestDecorator` with property `path` that points to a relative js file.
@@ -131,5 +153,4 @@ This function will be called at the start of application with following paramete
 Worth to look into !(express documentation)[https://expressjs.com/en/api.html#app]. 
 Use `get`, `post` etc. to define new endpoints. Use `use` to define middleware.
 
-Additionally, Turnilo defines empty object on Request object under `turniloMetadata` key. 
-Here you can pass values between your plugins and not pollute headers.
+Use [`turniloMetadata`](#turniloMetadata) object on `Request` to pass values between your plugins and not pollute headers.

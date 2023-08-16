@@ -18,7 +18,7 @@
 import { expect, use } from "chai";
 import equivalent from "../../../client/utils/test-utils/equivalent";
 import { RequestDecorator } from "../../../server/utils/request-decorator/request-decorator";
-import { RetryOptions } from "../../../server/utils/retry-options/retry-options";
+import { RetryOptions, RetryOptionsJS } from "../../../server/utils/retry-options/retry-options";
 import { NOOP_LOGGER } from "../../logger/logger";
 import { ClusterAuthJS } from "../cluster-auth/cluster-auth";
 import { Cluster, ClusterJS, fromConfig } from "./cluster";
@@ -48,7 +48,7 @@ describe("Cluster", () => {
         healthCheckTimeout: 1000,
         introspectionStrategy: "segment-metadata-fallback",
         requestDecorator: null,
-        retry: new RetryOptions(),
+        retry: undefined,
         sourceListRefreshInterval: 0,
         sourceListRefreshOnLoad: false,
         sourceListScan: "auto",
@@ -119,6 +119,16 @@ describe("Cluster", () => {
       expect(cluster.retry).to.be.equivalent(new RetryOptions({ maxAttempts: 1, delay: 42 }));
     });
 
+    it("should read partial retry options", () => {
+      const cluster = buildCluster({
+        retry: {
+          delay: 42
+        } as RetryOptionsJS
+      });
+
+      expect(cluster.retry).to.be.equivalent(new RetryOptions({ maxAttempts: 5, delay: 42 }));
+    });
+
     it("should read request decorator", () => {
       const cluster = buildCluster({
         name: "foobar",
@@ -185,7 +195,7 @@ describe("Cluster", () => {
         version: "new-version",
         type: "druid",
         requestDecorator: null,
-        retry: new RetryOptions(),
+        retry: undefined,
         auth: undefined
       });
     });

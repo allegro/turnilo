@@ -50,7 +50,7 @@ describe("log-query-info", () => {
   };
 
   it("Should log all basic variables", () => {
-    logQueryInfo(baseEssence, timekeeper, logger, executionTime);
+    logQueryInfo(baseEssence, timekeeper, logger, executionTime, {});
     expect(logger.log.calledWith(
       expectedMessage,
       expectedBasicVariables
@@ -59,7 +59,7 @@ describe("log-query-info", () => {
 
   it("Should log additional time shift variables", () => {
     const essence = baseEssence.set("timeShift", TimeShift.fromJS("P1D"));
-    logQueryInfo(essence, timekeeper, logger, executionTime);
+    logQueryInfo(essence, timekeeper, logger, executionTime, {});
     expect(logger.log.calledWith(
       expectedMessage,
       {
@@ -73,7 +73,7 @@ describe("log-query-info", () => {
 
   it("Should log additional time split variables", () => {
     const essence = baseEssence.addSplit(timeSplitCombine("time", "P2D"), VisStrategy.FairGame);
-    logQueryInfo(essence, timekeeper, logger, executionTime);
+    logQueryInfo(essence, timekeeper, logger, executionTime, {});
     expect(logger.log.calledWith(
       expectedMessage,
       {
@@ -81,6 +81,17 @@ describe("log-query-info", () => {
         visualization: "line-chart",
         splits: ["time"],
         granularity: "P2D"
+      }
+    )).to.be.true;
+  });
+
+  it("Should log additional logger context", () => {
+    logQueryInfo(baseEssence, timekeeper, logger, executionTime, { contextName: "context-value" });
+    expect(logger.log.calledWith(
+      expectedMessage,
+      {
+        ...expectedBasicVariables,
+        contextName: "context-value"
       }
     )).to.be.true;
   });

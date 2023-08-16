@@ -38,7 +38,9 @@ import { errorLayout } from "./views";
 
 declare module "express" {
   export interface Request {
-    turniloMetadata: object;
+    turniloMetadata: {
+      loggerContext: Record<string, unknown>
+    };
   }
 }
 
@@ -94,7 +96,9 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
   }
 
   app.use((req: Request, res: Response, next: Function) => {
-    req.turniloMetadata = {};
+    req.turniloMetadata = {
+      loggerContext: {}
+    };
     next();
   });
 

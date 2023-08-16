@@ -67,7 +67,8 @@ function setRetryOptions({ maxAttempts, delay }: RetryOptions) {
     requester,
     retry: maxAttempts,
     delay,
-    retryOnTimeout: true });
+    retryOnTimeout: true
+  });
 }
 
 function setVerbose(requester: PlywoodRequester<any>) {
