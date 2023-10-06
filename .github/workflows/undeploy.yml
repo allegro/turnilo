@@ -9,8 +9,8 @@ jobs:
   undeploy:
     runs-on: ubuntu-latest
 
-    # disable for PRs from forks
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    # disable for PRs from forks and Dependabot
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
 
     env:
       TAG_NAME: ${{ github.head_ref }}
