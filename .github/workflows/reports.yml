@@ -34,7 +34,7 @@ jobs:
         with:
           uploadArtifacts: true
           temporaryPublicStorage: true
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v7
         continue-on-error: true # can't comment for PRs from forks
         with:
           script: |
