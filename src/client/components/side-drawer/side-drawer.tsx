@@ -78,8 +78,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   private renderNavLogo(): JSX.Element | null {
     const { customization } = this.props;
-    if (!customization.customLogoSvg) return null;
-    return <NavLogo customLogoSvg={customization.customLogoSvg} />;
+    if (!customization.customLogoSvg && !customization.customLogoText) return null;
+    return <NavLogo customLogoSvg={customization.customLogoSvg} customLogoText={customization.customLogoText} />;
   }
 
   private renderHomeLink() {
@@ -152,11 +152,12 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
+    const { customization } = this.props;
     return <div className="side-drawer">
       {this.renderNavLogo()}
       {this.renderHomeLink()}
       {this.renderDataCubes()}
-      <NavList navLinks={[this.infoLink()]} />
+      { !customization.hideInfoAndFeedback && <NavList navLinks={[this.infoLink()]} /> }
     </div>;
   }
 }
