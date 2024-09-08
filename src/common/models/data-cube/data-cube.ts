@@ -513,7 +513,7 @@ export function getDefaultSplits(dataCube: ClientDataCube): Splits {
 }
 
 export function getDefaultSeries(dataCube: ClientDataCube): SeriesList {
-  if (dataCube.defaultSelectedMeasures) {
+  if (dataCube.defaultSelectedMeasures.length > 0) {
     return SeriesList.fromMeasures(dataCube.defaultSelectedMeasures.map(name => findMeasureByName(dataCube.measures, name)));
   }
   const first4Measures = allMeasures(dataCube.measures).slice(0, 4);
