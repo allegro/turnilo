@@ -19,10 +19,12 @@ import { ClientCustomization, SerializedCustomization } from "../../common/model
 import { deserialize as deserializeLocale } from "../../common/models/locale/locale";
 
 export function deserialize(customization: SerializedCustomization): ClientCustomization {
-  const { headerBackground, messages, locale, customLogoSvg, timezones, externalViews, hasUrlShortener, sentryDSN, visualizationColors } = customization;
+  const { headerBackground, messages, locale, customLogoText, customLogoSvg, hideInfoAndFeedback, timezones, externalViews, hasUrlShortener, sentryDSN, visualizationColors } = customization;
   return {
     headerBackground,
+    customLogoText,
     customLogoSvg,
+    hideInfoAndFeedback,
     externalViews,
     hasUrlShortener,
     sentryDSN,

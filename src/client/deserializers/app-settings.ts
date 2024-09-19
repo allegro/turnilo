@@ -33,7 +33,7 @@ export function deserialize({ oauth, clientTimeout, customization, version }: Se
 */
 export function serialize(appSettings: ClientAppSettings): SerializedAppSettings {
   const { clientTimeout, version, customization, oauth } = appSettings;
-  const { visualizationColors, messages, customLogoSvg, hasUrlShortener, locale, headerBackground, sentryDSN, timezones, externalViews } = customization;
+  const { visualizationColors, messages, customLogoText, customLogoSvg, hasUrlShortener, locale, headerBackground, sentryDSN, timezones, externalViews } = customization;
 
   return {
     clientTimeout,
@@ -42,6 +42,7 @@ export function serialize(appSettings: ClientAppSettings): SerializedAppSettings
     customization: {
       visualizationColors,
       messages,
+      customLogoText,
       customLogoSvg,
       locale,
       hasUrlShortener,
