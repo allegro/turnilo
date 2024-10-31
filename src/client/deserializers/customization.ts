@@ -17,13 +17,14 @@
 import { Timezone } from "chronoshift";
 import { ClientCustomization, SerializedCustomization } from "../../common/models/customization/customization";
 import { deserialize as deserializeLocale } from "../../common/models/locale/locale";
+import { ExternalView } from "../../common/models/external-view/external-view";
 
 export function deserialize(customization: SerializedCustomization): ClientCustomization {
   const { headerBackground, messages, locale, customLogoSvg, timezones, externalViews, hasUrlShortener, sentryDSN, visualizationColors } = customization;
   return {
     headerBackground,
     customLogoSvg,
-    externalViews,
+    externalViews: externalViews.map(ExternalView.fromJS),
     hasUrlShortener,
     sentryDSN,
     messages,
