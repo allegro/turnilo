@@ -135,7 +135,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
       }
       if (splitKind === "time") {
         if (splitDimension.kind !== "time") {
-          throw new Error(`Expected Time Dimension, god ${splitDimension.kind}`);
+          throw new Error(`Expected Time Dimension, got ${splitDimension.kind}`);
         }
         const clause = specificFilter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
         return split.changeBucket(clause
@@ -145,7 +145,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
 
       } else if (splitKind === "number") {
         if (splitDimension.kind !== "number") {
-          throw new Error(`Expected Number Dimension, god ${splitDimension.kind}`);
+          throw new Error(`Expected Number Dimension, got ${splitDimension.kind}`);
         }
         const clause = specificFilter.clauses.find(clause => clause instanceof NumberFilterClause) as NumberFilterClause;
         return split.changeBucket(clause
