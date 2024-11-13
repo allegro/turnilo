@@ -23,6 +23,7 @@ import makeQuery from "../../../../common/utils/query/visualization-query";
 import { executeQuery } from "../../../utils/query/execute-query";
 import { logQueryInfo } from "../../../utils/query/log-query";
 import { QueryRouterRequest } from "../query";
+import { data } from "cypress/types/jquery";
 
 function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   return essence.visualization.name === "grid" ? makeGridQuery(essence, timekeeper) : makeQuery(essence, timekeeper);
@@ -31,8 +32,14 @@ function getQuery(essence: Essence, timekeeper: Timekeeper): Expression {
 export default async function visualizationRoute({ turniloMetadata, context }: QueryRouterRequest, res: Response) {
   const { dataCube, essence, decorator, timekeeper, logger } = context;
   const query = getQuery(essence, timekeeper);
+  // console.log(query);
+  // console.log(JSON.stringify(essence));
+  // console.log(JSON.stringify(dataCube));
+  // console.log(decorator)
   const queryTimeStart = Date.now();
   const result = await executeQuery(dataCube, query, essence.timezone, decorator);
   logQueryInfo(essence, timekeeper, logger.setLoggerId("turnilo-visualization-query"), Date.now() - queryTimeStart, turniloMetadata.loggerContext);
+  console.log('result')
+  console.log(JSON.stringify(result));
   res.json({ result });
 }

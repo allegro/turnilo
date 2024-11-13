@@ -52,6 +52,7 @@ export interface QueryableDataCube extends DataCube {
 }
 
 export function addAttributes(dataCube: DataCube, newAttributes: Attributes): DataCube {
+  console.log("addAttributes", dataCube, newAttributes);
   const { attributes, introspection } = dataCube;
   let { dimensions, measures } = dataCube;
   if (introspection === "none") return dataCube;
