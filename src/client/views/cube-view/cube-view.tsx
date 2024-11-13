@@ -204,6 +204,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   refreshMaxTime = () => {
+    alert('refreshMaxTime')
     const { essence, timekeeper } = this.state;
     const { dataCube: { name, executor, timeAttribute, refreshRule } } = essence;
     this.setState({ updatingMaxTime: true });

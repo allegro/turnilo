@@ -17,10 +17,14 @@ import { Timezone } from "chronoshift";
 import { Dataset, DatasetJS, Expression } from "plywood";
 import { QueryableDataCube } from "../../../common/models/data-cube/queryable-data-cube";
 import { AppliedQueryDecorator } from "../query-decorator-loader/get-query-decorator";
+import {translateExpressionToBigQuery} from "./bigquery";
 
 export async function executeQuery(dataCube: QueryableDataCube, query: Expression, timezone: Timezone | null, decorator: AppliedQueryDecorator): Promise<DatasetJS> {
   const maxQueries = dataCube.maxQueries;
   const expression = decorator(query);
+  console.log('query')
+  console.log(JSON.stringify(expression));
+  // console.log(translateExpressionToBigQuery(JSON.parse(JSON.stringify(expression))));
   const data = await dataCube.executor(expression, { maxQueries, timezone });
   return Dataset.isDataset(data) ? data.toJS() : data as DatasetJS;
 }
