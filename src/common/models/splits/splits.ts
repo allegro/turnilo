@@ -134,9 +134,6 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
         return split;
       }
       if (splitKind === "time") {
-        if (splitDimension.kind !== "time") {
-          throw new Error(`Expected Time Dimension, got ${splitDimension.kind}`);
-        }
         const clause = specificFilter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
         return split.changeBucket(clause
           ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
@@ -144,9 +141,6 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
         );
 
       } else if (splitKind === "number") {
-        if (splitDimension.kind !== "number") {
-          throw new Error(`Expected Number Dimension, got ${splitDimension.kind}`);
-        }
         const clause = specificFilter.clauses.find(clause => clause instanceof NumberFilterClause) as NumberFilterClause;
         return split.changeBucket(clause
           ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
