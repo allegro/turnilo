@@ -34,7 +34,7 @@ const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<L
 
 export const settings: LineChartVisualizationSettings = {
   converter: {
-    print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
+    print: (settings: ImmutableRecord<LineChartSettings>) => settings ? settings.toJS() : null,
     read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries })
   },
   defaults: createSettings({}) as ImmutableRecord<object>
