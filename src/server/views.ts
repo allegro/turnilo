@@ -54,6 +54,7 @@ export function layout(options: ViewOptions, content: string): string {
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
   <title>${options.title}</title>
   <link rel="stylesheet" href="main.css?v=${options.version}">
+  <link rel="stylesheet" href="custom_styles.css?v=${options.version}">
 </head>
 <body>
 ${content}
@@ -79,6 +80,7 @@ export function mainLayout(options: ViewOptions): string {
 <script charset="UTF-8" async src="dnd.es5.js?v=${version}"></script>
 <script charset="UTF-8" async nomodule src="main.es5.js?v=${version}"></script>
 <script charset="UTF-8" async type="module" src="main.js?v=${version}"></script>
+<script charset="UTF-8" async type="module" src="custom_js.js?v=${version}"></script>
 ${cssOverrides}`
   );
 }

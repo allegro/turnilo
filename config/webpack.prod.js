@@ -43,6 +43,8 @@ const prodConfig = {
   mode: "production",
   entry: {
     main: "./src/client/main.tsx",
+    custom_styles: "./src/client/custom_styles.scss",
+    custom_js: "./src/client/custom_js.tsx",
   },
   plugins: [
     new webpack.DefinePlugin({
