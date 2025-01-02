@@ -104,7 +104,7 @@ export const STRINGS: any = {
   granularity: "Granularity",
   home: "Turnilo",
   include: "Include",
-  infoAndFeedback: "Info & Feedback",
+  infoAndFeedback: "",
   intersection: "Intersection",
   invalidDurationFormat: "Invalid duration format",
   invalidNumberFormat: "Invalid number format",
