@@ -31,7 +31,7 @@ export const HeaderBar: React.FunctionComponent<HeaderBarProps> = props => {
 
   return <header className="header-bar" style={headerStyle}>
     <div className="left-bar">
-      <div className="title">{title}</div>
+      <img className="logo" src="verve-logo.svg" alt="Verve Logo"/>
     </div>
     <div className="right-bar">
       {props.children}
