@@ -54,6 +54,9 @@ export function layout(options: ViewOptions, content: string): string {
   <title>${options.title}</title>
   <link rel="stylesheet" href="main.css?v=${options.version}">
   <link rel="stylesheet" href="custom_styles.css?v=${options.version}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 ${content}
