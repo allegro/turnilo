@@ -44,8 +44,9 @@
       @include internet-explorer {
         top: 0;
       }
+
       top: 4px;
-      left: -2px;
+      left: 0px;
       width: 19px;
 
       svg {
@@ -59,9 +60,11 @@
 
     .label {
       @include ellipsis;
+
       @include internet-explorer {
         width: 100%;
       }
+
       flex-grow: 1;
       min-width: 0;
       display: block;
