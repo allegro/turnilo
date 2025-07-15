@@ -32,7 +32,15 @@ export default async function visualizationRoute({ turniloMetadata, context }: Q
   const { dataCube, essence, decorator, timekeeper, logger } = context;
   const query = getQuery(essence, timekeeper);
   const queryTimeStart = Date.now();
-  const result = await executeQuery(dataCube, query, essence.timezone, decorator);
-  logQueryInfo(essence, timekeeper, logger.setLoggerId("turnilo-visualization-query"), Date.now() - queryTimeStart, turniloMetadata.loggerContext);
-  res.json({ result });
+  let error: Error | undefined;
+
+  try {
+    const result = await executeQuery(dataCube, query, essence.timezone, decorator);
+    res.json({ result });
+  } catch (e) {
+    error = e instanceof Error ? e : new Error(String(e));
+    throw e;
+  } finally {
+    logQueryInfo(essence, timekeeper, logger.setLoggerId("turnilo-visualization-query"), Date.now() - queryTimeStart, turniloMetadata.loggerContext, error);
+  }
 }

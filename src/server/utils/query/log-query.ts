@@ -65,10 +65,10 @@ function timeVariables(essence: Essence, timekeeper: Timekeeper): Record<string,
   return variables;
 }
 
-export function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger, executionTime: number, context: Record<string, unknown>) {
+export function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: Logger, executionTime: number, context: Record<string, unknown>, error?: Error) {
   const nonTimeFilters = essence.filter.removeClause(essence.getTimeDimension().name);
 
-  logger.log(`Visualization query ${essence.description(timekeeper)}`, {
+  const logData = {
     ...context,
     executionTime,
     ...timeVariables(essence, timekeeper),
@@ -76,6 +76,9 @@ export function logQueryInfo(essence: Essence, timekeeper: Timekeeper, logger: L
     visualization: essence.visualization.name,
     filters: nonTimeFilters.clauses.map(clause => clause.reference).toArray(),
     splits: essence.splits.splits.map(split => split.reference).toArray(),
-    measures: essence.series.series.flatMap(usedMeasures).toSet().toArray()
-  });
+    measures: essence.series.series.flatMap(usedMeasures).toSet().toArray(),
+    ...(error && { error: error.message })
+  };
+
+  logger.log(`Visualization query ${essence.description(timekeeper)}`, logData);
 }
