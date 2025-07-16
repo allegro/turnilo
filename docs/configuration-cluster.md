@@ -27,7 +27,6 @@ The next step is to open the generated config file in your favourite text editor
 Below we will go through a typical configuration flow. At any point you can save the config and re-launch Turnilo to load
 that config in.
 
-
 ## Configuring the Turnilo server
 
 **port** (number), default: 9090
@@ -40,11 +39,13 @@ Indicates that Turnilo should run in verbose mode. This will log all the queries
 
 **loggerFormat** *EXPERIMENTAL* (`plain` or `json`), default: `plain` 
 
-Format for logged message. 
+Format for logged message.
+
 * `plain`: messages are logged as is.
 * `json`: messages are wrapped in object with additional metadata and logged as stringified JSON.
 
 Additional metadata for `json` format:
+
 * `@timestamp`: ISO 8601 timestamp of logged event
 * `level`: "INFO", "WARN", or "ERROR" string
 * `logger`: name of the logger
@@ -105,11 +106,9 @@ Specify that Turnilo should set the [StrictTransportSecurity](https://developer.
 Note that Turnilo can itself only run a http server.
 This option is intended to be used when Turnilo is running behind an HTTPS terminator like AWS ELB.
 
-
 ## Configuring the Clusters
 
 The top level `clusters:` key that holds the clusters that Turnilo will connect to.
-
 
 ### General properties
 
@@ -148,7 +147,7 @@ auth:
 
 This would result in all Druid request having added headers
 
-![](assets/images/basic-auth-headers.png)
+![Basic Auth Headers](assets/images/basic-auth-headers.png)
 
 **version** (string)
 
@@ -168,10 +167,13 @@ Object should have the following structure:
 retry:
     maxAttempts: 10
     delay: 1000
-``` 
+```
 
-* `maxAttempts` is count of maximum attempts for retry. Default values is 5
-* `delay` is time in ms between each attempt.
+* `maxAttempts` is count of maximum attempts for retry. Set to -1 to disable retries. Default values is 5.
+* `delay` is time in ms between each attempt. Default value is 5000ms.
+
+{: .note }
+Don't set `maxAttempts` to 0, as the [plywood retry requester](https://github.com/implydata/plywood/blob/v0.21.11/src/helper/retryRequester.ts#L31) will fall back to 3 retries in that case.
 
 **healthCheckTimeout** (number), default: 1000
 
