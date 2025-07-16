@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.40.2",
+  "version": "1.40.3",
   "description": "Business intelligence, data exploration and visualization web application for Druid, formerly known as Swiv and Pivot",
   "keywords": [
     "turnilo",
