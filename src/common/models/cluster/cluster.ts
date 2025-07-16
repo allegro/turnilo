@@ -46,6 +46,7 @@ export interface Cluster {
   introspectionStrategy?: string;
   requestDecorator?: RequestDecorator;
   retry?: RetryOptions;
+  concurrentLimit?: number;
   auth?: ClusterAuth;
 }
 
@@ -66,6 +67,7 @@ export interface ClusterJS {
   introspectionStrategy?: string;
   requestDecorator?: RequestDecoratorJS;
   retry?: RetryOptionsJS;
+  concurrentLimit?: number;
   auth?: ClusterAuthJS;
 }
 
@@ -196,6 +198,7 @@ export function fromConfig(params: ClusterJS, logger: Logger): Cluster {
     guardDataCubes,
     introspectionStrategy,
     healthCheckTimeout,
+    concurrentLimit: typeof params.concurrentLimit === "string" ? parseInt(params.concurrentLimit, 10) : params.concurrentLimit,
     auth
   };
 }
