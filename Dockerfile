@@ -1,7 +1,7 @@
 #
 # BUILD stage
 #
-FROM node:16 AS build
+FROM node:18 AS build
 
 WORKDIR /usr/src/app
 
@@ -20,9 +20,9 @@ RUN npm prune --production
 
 #
 # RUNTIME stage
-# We pick last node 16.x to get recommended security updates. Any 16.x node should work as runtime.
+# We pick last node 18.x to get recommended security updates. Any 18.x node should work as runtime.
 #
-FROM gcr.io/distroless/nodejs:16 as runtime
+FROM gcr.io/distroless/nodejs:18 as runtime
 
 WORKDIR /app
 

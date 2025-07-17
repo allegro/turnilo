@@ -33,7 +33,7 @@
     "start:examples": "npm run start -- run-examples",
     "start:dev": "NODE_ENV=dev-hmr ./bin/turnilo",
     "start:dev:examples": "npm run start:dev -- run-examples",
-    "build:client": "webpack --config config/webpack.prod.js",
+    "build:client": "NODE_OPTIONS=--openssl-legacy-provider webpack --config config/webpack.prod.js",
     "build:server": "tsc -p src/server/tsconfig.json",
     "build": "npm-run-all -s clean build:server build:client",
     "clean": "rimraf build/*",
