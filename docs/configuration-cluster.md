@@ -175,6 +175,10 @@ retry:
 {: .note }
 Don't set `maxAttempts` to 0, as the [plywood retry requester](https://github.com/implydata/plywood/blob/v0.21.11/src/helper/retryRequester.ts#L31) will fall back to 3 retries in that case.
 
+**concurrentLimit** (number), default: 5
+
+The maximum number of concurrent requests that can be made to the cluster. This setting helps control the load on the data store by limiting how many queries can run simultaneously.
+
 **healthCheckTimeout** (number), default: 1000
 
 The timeout for the cluster health checking request in ms. See [Checking health of Turnilo instance](health-checking.md)

@@ -60,6 +60,7 @@ describe("Cluster", () => {
         type: "druid",
         url: "https://foobar.com",
         version: null,
+        concurrentLimit: undefined,
         auth: undefined
       });
     });
@@ -129,6 +130,20 @@ describe("Cluster", () => {
       expect(cluster.retry).to.be.equivalent(new RetryOptions({ maxAttempts: 5, delay: 42 }));
     });
 
+    it("should read concurrentLimit", () => {
+      const cluster = buildCluster({
+        concurrentLimit: 10
+      });
+
+      expect(cluster.concurrentLimit).to.be.equal(10);
+    });
+
+    it("should default concurrentLimit to undefined", () => {
+      const cluster = buildCluster();
+
+      expect(cluster.concurrentLimit).to.be.undefined;
+    });
+
     it("should read request decorator", () => {
       const cluster = buildCluster({
         name: "foobar",
@@ -196,9 +211,10 @@ describe("Cluster", () => {
         type: "druid",
         requestDecorator: null,
         retry: undefined,
+        concurrentLimit: undefined,
         auth: undefined
       });
     });
   });
 })
-;
+  ;

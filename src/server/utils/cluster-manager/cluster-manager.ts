@@ -155,7 +155,7 @@ export class ClusterManager {
     return properRequesterFactory({
       cluster,
       verbose: this.verbose,
-      concurrentLimit: 5,
+      concurrentLimit: cluster.concurrentLimit || 5,
       druidRequestDecorator
     });
   }
@@ -167,7 +167,7 @@ export class ClusterManager {
       case "http-basic": {
         const credentials = `${auth.username}:${auth.password}`;
         const Authorization = `Basic ${Buffer.from(credentials).toString("base64")}`;
-        return  { Authorization };
+        return { Authorization };
       }
     }
   }
@@ -179,11 +179,11 @@ export class ClusterManager {
       if (isNil(authHeaders)) {
         return undefined;
       } else {
-        return constant( { headers: authHeaders });
+        return constant({ headers: authHeaders });
       }
     }
 
-    if (isNil(authHeaders) ) return requestDecorator;
+    if (isNil(authHeaders)) return requestDecorator;
 
     return (request: DecoratorRequest, context: object) => {
       const decoration = requestDecorator(request, context);
@@ -410,24 +410,24 @@ export class ClusterManager {
     logger.log(`Introspecting all sources in cluster '${cluster.name}'`);
 
     return (External.getConstructorFor(cluster.type) as any).getSourceList(this.requester)
-        .then(
-            (sources: string[]) => {
-              const introspectionTasks: Array<Promise<void>> = [];
-              sources.forEach(source => {
-                const existingExternalsForSource = this.managedExternals.filter(managedExternal => externalContainsSource(managedExternal.external, source));
+      .then(
+        (sources: string[]) => {
+          const introspectionTasks: Array<Promise<void>> = [];
+          sources.forEach(source => {
+            const existingExternalsForSource = this.managedExternals.filter(managedExternal => externalContainsSource(managedExternal.external, source));
 
-                if (existingExternalsForSource.length) {
-                  existingExternalsForSource.forEach(existingExternalForSource => {
-                    introspectionTasks.push(this.introspectManagedExternal(existingExternalForSource));
-                  });
-                }
+            if (existingExternalsForSource.length) {
+              existingExternalsForSource.forEach(existingExternalForSource => {
+                introspectionTasks.push(this.introspectManagedExternal(existingExternalForSource));
               });
-              return Promise.all(introspectionTasks);
-            },
-            (e: Error) => {
-              logger.error(`Failed to get source list from cluster '${cluster.name}' because: ${e.message}`);
             }
-        );
+          });
+          return Promise.all(introspectionTasks);
+        },
+        (e: Error) => {
+          logger.error(`Failed to get source list from cluster '${cluster.name}' because: ${e.message}`);
+        }
+      );
   }
 
   // Refresh the cluster now, will trigger onExternalUpdate and then return an empty promise when done
