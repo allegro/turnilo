@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { config: commonConfig } = require("./webpack.common");
+const {config: commonConfig} = require("./webpack.common");
 const { merge } = require("webpack-merge");
 const webpack = require('webpack');
 const hotMiddlewareScript = 'webpack-hot-middleware/client';
