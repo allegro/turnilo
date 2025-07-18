@@ -22,7 +22,6 @@ import {
   Cluster,
   ClusterJS,
   fromConfig as clusterFromConfig,
-  serialize as serializeCluster,
   SerializedCluster
 } from "../cluster/cluster";
 import { findCluster } from "../cluster/find-cluster";
@@ -96,22 +95,6 @@ export function fromConfig(config: SourcesJS, logger: Logger): Sources {
   };
 }
 
-export function serialize({
-                            clusters: serverClusters,
-                            dataCubes: serverDataCubes
-                          }: Sources): SerializedSources {
-  const clusters = serverClusters.map(serializeCluster);
-
-  const dataCubes = serverDataCubes
-    .filter(dc => isQueryable(dc))
-    .map(serializeDataCube);
-
-  return {
-    clusters,
-    dataCubes
-  };
-}
-
 export function getDataCubesForCluster(sources: Sources, clusterName: string): DataCube[] {
   return sources.dataCubes.filter(dataCube => dataCube.clusterName === clusterName);
 }
@@ -133,4 +116,8 @@ export function deleteDataCube(sources: Sources, dataCube: DataCube): Sources {
     ...sources,
     dataCubes: sources.dataCubes.filter(dc => dc.name !== dataCube.name)
   };
+}
+
+export function serializeDataCubes(dataCubes: DataCube[]): SerializedDataCube[] {
+  return dataCubes.filter(isQueryable).map(serializeDataCube);
 }

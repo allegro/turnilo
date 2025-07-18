@@ -16,8 +16,10 @@
 
 import { Request, Response, Router } from "express";
 import { errorToMessage } from "../../../common/logger/logger";
-import { serialize } from "../../../common/models/sources/sources";
+import { serialize as serializeCluster } from "../../../common/models/cluster/cluster";
+import { serializeDataCubes } from "../../../common/models/sources/sources";
 import { checkAccess } from "../../utils/datacube-guard/datacube-guard";
+import { getDataCubesPage, getPageNumber } from "../../utils/datacubes/pagination";
 import { SettingsManager } from "../../utils/settings-manager/settings-manager";
 
 export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "logger">) {
@@ -25,20 +27,31 @@ export function sourcesRouter(settings: Pick<SettingsManager, "getSources" | "lo
   const logger = settings.logger.setLoggerId("Sources");
 
   const router = Router();
-
-  router.get("/", async (req: Request, res: Response) => {
-
+  router.get("/clusters", async (req: Request, res: Response) => {
     try {
-      const { clusters, dataCubes } = await settings.getSources();
-      res.json(serialize({
-        clusters,
-        dataCubes: dataCubes.filter( dataCube => checkAccess(dataCube, req.headers) )
-      }));
+      const { clusters } = await settings.getSources();
+      res.json(clusters.map(serializeCluster));
     } catch (error) {
-     logger.error(errorToMessage(error));
+      logger.error(errorToMessage(error));
+      res.status(500).send({
+        error: "Can't fetch clusters",
+        message: error.message
+      });
+    }
+  });
 
-     res.status(500).send({
-        error: "Can't fetch settings",
+  router.get("/dataCubes", async (req: Request, res: Response) => {
+    try {
+      const sources = await settings.getSources();
+      const dataCubes = sources.dataCubes
+        .filter(dataCube => checkAccess(dataCube, req.headers));
+      const serializedDataCubes = serializeDataCubes(dataCubes);
+      const page = getPageNumber(req.query.page);
+      res.json(getDataCubesPage(serializedDataCubes, page));
+    } catch (error) {
+      logger.error(errorToMessage(error));
+      res.status(500).send({
+        error: "Can't fetch data cubes",
         message: error.message
       });
     }
