@@ -111,7 +111,9 @@ interface Messages {
 export interface Customization {
   title?: string;
   headerBackground?: string;
+  customLogoText?: string;
   customLogoSvg?: string;
+  hideInfoAndFeedback?: boolean;
   externalViews: ExternalView[];
   timezones: Timezone[];
   urlShortener?: UrlShortener;
@@ -126,7 +128,9 @@ export interface CustomizationJS {
   title?: string;
   locale?: LocaleJS;
   headerBackground?: string;
+  customLogoText?: string;
   customLogoSvg?: string;
+  hideInfoAndFeedback?: boolean;
   externalViews?: ExternalViewValue[];
   timezones?: string[];
   urlShortener?: UrlShortenerDef;
@@ -138,7 +142,9 @@ export interface CustomizationJS {
 
 export interface SerializedCustomization {
   headerBackground?: string;
+  customLogoText?: string;
   customLogoSvg?: string;
+  hideInfoAndFeedback?: boolean;
   timezones: string[];
   externalViews: ExternalViewValue[];
   hasUrlShortener: boolean;
@@ -150,7 +156,9 @@ export interface SerializedCustomization {
 
 export interface ClientCustomization {
   headerBackground?: string;
+  customLogoText?: string;
   customLogoSvg?: string;
+  hideInfoAndFeedback?: boolean;
   timezones: Timezone[];
   externalViews: ExternalViewValue[];
   hasUrlShortener: boolean;
@@ -184,7 +192,9 @@ export function fromConfig(config: CustomizationJS = {}, logger: Logger): Custom
   const {
     title = DEFAULT_TITLE,
     headerBackground,
+    customLogoText,
     customLogoSvg,
+    hideInfoAndFeedback: configHideInfoAndFeedback,
     externalViews: configExternalViews,
     timezones: configTimezones,
     urlShortener,
@@ -204,10 +214,14 @@ export function fromConfig(config: CustomizationJS = {}, logger: Logger): Custom
 
   const visualizationColors = readVisualizationColors(config);
 
+  const hideInfoAndFeedback = isNil(configHideInfoAndFeedback) ? false : configHideInfoAndFeedback;
+
   return {
     title,
     headerBackground,
+    customLogoText,
     customLogoSvg,
+    hideInfoAndFeedback,
     sentryDSN,
     cssVariables: verifyCssVariables(cssVariables, logger),
     urlShortener: urlShortenerFromConfig(urlShortener),
@@ -220,9 +234,11 @@ export function fromConfig(config: CustomizationJS = {}, logger: Logger): Custom
 }
 
 export function serialize(customization: Customization): SerializedCustomization {
-  const { customLogoSvg, timezones, headerBackground, locale, externalViews, sentryDSN, urlShortener, messages, visualizationColors } = customization;
+  const { customLogoText, customLogoSvg, hideInfoAndFeedback, timezones, headerBackground, locale, externalViews, sentryDSN, urlShortener, messages, visualizationColors } = customization;
   return {
+    customLogoText,
     customLogoSvg,
+    hideInfoAndFeedback,
     externalViews,
     hasUrlShortener: isTruthy(urlShortener),
     headerBackground,
