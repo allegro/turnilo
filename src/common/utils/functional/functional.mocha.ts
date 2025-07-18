@@ -259,7 +259,7 @@ describe("Functional utilities", () => {
 
     it("should return promise with value", async () => {
       const returnVal = 5;
-      const debounced = debounceWithPromise(() => returnVal, 10);
+      const debounced = debounceWithPromise(async () => returnVal, 10);
       const x = await debounced();
       expect(x).to.be.eq(returnVal);
     });
