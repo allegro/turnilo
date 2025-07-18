@@ -131,9 +131,8 @@ export default function createApp(serverSettings: ServerSettings, settingsManage
       const webpackCompiler = webpack(webpackConfig);
 
       app.use(webpackDevMiddleware(webpackCompiler, {
-        hot: true,
-        noInfo: true,
-        publicPath: webpackConfig.output.publicPath
+        publicPath: webpackConfig.output.publicPath,
+        stats: 'minimal'
       }));
 
       app.use(webpackHotMiddleware(webpackCompiler, {

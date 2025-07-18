@@ -15,6 +15,7 @@
  */
 
 const path = require("path");
+const webpack = require("webpack");
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { IgnorePlugin } = require('webpack');
@@ -35,16 +36,29 @@ const config = {
   output: {
     path: path.resolve(__dirname, '../build/public'),
     filename: "[name].js",
-    chunkFilename: "[name].[hash].js"
+    chunkFilename: "[name].[contenthash].js",
+    clean: true
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json"],
+    fallback: {
+      "url": false,
+      "querystring": require.resolve("querystring-es3"),
+      "buffer": require.resolve("buffer/"),
+      "crypto": require.resolve("crypto-browserify"),
+      "stream": require.resolve("stream-browserify"),
+      "vm": require.resolve("vm-browserify")
+    }
   },
   plugins: [
     new MiniCssExtractPlugin(),
     new IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser',
     }),
   ],
   module: {
@@ -80,7 +94,7 @@ const config = {
       },
       {
         test: /\.(woff|woff2)$/i,
-        loader: "file-loader",
+        type: "asset/resource",
       },
       {
         test: /\.svg$/,
