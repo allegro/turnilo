@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const {config: commonConfig, toTranspilePattern} = require('./webpack.common');
-const merge = require('webpack-merge');
+const { config: commonConfig, toTranspilePattern } = require('./webpack.common');
+const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -82,6 +82,6 @@ const es5Config = {
 };
 
 module.exports = [
-  merge.smart(commonConfig, prodConfig, bundleAnalyzerConfig),
-  merge.smart(commonConfig, prodConfig, es5Config, polyfillsConfig),
+  merge(commonConfig, prodConfig, bundleAnalyzerConfig),
+  merge(commonConfig, prodConfig, es5Config, polyfillsConfig),
 ]

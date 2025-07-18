@@ -50,7 +50,7 @@ or join the chat on [Slack](https://join.slack.com/t/turnilo/shared_invite/enQtO
 
 ## Pre-requisites
 
-* [Node.js](https://nodejs.org/) - 14.x or 16.x version
+* [Node.js](https://nodejs.org/) - 16.x or 18.x version (18.x recommended)
 
 :warning:
 Do not use `yarn` command for dependency management and project build, use `npm` instead.

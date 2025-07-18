@@ -15,11 +15,11 @@
  */
 
 const {config: commonConfig} = require("./webpack.common");
-const merge = require("webpack-merge");
+const { merge } = require("webpack-merge");
 const webpack = require('webpack');
 const hotMiddlewareScript = 'webpack-hot-middleware/client';
 
-module.exports = merge.smart(commonConfig, {
+module.exports = merge(commonConfig, {
   mode: 'development',
   entry: {
     main: [hotMiddlewareScript, "./src/client/main.tsx"]

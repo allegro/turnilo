@@ -4,7 +4,7 @@ description: Setup build
 inputs:
   node-version:
     required: true
-    default: '16'
+    default: "18"
     description: Node version
 
 runs:
@@ -14,7 +14,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'npm'
+        cache: "npm"
 
     - name: Install dependencies
       shell: bash
