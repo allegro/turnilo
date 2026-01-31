@@ -18,6 +18,8 @@
 import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import "./highlight-string.scss";
+import { getCopyHandlers, useCopyToClipboard } from "../../utils/copy-to-clipboard/copy-to-clipboard";
+import { CopyToast } from "../copy-toast/copy-toast";
 
 export interface HighlightStringProps {
   className?: string;
@@ -48,6 +50,28 @@ function highlightBy(text: string, highlight: string | RegExp): string | JSX.Ele
   return highlightByIndex(text, startIndex, startIndex + match[0].length);
 }
 
-export const HighlightString: React.FunctionComponent<HighlightStringProps> = ({ className, text, highlight }) => {
+export const HighlightString: React.FunctionComponent<HighlightStringProps> = ({ className, text, highlight}) => {
   return <span className={classNames("highlight-string", className)}>{highlightBy(text, highlight)}</span>;
+};
+
+export const CopyableHighlightString: React.FC<HighlightStringProps> = ({
+  className,
+  text,
+  highlight,
+}) => {
+  const { copy, copied } = useCopyToClipboard();
+  const copyProps =  getCopyHandlers(() => copy(text));
+  return (
+    <>
+      <span
+        className={classNames("highlight-string", className)}
+        title={`${text}: Copy to clipboard`}
+        {...copyProps}
+      >
+        {highlightBy(text, highlight)}
+      </span>
+
+      {copied && <CopyToast text={text}/>}
+    </>
+  );
 };
