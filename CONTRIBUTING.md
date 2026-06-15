@@ -1,5 +1,13 @@
 # How to Contribute
 
+> **This project is archived and no longer maintained.**
+>
+> Allegro has stepped back from Turnilo's development. The repository is read-only and we are
+> no longer reviewing or merging issues and pull requests, so new contributions cannot be accepted.
+>
+> A heartfelt thank you to everyone who contributed over the years — your work is deeply appreciated.
+> The guidelines below are kept for historical reference.
+
 ## General guidelines
 
 - Bug reports, feature requests, and any sort of feedback is very welcome.
