@@ -3,6 +3,16 @@ title: Turnilo
 nav_order: 1
 ---
 
+{: .important }
+> **This project is archived and no longer maintained.**
+>
+> Allegro no longer uses Turnilo internally and is stepping back from its development.
+> The repository is now read-only: there will be no further releases, bug fixes, or support,
+> and issues and pull requests are no longer being reviewed or merged.
+>
+> Thank you to everyone who contributed code, reported issues, shared ideas, and used Turnilo
+> over the years. This project would not have been what it is without you.
+
 Turnilo is a business intelligence, data exploration and visualization web application for [Apache Druid](https://druid.apache.org).
 Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
 This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv)

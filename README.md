@@ -4,9 +4,19 @@
 [![build status](https://github.com/allegro/turnilo/workflows/Build/badge.svg)](https://github.com/allegro/turnilo/actions)
 [![Join our Slack chat](https://img.shields.io/badge/slack-chat-purple.svg?logo=slack)](https://join.slack.com/t/turnilo/shared_invite/enQtOTI4ODcxMjcyNjU2LTFlOTk5YWZlOGMyZDZhZWU3MGNjNDRhZmI1Y2UzNDlkZmY3YzYxYTJhYzIzMzc0MTc3MzA3OTE1NmQ5NDI1M2I)
 
+> [!WARNING]
+> **This project is archived and no longer maintained.**
+>
+> Allegro no longer uses Turnilo internally and is stepping back from its development.
+> The repository is now read-only: there will be no further releases, bug fixes, or support,
+> and issues and pull requests are no longer being reviewed or merged.
+>
+> Thank you to everyone who contributed code, reported issues, shared ideas, and used Turnilo
+> over the years. This project would not have been what it is without you.
+
 Turnilo is a business intelligence, data exploration and visualization web application for [Apache Druid](https://druid.apache.org).
 Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
-This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv) 
+This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv)
 with the latest version of Pivot under Apache license.
 
 ## Motivation
@@ -30,20 +40,20 @@ this is how Turnilo emerged.
 ## Features
 
 * Intuitive, drag and drop, gorgeous user interface to visualize Druid datasets.
-* Fully dedicated to low latency Druid 
-[Timeseries](https://druid.apache.org/docs/latest/querying/timeseriesquery.html), 
-[TopN](https://druid.apache.org/docs/latest/querying/topnquery.html) and 
+* Fully dedicated to low latency Druid
+[Timeseries](https://druid.apache.org/docs/latest/querying/timeseriesquery.html),
+[TopN](https://druid.apache.org/docs/latest/querying/topnquery.html) and
 [GroupBy](https://druid.apache.org/docs/latest/querying/groupbyquery.html) queries.
 * Unified view for historical and real-time data.
 * Blazingly fast.
 
 ![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/assets/images/showcase.gif)
 
-## Try it!
+## Try it
 
 You can try an online demo with example datasets (Covid-19 and Wikipedia) at [https://turnilo.app](https://turnilo.app).
 
-## Join us!
+## Join us
 
 Feel free to ask on [GitHub Discussions](https://github.com/allegro/turnilo/discussions)
 or join the chat on [Slack](https://join.slack.com/t/turnilo/shared_invite/enQtOTI4ODcxMjcyNjU2LTFlOTk5YWZlOGMyZDZhZWU3MGNjNDRhZmI1Y2UzNDlkZmY3YzYxYTJhYzIzMzc0MTc3MzA3OTE1NmQ5NDI1M2I).
@@ -85,13 +95,13 @@ Learn how to configure and customize Turnilo:
 
 ## Development
 
-### Install project dependencies.
+### Install project dependencies
 
 ```
 npm install
 ```
 
-### Build the project.
+### Build the project
 
 ```
 npm run build
@@ -139,7 +149,6 @@ Connect to the existing Druid broker using your config file.
 npm run start:dev -- run-config path/to/config.yml
 ```
 
-
 ## Testing
 
 ### Unit tests
@@ -180,13 +189,12 @@ Run cypress interactive tools for e2e testing
 npm run e2e:dev
 ```
 
-
-## Debugging 
+## Debugging
 
 ### Server module
 
 In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
-Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo" 
+Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo"
 and "Application parameters" to "--examples".
 
 You can find more infrmation [here](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html)
