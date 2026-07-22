@@ -18,7 +18,7 @@
 import React from "react";
 import { ClientCustomization } from "../../../common/models/customization/customization";
 import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
-import { Fn } from "../../../common/utils/general/general";
+import { Fn, isNil } from "../../../common/utils/general/general";
 import { ClearableInput } from "../../components/clearable-input/clearable-input";
 import { HeaderBar } from "../../components/header-bar/header-bar";
 import { EmptyDataCubeList } from "../../components/no-data/empty-data-cube-list";
@@ -73,15 +73,19 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   }
 
   render() {
-    const { onOpenAbout, dataCubes } = this.props;
+    const { onOpenAbout, dataCubes, customization } = this.props;
     const { query } = this.state;
     const hasDataCubes = dataCubes.length > 0;
 
+    const titleString = isNil(customization.customLogoText) ? STRINGS.home : customization.customLogoText;
+
     return <div className="home-view">
-      <HeaderBar title={STRINGS.home}>
-        <button className="text-button" onClick={onOpenAbout}>
-          {STRINGS.infoAndFeedback}
-        </button>
+      <HeaderBar title={titleString}>
+        { !customization.hideInfoAndFeedback && 
+          <button className="text-button" onClick={onOpenAbout}>
+            {STRINGS.infoAndFeedback}
+          </button> 
+        }
       </HeaderBar>
 
       <div className="container">
