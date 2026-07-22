@@ -29,11 +29,12 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
-import { Loader } from "../../components/loader/loader";
+import { Button } from "../../components/button/button";
 import { QueryError } from "../../components/query-error/query-error";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { VisualizationQuery } from "../../views/cube-view/api-context";
 import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
+import { Loader } from "../../components/loader/loader";
 
 interface DataProviderProps {
   refreshRequestTimestamp: number;
@@ -46,20 +47,16 @@ interface DataProviderProps {
 
 interface DataProviderState {
   dataset: DatasetRequest;
+  requesting: boolean;
 }
 
 export class DataProvider extends React.Component<DataProviderProps, DataProviderState> {
   static contextType = DownloadableDatasetContext;
   context: DownloadableDataset;
 
-  state: DataProviderState = { dataset: loading };
+  state: DataProviderState = { dataset: loading, requesting: false };
 
   private lastQueryEssence: Essence = null;
-
-  componentDidMount() {
-    const { essence } = this.props;
-    this.loadData(essence);
-  }
 
   componentWillUnmount() {
     this.lastQueryEssence = null;
@@ -68,15 +65,18 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
 
   UNSAFE_componentWillReceiveProps(nextProps: DataProviderProps) {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
+      this.setState({ requesting: false });
       const { essence } = nextProps;
       const hadDataLoaded = isLoaded(this.state.dataset);
       const essenceChanged = !essence.equals(this.props.essence);
-      this.loadData(essence, hadDataLoaded && essenceChanged);
+      if (hadDataLoaded && essenceChanged) {
+        this.handleDatasetLoad(loading);
+      }
     }
   }
 
-  private loadData(essence: Essence, showSpinner = true) {
-    if (showSpinner) this.handleDatasetLoad(loading);
+  private loadData(essence: Essence) {
+    this.lastQueryEssence = essence;
     this.fetchData(essence)
       .then(loadedDataset => {
         // TODO: encode it better
@@ -92,17 +92,16 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
   }
 
   private fetchData(essence: Essence): Promise<DatasetRequest | null> {
-    this.lastQueryEssence = essence;
     return this.debouncedCallExecutor(essence);
   }
 
   private callExecutor = (essence: Essence): Promise<DatasetRequest | null> =>
     this.props.query(essence)
       .then((dataset: Dataset) => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          return loaded(dataset);
-        },
+        // signal out of order requests with null
+        if (!this.wasUsedForLastQuery(essence)) return null;
+        return loaded(dataset);
+      },
         err => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
@@ -153,14 +152,28 @@ export class DataProvider extends React.Component<DataProviderProps, DataProvide
     return this.props.stage.equals(nextProps.stage);
   }
 
+  private sendRequest = () => {
+    this.setState({ requesting: true });
+    this.loadData(this.props.essence);
+  };
+
   render() {
     const { children } = this.props;
-    const { dataset } = this.state;
+    const { dataset, requesting } = this.state;
     switch (dataset.status) {
       case DatasetRequestStatus.LOADING:
-        return <Loader/>;
+        return requesting ? <Loader /> : (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '70vh',
+          }}>
+            <Button type="primary" title="Query" onClick={this.sendRequest} />
+          </div>
+        );
       case DatasetRequestStatus.ERROR:
-        return <QueryError error={dataset.error}/>;
+        return <QueryError error={dataset.error} />;
       case DatasetRequestStatus.LOADED:
         return children(dataset.dataset);
     }
