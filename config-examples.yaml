@@ -635,3 +635,9 @@ customization:
   urlShortener: |
     // also available: context.clientIp
     return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))
+  externalViews:
+    - title: Example externalView
+      linkGenerator: >
+        { 
+          return 'http://www.example.com'; 
+        }
