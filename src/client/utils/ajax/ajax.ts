@@ -18,8 +18,10 @@
 import axios from "axios";
 import { Dataset, DatasetJS, Environment, Executor, Expression } from "plywood";
 import { ClientAppSettings } from "../../../common/models/app-settings/app-settings";
+import { SerializedCluster } from "../../../common/models/cluster/cluster";
+import { SerializedDataCube } from "../../../common/models/data-cube/data-cube";
 import { isEnabled, Oauth } from "../../../common/models/oauth/oauth";
-import { ClientSources, SerializedSources } from "../../../common/models/sources/sources";
+import { ClientSources } from "../../../common/models/sources/sources";
 import { deserialize } from "../../deserializers/sources";
 import { getToken, mapOauthError } from "../../oauth/oauth";
 
@@ -73,13 +75,44 @@ export class Ajax {
     };
   }
 
-  static sources(appSettings: ClientAppSettings): Promise<ClientSources> {
-    const headers = Ajax.headers(appSettings.oauth);
-    return axios.get<SerializedSources>("sources", { headers })
-      .then(resp => resp.data)
-      .catch(error => {
-        throw mapOauthError(appSettings.oauth, error);
-      })
-      .then(sourcesJS => deserialize(sourcesJS, appSettings));
+  static async fetchClusters(headers: Record<string, string>): Promise<SerializedCluster[]> {
+    return axios.get("sources/clusters", { headers }).then(resp => resp.data);
+  }
+
+  static async fetchDataCubes(headers: Record<string, string>): Promise<SerializedDataCube[]> {
+    async function* fetchDataCubesPage(page: number): AsyncIterableIterator<SerializedDataCube[]> {
+      const { dataCubes, next } = (await axios.get(`sources/dataCubes?page=${page}`, { headers })).data;
+      yield dataCubes;
+      if (next) {
+        yield* fetchDataCubesPage(next);
+      }
+
+    }
+
+    async function* fetchAllPages() {
+      yield* fetchDataCubesPage(0);
+    }
+
+    const dataCubes: SerializedDataCube[] = [];
+    for await (const cubes of fetchAllPages()) {
+      dataCubes.push(...cubes);
+    }
+
+    return dataCubes;
+  }
+
+  static async sources(appSettings: ClientAppSettings): Promise<ClientSources> {
+    try {
+      const headers = Ajax.headers(appSettings.oauth);
+      const clusters = Ajax.fetchClusters(headers);
+      const dataCubes = Ajax.fetchDataCubes(headers);
+
+      return deserialize({
+        clusters: await clusters,
+        dataCubes: await dataCubes
+      }, appSettings);
+    } catch (e) {
+      throw mapOauthError(appSettings.oauth, e);
+    }
   }
 }
