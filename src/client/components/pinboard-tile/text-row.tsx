@@ -17,7 +17,7 @@
 import React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 import { classNames } from "../../utils/dom/dom";
-import { HighlightString } from "../highlight-string/highlight-string";
+import { CopyableHighlightString } from "../highlight-string/highlight-string";
 import "./text-row.scss";
 
 interface TextRowProps {
@@ -35,7 +35,7 @@ export const TextRow: React.FunctionComponent<TextRowProps> = props => {
     className={classNames("pinboard-text-row", { selectable: clickable })}
     onClick={() => clickable && onClick(value)}>
     <div className="segment-value" title={strValue}>
-      <HighlightString className="label" text={strValue} highlight={searchText} />
+      <CopyableHighlightString className="label" text={strValue} highlight={searchText} />
     </div>
     {measure && <div className="measure-value">{measure}</div>}
   </div>;

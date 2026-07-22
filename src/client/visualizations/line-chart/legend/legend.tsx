@@ -17,6 +17,8 @@
 import React from "react";
 import { useSettingsContext } from "../../../views/cube-view/settings-context";
 import "./legend.scss";
+import { getCopyHandlers, useCopyToClipboard } from "../../../utils/copy-to-clipboard/copy-to-clipboard";
+import { CopyToast } from "../../../components/copy-toast/copy-toast";
 
 export interface LegendProps {
   values: string[];
@@ -26,6 +28,23 @@ export interface LegendProps {
 interface LegendValuesProps {
   values: string[];
 }
+
+interface LegendValueProps {
+  text: string;
+}
+
+export const CopyableLegendItem: React.FC<LegendValueProps> = ({
+ text
+}) => {
+  const { copy, copied } = useCopyToClipboard();
+  const copyProps =  getCopyHandlers(() => copy(text));
+  return (
+    <>
+      <span className="legend-value-name" {...copyProps} >{text}</span>
+      {copied && <CopyToast text={text} />}
+    </>
+  );
+};
 
 const LegendValues: React.FunctionComponent<LegendValuesProps> = props => {
   const { customization: { visualizationColors } } = useSettingsContext();
@@ -40,7 +59,7 @@ const LegendValues: React.FunctionComponent<LegendValuesProps> = props => {
             <div className="legend-value-color" style={style} />
           </td>
           <td className="legend-value-label">
-            <span className="legend-value-name">{value}</span>
+            <CopyableLegendItem text={value} />
           </td>
         </tr>;
       })}
